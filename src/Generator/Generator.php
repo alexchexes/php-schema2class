@@ -136,18 +136,38 @@ class Generator
         );
         $docBlock->setWordWrap(false);
 
+        $body =
+            // Guard against passing anything except arrays/objects
+            "if (!is_array(\$$inputVarName) && !is_object(\$$inputVarName)) {\n" .
+            "    throw new \\InvalidArgumentException(\n" .
+            "        'Input to buildFromInput must be array or object, got ' . gettype(\$$inputVarName)\n" .
+            "    );\n" .
+            "}\n\n" .
+            
+            // Conversion into object if input is array
+            "\$$inputVarName = is_array(\$$inputVarName) ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$$inputVarName) : \$$inputVarName;\n" .
+
+            // Conditional schema validation
+            "if (\$validate) {\n" .
+            "    static::validateInput(\$$inputVarName);\n" .
+            "}\n\n" .
+
+            // Property‐by‐property mapping
+            $properties->generateJSONToTypeConversionCode($inputVarName, object: true) . "\n\n" .
+
+            // Construct & assign optional props
+            '$obj = new self(' . join(", ", $constructorParams) . ');' . "\n" .
+            join("\n", $assignments) . "\n" .
+
+            // Return
+            'return $obj;'
+        ;
+
         $method = new MethodGenerator(
             'buildFromInput',
             [new ParameterGenerator($inputVarName, $paramType), $validationParam],
             MethodGenerator::FLAG_PUBLIC | MethodGenerator::FLAG_STATIC,
-            "\$$inputVarName = is_array(\$$inputVarName) ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$$inputVarName) : \$$inputVarName;\n" .
-            "if (\$validate) {\n" .
-            "    static::validateInput(\$$inputVarName);\n" .
-            "}\n\n" .
-            $properties->generateJSONToTypeConversionCode($inputVarName, object: true) . "\n\n" .
-            '$obj = new self(' . join(", ", $constructorParams) . ');' . "\n" .
-            join("\n", $assignments) . "\n" .
-            'return $obj;',
+            $body,
             $docBlock
         );
 
