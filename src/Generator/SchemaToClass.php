@@ -126,6 +126,15 @@ class SchemaToClass
         $content = preg_replace('/ : \\\\self/', ' : self', $content);
         $content = preg_replace('/\\\\' . preg_quote($req->getTargetNamespace(), '/') . '\\\\/', '', $content);
 
+        // Strip any remaining leading backslashes on class names in type hints/constructor params/return types
+        // e.g. "\ClassName $data" => "ClassName $data"  and ": \ClassName" => ": ClassName"
+
+        $content = preg_replace(
+            '/\\\\([A-Za-z_][A-Za-z0-9_\\\\]*)(?=\s|\$|;)/',
+            '$1',
+            $content
+        );
+
         $this->writer->writeFile($filename, $content);
     }
 

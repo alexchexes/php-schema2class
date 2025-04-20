@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Property;
@@ -45,61 +46,93 @@ class UnionProperty extends AbstractProperty
 
     public function convertJSONToTypeMatch(string $inputVarName = 'input', bool $object = false): string
     {
-        $key      = $this->key;
-        $keyStr   = var_export($key, true);
-        $accessor = $object ? "\${$inputVarName}->{{$keyStr}}" : "\${$inputVarName}[{$keyStr}]";
-        $match    = new MatchGenerator("true");
+        $name  = $this->name;
+        $key   = $this->key;
+        $keyStr = var_export($key, true);
+
+        $accessor = $object
+            ? "\${$inputVarName}->{{$keyStr}}"
+            : "\${$inputVarName}[{$keyStr}]";
+
+        $match = new MatchGenerator("true");
 
         foreach ($this->subProperties as $subProperty) {
             $mapping       = $subProperty->generateInputMappingExpr($accessor, asserted: true);
             $discriminator = $subProperty->generateInputAssertionExpr($accessor);
-
             $match->addArm($discriminator, $mapping);
         }
 
-        $match->addArm("default", "throw new \\InvalidArgumentException(\"could not build property '$key' from JSON\")");
+        $match->addArm(
+            "default",
+            "throw new \\InvalidArgumentException(\"could not build property '{$key}' from JSON\")"
+        );
 
-        return "\${$key} = {$match->generate()};";
+        // assign into the camel‑cased local variable
+        return "\${$name} = {$match->generate()};";
     }
 
     public function convertJSONToType(string $inputVarName = 'input', bool $object = false): string
     {
+        // PHP 8+ uses match() which already guards correctly
         if ($this->generatorRequest->isAtLeastPHP("8.0")) {
             return $this->convertJSONToTypeMatch($inputVarName, $object);
         }
-
+    
         $name   = $this->name;
         $key    = $this->key;
         $keyStr = var_export($key, true);
-
-        $accessor = $object ? "\${$inputVarName}->{{$keyStr}}" : "\${$inputVarName}[{$keyStr}]";
-
-        $conversions = ["\$$key = $accessor;" => ["discriminators" => [], "fallback" => true]];
-
-        foreach ($this->subProperties as $i => $subProp) {
-            $mapping       = $subProp->generateInputMappingExpr($accessor, true);
+    
+        $accessor = $object
+            ? "\${$inputVarName}->{{$keyStr}}"
+            : "\${$inputVarName}[{$keyStr}]";
+    
+        // Start with a “fallback” that just reassigns the raw value
+        $conversions = [
+            "\$$key = {$accessor};" => ["discriminators" => [], "fallback" => true],
+        ];
+    
+        // Build up per‑arm conversions
+        foreach ($this->subProperties as $subProp) {
+            $mapping       = $subProp->generateInputMappingExpr($accessor, asserted: true);
             $assignment    = "\$$name = {$mapping};";
             $discriminator = $subProp->generateInputAssertionExpr($accessor);
-
-            if (!isset($conversions[$assignment])) {
+    
+            // If this arm is an “array” type, prefix its test with is_array(...)
+            if (
+                ! $this->generatorRequest->isAtLeastPHP("8.0")
+                && (
+                    $subProp instanceof ReferenceArrayProperty
+                    || $subProp instanceof ObjectArrayProperty
+                    || $subProp instanceof PrimitiveArrayProperty
+                )
+            ) {
+                $discriminator = "is_array({$accessor}) && ({$discriminator})";
+            }
+    
+            if (! isset($conversions[$assignment])) {
                 $conversions[$assignment] = ["discriminators" => [], "fallback" => false];
             }
-
             $conversions[$assignment]["discriminators"][] = $discriminator;
         }
-
+    
+        // Turn those into an if/elseif/else chain
         $ifs      = 0;
         $branches = [];
         $fallback = null;
-        foreach ($conversions as $assignment => $conversion) {
-            if ($conversion["fallback"]) {
+    
+        foreach ($conversions as $assignment => $info) {
+            if ($info["fallback"]) {
                 $fallback = $assignment;
                 continue;
             }
-            $condition  = "(" . join(") || (", $conversion["discriminators"]) . ")";
-            $branches[] = ($ifs++ > 0 ? "else " : "") . "if ($condition) {\n    $assignment\n}";
+            $cond = "(" . join(") || (", $info["discriminators"]) . ")";
+            $branches[] = ($ifs++ > 0 ? "else " : "if ")
+                . "($cond) {\n"
+                . "    $assignment\n"
+                . "}";
         }
-
+    
+        // Attach the fallback at the end
         if ($fallback !== null) {
             if (count($branches) > 0) {
                 $branches[] = "else {\n    $fallback\n}";
@@ -107,9 +140,11 @@ class UnionProperty extends AbstractProperty
                 $branches[] = $fallback;
             }
         }
-
+    
+        // Join and normalize “}else” → “} else”
         return str_replace("}\nelse", "} else", join("\n", $branches));
     }
+    
 
     private function convertTypeToJSONMatch(string $outputVarName = 'output'): string
     {
@@ -188,7 +223,7 @@ class UnionProperty extends AbstractProperty
 
     public function typeAnnotation(): string
     {
-        $types = array_map(fn(PropertyInterface $prop): string => $prop->typeAnnotation(), $this->subProperties);
+        $types = array_map(fn (PropertyInterface $prop): string => $prop->typeAnnotation(), $this->subProperties);
         $types = array_unique($types);
         return join("|", $types);
     }

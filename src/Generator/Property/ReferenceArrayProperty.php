@@ -42,13 +42,34 @@ class ReferenceArrayProperty extends AbstractProperty
 
     public function generateInputAssertionExpr(string $expr): string
     {
-        $map = "array_map(fn({$this->type->serializedInputTypeHint($this->generatorRequest)} \$i): bool => {$this->type->inputAssertionExpr($this->generatorRequest, '$i')}, {$expr})";
-        return "array_reduce($map, fn(bool \$carry, bool \$item): bool => \$carry && \$item, true)";
+        // Build the inner assertion closure: use union hint only on PHP ≥8.0;
+        // on 7.4+, drop the hint so `fn($i)` stays valid.
+        $innerAssert = $this->type->inputAssertionExpr($this->generatorRequest, '$i');
+        if ($this->generatorRequest->isAtLeastPHP("8.0")) {
+            $hint = $this->type->serializedInputTypeHint($this->generatorRequest);
+            $map  = "array_map(fn({$hint} \$i): bool => {$innerAssert}, {$expr})";
+        } else {
+            $map  = "array_map(fn(\$i): bool => {$innerAssert}, {$expr})";
+        }
+        return "array_reduce({$map}, fn(bool \$carry, bool \$item): bool => \$carry && \$item, true)";
     }
 
     public function generateInputMappingExpr(string $expr, bool $asserted = false): string
     {
-        return "array_map(fn({$this->type->serializedInputTypeHint($this->generatorRequest)} \$i): {$this->type->typeHint($this->generatorRequest)} => {$this->type->inputMappingExpr($this->generatorRequest, expr: '$i', validateExpr: null)}, {$expr})";
+        // Build the mapping closure: drop union type hints for PHP < 8.0
+        $innerMap = $this->type->inputMappingExpr(
+            $this->generatorRequest,
+            expr: '$i',
+            validateExpr: null
+        );
+        if ($this->generatorRequest->isAtLeastPHP("8.0")) {
+            $hint = $this->type->serializedInputTypeHint($this->generatorRequest);
+            $returnHint = $this->type->typeHint($this->generatorRequest);
+            $closure = "fn({$hint} \$i): {$returnHint} => {$innerMap}";
+        } else {
+            $closure = "fn(\$i) => {$innerMap}";
+        }
+        return "array_map({$closure}, {$expr})";
     }
 
     public function generateOutputMappingExpr(string $expr): string

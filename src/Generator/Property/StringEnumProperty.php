@@ -1,8 +1,8 @@
 <?php
 declare(strict_types = 1);
+
 namespace Helmich\Schema2Class\Generator\Property;
 
-use Composer\Semver\Semver;
 use Helmich\Schema2Class\Generator\GeneratorException;
 use Helmich\Schema2Class\Generator\SchemaToClass;
 use Helmich\Schema2Class\Generator\SchemaToEnum;
@@ -15,65 +15,100 @@ class StringEnumProperty extends AbstractProperty
 
     public static function canHandleSchema(array $schema): bool
     {
-        return isset($schema["type"]) && $schema["type"] === "string" && isset($schema["enum"]);
+        return isset($schema["type"], $schema["enum"])
+            && $schema["type"] === "string";
     }
 
     public function isComplex(): bool
     {
-        return true;
+        // Only “complex” if we will generate a PHP 8.1+ enum class
+        return $this->generatorRequest->isAtLeastPHP("8.1") && isset($this->schema["enum"]);
     }
 
     /**
-     * @param SchemaToClass    $generator
+     * Generate a real enum class only on PHP 8.1+.
+     *
      * @throws GeneratorException
      */
     public function generateSubTypes(SchemaToClass $generator): void
     {
-        $generator->schemaToClass(
-            $this->generatorRequest
-                ->withSchema($this->schema)
-                ->withClass($this->subTypeName())
-        );
+        if (!$this->generatorRequest->isAtLeastPHP("8.1")) {
+            // no enum classes on PHP <8.1
+            return;
+        }
+        parent::generateSubTypes($generator);
     }
 
     public function typeAnnotation(): string
     {
-        return $this->subTypeName();
+        if ($this->generatorRequest->isAtLeastPHP("8.1")) {
+            // will be a real enum class name
+            return $this->subTypeName();
+        }
+
+        // fallback: a literal‑union of all enum values
+        $literals = array_map(
+            fn(string|int $v) => "'" . $v . "'",
+            $this->schema['enum']
+        );
+
+        return implode('|', $literals);
     }
 
     public function typeHint(string $phpVersion): ?string
     {
-        return "\\" . $this->generatorRequest->getTargetNamespace() . "\\" . $this->subTypeName();
+        if ($this->generatorRequest->isAtLeastPHP("8.1")) {
+            return "\\" . $this->generatorRequest->getTargetNamespace() . "\\" . $this->subTypeName();
+        }
+
+        // fallback to plain string
+        return 'string';
     }
 
     public function generateTypeAssertionExpr(string $expr): string
     {
-        return "{$expr} instanceof {$this->subTypeName()}";
+        if ($this->generatorRequest->isAtLeastPHP("8.1")) {
+            return "{$expr} instanceof {$this->subTypeName()}";
+        }
+
+        // fallback: check it's a string and one of the allowed values
+        $values = var_export($this->schema["enum"], true);
+        return "is_string({$expr}) && in_array({$expr}, {$values}, true)";
     }
 
     public function generateInputAssertionExpr(string $expr): string
     {
-        return "{$this->subTypeName()}::tryFrom({$expr}) !== null";
+        if ($this->generatorRequest->isAtLeastPHP("8.1")) {
+            return "{$this->subTypeName()}::tryFrom({$expr}) !== null";
+        }
+
+        $values = var_export($this->schema["enum"], true);
+        return "in_array({$expr}, {$values}, true)";
     }
 
     public function generateInputMappingExpr(string $expr, bool $asserted = false): string
     {
-        return "{$this->subTypeName()}::from({$expr})";
+        if ($this->generatorRequest->isAtLeastPHP("8.1")) {
+            return "{$this->subTypeName()}::from({$expr})";
+        }
+
+        // fallback: accept raw string
+        return $expr;
     }
 
     public function generateOutputMappingExpr(string $expr): string
     {
-        return "({$expr})->value";
+        if ($this->generatorRequest->isAtLeastPHP("8.1")) {
+            return "({$expr})->value";
+        }
+
+        return $expr;
     }
 
     public function generateCloneExpr(string $expr): string
     {
+        // enum or string, same copy semantics
         return $expr;
-    }
-
-    private function subTypeName(): string
-    {
-        return $this->generatorRequest->getTargetClass() . $this->capitalizedName;
     }
 
     public function formatValue(mixed $value): PropertyValueGenerator
@@ -82,13 +117,20 @@ class StringEnumProperty extends AbstractProperty
             return new PropertyValueGenerator(null);
         }
 
-        // Using TYPE_CONSTANT is a dirty workaround to bypass PropertyValueGenerator's formatting.
-        // Ideally, we would want to use TYPE_ENUM, but this requires the referenced enum to exist
-        // as a class WHILE generating.
-        return new PropertyValueGenerator(
-            $this->subTypeName() . "::" . SchemaToEnum::enumCaseName($value),
-            ValueGenerator::TYPE_CONSTANT,
-        );
+        if ($this->generatorRequest->isAtLeastPHP("8.1")) {
+            // Use TYPE_CONSTANT for enum-backed constant
+            return new PropertyValueGenerator(
+                $this->subTypeName() . "::" . SchemaToEnum::enumCaseName($value),
+                ValueGenerator::TYPE_CONSTANT
+            );
+        }
+
+        // fallback: literal string
+        return new PropertyValueGenerator($value, ValueGenerator::TYPE_STRING);
     }
 
+    private function subTypeName(): string
+    {
+        return $this->generatorRequest->getTargetClass() . $this->capitalizedName;
+    }
 }

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Property;
@@ -10,7 +11,6 @@ use Laminas\Code\Generator\PropertyValueGenerator;
 
 abstract class AbstractProperty implements PropertyInterface
 {
-
     protected string $key;
 
     protected string $name;
@@ -71,13 +71,15 @@ abstract class AbstractProperty implements PropertyInterface
         $name = $this->name;
         $key  = $this->key;
         $keyS = var_export($key, true);
-
+        // build the raw lookup expression (using the JSON key only inside the braces)
         if ($object) {
-            $map = $this->generateInputMappingExpr("\${$inputVarName}->{{$keyS}}");
+            $lookup = "\${$inputVarName}->{{$keyS}}";
         } else {
-            $map = $this->generateInputMappingExpr("\${$inputVarName}[{$keyS}]");
+            $lookup = "\${$inputVarName}[{$keyS}]";
         }
-
+        // now map from JSON→Type (this will call buildFromInput, etc.)
+        $map = $this->generateInputMappingExpr($lookup);
+        // assign to the *camelCased* local variable name
         return "\${$name} = {$map};";
     }
 

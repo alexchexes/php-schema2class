@@ -1,7 +1,11 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
+
 namespace Helmich\Schema2Class\Command;
 
+use Helmich\Schema2Class\Generator\Property\NestedObjectProperty;
+use Helmich\Schema2Class\Generator\DefinitionsReferenceLookup;
 use Helmich\Schema2Class\Generator\GeneratorException;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\NamespaceInferrer;
@@ -76,8 +80,16 @@ class GenerateCommand extends Command
         $schema = $this->loader->loadSchema($schemaFile);
 
         if (!$targetNamespace) {
-            $output->writeln("target namespace not given. trying to infer from target directory...");
-            $targetNamespace = $this->namespaceInferrer->inferNamespaceFromTargetDirectory($targetDirectory);
+            $output->writeln("target namespace not given. inferring from target directory…");
+            try {
+                $targetNamespace = $this->namespaceInferrer
+                    ->inferNamespaceFromTargetDirectory($targetDirectory);
+            } catch (GeneratorException $e) {
+                $output->writeln(
+                    "  ↳ PSR‑4 lookup failed, defaulting to class name as namespace: <comment>{$class}</comment>"
+                );
+                $targetNamespace = $class;
+            }
         }
 
         $output->writeln("using target namespace <comment>$targetNamespace</comment> in directory <comment>$targetDirectory</comment>");
@@ -95,9 +107,28 @@ class GenerateCommand extends Command
             $opts = $opts->withTargetPHPVersion("5.6.0");
         }
 
-        $request = new GeneratorRequest($schema, $spec, $opts);
+        // If the schema defines "definitions", emit one class per definition first:
+        $definitions = $schema['definitions'] ?? [];
+        // Build a Lookup so all $ref → definition classes will resolve
+        $lookup = new DefinitionsReferenceLookup($definitions);
+        // Base request with lookup wired in
+        $baseRequest = (new GeneratorRequest($schema, $spec, $opts))
+            ->withReferenceLookup($lookup);
+        // Generate one class per definition
+        foreach ($definitions as $defName => $defSchema) {
+            $reqDef = $baseRequest
+                ->withClass($defName)
+                ->withSchema($defSchema);
+            $this->s2c->build($writer, $output)
+               ->schemaToClass($reqDef);
+        }
+        // Only generate the "main" class if the root schema really defines an object
+        if (NestedObjectProperty::canHandleSchema($schema)) {
+            $mainRequest = $baseRequest->withClass($class);
+            $this->s2c->build($writer, $output)
+                ->schemaToClass($mainRequest);
+        }
 
-        $this->s2c->build($writer, $output)->schemaToClass($request);
         return 0;
     }
 }

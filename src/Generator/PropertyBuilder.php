@@ -1,5 +1,6 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator;
 
@@ -53,6 +54,68 @@ class PropertyBuilder
     {
         self::testInvariants($definition);
 
+        // ─── Handle ["null","primitive"] style optional primitives ──────────────
+        if (isset($definition['type'])
+        && is_array($definition['type'])
+        && count($definition['type']) === 2
+        && in_array('null', $definition['type'], true)
+        ) {
+            [$a, $b] = $definition['type'];
+            $prim = $a === 'null' ? $b : $a;
+            switch ($prim) {
+                case 'string':
+                    $prop = new StringProperty($name, $definition, $req);
+                    break;
+                case 'integer':
+                    $prop = new IntegerProperty($name, $definition, $req);
+                    break;
+                case 'number':
+                    $prop = new NumberProperty($name, $definition, $req);
+                    break;
+                case 'boolean':
+                    $prop = new BooleanProperty($name, $definition, $req);
+                    break;
+                default:
+                    $prop = null;
+            }
+            if ($prop !== null) {
+                return new OptionalPropertyDecorator($name, $prop);
+            }
+        }
+        // ───────────────────────────────────────────────────────────────────────
+
+
+        // ─── Strip out null arms from anyOf/oneOf and wrap the rest as Optional<…> ───────
+        $unionKey = isset($definition['anyOf']) ? 'anyOf'
+                  : (isset($definition['oneOf']) ? 'oneOf' : null);
+
+        if ($unionKey) {
+            $subs   = $definition[$unionKey];
+            $nullIx = null;
+            foreach ($subs as $i => $sub) {
+                if (isset($sub['type']) && $sub['type'] === 'null') {
+                    $nullIx = $i;
+                    break;
+                }
+            }
+            if ($nullIx !== null && count($subs) > 1) {
+                // remove the null arm
+                $otherArms = $subs;
+                array_splice($otherArms, $nullIx, 1);
+
+                // build a new schema that only has the non-null arms
+                $cleanDef = $definition;
+                $cleanDef[$unionKey] = $otherArms;
+
+                // create a UnionProperty on string|array|enum|whatever...
+                $unionProp = new UnionProperty($name, $cleanDef, $req);
+
+                // then wrap it as optional (nullable)
+                return new OptionalPropertyDecorator($name, $unionProp);
+            }
+        }
+        // ────────────────────────────────────────────────────────────────────────────────
+
         foreach (self::$propertyTypes as $propertyType) {
             if ($propertyType::canHandleSchema($definition)) {
                 /** @var PropertyInterface $property */
@@ -60,7 +123,7 @@ class PropertyBuilder
 
                 if (isset($definition["default"]) && $req->getOptions()->getTreatValuesWithDefaultAsOptional()) {
                     $property = new DefaultPropertyDecorator($name, $property);
-                } else if (!$isRequired) {
+                } elseif (!$isRequired) {
                     $property = new OptionalPropertyDecorator($name, $property);
                 }
 

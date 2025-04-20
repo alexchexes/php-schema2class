@@ -36,22 +36,13 @@ class Specification
                 'items' => [
                     'required' => [
                         'input',
-                        'className',
                         'targetDirectory',
                     ],
                     'properties' => [
-                        'input' => [
-                            'type' => 'string',
-                        ],
-                        'className' => [
-                            'type' => 'string',
-                        ],
-                        'targetDirectory' => [
-                            'type' => 'string',
-                        ],
-                        'targetNamespace' => [
-                            'type' => 'string',
-                        ],
+                        'input'           => [ 'type' => 'string', ],
+                        'className'       => [ 'type' => 'string', ],
+                        'targetDirectory' => [ 'type' => 'string', ],
+                        'targetNamespace' => [ 'type' => 'string', ],
                     ],
                 ],
             ],
