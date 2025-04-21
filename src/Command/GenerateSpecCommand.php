@@ -118,25 +118,82 @@ class GenerateSpecCommand extends Command
                 $opts
             ))->withReferenceLookup($lookup);
 
-            // 1) emit all definitions
+            // 1) Emit one class per definition
             foreach ($definitions as $defName => $defSchema) {
+                // collect *transitive* dependencies of this definition
+                $deps = collect_all_local_refs($defSchema, $definitions);
+
+                // build a trimmed map containing exactly those dependencies
+                $trimmedDefs = array_intersect_key($definitions, array_flip($deps));
+
                 $reqDef = $baseRequest
                     ->withClass($defName)
-                    ->withSchema($defSchema);
-                $this->s2c->build($writer, $output)
-                    ->schemaToClass($reqDef);
+                    ->withSchema($defSchema)
+                    ->withRootDefinitions($trimmedDefs);
+
+                $this->s2c->build($writer, $output)->schemaToClass($reqDef);
             }
 
-            // 2) emit main class if root schema is an object
+
+
+            // 2) Then emit the "main" class only if the schema is an object
             if (NestedObjectProperty::canHandleSchema($schema)) {
-                $mainReq = $baseRequest->withClass($className);
+                $mainRequest = $baseRequest
+                    ->withClass($file->getClassName())
+                    ->withRootDefinitions($schema['definitions'] ?? []);
+
                 $this->s2c->build($writer, $output)
-                    ->schemaToClass($mainReq);
+                    ->schemaToClass($mainRequest);
             }
+
             // === end definitions loop ===
         }
 
         return 0;
     }
 
+}
+
+/**
+ * Recursively collect *all* local #/definitions/... dependencies of $schema.
+ *
+ * @param array<string,mixed> $schema          object/definition currently emitted
+ * @param array<string,mixed> $allDefinitions  full root‑level "definitions" map
+ * @return string[]                            list of definition names actually needed
+ */
+function collect_all_local_refs(array $schema, array $allDefinitions): array
+{
+    $needed   = [];            // discovered definition names
+    $queue    = [$schema];     // schemas still to scan
+    $visited  = [];            // names we have already expanded
+
+    while ($cur = array_pop($queue)) {
+        // walk recursively through this schema node
+        $iter = function ($node) use (&$iter, &$needed, &$queue, &$visited, $allDefinitions) {
+            if (is_array($node)) {
+                foreach ($node as $k => $v) {
+                    if ($k === '$ref'
+                        && is_string($v)
+                        && str_starts_with($v, '#/definitions/')) {
+
+                        $name = substr($v, 14);        // strip "#/definitions/"
+                        if (!isset($visited[$name])) {
+                            $visited[$name] = true;
+                            $needed[] = $name;
+
+                            // enqueue the referenced definition’s own schema
+                            if (isset($allDefinitions[$name])) {
+                                $queue[] = $allDefinitions[$name];
+                            }
+                        }
+                    } elseif (is_array($v)) {
+                        $iter($v);                     // drill down
+                    }
+                }
+            }
+        };
+        $iter($cur);
+    }
+
+    return $needed;   // de‑duplicated by $visited already
 }

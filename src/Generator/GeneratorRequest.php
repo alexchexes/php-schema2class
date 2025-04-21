@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator;
@@ -14,12 +15,14 @@ use Laminas\Code\Generator\PropertyGenerator;
 
 class GeneratorRequest
 {
+    use GeneratorHookRunner;
     private array $schema;
+    /** @var array<string,mixed>|null Root schema’s definitions, if any */
+    private ?array $rootDefinitions = null;
+
     private ValidatedSpecificationFilesItem $spec;
     private SpecificationOptions $opts;
     private ?ReferenceLookup $referenceLookup = null;
-
-    use GeneratorHookRunner;
 
     public function __construct(array $schema, ValidatedSpecificationFilesItem $spec, SpecificationOptions $opts)
     {
@@ -29,6 +32,28 @@ class GeneratorRequest
         $this->spec   = $spec;
         $this->opts   = $opts;
     }
+
+    /**
+     * Attach the root schema’s “definitions” block so each class can re‑embed it.
+     *
+     * @param array<string,mixed> $definitions
+     * @return self
+     */
+    public function withRootDefinitions(array $definitions): self
+    {
+        $clone = clone $this;
+        $clone->rootDefinitions = $definitions;
+        return $clone;
+    }
+
+    /**
+     * @return array<string,mixed>|null
+     */
+    public function getRootDefinitions(): ?array
+    {
+        return $this->rootDefinitions;
+    }
+
 
     private static function semversifyVersionNumber(string|int $versionNumber): string
     {

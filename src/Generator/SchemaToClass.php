@@ -36,15 +36,30 @@ class SchemaToClass
      */
     public function schemaToClass(GeneratorRequest $req): void
     {
+        // 1) start with whatever schema the request already has
         $schema = $req->getSchema();
 
+        // 2) if the caller supplied root definitions, *always* splice them in here
+        if (($defs = $req->getRootDefinitions()) !== null && count($defs) > 0) {
+            // don’t overwrite if the schema already carried its own definitions
+            if (!isset($schema['definitions'])) {
+                $schema['definitions'] = $defs;
+            } else {
+                // merge – let local keys override, just in case
+                $schema['definitions'] = array_replace($defs, $schema['definitions']);
+            }
+        }
+
+
+        // 3) Now your existing logic kicks in:
         if (isset($schema["enum"])) {
             $this->enumGenerator->schemaToEnum($req);
             return;
         }
 
         if (IntersectProperty::canHandleSchema($schema)) {
-            $schema = (new IntersectProperty($req->getTargetClass(), $schema, $req))->buildSchemaIntersect();
+            $schema = (new IntersectProperty($req->getTargetClass(), $schema, $req))
+                ->buildSchemaIntersect();
         }
 
         if (!NestedObjectProperty::canHandleSchema($schema)) {
