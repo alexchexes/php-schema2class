@@ -28,15 +28,18 @@ class StringEnumProperty extends AbstractProperty
     /**
      * Generate a real enum class only on PHP 8.1+.
      *
+     * @param SchemaToClass    $generator
      * @throws GeneratorException
      */
     public function generateSubTypes(SchemaToClass $generator): void
     {
-        if (!$this->generatorRequest->isAtLeastPHP("8.1")) {
-            // no enum classes on PHP <8.1
-            return;
+        if ($this->generatorRequest->isAtLeastPHP("8.1")) {
+            $generator->schemaToClass(
+                $this->generatorRequest
+                    ->withSchema($this->schema)
+                    ->withClass($this->subTypeName())
+            );
         }
-        parent::generateSubTypes($generator);
     }
 
     public function typeAnnotation(): string
