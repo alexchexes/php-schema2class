@@ -20,16 +20,16 @@ class StringUtilsTest extends TestCase
         assertThat($capitalized, equalTo("Foo"));
     }
 
-    public function testCapitalizeNameCapitalizesName()
+    public function testPascalCaseMakesWordPascalCase()
     {
-        $capitalized = StringUtils::capitalizeName("foo");
-        assertThat($capitalized, equalTo("Foo"));
+        $pascaled = StringUtils::pascalCase("foo");
+        assertThat($pascaled, equalTo("Foo"));
     }
 
-    public function testCapitalizeNameCapitalizedWordsWithDashes()
+    public function testPascalCaseHandlesWordsWithDashes()
     {
-        $capitalized = StringUtils::capitalizeName("content-disposition");
-        assertThat($capitalized, equalTo("ContentDisposition"));
+        $pascaled = StringUtils::pascalCase("content-disposition");
+        assertThat($pascaled, equalTo("ContentDisposition"));
     }
 
     public function testCamelCaseCamelCases()

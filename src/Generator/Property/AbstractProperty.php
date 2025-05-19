@@ -25,7 +25,7 @@ abstract class AbstractProperty implements PropertyInterface
     {
         $this->key              = $key;
         $this->schema           = $schema;
-        $this->capitalizedName  = StringUtils::capitalizeName($this->key);
+        $this->capitalizedName  = StringUtils::pascalCase($this->key);
         $this->generatorRequest = $generatorRequest;
 
         /** preserve? – use key verbatim, else camel-case */

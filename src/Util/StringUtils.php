@@ -4,14 +4,14 @@ namespace Helmich\Schema2Class\Util;
 
 class StringUtils
 {
-    public static function capitalizeWord(string $word): string
+    public static function capitalizeWord(string $input): string
     {
-        return strtoupper($word[0]) . substr($word, 1);
+        return strtoupper($input[0]) . substr($input, 1);
     }
 
-    public static function capitalizeName(string $name): string
+    public static function pascalCase(string $input): string
     {
-        return self::capitalizeWord(self::camelCase($name));
+        return self::capitalizeWord(self::camelCase($input));
     }
 
     public static function camelCase(string $input): string

@@ -307,7 +307,7 @@ class Generator
         }
 
         $name           = $property->name();
-        $camelCasedName = StringUtils::capitalizeName($property->name());
+        $camelCasedName = StringUtils::pascalCase($property->name());
         $annotatedType  = $property->typeAnnotation();
 
         $tags = [new ReturnTag($annotatedType)];
@@ -364,7 +364,7 @@ class Generator
     {
         $key           = $property->key();
         $name          = $property->name();
-        $camelCaseName = StringUtils::capitalizeName($name);
+        $camelCaseName = StringUtils::pascalCase($name);
 
         $requiredProperty = ($property instanceof OptionalPropertyDecorator) ? $property->unwrap() : $property;
 
@@ -420,7 +420,7 @@ return \$clone;",
     public function generateUnsetterMethod(PropertyInterface $property): MethodGenerator
     {
         $name           = $property->name();
-        $camelCasedName = StringUtils::capitalizeWord($name);
+        $camelCasedName = StringUtils::pascalCase($name);
 
         $body = "\$clone = clone \$this;\n";
         if (isset($property->schema()["default"])) {

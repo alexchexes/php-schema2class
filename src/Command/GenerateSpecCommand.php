@@ -85,7 +85,7 @@ class GenerateSpecCommand extends Command
             $className = $file->getClassName();
             if ($className === null) {
                 $basename  = pathinfo($schemaFile, PATHINFO_FILENAME);
-                $className = StringUtils::capitalizeName($basename);
+                $className = StringUtils::pascalCase($basename);
                 $file      = $file->withClassName($className);
             }
 
