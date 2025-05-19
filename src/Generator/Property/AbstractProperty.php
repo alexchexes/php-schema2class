@@ -24,10 +24,16 @@ abstract class AbstractProperty implements PropertyInterface
     public function __construct(string $key, array $schema, GeneratorRequest $generatorRequest)
     {
         $this->key              = $key;
-        $this->name             = StringUtils::camelCase($key);
         $this->schema           = $schema;
         $this->capitalizedName  = StringUtils::capitalizeName($this->key);
         $this->generatorRequest = $generatorRequest;
+
+        /** preserve? – use key verbatim, else camel-case */
+        if ($generatorRequest->getOptions()->getPreservePropertyNames()) {
+            $this->name = $key;
+        } else {
+            $this->name = StringUtils::camelCase($key);
+        }
     }
 
     public function isComplex(): bool

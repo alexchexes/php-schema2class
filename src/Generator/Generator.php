@@ -307,7 +307,7 @@ class Generator
         }
 
         $name           = $property->name();
-        $camelCasedName = StringUtils::capitalizeWord($property->name());
+        $camelCasedName = StringUtils::capitalizeName($property->name());
         $annotatedType  = $property->typeAnnotation();
 
         $tags = [new ReturnTag($annotatedType)];
@@ -364,7 +364,7 @@ class Generator
     {
         $key           = $property->key();
         $name          = $property->name();
-        $camelCaseName = StringUtils::capitalizeWord($name);
+        $camelCaseName = StringUtils::capitalizeName($name);
 
         $requiredProperty = ($property instanceof OptionalPropertyDecorator) ? $property->unwrap() : $property;
 

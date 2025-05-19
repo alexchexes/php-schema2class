@@ -83,6 +83,10 @@ This is useful if you want to use a custom validator class.
 ',
                         'default' => 'new \\JsonSchema\\Validator()',
                     ],
+                    'preservePropertyNames' => [
+                        'type' => 'boolean',
+                        'default' => false,
+                    ],
                 ],
             ],
         ],

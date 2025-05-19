@@ -48,6 +48,10 @@ This is useful if you want to use a custom validator class.
 ',
                 'default' => 'new \\JsonSchema\\Validator()',
             ],
+            'preservePropertyNames' => [
+                'type' => 'boolean',
+                'default' => false,
+            ],
         ],
     ];
 
@@ -79,6 +83,11 @@ This is useful if you want to use a custom validator class.
      * @var string
      */
     private string $newValidatorClassExpr = 'new \\JsonSchema\\Validator()';
+
+    /**
+     * @var bool
+     */
+    private bool $preservePropertyNames = false;
 
     /**
      *
@@ -125,6 +134,14 @@ This is useful if you want to use a custom validator class.
     public function getNewValidatorClassExpr() : string
     {
         return $this->newValidatorClassExpr;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getPreservePropertyNames() : bool
+    {
+        return $this->preservePropertyNames;
     }
 
     /**
@@ -267,6 +284,35 @@ This is useful if you want to use a custom validator class.
     }
 
     /**
+     * @param bool $preservePropertyNames
+     * @return self
+     */
+    public function withPreservePropertyNames(bool $preservePropertyNames) : self
+    {
+        $validator = new \JsonSchema\Validator();
+        $validator->validate($preservePropertyNames, self::$schema['properties']['preservePropertyNames']);
+        if (!$validator->isValid()) {
+            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        }
+
+        $clone = clone $this;
+        $clone->preservePropertyNames = $preservePropertyNames;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutPreservePropertyNames() : self
+    {
+        $clone = clone $this;
+        $clone->preservePropertyNames = false;
+
+        return $clone;
+    }
+
+    /**
      * Builds a new instance from an input array
      *
      * @param array|object $input Input data
@@ -304,6 +350,10 @@ This is useful if you want to use a custom validator class.
         if (isset($input->{'newValidatorClassExpr'})) {
             $newValidatorClassExpr = $input->{'newValidatorClassExpr'};
         }
+        $preservePropertyNames = false;
+        if (isset($input->{'preservePropertyNames'})) {
+            $preservePropertyNames = (bool)($input->{'preservePropertyNames'});
+        }
 
         $obj = new self();
         $obj->disableStrictTypes = $disableStrictTypes;
@@ -311,6 +361,7 @@ This is useful if you want to use a custom validator class.
         $obj->inlineAllofReferences = $inlineAllofReferences;
         $obj->targetPHPVersion = $targetPHPVersion;
         $obj->newValidatorClassExpr = $newValidatorClassExpr;
+        $obj->preservePropertyNames = $preservePropertyNames;
         return $obj;
     }
 
@@ -338,6 +389,9 @@ This is useful if you want to use a custom validator class.
         }
         if (isset($this->newValidatorClassExpr)) {
             $output['newValidatorClassExpr'] = $this->newValidatorClassExpr;
+        }
+        if (isset($this->preservePropertyNames)) {
+            $output['preservePropertyNames'] = $this->preservePropertyNames;
         }
 
         return $output;
