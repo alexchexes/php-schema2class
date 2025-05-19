@@ -85,9 +85,10 @@ class PropertyBuilder
         // ───────────────────────────────────────────────────────────────────────
 
 
-        // ─── Strip out null arms from anyOf/oneOf and wrap the rest as Optional<…> ───────
+
+        // ─── Strip out null arms from anyOf/oneOf and wrap the rest as an Optional<…> ──────
         $unionKey = isset($definition['anyOf']) ? 'anyOf'
-                  : (isset($definition['oneOf']) ? 'oneOf' : null);
+                : (isset($definition['oneOf']) ? 'oneOf' : null);
 
         if ($unionKey) {
             $subs   = $definition[$unionKey];
@@ -98,23 +99,51 @@ class PropertyBuilder
                     break;
                 }
             }
+
+            // found a null–arm and at least one non-null arm
             if ($nullIx !== null && count($subs) > 1) {
-                // remove the null arm
+                // everything except the null
                 $otherArms = $subs;
                 array_splice($otherArms, $nullIx, 1);
 
-                // build a new schema that only has the non-null arms
-                $cleanDef = $definition;
-                $cleanDef[$unionKey] = $otherArms;
+                /**
+                 * ▌CASE A – exactly **one** remaining arm
+                 * ▌        → build *that* schema directly
+                 */
+                if (count($otherArms) === 1) {
+                    $singleSchema = $otherArms[0];
+                    
+                    /** copy meta fields that live on the top-level property */
+                    foreach (['description', 'title', 'default', 'deprecated'] as $k) {
+                        if (isset($definition[$k]) && !isset($singleSchema[$k])) {
+                            $singleSchema[$k] = $definition[$k];
+                        }
+                    }
 
-                // create a UnionProperty on string|array|enum|whatever...
-                $unionProp = new UnionProperty($name, $cleanDef, $req);
+                    // build the inner property in the usual way
+                    $inner = self::buildPropertyFromSchema(
+                        $req,
+                        $name,
+                        $singleSchema,
+                        $isRequired     // pass-through
+                    );
 
-                // then wrap it as optional (nullable)
+                    // and make it nullable
+                    return new OptionalPropertyDecorator($name, $inner);
+                }
+
+                /**
+                 * ▌CASE B – still multiple arms
+                 * ▌        → keep a real UnionProperty
+                 */
+                $cleanDef             = $definition;
+                $cleanDef[$unionKey]  = $otherArms;            // without the null arm
+                $unionProp            = new UnionProperty($name, $cleanDef, $req);
+
                 return new OptionalPropertyDecorator($name, $unionProp);
             }
         }
-        // ────────────────────────────────────────────────────────────────────────────────
+        // ────────────────────────────────────────────────────────────────────────────────────
 
         foreach (self::$propertyTypes as $propertyType) {
             if ($propertyType::canHandleSchema($definition)) {
