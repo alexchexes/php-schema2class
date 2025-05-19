@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Spec;
 
-use Helmich\Schema2Class\Util\StringUtils;
-
 class SpecificationFilesItem
 {
     /**
@@ -40,9 +38,9 @@ class SpecificationFilesItem
     private string $input;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private string $className;
+    private ?string $className = null;
 
     /**
      * @var string
@@ -56,36 +54,34 @@ class SpecificationFilesItem
 
     /**
      * @param string $input
-     * @param string $className
      * @param string $targetDirectory
      */
-    public function __construct(string $input, string $className, string $targetDirectory)
+    public function __construct(string $input, string $targetDirectory)
     {
         $this->input = $input;
-        $this->className = $className;
         $this->targetDirectory = $targetDirectory;
     }
 
     /**
      * @return string
      */
-    public function getInput(): string
+    public function getInput() : string
     {
         return $this->input;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getClassName(): string
+    public function getClassName() : ?string
     {
-        return $this->className;
+        return $this->className ?? null;
     }
 
     /**
      * @return string
      */
-    public function getTargetDirectory(): string
+    public function getTargetDirectory() : string
     {
         return $this->targetDirectory;
     }
@@ -93,7 +89,7 @@ class SpecificationFilesItem
     /**
      * @return string|null
      */
-    public function getTargetNamespace(): ?string
+    public function getTargetNamespace() : ?string
     {
         return $this->targetNamespace ?? null;
     }
@@ -102,7 +98,7 @@ class SpecificationFilesItem
      * @param string $input
      * @return self
      */
-    public function withInput(string $input): self
+    public function withInput(string $input) : self
     {
         $validator = new \JsonSchema\Validator();
         $validator->validate($input, self::$schema['properties']['input']);
@@ -120,7 +116,7 @@ class SpecificationFilesItem
      * @param string $className
      * @return self
      */
-    public function withClassName(string $className): self
+    public function withClassName(string $className) : self
     {
         $validator = new \JsonSchema\Validator();
         $validator->validate($className, self::$schema['properties']['className']);
@@ -135,10 +131,21 @@ class SpecificationFilesItem
     }
 
     /**
+     * @return self
+     */
+    public function withoutClassName() : self
+    {
+        $clone = clone $this;
+        unset($clone->className);
+
+        return $clone;
+    }
+
+    /**
      * @param string $targetDirectory
      * @return self
      */
-    public function withTargetDirectory(string $targetDirectory): self
+    public function withTargetDirectory(string $targetDirectory) : self
     {
         $validator = new \JsonSchema\Validator();
         $validator->validate($targetDirectory, self::$schema['properties']['targetDirectory']);
@@ -156,7 +163,7 @@ class SpecificationFilesItem
      * @param string $targetNamespace
      * @return self
      */
-    public function withTargetNamespace(string $targetNamespace): self
+    public function withTargetNamespace(string $targetNamespace) : self
     {
         $validator = new \JsonSchema\Validator();
         $validator->validate($targetNamespace, self::$schema['properties']['targetNamespace']);
@@ -173,7 +180,7 @@ class SpecificationFilesItem
     /**
      * @return self
      */
-    public function withoutTargetNamespace(): self
+    public function withoutTargetNamespace() : self
     {
         $clone = clone $this;
         unset($clone->targetNamespace);
@@ -189,30 +196,32 @@ class SpecificationFilesItem
      * @return SpecificationFilesItem Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input2, bool $validate = true): SpecificationFilesItem
+    public static function buildFromInput(array|object $input2, bool $validate = true) : SpecificationFilesItem
     {
+        if (!is_array($input2) && !is_object($input2)) {
+            throw new \InvalidArgumentException(
+                'Input to buildFromInput must be array or object, got ' . gettype($input2)
+            );
+        }
+
         $input2 = is_array($input2) ? \JsonSchema\Validator::arrayToObjectRecursive($input2) : $input2;
         if ($validate) {
             static::validateInput($input2);
         }
 
         $input = $input2->{'input'};
-        // derive className if it wasn’t set in the YAML
+        $className = null;
         if (isset($input2->{'className'})) {
             $className = $input2->{'className'};
-        } else {
-            $basename  = pathinfo($input, PATHINFO_FILENAME);
-            $className = StringUtils::capitalizeName($basename);
         }
-
         $targetDirectory = $input2->{'targetDirectory'};
         $targetNamespace = null;
-
         if (isset($input2->{'targetNamespace'})) {
             $targetNamespace = $input2->{'targetNamespace'};
         }
 
-        $obj = new self($input, $className, $targetDirectory);
+        $obj = new self($input, $targetDirectory);
+        $obj->className = $className;
         $obj->targetNamespace = $targetNamespace;
         return $obj;
     }
@@ -222,11 +231,13 @@ class SpecificationFilesItem
      *
      * @return array Converted array
      */
-    public function toJson(): array
+    public function toJson() : array
     {
         $output = [];
         $output['input'] = $this->input;
-        $output['className'] = $this->className;
+        if (isset($this->className)) {
+            $output['className'] = $this->className;
+        }
         $output['targetDirectory'] = $this->targetDirectory;
         if (isset($this->targetNamespace)) {
             $output['targetNamespace'] = $this->targetNamespace;
@@ -243,14 +254,14 @@ class SpecificationFilesItem
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput(array|object $input, bool $return = false): bool
+    public static function validateInput(array|object $input, bool $return = false) : bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         $validator->validate($input, self::$schema);
 
         if (!$validator->isValid() && !$return) {
-            $errors = array_map(function (array $e): string {
+            $errors = array_map(function(array $e): string {
                 return $e["property"] . ": " . $e["message"];
             }, $validator->getErrors());
             throw new \InvalidArgumentException(join(", ", $errors));
@@ -263,3 +274,4 @@ class SpecificationFilesItem
     {
     }
 }
+
