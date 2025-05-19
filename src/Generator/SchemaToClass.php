@@ -141,14 +141,13 @@ class SchemaToClass
         $content = preg_replace('/ : \\\\self/', ' : self', $content);
         $content = preg_replace('/\\\\' . preg_quote($req->getTargetNamespace(), '/') . '\\\\/', '', $content);
 
-        // Strip any remaining leading backslashes on class names in type hints/constructor params/return types
-        // e.g. "\ClassName $data" => "ClassName $data"  and ": \ClassName" => ": ClassName"
-
-        $content = preg_replace(
-            '/\\\\([A-Za-z_][A-Za-z0-9_\\\\]*)(?=\s|\$|;)/',
-            '$1',
-            $content
-        );
+        $ownClasses = $req->getGeneratedClassNames();
+        if ($ownClasses) {
+            $escapedOwnClasses = array_map(fn($n) => preg_quote($n, '/'), $ownClasses);
+            $pattern = '/\\\\(' . join('|', $escapedOwnClasses) . ')(?=\s|[,;)]|$)/';
+            preg_match($pattern, $content, $matches);
+            $content = preg_replace($pattern, '$1', $content);
+        }
 
         $this->writer->writeFile($filename, $content);
     }

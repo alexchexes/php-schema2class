@@ -19,6 +19,7 @@ class GeneratorRequest
     private array $schema;
     /** @var array<string,mixed>|null Root schema’s definitions, if any */
     private ?array $rootDefinitions = null;
+    private array $generatedClassNames = [];
 
     private ValidatedSpecificationFilesItem $spec;
     private SpecificationOptions $opts;
@@ -92,6 +93,18 @@ class GeneratorRequest
         $clone->clearNonPropagatingHooks();
 
         return $clone;
+    }
+
+    public function withGeneratedClassNames(array $names): self
+    {
+        $clone = clone $this;
+        $clone->generatedClassNames = $names;
+        return $clone;
+    }
+    
+    public function getGeneratedClassNames(): array
+    {
+        return $this->generatedClassNames;
     }
 
     public function withPHPVersion(string $targetPHPVersion): self

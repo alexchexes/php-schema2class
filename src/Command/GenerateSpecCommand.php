@@ -118,6 +118,11 @@ class GenerateSpecCommand extends Command
                 $opts
             ))->withReferenceLookup($lookup);
 
+
+            // save all classes we generate so we can remove leading slashes before them
+            $generatedClasses = array_keys($definitions);
+            $generatedClasses[] = $file->getClassName();
+
             // 1) Emit one class per definition
             foreach ($definitions as $defName => $defSchema) {
                 // collect *transitive* dependencies of this definition
@@ -129,7 +134,8 @@ class GenerateSpecCommand extends Command
                 $reqDef = $baseRequest
                     ->withClass($defName)
                     ->withSchema($defSchema)
-                    ->withRootDefinitions($trimmedDefs);
+                    ->withRootDefinitions($trimmedDefs)
+                    ->withGeneratedClassNames($generatedClasses);
 
                 $this->s2c->build($writer, $output)->schemaToClass($reqDef);
             }
@@ -140,7 +146,8 @@ class GenerateSpecCommand extends Command
             if (NestedObjectProperty::canHandleSchema($schema)) {
                 $mainRequest = $baseRequest
                     ->withClass($file->getClassName())
-                    ->withRootDefinitions($schema['definitions'] ?? []);
+                    ->withRootDefinitions($schema['definitions'] ?? [])
+                    ->withGeneratedClassNames($generatedClasses);
 
                 $this->s2c->build($writer, $output)
                     ->schemaToClass($mainRequest);
