@@ -320,7 +320,7 @@ class Generator
             $tags[] = new GenericTag("deprecated");
         }
 
-        $docBlockGenerator = new DocBlockGenerator(null, null, $tags);
+        $docBlockGenerator = new DocBlockGenerator(null, $property->description(), $tags);
         $docBlockGenerator->setWordWrap(false);  // needs to be disabled because its fundamentally broken
 
         $getMethod = new MethodGenerator(

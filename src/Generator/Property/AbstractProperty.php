@@ -19,6 +19,8 @@ abstract class AbstractProperty implements PropertyInterface
 
     protected string $capitalizedName;
 
+    protected ?string $description;
+
     protected GeneratorRequest $generatorRequest;
 
     public function __construct(string $key, array $schema, GeneratorRequest $generatorRequest)
@@ -27,6 +29,7 @@ abstract class AbstractProperty implements PropertyInterface
         $this->schema           = $schema;
         $this->capitalizedName  = StringUtils::pascalCase($this->key);
         $this->generatorRequest = $generatorRequest;
+        $this->description      = $schema['description'] ?? null;
 
         /** preserve? – use key verbatim, else camel-case */
         if ($generatorRequest->getOptions()->getPreservePropertyNames()) {
@@ -54,6 +57,11 @@ abstract class AbstractProperty implements PropertyInterface
     public function name(): string
     {
         return $this->name;
+    }
+
+    public function description(): ?string
+    {
+        return $this->description;
     }
 
     /**
