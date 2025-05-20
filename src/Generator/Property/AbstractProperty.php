@@ -134,4 +134,34 @@ abstract class AbstractProperty implements PropertyInterface
         return new PropertyValueGenerator($value);
     }
 
+    public function allowsNull(): bool
+    {
+        // Fast: enumeration contains null
+        if (isset($this->schema['enum']) && in_array(null, $this->schema['enum'], true)) {
+            return true;
+        }
+
+        // Common cases
+        if (($this->schema['type'] ?? null) === 'null') {
+            return true;
+        }
+        if (is_array($this->schema['type'] ?? null) && in_array('null', $this->schema['type'], true)) {
+            return true;
+        }
+
+        // anyOf / oneOf with a null arm
+        foreach (['anyOf', 'oneOf'] as $k) {
+            if (!isset($this->schema[$k]) || !is_array($this->schema[$k])) {
+                continue;
+            }
+            foreach ($this->schema[$k] as $sub) {
+                if (($sub['type'] ?? null) === 'null') {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
+    }
+
 }

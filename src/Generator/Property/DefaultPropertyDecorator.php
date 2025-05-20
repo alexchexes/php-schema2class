@@ -161,4 +161,5 @@ class DefaultPropertyDecorator implements PropertyInterface
         return $this->inner->formatValue($value);
     }
 
+    public function allowsNull(): bool { return $this->inner->allowsNull(); }
 }

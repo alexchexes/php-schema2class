@@ -14,6 +14,7 @@ use Helmich\Schema2Class\Generator\Property\IntegerProperty;
 use Helmich\Schema2Class\Generator\Property\IntersectProperty;
 use Helmich\Schema2Class\Generator\Property\MixedProperty;
 use Helmich\Schema2Class\Generator\Property\NestedObjectProperty;
+use Helmich\Schema2Class\Generator\Property\NullablePropertyDecorator;
 use Helmich\Schema2Class\Generator\Property\NullProperty;
 use Helmich\Schema2Class\Generator\Property\OptionalPropertyDecorator;
 use Helmich\Schema2Class\Generator\Property\PrimitiveUnionEnumProperty;
@@ -60,9 +61,9 @@ class PropertyBuilder
 
         // ─── Handle ["null","primitive"] style optional primitives ──────────────
         if (isset($definition['type'])
-        && is_array($definition['type'])
-        && count($definition['type']) === 2
-        && in_array('null', $definition['type'], true)
+            && is_array($definition['type'])
+            && count($definition['type']) === 2
+            && in_array('null', $definition['type'], true)
         ) {
             [$a, $b] = $definition['type'];
             $prim = $a === 'null' ? $b : $a;
@@ -83,7 +84,9 @@ class PropertyBuilder
                     $prop = null;
             }
             if ($prop !== null) {
-                return new OptionalPropertyDecorator($name, $prop);
+                return $isRequired
+                    ? new NullablePropertyDecorator($name, $prop)   // required + nullable
+                    : new OptionalPropertyDecorator($name, $prop);  // optional
             }
         }
         // ───────────────────────────────────────────────────────────────────────
@@ -132,8 +135,9 @@ class PropertyBuilder
                         $isRequired     // pass-through
                     );
 
-                    // and make it nullable
-                    return new OptionalPropertyDecorator($name, $inner);
+                    return $isRequired
+                        ? new NullablePropertyDecorator($name, $inner)
+                        : new OptionalPropertyDecorator($name, $inner);
                 }
 
                 /**
@@ -144,7 +148,9 @@ class PropertyBuilder
                 $cleanDef[$unionKey]  = $otherArms;            // without the null arm
                 $unionProp            = new UnionProperty($name, $cleanDef, $req);
 
-                return new OptionalPropertyDecorator($name, $unionProp);
+                return $isRequired
+                    ? new NullablePropertyDecorator($name, $unionProp)
+                    : new OptionalPropertyDecorator($name, $unionProp);
             }
         }
         // ────────────────────────────────────────────────────────────────────────────────────
@@ -157,7 +163,9 @@ class PropertyBuilder
                 if (isset($definition["default"]) && $req->getOptions()->getTreatValuesWithDefaultAsOptional()) {
                     $property = new DefaultPropertyDecorator($name, $property);
                 } elseif (!$isRequired) {
-                    $property = new OptionalPropertyDecorator($name, $property);
+                    $property = new OptionalPropertyDecorator($name, $property);  // optional
+                } elseif ($property->allowsNull()) {
+                    $property = new NullablePropertyDecorator($name, $property); // required + nullable
                 }
 
                 return $property;

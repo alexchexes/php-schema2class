@@ -113,4 +113,5 @@ interface PropertyInterface
 
     public function formatValue(mixed $value): PropertyValueGenerator;
 
+    public function allowsNull(): bool;
 }
