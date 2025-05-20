@@ -117,6 +117,11 @@ class DefaultPropertyDecorator implements PropertyInterface
         return $this->inner->name();
     }
 
+    public function description(): string
+    {
+        return $this->inner->description();
+    }
+
     /**
      * @return PropertyInterface
      */
