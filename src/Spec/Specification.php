@@ -93,6 +93,20 @@ This is useful if you want to use a custom validator class.
                     ],
                     'preservePropertyNames' => [
                         'type' => 'boolean',
+                        'description' => 'When true, properties names are not converted to camelCase.
+',
+                        'default' => false,
+                    ],
+                    'noGetters' => [
+                        'type' => 'boolean',
+                        'description' => 'When true, no getters are created and all properties are \'public\'.
+',
+                        'default' => false,
+                    ],
+                    'noSetters' => [
+                        'type' => 'boolean',
+                        'description' => 'When true, no withX() / withoutX() setters/unsetters are created.
+',
                         'default' => false,
                     ],
                 ],
@@ -282,9 +296,9 @@ This is useful if you want to use a custom validator class.
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {
-                return $e["property"] . ": " . $e["message"];
+                return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];
             }, $validator->getErrors());
-            throw new \InvalidArgumentException(join(", ", $errors));
+            throw new \InvalidArgumentException(join(".\n", $errors));
         }
 
         return $validator->isValid();

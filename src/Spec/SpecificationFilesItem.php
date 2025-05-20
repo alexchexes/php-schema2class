@@ -262,9 +262,9 @@ class SpecificationFilesItem
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {
-                return $e["property"] . ": " . $e["message"];
+                return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];
             }, $validator->getErrors());
-            throw new \InvalidArgumentException(join(", ", $errors));
+            throw new \InvalidArgumentException(join(".\n", $errors));
         }
 
         return $validator->isValid();

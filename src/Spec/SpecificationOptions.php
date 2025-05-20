@@ -50,6 +50,20 @@ This is useful if you want to use a custom validator class.
             ],
             'preservePropertyNames' => [
                 'type' => 'boolean',
+                'description' => 'When true, properties names are not converted to camelCase.
+',
+                'default' => false,
+            ],
+            'noGetters' => [
+                'type' => 'boolean',
+                'description' => 'When true, no getters are created and all properties are \'public\'.
+',
+                'default' => false,
+            ],
+            'noSetters' => [
+                'type' => 'boolean',
+                'description' => 'When true, no withX() / withoutX() setters/unsetters are created.
+',
                 'default' => false,
             ],
         ],
@@ -85,9 +99,28 @@ This is useful if you want to use a custom validator class.
     private string $newValidatorClassExpr = 'new \\JsonSchema\\Validator()';
 
     /**
+     * When true, properties names are not converted to camelCase.
+     *
+     *
      * @var bool
      */
     private bool $preservePropertyNames = false;
+
+    /**
+     * When true, no getters are created and all properties are 'public'.
+     *
+     *
+     * @var bool
+     */
+    private bool $noGetters = false;
+
+    /**
+     * When true, no withX() / withoutX() setters/unsetters are created.
+     *
+     *
+     * @var bool
+     */
+    private bool $noSetters = false;
 
     /**
      *
@@ -129,6 +162,10 @@ This is useful if you want to use a custom validator class.
     }
 
     /**
+     * The expression to use to create a new instance of the validator class.
+     * This is useful if you want to use a custom validator class.
+     *
+     *
      * @return string
      */
     public function getNewValidatorClassExpr() : string
@@ -137,11 +174,36 @@ This is useful if you want to use a custom validator class.
     }
 
     /**
+     * When true, properties names are not converted to camelCase.
+     *
+     *
      * @return bool
      */
     public function getPreservePropertyNames() : bool
     {
         return $this->preservePropertyNames;
+    }
+
+    /**
+     * When true, no getters are created and all properties are 'public'.
+     *
+     *
+     * @return bool
+     */
+    public function getNoGetters() : bool
+    {
+        return $this->noGetters;
+    }
+
+    /**
+     * When true, no withX() / withoutX() setters/unsetters are created.
+     *
+     *
+     * @return bool
+     */
+    public function getNoSetters() : bool
+    {
+        return $this->noSetters;
     }
 
     /**
@@ -313,6 +375,64 @@ This is useful if you want to use a custom validator class.
     }
 
     /**
+     * @param bool $noGetters
+     * @return self
+     */
+    public function withNoGetters(bool $noGetters) : self
+    {
+        $validator = new \JsonSchema\Validator();
+        $validator->validate($noGetters, self::$schema['properties']['noGetters']);
+        if (!$validator->isValid()) {
+            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        }
+
+        $clone = clone $this;
+        $clone->noGetters = $noGetters;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutNoGetters() : self
+    {
+        $clone = clone $this;
+        $clone->noGetters = false;
+
+        return $clone;
+    }
+
+    /**
+     * @param bool $noSetters
+     * @return self
+     */
+    public function withNoSetters(bool $noSetters) : self
+    {
+        $validator = new \JsonSchema\Validator();
+        $validator->validate($noSetters, self::$schema['properties']['noSetters']);
+        if (!$validator->isValid()) {
+            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        }
+
+        $clone = clone $this;
+        $clone->noSetters = $noSetters;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutNoSetters() : self
+    {
+        $clone = clone $this;
+        $clone->noSetters = false;
+
+        return $clone;
+    }
+
+    /**
      * Builds a new instance from an input array
      *
      * @param array|object $input Input data
@@ -360,6 +480,14 @@ This is useful if you want to use a custom validator class.
         if (isset($input->{'preservePropertyNames'})) {
             $preservePropertyNames = (bool)($input->{'preservePropertyNames'});
         }
+        $noGetters = false;
+        if (isset($input->{'noGetters'})) {
+            $noGetters = (bool)($input->{'noGetters'});
+        }
+        $noSetters = false;
+        if (isset($input->{'noSetters'})) {
+            $noSetters = (bool)($input->{'noSetters'});
+        }
 
         $obj = new self();
         $obj->disableStrictTypes = $disableStrictTypes;
@@ -368,6 +496,8 @@ This is useful if you want to use a custom validator class.
         $obj->targetPHPVersion = $targetPHPVersion;
         $obj->newValidatorClassExpr = $newValidatorClassExpr;
         $obj->preservePropertyNames = $preservePropertyNames;
+        $obj->noGetters = $noGetters;
+        $obj->noSetters = $noSetters;
         return $obj;
     }
 
@@ -399,6 +529,12 @@ This is useful if you want to use a custom validator class.
         if (isset($this->preservePropertyNames)) {
             $output['preservePropertyNames'] = $this->preservePropertyNames;
         }
+        if (isset($this->noGetters)) {
+            $output['noGetters'] = $this->noGetters;
+        }
+        if (isset($this->noSetters)) {
+            $output['noSetters'] = $this->noSetters;
+        }
 
         return $output;
     }
@@ -419,9 +555,9 @@ This is useful if you want to use a custom validator class.
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {
-                return $e["property"] . ": " . $e["message"];
+                return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];
             }, $validator->getErrors());
-            throw new \InvalidArgumentException(join(", ", $errors));
+            throw new \InvalidArgumentException(join(".\n", $errors));
         }
 
         return $validator->isValid();

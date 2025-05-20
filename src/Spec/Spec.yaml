@@ -44,6 +44,21 @@ properties:
           The expression to use to create a new instance of the validator class.
           This is useful if you want to use a custom validator class.
         default: "new \\JsonSchema\\Validator()"
+
       preservePropertyNames:
         type: boolean
+        description: |
+          When true, properties names are not converted to camelCase.
+        default: false
+
+      noGetters:
+        type: boolean
+        description: |
+          When true, no getters are created and all properties are 'public'.
+        default: false
+
+      noSetters:
+        type: boolean
+        description: |
+          When true, no withX() / withoutX() setters/unsetters are created.
         default: false

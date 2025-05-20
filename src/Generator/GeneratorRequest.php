@@ -157,6 +157,16 @@ class GeneratorRequest
         return (string)$this->opts->getTargetPHPVersion();
     }
 
+    public function getNoGetters(): bool
+    {
+        return $this->opts->getNoGetters();
+    }
+    
+    public function getNoSetters(): bool
+    {
+        return $this->opts->getNoSetters();
+    }
+
     /**
      * @param int $version
      * @return bool

@@ -39,13 +39,17 @@ class Generator
     {
         $propertyGenerators = [];
 
+        $visibility = $this->generatorRequest->getNoGetters()
+            ? PropertyGenerator::FLAG_PUBLIC
+            : PropertyGenerator::FLAG_PRIVATE;
+
         foreach ($properties as $property) {
             $schema     = $property->schema();
             $isOptional = false;
             $prop       = new PropertyGenerator(
                 $property->name(),
                 $property->formatValue($schema["default"] ?? null),
-                PropertyGenerator::FLAG_PRIVATE
+                $visibility
             );
 
             if ($property instanceof OptionalPropertyDecorator || $property instanceof DefaultPropertyDecorator) {
@@ -290,6 +294,10 @@ class Generator
      */
     public function generateGetterMethods(PropertyCollection $properties): array
     {
+        if ($this->generatorRequest->getNoGetters()) {
+            return [];
+        }
+
         $methods = [];
 
         $properties = $properties->filter(PropertyCollectionFilterFactory::withoutDeprecatedAndSameName($properties));
@@ -351,6 +359,10 @@ class Generator
      */
     public function generateSetterMethods(PropertyCollection $properties): array
     {
+        if ($this->generatorRequest->getNoSetters()) {
+            return [];
+        }
+
         $methods    = [];
         $properties = $properties->filter(PropertyCollectionFilterFactory::withoutDeprecatedAndSameName($properties));
 
