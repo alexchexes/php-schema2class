@@ -89,7 +89,8 @@ class OptionalPropertyDecorator implements PropertyInterface
     public function typeAnnotation(): string
     {
         $inner = $this->inner->typeAnnotation();
-        if (!str_contains($inner, "|null")) {
+        /* Avoid 'null|null' when the wrapped property is already just 'null'. */
+        if ($inner !== 'null' && !preg_match('/(^|\\|)null(\\||$)/', $inner)) {
             $inner .= "|null";
         }
 

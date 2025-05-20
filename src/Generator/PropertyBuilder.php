@@ -14,7 +14,9 @@ use Helmich\Schema2Class\Generator\Property\IntegerProperty;
 use Helmich\Schema2Class\Generator\Property\IntersectProperty;
 use Helmich\Schema2Class\Generator\Property\MixedProperty;
 use Helmich\Schema2Class\Generator\Property\NestedObjectProperty;
+use Helmich\Schema2Class\Generator\Property\NullProperty;
 use Helmich\Schema2Class\Generator\Property\OptionalPropertyDecorator;
+use Helmich\Schema2Class\Generator\Property\PrimitiveUnionEnumProperty;
 use Helmich\Schema2Class\Generator\Property\PropertyInterface;
 use Helmich\Schema2Class\Generator\Property\ReferenceArrayProperty;
 use Helmich\Schema2Class\Generator\Property\ReferenceProperty;
@@ -30,6 +32,8 @@ class PropertyBuilder
         UnionProperty::class,
         DateProperty::class,
         StringEnumProperty::class,
+        PrimitiveUnionEnumProperty::class,
+        NullProperty::class,
         StringProperty::class,
         IntegerProperty::class,
         NumberProperty::class,
