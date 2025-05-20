@@ -246,9 +246,9 @@ class Generator
             ($this->generatorRequest->isAtLeastPHP("7.0") ?
                 '    $errors = array_map(function(array $e): string {' . "\n" :
                 '    $errors = array_map(function($e) {' . "\n") .
-            '        return $e["property"] . ": " . $e["message"];' . "\n" .
+            '        return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];' . "\n" .
             '    }, $validator->getErrors());' . "\n" .
-            '    throw new \\InvalidArgumentException(join(", ", $errors));' . "\n" .
+            '    throw new \\InvalidArgumentException(join(".\n", $errors));' . "\n" .
             '}' . "\n\n" .
             'return $validator->isValid();',
             $docBlock
