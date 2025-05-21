@@ -78,14 +78,9 @@ class Generator
                 $prop->setTypeHint($typeHint);
             }
 
-            /**
-             * A property that *allows* `null` should initialise to `null`
-             * even when it is in the JSON-Schema "required" list.
-             */
-            $allowsNull = str_contains((string) $property->typeAnnotation(), 'null')
-                || str_contains((string) $typeHint, 'null');
-
-            $prop->omitDefaultValue(!$isOptional && !$allowsNull);
+            // omit default `null` for every required field, unsless default is specified in the schema
+            $hasSchemaDefault = array_key_exists('default', $property->schema());
+            $prop->omitDefaultValue(!$isOptional && !$hasSchemaDefault);
 
             $propertyGenerators[] = $prop;
         }
