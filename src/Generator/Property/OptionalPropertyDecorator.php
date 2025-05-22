@@ -16,14 +16,23 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator
     {
         $key   = $this->key;
         $name  = $this->inner->name();
-        $inner = $this->inner->convertJSONToType($inputVarName, $object);
+
+        // JSON accessor:  $input->{'key'}   or   $input['key']
+        $accessor = $object
+            ? "\${$inputVarName}->{'$key'}"
+            : "\${$inputVarName}['$key']";
+
+        // Single mapping expression (with null-guard if the property is nullable)
+        $mapped   = $this->generateInputMappingExpr($accessor, true);
 
         $default    = isset($this->schema()["default"]) ? $this->schema()["default"] : null;
         $defaultExp = rtrim($this->formatValue($default)->generate(), ";");
 
-        $accessor = $object ? "\${$inputVarName}->{'$key'}" : "\${$inputVarName}['$key']";
+        $assignment = "\${$name} = {$mapped};";
 
-        return "\${$name} = {$defaultExp};\nif (isset($accessor)) {\n" . $this->indentCode($inner, 1) . "\n}";
+        return "\${$name} = {$defaultExp};\n"
+             . "if (isset($accessor)) {\n"
+             .     $this->indentCode($assignment, 1) . "\n}";
     }
 
     /**
