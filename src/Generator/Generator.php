@@ -242,9 +242,11 @@ class Generator
             '$input = is_array($input) ? \\JsonSchema\\Validator::arrayToObjectRecursive($input) : $input;' . "\n" .
             '$validator->validate($input, self::$schema);' . "\n\n" .
             'if (!$validator->isValid() && !$return) {' . "\n" .
-            ($this->generatorRequest->isAtLeastPHP("7.0") ?
-                '    $errors = array_map(function(array $e): string {' . "\n" :
-                '    $errors = array_map(function($e) {' . "\n") .
+            (
+                $this->generatorRequest->isAtLeastPHP("7.0")
+                ? '    $errors = array_map(function(array $e): string {' . "\n"
+                : '    $errors = array_map(function($e) {' . "\n"
+            ) .
             '        return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];' . "\n" .
             '    }, $validator->getErrors());' . "\n" .
             '    throw new \\InvalidArgumentException(join(".\n", $errors));' . "\n" .
@@ -252,7 +254,6 @@ class Generator
             'return $validator->isValid();',
             $docBlock
         );
-
         if ($this->generatorRequest->isAtLeastPHP("7.0")) {
             $method->setReturnType("bool");
         }

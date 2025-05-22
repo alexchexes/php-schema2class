@@ -157,7 +157,16 @@ class NullablePropertyDecorator implements PropertyInterface
 
     public function generateInputMappingExpr(string $expr, bool $asserted = false): string
     {
-        $inner = $this->inner->generateInputMappingExpr($expr);
+        // Let the inner property build its own mapping (casts, builder calls, …)
+        $inner = $this->inner->generateInputMappingExpr($expr, $asserted);
+
+        // If we’re already inside an `isset()` check (asserted === true),
+        // the value cannot be null → no extra guard needed.
+        if ($asserted) {
+            return $inner;
+        }
+
+        // Top-level nullable field: we still need the null-guard here.
         return "({$expr} !== null) ? ({$inner}) : null";
     }
 
