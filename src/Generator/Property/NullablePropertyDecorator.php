@@ -71,10 +71,27 @@ class NullablePropertyDecorator implements PropertyInterface
         return true;
     }
 
-    /* ── JSON ↔︎ type conversion: keep original behaviour (no isset) ── */
-    public function convertJSONToType(string $v = 'input', bool $obj = false): string
+    public function convertJSONToType(string $inputVarName = 'input', bool $object = false): string
     {
-        return $this->inner->convertJSONToType($v, $obj);
+        // Key name in the JSON object
+        $key   = $this->key;
+        $keyS  = var_export($key, true);
+        $name  = $this->inner->name(); // local variable to assign to
+
+        $accessor = $object
+            ? "\${$inputVarName}->{{$keyS}}"
+            : "\${$inputVarName}[{$keyS}]";
+
+        $mapped = $this->inner->generateInputMappingExpr($accessor);
+
+        // we don't need null guards for string and null type properties
+        $needsGuard = !($this->inner instanceof StringProperty || $this->inner instanceof NullProperty);
+
+        $expr = $needsGuard
+            ? "({$accessor} !== null) ? ({$mapped}) : null"
+            : $mapped;                      // clean one-liner for strings/nulls
+
+        return "\${$name} = {$expr};";
     }
 
     public function convertTypeToJSON(string $out = 'output'): string
