@@ -28,11 +28,7 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator
         $default    = isset($this->schema()["default"]) ? $this->schema()["default"] : null;
         $defaultExp = rtrim($this->formatValue($default)->generate(), ";");
 
-        $assignment = "\${$name} = {$mapped};";
-
-        return "\${$name} = {$defaultExp};\n"
-             . "if (isset($accessor)) {\n"
-             .     $this->indentCode($assignment, 1) . "\n}";
+        return "\${$name} = isset($accessor) ? {$mapped} : {$defaultExp};";
     }
 
     /**
