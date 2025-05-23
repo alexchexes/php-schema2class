@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator;
@@ -41,7 +42,7 @@ class SchemaToClass
 
         // 2) if the caller supplied root definitions, *always* splice them in here
         if (($defs = $req->getRootDefinitions()) !== null && count($defs) > 0) {
-            // don’t overwrite if the schema already carried its own definitions
+            // don't overwrite if the schema already carried its own definitions
             if (!isset($schema['definitions'])) {
                 $schema['definitions'] = $defs;
             } else {
@@ -50,23 +51,43 @@ class SchemaToClass
             }
         }
 
-
-        // 3) Now your existing logic kicks in:
         if (isset($schema["enum"])) {
             $this->enumGenerator->schemaToEnum($req);
             return;
         }
 
         if (IntersectProperty::canHandleSchema($schema)) {
-            $schema = (new IntersectProperty($req->getTargetClass(), $schema, $req))
-                ->buildSchemaIntersect();
+            $schema = (new IntersectProperty($req->getTargetClass(), $schema, $req))->buildSchemaIntersect();
         }
 
         if (!NestedObjectProperty::canHandleSchema($schema)) {
             throw new GeneratorException("cannot generate class for types other than 'object'");
         }
 
-        $schemaProperty = new PropertyGenerator("schema", $schema, PropertyGenerator::FLAG_PRIVATE | PropertyGenerator::FLAG_STATIC);
+        // remove descriptions from schema if such option is set
+        if ($req->getOptions()->getNoDescriptionsInSchema()) {
+            $stripDescriptions = function (&$node) use (&$stripDescriptions) {
+                if (!is_array($node)) {
+                    return;
+                }
+                foreach ($node as $key => &$value) {
+                    if ($key === 'description') {
+                        unset($node[$key]);
+                    } elseif (is_array($value)) {
+                        // recurse into nested arrays
+                        $stripDescriptions($value);
+                    }
+                }
+            };
+            $stripDescriptions($schema);
+        }
+
+        $schemaProperty = new PropertyGenerator(
+            "schema",
+            $schema,
+            PropertyGenerator::FLAG_PRIVATE | PropertyGenerator::FLAG_STATIC
+        );
+
         $schemaProperty->setDocBlock(new DocBlockGenerator(
             "Schema used to validate input for creating instances of this class",
             null,
@@ -75,6 +96,10 @@ class SchemaToClass
 
         if ($req->isAtLeastPHP("7.4")) {
             $schemaProperty->setTypeHint("array");
+        }
+
+        if ($req->getOptions()->getSingleLineSchema()) {
+            $schemaProperty->setSingleLineDefaultValue(true);
         }
 
         $properties = [$schemaProperty];
@@ -143,7 +168,7 @@ class SchemaToClass
 
         $ownClasses = $req->getGeneratedClassNames();
         if ($ownClasses) {
-            $escapedOwnClasses = array_map(fn($n) => preg_quote($n, '/'), $ownClasses);
+            $escapedOwnClasses = array_map(fn ($n) => preg_quote($n, '/'), $ownClasses);
             $pattern = '/\\\\(' . join('|', $escapedOwnClasses) . ')(?=\s|[,;)]|$)/';
             preg_match($pattern, $content, $matches);
             $content = preg_replace($pattern, '$1', $content);

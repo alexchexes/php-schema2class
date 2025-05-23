@@ -109,6 +109,18 @@ This is useful if you want to use a custom validator class.
 ',
                         'default' => false,
                     ],
+                    'noDescriptionsInSchema' => [
+                        'type' => 'boolean',
+                        'description' => 'When true, the schema used for validation will not include any description fields
+',
+                        'default' => false,
+                    ],
+                    'singleLineSchema' => [
+                        'type' => 'boolean',
+                        'description' => 'When true, the whole schema used for validation will on a single line in the class property
+',
+                        'default' => false,
+                    ],
                 ],
             ],
         ],
@@ -240,18 +252,13 @@ This is useful if you want to use a custom validator class.
             static::validateInput($input);
         }
 
-        $targetPHPVersion = null;
-        if (isset($input->{'targetPHPVersion'})) {
-            $targetPHPVersion = match (true) {
-                is_int($input->{'targetPHPVersion'}), is_string($input->{'targetPHPVersion'}) => $input->{'targetPHPVersion'},
-                default => throw new \InvalidArgumentException("could not build property 'targetPHPVersion' from JSON"),
-            };
-        }
+        $targetPHPVersion = isset($input->{'targetPHPVersion'}) ? match (true) {
+            default => null,
+            is_int($input->{'targetPHPVersion'}) => (int)($input->{'targetPHPVersion'}),
+            is_string($input->{'targetPHPVersion'}) => $input->{'targetPHPVersion'},
+        } : null;
         $files = array_map(fn (array|object $i): SpecificationFilesItem => SpecificationFilesItem::buildFromInput($i, validate: $validate), $input->{'files'});
-        $options = null;
-        if (isset($input->{'options'})) {
-            $options = SpecificationOptions::buildFromInput($input->{'options'}, validate: $validate);
-        }
+        $options = isset($input->{'options'}) ? SpecificationOptions::buildFromInput($input->{'options'}, validate: $validate) : null;
 
         $obj = new self($files);
         $obj->targetPHPVersion = $targetPHPVersion;

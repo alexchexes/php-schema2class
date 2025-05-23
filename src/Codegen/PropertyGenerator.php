@@ -30,10 +30,9 @@ class PropertyGenerator extends ZendPropertyGenerator
      */
     protected ?PropertyValueGenerator $defaultValue = null;
 
-    /**
-     * @var bool
-     */
-    private $omitDefaultValue = false;
+    private bool $omitDefaultValue = false;
+
+    private bool $singleLineDefaultValue = false;
 
     /**
      * @var string|null
@@ -187,12 +186,14 @@ class PropertyGenerator extends ZendPropertyGenerator
         return $this;
     }
 
-    /**
-     * @param string $typeHint
-     */
     public function setTypeHint(string $typeHint): void
     {
         $this->typeHint = $typeHint;
+    }
+
+    public function setSingleLineDefaultValue(bool $v): void
+    {
+        $this->singleLineDefaultValue = $v;
     }
 
     /**
@@ -213,6 +214,10 @@ class PropertyGenerator extends ZendPropertyGenerator
     {
         $name         = $this->getName();
         $defaultValue = $this->getDefaultValue();
+
+        if ($this->singleLineDefaultValue) {
+            $defaultValue->setOutputMode('singleLine');
+        }
 
         $output = '';
 

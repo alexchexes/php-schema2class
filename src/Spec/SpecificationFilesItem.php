@@ -210,15 +210,9 @@ class SpecificationFilesItem
         }
 
         $input = $input2->{'input'};
-        $className = null;
-        if (isset($input2->{'className'})) {
-            $className = $input2->{'className'};
-        }
+        $className = isset($input2->{'className'}) ? $input2->{'className'} : null;
         $targetDirectory = $input2->{'targetDirectory'};
-        $targetNamespace = null;
-        if (isset($input2->{'targetNamespace'})) {
-            $targetNamespace = $input2->{'targetNamespace'};
-        }
+        $targetNamespace = isset($input2->{'targetNamespace'}) ? $input2->{'targetNamespace'} : null;
 
         $obj = new self($input, $targetDirectory);
         $obj->className = $className;

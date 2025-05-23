@@ -66,6 +66,18 @@ This is useful if you want to use a custom validator class.
 ',
                 'default' => false,
             ],
+            'noDescriptionsInSchema' => [
+                'type' => 'boolean',
+                'description' => 'When true, the schema used for validation will not include any description fields
+',
+                'default' => false,
+            ],
+            'singleLineSchema' => [
+                'type' => 'boolean',
+                'description' => 'When true, the whole schema used for validation will on a single line in the class property
+',
+                'default' => false,
+            ],
         ],
     ];
 
@@ -121,6 +133,22 @@ This is useful if you want to use a custom validator class.
      * @var bool
      */
     private bool $noSetters = false;
+
+    /**
+     * When true, the schema used for validation will not include any description fields
+     *
+     *
+     * @var bool
+     */
+    private bool $noDescriptionsInSchema = false;
+
+    /**
+     * When true, the whole schema used for validation will on a single line in the class property
+     *
+     *
+     * @var bool
+     */
+    private bool $singleLineSchema = false;
 
     /**
      *
@@ -204,6 +232,28 @@ This is useful if you want to use a custom validator class.
     public function getNoSetters() : bool
     {
         return $this->noSetters;
+    }
+
+    /**
+     * When true, the schema used for validation will not include any description fields
+     *
+     *
+     * @return bool
+     */
+    public function getNoDescriptionsInSchema() : bool
+    {
+        return $this->noDescriptionsInSchema;
+    }
+
+    /**
+     * When true, the whole schema used for validation will on a single line in the class property
+     *
+     *
+     * @return bool
+     */
+    public function getSingleLineSchema() : bool
+    {
+        return $this->singleLineSchema;
     }
 
     /**
@@ -433,6 +483,64 @@ This is useful if you want to use a custom validator class.
     }
 
     /**
+     * @param bool $noDescriptionsInSchema
+     * @return self
+     */
+    public function withNoDescriptionsInSchema(bool $noDescriptionsInSchema) : self
+    {
+        $validator = new \JsonSchema\Validator();
+        $validator->validate($noDescriptionsInSchema, self::$schema['properties']['noDescriptionsInSchema']);
+        if (!$validator->isValid()) {
+            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        }
+
+        $clone = clone $this;
+        $clone->noDescriptionsInSchema = $noDescriptionsInSchema;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutNoDescriptionsInSchema() : self
+    {
+        $clone = clone $this;
+        $clone->noDescriptionsInSchema = false;
+
+        return $clone;
+    }
+
+    /**
+     * @param bool $singleLineSchema
+     * @return self
+     */
+    public function withSingleLineSchema(bool $singleLineSchema) : self
+    {
+        $validator = new \JsonSchema\Validator();
+        $validator->validate($singleLineSchema, self::$schema['properties']['singleLineSchema']);
+        if (!$validator->isValid()) {
+            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        }
+
+        $clone = clone $this;
+        $clone->singleLineSchema = $singleLineSchema;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutSingleLineSchema() : self
+    {
+        $clone = clone $this;
+        $clone->singleLineSchema = false;
+
+        return $clone;
+    }
+
+    /**
      * Builds a new instance from an input array
      *
      * @param array|object $input Input data
@@ -453,41 +561,20 @@ This is useful if you want to use a custom validator class.
             static::validateInput($input);
         }
 
-        $disableStrictTypes = false;
-        if (isset($input->{'disableStrictTypes'})) {
-            $disableStrictTypes = (bool)($input->{'disableStrictTypes'});
-        }
-        $treatValuesWithDefaultAsOptional = false;
-        if (isset($input->{'treatValuesWithDefaultAsOptional'})) {
-            $treatValuesWithDefaultAsOptional = (bool)($input->{'treatValuesWithDefaultAsOptional'});
-        }
-        $inlineAllofReferences = false;
-        if (isset($input->{'inlineAllofReferences'})) {
-            $inlineAllofReferences = (bool)($input->{'inlineAllofReferences'});
-        }
-        $targetPHPVersion = '8.2.0';
-        if (isset($input->{'targetPHPVersion'})) {
-            $targetPHPVersion = match (true) {
-                is_int($input->{'targetPHPVersion'}), is_string($input->{'targetPHPVersion'}) => $input->{'targetPHPVersion'},
-                default => throw new \InvalidArgumentException("could not build property 'targetPHPVersion' from JSON"),
-            };
-        }
-        $newValidatorClassExpr = 'new \\JsonSchema\\Validator()';
-        if (isset($input->{'newValidatorClassExpr'})) {
-            $newValidatorClassExpr = $input->{'newValidatorClassExpr'};
-        }
-        $preservePropertyNames = false;
-        if (isset($input->{'preservePropertyNames'})) {
-            $preservePropertyNames = (bool)($input->{'preservePropertyNames'});
-        }
-        $noGetters = false;
-        if (isset($input->{'noGetters'})) {
-            $noGetters = (bool)($input->{'noGetters'});
-        }
-        $noSetters = false;
-        if (isset($input->{'noSetters'})) {
-            $noSetters = (bool)($input->{'noSetters'});
-        }
+        $disableStrictTypes = isset($input->{'disableStrictTypes'}) ? $input->{'disableStrictTypes'} : false;
+        $treatValuesWithDefaultAsOptional = isset($input->{'treatValuesWithDefaultAsOptional'}) ? $input->{'treatValuesWithDefaultAsOptional'} : false;
+        $inlineAllofReferences = isset($input->{'inlineAllofReferences'}) ? $input->{'inlineAllofReferences'} : false;
+        $targetPHPVersion = isset($input->{'targetPHPVersion'}) ? match (true) {
+            default => null,
+            is_int($input->{'targetPHPVersion'}) => (int)($input->{'targetPHPVersion'}),
+            is_string($input->{'targetPHPVersion'}) => $input->{'targetPHPVersion'},
+        } : '8.2.0';
+        $newValidatorClassExpr = isset($input->{'newValidatorClassExpr'}) ? $input->{'newValidatorClassExpr'} : 'new \\JsonSchema\\Validator()';
+        $preservePropertyNames = isset($input->{'preservePropertyNames'}) ? $input->{'preservePropertyNames'} : false;
+        $noGetters = isset($input->{'noGetters'}) ? $input->{'noGetters'} : false;
+        $noSetters = isset($input->{'noSetters'}) ? $input->{'noSetters'} : false;
+        $noDescriptionsInSchema = isset($input->{'noDescriptionsInSchema'}) ? $input->{'noDescriptionsInSchema'} : false;
+        $singleLineSchema = isset($input->{'singleLineSchema'}) ? $input->{'singleLineSchema'} : false;
 
         $obj = new self();
         $obj->disableStrictTypes = $disableStrictTypes;
@@ -498,6 +585,8 @@ This is useful if you want to use a custom validator class.
         $obj->preservePropertyNames = $preservePropertyNames;
         $obj->noGetters = $noGetters;
         $obj->noSetters = $noSetters;
+        $obj->noDescriptionsInSchema = $noDescriptionsInSchema;
+        $obj->singleLineSchema = $singleLineSchema;
         return $obj;
     }
 
@@ -534,6 +623,12 @@ This is useful if you want to use a custom validator class.
         }
         if (isset($this->noSetters)) {
             $output['noSetters'] = $this->noSetters;
+        }
+        if (isset($this->noDescriptionsInSchema)) {
+            $output['noDescriptionsInSchema'] = $this->noDescriptionsInSchema;
+        }
+        if (isset($this->singleLineSchema)) {
+            $output['singleLineSchema'] = $this->singleLineSchema;
         }
 
         return $output;
