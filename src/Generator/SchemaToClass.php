@@ -117,6 +117,8 @@ class SchemaToClass
             }
         }
 
+        $this->ensureUniquePropertyNames($propertiesFromSchema);
+
         foreach ($propertiesFromSchema as $property) {
             $property->generateSubTypes($this);
         }
@@ -179,4 +181,26 @@ class SchemaToClass
         $this->writer->writeFile($filename, $content);
     }
 
+    /**
+     * Ensures that property names are unique after sanitization. When a
+     * collision is detected, an underscore is prepended until the name is
+     * unique within the given property collection.
+     */
+    private function ensureUniquePropertyNames(PropertyCollection $properties): void
+    {
+        $used = [];
+        foreach ($properties as $property) {
+            $base = $property->name();
+            $unique = $base;
+            $i = 1;
+            while (in_array($unique, $used, true)) {
+                $unique = $base . '_' . $i;
+                $i++;
+            }
+            if ($unique !== $base && method_exists($property, 'setName')) {
+                $property->setName($unique);
+            }
+            $used[] = $unique;
+        }
+    }
 }
