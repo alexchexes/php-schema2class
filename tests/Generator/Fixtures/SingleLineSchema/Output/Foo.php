@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ns\RefList;
+namespace Ns\SingleLineSchema;
 
 class Foo
 {
@@ -11,59 +11,43 @@ class Foo
      *
      * @var array
      */
-    private static array $schema = [
-        'required' => [
-            'foo_bar',
-        ],
-        'properties' => [
-            'foo' => [
-                'type' => 'array',
-                'items' => [
-                    '$ref' => '#/properties/address',
-                ],
-            ],
-        ],
-    ];
+    private static array $schema = ['required' => ['foo'], 'properties' => ['foo' => ['type' => 'string']]];
 
     /**
-     * @var Helmich\Schema2Class\Example\CustomerAddress[]|null
+     * @var string
      */
-    private ?array $foo = null;
+    private string $foo;
 
     /**
-     *
+     * @param string $foo
      */
-    public function __construct()
+    public function __construct(string $foo)
     {
+        $this->foo = $foo;
     }
 
     /**
-     * @return Helmich\Schema2Class\Example\CustomerAddress[]|null
+     * @return string
      */
-    public function getFoo() : ?array
+    public function getFoo() : string
     {
-        return $this->foo ?? null;
+        return $this->foo;
     }
 
     /**
-     * @param Helmich\Schema2Class\Example\CustomerAddress[] $foo
+     * @param string $foo
      * @return self
      */
-    public function withFoo(array $foo) : self
+    public function withFoo(string $foo) : self
     {
+        $validator = new \JsonSchema\Validator();
+        $validator->validate($foo, self::$schema['properties']['foo']);
+        if (!$validator->isValid()) {
+            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        }
+
         $clone = clone $this;
         $clone->foo = $foo;
-
-        return $clone;
-    }
-
-    /**
-     * @return self
-     */
-    public function withoutFoo() : self
-    {
-        $clone = clone $this;
-        unset($clone->foo);
 
         return $clone;
     }
@@ -89,10 +73,10 @@ class Foo
             static::validateInput($input);
         }
 
-        $foo = isset($input->{'foo'}) ? array_map(fn(array|object $i): Helmich\Schema2Class\Example\CustomerAddress => Helmich\Schema2Class\Example\CustomerAddress::buildFromInput($i, $validate), $input->{'foo'}) : null;
+        $foo = $input->{'foo'};
 
-        $obj = new self();
-        $obj->foo = $foo;
+        $obj = new self($foo);
+
         return $obj;
     }
 
@@ -104,9 +88,7 @@ class Foo
     public function toJson() : array
     {
         $output = [];
-        if (isset($this->foo)) {
-            $output['foo'] = array_map(fn(Helmich\Schema2Class\Example\CustomerAddress $i): array => $i->toJson(), $this->foo);
-        }
+        $output['foo'] = $this->foo;
 
         return $output;
     }

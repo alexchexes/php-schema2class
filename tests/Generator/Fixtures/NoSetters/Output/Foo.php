@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ns\RefList;
+namespace Ns\NoSetters;
 
 class Foo
 {
@@ -13,59 +13,53 @@ class Foo
      */
     private static array $schema = [
         'required' => [
-            'foo_bar',
+            'foo',
+            'bar',
         ],
         'properties' => [
             'foo' => [
-                'type' => 'array',
-                'items' => [
-                    '$ref' => '#/properties/address',
-                ],
+                'type' => 'string',
+            ],
+            'bar' => [
+                'type' => 'integer',
             ],
         ],
     ];
 
     /**
-     * @var Helmich\Schema2Class\Example\CustomerAddress[]|null
+     * @var string
      */
-    private ?array $foo = null;
+    private string $foo;
 
     /**
-     *
+     * @var int
      */
-    public function __construct()
+    private int $bar;
+
+    /**
+     * @param string $foo
+     * @param int $bar
+     */
+    public function __construct(string $foo, int $bar)
     {
+        $this->foo = $foo;
+        $this->bar = $bar;
     }
 
     /**
-     * @return Helmich\Schema2Class\Example\CustomerAddress[]|null
+     * @return string
      */
-    public function getFoo() : ?array
+    public function getFoo() : string
     {
-        return $this->foo ?? null;
+        return $this->foo;
     }
 
     /**
-     * @param Helmich\Schema2Class\Example\CustomerAddress[] $foo
-     * @return self
+     * @return int
      */
-    public function withFoo(array $foo) : self
+    public function getBar() : int
     {
-        $clone = clone $this;
-        $clone->foo = $foo;
-
-        return $clone;
-    }
-
-    /**
-     * @return self
-     */
-    public function withoutFoo() : self
-    {
-        $clone = clone $this;
-        unset($clone->foo);
-
-        return $clone;
+        return $this->bar;
     }
 
     /**
@@ -89,10 +83,11 @@ class Foo
             static::validateInput($input);
         }
 
-        $foo = isset($input->{'foo'}) ? array_map(fn(array|object $i): Helmich\Schema2Class\Example\CustomerAddress => Helmich\Schema2Class\Example\CustomerAddress::buildFromInput($i, $validate), $input->{'foo'}) : null;
+        $foo = $input->{'foo'};
+        $bar = (int)($input->{'bar'});
 
-        $obj = new self();
-        $obj->foo = $foo;
+        $obj = new self($foo, $bar);
+
         return $obj;
     }
 
@@ -104,9 +99,8 @@ class Foo
     public function toJson() : array
     {
         $output = [];
-        if (isset($this->foo)) {
-            $output['foo'] = array_map(fn(Helmich\Schema2Class\Example\CustomerAddress $i): array => $i->toJson(), $this->foo);
-        }
+        $output['foo'] = $this->foo;
+        $output['bar'] = $this->bar;
 
         return $output;
     }

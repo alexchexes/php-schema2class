@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ns\AllOfRef;
+namespace Ns\NonAsciiProperty;
 
 class Foo
 {
@@ -13,19 +13,18 @@ class Foo
      */
     private static array $schema = [
         'required' => [
-            'city',
-            'street',
-            'country',
+            'Город',
+            'название юр.лица',
+            'IP-адрес',
         ],
         'properties' => [
-            'city' => [
-                'type' => 'string',
-                'maxLength' => 32,
-            ],
-            'street' => [
+            'Город' => [
                 'type' => 'string',
             ],
-            'country' => [
+            'название юр.лица' => [
+                'type' => 'string',
+            ],
+            'IP-адрес' => [
                 'type' => 'string',
             ],
         ],
@@ -34,104 +33,104 @@ class Foo
     /**
      * @var string
      */
-    private string $city;
+    private string $Gorod;
 
     /**
      * @var string
      */
-    private string $street;
+    private string $nazvanieIurLitsa;
 
     /**
      * @var string
      */
-    private string $country;
+    private string $IPAdres;
 
     /**
-     * @param string $city
-     * @param string $street
-     * @param string $country
+     * @param string $Gorod
+     * @param string $nazvanieIurLitsa
+     * @param string $IPAdres
      */
-    public function __construct(string $city, string $street, string $country)
+    public function __construct(string $Gorod, string $nazvanieIurLitsa, string $IPAdres)
     {
-        $this->city = $city;
-        $this->street = $street;
-        $this->country = $country;
+        $this->Gorod = $Gorod;
+        $this->nazvanieIurLitsa = $nazvanieIurLitsa;
+        $this->IPAdres = $IPAdres;
     }
 
     /**
      * @return string
      */
-    public function getCity() : string
+    public function getGorod() : string
     {
-        return $this->city;
+        return $this->Gorod;
     }
 
     /**
      * @return string
      */
-    public function getStreet() : string
+    public function getNazvanieIurLitsa() : string
     {
-        return $this->street;
+        return $this->nazvanieIurLitsa;
     }
 
     /**
      * @return string
      */
-    public function getCountry() : string
+    public function getIPAdres() : string
     {
-        return $this->country;
+        return $this->IPAdres;
     }
 
     /**
-     * @param string $city
+     * @param string $Gorod
      * @return self
      */
-    public function withCity(string $city) : self
+    public function withGorod(string $Gorod) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($city, self::$schema['properties']['city']);
+        $validator->validate($Gorod, self::$schema['properties']['Город']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
 
         $clone = clone $this;
-        $clone->city = $city;
+        $clone->Gorod = $Gorod;
 
         return $clone;
     }
 
     /**
-     * @param string $street
+     * @param string $nazvanieIurLitsa
      * @return self
      */
-    public function withStreet(string $street) : self
+    public function withNazvanieIurLitsa(string $nazvanieIurLitsa) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($street, self::$schema['properties']['street']);
+        $validator->validate($nazvanieIurLitsa, self::$schema['properties']['название юр.лица']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
 
         $clone = clone $this;
-        $clone->street = $street;
+        $clone->nazvanieIurLitsa = $nazvanieIurLitsa;
 
         return $clone;
     }
 
     /**
-     * @param string $country
+     * @param string $IPAdres
      * @return self
      */
-    public function withCountry(string $country) : self
+    public function withIPAdres(string $IPAdres) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($country, self::$schema['properties']['country']);
+        $validator->validate($IPAdres, self::$schema['properties']['IP-адрес']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
 
         $clone = clone $this;
-        $clone->country = $country;
+        $clone->IPAdres = $IPAdres;
 
         return $clone;
     }
@@ -157,11 +156,11 @@ class Foo
             static::validateInput($input);
         }
 
-        $city = $input->{'city'};
-        $street = $input->{'street'};
-        $country = $input->{'country'};
+        $Gorod = $input->{'Город'};
+        $nazvanieIurLitsa = $input->{'название юр.лица'};
+        $IPAdres = $input->{'IP-адрес'};
 
-        $obj = new self($city, $street, $country);
+        $obj = new self($Gorod, $nazvanieIurLitsa, $IPAdres);
 
         return $obj;
     }
@@ -174,9 +173,9 @@ class Foo
     public function toJson() : array
     {
         $output = [];
-        $output['city'] = $this->city;
-        $output['street'] = $this->street;
-        $output['country'] = $this->country;
+        $output['Город'] = $this->Gorod;
+        $output['название юр.лица'] = $this->nazvanieIurLitsa;
+        $output['IP-адрес'] = $this->IPAdres;
 
         return $output;
     }

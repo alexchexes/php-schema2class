@@ -136,7 +136,7 @@ class SchemaToClassTest extends TestCase
 
             if (getenv("UPDATE_SNAPSHOTS") === "1") {
                 $outputFilename = join(DIRECTORY_SEPARATOR, [__DIR__, "Fixtures", $name, "Output", $file]);
-                file_put_contents($outputFilename, $actualContent);
+                file_put_contents($outputFilename, $actualContent . "\n");
             } else {
                 assertThat($actualContent, equalTo($content));
             }

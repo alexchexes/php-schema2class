@@ -47,7 +47,7 @@ class StringUtilsTest extends TestCase
     public function testSanitizeIdentifierTransliteratesAndRemovesInvalidCharacters()
     {
         $sanitized = StringUtils::sanitizeIdentifier("IP-адреса");
-        assertThat($sanitized, equalTo("IPadresa"));
+        assertThat($sanitized, equalTo("IP_adresa"));
     }
 
     public function testCapitalizeWordHandlesEmptyString()

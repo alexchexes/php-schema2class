@@ -1,0 +1,18 @@
+required:
+  - "foo-bar"
+  - "baz qux"
+  - "Город"
+  - "название юр.лица"
+  - "IP-адрес"
+properties:
+  "foo-bar":
+    type: string
+  "baz qux":
+    type: string
+  "Город":
+    type: string
+  "название юр.лица":
+    type: string
+  "IP-адрес":
+    type: string
+
