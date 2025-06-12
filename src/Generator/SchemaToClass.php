@@ -64,7 +64,9 @@ class SchemaToClass
             throw new GeneratorException("cannot generate class for types other than 'object'");
         }
 
-        // remove descriptions from schema if such option is set
+        // remove descriptions from schema if such option is set, but keep them
+        // for building property documentation
+        $validationSchema = $schema;
         if ($req->getOptions()->getNoDescriptionsInSchema()) {
             $stripDescriptions = function (&$node) use (&$stripDescriptions) {
                 if (!is_array($node)) {
@@ -79,12 +81,12 @@ class SchemaToClass
                     }
                 }
             };
-            $stripDescriptions($schema);
+            $stripDescriptions($validationSchema);
         }
 
         $schemaProperty = new PropertyGenerator(
             "schema",
-            $schema,
+            $validationSchema,
             PropertyGenerator::FLAG_PRIVATE | PropertyGenerator::FLAG_STATIC
         );
 
