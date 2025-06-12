@@ -212,5 +212,9 @@ class SchemaToClassTest extends TestCase
                 assertThat($actualContent, equalTo($content));
             }
         }
+
+        if (getenv('UPDATE_SNAPSHOTS') === '1') {
+            $this->addToAssertionCount(1);
+        }
     }
 }
