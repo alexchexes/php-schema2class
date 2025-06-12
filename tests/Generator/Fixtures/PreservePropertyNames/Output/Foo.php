@@ -14,7 +14,9 @@ class Foo
     private static array $schema = [
         'required' => [
             'foo-bar',
+            'foo bar',
             'baz qux',
+            '123 qwe',
             'Город',
             'название юр.лица',
             'IP-адрес',
@@ -23,7 +25,13 @@ class Foo
             'foo-bar' => [
                 'type' => 'string',
             ],
+            'foo bar' => [
+                'type' => 'string',
+            ],
             'baz qux' => [
+                'type' => 'string',
+            ],
+            '123 qwe' => [
                 'type' => 'string',
             ],
             'Город' => [
@@ -46,7 +54,17 @@ class Foo
     /**
      * @var string
      */
+    private string $foo_bar_1;
+
+    /**
+     * @var string
+     */
     private string $baz_qux;
+
+    /**
+     * @var string
+     */
+    private string $_123_qwe;
 
     /**
      * @var string
@@ -65,15 +83,19 @@ class Foo
 
     /**
      * @param string $foo_bar
+     * @param string $foo_bar_1
      * @param string $baz_qux
+     * @param string $_123_qwe
      * @param string $Gorod
      * @param string $nazvanie_iur_litsa
      * @param string $IP_adres
      */
-    public function __construct(string $foo_bar, string $baz_qux, string $Gorod, string $nazvanie_iur_litsa, string $IP_adres)
+    public function __construct(string $foo_bar, string $foo_bar_1, string $baz_qux, string $_123_qwe, string $Gorod, string $nazvanie_iur_litsa, string $IP_adres)
     {
         $this->foo_bar = $foo_bar;
+        $this->foo_bar_1 = $foo_bar_1;
         $this->baz_qux = $baz_qux;
+        $this->_123_qwe = $_123_qwe;
         $this->Gorod = $Gorod;
         $this->nazvanie_iur_litsa = $nazvanie_iur_litsa;
         $this->IP_adres = $IP_adres;
@@ -90,9 +112,25 @@ class Foo
     /**
      * @return string
      */
+    public function getFooBar1() : string
+    {
+        return $this->foo_bar_1;
+    }
+
+    /**
+     * @return string
+     */
     public function getBazQux() : string
     {
         return $this->baz_qux;
+    }
+
+    /**
+     * @return string
+     */
+    public function get_123Qwe() : string
+    {
+        return $this->_123_qwe;
     }
 
     /**
@@ -138,6 +176,24 @@ class Foo
     }
 
     /**
+     * @param string $foo_bar_1
+     * @return self
+     */
+    public function withFooBar1(string $foo_bar_1) : self
+    {
+        $validator = new \JsonSchema\Validator();
+        $validator->validate($foo_bar_1, self::$schema['properties']['foo bar']);
+        if (!$validator->isValid()) {
+            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        }
+
+        $clone = clone $this;
+        $clone->foo_bar_1 = $foo_bar_1;
+
+        return $clone;
+    }
+
+    /**
      * @param string $baz_qux
      * @return self
      */
@@ -151,6 +207,24 @@ class Foo
 
         $clone = clone $this;
         $clone->baz_qux = $baz_qux;
+
+        return $clone;
+    }
+
+    /**
+     * @param string $_123_qwe
+     * @return self
+     */
+    public function with_123Qwe(string $_123_qwe) : self
+    {
+        $validator = new \JsonSchema\Validator();
+        $validator->validate($_123_qwe, self::$schema['properties']['123 qwe']);
+        if (!$validator->isValid()) {
+            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        }
+
+        $clone = clone $this;
+        $clone->_123_qwe = $_123_qwe;
 
         return $clone;
     }
@@ -231,12 +305,14 @@ class Foo
         }
 
         $foo_bar = $input->{'foo-bar'};
+        $foo_bar_1 = $input->{'foo bar'};
         $baz_qux = $input->{'baz qux'};
+        $_123_qwe = $input->{'123 qwe'};
         $Gorod = $input->{'Город'};
         $nazvanie_iur_litsa = $input->{'название юр.лица'};
         $IP_adres = $input->{'IP-адрес'};
 
-        $obj = new self($foo_bar, $baz_qux, $Gorod, $nazvanie_iur_litsa, $IP_adres);
+        $obj = new self($foo_bar, $foo_bar_1, $baz_qux, $_123_qwe, $Gorod, $nazvanie_iur_litsa, $IP_adres);
 
         return $obj;
     }
@@ -250,7 +326,9 @@ class Foo
     {
         $output = [];
         $output['foo-bar'] = $this->foo_bar;
+        $output['foo bar'] = $this->foo_bar_1;
         $output['baz qux'] = $this->baz_qux;
+        $output['123 qwe'] = $this->_123_qwe;
         $output['Город'] = $this->Gorod;
         $output['название юр.лица'] = $this->nazvanie_iur_litsa;
         $output['IP-адрес'] = $this->IP_adres;

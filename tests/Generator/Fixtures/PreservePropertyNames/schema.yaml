@@ -1,13 +1,19 @@
 required:
   - "foo-bar"
+  - "foo bar"
   - "baz qux"
+  - "123 qwe"
   - "Город"
   - "название юр.лица"
   - "IP-адрес"
 properties:
   "foo-bar":
     type: string
+  "foo bar":
+    type: string
   "baz qux":
+    type: string
+  "123 qwe":
     type: string
   "Город":
     type: string

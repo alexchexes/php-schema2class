@@ -58,6 +58,11 @@ abstract class AbstractProperty implements PropertyInterface
         return $this->name;
     }
 
+    public function setName(string $name): void
+    {
+        $this->name = $name;
+    }
+
     public function description(): ?string
     {
         return $this->description;
