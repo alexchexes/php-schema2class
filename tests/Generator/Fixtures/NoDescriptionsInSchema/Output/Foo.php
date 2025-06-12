@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ns\Fixture;
+namespace Ns\NoDescriptionsInSchema;
 
 class Foo
 {
