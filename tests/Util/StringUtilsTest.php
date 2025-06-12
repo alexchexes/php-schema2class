@@ -37,4 +37,16 @@ class StringUtilsTest extends TestCase
         $camelCased = StringUtils::camelCase("content-disposition");
         assertThat($camelCased, equalTo("contentDisposition"));
     }
+
+    public function testCamelCaseTransliteratesNonAsciiCharacters()
+    {
+        $camelCased = StringUtils::camelCase("ЕГРЮЛ Казахстан");
+        assertThat($camelCased, equalTo("EGRULKazahstan"));
+    }
+
+    public function testSanitizeIdentifierTransliteratesAndRemovesInvalidCharacters()
+    {
+        $sanitized = StringUtils::sanitizeIdentifier("IP-адреса");
+        assertThat($sanitized, equalTo("IPadresa"));
+    }
 }

@@ -31,9 +31,8 @@ abstract class AbstractProperty implements PropertyInterface
         $this->generatorRequest = $generatorRequest;
         $this->description      = $schema['description'] ?? null;
 
-        /** preserve? – use key verbatim, else camel-case */
         if ($generatorRequest->getOptions()->getPreservePropertyNames()) {
-            $this->name = $key;
+            $this->name = StringUtils::sanitizeIdentifier($key);
         } else {
             $this->name = StringUtils::camelCase($key);
         }
