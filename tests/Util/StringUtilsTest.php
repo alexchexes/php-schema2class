@@ -49,4 +49,16 @@ class StringUtilsTest extends TestCase
         $sanitized = StringUtils::sanitizeIdentifier("IP-адреса");
         assertThat($sanitized, equalTo("IPadresa"));
     }
+
+    public function testCapitalizeWordHandlesEmptyString()
+    {
+        $capitalized = StringUtils::capitalizeWord("");
+        assertThat($capitalized, equalTo(""));
+    }
+
+    public function testSanitizeIdentifierFallbackForInvalidString()
+    {
+        $sanitized = StringUtils::sanitizeIdentifier("!!!");
+        $this->assertMatchesRegularExpression('/^_[a-f0-9]{8}$/', $sanitized);
+    }
 }

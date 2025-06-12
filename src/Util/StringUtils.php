@@ -31,23 +31,28 @@ class StringUtils
      */
     public static function sanitizeIdentifier(string $input): string
     {
-        $input = self::transliterate($input);
+        $transliterated = self::transliterate($input);
         // Remove everything that is not a letter, digit or underscore
-        $input = preg_replace('/[^A-Za-z0-9_]+/', '', $input);
+        $sanitized = preg_replace('/[^A-Za-z0-9_]+/', '', $transliterated);
 
-        if ($input === '') {
-            return '_';
+        if ($sanitized === '') {
+            $hash = substr(md5($input), 0, 8);
+            $sanitized = '_' . $hash;
         }
 
         // Identifiers must not start with a digit
-        if (preg_match('/^[0-9]/', $input)) {
-            $input = '_' . $input;
+        if (preg_match('/^[0-9]/', $sanitized)) {
+            $sanitized = '_' . $sanitized;
         }
 
-        return $input;
+        return $sanitized;
     }
     public static function capitalizeWord(string $input): string
     {
+        if ($input === '') {
+            return '';
+        }
+
         return strtoupper($input[0]) . substr($input, 1);
     }
 
