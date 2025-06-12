@@ -1,5 +1,11 @@
 required:
-  - город
+  - Город
+  - название юр.лица
+  - IP-адрес
 properties:
-  город:
+  Город:
+    type: string
+  название юр.лица:
+    type: string
+  IP-адрес:
     type: string

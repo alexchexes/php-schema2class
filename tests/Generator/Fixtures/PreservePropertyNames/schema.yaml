@@ -1,8 +1,18 @@
 required:
   - "foo-bar"
-  - "город"
+  - "baz qux"
+  - "Город"
+  - "название юр.лица"
+  - "IP-адрес"
 properties:
   "foo-bar":
     type: string
-  "город":
-    type: integer
+  "baz qux":
+    type: string
+  "Город":
+    type: string
+  "название юр.лица":
+    type: string
+  "IP-адрес":
+    type: string
+

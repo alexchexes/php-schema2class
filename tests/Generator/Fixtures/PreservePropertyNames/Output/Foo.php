@@ -14,14 +14,26 @@ class Foo
     private static array $schema = [
         'required' => [
             'foo-bar',
-            'город',
+            'baz qux',
+            'Город',
+            'название юр.лица',
+            'IP-адрес',
         ],
         'properties' => [
             'foo-bar' => [
                 'type' => 'string',
             ],
-            'город' => [
-                'type' => 'integer',
+            'baz qux' => [
+                'type' => 'string',
+            ],
+            'Город' => [
+                'type' => 'string',
+            ],
+            'название юр.лица' => [
+                'type' => 'string',
+            ],
+            'IP-адрес' => [
+                'type' => 'string',
             ],
         ],
     ];
@@ -29,71 +41,170 @@ class Foo
     /**
      * @var string
      */
-    private string $foobar;
+    private string $foo_bar;
 
     /**
-     * @var int
+     * @var string
      */
-    private int $gorod;
+    private string $baz_qux;
 
     /**
-     * @param string $foobar
-     * @param int $gorod
+     * @var string
      */
-    public function __construct(string $foobar, int $gorod)
+    private string $Gorod;
+
+    /**
+     * @var string
+     */
+    private string $nazvanie_iur_litsa;
+
+    /**
+     * @var string
+     */
+    private string $IP_adres;
+
+    /**
+     * @param string $foo_bar
+     * @param string $baz_qux
+     * @param string $Gorod
+     * @param string $nazvanie_iur_litsa
+     * @param string $IP_adres
+     */
+    public function __construct(string $foo_bar, string $baz_qux, string $Gorod, string $nazvanie_iur_litsa, string $IP_adres)
     {
-        $this->foobar = $foobar;
-        $this->gorod = $gorod;
+        $this->foo_bar = $foo_bar;
+        $this->baz_qux = $baz_qux;
+        $this->Gorod = $Gorod;
+        $this->nazvanie_iur_litsa = $nazvanie_iur_litsa;
+        $this->IP_adres = $IP_adres;
     }
 
     /**
      * @return string
      */
-    public function getFoobar() : string
+    public function getFooBar() : string
     {
-        return $this->foobar;
+        return $this->foo_bar;
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function getGorod() : int
+    public function getBazQux() : string
     {
-        return $this->gorod;
+        return $this->baz_qux;
     }
 
     /**
-     * @param string $foobar
+     * @return string
+     */
+    public function getGorod() : string
+    {
+        return $this->Gorod;
+    }
+
+    /**
+     * @return string
+     */
+    public function getNazvanieIurLitsa() : string
+    {
+        return $this->nazvanie_iur_litsa;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIPAdres() : string
+    {
+        return $this->IP_adres;
+    }
+
+    /**
+     * @param string $foo_bar
      * @return self
      */
-    public function withFoobar(string $foobar) : self
+    public function withFooBar(string $foo_bar) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($foobar, self::$schema['properties']['foo-bar']);
+        $validator->validate($foo_bar, self::$schema['properties']['foo-bar']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
 
         $clone = clone $this;
-        $clone->foobar = $foobar;
+        $clone->foo_bar = $foo_bar;
 
         return $clone;
     }
 
     /**
-     * @param int $gorod
+     * @param string $baz_qux
      * @return self
      */
-    public function withGorod(int $gorod) : self
+    public function withBazQux(string $baz_qux) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($gorod, self::$schema['properties']['город']);
+        $validator->validate($baz_qux, self::$schema['properties']['baz qux']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
 
         $clone = clone $this;
-        $clone->gorod = $gorod;
+        $clone->baz_qux = $baz_qux;
+
+        return $clone;
+    }
+
+    /**
+     * @param string $Gorod
+     * @return self
+     */
+    public function withGorod(string $Gorod) : self
+    {
+        $validator = new \JsonSchema\Validator();
+        $validator->validate($Gorod, self::$schema['properties']['Город']);
+        if (!$validator->isValid()) {
+            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        }
+
+        $clone = clone $this;
+        $clone->Gorod = $Gorod;
+
+        return $clone;
+    }
+
+    /**
+     * @param string $nazvanie_iur_litsa
+     * @return self
+     */
+    public function withNazvanieIurLitsa(string $nazvanie_iur_litsa) : self
+    {
+        $validator = new \JsonSchema\Validator();
+        $validator->validate($nazvanie_iur_litsa, self::$schema['properties']['название юр.лица']);
+        if (!$validator->isValid()) {
+            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        }
+
+        $clone = clone $this;
+        $clone->nazvanie_iur_litsa = $nazvanie_iur_litsa;
+
+        return $clone;
+    }
+
+    /**
+     * @param string $IP_adres
+     * @return self
+     */
+    public function withIPAdres(string $IP_adres) : self
+    {
+        $validator = new \JsonSchema\Validator();
+        $validator->validate($IP_adres, self::$schema['properties']['IP-адрес']);
+        if (!$validator->isValid()) {
+            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        }
+
+        $clone = clone $this;
+        $clone->IP_adres = $IP_adres;
 
         return $clone;
     }
@@ -119,10 +230,13 @@ class Foo
             static::validateInput($input);
         }
 
-        $foobar = $input->{'foo-bar'};
-        $gorod = (int)($input->{'город'});
+        $foo_bar = $input->{'foo-bar'};
+        $baz_qux = $input->{'baz qux'};
+        $Gorod = $input->{'Город'};
+        $nazvanie_iur_litsa = $input->{'название юр.лица'};
+        $IP_adres = $input->{'IP-адрес'};
 
-        $obj = new self($foobar, $gorod);
+        $obj = new self($foo_bar, $baz_qux, $Gorod, $nazvanie_iur_litsa, $IP_adres);
 
         return $obj;
     }
@@ -135,8 +249,11 @@ class Foo
     public function toJson() : array
     {
         $output = [];
-        $output['foo-bar'] = $this->foobar;
-        $output['город'] = $this->gorod;
+        $output['foo-bar'] = $this->foo_bar;
+        $output['baz qux'] = $this->baz_qux;
+        $output['Город'] = $this->Gorod;
+        $output['название юр.лица'] = $this->nazvanie_iur_litsa;
+        $output['IP-адрес'] = $this->IP_adres;
 
         return $output;
     }

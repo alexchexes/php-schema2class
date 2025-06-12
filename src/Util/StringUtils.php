@@ -19,10 +19,11 @@ class StringUtils
     public static function sanitizeIdentifier(string $input): string
     {
         $transliterated = self::transliterate($input);
-        // Remove everything that is not a letter, digit or underscore
-        $sanitized = preg_replace('/[^A-Za-z0-9_]+/', '', $transliterated);
+        // Replace everything that is not a letter, digit or underscore with underscore
+        $sanitized = preg_replace('/[^A-Za-z0-9_]+/', '_', $transliterated);
 
-        if ($sanitized === '') {
+        // fallback if empty or underscores-only
+        if ($sanitized === '' || ($sanitized === '_' && $input !== '_')) {
             $hash = substr(md5($input), 0, 8);
             $sanitized = '_' . $hash;
         }

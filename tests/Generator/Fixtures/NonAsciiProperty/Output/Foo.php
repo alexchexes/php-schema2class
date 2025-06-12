@@ -13,10 +13,18 @@ class Foo
      */
     private static array $schema = [
         'required' => [
-            'город',
+            'Город',
+            'название юр.лица',
+            'IP-адрес',
         ],
         'properties' => [
-            'город' => [
+            'Город' => [
+                'type' => 'string',
+            ],
+            'название юр.лица' => [
+                'type' => 'string',
+            ],
+            'IP-адрес' => [
                 'type' => 'string',
             ],
         ],
@@ -25,14 +33,28 @@ class Foo
     /**
      * @var string
      */
-    private string $gorod;
+    private string $Gorod;
 
     /**
-     * @param string $gorod
+     * @var string
      */
-    public function __construct(string $gorod)
+    private string $nazvanieIurLitsa;
+
+    /**
+     * @var string
+     */
+    private string $IPAdres;
+
+    /**
+     * @param string $Gorod
+     * @param string $nazvanieIurLitsa
+     * @param string $IPAdres
+     */
+    public function __construct(string $Gorod, string $nazvanieIurLitsa, string $IPAdres)
     {
-        $this->gorod = $gorod;
+        $this->Gorod = $Gorod;
+        $this->nazvanieIurLitsa = $nazvanieIurLitsa;
+        $this->IPAdres = $IPAdres;
     }
 
     /**
@@ -40,23 +62,75 @@ class Foo
      */
     public function getGorod() : string
     {
-        return $this->gorod;
+        return $this->Gorod;
     }
 
     /**
-     * @param string $gorod
+     * @return string
+     */
+    public function getNazvanieIurLitsa() : string
+    {
+        return $this->nazvanieIurLitsa;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIPAdres() : string
+    {
+        return $this->IPAdres;
+    }
+
+    /**
+     * @param string $Gorod
      * @return self
      */
-    public function withGorod(string $gorod) : self
+    public function withGorod(string $Gorod) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($gorod, self::$schema['properties']['город']);
+        $validator->validate($Gorod, self::$schema['properties']['Город']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
 
         $clone = clone $this;
-        $clone->gorod = $gorod;
+        $clone->Gorod = $Gorod;
+
+        return $clone;
+    }
+
+    /**
+     * @param string $nazvanieIurLitsa
+     * @return self
+     */
+    public function withNazvanieIurLitsa(string $nazvanieIurLitsa) : self
+    {
+        $validator = new \JsonSchema\Validator();
+        $validator->validate($nazvanieIurLitsa, self::$schema['properties']['название юр.лица']);
+        if (!$validator->isValid()) {
+            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        }
+
+        $clone = clone $this;
+        $clone->nazvanieIurLitsa = $nazvanieIurLitsa;
+
+        return $clone;
+    }
+
+    /**
+     * @param string $IPAdres
+     * @return self
+     */
+    public function withIPAdres(string $IPAdres) : self
+    {
+        $validator = new \JsonSchema\Validator();
+        $validator->validate($IPAdres, self::$schema['properties']['IP-адрес']);
+        if (!$validator->isValid()) {
+            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        }
+
+        $clone = clone $this;
+        $clone->IPAdres = $IPAdres;
 
         return $clone;
     }
@@ -82,9 +156,11 @@ class Foo
             static::validateInput($input);
         }
 
-        $gorod = $input->{'город'};
+        $Gorod = $input->{'Город'};
+        $nazvanieIurLitsa = $input->{'название юр.лица'};
+        $IPAdres = $input->{'IP-адрес'};
 
-        $obj = new self($gorod);
+        $obj = new self($Gorod, $nazvanieIurLitsa, $IPAdres);
 
         return $obj;
     }
@@ -97,7 +173,9 @@ class Foo
     public function toJson() : array
     {
         $output = [];
-        $output['город'] = $this->gorod;
+        $output['Город'] = $this->Gorod;
+        $output['название юр.лица'] = $this->nazvanieIurLitsa;
+        $output['IP-адрес'] = $this->IPAdres;
 
         return $output;
     }
