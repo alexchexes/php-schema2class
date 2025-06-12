@@ -1,0 +1,8 @@
+required:
+  - "foo-bar"
+  - "город"
+properties:
+  "foo-bar":
+    type: string
+  "город":
+    type: integer

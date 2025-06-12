@@ -1,0 +1,5 @@
+required:
+  - город
+properties:
+  город:
+    type: string
