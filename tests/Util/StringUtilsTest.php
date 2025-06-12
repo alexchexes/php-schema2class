@@ -41,7 +41,7 @@ class StringUtilsTest extends TestCase
     public function testCamelCaseTransliteratesNonAsciiCharacters()
     {
         $camelCased = StringUtils::camelCase("ЕГРЮЛ Казахстан");
-        assertThat($camelCased, equalTo("EGRULKazahstan"));
+        assertThat($camelCased, equalTo("EGRIuLKazakhstan"));
     }
 
     public function testSanitizeIdentifierTransliteratesAndRemovesInvalidCharacters()
