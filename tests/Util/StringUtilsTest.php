@@ -37,4 +37,40 @@ class StringUtilsTest extends TestCase
         $camelCased = StringUtils::camelCase("content-disposition");
         assertThat($camelCased, equalTo("contentDisposition"));
     }
+
+    public function testCamelCaseTransliteratesNonAsciiCharacters()
+    {
+        $camelCased = StringUtils::camelCase("ЕГРЮЛ Казахстан");
+        assertThat($camelCased, equalTo("EGRIuLKazakhstan"));
+    }
+
+    public function testSanitizeIdentifierTransliteratesAndRemovesInvalidCharacters()
+    {
+        $sanitized = StringUtils::sanitizeIdentifier("IP-адреса");
+        assertThat($sanitized, equalTo("IPadresa"));
+    }
+
+    public function testCapitalizeWordHandlesEmptyString()
+    {
+        $capitalized = StringUtils::capitalizeWord("");
+        assertThat($capitalized, equalTo(""));
+    }
+
+    public function testSanitizeIdentifierFallbackForInvalidString()
+    {
+        $sanitized = StringUtils::sanitizeIdentifier("!!!");
+        $this->assertMatchesRegularExpression('/^_[a-f0-9]{8}$/', $sanitized);
+    }
+
+    public function testCamelCaseFallbackForInvalidString()
+    {
+        $camel = StringUtils::camelCase("!!!");
+        $this->assertMatchesRegularExpression('/^_[a-f0-9]{8}$/', $camel);
+    }
+
+    public function testCamelCasePrefixesNumericNames()
+    {
+        $camel = StringUtils::camelCase("123name");
+        assertThat($camel, equalTo("_123name"));
+    }
 }
