@@ -131,7 +131,7 @@ class SchemaToClassTest extends TestCase
             ),
         );
         foreach ($expectedOutput as $file => $content) {
-            $filename      = join(DIRECTORY_SEPARATOR, [__DIR__, $file]);
+            $filename      = __DIR__ . '/' . $file;
             $actualContent = $writer->getWrittenFiles()[$filename];
 
             if (getenv("UPDATE_SNAPSHOTS") === "1") {
