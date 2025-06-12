@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "AddressAdminSuggestion": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value": { "type": "string" },
+        "unrestricted_value": { "type": "string" },
+        "data": { "$ref": "#/definitions/AddressAdminData" }
+      },
+      "required": ["data", "unrestricted_value", "value"]
+    },
+    "AddressAdminData": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "postal_code": { "type": ["null", "string"] },
+        "country": { "type": "string" },
+        "country_iso_code": { "type": "string" }
+      }
+    }
+  }
+}
