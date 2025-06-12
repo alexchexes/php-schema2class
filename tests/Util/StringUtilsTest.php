@@ -61,4 +61,16 @@ class StringUtilsTest extends TestCase
         $sanitized = StringUtils::sanitizeIdentifier("!!!");
         $this->assertMatchesRegularExpression('/^_[a-f0-9]{8}$/', $sanitized);
     }
+
+    public function testCamelCaseFallbackForInvalidString()
+    {
+        $camel = StringUtils::camelCase("!!!");
+        $this->assertMatchesRegularExpression('/^_[a-f0-9]{8}$/', $camel);
+    }
+
+    public function testCamelCasePrefixesNumericNames()
+    {
+        $camel = StringUtils::camelCase("123name");
+        assertThat($camel, equalTo("_123name"));
+    }
 }

@@ -70,14 +70,20 @@ class StringUtils
         $canonicalizedName = trim($canonicalizedName);
 
         if ($canonicalizedName === '') {
-            return '';
+            return '_' . substr(md5($input), 0, 8);
         }
 
         $words = preg_split('/\s+/', $canonicalizedName);
         $first = $words[0];
         $rest  = array_slice($words, 1);
 
-        return $first . join('', array_map(fn(string $w) => self::capitalizeWord($w), $rest));
+        $identifier = $first . join('', array_map(fn(string $w) => self::capitalizeWord($w), $rest));
+
+        if (preg_match('/^[0-9]/', $identifier)) {
+            $identifier = '_' . $identifier;
+        }
+
+        return $identifier;
     }
 }
 
