@@ -51,6 +51,11 @@ class SchemaToClass
             }
         }
 
+        // dereference schemas that consist only of a reference
+        if (isset($schema['$ref'])) {
+            $schema = $req->lookupSchema($schema['$ref']);
+        }
+
         if (isset($schema["enum"])) {
             $this->enumGenerator->schemaToEnum($req);
             return;
