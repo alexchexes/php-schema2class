@@ -1,0 +1,11 @@
+{
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "description": "- `LEGAL` - юрлицо\n- `INDIVIDUAL` - ИП"
+    },
+    "okved": { "type": "array", "items": { "type": "string" } }
+  },
+  "additionalProperties": false
+}
