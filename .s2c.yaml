@@ -1,5 +1,58 @@
-targetPHPVersion: "8.2"
+# targetPHPVersion: "8.2"
+# files:
+# - input: src/Spec/Spec.yaml
+#   className: Specification
+#   targetDirectory: src/Spec
+
+# SHORT:
+
+# targetPHPVersion: "7.4"
+# options:
+#   preservePropertyNames: true
+#   noGetters: true
+#   noSetters: true
+#   singleLineSchema: true
+#   noDescriptionsInSchema: true
+# files:
+#   - input: "D:\\repos\\vue-dadata\\json-schema\\address-partial.json"
+#     targetDirectory: "D:\\repos\\ispvrn\\code\\ExternalServices\\Dadata"
+#     targetNamespace: "Dadata"
+
+# FULL:
+
+# targetPHPVersion: "7.4"
+# options:
+#   preservePropertyNames: true
+#   # noGetters: true
+#   # noSetters: true
+# files:
+#   - input: "D:\\repos\\vue-dadata\\json-schema\\response.json"
+#     targetDirectory: "D:\\repos\\ispvrn\\code\\ExternalServices\\Dadata"
+#     targetNamespace: "Dadata"
+
+
+# targetPHPVersion: "8.2"
+# options:
+#   preservePropertyNames: true
+#   noGetters: true
+#   noSetters: true
+#   singleLineSchema: true
+#   noDescriptionsInSchema: true
+# files:
+#   - input: "D:\\repos\\vue-dadata\\json-schema\\response.json"
+#     targetDirectory: "temporary/Dadata/Response"
+#     targetNamespace: "Dadata"
+
+
+#test references 
+targetPHPVersion: "7.4"
+options:
+  preservePropertyNames: true
+  noGetters: true
+  noSetters: true
+  singleLineSchema: true
+  # noDescriptionsInSchema: true
 files:
-- input: src/Spec/Spec.yaml
-  className: Specification
-  targetDirectory: src/Spec
+  - input: "D:/repos/dadata-sdk/packages/api-types/json-schema/response.json"
+    targetDirectory: "D:/repos/ispvrn/code/TestClass"
+    targetNamespace: "TestClass"
