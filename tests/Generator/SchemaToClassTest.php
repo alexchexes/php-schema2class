@@ -190,15 +190,17 @@ class SchemaToClassTest extends TestCase
             $factory->build($writer, $output)->schemaToClass($req);
         }
 
-        $this->assertCount(
-            expectedCount: count($expectedOutput),
-            haystack: $writer->getWrittenFiles(),
-            message: sprintf(
-                'Expected file count [%s] does not match the written file count [%s]',
-                implode(', ', array_keys($expectedOutput)),
-                implode(', ', array_keys($writer->getWrittenFiles())),
-            ),
-        );
+        if (getenv('UPDATE_SNAPSHOTS') !== '1') {
+            $this->assertCount(
+                expectedCount: count($expectedOutput),
+                haystack: $writer->getWrittenFiles(),
+                message: sprintf(
+                    'Expected file count [%s] does not match the written file count [%s]',
+                    implode(', ', array_keys($expectedOutput)),
+                    implode(', ', array_keys($writer->getWrittenFiles())),
+                ),
+            );
+        }
         foreach ($expectedOutput as $file => $content) {
             $filename      = __DIR__ . '/' . $file;
             $actualContent = $writer->getWrittenFiles()[$filename];
