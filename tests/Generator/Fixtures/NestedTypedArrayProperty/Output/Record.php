@@ -155,6 +155,12 @@ class Record
      */
     public function withDataArray(array $dataArray) : self
     {
+        $validator = new \JsonSchema\Validator();
+        $validator->validate($dataArray, self::$schema['properties']['dataArray']);
+        if (!$validator->isValid()) {
+            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        }
+
         $clone = clone $this;
         $clone->dataArray = $dataArray;
 
@@ -178,6 +184,12 @@ class Record
      */
     public function withDataArrayNested(array $dataArrayNested) : self
     {
+        $validator = new \JsonSchema\Validator();
+        $validator->validate($dataArrayNested, self::$schema['properties']['dataArrayNested']);
+        if (!$validator->isValid()) {
+            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        }
+
         $clone = clone $this;
         $clone->dataArrayNested = $dataArrayNested;
 
@@ -201,6 +213,12 @@ class Record
      */
     public function withDataArrayAnyOf(array $dataArrayAnyOf) : self
     {
+        $validator = new \JsonSchema\Validator();
+        $validator->validate($dataArrayAnyOf, self::$schema['properties']['dataArrayAnyOf']);
+        if (!$validator->isValid()) {
+            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        }
+
         $clone = clone $this;
         $clone->dataArrayAnyOf = $dataArrayAnyOf;
 
@@ -224,6 +242,12 @@ class Record
      */
     public function withDataArrayNestedAnyOf(array $dataArrayNestedAnyOf) : self
     {
+        $validator = new \JsonSchema\Validator();
+        $validator->validate($dataArrayNestedAnyOf, self::$schema['properties']['dataArrayNestedAnyOf']);
+        if (!$validator->isValid()) {
+            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        }
+
         $clone = clone $this;
         $clone->dataArrayNestedAnyOf = $dataArrayNestedAnyOf;
 
