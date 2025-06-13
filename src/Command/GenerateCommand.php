@@ -48,6 +48,15 @@ class GenerateCommand extends Command
         $this->addOption("dry-run", null, InputOption::VALUE_NONE, "Print output to console instead of writing to files");
         $this->addOption("php5", '5', InputOption::VALUE_NONE, "Generate PHP5-compatible code (DEPRECATED: Use --target-php instead)");
         $this->addOption("class", "c", InputOption::VALUE_REQUIRED, "Target class name", "Object");
+        $this->addOption("disable-strict-types", null, InputOption::VALUE_NONE, "Do not emit strict_types declaration");
+        $this->addOption("treat-default-as-optional", null, InputOption::VALUE_NONE, "Treat properties with defaults as optional");
+        $this->addOption("inline-allof", null, InputOption::VALUE_NONE, "Inline allOf references");
+        $this->addOption("validator-expr", null, InputOption::VALUE_REQUIRED, "Expression used to create validator instance");
+        $this->addOption("preserve-property-names", null, InputOption::VALUE_NONE, "Do not convert property names to camelCase");
+        $this->addOption("no-getters", null, InputOption::VALUE_NONE, "Do not generate getter methods");
+        $this->addOption("no-setters", null, InputOption::VALUE_NONE, "Do not generate withX()/withoutX() methods");
+        $this->addOption("no-schema-descriptions", null, InputOption::VALUE_NONE, "Omit description fields from schema property");
+        $this->addOption("single-line-schema", null, InputOption::VALUE_NONE, "Store schema property as single line");
     }
 
     /**
@@ -81,6 +90,34 @@ class GenerateCommand extends Command
         $spec = new ValidatedSpecificationFilesItem($targetNamespace, $class, $targetDirectory);
         $opts = (new SpecificationOptions())
             ->withTargetPHPVersion($targetPHPVersion ?? "8.2.0");
+
+        if ($input->getOption("disable-strict-types")) {
+            $opts = $opts->withDisableStrictTypes(true);
+        }
+        if ($input->getOption("treat-default-as-optional")) {
+            $opts = $opts->withTreatValuesWithDefaultAsOptional(true);
+        }
+        if ($input->getOption("inline-allof")) {
+            $opts = $opts->withInlineAllofReferences(true);
+        }
+        if ($expr = $input->getOption("validator-expr")) {
+            $opts = $opts->withNewValidatorClassExpr((string)$expr);
+        }
+        if ($input->getOption("preserve-property-names")) {
+            $opts = $opts->withPreservePropertyNames(true);
+        }
+        if ($input->getOption("no-getters")) {
+            $opts = $opts->withNoGetters(true);
+        }
+        if ($input->getOption("no-setters")) {
+            $opts = $opts->withNoSetters(true);
+        }
+        if ($input->getOption("no-schema-descriptions")) {
+            $opts = $opts->withNoDescriptionsInSchema(true);
+        }
+        if ($input->getOption("single-line-schema")) {
+            $opts = $opts->withSingleLineSchema(true);
+        }
 
         if ($input->getOption("php5")) {
             $opts = $opts->withTargetPHPVersion("5.6.0");
