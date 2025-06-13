@@ -51,6 +51,12 @@ class Foo
      */
     public function withFoo(array $foo) : self
     {
+        $validator = new \JsonSchema\Validator();
+        $validator->validate($foo, self::$schema['properties']['foo']);
+        if (!$validator->isValid()) {
+            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        }
+
         $clone = clone $this;
         $clone->foo = $foo;
 
