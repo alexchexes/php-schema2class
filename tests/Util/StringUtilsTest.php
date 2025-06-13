@@ -50,6 +50,13 @@ class StringUtilsTest extends TestCase
         assertThat($sanitized, equalTo("IP_adresa"));
     }
 
+    public function testSanitizeIdentifierTransliteratesAndPlacesUnderscoresCorrectly()
+    {
+
+        $sanitized = StringUtils::sanitizeIdentifier("@@Беларусь");
+        assertThat($sanitized, equalTo("_Belarus"));
+    }
+
     public function testCapitalizeWordHandlesEmptyString()
     {
         $capitalized = StringUtils::capitalizeWord("");
