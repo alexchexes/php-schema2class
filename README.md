@@ -73,6 +73,8 @@ $user = \MyNamespace\Target\User::buildFromInput($userData);
 echo "Hello, " . $user->getGivenName() . "\n";
 ```
 
+* Note: It is not possible to generate classes without a namespace at the moment.
+
 ### Schemas with definitions
 
 If your schema contains a `definitions` section, classes are generated for every definition as well. References like `"$ref": "#/definitions/Address"` will use the generated `Address` class automatically.
@@ -80,15 +82,15 @@ If your schema contains a `definitions` section, classes are generated for every
 
 ## Compatibility
 
-This tool requires PHP 8.2 or newer to run.
+This tool requires PHP 8.2 or newer **to generate classes**.
 
-The generated code can be backwards-compatible up until PHP 5.6. Use the `--target-php` flag to set the desired PHP version that the generated code should be compatible with. When [using a configuration file](#using-configuration-files), use the `targetPHPVersion` property. 
+The generated code can be backwards-compatible **up until PHP 5.6**. Use the `--target-php` flag to set the desired PHP version that the generated code should be compatible with. When [using a configuration file](#using-configuration-files), use the `targetPHPVersion` property. 
 
 ## Creation result
 
 The generated classes have these features:
 
-- The class namespace can either be specified via command-line (`--target-namespace`), specification file (`targetNamespace`). If neither is specified, the generator will inspect the `composer.json` of your project, look for any PSR-4 configuration and infer the namespace from there.
+- The class namespace can either be specified via command-line (`--target-namespace`), specification file (`targetNamespace`). If neither is specified, the generator will inspect the `composer.json` of your project, look for any PSR-4 configuration and infer the namespace from there. Generating without namespaces is not supported now.
 - The main object's name is defined by the command-line (`--class`) or the specification file.
 - Sub-object's names are taken from the property name.
 - Array items are suffixed 'Item'.
@@ -96,6 +98,7 @@ The generated classes have these features:
 - The constructor has arguments for all required properties in the schema.
 - All properties are private, with getter methods for access, and explicit type declarations for the return value (in PHP5 mode, only PHPDoc is used).
 - Static function `buildFromInput(array $data)` accepts an array (using `json_decode('{}', true)`), validates it according to the schema and creates the full object tree as return value. An additional mapping step is not required.
+- To disable validation against schema, you can pass 2nd parameter as `false`, like this: `buildFromInput(array $data, false)`. Use at your own risk.
 - Function `toJson()` returns a plain array ready for `json_encode()`.
 - Writing to any object's properties is done immutably by using `withX()` (or `withoutX()` for optional values). This will return a new instance of that object with the value changed.
 
@@ -218,7 +221,13 @@ You can store your local configuration in this yaml file and start the generatio
 s2c generate:fromspec
 ```
 
-This will scan for `.s2c.yaml` in the current directory and use it's parameters. If you need to have different files for multiple schemas, you can provide a config file as a parameter.
+This will scan for `.s2c.yaml` in the current directory and use it's parameters. If you need to have different files for multiple schemas, you can provide a config file as a parameter:
+
+```bash
+s2c generate:fromspec my-config.yaml
+# or 
+s2c generate:fromspec my-config.json
+```
 
 ### Options
 
@@ -227,12 +236,12 @@ The specification `options` section (or the equivalent CLI flags) allows fine tu
 - `disableStrictTypes` – omit the `strict_types` declaration.
 - `treatValuesWithDefaultAsOptional` – treat properties with a default value as optional.
 - `inlineAllofReferences` – inline `allOf` references before generating classes.
-- `newValidatorClassExpr` – expression used to create a validator instance.
-- `preservePropertyNames` – keep property names as‐is instead of converting them to camelCase.
-- `noGetters` – generate public properties only, without getter methods.
-- `noSetters` – omit `withX()`/`withoutX()` methods.
-- `noDescriptionsInSchema` – drop `description` fields from the embedded schema.
-- `singleLineSchema` – store the validation schema as a single line in the generated class.
+- `newValidatorClassExpr` – expression used to create a validator instance, e.g. "new MyValidator()".
+- `preservePropertyNames` – keep property names as‐is instead of converting them to camelCase (they will be sanitized anyway).
+- `noGetters` – if *true*, no getter methods will be generated, and all properties will be `public`.
+- `noSetters` – don't generate `withX()`/`withoutX()` methods.
+- `noDescriptionsInSchema` – drop `description` fields from the embedded schema to reduce its size.
+- `singleLineSchema` – store the validation schema as a single line in the generated class to reduce length of .php file.
 
 See [`src/Spec/Spec.yaml`](src/Spec/Spec.yaml) for a full list of available options and their defaults.
 
