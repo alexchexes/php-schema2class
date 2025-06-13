@@ -190,30 +190,31 @@ class SchemaToClassTest extends TestCase
             $factory->build($writer, $output)->schemaToClass($req);
         }
 
+        $writtenFiles = $writer->getWrittenFiles();
+
         if (getenv('UPDATE_SNAPSHOTS') !== '1') {
             $this->assertCount(
                 expectedCount: count($expectedOutput),
-                haystack: $writer->getWrittenFiles(),
+                haystack: $writtenFiles,
                 message: sprintf(
                     'Expected file count [%s] does not match the written file count [%s]',
                     implode(', ', array_keys($expectedOutput)),
-                    implode(', ', array_keys($writer->getWrittenFiles())),
+                    implode(', ', array_keys($writtenFiles)),
                 ),
             );
-        }
-        foreach ($expectedOutput as $file => $content) {
-            $filename      = __DIR__ . '/' . $file;
-            $actualContent = $writer->getWrittenFiles()[$filename];
 
-            if (getenv("UPDATE_SNAPSHOTS") === "1") {
-                $outputFilename = join(DIRECTORY_SEPARATOR, [__DIR__, "Fixtures", $name, "Output", $file]);
-                file_put_contents($outputFilename, $actualContent . "\n");
-            } else {
+            foreach ($expectedOutput as $file => $content) {
+                $filename      = __DIR__ . '/' . $file;
+                $actualContent = $writtenFiles[$filename];
                 assertThat($actualContent, equalTo($content));
             }
-        }
+        } else {
+            foreach ($writtenFiles as $filename => $content) {
+                $file          = basename($filename);
+                $outputFilename = join(DIRECTORY_SEPARATOR, [__DIR__, 'Fixtures', $name, 'Output', $file]);
+                file_put_contents($outputFilename, $content . "\n");
+            }
 
-        if (getenv('UPDATE_SNAPSHOTS') === '1') {
             $this->addToAssertionCount(1);
         }
     }
