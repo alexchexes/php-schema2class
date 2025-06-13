@@ -8,6 +8,7 @@ use Helmich\Schema2Class\Generator\Property\BooleanProperty;
 use Helmich\Schema2Class\Generator\Property\DefaultPropertyDecorator;
 use Helmich\Schema2Class\Generator\Property\NumberProperty;
 use Helmich\Schema2Class\Generator\Property\ObjectArrayProperty;
+use Helmich\Schema2Class\Generator\Property\TypedArrayProperty;
 use Helmich\Schema2Class\Generator\Property\PrimitiveArrayProperty;
 use Helmich\Schema2Class\Generator\Property\DateProperty;
 use Helmich\Schema2Class\Generator\Property\IntegerProperty;
@@ -41,6 +42,7 @@ class PropertyBuilder
         NestedObjectProperty::class,
         ObjectArrayProperty::class,
         ReferenceArrayProperty::class,
+        TypedArrayProperty::class,
         PrimitiveArrayProperty::class,
         BooleanProperty::class,
         ReferenceProperty::class,
