@@ -15,6 +15,7 @@ use Helmich\Schema2Class\Generator\Property\PrimitiveArrayProperty;
 use Helmich\Schema2Class\Generator\Property\ObjectArrayProperty;
 use Helmich\Schema2Class\Generator\Property\ReferenceArrayProperty;
 use Helmich\Schema2Class\Generator\Property\NullablePropertyDecorator;
+use Helmich\Schema2Class\Generator\Property\PropertyDecoratorInterface;
 use Helmich\Schema2Class\Generator\Property\TypedArrayProperty;
 use Helmich\Schema2Class\Util\StringUtils;
 use Laminas\Code\Generator\DocBlock\Tag\GenericTag;
@@ -390,9 +391,7 @@ class Generator
         $typeHint      = $requiredProperty->typeHint($this->generatorRequest->getTargetPHPVersion());
 
         $base = $property;
-        while ($base instanceof OptionalPropertyDecorator
-            || $base instanceof DefaultPropertyDecorator
-            || $base instanceof NullablePropertyDecorator) {
+        while ($base instanceof PropertyDecoratorInterface) {
             $base = $base->unwrap();
         }
 
