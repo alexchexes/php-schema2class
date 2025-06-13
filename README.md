@@ -4,7 +4,7 @@ Build PHP classes from [JSON schemas][jsonschema] automatically.
 
 ## Example
 
-Consider a simple JSON schema (ironically stored in YAML format), stored in a file `example.yaml`:
+Consider a simple JSON schema (shown here in YAML format), stored in a file `example.yaml`:
 
 ```yaml
 required:
@@ -24,7 +24,26 @@ properties:
       country:
         type: string
       city:
-        type: string 
+        type: string
+```
+
+The same schema can of course be written in JSON:
+
+```json
+{
+  "required": ["givenName", "familyName"],
+  "properties": {
+    "givenName": {"type": "string"},
+    "familyName": {"type": "string"},
+    "hobbies": {"type": "array", "items": {"type": "string"}},
+    "location": {
+      "properties": {
+        "country": {"type": "string"},
+        "city": {"type": "string"}
+      }
+    }
+  }
+}
 ```
 
 Using this converter, you can automatically generate PHP classes from this schema
@@ -32,6 +51,8 @@ with accessor and conversion functions:
 
 ```bash
 $ vendor/bin/s2c generate:fromschema --class User ./example.yaml src/Target
+# or
+$ vendor/bin/s2c generate:fromschema --class User ./example.json src/Target
 ```
 
 This command will automatically try to infer a PHP target namespace from your `composer.json` file and automatically create the appropriate PHP classes:
@@ -51,6 +72,11 @@ $user = \MyNamespace\Target\User::buildFromInput($userData);
 
 echo "Hello, " . $user->getGivenName() . "\n";
 ```
+
+### Schemas with definitions
+
+If your schema contains a `definitions` section, classes are generated for every definition as well. References like `"$ref": "#/definitions/Address"` will use the generated `Address` class automatically.
+
 
 ## Compatibility
 
@@ -193,5 +219,44 @@ s2c generate:fromspec
 ```
 
 This will scan for `.s2c.yaml` in the current directory and use it's parameters. If you need to have different files for multiple schemas, you can provide a config file as a parameter.
+
+### Options
+
+The specification `options` section (or the equivalent CLI flags) allows fine tuning of the generated classes.  Important options include:
+
+- `disableStrictTypes` – omit the `strict_types` declaration.
+- `treatValuesWithDefaultAsOptional` – treat properties with a default value as optional.
+- `inlineAllofReferences` – inline `allOf` references before generating classes.
+- `newValidatorClassExpr` – expression used to create a validator instance.
+- `preservePropertyNames` – keep property names as‐is instead of converting them to camelCase.
+- `noGetters` – generate public properties only, without getter methods.
+- `noSetters` – omit `withX()`/`withoutX()` methods.
+- `noDescriptionsInSchema` – drop `description` fields from the embedded schema.
+- `singleLineSchema` – store the validation schema as a single line in the generated class.
+
+See [`src/Spec/Spec.yaml`](src/Spec/Spec.yaml) for a full list of available options and their defaults.
+
+### Programmatic usage
+
+The generator can be invoked from PHP code without the CLI.  Create a `GeneratorRequest` and pass it to `SchemaToClassFactory`:
+
+```php
+use Helmich\Schema2Class\Generator\GeneratorRequest;
+use Helmich\Schema2Class\Generator\SchemaLoader;
+use Helmich\Schema2Class\Generator\SchemaToClassFactory;
+use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
+use Helmich\Schema2Class\Spec\SpecificationOptions;
+use Symfony\Component\Console\Output\NullOutput;
+
+$schema = (new SchemaLoader())->loadSchema('example.json');
+$request = new GeneratorRequest(
+    $schema,
+    new ValidatedSpecificationFilesItem('My\\Target', 'User', 'src/Target'),
+    new SpecificationOptions()
+);
+$factory = new SchemaToClassFactory();
+$factory->build(new \Helmich\Schema2Class\Writer\FileWriter(new NullOutput()), new NullOutput())
+    ->schemaToClass($request);
+```
 
 [jsonschema]: http://json-schema.org/

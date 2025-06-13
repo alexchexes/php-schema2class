@@ -6,38 +6,48 @@ properties:
       - type: integer
         enum: [5, 7, 8]
       - type: string
+
   files:
     type: array
     items:
       required:
         - input
         - targetDirectory
+
       properties:
         input:
           type: string
+
         className:
           type: string
+
         targetDirectory:
           type: string
+
         targetNamespace:
           type: string
+
   options:
     properties:
       disableStrictTypes:
         type: boolean
         default: false
+
       treatValuesWithDefaultAsOptional:
         type: boolean
         default: false
+
       inlineAllofReferences:
         type: boolean
         default: false
+
       targetPHPVersion:
         oneOf:
           - type: integer
             enum: [5, 7, 8]
           - type: string
         default: 8.2.0
+
       newValidatorClassExpr:
         type: string
         description: |
