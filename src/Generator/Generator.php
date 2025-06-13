@@ -11,6 +11,12 @@ use Helmich\Schema2Class\Generator\Property\OptionalPropertyDecorator;
 use Helmich\Schema2Class\Generator\Property\PropertyCollection;
 use Helmich\Schema2Class\Generator\Property\PropertyCollectionFilterFactory;
 use Helmich\Schema2Class\Generator\Property\PropertyInterface;
+use Helmich\Schema2Class\Generator\Property\PrimitiveArrayProperty;
+use Helmich\Schema2Class\Generator\Property\ObjectArrayProperty;
+use Helmich\Schema2Class\Generator\Property\ReferenceArrayProperty;
+use Helmich\Schema2Class\Generator\Property\NullablePropertyDecorator;
+use Helmich\Schema2Class\Generator\Property\PropertyDecoratorInterface;
+use Helmich\Schema2Class\Generator\Property\TypedArrayProperty;
 use Helmich\Schema2Class\Util\StringUtils;
 use Laminas\Code\Generator\DocBlock\Tag\GenericTag;
 use Laminas\Code\Generator\DocBlock\Tag\ParamTag;
@@ -384,7 +390,18 @@ class Generator
         $annotatedType = $requiredProperty->typeAnnotation();
         $typeHint      = $requiredProperty->typeHint($this->generatorRequest->getTargetPHPVersion());
 
-        if ($property->isComplex()) {
+        $base = $property;
+        while ($base instanceof PropertyDecoratorInterface) {
+            /** @var PropertyDecoratorInterface $base */
+            $base = $base->unwrap();
+        }
+
+        $isArray = $base instanceof PrimitiveArrayProperty
+            || $base instanceof ObjectArrayProperty
+            || $base instanceof ReferenceArrayProperty
+            || $base instanceof TypedArrayProperty;
+
+        if ($property->isComplex() && !$isArray) {
             $setterValidation = "";
         } else {
             $setterValidation = "\$validator = new \JsonSchema\Validator();

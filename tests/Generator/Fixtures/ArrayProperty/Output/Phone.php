@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ns\RefList;
+namespace Ns\ArrayProperty;
 
-class Foo
+class Phone
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -12,23 +12,18 @@ class Foo
      * @var array
      */
     private static array $schema = [
-        'required' => [
-            'foo_bar',
-        ],
+        'type' => 'object',
         'properties' => [
             'foo' => [
-                'type' => 'array',
-                'items' => [
-                    '$ref' => '#/properties/address',
-                ],
+                'type' => 'string',
             ],
         ],
     ];
 
     /**
-     * @var Helmich\Schema2Class\Example\CustomerAddress[]|null
+     * @var string|null
      */
-    private ?array $foo = null;
+    private ?string $foo = null;
 
     /**
      *
@@ -38,18 +33,18 @@ class Foo
     }
 
     /**
-     * @return Helmich\Schema2Class\Example\CustomerAddress[]|null
+     * @return string|null
      */
-    public function getFoo() : ?array
+    public function getFoo() : ?string
     {
         return $this->foo ?? null;
     }
 
     /**
-     * @param Helmich\Schema2Class\Example\CustomerAddress[] $foo
+     * @param string $foo
      * @return self
      */
-    public function withFoo(array $foo) : self
+    public function withFoo(string $foo) : self
     {
         $validator = new \JsonSchema\Validator();
         $validator->validate($foo, self::$schema['properties']['foo']);
@@ -79,10 +74,10 @@ class Foo
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
-     * @return Foo Created instance
+     * @return Phone Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : Foo
+    public static function buildFromInput(array|object $input, bool $validate = true) : Phone
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
@@ -95,7 +90,7 @@ class Foo
             static::validateInput($input);
         }
 
-        $foo = isset($input->{'foo'}) ? array_map(fn(array|object $i): Helmich\Schema2Class\Example\CustomerAddress => Helmich\Schema2Class\Example\CustomerAddress::buildFromInput($i, $validate), $input->{'foo'}) : null;
+        $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
 
         $obj = new self();
         $obj->foo = $foo;
@@ -111,7 +106,7 @@ class Foo
     {
         $output = [];
         if (isset($this->foo)) {
-            $output['foo'] = array_map(fn(Helmich\Schema2Class\Example\CustomerAddress $i): array => $i->toJson(), $this->foo);
+            $output['foo'] = $this->foo;
         }
 
         return $output;

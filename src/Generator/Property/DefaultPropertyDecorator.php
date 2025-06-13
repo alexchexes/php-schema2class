@@ -6,7 +6,7 @@ namespace Helmich\Schema2Class\Generator\Property;
 use Helmich\Schema2Class\Generator\SchemaToClass;
 use Laminas\Code\Generator\PropertyValueGenerator;
 
-class DefaultPropertyDecorator implements PropertyInterface
+class DefaultPropertyDecorator implements PropertyDecoratorInterface
 {
     use CodeFormatting;
 

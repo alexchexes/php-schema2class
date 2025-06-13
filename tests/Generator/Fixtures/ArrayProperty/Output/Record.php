@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ns\RefList;
+namespace Ns\ArrayProperty;
 
-class Foo
+class Record
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -12,23 +12,33 @@ class Foo
      * @var array
      */
     private static array $schema = [
-        'required' => [
-            'foo_bar',
-        ],
+        'type' => 'object',
         'properties' => [
-            'foo' => [
+            'dataArray' => [
                 'type' => 'array',
                 'items' => [
-                    '$ref' => '#/properties/address',
+                    '$ref' => '#/definitions/Phone',
+                ],
+                'minItems' => 1,
+                'maxItems' => 1,
+            ],
+        ],
+        'definitions' => [
+            'Phone' => [
+                'type' => 'object',
+                'properties' => [
+                    'foo' => [
+                        'type' => 'string',
+                    ],
                 ],
             ],
         ],
     ];
 
     /**
-     * @var Helmich\Schema2Class\Example\CustomerAddress[]|null
+     * @var Phone[]|null
      */
-    private ?array $foo = null;
+    private ?array $dataArray = null;
 
     /**
      *
@@ -38,27 +48,27 @@ class Foo
     }
 
     /**
-     * @return Helmich\Schema2Class\Example\CustomerAddress[]|null
+     * @return Phone[]|null
      */
-    public function getFoo() : ?array
+    public function getDataArray() : ?array
     {
-        return $this->foo ?? null;
+        return $this->dataArray ?? null;
     }
 
     /**
-     * @param Helmich\Schema2Class\Example\CustomerAddress[] $foo
+     * @param Phone[] $dataArray
      * @return self
      */
-    public function withFoo(array $foo) : self
+    public function withDataArray(array $dataArray) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($foo, self::$schema['properties']['foo']);
+        $validator->validate($dataArray, self::$schema['properties']['dataArray']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
 
         $clone = clone $this;
-        $clone->foo = $foo;
+        $clone->dataArray = $dataArray;
 
         return $clone;
     }
@@ -66,10 +76,10 @@ class Foo
     /**
      * @return self
      */
-    public function withoutFoo() : self
+    public function withoutDataArray() : self
     {
         $clone = clone $this;
-        unset($clone->foo);
+        unset($clone->dataArray);
 
         return $clone;
     }
@@ -79,10 +89,10 @@ class Foo
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
-     * @return Foo Created instance
+     * @return Record Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : Foo
+    public static function buildFromInput(array|object $input, bool $validate = true) : Record
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
@@ -95,10 +105,10 @@ class Foo
             static::validateInput($input);
         }
 
-        $foo = isset($input->{'foo'}) ? array_map(fn(array|object $i): Helmich\Schema2Class\Example\CustomerAddress => Helmich\Schema2Class\Example\CustomerAddress::buildFromInput($i, $validate), $input->{'foo'}) : null;
+        $dataArray = isset($input->{'dataArray'}) ? array_map(fn(array|object $i): Phone => Phone::buildFromInput($i, $validate), $input->{'dataArray'}) : null;
 
         $obj = new self();
-        $obj->foo = $foo;
+        $obj->dataArray = $dataArray;
         return $obj;
     }
 
@@ -110,8 +120,8 @@ class Foo
     public function toJson() : array
     {
         $output = [];
-        if (isset($this->foo)) {
-            $output['foo'] = array_map(fn(Helmich\Schema2Class\Example\CustomerAddress $i): array => $i->toJson(), $this->foo);
+        if (isset($this->dataArray)) {
+            $output['dataArray'] = array_map(fn(Phone $i): array => $i->toJson(), $this->dataArray);
         }
 
         return $output;

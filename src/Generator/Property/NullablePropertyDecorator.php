@@ -8,7 +8,7 @@ use Composer\Semver\Semver;
 use Helmich\Schema2Class\Generator\SchemaToClass;
 use Laminas\Code\Generator\PropertyValueGenerator;
 
-class NullablePropertyDecorator implements PropertyInterface
+class NullablePropertyDecorator implements PropertyDecoratorInterface
 {
     use CodeFormatting;
 
