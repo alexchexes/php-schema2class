@@ -248,16 +248,16 @@ See [`src/Spec/Spec.yaml`](src/Spec/Spec.yaml) for a full list of available opti
 ### Programmatic usage
 
 The generator can be invoked from PHP code without the CLI.  The easiest way is
-to use the `SchemaGenerator` class which accepts either a specification file or
+to use the `Schema2Class` class which accepts either a specification file or
 an array describing the configuration:
 
 ```php
-use Helmich\Schema2Class\SchemaGenerator;
+use Helmich\Schema2Class\Schema2Class;
 
-$generator = new SchemaGenerator();
+$generator = new Schema2Class();
 $generator->generateFromSpecFile('.s2c.yaml');
 // or
-$generator->generateFromArray([
+$generator->generateFromSpecArray([
     'files' => [
         [
             'input' => 'example.json',

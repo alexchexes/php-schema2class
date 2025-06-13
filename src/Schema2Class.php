@@ -22,7 +22,7 @@ use Symfony\Component\Yaml\Yaml;
  * This class can load a StructBuilder specification from a YAML file or from
  * an associative array and generate all classes described therein.
  */
-class SchemaGenerator
+class Schema2Class
 {
     use GenerateFromRequestTrait;
 
@@ -47,14 +47,14 @@ class SchemaGenerator
     {
         $output = $output ?? new NullOutput();
         $config = Yaml::parse(file_get_contents($specFile));
-        $this->generateFromArray($config, $output);
+        $this->generateFromSpecArray($config, $output);
     }
 
     /**
      * Generate classes from a specification provided as an associative array.
      * The array structure is the same as used in .s2c.yaml files.
      */
-    public function generateFromArray(array $config, ?OutputInterface $output = null): void
+    public function generateFromSpecArray(array $config, ?OutputInterface $output = null): void
     {
         $output = $output ?? new NullOutput();
 
