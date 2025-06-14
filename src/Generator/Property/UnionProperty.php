@@ -99,12 +99,9 @@ class UnionProperty extends AbstractProperty
     
             // If this arm is an “array” type, prefix its test with is_array(...)
             if (
-                ! $this->generatorRequest->isAtLeastPHP("8.0")
-                && (
-                    $subProp instanceof ReferenceArrayProperty
-                    || $subProp instanceof ObjectArrayProperty
-                    || $subProp instanceof PrimitiveArrayProperty
-                )
+                $subProp instanceof ReferenceArrayProperty
+                || $subProp instanceof ObjectArrayProperty
+                || $subProp instanceof PrimitiveArrayProperty
             ) {
                 $discriminator = "is_array({$accessor}) && ({$discriminator})";
             }

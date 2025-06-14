@@ -136,13 +136,4 @@ class SchemaToEnum
     }
 
 
-    /**
-     * @param string $value
-     * @return string
-     */
-    private static function enumCaseNameString(string $value): string
-    {
-        return preg_replace('/[^a-zA-Z0-9]/', '', $value);
-    }
-
 }

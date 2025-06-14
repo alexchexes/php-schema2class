@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Command;
 
+use Helmich\Schema2Class\Generator\GeneratorException;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\NamespaceInferrer;
 use Helmich\Schema2Class\Generator\SchemaToClassFactory;
