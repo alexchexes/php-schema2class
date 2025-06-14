@@ -106,4 +106,38 @@ class Schema2Class
             $this->generateFromRequest($baseRequest, $output, false);
         }
     }
+
+    /**
+     * Generate classes from a JSON schema that is already parsed into an array.
+     *
+     * This bypasses reading the schema from disk and can be useful if the
+     * schema was retrieved from another source, e.g. a database or network.
+     */
+    public function generateFromSchema(
+        array $schema,
+        string $className,
+        string $targetDirectory,
+        ?string $targetNamespace = null,
+        ?SpecificationOptions $options = null,
+        ?OutputInterface $output = null
+    ): void {
+        $output = $output ?? new NullOutput();
+        $options = $options ?? new SpecificationOptions();
+
+        $targetNamespace = $this->inferNamespace($output, $targetNamespace, $targetDirectory, $className);
+        $output->writeln(
+            "using target namespace <comment>{$targetNamespace}</comment> in directory <comment>{$targetDirectory}</comment>"
+        );
+
+        $tpv = $options->getTargetPHPVersion();
+        if (is_int($tpv)) {
+            $tpv = $tpv === 5 ? '5.6.0' : '7.4.0';
+        }
+        $options = $options->withTargetPHPVersion($tpv);
+
+        $spec = new ValidatedSpecificationFilesItem($targetNamespace, $className, $targetDirectory);
+        $req  = new GeneratorRequest($schema, $spec, $options);
+
+        $this->generateFromRequest($req, $output, false);
+    }
 }
