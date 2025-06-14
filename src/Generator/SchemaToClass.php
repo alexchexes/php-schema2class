@@ -177,13 +177,15 @@ class SchemaToClass
 
         // Do some corrections because the Zend code generation library is stupid.
         $content = preg_replace('/ : \\\\self/', ' : self', $content);
+
+        // Remove current namespace from all class names
         $content = preg_replace('/\\\\' . preg_quote($req->getTargetNamespace(), '/') . '\\\\/', '', $content);
 
+        // Remove "\" before class names that we just generated (as they're all in the current namespace)
         $ownClasses = $req->getGeneratedClassNames();
         if ($ownClasses) {
             $escapedOwnClasses = array_map(fn ($n) => preg_quote($n, '/'), $ownClasses);
             $pattern = '/\\\\(' . join('|', $escapedOwnClasses) . ')(?=\s|[,;)]|$)/';
-            preg_match($pattern, $content, $matches);
             $content = preg_replace($pattern, '$1', $content);
         }
 
