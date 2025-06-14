@@ -8,12 +8,17 @@ use Helmich\Schema2Class\Generator\DefinitionsReferenceLookup;
 use Helmich\Schema2Class\Generator\GeneratorException;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\NamespaceInferrer;
+use Helmich\Schema2Class\Generator\SchemaToClassFactory;
 use Helmich\Schema2Class\Generator\Property\NestedObjectProperty;
 use Helmich\Schema2Class\Writer\DebugWriter;
 use Helmich\Schema2Class\Writer\FileWriter;
 use Helmich\Schema2Class\Writer\WriterInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * @property NamespaceInferrer $namespaceInferrer
+ * @property SchemaToClassFactory $s2c
+ */
 trait GenerateFromRequestTrait
 {
     /**
@@ -40,7 +45,6 @@ trait GenerateFromRequestTrait
         $output->writeln('target namespace not given. inferring from directory…');
 
         try {
-            /** @var NamespaceInferrer $this->namespaceInferrer */
             return $this->namespaceInferrer->inferNamespaceFromTargetDirectory($targetDir);
         } catch (GeneratorException $e) {
             $output->writeln(
