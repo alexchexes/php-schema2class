@@ -1,0 +1,7 @@
+required:
+  - "foo-bar"
+properties:
+  "foo-bar":
+    type: string
+  "foo bar":
+    type: string
