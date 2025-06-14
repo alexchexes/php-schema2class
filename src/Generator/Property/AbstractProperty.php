@@ -9,7 +9,7 @@ use Helmich\Schema2Class\Generator\SchemaToClass;
 use Helmich\Schema2Class\Util\StringUtils;
 use Laminas\Code\Generator\PropertyValueGenerator;
 
-abstract class AbstractProperty implements PropertyInterface
+abstract class AbstractProperty implements PropertyInterface, RenameablePropertyInterface
 {
     protected string $key;
 

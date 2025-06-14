@@ -8,6 +8,7 @@ use Helmich\Schema2Class\Codegen\PropertyGenerator;
 use Helmich\Schema2Class\Generator\Property\IntersectProperty;
 use Helmich\Schema2Class\Generator\Property\NestedObjectProperty;
 use Helmich\Schema2Class\Generator\Property\PropertyCollection;
+use Helmich\Schema2Class\Generator\Property\RenameablePropertyInterface;
 use Helmich\Schema2Class\Writer\WriterInterface;
 use Laminas\Code\DeclareStatement;
 use Laminas\Code\Generator\ClassGenerator;
@@ -205,7 +206,7 @@ class SchemaToClass
                 $unique = $base . '_' . $i;
                 $i++;
             }
-            if ($unique !== $base && method_exists($property, 'setName')) {
+            if ($unique !== $base && $property instanceof RenameablePropertyInterface) {
                 $property->setName($unique);
             }
             $used[] = $unique;

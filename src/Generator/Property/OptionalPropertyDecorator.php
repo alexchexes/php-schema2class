@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Property;
 
-class OptionalPropertyDecorator extends NullablePropertyDecorator
+class OptionalPropertyDecorator extends NullablePropertyDecorator implements RenameablePropertyInterface
 {
     use CodeFormatting;
 

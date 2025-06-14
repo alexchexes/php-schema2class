@@ -8,7 +8,7 @@ use Composer\Semver\Semver;
 use Helmich\Schema2Class\Generator\SchemaToClass;
 use Laminas\Code\Generator\PropertyValueGenerator;
 
-class NullablePropertyDecorator implements PropertyDecoratorInterface
+class NullablePropertyDecorator implements PropertyDecoratorInterface, RenameablePropertyInterface
 {
     use CodeFormatting;
 
@@ -184,5 +184,12 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface
     public function formatValue(mixed $value): PropertyValueGenerator
     {
         return $this->inner->formatValue($value);
+    }
+
+    public function setName(string $name): void
+    {
+        if ($this->inner instanceof RenameablePropertyInterface) {
+            $this->inner->setName($name);
+        }
     }
 }
