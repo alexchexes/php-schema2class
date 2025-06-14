@@ -13,10 +13,13 @@ use Laminas\Code\DeclareStatement;
 use Laminas\Code\Generator\ClassGenerator;
 use Laminas\Code\Generator\DocBlock\Tag\GenericTag;
 use Laminas\Code\Generator\DocBlockGenerator;
-use Laminas\Code\Generator\EnumGenerator\EnumGenerator;
 use Laminas\Code\Generator\FileGenerator;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Low-level generator that converts a prepared GeneratorRequest into PHP classes.
+ * For a simpler, one-call solution use {@see \Helmich\Schema2Class\Schema2Class}.
+ */
 class SchemaToClass
 {
     private WriterInterface $writer;
