@@ -256,7 +256,9 @@ use Helmich\Schema2Class\Schema2Class;
 
 $generator = new Schema2Class();
 $generator->generateFromSpecFile('.s2c.yaml');
-// or
+
+// OR
+
 $generator->generateFromSpecArray([
     'files' => [
         [
@@ -267,9 +269,19 @@ $generator->generateFromSpecArray([
         ],
     ],
 ]);
+
+// OR
+
+$schema = [
+    'required' => ['name'],
+    'properties' => [
+        'name' => ['type' => 'string']
+    ],
+]
+$generator->generateFromSchema($schema, 'MyClass', 'MyDir', 'MyNamespace');
 ```
 
-If you need more control you can still create a `GeneratorRequest` and pass it
+If you need more control you can create a `GeneratorRequest` and pass it
 to `SchemaToClassFactory` directly:
 
 ```php
