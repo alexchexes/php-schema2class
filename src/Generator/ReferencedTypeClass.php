@@ -17,13 +17,13 @@ readonly class ReferencedTypeClass implements ReferencedType
 
     public function typeAnnotation(GeneratorRequest $req): string
     {
-        // No leading backslash: class name resolves to current namespace
-        return $this->className;
+        // Use fully-qualified class name so annotations resolve correctly
+        return '\\' . ltrim($this->className, '\\');
     }
 
     public function typeHint(GeneratorRequest $req): ?string
     {
-        return $this->className;
+        return '\\' . ltrim($this->className, '\\');
     }
 
     public function serializedInputTypeHint(GeneratorRequest $req): ?string
@@ -38,21 +38,24 @@ readonly class ReferencedTypeClass implements ReferencedType
 
     public function typeAssertionExpr(GeneratorRequest $req, string $expr): string
     {
-        return "({$expr}) instanceof {$this->className}";
+        $class = '\\' . ltrim($this->className, '\\');
+        return "({$expr}) instanceof {$class}";
     }
 
     public function inputAssertionExpr(GeneratorRequest $req, string $expr): string
     {
-        return "{$this->className}::validateInput({$expr}, true)";
+        $class = '\\' . ltrim($this->className, '\\');
+        return "{$class}::validateInput({$expr}, true)";
     }
 
     public function inputMappingExpr(GeneratorRequest $req, string $expr, ?string $validateExpr): string
     {
         $validateExpr = $validateExpr ?? '$validate';
+        $class = '\\' . ltrim($this->className, '\\');
         if ($req->isAtLeastPHP('8.0')) {
-            return "{$this->className}::buildFromInput({$expr}, {$validateExpr})";
+            return "{$class}::buildFromInput({$expr}, {$validateExpr})";
         }
-        return "{$this->className}::buildFromInput({$expr}, {$validateExpr})";
+        return "{$class}::buildFromInput({$expr}, {$validateExpr})";
     }
 
     public function outputMappingExpr(GeneratorRequest $req, string $expr): string

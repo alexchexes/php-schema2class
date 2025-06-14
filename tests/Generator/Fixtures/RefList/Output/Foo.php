@@ -26,7 +26,7 @@ class Foo
     ];
 
     /**
-     * @var Helmich\Schema2Class\Example\CustomerAddress[]|null
+     * @var \Helmich\Schema2Class\Example\CustomerAddress[]|null
      */
     private ?array $foo = null;
 
@@ -38,7 +38,7 @@ class Foo
     }
 
     /**
-     * @return Helmich\Schema2Class\Example\CustomerAddress[]|null
+     * @return \Helmich\Schema2Class\Example\CustomerAddress[]|null
      */
     public function getFoo() : ?array
     {
@@ -46,7 +46,7 @@ class Foo
     }
 
     /**
-     * @param Helmich\Schema2Class\Example\CustomerAddress[] $foo
+     * @param \Helmich\Schema2Class\Example\CustomerAddress[] $foo
      * @return self
      */
     public function withFoo(array $foo) : self
@@ -77,12 +77,12 @@ class Foo
     /**
      * Builds a new instance from an input array
      *
-     * @param array|object $input Input data
+     * @param mixed $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
      * @return Foo Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : Foo
+    public static function buildFromInput(mixed $input, bool $validate = true) : Foo
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
@@ -95,7 +95,7 @@ class Foo
             static::validateInput($input);
         }
 
-        $foo = isset($input->{'foo'}) ? array_map(fn(array|object $i): Helmich\Schema2Class\Example\CustomerAddress => Helmich\Schema2Class\Example\CustomerAddress::buildFromInput($i, $validate), $input->{'foo'}) : null;
+        $foo = isset($input->{'foo'}) ? array_map(fn(array|object $i): \Helmich\Schema2Class\Example\CustomerAddress => \Helmich\Schema2Class\Example\CustomerAddress::buildFromInput($i, $validate), $input->{'foo'}) : null;
 
         $obj = new self();
         $obj->foo = $foo;
@@ -111,7 +111,7 @@ class Foo
     {
         $output = [];
         if (isset($this->foo)) {
-            $output['foo'] = array_map(fn(Helmich\Schema2Class\Example\CustomerAddress $i): array => $i->toJson(), $this->foo);
+            $output['foo'] = array_map(fn(\Helmich\Schema2Class\Example\CustomerAddress $i): array => $i->toJson(), $this->foo);
         }
 
         return $output;

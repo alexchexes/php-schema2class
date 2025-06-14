@@ -125,7 +125,7 @@ class Generator
 
         $paramType = null;
         if ($this->generatorRequest->isAtLeastPHP("8.0")) {
-            $paramType = "array|object";
+            $paramType = 'mixed';
         }
 
         $validationParam = new ParameterGenerator(
@@ -138,7 +138,7 @@ class Generator
             "Builds a new instance from an input array",
             null,
             [
-                new ParamTag($inputVarName, ["array|object"], "Input data"),
+                new ParamTag($inputVarName, ['mixed'], "Input data"),
                 new ParamTag("validate", ["bool"], "Set this to false to skip validation; use at own risk"),
                 new ReturnTag([$this->generatorRequest->getTargetClass()], "Created instance"),
                 new ThrowsTag("\\InvalidArgumentException"),

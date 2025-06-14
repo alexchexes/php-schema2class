@@ -109,12 +109,12 @@ class Foo
     /**
      * Builds a new instance from an input array
      *
-     * @param array|object $input Input data
+     * @param mixed $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
      * @return Foo Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : Foo
+    public static function buildFromInput(mixed $input, bool $validate = true) : Foo
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(

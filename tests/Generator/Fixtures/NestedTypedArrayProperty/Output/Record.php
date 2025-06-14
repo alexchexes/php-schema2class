@@ -91,22 +91,22 @@ class Record
     ];
 
     /**
-     * @var Phone[]|null
+     * @var \Phone[]|null
      */
     private ?array $dataArray = null;
 
     /**
-     * @var Phone[][]|null
+     * @var \Phone[][]|null
      */
     private ?array $dataArrayNested = null;
 
     /**
-     * @var (Phone|Fio)[]|null
+     * @var (\Phone|Fio)[]|null
      */
     private ?array $dataArrayAnyOf = null;
 
     /**
-     * @var ((Phone|Fio)[])[]|null
+     * @var ((\Phone|Fio)[])[]|null
      */
     private ?array $dataArrayNestedAnyOf = null;
 
@@ -118,7 +118,7 @@ class Record
     }
 
     /**
-     * @return Phone[]|null
+     * @return \Phone[]|null
      */
     public function getDataArray() : ?array
     {
@@ -126,7 +126,7 @@ class Record
     }
 
     /**
-     * @return Phone[][]|null
+     * @return \Phone[][]|null
      */
     public function getDataArrayNested() : ?array
     {
@@ -134,7 +134,7 @@ class Record
     }
 
     /**
-     * @return (Phone|Fio)[]|null
+     * @return (\Phone|Fio)[]|null
      */
     public function getDataArrayAnyOf() : ?array
     {
@@ -142,7 +142,7 @@ class Record
     }
 
     /**
-     * @return ((Phone|Fio)[])[]|null
+     * @return ((\Phone|Fio)[])[]|null
      */
     public function getDataArrayNestedAnyOf() : ?array
     {
@@ -150,7 +150,7 @@ class Record
     }
 
     /**
-     * @param Phone[] $dataArray
+     * @param \Phone[] $dataArray
      * @return self
      */
     public function withDataArray(array $dataArray) : self
@@ -179,7 +179,7 @@ class Record
     }
 
     /**
-     * @param Phone[][] $dataArrayNested
+     * @param \Phone[][] $dataArrayNested
      * @return self
      */
     public function withDataArrayNested(array $dataArrayNested) : self
@@ -208,7 +208,7 @@ class Record
     }
 
     /**
-     * @param (Phone|Fio)[] $dataArrayAnyOf
+     * @param (\Phone|Fio)[] $dataArrayAnyOf
      * @return self
      */
     public function withDataArrayAnyOf(array $dataArrayAnyOf) : self
@@ -237,7 +237,7 @@ class Record
     }
 
     /**
-     * @param ((Phone|Fio)[])[] $dataArrayNestedAnyOf
+     * @param ((\Phone|Fio)[])[] $dataArrayNestedAnyOf
      * @return self
      */
     public function withDataArrayNestedAnyOf(array $dataArrayNestedAnyOf) : self
@@ -268,12 +268,12 @@ class Record
     /**
      * Builds a new instance from an input array
      *
-     * @param array|object $input Input data
+     * @param mixed $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
      * @return Record Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : Record
+    public static function buildFromInput(mixed $input, bool $validate = true) : Record
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
@@ -286,17 +286,17 @@ class Record
             static::validateInput($input);
         }
 
-        $dataArray = isset($input->{'dataArray'}) ? array_map(fn(array|object $i): Phone => Phone::buildFromInput($i, $validate), $input->{'dataArray'}) : null;
-        $dataArrayNested = isset($input->{'dataArrayNested'}) ? array_map(fn($i) => array_map(fn(array|object $i): Phone => Phone::buildFromInput($i, $validate), $i), $input->{'dataArrayNested'}) : null;
+        $dataArray = isset($input->{'dataArray'}) ? array_map(fn(array|object $i): Phone => \Phone::buildFromInput($i, $validate), $input->{'dataArray'}) : null;
+        $dataArrayNested = isset($input->{'dataArrayNested'}) ? array_map(fn($i) => array_map(fn(array|object $i): Phone => \Phone::buildFromInput($i, $validate), $i), $input->{'dataArrayNested'}) : null;
         $dataArrayAnyOf = isset($input->{'dataArrayAnyOf'}) ? array_map(fn($i) => match (true) {
             default => null,
-            Phone::validateInput($i, true) => Phone::buildFromInput($i, $validate),
-            Fio::validateInput($i, true) => Fio::buildFromInput($i, $validate),
+            \Phone::validateInput($i, true) => \Phone::buildFromInput($i, $validate),
+            \Fio::validateInput($i, true) => \Fio::buildFromInput($i, $validate),
         }, $input->{'dataArrayAnyOf'}) : null;
         $dataArrayNestedAnyOf = isset($input->{'dataArrayNestedAnyOf'}) ? array_map(fn($i) => array_map(fn($i) => match (true) {
             default => null,
-            Phone::validateInput($i, true) => Phone::buildFromInput($i, $validate),
-            Fio::validateInput($i, true) => Fio::buildFromInput($i, $validate),
+            \Phone::validateInput($i, true) => \Phone::buildFromInput($i, $validate),
+            \Fio::validateInput($i, true) => \Fio::buildFromInput($i, $validate),
         }, $i), $input->{'dataArrayNestedAnyOf'}) : null;
 
         $obj = new self();

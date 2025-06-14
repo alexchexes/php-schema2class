@@ -36,7 +36,7 @@ class Record
     ];
 
     /**
-     * @var Phone[]|null
+     * @var \Phone[]|null
      */
     private ?array $dataArray = null;
 
@@ -48,7 +48,7 @@ class Record
     }
 
     /**
-     * @return Phone[]|null
+     * @return \Phone[]|null
      */
     public function getDataArray() : ?array
     {
@@ -56,7 +56,7 @@ class Record
     }
 
     /**
-     * @param Phone[] $dataArray
+     * @param \Phone[] $dataArray
      * @return self
      */
     public function withDataArray(array $dataArray) : self
@@ -87,12 +87,12 @@ class Record
     /**
      * Builds a new instance from an input array
      *
-     * @param array|object $input Input data
+     * @param mixed $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
      * @return Record Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : Record
+    public static function buildFromInput(mixed $input, bool $validate = true) : Record
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
@@ -105,7 +105,7 @@ class Record
             static::validateInput($input);
         }
 
-        $dataArray = isset($input->{'dataArray'}) ? array_map(fn(array|object $i): Phone => Phone::buildFromInput($i, $validate), $input->{'dataArray'}) : null;
+        $dataArray = isset($input->{'dataArray'}) ? array_map(fn(array|object $i): Phone => \Phone::buildFromInput($i, $validate), $input->{'dataArray'}) : null;
 
         $obj = new self();
         $obj->dataArray = $dataArray;
