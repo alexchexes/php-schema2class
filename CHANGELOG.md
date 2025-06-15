@@ -1,0 +1,58 @@
+# Changelog
+
+## v4.0.0
+
+This version introduces a substantial update across the project with new features, bug fixes, and refactoring. Key highlights:
+
+### Programmatic API
+
+- A new `Schema2Class` provides a direct PHP interface for generating classes without the CLI. It supports generating from specification files, specification arrays, or directly from a schema passed as an array. Example usage is documented in the README.
+
+### New options (extended specification)
+
+New options provide more control over how classes are generated:
+
+- `preservePropertyNames` - keep generated PHP property names as-is instead of converting them to camelCase
+- `noGetters` - if _true_, no getter methods will be generated, and all properties will be `public`.
+- `noSetters` - don't generate `withX()`/`withoutX()` methods.
+- `noDescriptionsInSchema` - drop `description` fields from the embedded schema to reduce its size.
+- `singleLineSchema` - store the validation schema as a single line in the generated class to reduce the length of .php files.
+
+### Additional CLI options
+
+- CLI now supports all the options previously available only via spec files, e.g., `--disable-strict-types`, `--inline-allof`, `--treat-default-as-optional`, etc., and all the new options like `--no-getters`, `--no-setters`, `--preserve-property-names`, etc.
+
+### Generator enhancements
+
+Now it:
+
+- Automatically creates classes for schemas with a `definitions` block (no more `cannot generate class for types other than 'object'`).
+- Supports non-ASCII property names. Any identifier is sanitized (with a uniqueness check), including when used with the `preservePropertyNames` option.
+- Improves camelCase/PascalCase handling when generating identifier names.
+- Omits the default `null` value for properties listed in the `required` schema block.
+- Improves type hints and PHPDoc type generation for complex types like unions, nested arrays, etc.
+- Adds a guard against passing anything other than an array/object to `buildFromInput`, building multi-line validation error messages.
+
+### Older PHP version support:
+
+- The generator no longer refuses to generate if the schema has enum types and the target PHP version is less than 8.1.
+
+### String utilities
+
+- `StringUtils` adds transliteration via `voku/portable-ascii`, robust identifier sanitization, and improved camelCase/PascalCase handling.
+
+### Documentation
+
+- README expanded with examples for JSON schema input, specification files, and programmatic API usage.
+
+### Internal
+
+- Several new classes and interfaces to handle new functionality; extensive refactoring of existing classes.
+- **Updated tests and fixtures**: Many new test cases covering new functionality such as typed arrays, non-ASCII identifiers, and the programmatic API.
+- **Dependency updates**:
+  - New dependency `voku/portable-ascii`
+  - Bumped PHPUnit to 12 and Psalm to 6
+
+### Breaking changes?
+
+- Essentially, the public API has only been extended, not changed, so existing functionality should continue to work as expected. However, the generated class code may differ in some aspects due to improved generation logic, so it's recommended to review any changes carefully.

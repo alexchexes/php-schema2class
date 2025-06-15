@@ -33,6 +33,13 @@ interface PropertyInterface
      */
     public function name(): string;
 
+    /** 
+     * Gets the description obtained from the schema
+     * 
+     * @return string|null
+     */
+    public function description(): ?string;
+
     /**
      * @return bool
      */
@@ -106,4 +113,5 @@ interface PropertyInterface
 
     public function formatValue(mixed $value): PropertyValueGenerator;
 
+    public function allowsNull(): bool;
 }

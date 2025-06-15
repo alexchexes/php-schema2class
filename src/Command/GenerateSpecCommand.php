@@ -1,8 +1,9 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
+
 namespace Helmich\Schema2Class\Command;
 
-use Helmich\Schema2Class\Generator\GeneratorException;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\NamespaceInferrer;
 use Helmich\Schema2Class\Generator\SchemaToClassFactory;
@@ -11,8 +12,7 @@ use Helmich\Schema2Class\Loader\SchemaLoader;
 use Helmich\Schema2Class\Spec\Specification;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
 use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
-use Helmich\Schema2Class\Writer\DebugWriter;
-use Helmich\Schema2Class\Writer\FileWriter;
+use Helmich\Schema2Class\Util\StringUtils;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -20,8 +20,12 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Yaml\Yaml;
 
+use Helmich\Schema2Class\Command\GenerateFromRequestTrait;
+
 class GenerateSpecCommand extends Command
 {
+    use GenerateFromRequestTrait;
+
     private SchemaLoader $loader;
 
     private NamespaceInferrer $namespaceInferrer;
@@ -46,66 +50,64 @@ class GenerateSpecCommand extends Command
         $this->addOption("dry-run", null, InputOption::VALUE_NONE, "Print output to console instead of writing to files");
     }
 
-    /**
-     * @param InputInterface  $input
-     * @param OutputInterface $output
-     * @return int
-     *
-     * @throws LoadingException
-     * @throws GeneratorException
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        /** @var string $specFile */
         $specFile = $input->getArgument("specfile") ?: getcwd() . "/.s2c.yaml";
-
         if (!file_exists($specFile)) {
             throw new LoadingException($specFile, "specification file not found");
         }
 
-        $contents = file_get_contents($specFile);
-        $parsed = Yaml::parse($contents);
+        $parsed = Yaml::parse(file_get_contents($specFile));
         $specification = Specification::buildFromInput($parsed);
 
-        $writer = new FileWriter($output);
-        if ($input->getOption("dry-run")) {
-            $writer = new DebugWriter($output);
-        }
+        $dryRun = (bool)$input->getOption("dry-run");
 
+        // prepare target-PHP version
         $opts = $specification->getOptions() ?? new SpecificationOptions();
-        $targetPHPVersionFromSpec = $specification->getTargetPHPVersion();
-        if ($targetPHPVersionFromSpec !== null) {
-            $opts = $opts->withTargetPHPVersion($targetPHPVersionFromSpec);
+        if ($v = $specification->getTargetPHPVersion()) {
+            $opts = $opts->withTargetPHPVersion($v);
         }
-
-        $targetPHPVersion = $opts->getTargetPHPVersion();
-        if (is_int($targetPHPVersion)) {
-            $targetPHPVersion = $targetPHPVersion === 5 ? "5.6.0" : "7.4.0";
+        $tpv = $opts->getTargetPHPVersion();
+        if (is_int($tpv)) {
+            $tpv = $tpv === 5 ? "5.6.0" : "7.4.0";
         }
-
-        $opts = $opts->withTargetPHPVersion($targetPHPVersion);
+        $opts = $opts->withTargetPHPVersion($tpv);
 
         foreach ($specification->getFiles() as $file) {
-            $schemaFile = $file->getInput();
-            $targetNamespace = $file->getTargetNamespace();
+            $schemaFile      = $file->getInput();
             $targetDirectory = $file->getTargetDirectory();
 
             $output->writeln("loading schema from <comment>$schemaFile</comment>");
-            $schema = $this->loader->loadSchema($schemaFile);
 
-            if ($targetNamespace === null) {
-                $output->writeln("target namespace not given. trying to infer from target directory...");
-                $targetNamespace = $this->namespaceInferrer->inferNamespaceFromTargetDirectory($targetDirectory);
-                $file = $file->withTargetNamespace($targetNamespace);
+            $className = $file->getClassName();
+            if ($className === null) {
+                $basename  = pathinfo($schemaFile, PATHINFO_FILENAME);
+                $className = StringUtils::pascalCase($basename);
+                $file      = $file->withClassName($className);
             }
+
+            $targetNamespace = $this->inferNamespace(
+                $output,
+                $file->getTargetNamespace(),
+                $targetDirectory,
+                $className
+            );
+            $file = $file->withTargetNamespace($targetNamespace);
 
             $output->writeln("using target namespace <comment>$targetNamespace</comment> in directory <comment>$targetDirectory</comment>");
 
-            $request = new GeneratorRequest($schema, ValidatedSpecificationFilesItem::fromSpecificationFilesItem($file, $targetNamespace), $opts);
+            $schema = $this->loader->loadSchema($schemaFile);
 
-            $this->s2c->build($writer, $output)->schemaToClass($request);
+            $baseRequest = new GeneratorRequest(
+                $schema,
+                ValidatedSpecificationFilesItem::fromSpecificationFilesItem($file, $targetNamespace),
+                $opts
+            );
+
+            $this->generateFromRequest($baseRequest, $output, $dryRun);
         }
 
         return 0;
     }
+
 }

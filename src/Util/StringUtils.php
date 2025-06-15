@@ -4,25 +4,75 @@ namespace Helmich\Schema2Class\Util;
 
 class StringUtils
 {
-    public static function capitalizeWord(string $word): string
+    /**
+     * Transliterate a string into ASCII characters, if possible.
+     */
+    private static function transliterate(string $input): string
     {
-        return strtoupper($word[0]) . substr($word, 1);
+        // Use the voku/portable-ascii library for robust transliteration
+        return \voku\helper\ASCII::to_transliterate($input);
     }
 
-    public static function capitalizeName(string $name): string
+    /**
+     * Sanitize a string so it can be used as a PHP identifier.
+     */
+    public static function sanitizeIdentifier(string $input): string
     {
-        return self::capitalizeWord(self::camelCase($name));
+        $transliterated = self::transliterate($input);
+        // Replace everything that is not a letter, digit or underscore with underscore
+        $sanitized = preg_replace('/[^A-Za-z0-9_]+/', '_', $transliterated);
+        $sanitized = rtrim($sanitized, '_');
+
+        // fallback to hash id if empty or underscores-only
+        if ($sanitized === '') {
+            $hash = substr(md5($input), 0, 8);
+            $sanitized = '_' . $hash;
+        }
+
+        // Identifiers must not start with a digit
+        if (preg_match('/^[0-9]/', $sanitized)) {
+            $sanitized = '_' . $sanitized;
+        }
+
+        return $sanitized;
+    }
+    public static function capitalizeWord(string $input): string
+    {
+        if ($input === '') {
+            return '';
+        }
+
+        return strtoupper($input[0]) . substr($input, 1);
+    }
+
+    public static function pascalCase(string $input): string
+    {
+        return self::capitalizeWord(self::camelCase($input));
     }
 
     public static function camelCase(string $input): string
     {
-        $separatorCharacters = ["-", "_", "/", " "];
-        $canonicalizedName = str_replace($separatorCharacters, " ", $input);
-        $words = explode(" ", $canonicalizedName);
+        $input = self::transliterate($input);
 
+        // Normalize separators to spaces
+        $canonicalizedName = preg_replace('/[^A-Za-z0-9]+/', ' ', $input);
+        $canonicalizedName = trim($canonicalizedName);
+
+        if ($canonicalizedName === '') {
+            return '_' . substr(md5($input), 0, 8);
+        }
+
+        $words = preg_split('/\s+/', $canonicalizedName);
         $first = $words[0];
-        $rest = array_slice($words, 1);
+        $rest  = array_slice($words, 1);
 
-        return $first . join("", array_map(fn (string $w) => self::capitalizeWord($w), $rest));
+        $identifier = $first . join('', array_map(fn(string $w) => self::capitalizeWord($w), $rest));
+
+        if (preg_match('/^[0-9]/', $identifier)) {
+            $identifier = '_' . $identifier;
+        }
+
+        return $identifier;
     }
 }
+

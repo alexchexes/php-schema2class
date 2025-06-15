@@ -1,0 +1,9 @@
+required:
+  - foo
+properties:
+  foo:
+    type: string
+    description: Foo description
+  bar:
+    type: integer
+    description: Bar description

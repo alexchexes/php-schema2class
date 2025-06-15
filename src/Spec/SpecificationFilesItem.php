@@ -14,7 +14,6 @@ class SpecificationFilesItem
     private static array $schema = [
         'required' => [
             'input',
-            'className',
             'targetDirectory',
         ],
         'properties' => [
@@ -39,9 +38,9 @@ class SpecificationFilesItem
     private string $input;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private string $className;
+    private ?string $className = null;
 
     /**
      * @var string
@@ -55,13 +54,11 @@ class SpecificationFilesItem
 
     /**
      * @param string $input
-     * @param string $className
      * @param string $targetDirectory
      */
-    public function __construct(string $input, string $className, string $targetDirectory)
+    public function __construct(string $input, string $targetDirectory)
     {
         $this->input = $input;
-        $this->className = $className;
         $this->targetDirectory = $targetDirectory;
     }
 
@@ -74,11 +71,11 @@ class SpecificationFilesItem
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getClassName() : string
+    public function getClassName() : ?string
     {
-        return $this->className;
+        return $this->className ?? null;
     }
 
     /**
@@ -134,6 +131,17 @@ class SpecificationFilesItem
     }
 
     /**
+     * @return self
+     */
+    public function withoutClassName() : self
+    {
+        $clone = clone $this;
+        unset($clone->className);
+
+        return $clone;
+    }
+
+    /**
      * @param string $targetDirectory
      * @return self
      */
@@ -183,27 +191,31 @@ class SpecificationFilesItem
     /**
      * Builds a new instance from an input array
      *
-     * @param array|object $input2 Input data
+     * @param mixed $input2 Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
      * @return SpecificationFilesItem Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input2, bool $validate = true) : SpecificationFilesItem
+    public static function buildFromInput(mixed $input2, bool $validate = true) : SpecificationFilesItem
     {
+        if (!is_array($input2) && !is_object($input2)) {
+            throw new \InvalidArgumentException(
+                'Input to buildFromInput must be array or object, got ' . gettype($input2)
+            );
+        }
+
         $input2 = is_array($input2) ? \JsonSchema\Validator::arrayToObjectRecursive($input2) : $input2;
         if ($validate) {
             static::validateInput($input2);
         }
 
         $input = $input2->{'input'};
-        $className = $input2->{'className'};
+        $className = isset($input2->{'className'}) ? $input2->{'className'} : null;
         $targetDirectory = $input2->{'targetDirectory'};
-        $targetNamespace = null;
-        if (isset($input2->{'targetNamespace'})) {
-            $targetNamespace = $input2->{'targetNamespace'};
-        }
+        $targetNamespace = isset($input2->{'targetNamespace'}) ? $input2->{'targetNamespace'} : null;
 
-        $obj = new self($input, $className, $targetDirectory);
+        $obj = new self($input, $targetDirectory);
+        $obj->className = $className;
         $obj->targetNamespace = $targetNamespace;
         return $obj;
     }
@@ -217,7 +229,9 @@ class SpecificationFilesItem
     {
         $output = [];
         $output['input'] = $this->input;
-        $output['className'] = $this->className;
+        if (isset($this->className)) {
+            $output['className'] = $this->className;
+        }
         $output['targetDirectory'] = $this->targetDirectory;
         if (isset($this->targetNamespace)) {
             $output['targetNamespace'] = $this->targetNamespace;
@@ -242,9 +256,9 @@ class SpecificationFilesItem
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {
-                return $e["property"] . ": " . $e["message"];
+                return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];
             }, $validator->getErrors());
-            throw new \InvalidArgumentException(join(", ", $errors));
+            throw new \InvalidArgumentException(join(".\n", $errors));
         }
 
         return $validator->isValid();

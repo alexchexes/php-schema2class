@@ -29,10 +29,18 @@ class SchemaToEnum
                 throw new GeneratorException("cannot generate enum classes for non-string/non-int enum values");
             }
 
-            $name  = self::enumCaseName($case);
-            $value = $case;
+            $name = self::enumCaseName($case);
 
-            $cases[$name] = $value;
+            // --- guarantee uniqueness ---
+            if (isset($cases[$name])) {
+                $i = 2;
+                while (isset($cases[$alt = "{$name}__{$i}"])) {
+                    ++$i;
+                }
+                $name = $alt;              // use the first free “…__n”
+            }
+
+            $cases[$name] = $case;
         }
 
         $cases = self::makeCaseNamesConsistent($cases);
@@ -105,30 +113,27 @@ class SchemaToEnum
      */
     public static function enumCaseName(string|int $value): string
     {
+        // ❶ numeric *int* stays as before
         if (is_int($value)) {
-            return "VALUE_$value";
+            return 'VALUE_' . $value;
         }
 
-        $value = self::enumCaseNameString($value);
+        // ❷ keep “-” by mapping every non-alnum char to “_”
+        $clean = preg_replace('/[^a-zA-Z0-9]/', '_', $value);
 
-        if (is_numeric($value[0])) {
-            return "VALUE_$value";
+        // ❸ empty after cleaning  →  use literal “EMPTY”
+        if ($clean === '') {
+            return 'EMPTY';
         }
 
-        if ($value === "") {
-            return "EMPTY";
+        // ❹ starts with a digit or minus?  →  VALUE_…
+        if (preg_match('/^[0-9\-]/', $clean)) {
+            return 'VALUE_' . strtoupper($clean);
         }
 
-        return $value;
+        // ❺ otherwise just upper-cased identifier
+        return strtoupper($clean);
     }
 
-    /**
-     * @param string $value
-     * @return string
-     */
-    private static function enumCaseNameString(string $value): string
-    {
-        return preg_replace('/[^a-zA-Z0-9]/', '', $value);
-    }
 
 }

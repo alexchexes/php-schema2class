@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Property;
@@ -8,9 +9,8 @@ use Helmich\Schema2Class\Generator\SchemaToClass;
 use Helmich\Schema2Class\Util\StringUtils;
 use Laminas\Code\Generator\PropertyValueGenerator;
 
-abstract class AbstractProperty implements PropertyInterface
+abstract class AbstractProperty implements PropertyInterface, RenameablePropertyInterface
 {
-
     protected string $key;
 
     protected string $name;
@@ -19,15 +19,23 @@ abstract class AbstractProperty implements PropertyInterface
 
     protected string $capitalizedName;
 
+    protected ?string $description;
+
     protected GeneratorRequest $generatorRequest;
 
     public function __construct(string $key, array $schema, GeneratorRequest $generatorRequest)
     {
         $this->key              = $key;
-        $this->name             = StringUtils::camelCase($key);
         $this->schema           = $schema;
-        $this->capitalizedName  = StringUtils::capitalizeName($this->key);
+        $this->capitalizedName  = StringUtils::pascalCase($this->key);
         $this->generatorRequest = $generatorRequest;
+        $this->description      = $schema['description'] ?? null;
+
+        if ($generatorRequest->getOptions()->getPreservePropertyNames()) {
+            $this->name = StringUtils::sanitizeIdentifier($key);
+        } else {
+            $this->name = StringUtils::camelCase($key);
+        }
     }
 
     public function isComplex(): bool
@@ -48,6 +56,16 @@ abstract class AbstractProperty implements PropertyInterface
     public function name(): string
     {
         return $this->name;
+    }
+
+    public function setName(string $name): void
+    {
+        $this->name = $name;
+    }
+
+    public function description(): ?string
+    {
+        return $this->description;
     }
 
     /**
@@ -71,13 +89,15 @@ abstract class AbstractProperty implements PropertyInterface
         $name = $this->name;
         $key  = $this->key;
         $keyS = var_export($key, true);
-
+        // build the raw lookup expression (using the JSON key only inside the braces)
         if ($object) {
-            $map = $this->generateInputMappingExpr("\${$inputVarName}->{{$keyS}}");
+            $lookup = "\${$inputVarName}->{{$keyS}}";
         } else {
-            $map = $this->generateInputMappingExpr("\${$inputVarName}[{$keyS}]");
+            $lookup = "\${$inputVarName}[{$keyS}]";
         }
-
+        // now map from JSON→Type (this will call buildFromInput, etc.)
+        $map = $this->generateInputMappingExpr($lookup);
+        // assign to the *camelCased* local variable name
         return "\${$name} = {$map};";
     }
 
@@ -116,6 +136,36 @@ abstract class AbstractProperty implements PropertyInterface
     public function formatValue(mixed $value): PropertyValueGenerator
     {
         return new PropertyValueGenerator($value);
+    }
+
+    public function allowsNull(): bool
+    {
+        // Fast: enumeration contains null
+        if (isset($this->schema['enum']) && in_array(null, $this->schema['enum'], true)) {
+            return true;
+        }
+
+        // Common cases
+        if (($this->schema['type'] ?? null) === 'null') {
+            return true;
+        }
+        if (is_array($this->schema['type'] ?? null) && in_array('null', $this->schema['type'], true)) {
+            return true;
+        }
+
+        // anyOf / oneOf with a null arm
+        foreach (['anyOf', 'oneOf'] as $k) {
+            if (!isset($this->schema[$k]) || !is_array($this->schema[$k])) {
+                continue;
+            }
+            foreach ($this->schema[$k] as $sub) {
+                if (($sub['type'] ?? null) === 'null') {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
     }
 
 }

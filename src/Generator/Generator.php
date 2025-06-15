@@ -11,6 +11,12 @@ use Helmich\Schema2Class\Generator\Property\OptionalPropertyDecorator;
 use Helmich\Schema2Class\Generator\Property\PropertyCollection;
 use Helmich\Schema2Class\Generator\Property\PropertyCollectionFilterFactory;
 use Helmich\Schema2Class\Generator\Property\PropertyInterface;
+use Helmich\Schema2Class\Generator\Property\PrimitiveArrayProperty;
+use Helmich\Schema2Class\Generator\Property\ObjectArrayProperty;
+use Helmich\Schema2Class\Generator\Property\ReferenceArrayProperty;
+use Helmich\Schema2Class\Generator\Property\NullablePropertyDecorator;
+use Helmich\Schema2Class\Generator\Property\PropertyDecoratorInterface;
+use Helmich\Schema2Class\Generator\Property\TypedArrayProperty;
 use Helmich\Schema2Class\Util\StringUtils;
 use Laminas\Code\Generator\DocBlock\Tag\GenericTag;
 use Laminas\Code\Generator\DocBlock\Tag\ParamTag;
@@ -39,13 +45,17 @@ class Generator
     {
         $propertyGenerators = [];
 
+        $visibility = $this->generatorRequest->getNoGetters()
+            ? PropertyGenerator::FLAG_PUBLIC
+            : PropertyGenerator::FLAG_PRIVATE;
+
         foreach ($properties as $property) {
             $schema     = $property->schema();
             $isOptional = false;
             $prop       = new PropertyGenerator(
                 $property->name(),
                 $property->formatValue($schema["default"] ?? null),
-                PropertyGenerator::FLAG_PRIVATE
+                $visibility
             );
 
             if ($property instanceof OptionalPropertyDecorator || $property instanceof DefaultPropertyDecorator) {
@@ -74,9 +84,9 @@ class Generator
                 $prop->setTypeHint($typeHint);
             }
 
-            if (!$isOptional) {
-                $prop->omitDefaultValue(true);
-            }
+            // omit default `null` for every required field, unsless default is specified in the schema
+            $hasSchemaDefault = array_key_exists('default', $property->schema());
+            $prop->omitDefaultValue(!$isOptional && !$hasSchemaDefault);
 
             $propertyGenerators[] = $prop;
         }
@@ -136,18 +146,38 @@ class Generator
         );
         $docBlock->setWordWrap(false);
 
+        $body =
+            // Guard against passing anything except arrays/objects
+            "if (!is_array(\$$inputVarName) && !is_object(\$$inputVarName)) {\n" .
+            "    throw new \\InvalidArgumentException(\n" .
+            "        'Input to buildFromInput must be array or object, got ' . gettype(\$$inputVarName)\n" .
+            "    );\n" .
+            "}\n\n" .
+            
+            // Conversion into object if input is array
+            "\$$inputVarName = is_array(\$$inputVarName) ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$$inputVarName) : \$$inputVarName;\n" .
+
+            // Conditional schema validation
+            "if (\$validate) {\n" .
+            "    static::validateInput(\$$inputVarName);\n" .
+            "}\n\n" .
+
+            // Property‐by‐property mapping
+            $properties->generateJSONToTypeConversionCode($inputVarName, object: true) . "\n\n" .
+
+            // Construct & assign optional props
+            '$obj = new self(' . join(", ", $constructorParams) . ');' . "\n" .
+            join("\n", $assignments) . "\n" .
+
+            // Return
+            'return $obj;'
+        ;
+
         $method = new MethodGenerator(
             'buildFromInput',
             [new ParameterGenerator($inputVarName, $paramType), $validationParam],
             MethodGenerator::FLAG_PUBLIC | MethodGenerator::FLAG_STATIC,
-            "\$$inputVarName = is_array(\$$inputVarName) ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$$inputVarName) : \$$inputVarName;\n" .
-            "if (\$validate) {\n" .
-            "    static::validateInput(\$$inputVarName);\n" .
-            "}\n\n" .
-            $properties->generateJSONToTypeConversionCode($inputVarName, object: true) . "\n\n" .
-            '$obj = new self(' . join(", ", $constructorParams) . ');' . "\n" .
-            join("\n", $assignments) . "\n" .
-            'return $obj;',
+            $body,
             $docBlock
         );
 
@@ -218,17 +248,18 @@ class Generator
             '$input = is_array($input) ? \\JsonSchema\\Validator::arrayToObjectRecursive($input) : $input;' . "\n" .
             '$validator->validate($input, self::$schema);' . "\n\n" .
             'if (!$validator->isValid() && !$return) {' . "\n" .
-            ($this->generatorRequest->isAtLeastPHP("7.0") ?
-                '    $errors = array_map(function(array $e): string {' . "\n" :
-                '    $errors = array_map(function($e) {' . "\n") .
-            '        return $e["property"] . ": " . $e["message"];' . "\n" .
+            (
+                $this->generatorRequest->isAtLeastPHP("7.0")
+                ? '    $errors = array_map(function(array $e): string {' . "\n"
+                : '    $errors = array_map(function($e) {' . "\n"
+            ) .
+            '        return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];' . "\n" .
             '    }, $validator->getErrors());' . "\n" .
-            '    throw new \\InvalidArgumentException(join(", ", $errors));' . "\n" .
+            '    throw new \\InvalidArgumentException(join(".\n", $errors));' . "\n" .
             '}' . "\n\n" .
             'return $validator->isValid();',
             $docBlock
         );
-
         if ($this->generatorRequest->isAtLeastPHP("7.0")) {
             $method->setReturnType("bool");
         }
@@ -265,6 +296,10 @@ class Generator
      */
     public function generateGetterMethods(PropertyCollection $properties): array
     {
+        if ($this->generatorRequest->getNoGetters()) {
+            return [];
+        }
+
         $methods = [];
 
         $properties = $properties->filter(PropertyCollectionFilterFactory::withoutDeprecatedAndSameName($properties));
@@ -287,7 +322,7 @@ class Generator
         }
 
         $name           = $property->name();
-        $camelCasedName = StringUtils::capitalizeWord($property->name());
+        $camelCasedName = StringUtils::pascalCase($property->name());
         $annotatedType  = $property->typeAnnotation();
 
         $tags = [new ReturnTag($annotatedType)];
@@ -295,7 +330,7 @@ class Generator
             $tags[] = new GenericTag("deprecated");
         }
 
-        $docBlockGenerator = new DocBlockGenerator(null, null, $tags);
+        $docBlockGenerator = new DocBlockGenerator(null, $property->description(), $tags);
         $docBlockGenerator->setWordWrap(false);  // needs to be disabled because its fundamentally broken
 
         $getMethod = new MethodGenerator(
@@ -326,6 +361,10 @@ class Generator
      */
     public function generateSetterMethods(PropertyCollection $properties): array
     {
+        if ($this->generatorRequest->getNoSetters()) {
+            return [];
+        }
+
         $methods    = [];
         $properties = $properties->filter(PropertyCollectionFilterFactory::withoutDeprecatedAndSameName($properties));
 
@@ -344,14 +383,25 @@ class Generator
     {
         $key           = $property->key();
         $name          = $property->name();
-        $camelCaseName = StringUtils::capitalizeWord($name);
+        $camelCaseName = StringUtils::pascalCase($name);
 
         $requiredProperty = ($property instanceof OptionalPropertyDecorator) ? $property->unwrap() : $property;
 
         $annotatedType = $requiredProperty->typeAnnotation();
         $typeHint      = $requiredProperty->typeHint($this->generatorRequest->getTargetPHPVersion());
 
-        if ($property->isComplex()) {
+        $base = $property;
+        while ($base instanceof PropertyDecoratorInterface) {
+            /** @var PropertyDecoratorInterface $base */
+            $base = $base->unwrap();
+        }
+
+        $isArray = $base instanceof PrimitiveArrayProperty
+            || $base instanceof ObjectArrayProperty
+            || $base instanceof ReferenceArrayProperty
+            || $base instanceof TypedArrayProperty;
+
+        if ($property->isComplex() && !$isArray) {
             $setterValidation = "";
         } else {
             $setterValidation = "\$validator = new \JsonSchema\Validator();
@@ -400,7 +450,7 @@ return \$clone;",
     public function generateUnsetterMethod(PropertyInterface $property): MethodGenerator
     {
         $name           = $property->name();
-        $camelCasedName = StringUtils::capitalizeWord($name);
+        $camelCasedName = StringUtils::pascalCase($name);
 
         $body = "\$clone = clone \$this;\n";
         if (isset($property->schema()["default"])) {

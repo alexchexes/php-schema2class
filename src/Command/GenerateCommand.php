@@ -1,19 +1,18 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
+
 namespace Helmich\Schema2Class\Command;
 
 use Helmich\Schema2Class\Generator\GeneratorException;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\NamespaceInferrer;
-use Helmich\Schema2Class\Generator\SchemaToClass;
 use Helmich\Schema2Class\Generator\SchemaToClassFactory;
 use Helmich\Schema2Class\Loader\LoadingException;
 use Helmich\Schema2Class\Loader\SchemaLoader;
-use Helmich\Schema2Class\Spec\SpecificationFilesItem;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
 use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
-use Helmich\Schema2Class\Writer\DebugWriter;
-use Helmich\Schema2Class\Writer\FileWriter;
+use Helmich\Schema2Class\Command\GenerateFromRequestTrait;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -22,10 +21,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class GenerateCommand extends Command
 {
+    use GenerateFromRequestTrait;
+
     private SchemaLoader $loader;
-
     private NamespaceInferrer $namespaceInferrer;
-
     private SchemaToClassFactory $s2c;
 
     public function __construct(SchemaLoader $loader, NamespaceInferrer $namespaceInferrer, SchemaToClassFactory $s2c)
@@ -49,6 +48,15 @@ class GenerateCommand extends Command
         $this->addOption("dry-run", null, InputOption::VALUE_NONE, "Print output to console instead of writing to files");
         $this->addOption("php5", '5', InputOption::VALUE_NONE, "Generate PHP5-compatible code (DEPRECATED: Use --target-php instead)");
         $this->addOption("class", "c", InputOption::VALUE_REQUIRED, "Target class name", "Object");
+        $this->addOption("disable-strict-types", null, InputOption::VALUE_NONE, "Do not emit strict_types declaration");
+        $this->addOption("treat-default-as-optional", null, InputOption::VALUE_NONE, "Treat properties with defaults as optional");
+        $this->addOption("inline-allof", null, InputOption::VALUE_NONE, "Inline allOf references");
+        $this->addOption("validator-expr", null, InputOption::VALUE_REQUIRED, "Expression used to create validator instance");
+        $this->addOption("preserve-property-names", null, InputOption::VALUE_NONE, "Do not convert property names to camelCase");
+        $this->addOption("no-getters", null, InputOption::VALUE_NONE, "Do not generate getter methods");
+        $this->addOption("no-setters", null, InputOption::VALUE_NONE, "Do not generate withX()/withoutX() methods");
+        $this->addOption("no-schema-descriptions", null, InputOption::VALUE_NONE, "Omit description fields from schema property");
+        $this->addOption("single-line-schema", null, InputOption::VALUE_NONE, "Store schema property as single line");
     }
 
     /**
@@ -75,29 +83,50 @@ class GenerateCommand extends Command
         $output->writeln("loading schema from <comment>$schemaFile</comment>");
         $schema = $this->loader->loadSchema($schemaFile);
 
-        if (!$targetNamespace) {
-            $output->writeln("target namespace not given. trying to infer from target directory...");
-            $targetNamespace = $this->namespaceInferrer->inferNamespaceFromTargetDirectory($targetDirectory);
-        }
+        $targetNamespace = $this->inferNamespace($output, $targetNamespace, $targetDirectory, $class);
 
         $output->writeln("using target namespace <comment>$targetNamespace</comment> in directory <comment>$targetDirectory</comment>");
-
-        $writer = new FileWriter($output);
-        if ($input->getOption("dry-run")) {
-            $writer = new DebugWriter($output);
-        }
 
         $spec = new ValidatedSpecificationFilesItem($targetNamespace, $class, $targetDirectory);
         $opts = (new SpecificationOptions())
             ->withTargetPHPVersion($targetPHPVersion ?? "8.2.0");
 
+        if ($input->getOption("disable-strict-types")) {
+            $opts = $opts->withDisableStrictTypes(true);
+        }
+        if ($input->getOption("treat-default-as-optional")) {
+            $opts = $opts->withTreatValuesWithDefaultAsOptional(true);
+        }
+        if ($input->getOption("inline-allof")) {
+            $opts = $opts->withInlineAllofReferences(true);
+        }
+        if ($expr = $input->getOption("validator-expr")) {
+            $opts = $opts->withNewValidatorClassExpr((string)$expr);
+        }
+        if ($input->getOption("preserve-property-names")) {
+            $opts = $opts->withPreservePropertyNames(true);
+        }
+        if ($input->getOption("no-getters")) {
+            $opts = $opts->withNoGetters(true);
+        }
+        if ($input->getOption("no-setters")) {
+            $opts = $opts->withNoSetters(true);
+        }
+        if ($input->getOption("no-schema-descriptions")) {
+            $opts = $opts->withNoDescriptionsInSchema(true);
+        }
+        if ($input->getOption("single-line-schema")) {
+            $opts = $opts->withSingleLineSchema(true);
+        }
+
         if ($input->getOption("php5")) {
             $opts = $opts->withTargetPHPVersion("5.6.0");
         }
 
-        $request = new GeneratorRequest($schema, $spec, $opts);
+        $baseRequest = new GeneratorRequest($schema, $spec, $opts);
 
-        $this->s2c->build($writer, $output)->schemaToClass($request);
+        $this->generateFromRequest($baseRequest, $output, (bool)$input->getOption('dry-run'));
+
         return 0;
     }
 }

@@ -36,7 +36,6 @@ class Specification
                 'items' => [
                     'required' => [
                         'input',
-                        'className',
                         'targetDirectory',
                     ],
                     'properties' => [
@@ -91,6 +90,36 @@ class Specification
 This is useful if you want to use a custom validator class.
 ',
                         'default' => 'new \\JsonSchema\\Validator()',
+                    ],
+                    'preservePropertyNames' => [
+                        'type' => 'boolean',
+                        'description' => 'When true, properties names are not converted to camelCase.
+',
+                        'default' => false,
+                    ],
+                    'noGetters' => [
+                        'type' => 'boolean',
+                        'description' => 'When true, no getters are created and all properties are \'public\'.
+',
+                        'default' => false,
+                    ],
+                    'noSetters' => [
+                        'type' => 'boolean',
+                        'description' => 'When true, no withX() / withoutX() setters/unsetters are created.
+',
+                        'default' => false,
+                    ],
+                    'noDescriptionsInSchema' => [
+                        'type' => 'boolean',
+                        'description' => 'When true, the schema used for validation will not include any description fields
+',
+                        'default' => false,
+                    ],
+                    'singleLineSchema' => [
+                        'type' => 'boolean',
+                        'description' => 'When true, the whole schema used for validation will on a single line in the class property
+',
+                        'default' => false,
                     ],
                 ],
             ],
@@ -205,30 +234,31 @@ This is useful if you want to use a custom validator class.
     /**
      * Builds a new instance from an input array
      *
-     * @param array|object $input Input data
+     * @param mixed $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
      * @return Specification Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : Specification
+    public static function buildFromInput(mixed $input, bool $validate = true) : Specification
     {
+        if (!is_array($input) && !is_object($input)) {
+            throw new \InvalidArgumentException(
+                'Input to buildFromInput must be array or object, got ' . gettype($input)
+            );
+        }
+
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $targetPHPVersion = null;
-        if (isset($input->{'targetPHPVersion'})) {
-            $targetPHPVersion = match (true) {
-                is_int($input->{'targetPHPVersion'}), is_string($input->{'targetPHPVersion'}) => $input->{'targetPHPVersion'},
-                default => throw new \InvalidArgumentException("could not build property 'targetPHPVersion' from JSON"),
-            };
-        }
+        $targetPHPVersion = isset($input->{'targetPHPVersion'}) ? match (true) {
+            default => null,
+            is_int($input->{'targetPHPVersion'}) => (int)($input->{'targetPHPVersion'}),
+            is_string($input->{'targetPHPVersion'}) => $input->{'targetPHPVersion'},
+        } : null;
         $files = array_map(fn (array|object $i): SpecificationFilesItem => SpecificationFilesItem::buildFromInput($i, validate: $validate), $input->{'files'});
-        $options = null;
-        if (isset($input->{'options'})) {
-            $options = SpecificationOptions::buildFromInput($input->{'options'}, validate: $validate);
-        }
+        $options = isset($input->{'options'}) ? SpecificationOptions::buildFromInput($input->{'options'}, validate: $validate) : null;
 
         $obj = new self($files);
         $obj->targetPHPVersion = $targetPHPVersion;
@@ -273,9 +303,9 @@ This is useful if you want to use a custom validator class.
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {
-                return $e["property"] . ": " . $e["message"];
+                return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];
             }, $validator->getErrors());
-            throw new \InvalidArgumentException(join(", ", $errors));
+            throw new \InvalidArgumentException(join(".\n", $errors));
         }
 
         return $validator->isValid();

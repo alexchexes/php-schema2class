@@ -4,9 +4,13 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class\Generator;
 
 use Helmich\Schema2Class\Codegen\PropertyGenerator;
+use Helmich\Schema2Class\Generator\Definitions\DefinitionsCollector;
+use Helmich\Schema2Class\Generator\Definitions\DefinitionsGenerator;
+use Helmich\Schema2Class\Generator\Definitions\DefinitionsReferenceLookup;
 use Helmich\Schema2Class\Generator\Property\IntersectProperty;
 use Helmich\Schema2Class\Generator\Property\NestedObjectProperty;
 use Helmich\Schema2Class\Generator\Property\PropertyCollection;
+use Helmich\Schema2Class\Generator\Property\RenameablePropertyInterface;
 use Helmich\Schema2Class\Writer\WriterInterface;
 use Laminas\Code\DeclareStatement;
 use Laminas\Code\Generator\ClassGenerator;
@@ -19,15 +23,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 class SchemaToClass
 {
     private WriterInterface $writer;
-    private SchemaToEnum $enumGenerator;
+    private OutputInterface $output;
 
-    /**
-     * @phpstan-ignore constructor.unusedParameter (kept for backwards compatibility)
-     */
     public function __construct(WriterInterface $writer, OutputInterface $output)
     {
         $this->writer = $writer;
-        $this->enumGenerator = new SchemaToEnum($writer);
+        $this->output = $output;
     }
 
     /**
@@ -38,8 +39,10 @@ class SchemaToClass
     {
         $schema = $req->getSchema();
 
+        $this->definitionsToSchemas($req);
+
         if (isset($schema["enum"])) {
-            $this->enumGenerator->schemaToEnum($req);
+            $this->schemaToEnum($req);
             return;
         }
 
@@ -78,6 +81,8 @@ class SchemaToClass
         foreach ($propertiesFromSchema as $property) {
             $property->generateSubTypes($this);
         }
+
+        $this->ensureUniquePropertyNames($propertiesFromSchema);
 
         $codeGenerator = new Generator($req);
 
@@ -124,9 +129,163 @@ class SchemaToClass
 
         // Do some corrections because the Zend code generation library is stupid.
         $content = preg_replace('/ : \\\\self/', ' : self', $content);
-        $content = preg_replace('/\\\\' . preg_quote($req->getTargetNamespace(), '/') . '\\\\/', '', $content);
+        $content = preg_replace('/\\\\' . preg_quote($req->getTargetNamespace()) . '\\\\/', '', $content);
 
         $this->writer->writeFile($filename, $content);
+    }
+
+    /**
+     * Ensures that property names are unique after sanitization. When a
+     * collision is detected, an underscore is prepended until the name is
+     * unique within the given property collection.
+     */
+    private function ensureUniquePropertyNames(PropertyCollection $properties): void
+    {
+        $used = [];
+        foreach ($properties as $property) {
+            $base   = $property->name();
+            $unique = $base;
+            $i      = 1;
+            while (in_array($unique, $used, true)) {
+                $unique = $base . '_' . $i;
+                $i++;
+            }
+            if ($unique !== $base && $property instanceof RenameablePropertyInterface) {
+                $property->setName($unique);
+            }
+            $used[] = $unique;
+        }
+    }
+
+    /**
+     * @param string|int $value
+     * @return non-empty-string
+     */
+    private static function enumCaseName(string|int $value): string
+    {
+        if (is_int($value)) {
+            return "VALUE_$value";
+        }
+
+        $value = static::enumCaseNameString($value);
+
+        if (is_numeric($value[0])) {
+            return "VALUE_$value";
+        }
+
+        if ($value === "") {
+            return "EMPTY";
+        }
+
+        return $value;
+    }
+
+    /**
+     * @param string $value
+     * @return string
+     */
+    private static function enumCaseNameString(string $value): string
+    {
+        return preg_replace('/[^a-zA-Z0-9]/', '', $value);
+    }
+
+    /**
+     * @param array<non-empty-string, string|int> $cases
+     * @return array<non-empty-string, string|int>
+     */
+    private static function makeCaseNamesConsistent(array $cases): array
+    {
+        $hasValuePrefix = false;
+
+        foreach ($cases as $name => $value) {
+            if (str_starts_with($name, "VALUE_")) {
+                $hasValuePrefix = true;
+                break;
+            }
+        }
+
+        if (!$hasValuePrefix) {
+            return $cases;
+        }
+
+        $newCases = [];
+        foreach ($cases as $name => $value) {
+            if (str_starts_with($name, "VALUE_")) {
+                $newCases[$name] = $value;
+            } else {
+                $newCases["VALUE_$name"] = $value;
+            }
+        }
+
+        return $newCases;
+    }
+
+    private function schemaToEnum(GeneratorRequest $req): void
+    {
+        if (!$req->isAtLeastPHP("8.1")) {
+            throw new GeneratorException("cannot generate enum classes for PHP versions < 8.1");
+        }
+
+        /** @var array<non-empty-string, string|int> $cases */
+        $cases = [];
+        foreach ($req->getSchema()["enum"] as $case) {
+            if (!is_string($case) && !is_int($case)) {
+                throw new GeneratorException("cannot generate enum classes for non-string/non-int enum values");
+            }
+
+            $name  = self::enumCaseName($case);
+            $value = $case;
+
+            $cases[$name] = $value;
+        }
+
+        $cases = self::makeCaseNamesConsistent($cases);
+
+        $type     = $req->getSchema()["type"] === "string" ? "string" : "int";
+        $enumName = $req->getTargetNamespace() . "\\" . $req->getTargetClass();
+        $enum     = EnumGenerator::withConfig([
+            "name"        => $enumName,
+            "backedCases" => [
+                "type"  => $type,
+                "cases" => $cases,
+            ],
+        ]);
+
+        $req->onEnumCreated($enumName, $enum);
+
+        $filename = $req->getTargetDirectory() . '/' . $req->getTargetClass() . '.php';
+        $file     = new FileGenerator();
+        $file->setBody($enum->generate());
+
+        $req->onFileCreated($filename, $file);
+
+        // No strict typings for enums, because Psalm shits itself in that case.
+        // $file->setDeclares([DeclareStatement::strictTypes(1)]);
+
+        $content = $file->generate();
+
+        // Do some corrections because the Zend code generation library is stupid.
+        $content = preg_replace('/ : \\\\self/', ' : self', $content);
+        $content = preg_replace('/\\\\' . preg_quote($req->getTargetNamespace()) . '\\\\/', '', $content);
+
+        $this->writer->writeFile($filename, $content);
+    }
+
+    private function definitionsToSchemas(GeneratorRequest &$req): void
+    {
+        if ($req->hasReferenceLookup(DefinitionsReferenceLookup::class)) {
+            return;
+        }
+
+        $collector = new DefinitionsCollector($req);
+        $collectedDefinitions = iterator_to_array($collector->collect($req->getSchema()));
+
+        $req = $req->withAdditionalReferenceLookup(new DefinitionsReferenceLookup(
+            $collectedDefinitions,
+        ));
+
+        $generator = new DefinitionsGenerator($this);
+        $generator->generate($collectedDefinitions, $req);
     }
 
 }

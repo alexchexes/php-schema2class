@@ -1,0 +1,68 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "Record": {
+      "type": "object",
+      "properties": {
+        "dataArray": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Phone"
+          },
+          "minItems": 1,
+          "maxItems": 1
+        },
+        "dataArrayNested": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/Phone"
+            }
+          },
+          "minItems": 1,
+          "maxItems": 1
+        },
+        "dataArrayAnyOf": {
+          "type": "array",
+          "items": {
+            "anyOf": [
+              { "$ref": "#/definitions/Phone" },
+              { "$ref": "#/definitions/Fio" }
+            ]
+          },
+          "minItems": 1,
+          "maxItems": 1
+        },
+        "dataArrayNestedAnyOf": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                { "$ref": "#/definitions/Phone" },
+                { "$ref": "#/definitions/Fio" }
+              ]
+            }
+          },
+          "minItems": 1,
+          "maxItems": 1
+        }
+      }
+    },
+
+    "Phone": {
+      "type": "object",
+      "properties": {
+        "foo": { "type": "string" }
+      }
+    },
+
+    "Fio": {
+      "type": "object",
+      "properties": {
+        "bar": { "type": ["null", "string"] }
+      }
+    }
+  }
+}

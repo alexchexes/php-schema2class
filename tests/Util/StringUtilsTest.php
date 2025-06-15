@@ -20,21 +20,64 @@ class StringUtilsTest extends TestCase
         assertThat($capitalized, equalTo("Foo"));
     }
 
-    public function testCapitalizeNameCapitalizesName()
+    public function testPascalCaseMakesWordPascalCase()
     {
-        $capitalized = StringUtils::capitalizeName("foo");
-        assertThat($capitalized, equalTo("Foo"));
+        $pascaled = StringUtils::pascalCase("foo");
+        assertThat($pascaled, equalTo("Foo"));
     }
 
-    public function testCapitalizeNameCapitalizedWordsWithDashes()
+    public function testPascalCaseHandlesWordsWithDashes()
     {
-        $capitalized = StringUtils::capitalizeName("content-disposition");
-        assertThat($capitalized, equalTo("ContentDisposition"));
+        $pascaled = StringUtils::pascalCase("content-disposition");
+        assertThat($pascaled, equalTo("ContentDisposition"));
     }
 
     public function testCamelCaseCamelCases()
     {
         $camelCased = StringUtils::camelCase("content-disposition");
         assertThat($camelCased, equalTo("contentDisposition"));
+    }
+
+    public function testCamelCaseTransliteratesNonAsciiCharacters()
+    {
+        $camelCased = StringUtils::camelCase("ЕГРЮЛ Казахстан");
+        assertThat($camelCased, equalTo("EGRIuLKazakhstan"));
+    }
+
+    public function testSanitizeIdentifierTransliteratesAndRemovesInvalidCharacters()
+    {
+        $sanitized = StringUtils::sanitizeIdentifier("IP-адреса");
+        assertThat($sanitized, equalTo("IP_adresa"));
+    }
+
+    public function testSanitizeIdentifierTransliteratesAndPlacesUnderscoresCorrectly()
+    {
+
+        $sanitized = StringUtils::sanitizeIdentifier("@@Беларусь");
+        assertThat($sanitized, equalTo("_Belarus"));
+    }
+
+    public function testCapitalizeWordHandlesEmptyString()
+    {
+        $capitalized = StringUtils::capitalizeWord("");
+        assertThat($capitalized, equalTo(""));
+    }
+
+    public function testSanitizeIdentifierFallbackForInvalidString()
+    {
+        $sanitized = StringUtils::sanitizeIdentifier("!!!");
+        $this->assertMatchesRegularExpression('/^_[a-f0-9]{8}$/', $sanitized);
+    }
+
+    public function testCamelCaseFallbackForInvalidString()
+    {
+        $camel = StringUtils::camelCase("!!!");
+        $this->assertMatchesRegularExpression('/^_[a-f0-9]{8}$/', $camel);
+    }
+
+    public function testCamelCasePrefixesNumericNames()
+    {
+        $camel = StringUtils::camelCase("123name");
+        assertThat($camel, equalTo("_123name"));
     }
 }

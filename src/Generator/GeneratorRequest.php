@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator;
@@ -14,12 +15,16 @@ use Laminas\Code\Generator\PropertyGenerator;
 
 class GeneratorRequest
 {
+    use GeneratorHookRunner;
     private array $schema;
+    /** @var array<string,mixed>|null Root schema’s definitions, if any */
+    private ?array $rootDefinitions = null;
+    private array $generatedClassNames = [];
+
     private ValidatedSpecificationFilesItem $spec;
     private SpecificationOptions $opts;
-    private ?ReferenceLookup $referenceLookup = null;
-
-    use GeneratorHookRunner;
+    /** @var array<class-string, ReferenceLookup> */
+    private array $referenceLookup = [];
 
     public function __construct(array $schema, ValidatedSpecificationFilesItem $spec, SpecificationOptions $opts)
     {
@@ -29,6 +34,28 @@ class GeneratorRequest
         $this->spec   = $spec;
         $this->opts   = $opts;
     }
+
+    /**
+     * Attach the root schema’s “definitions” block so each class can re‑embed it.
+     *
+     * @param array<string,mixed> $definitions
+     * @return self
+     */
+    public function withRootDefinitions(array $definitions): self
+    {
+        $clone = clone $this;
+        $clone->rootDefinitions = $definitions;
+        return $clone;
+    }
+
+    /**
+     * @return array<string,mixed>|null
+     */
+    public function getRootDefinitions(): ?array
+    {
+        return $this->rootDefinitions;
+    }
+
 
     private static function semversifyVersionNumber(string|int $versionNumber): string
     {
@@ -46,9 +73,26 @@ class GeneratorRequest
     public function withReferenceLookup(ReferenceLookup $referenceLookup): self
     {
         $clone                  = clone $this;
-        $clone->referenceLookup = $referenceLookup;
+        $clone->referenceLookup = [];
+        $clone->referenceLookup[$referenceLookup::class] = $referenceLookup;
 
         return $clone;
+    }
+
+    public function withAdditionalReferenceLookup(ReferenceLookup $referenceLookup): self
+    {
+        $clone                  = clone $this;
+        $clone->referenceLookup[$referenceLookup::class] = $referenceLookup;
+
+        return $clone;
+    }
+
+    /**
+     * @param class-string $referenceLookup
+     */
+    public function hasReferenceLookup(string $referenceLookup): bool
+    {
+        return isset($this->referenceLookup[$referenceLookup]);
     }
 
     public function withSchema(array $schema): self
@@ -63,6 +107,38 @@ class GeneratorRequest
     {
         $clone       = clone $this;
         $clone->spec = $this->spec->withTargetClass($targetClass);
+
+        $clone->clearNonPropagatingHooks();
+
+        return $clone;
+    }
+
+    public function withGeneratedClassNames(array $names): self
+    {
+        $clone = clone $this;
+        $clone->generatedClassNames = $names;
+        return $clone;
+    }
+
+    public function getGeneratedClassNames(): array
+    {
+        return $this->generatedClassNames;
+    }
+
+    public function withNamespace(string $targetNamespace): self
+    {
+        $clone       = clone $this;
+        $clone->spec = $this->spec->withTargetNamespace($targetNamespace);
+
+        $clone->clearNonPropagatingHooks();
+
+        return $clone;
+    }
+
+    public function withDirectory(string $targetDirectory): self
+    {
+        $clone       = clone $this;
+        $clone->spec = $this->spec->withTargetDirectory($targetDirectory);
 
         $clone->clearNonPropagatingHooks();
 
@@ -117,6 +193,16 @@ class GeneratorRequest
     public function getTargetPHPVersion(): string
     {
         return (string)$this->opts->getTargetPHPVersion();
+    }
+
+    public function getNoGetters(): bool
+    {
+        return $this->opts->getNoGetters();
+    }
+    
+    public function getNoSetters(): bool
+    {
+        return $this->opts->getNoSetters();
     }
 
     /**
@@ -182,19 +268,33 @@ class GeneratorRequest
 
     public function lookupReference(string $ref): ReferencedType
     {
-        if ($this->referenceLookup === null) {
+        if (empty($this->referenceLookup)) {
             return new ReferencedTypeUnknown();
         }
 
-        return $this->referenceLookup->lookupReference($ref);
+        foreach ($this->referenceLookup as $referenceLookup) {
+            $reference = $referenceLookup->lookupReference($ref);
+            if (!$reference instanceof ReferencedTypeUnknown) {
+                return $reference;
+            }
+        }
+
+        return new ReferencedTypeUnknown();
     }
 
     public function lookupSchema(string $ref): array
     {
-        if ($this->referenceLookup === null) {
+        if (empty($this->referenceLookup)) {
             return [];
         }
 
-        return $this->referenceLookup->lookupSchema($ref);
+        foreach ($this->referenceLookup as $referenceLookup) {
+            $schema = $referenceLookup->lookupSchema($ref);
+            if (!empty($schema)) {
+                return $schema;
+            }
+        }
+
+        return [];
     }
 }

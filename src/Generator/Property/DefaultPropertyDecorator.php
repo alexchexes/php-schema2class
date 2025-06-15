@@ -6,7 +6,7 @@ namespace Helmich\Schema2Class\Generator\Property;
 use Helmich\Schema2Class\Generator\SchemaToClass;
 use Laminas\Code\Generator\PropertyValueGenerator;
 
-class DefaultPropertyDecorator implements PropertyInterface
+class DefaultPropertyDecorator implements PropertyDecoratorInterface, RenameablePropertyInterface
 {
     use CodeFormatting;
 
@@ -117,6 +117,11 @@ class DefaultPropertyDecorator implements PropertyInterface
         return $this->inner->name();
     }
 
+    public function description(): ?string
+    {
+        return $this->inner->description();
+    }
+
     /**
      * @return PropertyInterface
      */
@@ -156,4 +161,12 @@ class DefaultPropertyDecorator implements PropertyInterface
         return $this->inner->formatValue($value);
     }
 
+    public function setName(string $name): void
+    {
+        if ($this->inner instanceof RenameablePropertyInterface) {
+            $this->inner->setName($name);
+        }
+    }
+
+    public function allowsNull(): bool { return $this->inner->allowsNull(); }
 }
