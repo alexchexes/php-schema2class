@@ -94,7 +94,7 @@ class Bar
             static::validateInput($input);
         }
 
-        $a = isset($input->{'a'}) ? Ns\DefinitionsPropertyRef\Foo::buildFromInput($input->{'a'}, $validate) : null;
+        $a = isset($input->{'a'}) ? Foo::buildFromInput($input->{'a'}, $validate) : null;
 
         $obj = new self();
         $obj->a = $a;

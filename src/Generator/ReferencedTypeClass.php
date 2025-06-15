@@ -58,10 +58,11 @@ readonly class ReferencedTypeClass implements ReferencedType
     public function inputMappingExpr(GeneratorRequest $req, string $expr, ?string $validateExpr): string
     {
         $validateExpr = $validateExpr ?? '$validate';
+        $cls = $this->relativeName($req);
         if ($req->isAtLeastPHP('8.0')) {
-            return "{$this->className}::buildFromInput({$expr}, {$validateExpr})";
+            return "{$cls}::buildFromInput({$expr}, {$validateExpr})";
         }
-        return "{$this->className}::buildFromInput({$expr}, {$validateExpr})";
+        return "{$cls}::buildFromInput({$expr}, {$validateExpr})";
     }
 
     public function outputMappingExpr(GeneratorRequest $req, string $expr): string

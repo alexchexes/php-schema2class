@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ns\Definitions;
+namespace Ns\DefinitionsRefs;
 
-class Address
+class Bar
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -14,99 +14,57 @@ class Address
     private static array $schema = [
         'type' => 'object',
         'properties' => [
-            'name' => [
-                '$ref' => '#/definitions/address/$defs/name',
-            ],
-            'city' => [
+            'a' => [
                 'type' => 'string',
-            ],
-        ],
-        'required' => [
-            'city',
-        ],
-        '$defs' => [
-            'name' => [
-                'type' => 'object',
-                'properties' => [
-                    'first' => [
-                        'type' => 'string',
-                    ],
-                ],
             ],
         ],
     ];
 
     /**
-     * @var Address\Defs\Name|null
+     * @var string|null
      */
-    private ?Address\DefsName $name = null;
+    private ?string $a = null;
 
     /**
-     * @var string
+     *
      */
-    private string $city;
-
-    /**
-     * @param string $city
-     */
-    public function __construct(string $city)
+    public function __construct()
     {
-        $this->city = $city;
     }
 
     /**
-     * @return Address\Defs\Name|null
+     * @return string|null
      */
-    public function getName() : ?\Address\DefsName
+    public function getA() : ?string
     {
-        return $this->name ?? null;
+        return $this->a ?? null;
     }
 
     /**
-     * @return string
-     */
-    public function getCity() : string
-    {
-        return $this->city;
-    }
-
-    /**
-     * @param Address\DefsName $name
+     * @param string $a
      * @return self
      */
-    public function withName(\Address\DefsName $name) : self
-    {
-        $clone = clone $this;
-        $clone->name = $name;
-
-        return $clone;
-    }
-
-    /**
-     * @return self
-     */
-    public function withoutName() : self
-    {
-        $clone = clone $this;
-        unset($clone->name);
-
-        return $clone;
-    }
-
-    /**
-     * @param string $city
-     * @return self
-     */
-    public function withCity(string $city) : self
+    public function withA(string $a) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($city, self::$schema['properties']['city']);
+        $validator->validate($a, self::$schema['properties']['a']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
 
         $clone = clone $this;
-        $clone->city = $city;
+        $clone->a = $a;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutA() : self
+    {
+        $clone = clone $this;
+        unset($clone->a);
 
         return $clone;
     }
@@ -116,10 +74,10 @@ class Address
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
-     * @return Address Created instance
+     * @return Bar Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : Address
+    public static function buildFromInput(array|object $input, bool $validate = true) : Bar
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
@@ -132,11 +90,10 @@ class Address
             static::validateInput($input);
         }
 
-        $name = isset($input->{'name'}) ? Address\Defs\Name::buildFromInput($input->{'name'}, $validate) : null;
-        $city = $input->{'city'};
+        $a = isset($input->{'a'}) ? $input->{'a'} : null;
 
-        $obj = new self($city);
-        $obj->name = $name;
+        $obj = new self();
+        $obj->a = $a;
         return $obj;
     }
 
@@ -148,10 +105,9 @@ class Address
     public function toJson() : array
     {
         $output = [];
-        if (isset($this->name)) {
-            $output['name'] = $this->name->toJson();
+        if (isset($this->a)) {
+            $output['a'] = $this->a;
         }
-        $output['city'] = $this->city;
 
         return $output;
     }

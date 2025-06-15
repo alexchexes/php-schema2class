@@ -286,17 +286,17 @@ class Record
             static::validateInput($input);
         }
 
-        $dataArray = isset($input->{'dataArray'}) ? array_map(fn(array|object $i): Phone => Ns\NestedTypedArrayProperty\Phone::buildFromInput($i, $validate), $input->{'dataArray'}) : null;
-        $dataArrayNested = isset($input->{'dataArrayNested'}) ? array_map(fn($i) => array_map(fn(array|object $i): Phone => Ns\NestedTypedArrayProperty\Phone::buildFromInput($i, $validate), $i), $input->{'dataArrayNested'}) : null;
+        $dataArray = isset($input->{'dataArray'}) ? array_map(fn(array|object $i): Phone => Phone::buildFromInput($i, $validate), $input->{'dataArray'}) : null;
+        $dataArrayNested = isset($input->{'dataArrayNested'}) ? array_map(fn($i) => array_map(fn(array|object $i): Phone => Phone::buildFromInput($i, $validate), $i), $input->{'dataArrayNested'}) : null;
         $dataArrayAnyOf = isset($input->{'dataArrayAnyOf'}) ? array_map(fn($i) => match (true) {
             default => null,
-            Ns\NestedTypedArrayProperty\Phone::validateInput($i, true) => Ns\NestedTypedArrayProperty\Phone::buildFromInput($i, $validate),
-            Ns\NestedTypedArrayProperty\Fio::validateInput($i, true) => Ns\NestedTypedArrayProperty\Fio::buildFromInput($i, $validate),
+            Ns\NestedTypedArrayProperty\Phone::validateInput($i, true) => Phone::buildFromInput($i, $validate),
+            Ns\NestedTypedArrayProperty\Fio::validateInput($i, true) => Fio::buildFromInput($i, $validate),
         }, $input->{'dataArrayAnyOf'}) : null;
         $dataArrayNestedAnyOf = isset($input->{'dataArrayNestedAnyOf'}) ? array_map(fn($i) => array_map(fn($i) => match (true) {
             default => null,
-            Ns\NestedTypedArrayProperty\Phone::validateInput($i, true) => Ns\NestedTypedArrayProperty\Phone::buildFromInput($i, $validate),
-            Ns\NestedTypedArrayProperty\Fio::validateInput($i, true) => Ns\NestedTypedArrayProperty\Fio::buildFromInput($i, $validate),
+            Ns\NestedTypedArrayProperty\Phone::validateInput($i, true) => Phone::buildFromInput($i, $validate),
+            Ns\NestedTypedArrayProperty\Fio::validateInput($i, true) => Fio::buildFromInput($i, $validate),
         }, $i), $input->{'dataArrayNestedAnyOf'}) : null;
 
         $obj = new self();
