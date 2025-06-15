@@ -47,12 +47,14 @@ readonly class ReferencedTypeClass implements ReferencedType
 
     public function typeAssertionExpr(GeneratorRequest $req, string $expr): string
     {
-        return "({$expr}) instanceof {$this->className}";
+        $cls = ltrim($this->relativeName($req), '\\');
+        return "({$expr}) instanceof {$cls}";
     }
 
     public function inputAssertionExpr(GeneratorRequest $req, string $expr): string
     {
-        return "{$this->className}::validateInput({$expr}, true)";
+        $cls = $this->relativeName($req);
+        return "{$cls}::validateInput({$expr}, true)";
     }
 
     public function inputMappingExpr(GeneratorRequest $req, string $expr, ?string $validateExpr): string
