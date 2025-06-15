@@ -29,6 +29,7 @@ class SchemaToClass
 {
     private WriterInterface $writer;
     private SchemaToEnum $enumGenerator;
+    private OutputInterface $output;
 
     /**
      * @phpstan-ignore constructor.unusedParameter (kept for backwards compatibility)
@@ -36,6 +37,7 @@ class SchemaToClass
     public function __construct(WriterInterface $writer, OutputInterface $output)
     {
         $this->writer = $writer;
+        $this->output = $output;
         $this->enumGenerator = new SchemaToEnum($writer);
     }
 
@@ -186,14 +188,27 @@ class SchemaToClass
         $content = preg_replace('/ : \\\\self/', ' : self', $content);
 
         // Remove current namespace from all class names
-        $content = preg_replace('/\\\\' . preg_quote($req->getTargetNamespace(), '/') . '\\\\/', '\\', $content);
+        $ns_pattern = '/\\\\' . preg_quote($req->getTargetNamespace(), '/') . '\\\\/';
+        if (str_contains($content, 'AddressAdminData')) {
+            $this->output->writeln('$ns_pattern:');
+            $this->output->writeln($ns_pattern);
+            $this->output->writeln('$content:');
+            $this->output->writeln('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
+            $this->output->writeln($content);
+            $this->output->writeln('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
+        }
+        $content = preg_replace($ns_pattern, '\\', $content);
 
         // Remove "\" before class names that we just generated (as they're all in the current namespace)
         $ownClasses = $req->getGeneratedClassNames();
         if ($ownClasses) {
             $escapedOwnClasses = array_map(fn ($n) => preg_quote($n, '/'), $ownClasses);
-            $pattern = '/\\\\(' . join('|', $escapedOwnClasses) . ')(?=\s|[,;)]|$)/';
-            $content = preg_replace($pattern, '$1', $content);
+            $root_ns_pattern = '/\\\\(' . join('|', $escapedOwnClasses) . ')(?=\s|[,;)]|$)/';
+        if (str_contains($content, 'AddressAdminData')) {
+            $this->output->writeln('$root_ns_pattern:');
+            $this->output->writeln($root_ns_pattern);
+        }
+            $content = preg_replace($root_ns_pattern, '$1', $content);
         }
 
         $this->writer->writeFile($filename, $content);
