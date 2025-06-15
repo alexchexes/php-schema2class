@@ -43,11 +43,6 @@ class SchemaToClassTest extends TestCase
 
             $optionsFile = join(DIRECTORY_SEPARATOR, [$testCaseDir, $entry, "options.yaml"]);
             $outputDir  = join(DIRECTORY_SEPARATOR, [$testCaseDir, $entry, "Output"]);
-            $output     = @opendir($outputDir);
-
-            if ($output === false) {
-                throw new \Exception("Could not open output directory for test case '{$entry}'");
-            }
 
             $expectedFiles = [];
             $schema        = (new SchemaLoader())->loadSchema($schemaFile);
@@ -60,12 +55,14 @@ class SchemaToClassTest extends TestCase
                 $opts = SpecificationOptions::buildFromInput($optsYaml);
             }
 
-            while ($outputEntry = readdir($output)) {
-                if (substr($outputEntry, -4) !== ".php") {
+            $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($outputDir));
+            foreach ($iterator as $fileInfo) {
+                if (!$fileInfo->isFile() || $fileInfo->getExtension() !== 'php') {
                     continue;
                 }
 
-                $expectedFiles[$outputEntry] = trim(file_get_contents(join(DIRECTORY_SEPARATOR, [$outputDir, $outputEntry])));
+                $relativePath = substr($fileInfo->getPathname(), strlen($outputDir) + 1);
+                $expectedFiles[$relativePath] = trim(file_get_contents($fileInfo->getPathname()));
             }
 
             $testCases[$entry] = [$entry, $schema, $expectedFiles, $opts];
@@ -130,65 +127,7 @@ class SchemaToClassTest extends TestCase
         $writer   = new DebugWriter($output);
         $factory  = new SchemaToClassFactory();
 
-        $collectAllLocalRefs = static function (array $schema, array $allDefinitions) {
-            $needed  = [];
-            $queue   = [$schema];
-            $visited = [];
-
-            while ($cur = array_pop($queue)) {
-                $iter = function ($node) use (&$iter, &$needed, &$queue, &$visited, $allDefinitions) {
-                    if (is_array($node)) {
-                        foreach ($node as $k => $v) {
-                            if ($k === '$ref'
-                                && is_string($v)
-                                && str_starts_with($v, '#/definitions/')) {
-                                $name = substr($v, 14);
-                                if (!isset($visited[$name])) {
-                                    $visited[$name] = true;
-                                    $needed[]       = $name;
-
-                                    if (isset($allDefinitions[$name])) {
-                                        $queue[] = $allDefinitions[$name];
-                                    }
-                                }
-                            } elseif (is_array($v)) {
-                                $iter($v);
-                            }
-                        }
-                    }
-                };
-                $iter($cur);
-            }
-
-            return $needed;
-        };
-
-        $generatedClasses = array_keys($definitions);
-        $generatedClasses[] = $req->getTargetClass();
-
-        foreach ($definitions as $defName => $defSchema) {
-            $deps        = $collectAllLocalRefs($defSchema, $definitions);
-            $trimmedDefs = array_intersect_key($definitions, array_flip($deps));
-
-            $defReq = $req
-                ->withClass($defName)
-                ->withSchema($defSchema)
-                ->withRootDefinitions($trimmedDefs)
-                ->withGeneratedClassNames($generatedClasses);
-
-            $factory->build($writer, $output)->schemaToClass($defReq);
-        }
-
-        $req = $req
-            ->withRootDefinitions($definitions)
-            ->withGeneratedClassNames($generatedClasses);
-
-        if (NestedObjectProperty::canHandleSchema($schema)
-            || IntersectProperty::canHandleSchema($schema)
-            || isset($schema['enum'])
-        ) {
-            $factory->build($writer, $output)->schemaToClass($req);
-        }
+        $factory->build($writer, $output)->schemaToClass($req);
 
         $writtenFiles = $writer->getWrittenFiles();
 

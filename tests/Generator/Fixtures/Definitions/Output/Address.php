@@ -37,9 +37,9 @@ class Address
     ];
 
     /**
-     * @var Ns\Definitions\Address\Defs\Name|null
+     * @var Address\Defs\Name|null
      */
-    private ?Ns\Definitions\Address\DefsName $name = null;
+    private ?Address\DefsName $name = null;
 
     /**
      * @var string
@@ -55,9 +55,9 @@ class Address
     }
 
     /**
-     * @return Ns\Definitions\Address\Defs\Name|null
+     * @return Address\Defs\Name|null
      */
-    public function getName() : ?Address\DefsName
+    public function getName() : ?\Address\DefsName
     {
         return $this->name ?? null;
     }
@@ -71,10 +71,10 @@ class Address
     }
 
     /**
-     * @param Ns\Definitions\Address\DefsName $name
+     * @param Address\DefsName $name
      * @return self
      */
-    public function withName(Address\DefsName $name) : self
+    public function withName(\Address\DefsName $name) : self
     {
         $clone = clone $this;
         $clone->name = $name;

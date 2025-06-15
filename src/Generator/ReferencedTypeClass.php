@@ -15,15 +15,24 @@ readonly class ReferencedTypeClass implements ReferencedType
         return $this->className;
     }
 
+    private function relativeName(GeneratorRequest $req): string
+    {
+        $ns = $req->getTargetNamespace();
+        if ($ns !== '' && str_starts_with($this->className, $ns . '\\')) {
+            return substr($this->className, strlen($ns) + 1);
+        }
+
+        return '\\' . $this->className;
+    }
+
     public function typeAnnotation(GeneratorRequest $req): string
     {
-        // No leading backslash: class name resolves to current namespace
-        return $this->className;
+        return ltrim($this->relativeName($req), '\\');
     }
 
     public function typeHint(GeneratorRequest $req): ?string
     {
-        return $this->className;
+        return $this->relativeName($req);
     }
 
     public function serializedInputTypeHint(GeneratorRequest $req): ?string

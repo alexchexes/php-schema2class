@@ -62,9 +62,9 @@ class Foo
     private int $id;
 
     /**
-     * @var Ns\Definitions\Address|null
+     * @var Address|null
      */
-    private ?Ns\DefinitionsAddress $address = null;
+    private ?Address $address = null;
 
     /**
      * @param int $id
@@ -83,7 +83,7 @@ class Foo
     }
 
     /**
-     * @return Ns\Definitions\Address|null
+     * @return Address|null
      */
     public function getAddress() : ?Address
     {
@@ -109,7 +109,7 @@ class Foo
     }
 
     /**
-     * @param Ns\DefinitionsAddress $address
+     * @param Address $address
      * @return self
      */
     public function withAddress(Address $address) : self
