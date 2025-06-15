@@ -62,7 +62,7 @@ class Foo
     private int $id;
 
     /**
-     * @var Ns\DefinitionsAddress|null
+     * @var Ns\Definitions\Address|null
      */
     private ?Ns\DefinitionsAddress $address = null;
 
@@ -83,7 +83,7 @@ class Foo
     }
 
     /**
-     * @return Ns\DefinitionsAddress|null
+     * @return Ns\Definitions\Address|null
      */
     public function getAddress() : ?Address
     {

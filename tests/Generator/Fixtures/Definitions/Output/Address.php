@@ -71,7 +71,7 @@ class Address
     }
 
     /**
-     * @param Ns\Definitions\Address\Defs\Name $name
+     * @param Ns\Definitions\Address\DefsName $name
      * @return self
      */
     public function withName(Address\DefsName $name) : self

@@ -31,9 +31,9 @@ class Bar
     ];
 
     /**
-     * @var Foo|null
+     * @var Ns\DefinitionsPropertyRef\Foo|null
      */
-    private ?Foo $a = null;
+    private ?Ns\DefinitionsPropertyRefFoo $a = null;
 
     /**
      *
@@ -43,7 +43,7 @@ class Bar
     }
 
     /**
-     * @return Foo|null
+     * @return Ns\DefinitionsPropertyRef\Foo|null
      */
     public function getA() : ?Foo
     {
@@ -51,7 +51,7 @@ class Bar
     }
 
     /**
-     * @param Foo $a
+     * @param Ns\DefinitionsPropertyRefFoo $a
      * @return self
      */
     public function withA(Foo $a) : self
@@ -94,7 +94,7 @@ class Bar
             static::validateInput($input);
         }
 
-        $a = isset($input->{'a'}) ? Foo::buildFromInput($input->{'a'}, $validate) : null;
+        $a = isset($input->{'a'}) ? Ns\DefinitionsPropertyRef\Foo::buildFromInput($input->{'a'}, $validate) : null;
 
         $obj = new self();
         $obj->a = $a;
