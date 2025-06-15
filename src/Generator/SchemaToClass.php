@@ -186,7 +186,7 @@ class SchemaToClass
         $content = preg_replace('/ : \\\\self/', ' : self', $content);
 
         // Remove current namespace from all class names
-        $content = preg_replace('/\\\\' . preg_quote($req->getTargetNamespace(), '/') . '\\\\/', '\\', $content);
+        $content = preg_replace('/\\\\' . preg_quote($req->getTargetNamespace(), '/') . '\\\\/', '', $content);
 
         // Remove "\" before class names that we just generated (as they're all in the current namespace)
         $ownClasses = $req->getGeneratedClassNames();
