@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ns\NestedTypedArrayProperty;
+namespace Ns\DefinitionsRefs\Definitions;
 
-class Fio
+class Foo
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -14,11 +14,8 @@ class Fio
     private static array $schema = [
         'type' => 'object',
         'properties' => [
-            'bar' => [
-                'type' => [
-                    'null',
-                    'string',
-                ],
+            'a' => [
+                'type' => 'string',
             ],
         ],
     ];
@@ -26,7 +23,7 @@ class Fio
     /**
      * @var string|null
      */
-    private ?string $bar = null;
+    private ?string $a = null;
 
     /**
      *
@@ -38,25 +35,25 @@ class Fio
     /**
      * @return string|null
      */
-    public function getBar() : ?string
+    public function getA() : ?string
     {
-        return $this->bar ?? null;
+        return $this->a ?? null;
     }
 
     /**
-     * @param string $bar
+     * @param string $a
      * @return self
      */
-    public function withBar(string $bar) : self
+    public function withA(string $a) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($bar, self::$schema['properties']['bar']);
+        $validator->validate($a, self::$schema['properties']['a']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
 
         $clone = clone $this;
-        $clone->bar = $bar;
+        $clone->a = $a;
 
         return $clone;
     }
@@ -64,10 +61,10 @@ class Fio
     /**
      * @return self
      */
-    public function withoutBar() : self
+    public function withoutA() : self
     {
         $clone = clone $this;
-        unset($clone->bar);
+        unset($clone->a);
 
         return $clone;
     }
@@ -77,10 +74,10 @@ class Fio
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
-     * @return Fio Created instance
+     * @return Foo Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : Fio
+    public static function buildFromInput(array|object $input, bool $validate = true) : Foo
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
@@ -93,10 +90,10 @@ class Fio
             static::validateInput($input);
         }
 
-        $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
+        $a = isset($input->{'a'}) ? $input->{'a'} : null;
 
         $obj = new self();
-        $obj->bar = $bar;
+        $obj->a = $a;
         return $obj;
     }
 
@@ -108,8 +105,8 @@ class Fio
     public function toJson() : array
     {
         $output = [];
-        if (isset($this->bar)) {
-            $output['bar'] = $this->bar;
+        if (isset($this->a)) {
+            $output['a'] = $this->a;
         }
 
         return $output;

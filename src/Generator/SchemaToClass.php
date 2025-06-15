@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class\Generator;
 
 use Helmich\Schema2Class\Codegen\PropertyGenerator;
+use Helmich\Schema2Class\Generator\Definitions\Definition;
+use Helmich\Schema2Class\Generator\Definitions\DefinitionsCollector;
+use Helmich\Schema2Class\Generator\Definitions\DefinitionsGenerator;
+use Helmich\Schema2Class\Generator\DefinitionsReferenceLookup;
 use Helmich\Schema2Class\Generator\Property\IntersectProperty;
 use Helmich\Schema2Class\Generator\Property\NestedObjectProperty;
 use Helmich\Schema2Class\Generator\Property\PropertyCollection;
@@ -60,6 +64,10 @@ class SchemaToClass
             $schema = $req->lookupSchema($schema['$ref']);
         }
 
+        $req = $req->withSchema($schema);
+        $this->definitionsToSchemas($req);
+        $schema = $req->getSchema();
+
         if (isset($schema["enum"])) {
             $this->enumGenerator->schemaToEnum($req);
             return;
@@ -67,10 +75,9 @@ class SchemaToClass
 
         if (IntersectProperty::canHandleSchema($schema)) {
             $schema = (new IntersectProperty($req->getTargetClass(), $schema, $req))->buildSchemaIntersect();
-        }
-
-        if (!NestedObjectProperty::canHandleSchema($schema)) {
-            throw new GeneratorException("cannot generate class for types other than 'object'");
+        } elseif (!NestedObjectProperty::canHandleSchema($schema)) {
+            // If the schema does not describe an object we only generate definitions
+            return;
         }
 
         // remove descriptions from schema if such option is set, but keep them
@@ -213,5 +220,25 @@ class SchemaToClass
             }
             $used[] = $unique;
         }
+    }
+
+    private function definitionsToSchemas(GeneratorRequest &$req): void
+    {
+        if ($req->hasReferenceLookup(DefinitionsReferenceLookup::class)) {
+            return;
+        }
+
+        $collector = new DefinitionsCollector($req);
+        $collected  = iterator_to_array($collector->collect($req->getSchema()));
+
+        $generatedClasses = array_map(static fn(Definitions\Definition $d) => $d->className, $collected);
+        $generatedClasses[] = $req->getTargetClass();
+
+        $req = $req
+            ->withAdditionalReferenceLookup(new DefinitionsReferenceLookup($collected))
+            ->withGeneratedClassNames($generatedClasses);
+
+        $generator = new DefinitionsGenerator($this);
+        $generator->generate($collected, $req);
     }
 }

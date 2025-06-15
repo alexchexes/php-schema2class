@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ns\DefinitionsRefs;
+namespace Ns\DefinitionsPropertyRef\Definitions;
 
 class Bar
 {
@@ -15,15 +15,15 @@ class Bar
         'type' => 'object',
         'properties' => [
             'a' => [
-                'type' => 'string',
+                '$ref' => '#/definitions/Foo',
             ],
         ],
     ];
 
     /**
-     * @var string|null
+     * @var Ns\DefinitionsPropertyRef\Definitions\Foo|null
      */
-    private ?string $a = null;
+    private ?Ns\DefinitionsPropertyRef\DefinitionsFoo $a = null;
 
     /**
      *
@@ -33,25 +33,19 @@ class Bar
     }
 
     /**
-     * @return string|null
+     * @return Ns\DefinitionsPropertyRef\Definitions\Foo|null
      */
-    public function getA() : ?string
+    public function getA() : ?Foo
     {
         return $this->a ?? null;
     }
 
     /**
-     * @param string $a
+     * @param Ns\DefinitionsPropertyRef\DefinitionsFoo $a
      * @return self
      */
-    public function withA(string $a) : self
+    public function withA(Foo $a) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($a, self::$schema['properties']['a']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-        }
-
         $clone = clone $this;
         $clone->a = $a;
 
@@ -90,7 +84,7 @@ class Bar
             static::validateInput($input);
         }
 
-        $a = isset($input->{'a'}) ? $input->{'a'} : null;
+        $a = isset($input->{'a'}) ? Ns\DefinitionsPropertyRef\Definitions\Foo::buildFromInput($input->{'a'}, $validate) : null;
 
         $obj = new self();
         $obj->a = $a;
@@ -106,7 +100,7 @@ class Bar
     {
         $output = [];
         if (isset($this->a)) {
-            $output['a'] = $this->a;
+            $output['a'] = $this->a->toJson();
         }
 
         return $output;
