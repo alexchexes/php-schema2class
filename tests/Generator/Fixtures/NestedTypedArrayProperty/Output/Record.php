@@ -91,22 +91,22 @@ class Record
     ];
 
     /**
-     * @var Phone[]|null
+     * @var Ns\NestedTypedArrayProperty\Phone[]|null
      */
     private ?array $dataArray = null;
 
     /**
-     * @var Phone[][]|null
+     * @var Ns\NestedTypedArrayProperty\Phone[][]|null
      */
     private ?array $dataArrayNested = null;
 
     /**
-     * @var (Phone|Fio)[]|null
+     * @var (Ns\NestedTypedArrayProperty\Phone|Ns\NestedTypedArrayPropertyFio)[]|null
      */
     private ?array $dataArrayAnyOf = null;
 
     /**
-     * @var ((Phone|Fio)[])[]|null
+     * @var ((Ns\NestedTypedArrayProperty\Phone|Ns\NestedTypedArrayPropertyFio)[])[]|null
      */
     private ?array $dataArrayNestedAnyOf = null;
 
@@ -118,7 +118,7 @@ class Record
     }
 
     /**
-     * @return Phone[]|null
+     * @return Ns\NestedTypedArrayProperty\Phone[]|null
      */
     public function getDataArray() : ?array
     {
@@ -126,7 +126,7 @@ class Record
     }
 
     /**
-     * @return Phone[][]|null
+     * @return Ns\NestedTypedArrayProperty\Phone[][]|null
      */
     public function getDataArrayNested() : ?array
     {
@@ -134,7 +134,7 @@ class Record
     }
 
     /**
-     * @return (Phone|Fio)[]|null
+     * @return (Ns\NestedTypedArrayProperty\Phone|Ns\NestedTypedArrayPropertyFio)[]|null
      */
     public function getDataArrayAnyOf() : ?array
     {
@@ -142,7 +142,7 @@ class Record
     }
 
     /**
-     * @return ((Phone|Fio)[])[]|null
+     * @return ((Ns\NestedTypedArrayProperty\Phone|Ns\NestedTypedArrayPropertyFio)[])[]|null
      */
     public function getDataArrayNestedAnyOf() : ?array
     {
@@ -150,7 +150,7 @@ class Record
     }
 
     /**
-     * @param Phone[] $dataArray
+     * @param Ns\NestedTypedArrayProperty\Phone[] $dataArray
      * @return self
      */
     public function withDataArray(array $dataArray) : self
@@ -179,7 +179,7 @@ class Record
     }
 
     /**
-     * @param Phone[][] $dataArrayNested
+     * @param Ns\NestedTypedArrayProperty\Phone[][] $dataArrayNested
      * @return self
      */
     public function withDataArrayNested(array $dataArrayNested) : self
@@ -208,7 +208,7 @@ class Record
     }
 
     /**
-     * @param (Phone|Fio)[] $dataArrayAnyOf
+     * @param (Ns\NestedTypedArrayProperty\Phone|Ns\NestedTypedArrayPropertyFio)[] $dataArrayAnyOf
      * @return self
      */
     public function withDataArrayAnyOf(array $dataArrayAnyOf) : self
@@ -237,7 +237,7 @@ class Record
     }
 
     /**
-     * @param ((Phone|Fio)[])[] $dataArrayNestedAnyOf
+     * @param ((Ns\NestedTypedArrayProperty\Phone|Ns\NestedTypedArrayPropertyFio)[])[] $dataArrayNestedAnyOf
      * @return self
      */
     public function withDataArrayNestedAnyOf(array $dataArrayNestedAnyOf) : self
@@ -286,17 +286,17 @@ class Record
             static::validateInput($input);
         }
 
-        $dataArray = isset($input->{'dataArray'}) ? array_map(fn(array|object $i): Phone => Phone::buildFromInput($i, $validate), $input->{'dataArray'}) : null;
-        $dataArrayNested = isset($input->{'dataArrayNested'}) ? array_map(fn($i) => array_map(fn(array|object $i): Phone => Phone::buildFromInput($i, $validate), $i), $input->{'dataArrayNested'}) : null;
+        $dataArray = isset($input->{'dataArray'}) ? array_map(fn(array|object $i): Ns\NestedTypedArrayPropertyPhone => Ns\NestedTypedArrayProperty\Phone::buildFromInput($i, $validate), $input->{'dataArray'}) : null;
+        $dataArrayNested = isset($input->{'dataArrayNested'}) ? array_map(fn($i) => array_map(fn(array|object $i): Ns\NestedTypedArrayPropertyPhone => Ns\NestedTypedArrayProperty\Phone::buildFromInput($i, $validate), $i), $input->{'dataArrayNested'}) : null;
         $dataArrayAnyOf = isset($input->{'dataArrayAnyOf'}) ? array_map(fn($i) => match (true) {
             default => null,
-            Phone::validateInput($i, true) => Phone::buildFromInput($i, $validate),
-            Fio::validateInput($i, true) => Fio::buildFromInput($i, $validate),
+            Ns\NestedTypedArrayProperty\Phone::validateInput($i, true) => Ns\NestedTypedArrayProperty\Phone::buildFromInput($i, $validate),
+            Ns\NestedTypedArrayProperty\Fio::validateInput($i, true) => Ns\NestedTypedArrayProperty\Fio::buildFromInput($i, $validate),
         }, $input->{'dataArrayAnyOf'}) : null;
         $dataArrayNestedAnyOf = isset($input->{'dataArrayNestedAnyOf'}) ? array_map(fn($i) => array_map(fn($i) => match (true) {
             default => null,
-            Phone::validateInput($i, true) => Phone::buildFromInput($i, $validate),
-            Fio::validateInput($i, true) => Fio::buildFromInput($i, $validate),
+            Ns\NestedTypedArrayProperty\Phone::validateInput($i, true) => Ns\NestedTypedArrayProperty\Phone::buildFromInput($i, $validate),
+            Ns\NestedTypedArrayProperty\Fio::validateInput($i, true) => Ns\NestedTypedArrayProperty\Fio::buildFromInput($i, $validate),
         }, $i), $input->{'dataArrayNestedAnyOf'}) : null;
 
         $obj = new self();
@@ -316,21 +316,21 @@ class Record
     {
         $output = [];
         if (isset($this->dataArray)) {
-            $output['dataArray'] = array_map(fn(Phone $i): array => $i->toJson(), $this->dataArray);
+            $output['dataArray'] = array_map(fn(Ns\NestedTypedArrayPropertyPhone $i): array => $i->toJson(), $this->dataArray);
         }
         if (isset($this->dataArrayNested)) {
-            $output['dataArrayNested'] = array_map(fn($i) => array_map(fn(Phone $i): array => $i->toJson(), $i), $this->dataArrayNested);
+            $output['dataArrayNested'] = array_map(fn($i) => array_map(fn(Ns\NestedTypedArrayPropertyPhone $i): array => $i->toJson(), $i), $this->dataArrayNested);
         }
         if (isset($this->dataArrayAnyOf)) {
             $output['dataArrayAnyOf'] = array_map(fn($i) => match (true) {
                 default => null,
-                ($i) instanceof Phone, ($i) instanceof Fio => $i->toJson(),
+                ($i) instanceof Ns\NestedTypedArrayPropertyPhone, ($i) instanceof Ns\NestedTypedArrayPropertyFio => $i->toJson(),
             }, $this->dataArrayAnyOf);
         }
         if (isset($this->dataArrayNestedAnyOf)) {
             $output['dataArrayNestedAnyOf'] = array_map(fn($i) => array_map(fn($i) => match (true) {
                 default => null,
-                ($i) instanceof Phone, ($i) instanceof Fio => $i->toJson(),
+                ($i) instanceof Ns\NestedTypedArrayPropertyPhone, ($i) instanceof Ns\NestedTypedArrayPropertyFio => $i->toJson(),
             }, $i), $this->dataArrayNestedAnyOf);
         }
 
@@ -368,12 +368,12 @@ class Record
         }
         if (isset($this->dataArrayAnyOf)) {
             $this->dataArrayAnyOf = array_map(fn($i) => match (true) {
-                ($i) instanceof Phone, ($i) instanceof Fio => $i,
+                ($i) instanceof Ns\NestedTypedArrayPropertyPhone, ($i) instanceof Ns\NestedTypedArrayPropertyFio => $i,
             }, $this->dataArrayAnyOf);
         }
         if (isset($this->dataArrayNestedAnyOf)) {
             $this->dataArrayNestedAnyOf = array_map(fn($i) => array_map(fn($i) => match (true) {
-                ($i) instanceof Phone, ($i) instanceof Fio => $i,
+                ($i) instanceof Ns\NestedTypedArrayPropertyPhone, ($i) instanceof Ns\NestedTypedArrayPropertyFio => $i,
             }, $i), $this->dataArrayNestedAnyOf);
         }
     }

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ns\ArrayProperty;
+namespace Ns\Definitions;
 
-class Record
+class Foo
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -12,63 +12,110 @@ class Record
      * @var array
      */
     private static array $schema = [
+        '$schema' => 'http://json-schema.org/draft-07/schema#',
+        '$id' => 'http://json-schema.org/draft-07/schema#',
+        'title' => 'definitions test',
         'type' => 'object',
-        'properties' => [
-            'dataArray' => [
-                'type' => 'array',
-                'items' => [
-                    '$ref' => '#/definitions/Phone',
-                ],
-                'minItems' => 1,
-                'maxItems' => 1,
-            ],
-        ],
+        'additionalProperties' => false,
         'definitions' => [
-            'Phone' => [
+            'address' => [
                 'type' => 'object',
                 'properties' => [
-                    'foo' => [
+                    'name' => [
+                        '$ref' => '#/definitions/address/$defs/name',
+                    ],
+                    'city' => [
                         'type' => 'string',
+                    ],
+                ],
+                'required' => [
+                    'city',
+                ],
+                '$defs' => [
+                    'name' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'first' => [
+                                'type' => 'string',
+                            ],
+                        ],
                     ],
                 ],
             ],
         ],
+        'properties' => [
+            'id' => [
+                'type' => 'integer',
+            ],
+            'address' => [
+                '$ref' => '#/definitions/address',
+            ],
+        ],
+        'required' => [
+            'id',
+        ],
     ];
 
     /**
-     * @var Ns\ArrayProperty\Phone[]|null
+     * @var int
      */
-    private ?array $dataArray = null;
+    private int $id;
 
     /**
-     *
+     * @var Ns\Definitions\Address|null
      */
-    public function __construct()
+    private ?Ns\DefinitionsAddress $address = null;
+
+    /**
+     * @param int $id
+     */
+    public function __construct(int $id)
     {
+        $this->id = $id;
     }
 
     /**
-     * @return Ns\ArrayProperty\Phone[]|null
+     * @return int
      */
-    public function getDataArray() : ?array
+    public function getId() : int
     {
-        return $this->dataArray ?? null;
+        return $this->id;
     }
 
     /**
-     * @param Ns\ArrayProperty\Phone[] $dataArray
+     * @return Ns\Definitions\Address|null
+     */
+    public function getAddress() : ?Address
+    {
+        return $this->address ?? null;
+    }
+
+    /**
+     * @param int $id
      * @return self
      */
-    public function withDataArray(array $dataArray) : self
+    public function withId(int $id) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($dataArray, self::$schema['properties']['dataArray']);
+        $validator->validate($id, self::$schema['properties']['id']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
 
         $clone = clone $this;
-        $clone->dataArray = $dataArray;
+        $clone->id = $id;
+
+        return $clone;
+    }
+
+    /**
+     * @param Ns\DefinitionsAddress $address
+     * @return self
+     */
+    public function withAddress(Address $address) : self
+    {
+        $clone = clone $this;
+        $clone->address = $address;
 
         return $clone;
     }
@@ -76,10 +123,10 @@ class Record
     /**
      * @return self
      */
-    public function withoutDataArray() : self
+    public function withoutAddress() : self
     {
         $clone = clone $this;
-        unset($clone->dataArray);
+        unset($clone->address);
 
         return $clone;
     }
@@ -89,10 +136,10 @@ class Record
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
-     * @return Record Created instance
+     * @return Foo Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : Record
+    public static function buildFromInput(array|object $input, bool $validate = true) : Foo
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
@@ -105,10 +152,11 @@ class Record
             static::validateInput($input);
         }
 
-        $dataArray = isset($input->{'dataArray'}) ? array_map(fn(array|object $i): Ns\ArrayPropertyPhone => Ns\ArrayProperty\Phone::buildFromInput($i, $validate), $input->{'dataArray'}) : null;
+        $id = (int)($input->{'id'});
+        $address = isset($input->{'address'}) ? Ns\Definitions\Address::buildFromInput($input->{'address'}, $validate) : null;
 
-        $obj = new self();
-        $obj->dataArray = $dataArray;
+        $obj = new self($id);
+        $obj->address = $address;
         return $obj;
     }
 
@@ -120,8 +168,9 @@ class Record
     public function toJson() : array
     {
         $output = [];
-        if (isset($this->dataArray)) {
-            $output['dataArray'] = array_map(fn(Ns\ArrayPropertyPhone $i): array => $i->toJson(), $this->dataArray);
+        $output['id'] = $this->id;
+        if (isset($this->address)) {
+            $output['address'] = $this->address->toJson();
         }
 
         return $output;
