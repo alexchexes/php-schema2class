@@ -53,9 +53,12 @@ with accessor and conversion functions:
 $ vendor/bin/s2c generate:fromschema --class User ./example.yaml src/Target
 # or
 $ vendor/bin/s2c generate:fromschema --class User ./example.json src/Target
+
+# From Windows' Command Line:
+php vendor\bin\s2c generate:fromschema [options]
 ```
 
-This command will automatically try to infer a PHP target namespace from your `composer.json` file and automatically create the appropriate PHP classes:
+This command will automatically try to infer a PHP target namespace from your `composer.json` file and automatically create the PHP classes:
 
 ```bash
 $ find src/Target
