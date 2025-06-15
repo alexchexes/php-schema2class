@@ -41,9 +41,15 @@ class DefinitionsCollector
 
     private function pathToDefinition(string $path, array $schema): Definition
     {
+        $segments = explode('/', ltrim(str_replace('$defs', 'Defs', $path), '#/'));
+        $segments = array_values(array_filter($segments, static fn(string $p) => $p !== 'definitions'));
+        if (isset($segments[0]) && $segments[0] === 'Defs') {
+            array_shift($segments);
+        }
+
         $parts = array_map(
             static fn(string $part) => str_replace(' ', '', ucwords(str_replace('_', ' ', $part))),
-            explode('/', ltrim(str_replace('$defs', 'Defs', $path), '#/'))
+            $segments
         );
 
         $className = array_pop($parts);

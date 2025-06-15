@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ns\DefinitionsIndependet\Definitions;
+namespace Ns\DefinitionsRefs;
 
-class Foo
+class Bar
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -74,10 +74,10 @@ class Foo
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
-     * @return Foo Created instance
+     * @return Bar Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : Foo
+    public static function buildFromInput(array|object $input, bool $validate = true) : Bar
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(

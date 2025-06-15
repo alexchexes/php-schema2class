@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ns\DefinitionsPropertyRef\Definitions;
+namespace Ns\DefinitionsIndependet;
 
 class Foo
 {

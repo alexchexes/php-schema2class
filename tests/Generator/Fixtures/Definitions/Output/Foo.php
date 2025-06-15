@@ -62,9 +62,9 @@ class Foo
     private int $id;
 
     /**
-     * @var Ns\Definitions\Definitions\Address|null
+     * @var Ns\DefinitionsAddress|null
      */
-    private ?Ns\Definitions\DefinitionsAddress $address = null;
+    private ?Ns\DefinitionsAddress $address = null;
 
     /**
      * @param int $id
@@ -83,9 +83,9 @@ class Foo
     }
 
     /**
-     * @return Ns\Definitions\Definitions\Address|null
+     * @return Ns\DefinitionsAddress|null
      */
-    public function getAddress() : ?DefinitionsAddress
+    public function getAddress() : ?Address
     {
         return $this->address ?? null;
     }
@@ -109,10 +109,10 @@ class Foo
     }
 
     /**
-     * @param Ns\Definitions\DefinitionsAddress $address
+     * @param Ns\DefinitionsAddress $address
      * @return self
      */
-    public function withAddress(DefinitionsAddress $address) : self
+    public function withAddress(Address $address) : self
     {
         $clone = clone $this;
         $clone->address = $address;
@@ -153,7 +153,7 @@ class Foo
         }
 
         $id = (int)($input->{'id'});
-        $address = isset($input->{'address'}) ? Ns\Definitions\Definitions\Address::buildFromInput($input->{'address'}, $validate) : null;
+        $address = isset($input->{'address'}) ? Ns\Definitions\Address::buildFromInput($input->{'address'}, $validate) : null;
 
         $obj = new self($id);
         $obj->address = $address;

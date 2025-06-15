@@ -64,17 +64,17 @@ final class SchemaDefinitionsCollectorTest extends TestCase
         $this->assertInstanceOf(Definition::class, $definitions['#/definitions/address']);
         $this->assertInstanceOf(Definition::class, $definitions['#/definitions/address/$defs/name']);
 
-        $this->assertSame('TargetNamespace\Defs', $definitions['#/$defs/address']->namespace);
-        $this->assertSame('TargetNamespace\Definitions', $definitions['#/definitions/address']->namespace);
-        $this->assertSame('TargetNamespace\Definitions\Address\Defs', $definitions['#/definitions/address/$defs/name']->namespace);
+        $this->assertSame('TargetNamespace', $definitions['#/$defs/address']->namespace);
+        $this->assertSame('TargetNamespace', $definitions['#/definitions/address']->namespace);
+        $this->assertSame('TargetNamespace\Address\Defs', $definitions['#/definitions/address/$defs/name']->namespace);
 
-        $this->assertSame('targetDirectory/Defs', $definitions['#/$defs/address']->directory);
-        $this->assertSame('targetDirectory/Definitions', $definitions['#/definitions/address']->directory);
-        $this->assertSame('targetDirectory/Definitions/Address/Defs', $definitions['#/definitions/address/$defs/name']->directory);
+        $this->assertSame('targetDirectory', $definitions['#/$defs/address']->directory);
+        $this->assertSame('targetDirectory', $definitions['#/definitions/address']->directory);
+        $this->assertSame('targetDirectory/Address/Defs', $definitions['#/definitions/address/$defs/name']->directory);
 
-        $this->assertSame('TargetNamespace\Defs\Address', $definitions['#/$defs/address']->classFQN);
-        $this->assertSame('TargetNamespace\Definitions\Address', $definitions['#/definitions/address']->classFQN);
-        $this->assertSame('TargetNamespace\Definitions\Address\Defs\Name', $definitions['#/definitions/address/$defs/name']->classFQN);
+        $this->assertSame('TargetNamespace\Address', $definitions['#/$defs/address']->classFQN);
+        $this->assertSame('TargetNamespace\Address', $definitions['#/definitions/address']->classFQN);
+        $this->assertSame('TargetNamespace\Address\Defs\Name', $definitions['#/definitions/address/$defs/name']->classFQN);
 
         $this->assertSame('Address', $definitions['#/$defs/address']->className);
         $this->assertSame('Address', $definitions['#/definitions/address']->className);

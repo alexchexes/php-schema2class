@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ns\NestedTypedArrayProperty\Definitions;
+namespace Ns\Definitions;
 
-class Fio
+class Address
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -14,49 +14,70 @@ class Fio
     private static array $schema = [
         'type' => 'object',
         'properties' => [
-            'bar' => [
-                'type' => [
-                    'null',
-                    'string',
+            'name' => [
+                '$ref' => '#/definitions/address/$defs/name',
+            ],
+            'city' => [
+                'type' => 'string',
+            ],
+        ],
+        'required' => [
+            'city',
+        ],
+        '$defs' => [
+            'name' => [
+                'type' => 'object',
+                'properties' => [
+                    'first' => [
+                        'type' => 'string',
+                    ],
                 ],
             ],
         ],
     ];
 
     /**
-     * @var string|null
+     * @var Ns\Definitions\Address\Defs\Name|null
      */
-    private ?string $bar = null;
+    private ?Ns\Definitions\Address\DefsName $name = null;
 
     /**
-     *
+     * @var string
      */
-    public function __construct()
+    private string $city;
+
+    /**
+     * @param string $city
+     */
+    public function __construct(string $city)
     {
+        $this->city = $city;
     }
 
     /**
-     * @return string|null
+     * @return Ns\Definitions\Address\Defs\Name|null
      */
-    public function getBar() : ?string
+    public function getName() : ?Address\DefsName
     {
-        return $this->bar ?? null;
+        return $this->name ?? null;
     }
 
     /**
-     * @param string $bar
+     * @return string
+     */
+    public function getCity() : string
+    {
+        return $this->city;
+    }
+
+    /**
+     * @param Ns\Definitions\Address\Defs\Name $name
      * @return self
      */
-    public function withBar(string $bar) : self
+    public function withName(Address\DefsName $name) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($bar, self::$schema['properties']['bar']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-        }
-
         $clone = clone $this;
-        $clone->bar = $bar;
+        $clone->name = $name;
 
         return $clone;
     }
@@ -64,10 +85,28 @@ class Fio
     /**
      * @return self
      */
-    public function withoutBar() : self
+    public function withoutName() : self
     {
         $clone = clone $this;
-        unset($clone->bar);
+        unset($clone->name);
+
+        return $clone;
+    }
+
+    /**
+     * @param string $city
+     * @return self
+     */
+    public function withCity(string $city) : self
+    {
+        $validator = new \JsonSchema\Validator();
+        $validator->validate($city, self::$schema['properties']['city']);
+        if (!$validator->isValid()) {
+            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        }
+
+        $clone = clone $this;
+        $clone->city = $city;
 
         return $clone;
     }
@@ -77,10 +116,10 @@ class Fio
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
-     * @return Fio Created instance
+     * @return Address Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : Fio
+    public static function buildFromInput(array|object $input, bool $validate = true) : Address
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
@@ -93,10 +132,11 @@ class Fio
             static::validateInput($input);
         }
 
-        $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
+        $name = isset($input->{'name'}) ? Ns\Definitions\Address\Defs\Name::buildFromInput($input->{'name'}, $validate) : null;
+        $city = $input->{'city'};
 
-        $obj = new self();
-        $obj->bar = $bar;
+        $obj = new self($city);
+        $obj->name = $name;
         return $obj;
     }
 
@@ -108,9 +148,10 @@ class Fio
     public function toJson() : array
     {
         $output = [];
-        if (isset($this->bar)) {
-            $output['bar'] = $this->bar;
+        if (isset($this->name)) {
+            $output['name'] = $this->name->toJson();
         }
+        $output['city'] = $this->city;
 
         return $output;
     }

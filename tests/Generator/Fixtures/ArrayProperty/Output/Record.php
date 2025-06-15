@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ns\ArrayProperty\Definitions;
+namespace Ns\ArrayProperty;
 
-class Phone
+class Record
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -14,16 +14,31 @@ class Phone
     private static array $schema = [
         'type' => 'object',
         'properties' => [
-            'foo' => [
-                'type' => 'string',
+            'dataArray' => [
+                'type' => 'array',
+                'items' => [
+                    '$ref' => '#/definitions/Phone',
+                ],
+                'minItems' => 1,
+                'maxItems' => 1,
+            ],
+        ],
+        'definitions' => [
+            'Phone' => [
+                'type' => 'object',
+                'properties' => [
+                    'foo' => [
+                        'type' => 'string',
+                    ],
+                ],
             ],
         ],
     ];
 
     /**
-     * @var string|null
+     * @var Phone[]|null
      */
-    private ?string $foo = null;
+    private ?array $dataArray = null;
 
     /**
      *
@@ -33,27 +48,27 @@ class Phone
     }
 
     /**
-     * @return string|null
+     * @return Phone[]|null
      */
-    public function getFoo() : ?string
+    public function getDataArray() : ?array
     {
-        return $this->foo ?? null;
+        return $this->dataArray ?? null;
     }
 
     /**
-     * @param string $foo
+     * @param Phone[] $dataArray
      * @return self
      */
-    public function withFoo(string $foo) : self
+    public function withDataArray(array $dataArray) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($foo, self::$schema['properties']['foo']);
+        $validator->validate($dataArray, self::$schema['properties']['dataArray']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
 
         $clone = clone $this;
-        $clone->foo = $foo;
+        $clone->dataArray = $dataArray;
 
         return $clone;
     }
@@ -61,10 +76,10 @@ class Phone
     /**
      * @return self
      */
-    public function withoutFoo() : self
+    public function withoutDataArray() : self
     {
         $clone = clone $this;
-        unset($clone->foo);
+        unset($clone->dataArray);
 
         return $clone;
     }
@@ -74,10 +89,10 @@ class Phone
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
-     * @return Phone Created instance
+     * @return Record Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : Phone
+    public static function buildFromInput(array|object $input, bool $validate = true) : Record
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
@@ -90,10 +105,10 @@ class Phone
             static::validateInput($input);
         }
 
-        $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
+        $dataArray = isset($input->{'dataArray'}) ? array_map(fn(array|object $i): Phone => Phone::buildFromInput($i, $validate), $input->{'dataArray'}) : null;
 
         $obj = new self();
-        $obj->foo = $foo;
+        $obj->dataArray = $dataArray;
         return $obj;
     }
 
@@ -105,8 +120,8 @@ class Phone
     public function toJson() : array
     {
         $output = [];
-        if (isset($this->foo)) {
-            $output['foo'] = $this->foo;
+        if (isset($this->dataArray)) {
+            $output['dataArray'] = array_map(fn(Phone $i): array => $i->toJson(), $this->dataArray);
         }
 
         return $output;

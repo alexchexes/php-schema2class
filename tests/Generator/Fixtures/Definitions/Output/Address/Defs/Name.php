@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ns\DefinitionsRefs\Definitions;
+namespace Ns\Definitions\Address\Defs;
 
-class Bar
+class Name
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -14,7 +14,7 @@ class Bar
     private static array $schema = [
         'type' => 'object',
         'properties' => [
-            'a' => [
+            'first' => [
                 'type' => 'string',
             ],
         ],
@@ -23,7 +23,7 @@ class Bar
     /**
      * @var string|null
      */
-    private ?string $a = null;
+    private ?string $first = null;
 
     /**
      *
@@ -35,25 +35,25 @@ class Bar
     /**
      * @return string|null
      */
-    public function getA() : ?string
+    public function getFirst() : ?string
     {
-        return $this->a ?? null;
+        return $this->first ?? null;
     }
 
     /**
-     * @param string $a
+     * @param string $first
      * @return self
      */
-    public function withA(string $a) : self
+    public function withFirst(string $first) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($a, self::$schema['properties']['a']);
+        $validator->validate($first, self::$schema['properties']['first']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
 
         $clone = clone $this;
-        $clone->a = $a;
+        $clone->first = $first;
 
         return $clone;
     }
@@ -61,10 +61,10 @@ class Bar
     /**
      * @return self
      */
-    public function withoutA() : self
+    public function withoutFirst() : self
     {
         $clone = clone $this;
-        unset($clone->a);
+        unset($clone->first);
 
         return $clone;
     }
@@ -74,10 +74,10 @@ class Bar
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
-     * @return Bar Created instance
+     * @return Name Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : Bar
+    public static function buildFromInput(array|object $input, bool $validate = true) : Name
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
@@ -90,10 +90,10 @@ class Bar
             static::validateInput($input);
         }
 
-        $a = isset($input->{'a'}) ? $input->{'a'} : null;
+        $first = isset($input->{'first'}) ? $input->{'first'} : null;
 
         $obj = new self();
-        $obj->a = $a;
+        $obj->first = $first;
         return $obj;
     }
 
@@ -105,8 +105,8 @@ class Bar
     public function toJson() : array
     {
         $output = [];
-        if (isset($this->a)) {
-            $output['a'] = $this->a;
+        if (isset($this->first)) {
+            $output['first'] = $this->first;
         }
 
         return $output;

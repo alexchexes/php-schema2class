@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ns\Definitions\Definitions;
+namespace Ns\NestedTypedArrayProperty;
 
-class Address
+class Phone
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -14,99 +14,57 @@ class Address
     private static array $schema = [
         'type' => 'object',
         'properties' => [
-            'name' => [
-                '$ref' => '#/definitions/address/$defs/name',
-            ],
-            'city' => [
+            'foo' => [
                 'type' => 'string',
-            ],
-        ],
-        'required' => [
-            'city',
-        ],
-        '$defs' => [
-            'name' => [
-                'type' => 'object',
-                'properties' => [
-                    'first' => [
-                        'type' => 'string',
-                    ],
-                ],
             ],
         ],
     ];
 
     /**
-     * @var Ns\Definitions\Definitions\Address\Defs\Name|null
+     * @var string|null
      */
-    private ?Ns\Definitions\Definitions\Address\DefsName $name = null;
+    private ?string $foo = null;
 
     /**
-     * @var string
+     *
      */
-    private string $city;
-
-    /**
-     * @param string $city
-     */
-    public function __construct(string $city)
+    public function __construct()
     {
-        $this->city = $city;
     }
 
     /**
-     * @return Ns\Definitions\Definitions\Address\Defs\Name|null
+     * @return string|null
      */
-    public function getName() : ?Address\DefsName
+    public function getFoo() : ?string
     {
-        return $this->name ?? null;
+        return $this->foo ?? null;
     }
 
     /**
-     * @return string
-     */
-    public function getCity() : string
-    {
-        return $this->city;
-    }
-
-    /**
-     * @param Ns\Definitions\Definitions\Address\DefsName $name
+     * @param string $foo
      * @return self
      */
-    public function withName(Address\DefsName $name) : self
-    {
-        $clone = clone $this;
-        $clone->name = $name;
-
-        return $clone;
-    }
-
-    /**
-     * @return self
-     */
-    public function withoutName() : self
-    {
-        $clone = clone $this;
-        unset($clone->name);
-
-        return $clone;
-    }
-
-    /**
-     * @param string $city
-     * @return self
-     */
-    public function withCity(string $city) : self
+    public function withFoo(string $foo) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($city, self::$schema['properties']['city']);
+        $validator->validate($foo, self::$schema['properties']['foo']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
 
         $clone = clone $this;
-        $clone->city = $city;
+        $clone->foo = $foo;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutFoo() : self
+    {
+        $clone = clone $this;
+        unset($clone->foo);
 
         return $clone;
     }
@@ -116,10 +74,10 @@ class Address
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
-     * @return Address Created instance
+     * @return Phone Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : Address
+    public static function buildFromInput(array|object $input, bool $validate = true) : Phone
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
@@ -132,11 +90,10 @@ class Address
             static::validateInput($input);
         }
 
-        $name = isset($input->{'name'}) ? Ns\Definitions\Definitions\Address\Defs\Name::buildFromInput($input->{'name'}, $validate) : null;
-        $city = $input->{'city'};
+        $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
 
-        $obj = new self($city);
-        $obj->name = $name;
+        $obj = new self();
+        $obj->foo = $foo;
         return $obj;
     }
 
@@ -148,10 +105,9 @@ class Address
     public function toJson() : array
     {
         $output = [];
-        if (isset($this->name)) {
-            $output['name'] = $this->name->toJson();
+        if (isset($this->foo)) {
+            $output['foo'] = $this->foo;
         }
-        $output['city'] = $this->city;
 
         return $output;
     }

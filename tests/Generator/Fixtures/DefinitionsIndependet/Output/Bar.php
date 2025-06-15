@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ns\DefinitionsPropertyRef\Definitions;
+namespace Ns\DefinitionsIndependet;
 
 class Bar
 {
@@ -14,16 +14,16 @@ class Bar
     private static array $schema = [
         'type' => 'object',
         'properties' => [
-            'a' => [
-                '$ref' => '#/definitions/Foo',
+            'b' => [
+                'type' => 'integer',
             ],
         ],
     ];
 
     /**
-     * @var Ns\DefinitionsPropertyRef\Definitions\Foo|null
+     * @var int|null
      */
-    private ?Ns\DefinitionsPropertyRef\DefinitionsFoo $a = null;
+    private ?int $b = null;
 
     /**
      *
@@ -33,21 +33,27 @@ class Bar
     }
 
     /**
-     * @return Ns\DefinitionsPropertyRef\Definitions\Foo|null
+     * @return int|null
      */
-    public function getA() : ?Foo
+    public function getB() : ?int
     {
-        return $this->a ?? null;
+        return $this->b ?? null;
     }
 
     /**
-     * @param Ns\DefinitionsPropertyRef\DefinitionsFoo $a
+     * @param int $b
      * @return self
      */
-    public function withA(Foo $a) : self
+    public function withB(int $b) : self
     {
+        $validator = new \JsonSchema\Validator();
+        $validator->validate($b, self::$schema['properties']['b']);
+        if (!$validator->isValid()) {
+            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        }
+
         $clone = clone $this;
-        $clone->a = $a;
+        $clone->b = $b;
 
         return $clone;
     }
@@ -55,10 +61,10 @@ class Bar
     /**
      * @return self
      */
-    public function withoutA() : self
+    public function withoutB() : self
     {
         $clone = clone $this;
-        unset($clone->a);
+        unset($clone->b);
 
         return $clone;
     }
@@ -84,10 +90,10 @@ class Bar
             static::validateInput($input);
         }
 
-        $a = isset($input->{'a'}) ? Ns\DefinitionsPropertyRef\Definitions\Foo::buildFromInput($input->{'a'}, $validate) : null;
+        $b = isset($input->{'b'}) ? $input->{'b'} : null;
 
         $obj = new self();
-        $obj->a = $a;
+        $obj->b = $b;
         return $obj;
     }
 
@@ -99,8 +105,8 @@ class Bar
     public function toJson() : array
     {
         $output = [];
-        if (isset($this->a)) {
-            $output['a'] = $this->a->toJson();
+        if (isset($this->b)) {
+            $output['b'] = $this->b;
         }
 
         return $output;

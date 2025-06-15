@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ns\NestedTypedArrayProperty\Definitions;
+namespace Ns\DefinitionsPropertyRef;
 
-class Phone
+class Bar
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -14,16 +14,26 @@ class Phone
     private static array $schema = [
         'type' => 'object',
         'properties' => [
-            'foo' => [
-                'type' => 'string',
+            'a' => [
+                '$ref' => '#/definitions/Foo',
+            ],
+        ],
+        'definitions' => [
+            'Foo' => [
+                'type' => 'object',
+                'properties' => [
+                    'a' => [
+                        'type' => 'string',
+                    ],
+                ],
             ],
         ],
     ];
 
     /**
-     * @var string|null
+     * @var Foo|null
      */
-    private ?string $foo = null;
+    private ?Foo $a = null;
 
     /**
      *
@@ -33,27 +43,21 @@ class Phone
     }
 
     /**
-     * @return string|null
+     * @return Foo|null
      */
-    public function getFoo() : ?string
+    public function getA() : ?Foo
     {
-        return $this->foo ?? null;
+        return $this->a ?? null;
     }
 
     /**
-     * @param string $foo
+     * @param Foo $a
      * @return self
      */
-    public function withFoo(string $foo) : self
+    public function withA(Foo $a) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($foo, self::$schema['properties']['foo']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-        }
-
         $clone = clone $this;
-        $clone->foo = $foo;
+        $clone->a = $a;
 
         return $clone;
     }
@@ -61,10 +65,10 @@ class Phone
     /**
      * @return self
      */
-    public function withoutFoo() : self
+    public function withoutA() : self
     {
         $clone = clone $this;
-        unset($clone->foo);
+        unset($clone->a);
 
         return $clone;
     }
@@ -74,10 +78,10 @@ class Phone
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
-     * @return Phone Created instance
+     * @return Bar Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : Phone
+    public static function buildFromInput(array|object $input, bool $validate = true) : Bar
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
@@ -90,10 +94,10 @@ class Phone
             static::validateInput($input);
         }
 
-        $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
+        $a = isset($input->{'a'}) ? Foo::buildFromInput($input->{'a'}, $validate) : null;
 
         $obj = new self();
-        $obj->foo = $foo;
+        $obj->a = $a;
         return $obj;
     }
 
@@ -105,8 +109,8 @@ class Phone
     public function toJson() : array
     {
         $output = [];
-        if (isset($this->foo)) {
-            $output['foo'] = $this->foo;
+        if (isset($this->a)) {
+            $output['a'] = $this->a->toJson();
         }
 
         return $output;
