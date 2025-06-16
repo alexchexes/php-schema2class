@@ -148,6 +148,21 @@ class SchemaToClassTest extends TestCase
                 assertThat($actualContent, equalTo($content));
             }
         } else {
+            $outputDir = join(DIRECTORY_SEPARATOR, [__DIR__, 'Fixtures', $name, 'Output']);
+            if (is_dir($outputDir)) {
+                $iterator = new \RecursiveIteratorIterator(
+                    new \RecursiveDirectoryIterator($outputDir, \FilesystemIterator::SKIP_DOTS),
+                    \RecursiveIteratorIterator::CHILD_FIRST,
+                );
+                foreach ($iterator as $fileInfo) {
+                    if ($fileInfo->isFile()) {
+                        unlink($fileInfo->getPathname());
+                    } else {
+                        @rmdir($fileInfo->getPathname());
+                    }
+                }
+            }
+
             foreach ($writtenFiles as $filename => $content) {
                 $relative = substr($filename, strlen(__DIR__) + 1);
                 $outputFilename = join(DIRECTORY_SEPARATOR, [__DIR__, 'Fixtures', $name, 'Output', $relative]);
