@@ -192,6 +192,7 @@ class SchemaToClass
         $ownClasses = $req->getGeneratedClassNames();
         if ($ownClasses) {
             $escapedOwnClasses = array_map(fn ($n) => preg_quote($n, '/'), $ownClasses);
+            usort($escapedOwnClasses, static fn(string $a, string $b) => strlen($b) <=> strlen($a));
             $pattern = '/\\\\(' . join('|', $escapedOwnClasses) . ')(?=\s|[,;)]|$)/';
             $content = preg_replace($pattern, '$1', $content);
         }
@@ -231,7 +232,18 @@ class SchemaToClass
         $collector = new DefinitionsCollector($req);
         $collected  = iterator_to_array($collector->collect($req->getSchema()));
 
-        $generatedClasses = array_map(static fn(Definitions\Definition $d) => $d->className, $collected);
+        $ns = $req->getTargetNamespace();
+        $generatedClasses = array_map(
+            static function (Definitions\Definition $d) use ($ns) {
+                $fqn = $d->classFQN;
+                $rel = $ns !== '' && str_starts_with($fqn, $ns . '\\')
+                    ? substr($fqn, strlen($ns) + 1)
+                    : ltrim($fqn, '\\');
+                return $rel;
+            },
+            $collected,
+        );
+        usort($generatedClasses, static fn(string $a, string $b) => strlen($b) <=> strlen($a));
         $generatedClasses[] = $req->getTargetClass();
 
         $req = $req
