@@ -15,15 +15,24 @@ readonly class ReferencedTypeClass implements ReferencedType
         return $this->className;
     }
 
+    private function relativeName(GeneratorRequest $req): string
+    {
+        $ns = $req->getTargetNamespace();
+        if ($ns !== '' && str_starts_with($this->className, $ns . '\\')) {
+            return substr($this->className, strlen($ns) + 1);
+        }
+
+        return '\\' . $this->className;
+    }
+
     public function typeAnnotation(GeneratorRequest $req): string
     {
-        // No leading backslash: class name resolves to current namespace
-        return $this->className;
+        return ltrim($this->relativeName($req), '\\');
     }
 
     public function typeHint(GeneratorRequest $req): ?string
     {
-        return $this->className;
+        return $this->relativeName($req);
     }
 
     public function serializedInputTypeHint(GeneratorRequest $req): ?string
@@ -38,21 +47,24 @@ readonly class ReferencedTypeClass implements ReferencedType
 
     public function typeAssertionExpr(GeneratorRequest $req, string $expr): string
     {
-        return "({$expr}) instanceof {$this->className}";
+        $cls = ltrim($this->relativeName($req), '\\');
+        return "({$expr}) instanceof {$cls}";
     }
 
     public function inputAssertionExpr(GeneratorRequest $req, string $expr): string
     {
-        return "{$this->className}::validateInput({$expr}, true)";
+        $cls = $this->relativeName($req);
+        return "{$cls}::validateInput({$expr}, true)";
     }
 
     public function inputMappingExpr(GeneratorRequest $req, string $expr, ?string $validateExpr): string
     {
         $validateExpr = $validateExpr ?? '$validate';
+        $cls = $this->relativeName($req);
         if ($req->isAtLeastPHP('8.0')) {
-            return "{$this->className}::buildFromInput({$expr}, {$validateExpr})";
+            return "{$cls}::buildFromInput({$expr}, {$validateExpr})";
         }
-        return "{$this->className}::buildFromInput({$expr}, {$validateExpr})";
+        return "{$cls}::buildFromInput({$expr}, {$validateExpr})";
     }
 
     public function outputMappingExpr(GeneratorRequest $req, string $expr): string

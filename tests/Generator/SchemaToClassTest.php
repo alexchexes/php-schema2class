@@ -43,11 +43,6 @@ class SchemaToClassTest extends TestCase
 
             $optionsFile = join(DIRECTORY_SEPARATOR, [$testCaseDir, $entry, "options.yaml"]);
             $outputDir  = join(DIRECTORY_SEPARATOR, [$testCaseDir, $entry, "Output"]);
-            $output     = @opendir($outputDir);
-
-            if ($output === false) {
-                throw new \Exception("Could not open output directory for test case '{$entry}'");
-            }
 
             $expectedFiles = [];
             $schema        = (new SchemaLoader())->loadSchema($schemaFile);
@@ -60,12 +55,15 @@ class SchemaToClassTest extends TestCase
                 $opts = SpecificationOptions::buildFromInput($optsYaml);
             }
 
-            while ($outputEntry = readdir($output)) {
-                if (substr($outputEntry, -4) !== ".php") {
+            $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($outputDir));
+            foreach ($iterator as $fileInfo) {
+                if (!$fileInfo->isFile() || $fileInfo->getExtension() !== 'php') {
                     continue;
                 }
 
-                $expectedFiles[$outputEntry] = trim(file_get_contents(join(DIRECTORY_SEPARATOR, [$outputDir, $outputEntry])));
+                $relativePath = substr($fileInfo->getPathname(), strlen($outputDir) + 1);
+                $relativePath = str_replace('\\', '/', $relativePath);
+                $expectedFiles[$relativePath] = trim(file_get_contents($fileInfo->getPathname()));
             }
 
             $testCases[$entry] = [$entry, $schema, $expectedFiles, $opts];
@@ -130,65 +128,7 @@ class SchemaToClassTest extends TestCase
         $writer   = new DebugWriter($output);
         $factory  = new SchemaToClassFactory();
 
-        $collectAllLocalRefs = static function (array $schema, array $allDefinitions) {
-            $needed  = [];
-            $queue   = [$schema];
-            $visited = [];
-
-            while ($cur = array_pop($queue)) {
-                $iter = function ($node) use (&$iter, &$needed, &$queue, &$visited, $allDefinitions) {
-                    if (is_array($node)) {
-                        foreach ($node as $k => $v) {
-                            if ($k === '$ref'
-                                && is_string($v)
-                                && str_starts_with($v, '#/definitions/')) {
-                                $name = substr($v, 14);
-                                if (!isset($visited[$name])) {
-                                    $visited[$name] = true;
-                                    $needed[]       = $name;
-
-                                    if (isset($allDefinitions[$name])) {
-                                        $queue[] = $allDefinitions[$name];
-                                    }
-                                }
-                            } elseif (is_array($v)) {
-                                $iter($v);
-                            }
-                        }
-                    }
-                };
-                $iter($cur);
-            }
-
-            return $needed;
-        };
-
-        $generatedClasses = array_keys($definitions);
-        $generatedClasses[] = $req->getTargetClass();
-
-        foreach ($definitions as $defName => $defSchema) {
-            $deps        = $collectAllLocalRefs($defSchema, $definitions);
-            $trimmedDefs = array_intersect_key($definitions, array_flip($deps));
-
-            $defReq = $req
-                ->withClass($defName)
-                ->withSchema($defSchema)
-                ->withRootDefinitions($trimmedDefs)
-                ->withGeneratedClassNames($generatedClasses);
-
-            $factory->build($writer, $output)->schemaToClass($defReq);
-        }
-
-        $req = $req
-            ->withRootDefinitions($definitions)
-            ->withGeneratedClassNames($generatedClasses);
-
-        if (NestedObjectProperty::canHandleSchema($schema)
-            || IntersectProperty::canHandleSchema($schema)
-            || isset($schema['enum'])
-        ) {
-            $factory->build($writer, $output)->schemaToClass($req);
-        }
+        $factory->build($writer, $output)->schemaToClass($req);
 
         $writtenFiles = $writer->getWrittenFiles();
 
@@ -204,14 +144,33 @@ class SchemaToClassTest extends TestCase
             );
 
             foreach ($expectedOutput as $file => $content) {
-                $filename      = __DIR__ . '/' . $file;
+                $filename = __DIR__ . '/' . str_replace('\\', '/', $file);
                 $actualContent = $writtenFiles[$filename];
                 assertThat($actualContent, equalTo($content));
             }
         } else {
+            $outputDir = join(DIRECTORY_SEPARATOR, [__DIR__, 'Fixtures', $name, 'Output']);
+            if (is_dir($outputDir)) {
+                $iterator = new \RecursiveIteratorIterator(
+                    new \RecursiveDirectoryIterator($outputDir, \FilesystemIterator::SKIP_DOTS),
+                    \RecursiveIteratorIterator::CHILD_FIRST,
+                );
+                foreach ($iterator as $fileInfo) {
+                    if ($fileInfo->isFile()) {
+                        unlink($fileInfo->getPathname());
+                    } else {
+                        @rmdir($fileInfo->getPathname());
+                    }
+                }
+            }
+
             foreach ($writtenFiles as $filename => $content) {
-                $file          = basename($filename);
-                $outputFilename = join(DIRECTORY_SEPARATOR, [__DIR__, 'Fixtures', $name, 'Output', $file]);
+                $relative = substr($filename, strlen(__DIR__) + 1);
+                $relative = str_replace('\\', '/', $relative);
+                $outputFilename = join(DIRECTORY_SEPARATOR, [__DIR__, 'Fixtures', $name, 'Output', $relative]);
+                if (!is_dir(dirname($outputFilename))) {
+                    mkdir(dirname($outputFilename), 0777, true);
+                }
                 file_put_contents($outputFilename, $content . "\n");
             }
 
