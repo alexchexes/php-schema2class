@@ -1,12 +1,5 @@
 # Changelog
 
-## Unreleased
-- switched enum generation to php-parser-based builder
-- updated EnumCreatedHook signature
-- added validation for mixed enum values
-- enum customization now testable via hooks
-
-
 ## v4.0.0
 
 This version introduces a substantial update across the project with new features, bug fixes, and refactoring. Key highlights:
@@ -48,6 +41,12 @@ Now it:
 
 - `StringUtils` adds transliteration via `voku/portable-ascii`, robust identifier sanitization, and improved camelCase/PascalCase handling.
 
+### Enums
+- switched enum generation to php-parser-based builder
+- updated EnumCreatedHook signature
+- added validation for mixed enum values
+- enum customization now testable via hooks
+
 ### Documentation
 
 - README expanded with examples for JSON schema input, specification files, and programmatic API usage.
@@ -57,7 +56,7 @@ Now it:
 - Several new classes and interfaces to handle new functionality; extensive refactoring of existing classes.
 - **Updated tests and fixtures**: Many new test cases covering new functionality such as typed arrays, non-ASCII identifiers, and the programmatic API.
 - **Dependency updates**:
-  - New dependency `voku/portable-ascii`
+  - New dependencies: `voku/portable-ascii`, `nikic/php-parser`
   - Bumped PHPUnit to 12 and Psalm to 6
 
 ### Breaking changes?
