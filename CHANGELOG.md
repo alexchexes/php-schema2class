@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+- switched enum generation to php-parser-based builder
+- updated EnumCreatedHook signature
+- added validation for mixed enum values
+- enum customization now testable via hooks
+
+
 ## v4.0.0
 
 This version introduces a substantial update across the project with new features, bug fixes, and refactoring. Key highlights:
