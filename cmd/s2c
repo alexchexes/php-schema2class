@@ -11,7 +11,7 @@ if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
     die('Could not find an autoload.php. Did you set up all dependencies?');
 }
 
-$app = new \Symfony\Component\Console\Application("jsb", "dev-master");
+$app = new \Symfony\Component\Console\Application("s2c");
 $app->add(new \Helmich\Schema2Class\Command\GenerateCommand(
     new \Helmich\Schema2Class\Loader\SchemaLoader(),
     new \Helmich\Schema2Class\Generator\NamespaceInferrer(),
