@@ -17,6 +17,7 @@
         "ext-json": "*",
         "composer/semver": "^3.0",
         "laminas/laminas-code": "^4.12",
+        "nikic/php-parser": "^5.0",
         "voku/portable-ascii": "^2.0"
     },
     "autoload": {

@@ -3,9 +3,8 @@
 namespace Helmich\Schema2Class\Generator;
 
 use Helmich\Schema2Class\Writer\WriterInterface;
-use Laminas\Code\DeclareStatement;
-use Laminas\Code\Generator\EnumGenerator\EnumGenerator;
 use Laminas\Code\Generator\FileGenerator;
+use Helmich\Schema2Class\Generator\PhpParserEnumGenerator;
 
 class SchemaToEnum
 {
@@ -24,10 +23,14 @@ class SchemaToEnum
 
         /** @var array<non-empty-string, string|int> $cases */
         $cases = [];
+        $hasInt = false;
+        $hasString = false;
         foreach ($req->getSchema()["enum"] as $case) {
             if (!is_string($case) && !is_int($case)) {
                 throw new GeneratorException("cannot generate enum classes for non-string/non-int enum values");
             }
+            $hasInt = $hasInt || is_int($case);
+            $hasString = $hasString || is_string($case);
 
             $name = self::enumCaseName($case);
 
@@ -43,17 +46,15 @@ class SchemaToEnum
             $cases[$name] = $case;
         }
 
+        if ($hasInt && $hasString) {
+            throw new GeneratorException("cannot generate enum classes for mixed int/string enum values");
+        }
+
         $cases = self::makeCaseNamesConsistent($cases);
 
         $type     = $req->getSchema()["type"] === "string" ? "string" : "int";
         $enumName = $req->getTargetNamespace() . "\\" . $req->getTargetClass();
-        $enum     = EnumGenerator::withConfig([
-            "name"        => $enumName,
-            "backedCases" => [
-                "type"  => $type,
-                "cases" => $cases,
-            ],
-        ]);
+        $enum     = new PhpParserEnumGenerator($enumName, $type, $cases);
 
         $req->onEnumCreated($enumName, $enum);
 
@@ -63,15 +64,10 @@ class SchemaToEnum
 
         $req->onFileCreated($filename, $file);
 
-        $file->setDeclares([DeclareStatement::strictTypes(1)]);
-
-        $content = $file->generate();
-
-        // Do some corrections because the Zend code generation library is stupid.
-        $content = preg_replace('/ : \\\\self/', ' : self', $content);
-        $content = preg_replace('/\\\\' . preg_quote($req->getTargetNamespace(), '/') . '\\\\/', '', $content);
+        $content = $file->getBody();
 
         $this->writer->writeFile($filename, $content);
+    
     }
 
 
