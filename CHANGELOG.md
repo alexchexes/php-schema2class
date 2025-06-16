@@ -42,10 +42,7 @@ Now it:
 - `StringUtils` adds transliteration via `voku/portable-ascii`, robust identifier sanitization, and improved camelCase/PascalCase handling.
 
 ### Enums
-- switched enum generation to php-parser-based builder
-- updated EnumCreatedHook signature
-- added validation for mixed enum values
-- enum customization now testable via hooks
+- Laminas's immutable EnumGenerator replaced with own mutable implementation PhpParserEnumGenerator built on nikic/php-parser which allows modifications via the hook system.
 
 ### Documentation
 
