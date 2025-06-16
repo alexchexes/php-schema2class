@@ -39,7 +39,7 @@ class Address
     /**
      * @var Address\Defs\Name|null
      */
-    private ?Address\DefsName $name = null;
+    private ?Address\Defs\Name $name = null;
 
     /**
      * @var string
@@ -57,7 +57,7 @@ class Address
     /**
      * @return Address\Defs\Name|null
      */
-    public function getName() : ?\Address\DefsName
+    public function getName() : ?Address\Defs\Name
     {
         return $this->name ?? null;
     }
@@ -71,10 +71,10 @@ class Address
     }
 
     /**
-     * @param Address\DefsName $name
+     * @param Address\Defs\Name $name
      * @return self
      */
-    public function withName(\Address\DefsName $name) : self
+    public function withName(Address\Defs\Name $name) : self
     {
         $clone = clone $this;
         $clone->name = $name;

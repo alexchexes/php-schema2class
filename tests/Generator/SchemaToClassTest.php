@@ -149,8 +149,11 @@ class SchemaToClassTest extends TestCase
             }
         } else {
             foreach ($writtenFiles as $filename => $content) {
-                $file          = basename($filename);
-                $outputFilename = join(DIRECTORY_SEPARATOR, [__DIR__, 'Fixtures', $name, 'Output', $file]);
+                $relative = substr($filename, strlen(__DIR__) + 1);
+                $outputFilename = join(DIRECTORY_SEPARATOR, [__DIR__, 'Fixtures', $name, 'Output', $relative]);
+                if (!is_dir(dirname($outputFilename))) {
+                    mkdir(dirname($outputFilename), 0777, true);
+                }
                 file_put_contents($outputFilename, $content . "\n");
             }
 

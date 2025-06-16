@@ -57,7 +57,14 @@ class DefinitionsGenerator
      */
     public function generate(array $definitions, GeneratorRequest $request): void
     {
-        $generatedClasses = array_map(static fn(Definition $d) => $d->className, $definitions);
+        $ns = $request->getTargetNamespace();
+        $generatedClasses = array_map(static function(Definition $d) use ($ns): string {
+            $cls = $d->classFQN;
+            if ($ns !== '' && str_starts_with($cls, $ns . '\\')) {
+                return substr($cls, strlen($ns) + 1);
+            }
+            return ltrim($cls, '\\');
+        }, $definitions);
         $generatedClasses[] = $request->getTargetClass();
 
         $rootDefinitions = $request->getSchema()['definitions'] ?? [];

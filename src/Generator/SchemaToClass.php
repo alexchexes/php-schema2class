@@ -231,7 +231,14 @@ class SchemaToClass
         $collector = new DefinitionsCollector($req);
         $collected  = iterator_to_array($collector->collect($req->getSchema()));
 
-        $generatedClasses = array_map(static fn(Definitions\Definition $d) => $d->className, $collected);
+        $ns = $req->getTargetNamespace();
+        $generatedClasses = array_map(static function(Definitions\Definition $d) use ($ns): string {
+            $cls = $d->classFQN;
+            if ($ns !== '' && str_starts_with($cls, $ns . '\\')) {
+                return substr($cls, strlen($ns) + 1);
+            }
+            return ltrim($cls, '\\');
+        }, $collected);
         $generatedClasses[] = $req->getTargetClass();
 
         $req = $req
