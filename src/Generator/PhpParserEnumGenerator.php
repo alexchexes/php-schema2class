@@ -65,7 +65,11 @@ class PhpParserEnumGenerator
         }
 
         $code = "<?php\n\n" . $this->printer->prettyPrint($stmts) . "\n";
-        $code = preg_replace('/declare \(strict_types=1\);\nnamespace/', 'declare(strict_types=1);' . PHP_EOL . PHP_EOL . 'namespace', $code);
+        $code = preg_replace(
+            '/declare \(strict_types=1\);\nnamespace/',
+            "declare(strict_types=1);\n\nnamespace",
+            $code,
+        );
         $code = preg_replace('/enum ([^:]+) : /', 'enum $1: ', $code);
         $code = preg_replace('/(enum[^\n]+)\n\{/', '$1 {', $code);
         return $code;
