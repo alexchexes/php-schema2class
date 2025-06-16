@@ -143,7 +143,7 @@ class SchemaToClassTest extends TestCase
             );
 
             foreach ($expectedOutput as $file => $content) {
-                $filename      = __DIR__ . '/' . $file;
+                $filename      = join(DIRECTORY_SEPARATOR, [__DIR__, $file]);
                 $actualContent = $writtenFiles[$filename];
                 assertThat($actualContent, equalTo($content));
             }
