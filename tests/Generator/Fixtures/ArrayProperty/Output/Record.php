@@ -36,7 +36,7 @@ class Record
     ];
 
     /**
-     * @var Ns\ArrayProperty\Phone[]|null
+     * @var Phone[]|null
      */
     private ?array $dataArray = null;
 
@@ -48,7 +48,7 @@ class Record
     }
 
     /**
-     * @return Ns\ArrayProperty\Phone[]|null
+     * @return Phone[]|null
      */
     public function getDataArray() : ?array
     {
@@ -56,7 +56,7 @@ class Record
     }
 
     /**
-     * @param Ns\ArrayProperty\Phone[] $dataArray
+     * @param Phone[] $dataArray
      * @return self
      */
     public function withDataArray(array $dataArray) : self
@@ -105,7 +105,7 @@ class Record
             static::validateInput($input);
         }
 
-        $dataArray = isset($input->{'dataArray'}) ? array_map(fn(array|object $i): Ns\ArrayPropertyPhone => Ns\ArrayProperty\Phone::buildFromInput($i, $validate), $input->{'dataArray'}) : null;
+        $dataArray = isset($input->{'dataArray'}) ? array_map(fn(array|object $i): Phone => Phone::buildFromInput($i, $validate), $input->{'dataArray'}) : null;
 
         $obj = new self();
         $obj->dataArray = $dataArray;
@@ -121,7 +121,7 @@ class Record
     {
         $output = [];
         if (isset($this->dataArray)) {
-            $output['dataArray'] = array_map(fn(Ns\ArrayPropertyPhone $i): array => $i->toJson(), $this->dataArray);
+            $output['dataArray'] = array_map(fn(Phone $i): array => $i->toJson(), $this->dataArray);
         }
 
         return $output;
