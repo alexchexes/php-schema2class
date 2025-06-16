@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ns\RefList;
+namespace Ns\Definitions\Address\Defs;
 
-class Foo
+class Name
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -12,23 +12,18 @@ class Foo
      * @var array
      */
     private static array $schema = [
-        'required' => [
-            'foo_bar',
-        ],
+        'type' => 'object',
         'properties' => [
-            'foo' => [
-                'type' => 'array',
-                'items' => [
-                    '$ref' => '#/properties/address',
-                ],
+            'first' => [
+                'type' => 'string',
             ],
         ],
     ];
 
     /**
-     * @var Helmich\Schema2Class\Example\CustomerAddress[]|null
+     * @var string|null
      */
-    private ?array $foo = null;
+    private ?string $first = null;
 
     /**
      *
@@ -38,27 +33,27 @@ class Foo
     }
 
     /**
-     * @return Helmich\Schema2Class\Example\CustomerAddress[]|null
+     * @return string|null
      */
-    public function getFoo() : ?array
+    public function getFirst() : ?string
     {
-        return $this->foo ?? null;
+        return $this->first ?? null;
     }
 
     /**
-     * @param Helmich\Schema2Class\Example\CustomerAddress[] $foo
+     * @param string $first
      * @return self
      */
-    public function withFoo(array $foo) : self
+    public function withFirst(string $first) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($foo, self::$schema['properties']['foo']);
+        $validator->validate($first, self::$schema['properties']['first']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
 
         $clone = clone $this;
-        $clone->foo = $foo;
+        $clone->first = $first;
 
         return $clone;
     }
@@ -66,10 +61,10 @@ class Foo
     /**
      * @return self
      */
-    public function withoutFoo() : self
+    public function withoutFirst() : self
     {
         $clone = clone $this;
-        unset($clone->foo);
+        unset($clone->first);
 
         return $clone;
     }
@@ -79,10 +74,10 @@ class Foo
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
-     * @return Foo Created instance
+     * @return Name Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : Foo
+    public static function buildFromInput(array|object $input, bool $validate = true) : Name
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
@@ -95,10 +90,10 @@ class Foo
             static::validateInput($input);
         }
 
-        $foo = isset($input->{'foo'}) ? array_map(fn(array|object $i): \Helmich\Schema2Class\Example\CustomerAddress => \Helmich\Schema2Class\Example\CustomerAddress::buildFromInput($i, $validate), $input->{'foo'}) : null;
+        $first = isset($input->{'first'}) ? $input->{'first'} : null;
 
         $obj = new self();
-        $obj->foo = $foo;
+        $obj->first = $first;
         return $obj;
     }
 
@@ -110,8 +105,8 @@ class Foo
     public function toJson() : array
     {
         $output = [];
-        if (isset($this->foo)) {
-            $output['foo'] = array_map(fn(\Helmich\Schema2Class\Example\CustomerAddress $i): array => $i->toJson(), $this->foo);
+        if (isset($this->first)) {
+            $output['first'] = $this->first;
         }
 
         return $output;

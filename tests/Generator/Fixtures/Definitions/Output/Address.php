@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ns\RefList;
+namespace Ns\Definitions;
 
-class Foo
+class Address
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -12,53 +12,72 @@ class Foo
      * @var array
      */
     private static array $schema = [
-        'required' => [
-            'foo_bar',
-        ],
+        'type' => 'object',
         'properties' => [
-            'foo' => [
-                'type' => 'array',
-                'items' => [
-                    '$ref' => '#/properties/address',
+            'name' => [
+                '$ref' => '#/definitions/address/$defs/name',
+            ],
+            'city' => [
+                'type' => 'string',
+            ],
+        ],
+        'required' => [
+            'city',
+        ],
+        '$defs' => [
+            'name' => [
+                'type' => 'object',
+                'properties' => [
+                    'first' => [
+                        'type' => 'string',
+                    ],
                 ],
             ],
         ],
     ];
 
     /**
-     * @var Helmich\Schema2Class\Example\CustomerAddress[]|null
+     * @var Address\Defs\Name|null
      */
-    private ?array $foo = null;
+    private ?Address\Defs\Name $name = null;
 
     /**
-     *
+     * @var string
      */
-    public function __construct()
+    private string $city;
+
+    /**
+     * @param string $city
+     */
+    public function __construct(string $city)
     {
+        $this->city = $city;
     }
 
     /**
-     * @return Helmich\Schema2Class\Example\CustomerAddress[]|null
+     * @return Address\Defs\Name|null
      */
-    public function getFoo() : ?array
+    public function getName() : ?Address\Defs\Name
     {
-        return $this->foo ?? null;
+        return $this->name ?? null;
     }
 
     /**
-     * @param Helmich\Schema2Class\Example\CustomerAddress[] $foo
+     * @return string
+     */
+    public function getCity() : string
+    {
+        return $this->city;
+    }
+
+    /**
+     * @param Address\Defs\Name $name
      * @return self
      */
-    public function withFoo(array $foo) : self
+    public function withName(Address\Defs\Name $name) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($foo, self::$schema['properties']['foo']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-        }
-
         $clone = clone $this;
-        $clone->foo = $foo;
+        $clone->name = $name;
 
         return $clone;
     }
@@ -66,10 +85,28 @@ class Foo
     /**
      * @return self
      */
-    public function withoutFoo() : self
+    public function withoutName() : self
     {
         $clone = clone $this;
-        unset($clone->foo);
+        unset($clone->name);
+
+        return $clone;
+    }
+
+    /**
+     * @param string $city
+     * @return self
+     */
+    public function withCity(string $city) : self
+    {
+        $validator = new \JsonSchema\Validator();
+        $validator->validate($city, self::$schema['properties']['city']);
+        if (!$validator->isValid()) {
+            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        }
+
+        $clone = clone $this;
+        $clone->city = $city;
 
         return $clone;
     }
@@ -79,10 +116,10 @@ class Foo
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
-     * @return Foo Created instance
+     * @return Address Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : Foo
+    public static function buildFromInput(array|object $input, bool $validate = true) : Address
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
@@ -95,10 +132,11 @@ class Foo
             static::validateInput($input);
         }
 
-        $foo = isset($input->{'foo'}) ? array_map(fn(array|object $i): \Helmich\Schema2Class\Example\CustomerAddress => \Helmich\Schema2Class\Example\CustomerAddress::buildFromInput($i, $validate), $input->{'foo'}) : null;
+        $name = isset($input->{'name'}) ? Address\Defs\Name::buildFromInput($input->{'name'}, $validate) : null;
+        $city = $input->{'city'};
 
-        $obj = new self();
-        $obj->foo = $foo;
+        $obj = new self($city);
+        $obj->name = $name;
         return $obj;
     }
 
@@ -110,9 +148,10 @@ class Foo
     public function toJson() : array
     {
         $output = [];
-        if (isset($this->foo)) {
-            $output['foo'] = array_map(fn(\Helmich\Schema2Class\Example\CustomerAddress $i): array => $i->toJson(), $this->foo);
+        if (isset($this->name)) {
+            $output['name'] = $this->name->toJson();
         }
+        $output['city'] = $this->city;
 
         return $output;
     }
