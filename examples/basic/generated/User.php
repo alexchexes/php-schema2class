@@ -18,14 +18,14 @@ class User
      *
      * @var string
      */
-    public string $name;
+    private string $name;
 
     /**
      * Object representing address of the user, field is optional.
      *
      * @var Address|null
      */
-    public ?Address $address = null;
+    private ?Address $address = null;
 
     /**
      * User status. Field is obligatory, but nullable.
@@ -34,7 +34,7 @@ class User
      *
      * @var 'customer'|'manager'|null
      */
-    public ?string $status;
+    private ?string $status;
 
     /**
      * @param string $name
@@ -44,6 +44,97 @@ class User
     {
         $this->name = $name;
         $this->status = $status;
+    }
+
+    /**
+     * Name of the user - required field.
+     *
+     * @return string
+     */
+    public function getName() : string
+    {
+        return $this->name;
+    }
+
+    /**
+     * Object representing address of the user, field is optional.
+     *
+     * @return Address|null
+     */
+    public function getAddress() : ?Address
+    {
+        return $this->address ?? null;
+    }
+
+    /**
+     * User status. Field is obligatory, but nullable.
+     *
+     * If target PHP is 8.1+ the type will be an `enum` with cases `CUSTOMER = 'customer'` and `MANAGER = 'manager'`
+     *
+     * @return 'customer'|'manager'|null
+     */
+    public function getStatus() : ?string
+    {
+        return $this->status ?? null;
+    }
+
+    /**
+     * @param string $name
+     * @return self
+     */
+    public function withName(string $name) : self
+    {
+        $validator = new \JsonSchema\Validator();
+        $validator->validate($name, self::$schema['properties']['name']);
+        if (!$validator->isValid()) {
+            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        }
+
+        $clone = clone $this;
+        $clone->name = $name;
+
+        return $clone;
+    }
+
+    /**
+     * @param Address $address
+     * @return self
+     */
+    public function withAddress(Address $address) : self
+    {
+        $clone = clone $this;
+        $clone->address = $address;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutAddress() : self
+    {
+        $clone = clone $this;
+        unset($clone->address);
+
+        return $clone;
+    }
+
+    /**
+     * @param 'customer'|'manager' $status
+     * @return self
+     */
+    public function withStatus(?string $status) : self
+    {
+        $validator = new \JsonSchema\Validator();
+        $validator->validate($status, self::$schema['properties']['status']);
+        if (!$validator->isValid()) {
+            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        }
+
+        $clone = clone $this;
+        $clone->status = $status;
+
+        return $clone;
     }
 
     /**

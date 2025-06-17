@@ -16,18 +16,92 @@ class Address
     /**
      * @var string|null
      */
-    public ?string $street = null;
+    private ?string $street = null;
 
     /**
      * @var int|null
      */
-    public ?int $house = null;
+    private ?int $house = null;
 
     /**
      *
      */
     public function __construct()
     {
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getStreet() : ?string
+    {
+        return $this->street ?? null;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getHouse() : ?int
+    {
+        return $this->house ?? null;
+    }
+
+    /**
+     * @param string $street
+     * @return self
+     */
+    public function withStreet(string $street) : self
+    {
+        $validator = new \JsonSchema\Validator();
+        $validator->validate($street, self::$schema['properties']['street']);
+        if (!$validator->isValid()) {
+            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        }
+
+        $clone = clone $this;
+        $clone->street = $street;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutStreet() : self
+    {
+        $clone = clone $this;
+        unset($clone->street);
+
+        return $clone;
+    }
+
+    /**
+     * @param int $house
+     * @return self
+     */
+    public function withHouse(int $house) : self
+    {
+        $validator = new \JsonSchema\Validator();
+        $validator->validate($house, self::$schema['properties']['house']);
+        if (!$validator->isValid()) {
+            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        }
+
+        $clone = clone $this;
+        $clone->house = $house;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutHouse() : self
+    {
+        $clone = clone $this;
+        unset($clone->house);
+
+        return $clone;
     }
 
     /**

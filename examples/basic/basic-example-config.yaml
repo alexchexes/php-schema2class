@@ -1,7 +1,5 @@
 targetPHPVersion: "7.4"
 options:
-  noGetters: true
-  noSetters: true
   singleLineSchema: true
   noDescriptionsInSchema: true
 files:

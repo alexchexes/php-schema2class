@@ -1,291 +1,240 @@
-# JSONSchema to PHP class converter
+# JSON Schema to PHP Class Converter
 
-Build PHP classes from [JSON schemas][jsonschema] automatically.
+Generate PHP classes from [JSON Schema][jsonschema] automatically. Use it from PHP code or the CLI, and enjoy immutability, self‑validation, and easily update the generated classes as your schema evolves.
 
-## Example
-
-Consider a simple JSON schema (shown here in YAML format), stored in a file `example.yaml`:
-
-```yaml
-required:
-  - givenName
-  - familyName
-properties:
-  givenName:
-    type: string
-  familyName:
-    type: string
-  hobbies:
-    type: array
-    items:
-      type: string
-  location:
-    properties:
-      country:
-        type: string
-      city:
-        type: string
-```
-
-The same schema can of course be written in JSON:
-
-```json
-{
-  "required": ["givenName", "familyName"],
-  "properties": {
-    "givenName": {"type": "string"},
-    "familyName": {"type": "string"},
-    "hobbies": {"type": "array", "items": {"type": "string"}},
-    "location": {
-      "properties": {
-        "country": {"type": "string"},
-        "city": {"type": "string"}
-      }
-    }
-  }
-}
-```
-
-Using this converter, you can automatically generate PHP classes from this schema
-with accessor and conversion functions:
-
-```bash
-$ vendor/bin/s2c generate:fromschema --class User ./example.yaml src/Target
-# or
-$ vendor/bin/s2c generate:fromschema --class User ./example.json src/Target
-
-# From Windows' Command Line:
-php vendor\bin\s2c generate:fromschema [options]
-```
-
-This command will automatically try to infer a PHP target namespace from your `composer.json` file and automatically create the PHP classes:
-
-```bash
-$ find src/Target
-src/Target
-src/Target/User.php
-src/Target/UserLocation.php
-```
-
-Then, use the classes in your code:
-
-```php
-$userData = json_decode("user.json", true);
-$user = \MyNamespace\Target\User::buildFromInput($userData);
-
-echo "Hello, " . $user->getGivenName() . "\n";
-```
-
-* Note: It is not possible to generate classes without a namespace at the moment.
-
-### Schemas with definitions
-
-If your schema contains a `definitions` section, classes are generated for every definition as well. References like `"$ref": "#/definitions/Address"` will use the generated `Address` class automatically.
-
-
-## Compatibility
-
-This tool requires PHP 8.2 or newer **to generate classes**.
-
-The generated code can be backwards-compatible **up until PHP 5.6**. Use the `--target-php` flag to set the desired PHP version that the generated code should be compatible with. When [using a configuration file](#using-configuration-files), use the `targetPHPVersion` property. 
-
-## Creation result
-
-The generated classes have these features:
-
-- The class namespace can either be specified via command-line (`--target-namespace`), specification file (`targetNamespace`). If neither is specified, the generator will inspect the `composer.json` of your project, look for any PSR-4 configuration and infer the namespace from there. Generating without namespaces is not supported now.
-- The main object's name is defined by the command-line (`--class`) or the specification file.
-- Sub-object's names are taken from the property name.
-- Array items are suffixed 'Item'.
-- `OneOf` alternatives are suffixed 'AlternativeX', with `X` being an incremented integer.
-- The constructor has arguments for all required properties in the schema.
-- All properties are private, with getter methods for access, and explicit type declarations for the return value (in PHP5 mode, only PHPDoc is used).
-- Static function `buildFromInput(array $data)` accepts an array (using `json_decode('{}', true)`), validates it according to the schema and creates the full object tree as return value. An additional mapping step is not required.
-- To disable validation against schema, you can pass 2nd parameter as `false`, like this: `buildFromInput(array $data, false)`. Use at your own risk.
-- Function `toJson()` returns a plain array ready for `json_encode()`.
-- Writing to any object's properties is done immutably by using `withX()` (or `withoutX()` for optional values). This will return a new instance of that object with the value changed.
-
-As an example, a shortened version with all comments removed, from the above schema shows the location, only containing the city (country is behaving the same, but with a different name)
-
-```php
-class UserLocation
-{
-    private static array $schema = array(
-        'properties' => array(
-            'city' => array(
-                'type' => 'string',
-            ),
-        ),
-    );
-
-    private ?string $country = null;
-
-    private ?string $city = null;
-
-    public function __construct()
-    {
-    }
-
-    public function getCity() : ?string
-    {
-        return $this->city;
-    }
-
-    public function withCity(string $city) : self
-    {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($city, static::$schema['properties']['city']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-        }
-
-        $clone = clone $this;
-        $clone->city = $city;
-
-        return $clone;
-    }
-
-    public function withoutCity() : self
-    {
-        $clone = clone $this;
-        unset($clone->city);
-
-        return $clone;
-    }
-
-    public static function buildFromInput(array $input) : UserLocation
-    {
-        static::validateInput($input);
-
-        $city = null;
-        if (isset($input['city'])) {
-            $city = $input['city'];
-        }
-
-        $obj = new static();
-        $obj->city = $city;
-        return $obj;
-    }
-
-    public function toJson() : array
-    {
-        $output = [];
-        if (isset($this->city)) {
-            $output['city'] = $this->city;
-        }
-
-        return $output;
-    }
-
-    public static function validateInput(array $input, bool $return = false) : bool
-    {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($input, static::$schema);
-
-        if (!$validator->isValid() && !$return) {
-            $errors = array_map(function($e) {
-                return $e["property"] . ": " . $e["message"];
-            }, $validator->getErrors());
-            throw new \InvalidArgumentException(join(", ", $errors));
-        }
-
-        return $validator->isValid();
-    }
-
-    public function __clone()
-    {
-    }
-}
-```
+- [Installation](#installation)
+- [Usage](#usage)
+- [Options](#options)
+- [Example workflow](#example-workflow)
+- [Compatibility](#compatibility)
+- [Creation result](#creation-result)
+- [Advanced programmatic usage](#advanced-programmatic-usage)
 
 ## Installation
 
-Install using Composer:
+Install with [Composer](https://getcomposer.org/):
 
-```bash
-$ composer require --dev helmich/schema2class
+```sh
+composer require --dev helmich/schema2class
 ```
 
-## Using configuration files
+## Usage
 
-In many projects, you're going to want to keep an evolving JSON schema in sync with the generated PHP classes continuously. For this reason, S2C allows you to create a configuration file `.s2c.yaml` that stores the most common conversion options:
+You can use this tool in three different ways:
 
-```yaml
-targetPHPVersion: "7.4"
+### A. Via the CLI, passing options and the schema path directly
+
+```sh
+vendor/bin/s2c generate:fromschema --class User my-schema.json src/TargetDir   # or ./my-schema.yaml
+
+# On Windows CMD:
+php vendor\bin\s2c generate:fromschema --class User my-schema.json src\TargetDir
+```
+
+See [all available options](#options).
+
+### B. Via the CLI, using a configuration file
+
+1. Create a configuration file, for example `my-config.yaml` (or the equivalent `.json` file):
+
+```yml
+targetPHPVersion: "7.4" # or "5.6", "8", "8.3", etc.
 files:
-- input: src/Spec/Spec.yaml
-  className: Specification
-  targetDirectory: src/Spec
+  - input: "path/to/schema.json" # On Windows: "D:/path/to/schema.json"
+    targetDirectory: "src/TargetDir"
+    targetNamespace: "MyNamespace"
+    className: "MyClass" # Omit this if your schema is a list of definitions
+options:
+  noSetters: true
 ```
 
-You can store your local configuration in this yaml file and start the generation process by calling
+2. Run the generator:
 
-```bash
-s2c generate:fromspec
+```sh
+vendor/bin/s2c generate:fromspec my-config.yaml   # or my-config.json
 ```
 
-This will scan for `.s2c.yaml` in the current directory and use it's parameters. If you need to have different files for multiple schemas, you can provide a config file as a parameter:
+You can also name the config file `.s2c.yaml` and execute the command without arguments:
 
-```bash
-s2c generate:fromspec my-config.yaml
-# or 
-s2c generate:fromspec my-config.json
+```sh
+vendor/bin/s2c generate:fromspec
 ```
 
-### Options
+`.s2c.yaml` will be used automatically.
 
-The specification `options` section (or the equivalent CLI flags) allows fine tuning of the generated classes.  Important options include:
+### C. From PHP code
 
-- `disableStrictTypes` – omit the `strict_types` declaration.
-- `treatValuesWithDefaultAsOptional` – treat properties with a default value as optional.
-- `inlineAllofReferences` – inline `allOf` references before generating classes.
-- `newValidatorClassExpr` – expression used to create a validator instance, e.g. "new MyValidator()".
-- `preservePropertyNames` – keep property names as‐is instead of converting them to camelCase (they will be sanitized anyway).
-- `noGetters` – if *true*, no getter methods will be generated, and all properties will be `public`.
-- `noSetters` – don't generate `withX()`/`withoutX()` methods.
-- `noDescriptionsInSchema` – drop `description` fields from the embedded schema to reduce its size.
-- `singleLineSchema` – store the validation schema as a single line in the generated class to reduce length of .php file.
+The simplest way to use the generator programmatically is to call `Schema2Class` class methods.
 
-See [`src/Spec/Spec.yaml`](src/Spec/Spec.yaml) for a full list of available options and their defaults.
-
-### Programmatic usage
-
-The generator can be invoked from PHP code without the CLI.  The easiest way is
-to use the `Schema2Class` class which accepts either a specification file or
-an array describing the configuration:
+Generate from a configuration file:
 
 ```php
 use Helmich\Schema2Class\Schema2Class;
 
 $generator = new Schema2Class();
-$generator->generateFromSpecFile('.s2c.yaml');
+$generator->generateFromSpec('my-config.yaml');
+```
 
-// OR
+Or from a configuration defined as a PHP array:
 
-$generator->generateFromSpecArray([
+```php
+$generator->generateFromSpec([
     'files' => [
         [
-            'input' => 'example.json',
-            'className' => 'User',
-            'targetDirectory' => 'src/Target',
-            'targetNamespace' => 'My\\Target',
+            'input'           => 'path/to/schema.json',
+            'targetDirectory' => 'src/TargetDir',
+            'targetNamespace' => 'MyNamespace',
+            'className'       => 'MyClass',
         ],
     ],
 ]);
+```
 
-// OR
+Or from a schema provided as a PHP array:
 
+```php
 $schema = [
-    'required' => ['name'],
+    'required'   => ['name'],
     'properties' => [
-        'name' => ['type' => 'string']
+        'name' => ['type' => 'string'],
     ],
-]
+];
+
 $generator->generateFromSchema($schema, 'MyClass', 'MyDir', 'MyNamespace');
 ```
 
-If you need more control you can create a `GeneratorRequest` and pass it
-to `SchemaToClassFactory` directly:
+See also the [advanced programmatic usage](#advanced-programmatic-usage) section.
+
+## Options
+
+Both the CLI and specification files accept the following options:
+
+| CLI option                    | Config file option                      | Description                                                                                                                                                            |
+| ----------------------------- | ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| _(1st argument)_              | `input` (per‑file)                 | JSON Schema file to read (`.json`, `.yml`, or `.yaml`).                                                                                                                |
+| _(2nd argument)_              | `targetDirectory` (per‑file)       | Directory in which the generated files will be placed.                                                                                                                 |
+| `--target-namespace`          | `targetNamespace` (per‑file)       | Namespace to use for every generated class (automatically determined from `composer.json` if omitted).                                                                 |
+| `--class`, `-c`               | `className` (per‑file)             | Class name to generate. Use this only when generating a single class from a schema that contains one top‑level object (not from a schema with multiple `definitions`). |
+| `--target-php`, `-p`          | `targetPHPVersion`                 | PHP version **with which** the generated code must be compatible.                                                                                                      |
+| `--disable-strict-types`      | `disableStrictTypes`               | Omit the `strict_types` declaration.                                                                                                                                   |
+| `--treat-default-as-optional` | `treatValuesWithDefaultAsOptional` | Treat properties that have a default value as optional.                                                                                                                |
+| `--inline-allof`              | `inlineAllofReferences`            | Inline `allOf` references before generating classes.                                                                                                                   |
+| `--validator-expr`            | `newValidatorClassExpr`            | Expression used to create a validator instance (e.g. `new MyValidator()`).                                                                                             |
+| `--preserve-property-names`   | `preservePropertyNames`            | Keep property names as is instead of converting them to camelCase (non-valid identifiers names will be sanitized).                                                     |
+| `--no-getters`                | `noGetters`                        | If **true**, no getter methods are generated and all properties are `public`.                                                                                          |
+| `--no-setters`                | `noSetters`                        | Do not generate `withX()` / `withoutX()` methods.                                                                                                                      |
+| `--no-schema-descriptions`    | `noDescriptionsInSchema`           | Remove `description` fields from the embedded schema to reduce its size.                                                                                               |
+| `--single-line-schema`        | `singleLineSchema`                 | Store the validation schema on a single line in the generated class to make the `.php` file smaller.                                                                   |
+| `--dry-run`                   | –                                  | Print the output to the console instead of writing files.                                                                                                              |
+
+## Example workflow
+
+To demonstrate Schema2Class's capabilities and how to use the generated code, consider the following workflow:
+
+1. You have a JSON Schema file [like this](examples/basic/basic-example.json) (can be `.json`, `.yml`, or `.yaml`).
+
+2. You define the desired behaviour of the generator
+
+   - in a [configuration file like this](examples/basic/basic-example-config.yaml)
+     In this case, run:
+
+   ```sh
+   vendor/bin/s2c generate:fromspec basic-example-config.yaml
+   ```
+
+   - or by passing the same options directly to the CLI:
+
+   ```sh
+   vendor/bin/s2c generate:fromschema \
+     examples/basic/basic-example.json \
+     examples/basic/generated \
+     --target-namespace Example\\Basic \
+     --target-php 7.4 \
+     --single-line-schema --no-schema-descriptions
+   ```
+
+3. By this point you're all set: Schema2Class has automatically created the PHP classes [\[1\]](examples/basic/generated/User.php) and [\[2\]](examples/basic/generated/Address.php):
+
+   ```text
+   examples/basic
+   └── generated
+       ├── Address.php
+       └── Client.php
+   ```
+
+   - **Note:** In a real project you can omit `--target-namespace`; Schema2Class will try to infer the target namespace from your `composer.json` file.
+   - **Also note:** At the moment it is not possible to generate classes without a namespace.
+
+Next, use the generated classes in your code:
+
+```php
+// App.php
+<?php
+
+$someApiResponse = '...';
+$userData = json_decode($someApiResponse, true);
+
+$user = \Example\Basic\User::buildFromInput($userData);
+
+// or, if for some reason you don't care about validation:
+$user = \Example\Basic\User::buildFromInput($userData, false);
+
+// Access object properties via getters:
+echo "User name:   " . $user->getName();
+echo "User status: " . $user->getStatus();
+echo "User street: " . ($user->getAddress()?->getStreet());
+
+// Or, if you used the `--no-getters` option, access them directly:
+echo "User name:   " . $user->name;
+echo "User status: " . $user->status;
+echo "User street: " . ($user->address?->street);
+
+// Update `status` WITHOUT mutating the original object:
+$updatedUser = $user->withStatus("customer");
+
+// Confirm:
+echo "Old status: " . $user->getStatus();      // not mutated
+echo "New status: " . $updatedUser->getStatus(); // 'customer'
+
+// Finally, convert the updated user back to an array to save it to a DB or elsewhere:
+$userAsArray = $updatedUser->toJson();
+```
+
+## Compatibility
+
+- The generated code can be made backwards‑compatible **down to PHP 5.6**. Use the `--target-php` CLI flag (or the `targetPHPVersion` option) to set the desired version.
+- The generator itself requires **PHP 8.2+**.
+- The tool runs on both Windows and Unix‑like systems.
+
+## Features
+
+### Generator
+
+- Generate a fully‑featured class from a JSON Schema file with a single command (zero configuration).
+- Hookable and extensible.
+
+### Generated classes
+
+The generated classes offer:
+
+- Typing (PHP 7+ type hints plus PHPDoc) wherever possible
+- PHPDoc descriptions derived from schema `"description"` fields.
+- All PHP properties are `private` (unless `--no-getters` is used), with getter methods and explicit return type declarations (PHPDoc for PHP 5 mode).
+- Namespacing: Specify the namespace for all classes with `--target-namespace` (`targetNamespace`). If omitted, the generator inspects your `composer.json` and tries to infer it from the PSR‑4 configuration.
+  Generating classes without namespaces is currently not supported.
+- Class names are derived from the names in the `"definitions"` section. If you generate from a schema with a top-level object and no definitions, set the class name with the `--class` (`className`) option.
+- Class/enum names for sub‑objects are derived from property names.
+- Classes generated for array items are suffixed with "Item". See [`Example\Advanced\User::$hobbies`](examples/advanced/generated/User.php#L203).
+- `oneOf`/`anyOf` alternatives are suffixed with "AlternativeX", where _X_ is an incrementing integer. See [`Example\Advanced\User::$payment`](examples/advanced/generated/User.php#L188).
+- The static method `buildFromInput(array $data[, bool $validate = true])` accepts an array (for example the result of `json_decode(..., true)`), validates it against the schema, and creates the full object graph. No additional mapping is required.
+  **Note:** Do not instantiate the class directly; always use `buildFromInput(...)`.
+- To disable validation, pass `false` as the second argument: `buildFromInput($data, false)`. Use at your own risk.
+- The method `toJson()` returns a plain array ready for `json_encode()`.
+- Properties are immutable; use `withX()` (or `withoutX()` for optional values) to create modified copies. Though If you set `--no-getters`+`--no-setters`, then you can write any property directly (not recommended).
+
+## Advanced programmatic usage
+
+If you need more control, you can create a `GeneratorRequest` and pass it to `SchemaToClassFactory`:
 
 ```php
 use Helmich\Schema2Class\Generator\GeneratorRequest;
@@ -295,10 +244,10 @@ use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
 use Symfony\Component\Console\Output\NullOutput;
 
-$schema = (new SchemaLoader())->loadSchema('example.json');
+$schema  = (new SchemaLoader())->loadSchema('example.json');
 $request = new GeneratorRequest(
     $schema,
-    new ValidatedSpecificationFilesItem('My\\Target', 'User', 'src/Target'),
+    new ValidatedSpecificationFilesItem('MyApp\\TargetDir', 'User', 'src/TargetDir'),
     new SpecificationOptions()
 );
 $factory = new SchemaToClassFactory();
