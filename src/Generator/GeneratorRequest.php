@@ -205,25 +205,6 @@ class GeneratorRequest
         return $this->opts->getNoSetters();
     }
 
-    /**
-     * @param int $version
-     * @return bool
-     * @deprecated Use `isAtLeastPHP` instead
-     */
-    public function isPhp(int $version): bool
-    {
-        $target = $this->getTargetPHPVersion();
-        switch ($version) {
-            case 5:
-                return Comparator::greaterThanOrEqualTo($target, "5.6.0")
-                    && Comparator::lessThan($target, "6.0.0");
-            case 7:
-                return Comparator::greaterThanOrEqualTo($target, "7.0.0");
-            default:
-                return false;
-        }
-    }
-
     public function isAtLeastPHP(string $version): bool
     {
         return Comparator::greaterThanOrEqualTo($this->getTargetPHPVersion(), self::semversifyVersionNumber($version));

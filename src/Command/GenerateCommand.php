@@ -43,10 +43,10 @@ class GenerateCommand extends Command
 
         $this->addArgument("schema", InputArgument::REQUIRED, "JSON schema file to read");
         $this->addArgument("target-dir", InputArgument::REQUIRED, "Target directory");
+        
         $this->addOption("target-namespace", null, InputOption::VALUE_REQUIRED, "Target namespace (will try to determine automatically from composer.json if omitted)");
         $this->addOption("target-php", "p", InputOption::VALUE_REQUIRED, "Target PHP version");
         $this->addOption("dry-run", null, InputOption::VALUE_NONE, "Print output to console instead of writing to files");
-        $this->addOption("php5", '5', InputOption::VALUE_NONE, "Generate PHP5-compatible code (DEPRECATED: Use --target-php instead)");
         $this->addOption("class", "c", InputOption::VALUE_REQUIRED, "Target class name", "Object");
         $this->addOption("disable-strict-types", null, InputOption::VALUE_NONE, "Do not emit strict_types declaration");
         $this->addOption("treat-default-as-optional", null, InputOption::VALUE_NONE, "Treat properties with defaults as optional");
@@ -117,10 +117,6 @@ class GenerateCommand extends Command
         }
         if ($input->getOption("single-line-schema")) {
             $opts = $opts->withSingleLineSchema(true);
-        }
-
-        if ($input->getOption("php5")) {
-            $opts = $opts->withTargetPHPVersion("5.6.0");
         }
 
         $baseRequest = new GeneratorRequest($schema, $spec, $opts);

@@ -34,22 +34,22 @@ class GeneratorRequestTest extends TestCase
         );
     }
 
-    #[TestDox("is PHP 7")]
-    public function testIsPHP7()
+    #[TestDox("is at least PHP 7 and not 8")]
+    public function testIsAtLeastPHP7vs8()
     {
         $req = $this->request->withPHPVersion("7.1");
 
-        assertTrue($req->isPhp(7));
-        assertFalse($req->isPhp(5));
+        assertTrue($req->isAtLeastPHP('7'));
+        assertFalse($req->isAtLeastPHP('8'));
     }
 
-    #[TestDox("is PHP 5")]
-    public function testIsPHP5()
+    #[TestDox("is at least PHP 8 and not 8.1")]
+    public function testIsAtLeastPHP8vs8_1()
     {
-        $req = $this->request->withPHPVersion("5.6");
+        $req = $this->request->withPHPVersion("8.0");
 
-        assertTrue($req->isPhp(5));
-        assertFalse($req->isPhp(7));
+        assertTrue($req->isAtLeastPHP('8'));
+        assertFalse($req->isAtLeastPHP('8.1'));
 
     }
 
