@@ -1,206 +1,206 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
 
 namespace Example\Advanced;
 
 class User
 {
-
     /**
      * Schema used to validate input for creating instances of this class
      *
      * @var array
      */
-    private static $schema = array(
-        'required' => array(
+    private static array $schema = [
+        'required' => [
             'firstName',
             'lastName',
-        ),
-        'properties' => array(
-            'createdAt' => array(
+        ],
+        'properties' => [
+            'createdAt' => [
                 'type' => 'string',
                 'format' => 'date-time',
-            ),
-            'gender' => array(
+            ],
+            'gender' => [
                 'type' => 'string',
-                'enum' => array(
+                'enum' => [
                     'male',
                     'female',
-                ),
-            ),
-            'firstName' => array(
+                ],
+            ],
+            'firstName' => [
                 'type' => 'string',
                 'minLength' => 2,
-            ),
-            'lastName' => array(
+            ],
+            'lastName' => [
                 'type' => 'string',
-            ),
-            'email' => array(
+            ],
+            'email' => [
                 'type' => 'string',
                 'format' => 'email',
-            ),
-            'billing' => array(
-                'allOf' => array(
-                    array(
-                        'required' => array(
+            ],
+            'billing' => [
+                'allOf' => [
+                    [
+                        'required' => [
                             'vatID',
-                        ),
-                        'properties' => array(
-                            'vatID' => array(
+                        ],
+                        'properties' => [
+                            'vatID' => [
                                 'type' => 'string',
-                            ),
-                            'creditLevel' => array(
+                            ],
+                            'creditLevel' => [
                                 'type' => 'integer',
-                            ),
-                        ),
-                    ),
-                    array(
-                        'oneOf' => array(
-                            array(
-                                'required' => array(
+                            ],
+                        ],
+                    ],
+                    [
+                        'oneOf' => [
+                            [
+                                'required' => [
                                     'foo',
-                                ),
-                                'properties' => array(
-                                    'foo' => array(
+                                ],
+                                'properties' => [
+                                    'foo' => [
                                         'type' => 'int',
-                                    ),
-                                ),
-                            ),
-                            array(
-                                'required' => array(
+                                    ],
+                                ],
+                            ],
+                            [
+                                'required' => [
                                     'bar',
-                                ),
-                                'properties' => array(
-                                    'bar' => array(
+                                ],
+                                'properties' => [
+                                    'bar' => [
                                         'type' => 'string',
-                                    ),
-                                ),
-                            ),
-                        ),
-                    ),
-                ),
-            ),
-            'payment' => array(
-                'oneOf' => array(
-                    array(
-                        'required' => array(
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            'payment' => [
+                'oneOf' => [
+                    [
+                        'required' => [
                             'type',
-                        ),
-                        'properties' => array(
-                            'type' => array(
+                        ],
+                        'properties' => [
+                            'type' => [
                                 'type' => 'string',
-                                'enum' => array(
+                                'enum' => [
                                     'invoice',
-                                ),
-                            ),
-                        ),
-                    ),
-                    array(
-                        'required' => array(
+                                ],
+                            ],
+                        ],
+                    ],
+                    [
+                        'required' => [
                             'type',
                             'accountNumber',
-                        ),
-                        'properties' => array(
-                            'type' => array(
+                        ],
+                        'properties' => [
+                            'type' => [
                                 'type' => 'string',
-                                'enum' => array(
+                                'enum' => [
                                     'debit',
-                                ),
-                            ),
-                            'accountNumber' => array(
+                                ],
+                            ],
+                            'accountNumber' => [
                                 'type' => 'string',
-                            ),
-                        ),
-                    ),
-                    array(
+                            ],
+                        ],
+                    ],
+                    [
                         'type' => 'string',
-                    ),
-                ),
-            ),
-            'address' => array(
-                'required' => array(
+                    ],
+                ],
+            ],
+            'address' => [
+                'required' => [
                     'city',
                     'street',
-                ),
-                'properties' => array(
-                    'city' => array(
+                ],
+                'properties' => [
+                    'city' => [
                         'type' => 'string',
                         'maxLength' => 32,
-                    ),
-                    'street' => array(
+                    ],
+                    'street' => [
                         'type' => 'string',
-                    ),
-                ),
-            ),
-            'tags' => array(
+                    ],
+                ],
+            ],
+            'tags' => [
                 'type' => 'array',
-                'items' => array(
+                'items' => [
                     'type' => 'string',
                     'minLength' => 1,
-                ),
-            ),
-            'hobbies' => array(
+                ],
+            ],
+            'hobbies' => [
                 'type' => 'array',
-                'items' => array(
-                    'properties' => array(
-                        'name' => array(
+                'items' => [
+                    'properties' => [
+                        'name' => [
                             'type' => 'string',
-                        ),
-                    ),
-                ),
-            ),
-        ),
-    );
+                        ],
+                    ],
+                ],
+            ],
+        ],
+    ];
 
     /**
      * @var \DateTime|null
      */
-    private $createdAt = null;
+    private ?\DateTime $createdAt = null;
 
     /**
-     * @var string|null
+     * @var UserGender|null
      */
-    private $gender = null;
-
-    /**
-     * @var string
-     */
-    private $firstName = null;
+    private ?UserGender $gender = null;
 
     /**
      * @var string
      */
-    private $lastName = null;
+    private string $firstName;
+
+    /**
+     * @var string
+     */
+    private string $lastName;
 
     /**
      * @var string|null
      */
-    private $email = null;
+    private ?string $email = null;
 
     /**
      * @var UserBilling|null
      */
-    private $billing = null;
+    private ?UserBilling $billing = null;
 
     /**
      * @var UserPaymentAlternative1|UserPaymentAlternative2|string|null
      */
-    private $payment = null;
+    private UserPaymentAlternative1|UserPaymentAlternative2|string|null $payment = null;
 
     /**
      * @var UserAddress|null
      */
-    private $address = null;
+    private ?UserAddress $address = null;
 
     /**
      * @var string[]|null
      */
-    private $tags = null;
+    private ?array $tags = null;
 
     /**
      * @var UserHobbiesItem[]|null
      */
-    private $hobbies = null;
+    private ?array $hobbies = null;
 
     /**
      * @param string $firstName
@@ -217,15 +217,15 @@ class User
      */
     public function getCreatedAt() : ?\DateTime
     {
-        return $this->createdAt;
+        return $this->createdAt ?? null;
     }
 
     /**
-     * @return string|null
+     * @return UserGender|null
      */
-    public function getGender() : ?string
+    public function getGender() : ?UserGender
     {
-        return $this->gender;
+        return $this->gender ?? null;
     }
 
     /**
@@ -249,7 +249,7 @@ class User
      */
     public function getEmail() : ?string
     {
-        return $this->email;
+        return $this->email ?? null;
     }
 
     /**
@@ -257,13 +257,13 @@ class User
      */
     public function getBilling() : ?UserBilling
     {
-        return $this->billing;
+        return $this->billing ?? null;
     }
 
     /**
      * @return UserPaymentAlternative1|UserPaymentAlternative2|string|null
      */
-    public function getPayment()
+    public function getPayment() : UserPaymentAlternative1|UserPaymentAlternative2|string|null
     {
         return $this->payment;
     }
@@ -273,7 +273,7 @@ class User
      */
     public function getAddress() : ?UserAddress
     {
-        return $this->address;
+        return $this->address ?? null;
     }
 
     /**
@@ -281,7 +281,7 @@ class User
      */
     public function getTags() : ?array
     {
-        return $this->tags;
+        return $this->tags ?? null;
     }
 
     /**
@@ -289,7 +289,7 @@ class User
      */
     public function getHobbies() : ?array
     {
-        return $this->hobbies;
+        return $this->hobbies ?? null;
     }
 
     /**
@@ -316,17 +316,11 @@ class User
     }
 
     /**
-     * @param string $gender
+     * @param UserGender $gender
      * @return self
      */
-    public function withGender(string $gender) : self
+    public function withGender(UserGender $gender) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($gender, static::$schema['properties']['gender']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-        }
-
         $clone = clone $this;
         $clone->gender = $gender;
 
@@ -351,7 +345,7 @@ class User
     public function withFirstName(string $firstName) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($firstName, static::$schema['properties']['firstName']);
+        $validator->validate($firstName, self::$schema['properties']['firstName']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
@@ -369,7 +363,7 @@ class User
     public function withLastName(string $lastName) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($lastName, static::$schema['properties']['lastName']);
+        $validator->validate($lastName, self::$schema['properties']['lastName']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
@@ -387,7 +381,7 @@ class User
     public function withEmail(string $email) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($email, static::$schema['properties']['email']);
+        $validator->validate($email, self::$schema['properties']['email']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
@@ -436,7 +430,7 @@ class User
      * @param UserPaymentAlternative1|UserPaymentAlternative2|string $payment
      * @return self
      */
-    public function withPayment($payment) : self
+    public function withPayment(UserPaymentAlternative1|UserPaymentAlternative2|string $payment) : self
     {
         $clone = clone $this;
         $clone->payment = $payment;
@@ -485,7 +479,7 @@ class User
     public function withTags(array $tags) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($tags, static::$schema['properties']['tags']);
+        $validator->validate($tags, self::$schema['properties']['tags']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
@@ -513,6 +507,12 @@ class User
      */
     public function withHobbies(array $hobbies) : self
     {
+        $validator = new \JsonSchema\Validator();
+        $validator->validate($hobbies, self::$schema['properties']['hobbies']);
+        if (!$validator->isValid()) {
+            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        }
+
         $clone = clone $this;
         $clone->hobbies = $hobbies;
 
@@ -533,56 +533,41 @@ class User
     /**
      * Builds a new instance from an input array
      *
-     * @param array $input Input data
+     * @param array|object $input Input data
+     * @param bool $validate Set this to false to skip validation; use at own risk
      * @return User Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array $input) : User
+    public static function buildFromInput(array|object $input, bool $validate = true) : User
     {
-        static::validateInput($input);
-
-        $createdAt = null;
-        if (isset($input['createdAt'])) {
-            $createdAt = new \DateTime($input['createdAt']);
-        }
-        $gender = null;
-        if (isset($input['gender'])) {
-            $gender = $input['gender'];
-        }
-        $firstName = $input['firstName'];
-        $lastName = $input['lastName'];
-        $email = null;
-        if (isset($input['email'])) {
-            $email = $input['email'];
-        }
-        $billing = null;
-        if (isset($input['billing'])) {
-            $billing = UserBilling::buildFromInput($input['billing']);
-        }
-        $payment = null;
-        if (isset($input['payment'])) {
-            if (UserPaymentAlternative1::validateInput($input['payment'], true)) {
-                $payment = UserPaymentAlternative1::buildFromInput($input['payment']);
-            } else if (UserPaymentAlternative2::validateInput($input['payment'], true)) {
-                $payment = UserPaymentAlternative2::buildFromInput($input['payment']);
-            } else {
-                $payment = $input['payment'];
-            }
-        }
-        $address = null;
-        if (isset($input['address'])) {
-            $address = UserAddress::buildFromInput($input['address']);
-        }
-        $tags = null;
-        if (isset($input['tags'])) {
-            $tags = $input['tags'];
-        }
-        $hobbies = null;
-        if (isset($input['hobbies'])) {
-            $hobbies = array_map(function($i) { return UserHobbiesItem::buildFromInput($i); }, $input['hobbies']);
+        if (!is_array($input) && !is_object($input)) {
+            throw new \InvalidArgumentException(
+                'Input to buildFromInput must be array or object, got ' . gettype($input)
+            );
         }
 
-        $obj = new static($firstName, $lastName);
+        $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
+        if ($validate) {
+            static::validateInput($input);
+        }
+
+        $createdAt = isset($input->{'createdAt'}) ? $input->{'createdAt'} : null;
+        $gender = isset($input->{'gender'}) ? UserGender::from($input->{'gender'}) : null;
+        $firstName = $input->{'firstName'};
+        $lastName = $input->{'lastName'};
+        $email = isset($input->{'email'}) ? $input->{'email'} : null;
+        $billing = isset($input->{'billing'}) ? UserBilling::buildFromInput($input->{'billing'}, validate: $validate) : null;
+        $payment = isset($input->{'payment'}) ? match (true) {
+            default => null,
+            UserPaymentAlternative1::validateInput($input->{'payment'}, true) => UserPaymentAlternative1::buildFromInput($input->{'payment'}, validate: $validate),
+            UserPaymentAlternative2::validateInput($input->{'payment'}, true) => UserPaymentAlternative2::buildFromInput($input->{'payment'}, validate: $validate),
+            is_string($input->{'payment'}) => $input->{'payment'},
+        } : null;
+        $address = isset($input->{'address'}) ? UserAddress::buildFromInput($input->{'address'}, validate: $validate) : null;
+        $tags = isset($input->{'tags'}) ? $input->{'tags'} : null;
+        $hobbies = isset($input->{'hobbies'}) ? array_map(fn (array|object $i): UserHobbiesItem => UserHobbiesItem::buildFromInput($i, validate: $validate), $input->{'hobbies'}) : null;
+
+        $obj = new self($firstName, $lastName);
         $obj->createdAt = $createdAt;
         $obj->gender = $gender;
         $obj->email = $email;
@@ -603,10 +588,10 @@ class User
     {
         $output = [];
         if (isset($this->createdAt)) {
-            $output['createdAt'] = $this->createdAt;
+            $output['createdAt'] = ($this->createdAt)->format(\DateTime::ATOM);
         }
         if (isset($this->gender)) {
-            $output['gender'] = $this->gender;
+            $output['gender'] = ($this->gender)->value;
         }
         $output['firstName'] = $this->firstName;
         $output['lastName'] = $this->lastName;
@@ -614,24 +599,22 @@ class User
             $output['email'] = $this->email;
         }
         if (isset($this->billing)) {
-            $output['billing'] = $this->billing->toJson();
+            $output['billing'] = ($this->billing)->toJson();
         }
         if (isset($this->payment)) {
-            if ($this instanceof UserPaymentAlternative1) {
-                $output['payment'] = $this->payment->toJson();
-            }
-            if ($this instanceof UserPaymentAlternative2) {
-                $output['payment'] = $this->payment->toJson();
-            }
+            $output['payment'] = match (true) {
+                $this->payment instanceof UserPaymentAlternative1, $this->payment instanceof UserPaymentAlternative2 => ($this->payment)->toJson(),
+                is_string($this->payment) => $this->payment,
+            };
         }
         if (isset($this->address)) {
-            $output['address'] = $this->address->toJson();
+            $output['address'] = ($this->address)->toJson();
         }
         if (isset($this->tags)) {
             $output['tags'] = $this->tags;
         }
         if (isset($this->hobbies)) {
-            $output['hobbies'] = array_map(function(UserHobbiesItem $i) { return $i->toJson(); }, $this->hobbies);
+            $output['hobbies'] = array_map(fn (UserHobbiesItem $i) => $i->toJson(), $this->hobbies);
         }
 
         return $output;
@@ -640,21 +623,22 @@ class User
     /**
      * Validates an input array
      *
-     * @param array $input Input data
+     * @param array|object $input Input data
      * @param bool $return Return instead of throwing errors
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput(array $input, bool $return = false) : bool
+    public static function validateInput(array|object $input, bool $return = false) : bool
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($input, static::$schema);
+        $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
+        $validator->validate($input, self::$schema);
 
         if (!$validator->isValid() && !$return) {
-            $errors = array_map(function($e) {
-                return $e["property"] . ": " . $e["message"];
+            $errors = array_map(function(array $e): string {
+                return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];
             }, $validator->getErrors());
-            throw new \InvalidArgumentException(join(", ", $errors));
+            throw new \InvalidArgumentException(join(".\n", $errors));
         }
 
         return $validator->isValid();
@@ -669,19 +653,17 @@ class User
             $this->billing = clone $this->billing;
         }
         if (isset($this->payment)) {
-            $this->payment = clone $this->payment;
+            $this->payment = match (true) {
+                $this->payment instanceof UserPaymentAlternative1, $this->payment instanceof UserPaymentAlternative2 => clone $this->payment,
+                is_string($this->payment) => $this->payment,
+            };
         }
         if (isset($this->address)) {
             $this->address = clone $this->address;
         }
-        if (isset($this->tags)) {
-            $this->tags = clone $this->tags;
-        }
         if (isset($this->hobbies)) {
-            $this->hobbies = array_map(function(UserHobbiesItem $i) { return clone $i; }, $this->hobbies);
+            $this->hobbies = array_map(fn (UserHobbiesItem $i) => clone $i, $this->hobbies);
         }
     }
-
-
 }
 

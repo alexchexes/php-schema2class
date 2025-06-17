@@ -1,41 +1,41 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
 
 namespace Example\Advanced;
 
 class UserAddress
 {
-
     /**
      * Schema used to validate input for creating instances of this class
      *
      * @var array
      */
-    private static $schema = array(
-        'required' => array(
+    private static array $schema = [
+        'required' => [
             'city',
             'street',
-        ),
-        'properties' => array(
-            'city' => array(
+        ],
+        'properties' => [
+            'city' => [
                 'type' => 'string',
                 'maxLength' => 32,
-            ),
-            'street' => array(
+            ],
+            'street' => [
                 'type' => 'string',
-            ),
-        ),
-    );
+            ],
+        ],
+    ];
 
     /**
      * @var string
      */
-    private $city = null;
+    private string $city;
 
     /**
      * @var string
      */
-    private $street = null;
+    private string $street;
 
     /**
      * @param string $city
@@ -70,7 +70,7 @@ class UserAddress
     public function withCity(string $city) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($city, static::$schema['properties']['city']);
+        $validator->validate($city, self::$schema['properties']['city']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
@@ -88,7 +88,7 @@ class UserAddress
     public function withStreet(string $street) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($street, static::$schema['properties']['street']);
+        $validator->validate($street, self::$schema['properties']['street']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
@@ -102,18 +102,28 @@ class UserAddress
     /**
      * Builds a new instance from an input array
      *
-     * @param array $input Input data
+     * @param array|object $input Input data
+     * @param bool $validate Set this to false to skip validation; use at own risk
      * @return UserAddress Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array $input) : UserAddress
+    public static function buildFromInput(array|object $input, bool $validate = true) : UserAddress
     {
-        static::validateInput($input);
+        if (!is_array($input) && !is_object($input)) {
+            throw new \InvalidArgumentException(
+                'Input to buildFromInput must be array or object, got ' . gettype($input)
+            );
+        }
 
-        $city = $input['city'];
-        $street = $input['street'];
+        $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
+        if ($validate) {
+            static::validateInput($input);
+        }
 
-        $obj = new static($city, $street);
+        $city = $input->{'city'};
+        $street = $input->{'street'};
+
+        $obj = new self($city, $street);
 
         return $obj;
     }
@@ -135,21 +145,22 @@ class UserAddress
     /**
      * Validates an input array
      *
-     * @param array $input Input data
+     * @param array|object $input Input data
      * @param bool $return Return instead of throwing errors
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput(array $input, bool $return = false) : bool
+    public static function validateInput(array|object $input, bool $return = false) : bool
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($input, static::$schema);
+        $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
+        $validator->validate($input, self::$schema);
 
         if (!$validator->isValid() && !$return) {
-            $errors = array_map(function($e) {
-                return $e["property"] . ": " . $e["message"];
+            $errors = array_map(function(array $e): string {
+                return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];
             }, $validator->getErrors());
-            throw new \InvalidArgumentException(join(", ", $errors));
+            throw new \InvalidArgumentException(join(".\n", $errors));
         }
 
         return $validator->isValid();
@@ -158,7 +169,5 @@ class UserAddress
     public function __clone()
     {
     }
-
-
 }
 

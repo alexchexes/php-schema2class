@@ -1,63 +1,57 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
 
 namespace Example\Advanced;
 
 class UserPaymentAlternative1
 {
-
     /**
      * Schema used to validate input for creating instances of this class
      *
      * @var array
      */
-    private static $schema = array(
-        'required' => array(
+    private static array $schema = [
+        'required' => [
             'type',
-        ),
-        'properties' => array(
-            'type' => array(
+        ],
+        'properties' => [
+            'type' => [
                 'type' => 'string',
-                'enum' => array(
+                'enum' => [
                     'invoice',
-                ),
-            ),
-        ),
-    );
+                ],
+            ],
+        ],
+    ];
 
     /**
-     * @var string
+     * @var UserPaymentAlternative1Type
      */
-    private $type = null;
+    private UserPaymentAlternative1Type $type;
 
     /**
-     * @param string $type
+     * @param UserPaymentAlternative1Type $type
      */
-    public function __construct(string $type)
+    public function __construct(UserPaymentAlternative1Type $type)
     {
         $this->type = $type;
     }
 
     /**
-     * @return string
+     * @return UserPaymentAlternative1Type
      */
-    public function getType() : string
+    public function getType() : UserPaymentAlternative1Type
     {
         return $this->type;
     }
 
     /**
-     * @param string $type
+     * @param UserPaymentAlternative1Type $type
      * @return self
      */
-    public function withType(string $type) : self
+    public function withType(UserPaymentAlternative1Type $type) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($type, static::$schema['properties']['type']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-        }
-
         $clone = clone $this;
         $clone->type = $type;
 
@@ -67,17 +61,27 @@ class UserPaymentAlternative1
     /**
      * Builds a new instance from an input array
      *
-     * @param array $input Input data
+     * @param array|object $input Input data
+     * @param bool $validate Set this to false to skip validation; use at own risk
      * @return UserPaymentAlternative1 Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array $input) : UserPaymentAlternative1
+    public static function buildFromInput(array|object $input, bool $validate = true) : UserPaymentAlternative1
     {
-        static::validateInput($input);
+        if (!is_array($input) && !is_object($input)) {
+            throw new \InvalidArgumentException(
+                'Input to buildFromInput must be array or object, got ' . gettype($input)
+            );
+        }
 
-        $type = $input['type'];
+        $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
+        if ($validate) {
+            static::validateInput($input);
+        }
 
-        $obj = new static($type);
+        $type = UserPaymentAlternative1Type::from($input->{'type'});
+
+        $obj = new self($type);
 
         return $obj;
     }
@@ -90,7 +94,7 @@ class UserPaymentAlternative1
     public function toJson() : array
     {
         $output = [];
-        $output['type'] = $this->type;
+        $output['type'] = ($this->type)->value;
 
         return $output;
     }
@@ -98,21 +102,22 @@ class UserPaymentAlternative1
     /**
      * Validates an input array
      *
-     * @param array $input Input data
+     * @param array|object $input Input data
      * @param bool $return Return instead of throwing errors
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput(array $input, bool $return = false) : bool
+    public static function validateInput(array|object $input, bool $return = false) : bool
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($input, static::$schema);
+        $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
+        $validator->validate($input, self::$schema);
 
         if (!$validator->isValid() && !$return) {
-            $errors = array_map(function($e) {
-                return $e["property"] . ": " . $e["message"];
+            $errors = array_map(function(array $e): string {
+                return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];
             }, $validator->getErrors());
-            throw new \InvalidArgumentException(join(", ", $errors));
+            throw new \InvalidArgumentException(join(".\n", $errors));
         }
 
         return $validator->isValid();
@@ -121,7 +126,5 @@ class UserPaymentAlternative1
     public function __clone()
     {
     }
-
-
 }
 

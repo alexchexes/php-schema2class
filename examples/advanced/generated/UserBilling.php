@@ -1,55 +1,55 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
 
 namespace Example\Advanced;
 
 class UserBilling
 {
-
     /**
      * Schema used to validate input for creating instances of this class
      *
      * @var array
      */
-    private static $schema = array(
-        'required' => array(
+    private static array $schema = [
+        'required' => [
             'vatID',
-        ),
-        'properties' => array(
-            'vatID' => array(
+        ],
+        'properties' => [
+            'vatID' => [
                 'type' => 'string',
-            ),
-            'creditLevel' => array(
+            ],
+            'creditLevel' => [
                 'type' => 'integer',
-            ),
-            'foo' => array(
+            ],
+            'foo' => [
                 'type' => 'int',
-            ),
-            'bar' => array(
+            ],
+            'bar' => [
                 'type' => 'string',
-            ),
-        ),
-    );
+            ],
+        ],
+    ];
 
     /**
      * @var string
      */
-    private $vatID = null;
+    private string $vatID;
 
     /**
      * @var int|null
      */
-    private $creditLevel = null;
+    private ?int $creditLevel = null;
 
     /**
      * @var int|null
      */
-    private $foo = null;
+    private ?int $foo = null;
 
     /**
      * @var string|null
      */
-    private $bar = null;
+    private ?string $bar = null;
 
     /**
      * @param string $vatID
@@ -72,7 +72,7 @@ class UserBilling
      */
     public function getCreditLevel() : ?int
     {
-        return $this->creditLevel;
+        return $this->creditLevel ?? null;
     }
 
     /**
@@ -80,7 +80,7 @@ class UserBilling
      */
     public function getFoo() : ?int
     {
-        return $this->foo;
+        return $this->foo ?? null;
     }
 
     /**
@@ -88,7 +88,7 @@ class UserBilling
      */
     public function getBar() : ?string
     {
-        return $this->bar;
+        return $this->bar ?? null;
     }
 
     /**
@@ -98,7 +98,7 @@ class UserBilling
     public function withVatID(string $vatID) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($vatID, static::$schema['properties']['vatID']);
+        $validator->validate($vatID, self::$schema['properties']['vatID']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
@@ -116,7 +116,7 @@ class UserBilling
     public function withCreditLevel(int $creditLevel) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($creditLevel, static::$schema['properties']['creditLevel']);
+        $validator->validate($creditLevel, self::$schema['properties']['creditLevel']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
@@ -145,7 +145,7 @@ class UserBilling
     public function withFoo(int $foo) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($foo, static::$schema['properties']['foo']);
+        $validator->validate($foo, self::$schema['properties']['foo']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
@@ -174,7 +174,7 @@ class UserBilling
     public function withBar(string $bar) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($bar, static::$schema['properties']['bar']);
+        $validator->validate($bar, self::$schema['properties']['bar']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
@@ -199,29 +199,30 @@ class UserBilling
     /**
      * Builds a new instance from an input array
      *
-     * @param array $input Input data
+     * @param array|object $input Input data
+     * @param bool $validate Set this to false to skip validation; use at own risk
      * @return UserBilling Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array $input) : UserBilling
+    public static function buildFromInput(array|object $input, bool $validate = true) : UserBilling
     {
-        static::validateInput($input);
-
-        $vatID = $input['vatID'];
-        $creditLevel = null;
-        if (isset($input['creditLevel'])) {
-            $creditLevel = (int) $input['creditLevel'];
-        }
-        $foo = null;
-        if (isset($input['foo'])) {
-            $foo = (int) $input['foo'];
-        }
-        $bar = null;
-        if (isset($input['bar'])) {
-            $bar = $input['bar'];
+        if (!is_array($input) && !is_object($input)) {
+            throw new \InvalidArgumentException(
+                'Input to buildFromInput must be array or object, got ' . gettype($input)
+            );
         }
 
-        $obj = new static($vatID);
+        $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
+        if ($validate) {
+            static::validateInput($input);
+        }
+
+        $vatID = $input->{'vatID'};
+        $creditLevel = isset($input->{'creditLevel'}) ? $input->{'creditLevel'} : null;
+        $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
+        $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
+
+        $obj = new self($vatID);
         $obj->creditLevel = $creditLevel;
         $obj->foo = $foo;
         $obj->bar = $bar;
@@ -253,21 +254,22 @@ class UserBilling
     /**
      * Validates an input array
      *
-     * @param array $input Input data
+     * @param array|object $input Input data
      * @param bool $return Return instead of throwing errors
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput(array $input, bool $return = false) : bool
+    public static function validateInput(array|object $input, bool $return = false) : bool
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($input, static::$schema);
+        $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
+        $validator->validate($input, self::$schema);
 
         if (!$validator->isValid() && !$return) {
-            $errors = array_map(function($e) {
-                return $e["property"] . ": " . $e["message"];
+            $errors = array_map(function(array $e): string {
+                return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];
             }, $validator->getErrors());
-            throw new \InvalidArgumentException(join(", ", $errors));
+            throw new \InvalidArgumentException(join(".\n", $errors));
         }
 
         return $validator->isValid();
@@ -276,7 +278,5 @@ class UserBilling
     public function __clone()
     {
     }
-
-
 }
 

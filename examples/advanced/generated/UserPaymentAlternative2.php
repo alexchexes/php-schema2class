@@ -1,58 +1,58 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
 
 namespace Example\Advanced;
 
 class UserPaymentAlternative2
 {
-
     /**
      * Schema used to validate input for creating instances of this class
      *
      * @var array
      */
-    private static $schema = array(
-        'required' => array(
+    private static array $schema = [
+        'required' => [
             'type',
             'accountNumber',
-        ),
-        'properties' => array(
-            'type' => array(
+        ],
+        'properties' => [
+            'type' => [
                 'type' => 'string',
-                'enum' => array(
+                'enum' => [
                     'debit',
-                ),
-            ),
-            'accountNumber' => array(
+                ],
+            ],
+            'accountNumber' => [
                 'type' => 'string',
-            ),
-        ),
-    );
+            ],
+        ],
+    ];
+
+    /**
+     * @var UserPaymentAlternative2Type
+     */
+    private UserPaymentAlternative2Type $type;
 
     /**
      * @var string
      */
-    private $type = null;
+    private string $accountNumber;
 
     /**
-     * @var string
-     */
-    private $accountNumber = null;
-
-    /**
-     * @param string $type
+     * @param UserPaymentAlternative2Type $type
      * @param string $accountNumber
      */
-    public function __construct(string $type, string $accountNumber)
+    public function __construct(UserPaymentAlternative2Type $type, string $accountNumber)
     {
         $this->type = $type;
         $this->accountNumber = $accountNumber;
     }
 
     /**
-     * @return string
+     * @return UserPaymentAlternative2Type
      */
-    public function getType() : string
+    public function getType() : UserPaymentAlternative2Type
     {
         return $this->type;
     }
@@ -66,17 +66,11 @@ class UserPaymentAlternative2
     }
 
     /**
-     * @param string $type
+     * @param UserPaymentAlternative2Type $type
      * @return self
      */
-    public function withType(string $type) : self
+    public function withType(UserPaymentAlternative2Type $type) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($type, static::$schema['properties']['type']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-        }
-
         $clone = clone $this;
         $clone->type = $type;
 
@@ -90,7 +84,7 @@ class UserPaymentAlternative2
     public function withAccountNumber(string $accountNumber) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($accountNumber, static::$schema['properties']['accountNumber']);
+        $validator->validate($accountNumber, self::$schema['properties']['accountNumber']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
@@ -104,18 +98,28 @@ class UserPaymentAlternative2
     /**
      * Builds a new instance from an input array
      *
-     * @param array $input Input data
+     * @param array|object $input Input data
+     * @param bool $validate Set this to false to skip validation; use at own risk
      * @return UserPaymentAlternative2 Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array $input) : UserPaymentAlternative2
+    public static function buildFromInput(array|object $input, bool $validate = true) : UserPaymentAlternative2
     {
-        static::validateInput($input);
+        if (!is_array($input) && !is_object($input)) {
+            throw new \InvalidArgumentException(
+                'Input to buildFromInput must be array or object, got ' . gettype($input)
+            );
+        }
 
-        $type = $input['type'];
-        $accountNumber = $input['accountNumber'];
+        $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
+        if ($validate) {
+            static::validateInput($input);
+        }
 
-        $obj = new static($type, $accountNumber);
+        $type = UserPaymentAlternative2Type::from($input->{'type'});
+        $accountNumber = $input->{'accountNumber'};
+
+        $obj = new self($type, $accountNumber);
 
         return $obj;
     }
@@ -128,7 +132,7 @@ class UserPaymentAlternative2
     public function toJson() : array
     {
         $output = [];
-        $output['type'] = $this->type;
+        $output['type'] = ($this->type)->value;
         $output['accountNumber'] = $this->accountNumber;
 
         return $output;
@@ -137,21 +141,22 @@ class UserPaymentAlternative2
     /**
      * Validates an input array
      *
-     * @param array $input Input data
+     * @param array|object $input Input data
      * @param bool $return Return instead of throwing errors
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput(array $input, bool $return = false) : bool
+    public static function validateInput(array|object $input, bool $return = false) : bool
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($input, static::$schema);
+        $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
+        $validator->validate($input, self::$schema);
 
         if (!$validator->isValid() && !$return) {
-            $errors = array_map(function($e) {
-                return $e["property"] . ": " . $e["message"];
+            $errors = array_map(function(array $e): string {
+                return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];
             }, $validator->getErrors());
-            throw new \InvalidArgumentException(join(", ", $errors));
+            throw new \InvalidArgumentException(join(".\n", $errors));
         }
 
         return $validator->isValid();
@@ -160,7 +165,5 @@ class UserPaymentAlternative2
     public function __clone()
     {
     }
-
-
 }
 

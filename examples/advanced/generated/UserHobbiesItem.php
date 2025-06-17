@@ -1,28 +1,28 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
 
 namespace Example\Advanced;
 
 class UserHobbiesItem
 {
-
     /**
      * Schema used to validate input for creating instances of this class
      *
      * @var array
      */
-    private static $schema = array(
-        'properties' => array(
-            'name' => array(
+    private static array $schema = [
+        'properties' => [
+            'name' => [
                 'type' => 'string',
-            ),
-        ),
-    );
+            ],
+        ],
+    ];
 
     /**
      * @var string|null
      */
-    private $name = null;
+    private ?string $name = null;
 
     /**
      *
@@ -36,7 +36,7 @@ class UserHobbiesItem
      */
     public function getName() : ?string
     {
-        return $this->name;
+        return $this->name ?? null;
     }
 
     /**
@@ -46,7 +46,7 @@ class UserHobbiesItem
     public function withName(string $name) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($name, static::$schema['properties']['name']);
+        $validator->validate($name, self::$schema['properties']['name']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
@@ -71,20 +71,27 @@ class UserHobbiesItem
     /**
      * Builds a new instance from an input array
      *
-     * @param array $input Input data
+     * @param array|object $input Input data
+     * @param bool $validate Set this to false to skip validation; use at own risk
      * @return UserHobbiesItem Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array $input) : UserHobbiesItem
+    public static function buildFromInput(array|object $input, bool $validate = true) : UserHobbiesItem
     {
-        static::validateInput($input);
-
-        $name = null;
-        if (isset($input['name'])) {
-            $name = $input['name'];
+        if (!is_array($input) && !is_object($input)) {
+            throw new \InvalidArgumentException(
+                'Input to buildFromInput must be array or object, got ' . gettype($input)
+            );
         }
 
-        $obj = new static();
+        $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
+        if ($validate) {
+            static::validateInput($input);
+        }
+
+        $name = isset($input->{'name'}) ? $input->{'name'} : null;
+
+        $obj = new self();
         $obj->name = $name;
         return $obj;
     }
@@ -107,21 +114,22 @@ class UserHobbiesItem
     /**
      * Validates an input array
      *
-     * @param array $input Input data
+     * @param array|object $input Input data
      * @param bool $return Return instead of throwing errors
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput(array $input, bool $return = false) : bool
+    public static function validateInput(array|object $input, bool $return = false) : bool
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($input, static::$schema);
+        $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
+        $validator->validate($input, self::$schema);
 
         if (!$validator->isValid() && !$return) {
-            $errors = array_map(function($e) {
-                return $e["property"] . ": " . $e["message"];
+            $errors = array_map(function(array $e): string {
+                return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];
             }, $validator->getErrors());
-            throw new \InvalidArgumentException(join(", ", $errors));
+            throw new \InvalidArgumentException(join(".\n", $errors));
         }
 
         return $validator->isValid();
@@ -130,7 +138,5 @@ class UserHobbiesItem
     public function __clone()
     {
     }
-
-
 }
 
