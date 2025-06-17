@@ -1,19 +1,30 @@
 # Examples
 
-This folder contains example schema files and their generated output.
+This folder contains example schema files and their corresponding generated output.
 
-## `basic`
+## `basic/`
 
-Very straighforward without any advanced structures: One main class `User` with several properties,
-two of them required, and a subclass `UserLocation` with optional properties.
+A small schema with two definitions, where one references the other via `$ref`.  
+The objects don't use complex advanced structures.
 
-In order to create the output in the `generated` subfolder, the following command was used:
+A few configuration options are set in the [basic-example-config.yaml](examples/basic/basic-example-config.yaml) file to make the resulting files smaller.
 
-`cmd/s2c generate:fromschema --class User --target-namespace Example\Basic ./examples/basic/basic-example.yaml examples/basic/generated`
+To create the output in the `generated` sub-folder, the following command can be used:
 
-## `advanced`
+```sh
+cmd/s2c generate:fromspec examples/basic/basic-example-config.yaml
+```
 
-The advanced example contains more constraints for individual properties, like enums, string length
-etc, as well as alternative structures due to `oneOf` and arrays containing objects.
+## `advanced/`
 
-`cmd/s2c generate:fromschema --class User --target-namespace Example\Advanced ./examples/advanced/advanced-schema.yaml examples/advanced/generated`
+The advanced example contains one top-level object without references, but it imposes more constraints on individual properties - such as enums, string-length limits, and so on—as well as alternative structures through `oneOf` and arrays of objects.
+
+```sh
+cmd/s2c generate:fromschema \
+  examples/advanced/advanced-schema.yaml \
+  examples/advanced/generated \
+  --class User \
+  --target-namespace Example\Advanced
+```
+
+No config file is used.

@@ -7,7 +7,7 @@ Generate PHP classes from [JSON Schema][jsonschema] automatically. Use it from P
 - [Options](#options)
 - [Example workflow](#example-workflow)
 - [Compatibility](#compatibility)
-- [Creation result](#creation-result)
+- [Features](#features)
 - [Advanced programmatic usage](#advanced-programmatic-usage)
 
 ## Installation
@@ -109,7 +109,7 @@ See also the [advanced programmatic usage](#advanced-programmatic-usage) section
 
 Both the CLI and specification files accept the following options:
 
-| CLI option                    | Config file option                      | Description                                                                                                                                                            |
+| CLI option                    | Config file option                 | Description                                                                                                                                                            |
 | ----------------------------- | ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | _(1st argument)_              | `input` (per‑file)                 | JSON Schema file to read (`.json`, `.yml`, or `.yaml`).                                                                                                                |
 | _(2nd argument)_              | `targetDirectory` (per‑file)       | Directory in which the generated files will be placed.                                                                                                                 |
@@ -156,10 +156,9 @@ To demonstrate Schema2Class's capabilities and how to use the generated code, co
 3. By this point you're all set: Schema2Class has automatically created the PHP classes [\[1\]](examples/basic/generated/User.php) and [\[2\]](examples/basic/generated/Address.php):
 
    ```text
-   examples/basic
-   └── generated
-       ├── Address.php
-       └── Client.php
+   examples/basic/generated
+      ├── Address.php
+      └── User.php
    ```
 
    - **Note:** In a real project you can omit `--target-namespace`; Schema2Class will try to infer the target namespace from your `composer.json` file.
@@ -218,6 +217,7 @@ $userAsArray = $updatedUser->toJson();
 The generated classes offer:
 
 - Typing (PHP 7+ type hints plus PHPDoc) wherever possible
+- When the target PHP version is 8.1 or higher, `enum` values are emitted as PHP `enum` classes.
 - PHPDoc descriptions derived from schema `"description"` fields.
 - All PHP properties are `private` (unless `--no-getters` is used), with getter methods and explicit return type declarations (PHPDoc for PHP 5 mode).
 - Namespacing: Specify the namespace for all classes with `--target-namespace` (`targetNamespace`). If omitted, the generator inspects your `composer.json` and tries to infer it from the PSR‑4 configuration.
