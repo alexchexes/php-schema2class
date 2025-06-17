@@ -146,14 +146,17 @@ class Generator
         );
         $docBlock->setWordWrap(false);
 
-        $body =
-            // Guard against passing anything except arrays/objects
-            "if (!is_array(\$$inputVarName) && !is_object(\$$inputVarName)) {\n" .
-            "    throw new \\InvalidArgumentException(\n" .
-            "        'Input to buildFromInput must be array or object, got ' . gettype(\$$inputVarName)\n" .
-            "    );\n" .
-            "}\n\n" .
+        $inputGuard = '';
+        if (!$this->generatorRequest->isAtLeastPHP('8.0')) {
+            $inputGuard = 
+                "if (!is_array(\$$inputVarName) && !is_object(\$$inputVarName)) {\n" .
+                "    throw new \\InvalidArgumentException(\n" .
+                "        'Input to buildFromInput must be array or object, got ' . gettype(\$$inputVarName)\n" .
+                "    );\n" .
+                "}\n\n";
+        }
             
+        $body = $inputGuard .
             // Conversion into object if input is array
             "\$$inputVarName = is_array(\$$inputVarName) ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$$inputVarName) : \$$inputVarName;\n" .
 

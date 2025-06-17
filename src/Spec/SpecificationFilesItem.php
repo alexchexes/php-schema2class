@@ -198,12 +198,6 @@ class SpecificationFilesItem
      */
     public static function buildFromInput(array|object $input2, bool $validate = true) : SpecificationFilesItem
     {
-        if (!is_array($input2) && !is_object($input2)) {
-            throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($input2)
-            );
-        }
-
         $input2 = is_array($input2) ? \JsonSchema\Validator::arrayToObjectRecursive($input2) : $input2;
         if ($validate) {
             static::validateInput($input2);
