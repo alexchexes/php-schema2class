@@ -41,26 +41,23 @@ class Schema2Class
     }
 
     /**
-     * Generate classes from a specification file.
+     * Generate classes from a config provided either as a specification file path,
+     * as an associative array or as an instance of `Schema2Class\Spec\Specification` object.
      */
-    public function generateFromSpecFile(string $specFile, ?OutputInterface $output = null): void
-    {
-        $output = $output ?? new NullOutput();
-        $config = Yaml::parse(file_get_contents($specFile));
-        $this->generateFromSpecArray($config, $output);
-    }
-
-    /**
-     * Generate classes from a specification provided as an associative array.
-     * The array structure is the same as used in .s2c.yaml files.
-     */
-    public function generateFromSpecArray(array $config, ?OutputInterface $output = null): void
+    public function generateFromSpec(string|array|Specification $config, ?OutputInterface $output = null): void
     {
         $output = $output ?? new NullOutput();
 
-        $specification = Specification::buildFromInput($config);
-        $opts = $specification->getOptions() ?? new SpecificationOptions();
-        if ($v = $specification->getTargetPHPVersion()) {
+        if (!($config instanceof Specification)) {
+            if (is_string($config)) {
+                $config = Yaml::parse(file_get_contents($config));
+            }
+            $config = Specification::buildFromInput($config);
+        }
+
+        $opts = $config->getOptions() ?? new SpecificationOptions();
+
+        if ($v = $config->getTargetPHPVersion()) {
             $opts = $opts->withTargetPHPVersion($v);
         }
 
@@ -70,7 +67,7 @@ class Schema2Class
         }
         $opts = $opts->withTargetPHPVersion($tpv);
 
-        foreach ($specification->getFiles() as $file) {
+        foreach ($config->getFiles() as $file) {
             $schemaFile = $file->getInput();
             $targetDirectory = $file->getTargetDirectory();
 

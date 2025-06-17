@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class;
 
+use Helmich\Schema2Class\Spec\Specification;
 use PHPUnit\Framework\TestCase;
 
 class Schema2ClassTest extends TestCase
@@ -28,6 +29,38 @@ class Schema2ClassTest extends TestCase
         $content = file_get_contents($file);
         $this->assertStringContainsString('namespace My\Ns;', $content);
         $this->assertStringContainsString('class Person', $content);
+
+        unlink($file);
+        rmdir($dir);
+    }
+
+    public function testGenerateFromSpecArrayAcceptsSpecification(): void
+    {
+        $schemaFile = __DIR__ . '/../Generator/Fixtures/Basic/schema.yaml';
+        $dir = sys_get_temp_dir() . '/s2c_' . uniqid();
+        mkdir($dir);
+
+        $config = [
+            'files' => [
+                [
+                    'input' => $schemaFile,
+                    'className' => 'Foo',
+                    'targetDirectory' => $dir,
+                    'targetNamespace' => 'My\\Ns',
+                ],
+            ],
+        ];
+
+        $spec = Specification::buildFromInput($config);
+
+        $generator = new Schema2Class();
+        $generator->generateFromSpec($spec);
+
+        $file = $dir . '/Foo.php';
+        $this->assertFileExists($file);
+        $content = file_get_contents($file);
+        $this->assertStringContainsString('namespace My\\Ns;', $content);
+        $this->assertStringContainsString('class Foo', $content);
 
         unlink($file);
         rmdir($dir);
