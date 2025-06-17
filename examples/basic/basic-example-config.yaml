@@ -1,0 +1,10 @@
+targetPHPVersion: "7.4"
+options:
+  noGetters: true
+  noSetters: true
+  singleLineSchema: true
+  noDescriptionsInSchema: true
+files:
+  - input: "examples/basic/basic-example.json"
+    targetDirectory: "examples/basic/generated"
+    targetNamespace: "Example\\Basic"

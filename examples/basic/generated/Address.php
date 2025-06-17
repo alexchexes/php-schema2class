@@ -4,46 +4,30 @@ declare(strict_types=1);
 
 namespace Example\Basic;
 
-class User
+class Address
 {
     /**
      * Schema used to validate input for creating instances of this class
      *
      * @var array
      */
-    private static array $schema = ['type' => 'object', 'required' => ['name', 'status'], 'properties' => ['name' => ['type' => 'string'], 'address' => ['$ref' => '#/definitions/Address'], 'status' => ['anyOf' => [['enum' => ['customer', 'manager'], 'type' => 'string'], ['type' => 'null']]]], 'definitions' => ['Address' => ['type' => 'object', 'properties' => ['street' => ['type' => 'string'], 'house' => ['type' => 'integer']]]]];
+    private static array $schema = ['type' => 'object', 'properties' => ['street' => ['type' => 'string'], 'house' => ['type' => 'integer']]];
 
     /**
-     * Name of the user - required field.
-     *
-     * @var string
+     * @var string|null
      */
-    public string $name;
+    public ?string $street = null;
 
     /**
-     * Object representing address of the user, field is optional.
-     *
-     * @var Address|null
+     * @var int|null
      */
-    public ?Address $address = null;
+    public ?int $house = null;
 
     /**
-     * User status. Field is obligatory, but nullable.
      *
-     * If target PHP is 8.1+ the type will be an `enum` with cases `CUSTOMER = 'customer'` and `MANAGER = 'manager'`
-     *
-     * @var 'customer'|'manager'|null
      */
-    public ?string $status;
-
-    /**
-     * @param string $name
-     * @param 'customer'|'manager'|null $status
-     */
-    public function __construct(string $name, ?string $status)
+    public function __construct()
     {
-        $this->name = $name;
-        $this->status = $status;
     }
 
     /**
@@ -51,10 +35,10 @@ class User
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
-     * @return User Created instance
+     * @return Address Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true) : User
+    public static function buildFromInput($input, bool $validate = true) : Address
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
@@ -67,12 +51,12 @@ class User
             static::validateInput($input);
         }
 
-        $name = $input->{'name'};
-        $address = isset($input->{'address'}) ? Address::buildFromInput($input->{'address'}, $validate) : null;
-        $status = ($input->{'status'} !== null) ? ($input->{'status'}) : null;
+        $street = isset($input->{'street'}) ? $input->{'street'} : null;
+        $house = isset($input->{'house'}) ? $input->{'house'} : null;
 
-        $obj = new self($name, $status);
-        $obj->address = $address;
+        $obj = new self();
+        $obj->street = $street;
+        $obj->house = $house;
         return $obj;
     }
 
@@ -84,11 +68,12 @@ class User
     public function toJson() : array
     {
         $output = [];
-        $output['name'] = $this->name;
-        if (isset($this->address)) {
-            $output['address'] = $this->address->toJson();
+        if (isset($this->street)) {
+            $output['street'] = $this->street;
         }
-        $output['status'] = $this->status;
+        if (isset($this->house)) {
+            $output['house'] = $this->house;
+        }
 
         return $output;
     }

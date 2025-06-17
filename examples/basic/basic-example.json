@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "User": {
+      "type": "object",
+      "required": ["name", "status"],
+      "properties": {
+        "name": {
+          "description": "Name of the user - required field.",
+          "type": "string"
+        },
+        "address": {
+          "description": "Object representing address of the user, field is optional.",
+          "$ref": "#/definitions/Address"
+        },
+        "status": {
+          "description": "User status. Field is obligatory, but nullable.\n\nIf target PHP is 8.1+ the type will be an `enum` with cases `CUSTOMER = 'customer'` and `MANAGER = 'manager'`",
+          "anyOf": [
+            { "enum": ["customer", "manager"], "type": "string" },
+            { "type": "null" }
+          ]
+        }
+      }
+    },
+    "Address": {
+      "type": "object",
+      "properties": {
+        "street": { "type": "string" },
+        "house": { "type": "integer" }
+      }
+    }
+  }
+}
