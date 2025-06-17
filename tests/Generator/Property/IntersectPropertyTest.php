@@ -46,11 +46,11 @@ class IntersectPropertyTest extends TestCase
         assertTrue($this->property->isComplex());
     }
 
-    public function testConvertJsonToType()
+    public function testConvertInputToType()
     {
         $underTest = new IntersectProperty('myPropertyName', ['allOf' => []], $this->generatorRequest);
 
-        $result = $underTest->convertJSONToType('variable');
+        $result = $underTest->convertInputToType('variable');
 
         $expected = <<<'EOCODE'
 $myPropertyName = FooMyPropertyName::buildFromInput($variable['myPropertyName'], validate: $validate);
@@ -59,12 +59,12 @@ EOCODE;
         assertSame($expected, $result);
     }
 
-    public function testConvertTypeToJson()
+    public function testConvertTypeToArray()
     {
-        $result = $this->property->convertTypeToJSON('variable');
+        $result = $this->property->convertTypeToArray('variable');
 
         $expected = <<<'EOCODE'
-$variable['myPropertyName'] = ($this->myPropertyName)->toJson();
+$variable['myPropertyName'] = ($this->myPropertyName)->toArray();
 EOCODE;
 
         assertSame($expected, $result);

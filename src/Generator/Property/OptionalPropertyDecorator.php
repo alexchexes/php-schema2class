@@ -12,7 +12,7 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator implements Ren
      * @param bool $object
      * @return string
      */
-    public function convertJSONToType(string $inputVarName = 'input', bool $object = false): string
+    public function convertInputToType(string $inputVarName = 'input', bool $object = false): string
     {
         $key   = $this->key;
         $name  = $this->inner->name();
@@ -35,10 +35,10 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator implements Ren
      * @param string $outputVarName
      * @return string
      */
-    public function convertTypeToJSON(string $outputVarName = 'output'): string
+    public function convertTypeToArray(string $outputVarName = 'output'): string
     {
         $name  = $this->inner->name();
-        $inner = $this->inner->convertTypeToJSON($outputVarName);
+        $inner = $this->inner->convertTypeToArray($outputVarName);
 
         return "if (isset(\$this->{$name})) {\n" . $this->indentCode($inner, 1) . "\n}";
     }

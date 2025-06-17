@@ -165,12 +165,12 @@ class Foo
      *
      * @return array Converted array
      */
-    public function toJson() : array
+    public function toArray() : array
     {
         $output = [];
         $output['id'] = $this->id;
         if (isset($this->address)) {
-            $output['address'] = $this->address->toJson();
+            $output['address'] = $this->address->toArray();
         }
 
         return $output;

@@ -56,16 +56,16 @@ class ObjectArrayProperty extends AbstractProperty
         return true;
     }
 
-    public function convertTypeToJSON(string $outputVarName = 'output'): string
+    public function convertTypeToArray(string $outputVarName = 'output'): string
     {
         $name = $this->name;
         $key  = $this->key;
         $st   = $this->subTypeName();
 
         if ($this->generatorRequest->isAtLeastPHP("7.4")) {
-            return "\${$outputVarName}['$key'] = array_map(fn ($st \$i) => \$i->toJson(), \$this->{$name});";
+            return "\${$outputVarName}['$key'] = array_map(fn ($st \$i) => \$i->toArray(), \$this->{$name});";
         }
-        return "\${$outputVarName}['$key'] = array_map(function($st \$i) { return \$i->toJson(); }, \$this->{$name});";
+        return "\${$outputVarName}['$key'] = array_map(function($st \$i) { return \$i->toArray(); }, \$this->{$name});";
     }
 
     /**

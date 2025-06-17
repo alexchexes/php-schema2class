@@ -69,6 +69,6 @@ readonly class ReferencedTypeClass implements ReferencedType
 
     public function outputMappingExpr(GeneratorRequest $req, string $expr): string
     {
-        return "{$expr}->toJson()";
+        return "{$expr}->toArray()";
     }
 }

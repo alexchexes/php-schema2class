@@ -44,7 +44,7 @@ class UnionProperty extends AbstractProperty
         return true;
     }
 
-    public function convertJSONToTypeMatch(string $inputVarName = 'input', bool $object = false): string
+    public function convertInputToTypeMatch(string $inputVarName = 'input', bool $object = false): string
     {
         $name  = $this->name;
         $key   = $this->key;
@@ -71,11 +71,11 @@ class UnionProperty extends AbstractProperty
         return "\${$name} = {$match->generate()};";
     }
 
-    public function convertJSONToType(string $inputVarName = 'input', bool $object = false): string
+    public function convertInputToType(string $inputVarName = 'input', bool $object = false): string
     {
         // PHP 8+ uses match() which already guards correctly
         if ($this->generatorRequest->isAtLeastPHP("8.0")) {
-            return $this->convertJSONToTypeMatch($inputVarName, $object);
+            return $this->convertInputToTypeMatch($inputVarName, $object);
         }
     
         $name   = $this->name;
@@ -143,7 +143,7 @@ class UnionProperty extends AbstractProperty
     }
     
 
-    private function convertTypeToJSONMatch(string $outputVarName = 'output'): string
+    private function convertTypeToArrayMatch(string $outputVarName = 'output'): string
     {
         $name   = $this->name;
         $key    = $this->key;
@@ -160,10 +160,10 @@ class UnionProperty extends AbstractProperty
         return "\${$outputVarName}[{$keyStr}] = " . $match->generate() . ";";
     }
 
-    public function convertTypeToJSON(string $outputVarName = 'output'): string
+    public function convertTypeToArray(string $outputVarName = 'output'): string
     {
         if ($this->generatorRequest->isAtLeastPHP("8.0")) {
-            return $this->convertTypeToJSONMatch($outputVarName);
+            return $this->convertTypeToArrayMatch($outputVarName);
         }
 
         $name        = $this->name;

@@ -48,11 +48,11 @@ class DefaultPropertyDecorator implements PropertyDecoratorInterface, Renameable
      * @param bool $object
      * @return string
      */
-    public function convertJSONToType(string $inputVarName = 'input', bool $object = false): string
+    public function convertInputToType(string $inputVarName = 'input', bool $object = false): string
     {
         $key   = $this->key;
         $name  = $this->name();
-        $inner = $this->inner->convertJSONToType($inputVarName, $object);
+        $inner = $this->inner->convertInputToType($inputVarName, $object);
 
         $defaultExp = $this->defaultExpr();
         $accessor   = $object ? "\${$inputVarName}->{'$key'}" : "\${$inputVarName}['$key']";
@@ -64,9 +64,9 @@ class DefaultPropertyDecorator implements PropertyDecoratorInterface, Renameable
      * @param string $outputVarName
      * @return string
      */
-    public function convertTypeToJSON(string $outputVarName = 'output'): string
+    public function convertTypeToArray(string $outputVarName = 'output'): string
     {
-        return $this->inner->convertTypeToJSON($outputVarName);
+        return $this->inner->convertTypeToArray($outputVarName);
     }
 
     /**

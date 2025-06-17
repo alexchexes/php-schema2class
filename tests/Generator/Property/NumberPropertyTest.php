@@ -49,9 +49,9 @@ class NumberPropertyTest extends TestCase
         assertFalse($this->property->isComplex());
     }
 
-    public function testConvertJsonToType()
+    public function testConvertInputToType()
     {
-        $result = $this->property->convertJSONToType('variable');
+        $result = $this->property->convertInputToType('variable');
 
         $expected = <<<'EOCODE'
 $myPropertyName = str_contains((string)($variable['myPropertyName']), '.') ? (float)($variable['myPropertyName']) : (int)($variable['myPropertyName']);
@@ -60,9 +60,9 @@ EOCODE;
         assertSame($expected, $result);
     }
 
-    public function testConvertTypeToJson()
+    public function testConvertTypeToArray()
     {
-        $result = $this->property->convertTypeToJSON('variable');
+        $result = $this->property->convertTypeToArray('variable');
 
         $expected = <<<'EOCODE'
 $variable['myPropertyName'] = $this->myPropertyName;

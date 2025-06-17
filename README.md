@@ -195,8 +195,8 @@ $updatedUser = $user->withStatus("customer");
 echo "Old status: " . $user->getStatus();      // not mutated
 echo "New status: " . $updatedUser->getStatus(); // 'customer'
 
-// Finally, convert the updated user back to an array to save it to a DB or elsewhere:
-$userAsArray = $updatedUser->toJson();
+// Finally, convert the updated user back to a simple PHP array:
+$userAsArray = $updatedUser->toArray();
 ```
 
 ## Compatibility
@@ -229,7 +229,7 @@ The generated classes offer:
 - The static method `buildFromInput(array $data[, bool $validate = true])` accepts an array (for example the result of `json_decode(..., true)`), validates it against the schema, and creates the full object graph. No additional mapping is required.
   **Note:** Do not instantiate the class directly; always use `buildFromInput(...)`.
 - To disable validation, pass `false` as the second argument: `buildFromInput($data, false)`. Use at your own risk.
-- The method `toJson()` returns a plain array ready for `json_encode()`.
+- The method `toArray()` returns a plain array ready for `json_encode()`.
 - Properties are immutable; use `withX()` (or `withoutX()` for optional values) to create modified copies. Though If you set `--no-getters`+`--no-setters`, then you can write any property directly (not recommended).
 
 ## Advanced programmatic usage

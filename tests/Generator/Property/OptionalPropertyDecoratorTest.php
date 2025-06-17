@@ -39,7 +39,7 @@ class OptionalPropertyDecoratorTest extends TestCase
         assertFalse($this->decorator->isComplex());
     }
 
-    public function testConvertJsonToType()
+    public function testConvertInputToType()
     {
         $this->innerProperty->name()->shouldBeCalled()->willReturn('myPropertyName');
         $this->innerProperty
@@ -47,19 +47,19 @@ class OptionalPropertyDecoratorTest extends TestCase
             ->shouldBeCalled()
             ->willReturn('INNER_EXPR');
 
-        $result = $this->decorator->convertJSONToType('variable');
+        $result = $this->decorator->convertInputToType('variable');
 
         $expected = '$myPropertyName = isset($variable[\'myPropertyName\']) ? INNER_EXPR : null;';
 
         assertSame($expected, $result);
     }
 
-    public function testConvertTypeToJson()
+    public function testConvertTypeToArray()
     {
         $this->innerProperty->name()->shouldBeCalled()->willReturn('myPropertyName');
-        $this->innerProperty->convertTypeToJSON('variable')->shouldBeCalled()->willReturn('echo "InnerCode";');
+        $this->innerProperty->convertTypeToArray('variable')->shouldBeCalled()->willReturn('echo "InnerCode";');
 
-        $result = $this->decorator->convertTypeToJSON('variable');
+        $result = $this->decorator->convertTypeToArray('variable');
 
         $expected = <<<'EOCODE'
 if (isset($this->myPropertyName)) {

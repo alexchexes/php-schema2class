@@ -117,11 +117,11 @@ class Record
      *
      * @return array Converted array
      */
-    public function toJson() : array
+    public function toArray() : array
     {
         $output = [];
         if (isset($this->dataArray)) {
-            $output['dataArray'] = array_map(fn(Phone $i): array => $i->toJson(), $this->dataArray);
+            $output['dataArray'] = array_map(fn(Phone $i): array => $i->toArray(), $this->dataArray);
         }
 
         return $output;

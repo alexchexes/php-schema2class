@@ -151,7 +151,7 @@ class SchemaToClass
             ...$codeGenerator->generateGetterMethods($propertiesFromSchema),
             ...$codeGenerator->generateSetterMethods($propertiesFromSchema),
             $codeGenerator->generateBuildMethod($propertiesFromSchema),
-            $codeGenerator->generateToJSONMethod($propertiesFromSchema),
+            $codeGenerator->generateToArrayMethod($propertiesFromSchema),
             $codeGenerator->generateValidateMethod(),
             $codeGenerator->generateCloneMethod($propertiesFromSchema),
         ];

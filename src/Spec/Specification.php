@@ -202,6 +202,12 @@ This is useful if you want to use a custom validator class.
      */
     public function withFiles(array $files) : self
     {
+        $validator = new \JsonSchema\Validator();
+        $validator->validate($files, self::$schema['properties']['files']);
+        if (!$validator->isValid()) {
+            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        }
+
         $clone = clone $this;
         $clone->files = $files;
 
@@ -234,12 +240,12 @@ This is useful if you want to use a custom validator class.
     /**
      * Builds a new instance from an input array
      *
-     * @param mixed $input Input data
+     * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
      * @return Specification Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(mixed $input, bool $validate = true) : Specification
+    public static function buildFromInput(array|object $input, bool $validate = true) : Specification
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
@@ -271,7 +277,7 @@ This is useful if you want to use a custom validator class.
      *
      * @return array Converted array
      */
-    public function toJson() : array
+    public function toArray() : array
     {
         $output = [];
         if (isset($this->targetPHPVersion)) {
@@ -279,9 +285,9 @@ This is useful if you want to use a custom validator class.
                 is_int($this->targetPHPVersion), is_string($this->targetPHPVersion) => $this->targetPHPVersion,
             };
         }
-        $output['files'] = array_map(fn (SpecificationFilesItem $i) => $i->toJson(), $this->files);
+        $output['files'] = array_map(fn (SpecificationFilesItem $i) => $i->toArray(), $this->files);
         if (isset($this->options)) {
-            $output['options'] = ($this->options)->toJson();
+            $output['options'] = ($this->options)->toArray();
         }
 
         return $output;

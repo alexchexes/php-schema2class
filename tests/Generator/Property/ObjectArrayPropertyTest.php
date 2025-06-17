@@ -54,13 +54,13 @@ class ObjectArrayPropertyTest extends TestCase
         assertFalse(ObjectArrayProperty::canHandleSchema($schema));
     }
 
-    public function testConvertJsonToTypeWithComplexArray()
+    public function testConvertInputToTypeWithComplexArray()
     {
         $underTest = new ObjectArrayProperty('myPropertyName', ['type' => 'array', 'items' => ['properties' => []]], $this->generatorRequest);
 
         assertTrue($underTest->isComplex());
 
-        $result = $underTest->convertJSONToType('variable');
+        $result = $underTest->convertInputToType('variable');
 
         $expected = <<<'EOCODE'
 $myPropertyName = array_map(fn (array|object $i): FooMyPropertyNameItem => FooMyPropertyNameItem::buildFromInput($i, validate: $validate), $variable['myPropertyName']);
@@ -69,14 +69,14 @@ EOCODE;
         assertSame($expected, $result);
     }
 
-    public function testConvertTypeToJsonWithComplexArray()
+    public function testConvertTypeToArrayWithComplexArray()
     {
         $underTest = new ObjectArrayProperty('myPropertyName', ['type' => 'array', 'items' => ['properties' => []]], $this->generatorRequest);
 
-        $result = $underTest->convertTypeToJSON('variable');
+        $result = $underTest->convertTypeToArray('variable');
 
         $expected = <<<'EOCODE'
-$variable['myPropertyName'] = array_map(fn (FooMyPropertyNameItem $i) => $i->toJson(), $this->myPropertyName);
+$variable['myPropertyName'] = array_map(fn (FooMyPropertyNameItem $i) => $i->toArray(), $this->myPropertyName);
 EOCODE;
 
         assertSame($expected, $result);

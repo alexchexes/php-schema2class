@@ -42,9 +42,9 @@ class DatePropertyTest extends TestCase
         assertTrue($this->property->isComplex());
     }
 
-    public function testConvertJsonToType()
+    public function testConvertInputToType()
     {
-        $result = $this->property->convertJSONToType('variable');
+        $result = $this->property->convertInputToType('variable');
 
         $expected = <<<'EOCODE'
 $myPropertyName = new \DateTime($variable['myPropertyName']);
@@ -53,9 +53,9 @@ EOCODE;
         assertSame($expected, $result);
     }
 
-    public function testConvertTypeToJson()
+    public function testConvertTypeToArray()
     {
-        $result = $this->property->convertTypeToJSON('variable');
+        $result = $this->property->convertTypeToArray('variable');
 
         $expected = <<<'EOCODE'
 $variable['myPropertyName'] = ($this->myPropertyName)->format(\DateTime::ATOM);

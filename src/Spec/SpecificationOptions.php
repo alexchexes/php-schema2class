@@ -543,12 +543,12 @@ This is useful if you want to use a custom validator class.
     /**
      * Builds a new instance from an input array
      *
-     * @param mixed $input Input data
+     * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
      * @return SpecificationOptions Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(mixed $input, bool $validate = true) : SpecificationOptions
+    public static function buildFromInput(array|object $input, bool $validate = true) : SpecificationOptions
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
@@ -595,7 +595,7 @@ This is useful if you want to use a custom validator class.
      *
      * @return array Converted array
      */
-    public function toJson() : array
+    public function toArray() : array
     {
         $output = [];
         if (isset($this->disableStrictTypes)) {

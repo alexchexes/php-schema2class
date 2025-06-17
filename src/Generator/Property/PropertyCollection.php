@@ -24,15 +24,15 @@ class PropertyCollection implements \Iterator
         $this->properties[] = $propertyGenerator;
     }
 
-    public function generateJSONToTypeConversionCode(string $inputVarName = 'input', bool $object = false): string
+    public function generateInputToTypeConversionCode(string $inputVarName = 'input', bool $object = false): string
     {
-        $conv = array_map(fn ($p) => $p->convertJSONToType($inputVarName, $object), $this->properties);
+        $conv = array_map(fn ($p) => $p->convertInputToType($inputVarName, $object), $this->properties);
         return join("\n", $conv);
     }
 
-    public function generateTypeToJSONConversionCode(string $outputVarName = 'output'): string
+    public function generateTypeToArrayConversionCode(string $outputVarName = 'output'): string
     {
-        $conv = array_map(fn ($p) => $p->convertTypeToJSON($outputVarName), $this->properties);
+        $conv = array_map(fn ($p) => $p->convertTypeToArray($outputVarName), $this->properties);
         return join("\n", $conv);
     }
 

@@ -584,7 +584,7 @@ class User
      *
      * @return array Converted array
      */
-    public function toJson() : array
+    public function toArray() : array
     {
         $output = [];
         if (isset($this->createdAt)) {
@@ -599,22 +599,22 @@ class User
             $output['email'] = $this->email;
         }
         if (isset($this->billing)) {
-            $output['billing'] = ($this->billing)->toJson();
+            $output['billing'] = ($this->billing)->toArray();
         }
         if (isset($this->payment)) {
             $output['payment'] = match (true) {
-                $this->payment instanceof UserPaymentAlternative1, $this->payment instanceof UserPaymentAlternative2 => ($this->payment)->toJson(),
+                $this->payment instanceof UserPaymentAlternative1, $this->payment instanceof UserPaymentAlternative2 => ($this->payment)->toArray(),
                 is_string($this->payment) => $this->payment,
             };
         }
         if (isset($this->address)) {
-            $output['address'] = ($this->address)->toJson();
+            $output['address'] = ($this->address)->toArray();
         }
         if (isset($this->tags)) {
             $output['tags'] = $this->tags;
         }
         if (isset($this->hobbies)) {
-            $output['hobbies'] = array_map(fn (UserHobbiesItem $i) => $i->toJson(), $this->hobbies);
+            $output['hobbies'] = array_map(fn (UserHobbiesItem $i) => $i->toArray(), $this->hobbies);
         }
 
         return $output;

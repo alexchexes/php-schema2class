@@ -71,7 +71,7 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface, Renameabl
         return true;
     }
 
-    public function convertJSONToType(string $inputVarName = 'input', bool $object = false): string
+    public function convertInputToType(string $inputVarName = 'input', bool $object = false): string
     {
         // Key name in the JSON object
         $key   = $this->key;
@@ -94,9 +94,9 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface, Renameabl
         return "\${$name} = {$expr};";
     }
 
-    public function convertTypeToJSON(string $out = 'output'): string
+    public function convertTypeToArray(string $out = 'output'): string
     {
-        return $this->inner->convertTypeToJSON($out);
+        return $this->inner->convertTypeToArray($out);
     }
 
     /* ── Add “null” to PHPDoc & type-hint if missing ────────────────── */

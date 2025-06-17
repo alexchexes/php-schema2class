@@ -140,7 +140,7 @@ class Foo
      *
      * @return array Converted array
      */
-    public function toJson() : array
+    public function toArray() : array
     {
         $output = [];
         $output['foo-bar'] = $this->foo_bar;

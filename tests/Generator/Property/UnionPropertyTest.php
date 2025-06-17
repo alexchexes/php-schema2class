@@ -44,11 +44,11 @@ class UnionPropertyTest extends TestCase
         assertTrue($this->property->isComplex());
     }
 
-    public function testConvertJsonToType()
+    public function testConvertInputToType()
     {
         $underTest = new UnionProperty('myPropertyName', ['anyOf' => [['properties' => ['subFoo1' => ['type' => 'string']]], ['properties' => ['subFoo2' => ['type' => 'string']]]]], $this->generatorRequest);
 
-        $result = $underTest->convertJSONToType('variable');
+        $result = $underTest->convertInputToType('variable');
 
         $expected = <<<'EOCODE'
 $myPropertyName = match (true) {
@@ -61,15 +61,15 @@ EOCODE;
         assertSame($expected, $result);
     }
 
-    public function testConvertTypeToJson()
+    public function testConvertTypeToArray()
     {
         $underTest = new UnionProperty('myPropertyName', ['anyOf' => [['properties' => ['subFoo1' => ['type' => 'string']]], ['properties' => ['subFoo2' => ['type' => 'string']]]]], $this->generatorRequest);
 
-        $result = $underTest->convertTypeToJSON('variable');
+        $result = $underTest->convertTypeToArray('variable');
 
         $expected = <<<'EOCODE'
 $variable['myPropertyName'] = match (true) {
-    $this->myPropertyName instanceof FooMyPropertyNameAlternative1, $this->myPropertyName instanceof FooMyPropertyNameAlternative2 => ($this->myPropertyName)->toJson(),
+    $this->myPropertyName instanceof FooMyPropertyNameAlternative1, $this->myPropertyName instanceof FooMyPropertyNameAlternative2 => ($this->myPropertyName)->toArray(),
 };
 EOCODE;
 

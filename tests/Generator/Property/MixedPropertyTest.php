@@ -43,9 +43,9 @@ class MixedPropertyTest extends TestCase
         assertFalse($this->underTest->isComplex());
     }
 
-    public function testConvertJsonToType()
+    public function testConvertInputToType()
     {
-        $result = $this->underTest->convertJSONToType('variable');
+        $result = $this->underTest->convertInputToType('variable');
 
         $expected = <<<'EOCODE'
 $myPropertyName = $variable['myPropertyName'];
@@ -54,9 +54,9 @@ EOCODE;
         assertSame($expected, $result);
     }
 
-    public function testConvertTypeToJson()
+    public function testConvertTypeToArray()
     {
-        $result = $this->underTest->convertTypeToJSON('variable');
+        $result = $this->underTest->convertTypeToArray('variable');
 
         $expected = <<<'EOCODE'
 $variable['myPropertyName'] = $this->myPropertyName;

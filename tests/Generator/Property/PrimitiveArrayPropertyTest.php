@@ -36,13 +36,13 @@ class PrimitiveArrayPropertyTest extends TestCase
         assertFalse(PrimitiveArrayProperty::canHandleSchema(['type' => 'foo']));
     }
 
-    public function testConvertJsonToTypeWithSimpleArray()
+    public function testConvertInputToTypeWithSimpleArray()
     {
         $underTest = new PrimitiveArrayProperty('myPropertyName', ['type' => 'array'], $this->generatorRequest);
 
         assertFalse($underTest->isComplex());
 
-        $result = $underTest->convertJSONToType('variable');
+        $result = $underTest->convertInputToType('variable');
 
         $expected = <<<'EOCODE'
 $myPropertyName = $variable['myPropertyName'];
@@ -51,11 +51,11 @@ EOCODE;
         assertSame($expected, $result);
     }
 
-    public function testConvertTypeToJsonWithSimpleArray()
+    public function testConvertTypeToArrayWithSimpleArray()
     {
         $underTest = new PrimitiveArrayProperty('myPropertyName', ['type' => 'array'], $this->generatorRequest);
 
-        $result = $underTest->convertTypeToJSON('variable');
+        $result = $underTest->convertTypeToArray('variable');
 
         $expected = <<<'EOCODE'
 $variable['myPropertyName'] = $this->myPropertyName;

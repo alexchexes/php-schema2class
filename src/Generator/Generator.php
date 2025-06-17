@@ -163,7 +163,7 @@ class Generator
             "}\n\n" .
 
             // Property‐by‐property mapping
-            $properties->generateJSONToTypeConversionCode($inputVarName, object: true) . "\n\n" .
+            $properties->generateInputToTypeConversionCode($inputVarName, object: true) . "\n\n" .
 
             // Construct & assign optional props
             '$obj = new self(' . join(", ", $constructorParams) . ');' . "\n" .
@@ -192,7 +192,7 @@ class Generator
      * @param PropertyCollection $properties
      * @return MethodGenerator
      */
-    public function generateToJSONMethod(PropertyCollection $properties): MethodGenerator
+    public function generateToArrayMethod(PropertyCollection $properties): MethodGenerator
     {
         $docBlock = new DocBlockGenerator(
             "Converts this object back to a simple array that can be JSON-serialized",
@@ -202,11 +202,11 @@ class Generator
         $docBlock->setWordWrap(false);
 
         $method = new MethodGenerator(
-            'toJson',
+            'toArray',
             [],
             MethodGenerator::FLAG_PUBLIC,
             '$output = [];' . "\n" .
-            $properties->generateTypeToJSONConversionCode('output') . "\n\n" .
+            $properties->generateTypeToArrayConversionCode('output') . "\n\n" .
             'return $output;',
             $docBlock
         );

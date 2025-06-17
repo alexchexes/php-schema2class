@@ -145,11 +145,11 @@ class Address
      *
      * @return array Converted array
      */
-    public function toJson() : array
+    public function toArray() : array
     {
         $output = [];
         if (isset($this->name)) {
-            $output['name'] = $this->name->toJson();
+            $output['name'] = $this->name->toArray();
         }
         $output['city'] = $this->city;
 

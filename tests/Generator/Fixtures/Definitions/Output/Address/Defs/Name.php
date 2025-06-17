@@ -102,7 +102,7 @@ class Name
      *
      * @return array Converted array
      */
-    public function toJson() : array
+    public function toArray() : array
     {
         $output = [];
         if (isset($this->first)) {

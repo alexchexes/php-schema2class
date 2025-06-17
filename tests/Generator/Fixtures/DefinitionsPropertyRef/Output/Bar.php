@@ -106,11 +106,11 @@ class Bar
      *
      * @return array Converted array
      */
-    public function toJson() : array
+    public function toArray() : array
     {
         $output = [];
         if (isset($this->a)) {
-            $output['a'] = $this->a->toJson();
+            $output['a'] = $this->a->toArray();
         }
 
         return $output;

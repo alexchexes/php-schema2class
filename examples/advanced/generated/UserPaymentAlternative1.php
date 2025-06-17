@@ -91,7 +91,7 @@ class UserPaymentAlternative1
      *
      * @return array Converted array
      */
-    public function toJson() : array
+    public function toArray() : array
     {
         $output = [];
         $output['type'] = ($this->type)->value;

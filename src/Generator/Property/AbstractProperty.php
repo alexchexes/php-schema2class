@@ -84,7 +84,7 @@ abstract class AbstractProperty implements PropertyInterface, RenameableProperty
         return null;
     }
 
-    public function convertJSONToType(string $inputVarName = 'input', bool $object = false): string
+    public function convertInputToType(string $inputVarName = 'input', bool $object = false): string
     {
         $name = $this->name;
         $key  = $this->key;
@@ -101,7 +101,7 @@ abstract class AbstractProperty implements PropertyInterface, RenameableProperty
         return "\${$name} = {$map};";
     }
 
-    public function convertTypeToJSON(string $outputVarName = 'output'): string
+    public function convertTypeToArray(string $outputVarName = 'output'): string
     {
         $key    = $this->key;
         $keyStr = var_export($key, true);

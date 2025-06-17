@@ -41,9 +41,9 @@ class StringPropertyTest extends TestCase
         assertFalse($this->property->isComplex());
     }
 
-    public function testConvertJsonToType()
+    public function testConvertInputToType()
     {
-        $result = $this->property->convertJSONToType('variable');
+        $result = $this->property->convertInputToType('variable');
 
         $expected = <<<'EOCODE'
 $myString = $variable['myString'];
@@ -52,9 +52,9 @@ EOCODE;
         assertSame($expected, $result);
     }
 
-    public function testConvertTypeToJson()
+    public function testConvertTypeToArray()
     {
-        $result = $this->property->convertTypeToJSON('variable');
+        $result = $this->property->convertTypeToArray('variable');
 
         $expected = <<<'EOCODE'
 $variable['myString'] = $this->myString;

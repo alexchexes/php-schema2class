@@ -50,13 +50,13 @@ interface PropertyInterface
      * @param bool   $object
      * @return string
      */
-    public function convertJSONToType(string $inputVarName = 'input', bool $object = false): string;
+    public function convertInputToType(string $inputVarName = 'input', bool $object = false): string;
 
     /**
      * @param string $outputVarName
      * @return string
      */
-    public function convertTypeToJSON(string $outputVarName = 'output'): string;
+    public function convertTypeToArray(string $outputVarName = 'output'): string;
 
     /**
      * @param SchemaToClass $generator

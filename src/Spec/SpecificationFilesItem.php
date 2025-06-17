@@ -191,12 +191,12 @@ class SpecificationFilesItem
     /**
      * Builds a new instance from an input array
      *
-     * @param mixed $input2 Input data
+     * @param array|object $input2 Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
      * @return SpecificationFilesItem Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(mixed $input2, bool $validate = true) : SpecificationFilesItem
+    public static function buildFromInput(array|object $input2, bool $validate = true) : SpecificationFilesItem
     {
         if (!is_array($input2) && !is_object($input2)) {
             throw new \InvalidArgumentException(
@@ -225,7 +225,7 @@ class SpecificationFilesItem
      *
      * @return array Converted array
      */
-    public function toJson() : array
+    public function toArray() : array
     {
         $output = [];
         $output['input'] = $this->input;

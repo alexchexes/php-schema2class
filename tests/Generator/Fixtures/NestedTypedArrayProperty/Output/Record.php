@@ -312,25 +312,25 @@ class Record
      *
      * @return array Converted array
      */
-    public function toJson() : array
+    public function toArray() : array
     {
         $output = [];
         if (isset($this->dataArray)) {
-            $output['dataArray'] = array_map(fn(Phone $i): array => $i->toJson(), $this->dataArray);
+            $output['dataArray'] = array_map(fn(Phone $i): array => $i->toArray(), $this->dataArray);
         }
         if (isset($this->dataArrayNested)) {
-            $output['dataArrayNested'] = array_map(fn($i) => array_map(fn(Phone $i): array => $i->toJson(), $i), $this->dataArrayNested);
+            $output['dataArrayNested'] = array_map(fn($i) => array_map(fn(Phone $i): array => $i->toArray(), $i), $this->dataArrayNested);
         }
         if (isset($this->dataArrayAnyOf)) {
             $output['dataArrayAnyOf'] = array_map(fn($i) => match (true) {
                 default => null,
-                ($i) instanceof Phone, ($i) instanceof Fio => $i->toJson(),
+                ($i) instanceof Phone, ($i) instanceof Fio => $i->toArray(),
             }, $this->dataArrayAnyOf);
         }
         if (isset($this->dataArrayNestedAnyOf)) {
             $output['dataArrayNestedAnyOf'] = array_map(fn($i) => array_map(fn($i) => match (true) {
                 default => null,
-                ($i) instanceof Phone, ($i) instanceof Fio => $i->toJson(),
+                ($i) instanceof Phone, ($i) instanceof Fio => $i->toArray(),
             }, $i), $this->dataArrayNestedAnyOf);
         }
 
