@@ -250,9 +250,29 @@ $request = new GeneratorRequest(
     new ValidatedSpecificationFilesItem('MyApp\\TargetDir', 'User', 'src/TargetDir'),
     new SpecificationOptions()
 );
+
+// Adding a hook
+$hook = new class implements ClassCreatedHook {
+    public function onClassCreated(string $name, ClassGenerator $class): void
+    {
+        $class->addProperty('extra');
+    }
+};
+$request = $request->withHook($hook);
+
 $factory = new SchemaToClassFactory();
 $factory->build(new \Helmich\Schema2Class\Writer\FileWriter(new NullOutput()), new NullOutput())
     ->schemaToClass($request);
 ```
+
+### Hook interfaces
+
+The generator exposes several hook interfaces that let you customize the generated code:
+
+- `ClassCreatedHook` – called for every generated class.
+- `EnumCreatedHook` – called for every generated enum.
+- `FileCreatedHook` – called before each file is written.
+
+Implement any of these interfaces and register the instance on a `GeneratorRequest` to adjust the generated output.
 
 [jsonschema]: http://json-schema.org/
