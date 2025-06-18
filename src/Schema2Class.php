@@ -62,9 +62,15 @@ class Schema2Class
         }
 
         $tpv = $opts->getTargetPHPVersion();
-        if (is_int($tpv)) {
-            $tpv = $tpv === 5 ? '5.6.0' : '7.4.0';
+
+        if ($tpv === 5 || $tpv === '5') {
+            $tpv = "5.6";
+        } elseif ($tpv === 7 || $tpv === '7') {
+            $tpv = "7.4";
+        } elseif ($tpv === 8 || $tpv === '8') {
+            $tpv = "8.4";
         }
+
         $opts = $opts->withTargetPHPVersion($tpv);
 
         foreach ($config->getFiles() as $file) {
@@ -133,9 +139,15 @@ class Schema2Class
         );
 
         $tpv = $options->getTargetPHPVersion();
-        if (is_int($tpv)) {
-            $tpv = $tpv === 5 ? '5.6.0' : '7.4.0';
+
+        if ($tpv === 5 || $tpv === '5') {
+            $tpv = "5.6";
+        } elseif ($tpv === 7 || $tpv === '7') {
+            $tpv = "7.4";
+        } elseif ($tpv === 8 || $tpv === '8') {
+            $tpv = "8.4";
         }
+        
         $options = $options->withTargetPHPVersion($tpv);
 
         if ($cleanTargetDirectory) {
