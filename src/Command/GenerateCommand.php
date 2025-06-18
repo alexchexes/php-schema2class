@@ -57,6 +57,7 @@ class GenerateCommand extends Command
         $this->addOption("no-setters", null, InputOption::VALUE_NONE, "Do not generate withX()/withoutX() methods");
         $this->addOption("no-schema-descriptions", null, InputOption::VALUE_NONE, "Omit description fields from schema property");
         $this->addOption("single-line-schema", null, InputOption::VALUE_NONE, "Store schema property as single line");
+        $this->addOption('no-enums', null, InputOption::VALUE_NONE, 'Disable PHP enum generation');
     }
 
     /**
@@ -117,6 +118,9 @@ class GenerateCommand extends Command
         }
         if ($input->getOption("single-line-schema")) {
             $opts = $opts->withSingleLineSchema(true);
+        }
+        if ($input->getOption('no-enums')) {
+            $opts = $opts->withNoEnums(true);
         }
 
         $baseRequest = new GeneratorRequest($schema, $spec, $opts);

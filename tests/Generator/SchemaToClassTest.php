@@ -5,7 +5,10 @@ namespace Helmich\Schema2Class\Generator;
 
 use Helmich\Schema2Class\Example\CustomerAddress;
 use Helmich\Schema2Class\Loader\SchemaLoader;
-use Helmich\Schema2Class\Command\GenerateSpecCommand;
+use Helmich\Schema2Class\Command\GenerateCommand;
+use Symfony\Component\Console\Tester\CommandTester;
+use Helmich\Schema2Class\Generator\NamespaceInferrer;
+use Helmich\Schema2Class\Generator\SchemaToClassFactory;
 use Helmich\Schema2Class\Generator\Property\IntersectProperty;
 use Helmich\Schema2Class\Generator\Property\NestedObjectProperty;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
@@ -176,5 +179,35 @@ class SchemaToClassTest extends TestCase
 
             $this->addToAssertionCount(1);
         }
+    }
+
+    public function testCliNoEnumsMatchesFixture(): void
+    {
+        $schemaFile = __DIR__ . '/Fixtures/NoEnums/schema.yaml';
+        $expected   = trim(file_get_contents(__DIR__ . '/Fixtures/NoEnums/Output/Foo.php'));
+
+        $dir = sys_get_temp_dir() . '/s2c_' . uniqid();
+        mkdir($dir);
+
+        $command = new GenerateCommand(
+            new SchemaLoader(),
+            new NamespaceInferrer(),
+            new SchemaToClassFactory(),
+        );
+
+        $tester = new CommandTester($command);
+        $tester->execute([
+            'schema' => $schemaFile,
+            'target-dir' => $dir,
+            '--target-namespace' => 'Ns\\NoEnums',
+            '--class' => 'Foo',
+            '--no-enums' => true,
+        ]);
+
+        $generated = trim(file_get_contents($dir . '/Foo.php'));
+        assertThat($generated, equalTo($expected));
+
+        unlink($dir . '/Foo.php');
+        rmdir($dir);
     }
 }
