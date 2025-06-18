@@ -205,6 +205,11 @@ class GeneratorRequest
         return $this->opts->getNoSetters();
     }
 
+    public function getNoEnums(): bool
+    {
+        return $this->opts->getNoEnums();
+    }
+
     public function isAtLeastPHP(string $version): bool
     {
         return Comparator::greaterThanOrEqualTo($this->getTargetPHPVersion(), self::semversifyVersionNumber($version));

@@ -22,7 +22,7 @@ class StringEnumProperty extends AbstractProperty
     public function isComplex(): bool
     {
         // Only “complex” if we will generate a PHP 8.1+ enum class
-        return $this->generatorRequest->isAtLeastPHP("8.1") && isset($this->schema["enum"]);
+        return $this->generatorRequest->isAtLeastPHP("8.1") && !$this->generatorRequest->getNoEnums() && isset($this->schema["enum"]);
     }
 
     /**
@@ -33,7 +33,7 @@ class StringEnumProperty extends AbstractProperty
      */
     public function generateSubTypes(SchemaToClass $generator): void
     {
-        if ($this->generatorRequest->isAtLeastPHP("8.1")) {
+        if ($this->generatorRequest->isAtLeastPHP("8.1") && !$this->generatorRequest->getNoEnums()) {
             $generator->schemaToClass(
                 $this->generatorRequest
                     ->withSchema($this->schema)
@@ -44,7 +44,7 @@ class StringEnumProperty extends AbstractProperty
 
     public function typeAnnotation(): string
     {
-        if ($this->generatorRequest->isAtLeastPHP("8.1")) {
+        if ($this->generatorRequest->isAtLeastPHP("8.1") && !$this->generatorRequest->getNoEnums()) {
             // will be a real enum class name
             return $this->subTypeName();
         }
@@ -60,7 +60,7 @@ class StringEnumProperty extends AbstractProperty
 
     public function typeHint(string $phpVersion): ?string
     {
-        if ($this->generatorRequest->isAtLeastPHP("8.1")) {
+        if ($this->generatorRequest->isAtLeastPHP("8.1") && !$this->generatorRequest->getNoEnums()) {
             return "\\" . $this->generatorRequest->getTargetNamespace() . "\\" . $this->subTypeName();
         }
 
@@ -70,7 +70,7 @@ class StringEnumProperty extends AbstractProperty
 
     public function generateTypeAssertionExpr(string $expr): string
     {
-        if ($this->generatorRequest->isAtLeastPHP("8.1")) {
+        if ($this->generatorRequest->isAtLeastPHP("8.1") && !$this->generatorRequest->getNoEnums()) {
             return "{$expr} instanceof {$this->subTypeName()}";
         }
 
@@ -81,7 +81,7 @@ class StringEnumProperty extends AbstractProperty
 
     public function generateInputAssertionExpr(string $expr): string
     {
-        if ($this->generatorRequest->isAtLeastPHP("8.1")) {
+        if ($this->generatorRequest->isAtLeastPHP("8.1") && !$this->generatorRequest->getNoEnums()) {
             return "{$this->subTypeName()}::tryFrom({$expr}) !== null";
         }
 
@@ -91,7 +91,7 @@ class StringEnumProperty extends AbstractProperty
 
     public function generateInputMappingExpr(string $expr, bool $asserted = false): string
     {
-        if ($this->generatorRequest->isAtLeastPHP("8.1")) {
+        if ($this->generatorRequest->isAtLeastPHP("8.1") && !$this->generatorRequest->getNoEnums()) {
             return "{$this->subTypeName()}::from({$expr})";
         }
 
@@ -101,7 +101,7 @@ class StringEnumProperty extends AbstractProperty
 
     public function generateOutputMappingExpr(string $expr): string
     {
-        if ($this->generatorRequest->isAtLeastPHP("8.1")) {
+        if ($this->generatorRequest->isAtLeastPHP("8.1") && !$this->generatorRequest->getNoEnums()) {
             return "({$expr})->value";
         }
 
@@ -120,7 +120,7 @@ class StringEnumProperty extends AbstractProperty
             return new PropertyValueGenerator(null);
         }
 
-        if ($this->generatorRequest->isAtLeastPHP("8.1")) {
+        if ($this->generatorRequest->isAtLeastPHP("8.1") && !$this->generatorRequest->getNoEnums()) {
             // Use TYPE_CONSTANT for enum-backed constant
             return new PropertyValueGenerator(
                 $this->subTypeName() . "::" . SchemaToEnum::enumCaseName($value),

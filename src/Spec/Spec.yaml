@@ -84,3 +84,10 @@ properties:
         description: |
           When true, the whole schema used for validation will on a single line in the class property
         default: false
+
+      noEnums:
+        type: boolean
+        description: |
+          Disable generating PHP enum classes even on PHP ≥ 8.1. Enum values will be
+          handled like in earlier PHP versions.
+        default: false

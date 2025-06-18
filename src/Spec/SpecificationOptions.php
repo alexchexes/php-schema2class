@@ -78,6 +78,11 @@ This is useful if you want to use a custom validator class.
 ',
                 'default' => false,
             ],
+            'noEnums' => [
+                'type' => 'boolean',
+                'description' => 'Disable generating PHP enum classes even on PHP ≥ 8.1. Enum values will be handled like on older PHP versions.',
+                'default' => false,
+            ],
         ],
     ];
 
@@ -149,6 +154,14 @@ This is useful if you want to use a custom validator class.
      * @var bool
      */
     private bool $singleLineSchema = false;
+
+    /**
+     * When true, enum generation is completely disabled even on PHP ≥ 8.1
+     * and schema enums are handled like on older PHP versions.
+     *
+     * @var bool
+     */
+    private bool $noEnums = false;
 
     /**
      *
@@ -254,6 +267,14 @@ This is useful if you want to use a custom validator class.
     public function getSingleLineSchema() : bool
     {
         return $this->singleLineSchema;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getNoEnums() : bool
+    {
+        return $this->noEnums;
     }
 
     /**
@@ -541,6 +562,35 @@ This is useful if you want to use a custom validator class.
     }
 
     /**
+     * @param bool $noEnums
+     * @return self
+     */
+    public function withNoEnums(bool $noEnums) : self
+    {
+        $validator = new \JsonSchema\Validator();
+        $validator->validate($noEnums, self::$schema['properties']['noEnums']);
+        if (!$validator->isValid()) {
+            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        }
+
+        $clone = clone $this;
+        $clone->noEnums = $noEnums;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutNoEnums() : self
+    {
+        $clone = clone $this;
+        $clone->noEnums = false;
+
+        return $clone;
+    }
+
+    /**
      * Builds a new instance from an input array
      *
      * @param array|object $input Input data
@@ -569,6 +619,7 @@ This is useful if you want to use a custom validator class.
         $noSetters = isset($input->{'noSetters'}) ? $input->{'noSetters'} : false;
         $noDescriptionsInSchema = isset($input->{'noDescriptionsInSchema'}) ? $input->{'noDescriptionsInSchema'} : false;
         $singleLineSchema = isset($input->{'singleLineSchema'}) ? $input->{'singleLineSchema'} : false;
+        $noEnums = isset($input->{'noEnums'}) ? $input->{'noEnums'} : false;
 
         $obj = new self();
         $obj->disableStrictTypes = $disableStrictTypes;
@@ -581,6 +632,7 @@ This is useful if you want to use a custom validator class.
         $obj->noSetters = $noSetters;
         $obj->noDescriptionsInSchema = $noDescriptionsInSchema;
         $obj->singleLineSchema = $singleLineSchema;
+        $obj->noEnums = $noEnums;
         return $obj;
     }
 
@@ -623,6 +675,9 @@ This is useful if you want to use a custom validator class.
         }
         if (isset($this->singleLineSchema)) {
             $output['singleLineSchema'] = $this->singleLineSchema;
+        }
+        if (isset($this->noEnums)) {
+            $output['noEnums'] = $this->noEnums;
         }
 
         return $output;
