@@ -125,7 +125,7 @@ Both the CLI and specification files accept the following options:
 | `--no-setters`                | `noSetters`                        | Do not generate `withX()` / `withoutX()` methods.                                                                                                                      |
 | `--no-schema-descriptions`    | `noDescriptionsInSchema`           | Remove `description` fields from the embedded schema to reduce its size.                                                                                               |
 | `--single-line-schema`        | `singleLineSchema`                 | Store the validation schema on a single line in the generated class to make the `.php` file smaller.                                                                   |
-| `--no-enums`                  | `noEnums`                          | Disable generation of PHP `enum` classes even when targeting PHP 8.1 or newer.  |
+| `--no-enums`                  | `noEnums`                          | Disable generation of PHP `enum` classes even when targeting PHP 8.1 or newer.                                                                                         |
 | `--dry-run`                   | –                                  | Print the output to the console instead of writing files.                                                                                                              |
 
 ## Example workflow
