@@ -9,7 +9,7 @@ class NamespaceInferrer
      * @return string
      * @throws GeneratorException
      */
-    public function inferNamespaceFromTargetDirectory(string $directory): string
+    public function inferNamespaceFromComposerFile(string $directory): string
     {
         $startsWith = function(string $string, string $prefix): bool {
             return substr($string, 0, strlen($prefix)) === $prefix;
@@ -64,6 +64,6 @@ class NamespaceInferrer
             $directory = dirname($directory);
         }
 
-        throw new GeneratorException("no composer.json could be found for directory $initialDirectory");
+        throw new GeneratorException("no composer.json found for directory $initialDirectory");
     }
 }

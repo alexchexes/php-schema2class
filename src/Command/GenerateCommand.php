@@ -92,6 +92,8 @@ class GenerateCommand extends Command
         $opts = (new SpecificationOptions())
             ->withTargetPHPVersion($targetPHPVersion ?? "8.2.0");
 
+        $output->writeln("target PHP version: <comment>{$opts->getTargetPHPVersion()}</comment>");
+
         if ($input->getOption("disable-strict-types")) {
             $opts = $opts->withDisableStrictTypes(true);
         }

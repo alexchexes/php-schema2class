@@ -73,6 +73,8 @@ class GenerateSpecCommand extends Command
         }
         $opts = $opts->withTargetPHPVersion($tpv);
 
+        $output->writeln("target PHP version <comment>$tpv</comment>");
+
         foreach ($specification->getFiles() as $file) {
             $schemaFile      = $file->getInput();
             $targetDirectory = $file->getTargetDirectory();

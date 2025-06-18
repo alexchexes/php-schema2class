@@ -43,10 +43,10 @@ trait GenerateFromRequestTrait
             return $givenNamespace;
         }
 
-        $output->writeln('target namespace not given. inferring from directory…');
+        $output->writeln('target namespace not given. inferring from composer.json...');
 
         try {
-            return $this->namespaceInferrer->inferNamespaceFromTargetDirectory($targetDir);
+            return $this->namespaceInferrer->inferNamespaceFromComposerFile($targetDir);
         } catch (GeneratorException $e) {
             $fallback = StringUtils::pascalCase(basename(str_replace('\\', '/', rtrim($targetDir, '/'))));
             $output->writeln(
