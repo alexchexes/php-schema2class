@@ -82,7 +82,7 @@ class Specification
                                 'type' => 'string',
                             ],
                         ],
-                        'default' => '8.2.0',
+                        'default' => '8.4',
                     ],
                     'newValidatorClassExpr' => [
                         'type' => 'string',
@@ -118,6 +118,13 @@ This is useful if you want to use a custom validator class.
                     'singleLineSchema' => [
                         'type' => 'boolean',
                         'description' => 'When true, the whole schema used for validation will on a single line in the class property
+',
+                        'default' => false,
+                    ],
+                    'noEnums' => [
+                        'type' => 'boolean',
+                        'description' => 'Disable generating PHP enum classes even on PHP ≥ 8.1. Enum values will be
+handled like in earlier PHP versions.
 ',
                         'default' => false,
                     ],

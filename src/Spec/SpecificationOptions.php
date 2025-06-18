@@ -39,7 +39,7 @@ class SpecificationOptions
                         'type' => 'string',
                     ],
                 ],
-                'default' => '8.2.0',
+                'default' => '8.4',
             ],
             'newValidatorClassExpr' => [
                 'type' => 'string',
@@ -80,7 +80,9 @@ This is useful if you want to use a custom validator class.
             ],
             'noEnums' => [
                 'type' => 'boolean',
-                'description' => 'Disable generating PHP enum classes even on PHP ≥ 8.1. Enum values will be handled like on older PHP versions.',
+                'description' => 'Disable generating PHP enum classes even on PHP ≥ 8.1. Enum values will be
+handled like in earlier PHP versions.
+',
                 'default' => false,
             ],
         ],
@@ -104,7 +106,7 @@ This is useful if you want to use a custom validator class.
     /**
      * @var int|string
      */
-    private int|string $targetPHPVersion = '8.2.0';
+    private int|string $targetPHPVersion = '8.4';
 
     /**
      * The expression to use to create a new instance of the validator class.
@@ -156,8 +158,9 @@ This is useful if you want to use a custom validator class.
     private bool $singleLineSchema = false;
 
     /**
-     * When true, enum generation is completely disabled even on PHP ≥ 8.1
-     * and schema enums are handled like on older PHP versions.
+     * Disable generating PHP enum classes even on PHP ≥ 8.1. Enum values will be
+     * handled like in earlier PHP versions.
+     *
      *
      * @var bool
      */
@@ -270,6 +273,10 @@ This is useful if you want to use a custom validator class.
     }
 
     /**
+     * Disable generating PHP enum classes even on PHP ≥ 8.1. Enum values will be
+     * handled like in earlier PHP versions.
+     *
+     *
      * @return bool
      */
     public function getNoEnums() : bool
@@ -382,7 +389,7 @@ This is useful if you want to use a custom validator class.
     public function withoutTargetPHPVersion() : self
     {
         $clone = clone $this;
-        $clone->targetPHPVersion = '8.2.0';
+        $clone->targetPHPVersion = '8.4';
 
         return $clone;
     }
@@ -612,7 +619,7 @@ This is useful if you want to use a custom validator class.
             default => null,
             is_int($input->{'targetPHPVersion'}) => (int)($input->{'targetPHPVersion'}),
             is_string($input->{'targetPHPVersion'}) => $input->{'targetPHPVersion'},
-        } : '8.2.0';
+        } : '8.4';
         $newValidatorClassExpr = isset($input->{'newValidatorClassExpr'}) ? $input->{'newValidatorClassExpr'} : 'new \\JsonSchema\\Validator()';
         $preservePropertyNames = isset($input->{'preservePropertyNames'}) ? $input->{'preservePropertyNames'} : false;
         $noGetters = isset($input->{'noGetters'}) ? $input->{'noGetters'} : false;

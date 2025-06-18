@@ -46,7 +46,7 @@ properties:
           - type: integer
             enum: [5, 7, 8]
           - type: string
-        default: 8.2.0
+        default: '8.4'
 
       newValidatorClassExpr:
         type: string

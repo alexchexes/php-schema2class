@@ -9,6 +9,7 @@ use Helmich\Schema2Class\Generator\GeneratorException;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\NamespaceInferrer;
 use Helmich\Schema2Class\Generator\SchemaToClassFactory;
+use Helmich\Schema2Class\Util\StringUtils;
 use Helmich\Schema2Class\Generator\Property\NestedObjectProperty;
 use Helmich\Schema2Class\Writer\DebugWriter;
 use Helmich\Schema2Class\Writer\FileWriter;
@@ -36,21 +37,21 @@ trait GenerateFromRequestTrait
         OutputInterface $output,
         ?string $givenNamespace,
         string $targetDir,
-        string $fallbackClass
     ): string {
         if ($givenNamespace) {
             return $givenNamespace;
         }
 
-        $output->writeln('target namespace not given. inferring from directory…');
+        $output->writeln('target namespace not given. inferring from composer.json...');
 
         try {
-            return $this->namespaceInferrer->inferNamespaceFromTargetDirectory($targetDir);
+            return $this->namespaceInferrer->inferNamespaceFromComposerFile($targetDir);
         } catch (GeneratorException $e) {
+            $fallback = StringUtils::pascalCase(basename(str_replace('\\', '/', rtrim($targetDir, '/'))));
             $output->writeln(
-                "  ↳ PSR‑4 lookup failed, defaulting to class name as namespace: <comment>{$fallbackClass}</comment>"
+                "  ↳ PSR‑4 lookup failed, defaulting to directory name as namespace: <comment>{$fallback}</comment>"
             );
-            return $fallbackClass;
+            return $fallback;
         }
     }
 

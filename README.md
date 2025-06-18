@@ -162,7 +162,7 @@ To demonstrate Schema2Class's capabilities and how to use the generated code, co
       └── User.php
    ```
 
-   - **Note:** In a real project you can omit `--target-namespace`; Schema2Class will try to infer the target namespace from your `composer.json` file.
+   - **Note:** In a real project you can omit `--target-namespace`; Schema2Class will try to infer the target namespace from your `composer.json` file. If that fails, the last segment of the target directory is used as a fallback.
    - **Also note:** At the moment it is not possible to generate classes without a namespace.
 
 Next, use the generated classes in your code:
@@ -222,7 +222,7 @@ The generated classes offer:
 - Use `--no-enums`/`noEnums: true` to keep the pre‑8.1 behaviour and avoid generating enum classes.
 - PHPDoc descriptions derived from schema `"description"` fields.
 - All PHP properties are `private` (unless `--no-getters` is used), with getter methods and explicit return type declarations (PHPDoc for PHP 5 mode).
-- Namespacing: Specify the namespace for all classes with `--target-namespace` (`targetNamespace`). If omitted, the generator inspects your `composer.json` and tries to infer it from the PSR‑4 configuration.
+- Namespacing: Specify the namespace for all classes with `--target-namespace` (`targetNamespace`). If omitted, the generator inspects your `composer.json` and tries to infer it from the PSR‑4 configuration. If no match is found, the generator falls back to the name of the target directory.
   Generating classes without namespaces is currently not supported.
 - Class names are derived from the names in the `"definitions"` section. If you generate from a schema with a top-level object and no definitions, set the class name with the `--class` (`className`) option.
 - Class/enum names for sub‑objects are derived from property names.

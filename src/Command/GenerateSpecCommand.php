@@ -68,10 +68,18 @@ class GenerateSpecCommand extends Command
             $opts = $opts->withTargetPHPVersion($v);
         }
         $tpv = $opts->getTargetPHPVersion();
-        if (is_int($tpv)) {
-            $tpv = $tpv === 5 ? "5.6.0" : "7.4.0";
+        
+        if ($tpv === 5 || $tpv === '5') {
+            $tpv = "5.6";
+        } elseif ($tpv === 7 || $tpv === '7') {
+            $tpv = "7.4";
+        } elseif ($tpv === 8 || $tpv === '8') {
+            $tpv = "8.4";
         }
+
         $opts = $opts->withTargetPHPVersion($tpv);
+
+        $output->writeln("target PHP version <comment>$tpv</comment>");
 
         foreach ($specification->getFiles() as $file) {
             $schemaFile      = $file->getInput();
