@@ -37,7 +37,6 @@ trait GenerateFromRequestTrait
         OutputInterface $output,
         ?string $givenNamespace,
         string $targetDir,
-        string $fallbackClass
     ): string {
         if ($givenNamespace) {
             return $givenNamespace;

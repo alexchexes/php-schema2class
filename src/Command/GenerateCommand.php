@@ -89,8 +89,17 @@ class GenerateCommand extends Command
         $output->writeln("using target namespace <comment>$targetNamespace</comment> in directory <comment>$targetDirectory</comment>");
 
         $spec = new ValidatedSpecificationFilesItem($targetNamespace, $class, $targetDirectory);
+
+        if ($targetPHPVersion === 5 || $targetPHPVersion === '5') {
+            $targetPHPVersion = "5.6";
+        } elseif ($targetPHPVersion === 7 || $targetPHPVersion === '7') {
+            $targetPHPVersion = "7.4";
+        } elseif ($targetPHPVersion === 8 || $targetPHPVersion === '8' || !$targetPHPVersion) {
+            $targetPHPVersion = "8.4";
+        }
+
         $opts = (new SpecificationOptions())
-            ->withTargetPHPVersion($targetPHPVersion ?? "8.2.0");
+            ->withTargetPHPVersion($targetPHPVersion);
 
         $output->writeln("target PHP version: <comment>{$opts->getTargetPHPVersion()}</comment>");
 
