@@ -125,7 +125,7 @@ Both the CLI and specification files accept the following options:
 | `--no-setters`                | `noSetters`                        | Do not generate `withX()` / `withoutX()` methods.                                                                                                                      |
 | `--no-schema-descriptions`    | `noDescriptionsInSchema`           | Remove `description` fields from the embedded schema to reduce its size.                                                                                               |
 | `--single-line-schema`        | `singleLineSchema`                 | Store the validation schema on a single line in the generated class to make the `.php` file smaller.                                                                   |
-| `--no-enums`                  | `noEnums`                          | Disable generation of PHP `enum` classes even when targeting PHP 8.1 or newer.  |
+| `--no-enums`                  | `noEnums`                          | Disable generation of PHP `enum` classes even when targeting PHP 8.1 or newer. Generation fails if the schema itself is an enum. |
 | `--dry-run`                   | –                                  | Print the output to the console instead of writing files.                                                                                                              |
 
 ## Example workflow
@@ -219,7 +219,7 @@ The generated classes offer:
 
 - Typing (PHP 7+ type hints plus PHPDoc) wherever possible
 - When the target PHP version is 8.1 or higher, `enum` values are emitted as PHP `enum` classes.
-- Use `--no-enums`/`noEnums: true` to keep the pre‑8.1 behaviour and avoid generating enum classes.
+- Use `--no-enums`/`noEnums: true` to keep the pre‑8.1 behaviour and avoid generating enum classes. If the schema itself is an enum, generation will fail.
 - PHPDoc descriptions derived from schema `"description"` fields.
 - All PHP properties are `private` (unless `--no-getters` is used), with getter methods and explicit return type declarations (PHPDoc for PHP 5 mode).
 - Namespacing: Specify the namespace for all classes with `--target-namespace` (`targetNamespace`). If omitted, the generator inspects your `composer.json` and tries to infer it from the PSR‑4 configuration.

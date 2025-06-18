@@ -68,7 +68,11 @@ class SchemaToClass
         $this->definitionsToSchemas($req);
         $schema = $req->getSchema();
 
-        if (isset($schema["enum"]) && $req->isAtLeastPHP("8.1") && !$req->getNoEnums()) {
+        if (isset($schema["enum"])) {
+            if ($req->getNoEnums()) {
+                throw new GeneratorException("enum generation disabled");
+            }
+
             $this->enumGenerator->schemaToEnum($req);
             return;
         }

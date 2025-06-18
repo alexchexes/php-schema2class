@@ -61,7 +61,7 @@ class SchemaToEnumTest extends TestCase
         assertStringContainsString("case BAR = 'bar';", $written);
     }
 
-    public function testNoEnumsOptionSkipsEnumGeneration(): void
+    public function testNoEnumsOptionThrowsForTopLevelEnums(): void
     {
         $schema = [
             'enum' => ['foo', 'bar'],
@@ -77,8 +77,8 @@ class SchemaToEnumTest extends TestCase
         );
 
         $writer = new DebugWriter(new NullOutput());
-        (new SchemaToClassFactory())->build($writer, new NullOutput())->schemaToClass($req);
 
-        $this->assertCount(0, $writer->getWrittenFiles());
+        $this->expectException(GeneratorException::class);
+        (new SchemaToClassFactory())->build($writer, new NullOutput())->schemaToClass($req);
     }
 }

@@ -89,5 +89,6 @@ properties:
         type: boolean
         description: |
           Disable generating PHP enum classes even on PHP ≥ 8.1. Enum values will be
-          handled like in earlier PHP versions.
+          handled like in earlier PHP versions. If the schema itself describes an
+          enum, generation will fail just like when targeting PHP < 8.1.
         default: false
