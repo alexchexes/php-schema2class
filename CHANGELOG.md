@@ -18,6 +18,7 @@ New options provide more control over how classes are generated:
 - `noDescriptionsInSchema` - drop `description` fields from the embedded schema to reduce its size.
 - `singleLineSchema` - store the validation schema as a single line in the generated class to reduce the length of .php files.
 - `noEnums` - Disable generation of PHP `enum` classes even when targeting PHP 8.1 or newer.
+- `cleanTargetDirectory` - remove all files from the target directory before generation.
 
 ### Additional CLI options
 

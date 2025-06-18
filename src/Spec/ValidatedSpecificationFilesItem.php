@@ -8,6 +8,7 @@ class ValidatedSpecificationFilesItem
     private string $targetNamespace;
     private string $targetClass;
     private string $targetDirectory;
+    private bool $cleanTargetDirectory;
 
     /**
      * ValidatedSpecificationFilesItem constructor.
@@ -15,11 +16,12 @@ class ValidatedSpecificationFilesItem
      * @param string $targetClass
      * @param string $targetDirectory
      */
-    public function __construct(string $targetNamespace, string $targetClass, string $targetDirectory)
+    public function __construct(string $targetNamespace, string $targetClass, string $targetDirectory, bool $cleanTargetDirectory = false)
     {
         $this->targetNamespace = $targetNamespace;
         $this->targetClass     = $targetClass;
         $this->targetDirectory = $targetDirectory;
+        $this->cleanTargetDirectory = $cleanTargetDirectory;
     }
 
     public static function fromSpecificationFilesItem(SpecificationFilesItem $input, string $fallbackNamespace): ValidatedSpecificationFilesItem {
@@ -27,6 +29,7 @@ class ValidatedSpecificationFilesItem
             $input->getTargetNamespace() ?? $fallbackNamespace,
             $input->getClassName(),
             $input->getTargetDirectory(),
+            $input->getCleanTargetDirectory(),
         );
     }
 
@@ -54,6 +57,11 @@ class ValidatedSpecificationFilesItem
         return $this->targetDirectory;
     }
 
+    public function getCleanTargetDirectory(): bool
+    {
+        return $this->cleanTargetDirectory;
+    }
+
     public function withTargetClass(string $targetClass): self
     {
         $c              = clone $this;
@@ -74,6 +82,14 @@ class ValidatedSpecificationFilesItem
     {
         $c               = clone $this;
         $c->targetDirectory = $targetDirectory;
+
+        return $c;
+    }
+
+    public function withCleanTargetDirectory(bool $cleanTargetDirectory): self
+    {
+        $c = clone $this;
+        $c->cleanTargetDirectory = $cleanTargetDirectory;
 
         return $c;
     }

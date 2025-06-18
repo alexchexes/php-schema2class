@@ -65,4 +65,24 @@ class Schema2ClassTest extends TestCase
         unlink($file);
         rmdir($dir);
     }
+
+    public function testGenerateFromSchemaCleansDirectory(): void
+    {
+        $schema = [
+            'required' => ['name'],
+            'properties' => ['name' => ['type' => 'string']],
+        ];
+
+        $dir = sys_get_temp_dir() . '/s2c_' . uniqid();
+        mkdir($dir);
+        file_put_contents($dir . '/Old.php', '<?php');
+
+        $generator = new Schema2Class();
+        $generator->generateFromSchema($schema, 'Person', $dir, 'My\\Ns', null, null, true);
+
+        $this->assertFileDoesNotExist($dir . '/Old.php');
+
+        unlink($dir . '/Person.php');
+        rmdir($dir);
+    }
 }

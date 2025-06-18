@@ -105,9 +105,15 @@ class GenerateSpecCommand extends Command
 
             $schema = $this->loader->loadSchema($schemaFile);
 
+            $validated = ValidatedSpecificationFilesItem::fromSpecificationFilesItem($file, $targetNamespace);
+
+            if ($validated->getCleanTargetDirectory()) {
+                $this->cleanDirectory($validated->getTargetDirectory(), $output);
+            }
+
             $baseRequest = new GeneratorRequest(
                 $schema,
-                ValidatedSpecificationFilesItem::fromSpecificationFilesItem($file, $targetNamespace),
+                $validated,
                 $opts
             );
 

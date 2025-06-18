@@ -53,6 +53,13 @@ class Specification
                         'targetNamespace' => [
                             'type' => 'string',
                         ],
+                        'cleanTargetDirectory' => [
+                            'type' => 'boolean',
+                            'description' => 'When true, the generator removes all files from the target directory
+before writing new ones.
+',
+                            'default' => false,
+                        ],
                     ],
                 ],
             ],

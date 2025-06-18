@@ -93,9 +93,15 @@ class Schema2Class
 
             $schema = $this->loader->loadSchema($schemaFile);
 
+            $validated = ValidatedSpecificationFilesItem::fromSpecificationFilesItem($file, $targetNamespace);
+
+            if ($validated->getCleanTargetDirectory()) {
+                $this->cleanDirectory($validated->getTargetDirectory(), $output);
+            }
+
             $baseRequest = new GeneratorRequest(
                 $schema,
-                ValidatedSpecificationFilesItem::fromSpecificationFilesItem($file, $targetNamespace),
+                $validated,
                 $opts
             );
 
@@ -115,7 +121,8 @@ class Schema2Class
         string $targetDirectory,
         ?string $targetNamespace = null,
         ?SpecificationOptions $options = null,
-        ?OutputInterface $output = null
+        ?OutputInterface $output = null,
+        bool $cleanTargetDirectory = false,
     ): void {
         $output = $output ?? new NullOutput();
         $options = $options ?? new SpecificationOptions();
@@ -131,7 +138,11 @@ class Schema2Class
         }
         $options = $options->withTargetPHPVersion($tpv);
 
-        $spec = new ValidatedSpecificationFilesItem($targetNamespace, $className, $targetDirectory);
+        if ($cleanTargetDirectory) {
+            $this->cleanDirectory($targetDirectory, $output);
+        }
+
+        $spec = new ValidatedSpecificationFilesItem($targetNamespace, $className, $targetDirectory, $cleanTargetDirectory);
         $req  = new GeneratorRequest($schema, $spec, $options);
 
         $this->generateFromRequest($req, $output, false);
