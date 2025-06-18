@@ -1,0 +1,6 @@
+required:
+  - color
+properties:
+  color:
+    type: string
+    enum: [red, green]

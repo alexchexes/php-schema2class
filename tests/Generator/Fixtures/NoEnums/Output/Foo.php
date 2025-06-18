@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ns\DefinitionsIndependet;
+namespace Ns\NoEnums;
 
 class Foo
 {
@@ -12,59 +12,55 @@ class Foo
      * @var array
      */
     private static array $schema = [
-        'type' => 'object',
+        'required' => [
+            'color',
+        ],
         'properties' => [
-            'a' => [
+            'color' => [
                 'type' => 'string',
+                'enum' => [
+                    'red',
+                    'green',
+                ],
             ],
         ],
     ];
 
     /**
-     * @var string|null
+     * @var 'red'|'green'
      */
-    private ?string $a = null;
+    private string $color;
 
     /**
-     *
+     * @param 'red'|'green' $color
      */
-    public function __construct()
+    public function __construct(string $color)
     {
+        $this->color = $color;
     }
 
     /**
-     * @return string|null
+     * @return 'red'|'green'
      */
-    public function getA() : ?string
+    public function getColor() : string
     {
-        return $this->a ?? null;
+        return $this->color;
     }
 
     /**
-     * @param string $a
+     * @param 'red'|'green' $color
      * @return self
      */
-    public function withA(string $a) : self
+    public function withColor(string $color) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($a, self::$schema['properties']['a']);
+        $validator->validate($color, self::$schema['properties']['color']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
 
         $clone = clone $this;
-        $clone->a = $a;
-
-        return $clone;
-    }
-
-    /**
-     * @return self
-     */
-    public function withoutA() : self
-    {
-        $clone = clone $this;
-        unset($clone->a);
+        $clone->color = $color;
 
         return $clone;
     }
@@ -84,10 +80,10 @@ class Foo
             static::validateInput($input);
         }
 
-        $a = isset($input->{'a'}) ? $input->{'a'} : null;
+        $color = $input->{'color'};
 
-        $obj = new self();
-        $obj->a = $a;
+        $obj = new self($color);
+
         return $obj;
     }
 
@@ -99,9 +95,7 @@ class Foo
     public function toArray() : array
     {
         $output = [];
-        if (isset($this->a)) {
-            $output['a'] = $this->a;
-        }
+        $output['color'] = $this->color;
 
         return $output;
     }

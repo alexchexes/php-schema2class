@@ -60,4 +60,25 @@ class SchemaToEnumTest extends TestCase
         $written = current($writer->getWrittenFiles());
         assertStringContainsString("case BAR = 'bar';", $written);
     }
+
+    public function testNoEnumsOptionSkipsEnumGeneration(): void
+    {
+        $schema = [
+            'enum' => ['foo', 'bar'],
+            'type' => 'string',
+        ];
+
+        $req = new GeneratorRequest(
+            $schema,
+            new ValidatedSpecificationFilesItem('Ns\\NoEnumsTop', 'Foo', __DIR__),
+            (new SpecificationOptions())
+                ->withTargetPHPVersion('8.2')
+                ->withNoEnums(true)
+        );
+
+        $writer = new DebugWriter(new NullOutput());
+        (new SchemaToClassFactory())->build($writer, new NullOutput())->schemaToClass($req);
+
+        $this->assertCount(0, $writer->getWrittenFiles());
+    }
 }
