@@ -15,6 +15,7 @@ class Specification
         'required' => [
             'files',
         ],
+        'additionalProperties' => false,
         'properties' => [
             'targetPHPVersion' => [
                 'oneOf' => [
@@ -38,6 +39,7 @@ class Specification
                         'input',
                         'targetDirectory',
                     ],
+                    'additionalProperties' => false,
                     'properties' => [
                         'input' => [
                             'type' => 'string',
@@ -55,6 +57,7 @@ class Specification
                 ],
             ],
             'options' => [
+                'additionalProperties' => false,
                 'properties' => [
                     'disableStrictTypes' => [
                         'type' => 'boolean',

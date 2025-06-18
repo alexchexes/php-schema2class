@@ -16,6 +16,7 @@ class SpecificationFilesItem
             'input',
             'targetDirectory',
         ],
+        'additionalProperties' => false,
         'properties' => [
             'input' => [
                 'type' => 'string',

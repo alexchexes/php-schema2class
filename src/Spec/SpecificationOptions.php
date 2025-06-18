@@ -12,6 +12,7 @@ class SpecificationOptions
      * @var array
      */
     private static array $schema = [
+        'additionalProperties' => false,
         'properties' => [
             'disableStrictTypes' => [
                 'type' => 'boolean',

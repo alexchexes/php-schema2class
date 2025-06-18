@@ -1,5 +1,6 @@
 required:
   - files
+additionalProperties: false
 properties:
   targetPHPVersion:
     oneOf:
@@ -13,7 +14,7 @@ properties:
       required:
         - input
         - targetDirectory
-
+      additionalProperties: false
       properties:
         input:
           type: string
@@ -28,6 +29,7 @@ properties:
           type: string
 
   options:
+    additionalProperties: false
     properties:
       disableStrictTypes:
         type: boolean
