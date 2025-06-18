@@ -58,6 +58,7 @@ class GenerateCommand extends Command
         $this->addOption("no-schema-descriptions", null, InputOption::VALUE_NONE, "Omit description fields from schema property");
         $this->addOption("single-line-schema", null, InputOption::VALUE_NONE, "Store schema property as single line");
         $this->addOption('no-enums', null, InputOption::VALUE_NONE, 'Disable PHP enum generation');
+        $this->addOption('clean-target-dir', null, InputOption::VALUE_NONE, 'Remove all files in target directory before writing');
     }
 
     /**
@@ -88,7 +89,13 @@ class GenerateCommand extends Command
 
         $output->writeln("using target namespace <comment>$targetNamespace</comment> in directory <comment>$targetDirectory</comment>");
 
-        $spec = new ValidatedSpecificationFilesItem($targetNamespace, $class, $targetDirectory);
+        $cleanTarget = (bool)$input->getOption('clean-target-dir');
+
+        if ($cleanTarget) {
+            $this->cleanDirectory($targetDirectory, $output);
+        }
+
+        $spec = new ValidatedSpecificationFilesItem($targetNamespace, $class, $targetDirectory, $cleanTarget);
 
         if ($targetPHPVersion === '5') {
             $targetPHPVersion = "5.6";

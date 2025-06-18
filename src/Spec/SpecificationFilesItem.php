@@ -30,6 +30,13 @@ class SpecificationFilesItem
             'targetNamespace' => [
                 'type' => 'string',
             ],
+            'cleanTargetDirectory' => [
+                'type' => 'boolean',
+                'description' => 'When true, the generator removes all files from the target directory
+before writing new ones.
+',
+                'default' => false,
+            ],
         ],
     ];
 
@@ -52,6 +59,15 @@ class SpecificationFilesItem
      * @var string|null
      */
     private ?string $targetNamespace = null;
+
+    /**
+     * When true, the generator removes all files from the target directory
+     * before writing new ones.
+     *
+     *
+     * @var bool
+     */
+    private bool $cleanTargetDirectory = false;
 
     /**
      * @param string $input
@@ -93,6 +109,18 @@ class SpecificationFilesItem
     public function getTargetNamespace() : ?string
     {
         return $this->targetNamespace ?? null;
+    }
+
+    /**
+     * When true, the generator removes all files from the target directory
+     * before writing new ones.
+     *
+     *
+     * @return bool
+     */
+    public function getCleanTargetDirectory() : bool
+    {
+        return $this->cleanTargetDirectory;
     }
 
     /**
@@ -190,6 +218,35 @@ class SpecificationFilesItem
     }
 
     /**
+     * @param bool $cleanTargetDirectory
+     * @return self
+     */
+    public function withCleanTargetDirectory(bool $cleanTargetDirectory) : self
+    {
+        $validator = new \JsonSchema\Validator();
+        $validator->validate($cleanTargetDirectory, self::$schema['properties']['cleanTargetDirectory']);
+        if (!$validator->isValid()) {
+            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        }
+
+        $clone = clone $this;
+        $clone->cleanTargetDirectory = $cleanTargetDirectory;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutCleanTargetDirectory() : self
+    {
+        $clone = clone $this;
+        $clone->cleanTargetDirectory = false;
+
+        return $clone;
+    }
+
+    /**
      * Builds a new instance from an input array
      *
      * @param array|object $input2 Input data
@@ -208,10 +265,12 @@ class SpecificationFilesItem
         $className = isset($input2->{'className'}) ? $input2->{'className'} : null;
         $targetDirectory = $input2->{'targetDirectory'};
         $targetNamespace = isset($input2->{'targetNamespace'}) ? $input2->{'targetNamespace'} : null;
+        $cleanTargetDirectory = isset($input2->{'cleanTargetDirectory'}) ? $input2->{'cleanTargetDirectory'} : false;
 
         $obj = new self($input, $targetDirectory);
         $obj->className = $className;
         $obj->targetNamespace = $targetNamespace;
+        $obj->cleanTargetDirectory = $cleanTargetDirectory;
         return $obj;
     }
 
@@ -230,6 +289,9 @@ class SpecificationFilesItem
         $output['targetDirectory'] = $this->targetDirectory;
         if (isset($this->targetNamespace)) {
             $output['targetNamespace'] = $this->targetNamespace;
+        }
+        if (isset($this->cleanTargetDirectory)) {
+            $output['cleanTargetDirectory'] = $this->cleanTargetDirectory;
         }
 
         return $output;

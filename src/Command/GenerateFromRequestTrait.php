@@ -31,6 +31,30 @@ trait GenerateFromRequestTrait
     }
 
     /**
+     * Remove all files from the given directory.
+     */
+    private function cleanDirectory(string $directory, OutputInterface $output): void
+    {
+        if (!is_dir($directory)) {
+            return;
+        }
+
+        $output->writeln("cleaning directory <comment>{$directory}</comment>");
+
+        $iterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($directory, \FilesystemIterator::SKIP_DOTS),
+            \RecursiveIteratorIterator::CHILD_FIRST,
+        );
+        foreach ($iterator as $fileInfo) {
+            if ($fileInfo->isDir()) {
+                @rmdir($fileInfo->getPathname());
+            } else {
+                @unlink($fileInfo->getPathname());
+            }
+        }
+    }
+
+    /**
      * Infer the target namespace or fall back to a default class name.
      */
     private function inferNamespace(
