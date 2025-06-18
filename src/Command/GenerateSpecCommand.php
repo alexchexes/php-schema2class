@@ -98,7 +98,6 @@ class GenerateSpecCommand extends Command
                 $output,
                 $file->getTargetNamespace(),
                 $targetDirectory,
-                $className
             );
             $file = $file->withTargetNamespace($targetNamespace);
 

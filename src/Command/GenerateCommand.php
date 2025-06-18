@@ -84,17 +84,17 @@ class GenerateCommand extends Command
         $output->writeln("loading schema from <comment>$schemaFile</comment>");
         $schema = $this->loader->loadSchema($schemaFile);
 
-        $targetNamespace = $this->inferNamespace($output, $targetNamespace, $targetDirectory, $class);
+        $targetNamespace = $this->inferNamespace($output, $targetNamespace, $targetDirectory);
 
         $output->writeln("using target namespace <comment>$targetNamespace</comment> in directory <comment>$targetDirectory</comment>");
 
         $spec = new ValidatedSpecificationFilesItem($targetNamespace, $class, $targetDirectory);
 
-        if ($targetPHPVersion === 5 || $targetPHPVersion === '5') {
+        if ($targetPHPVersion === '5') {
             $targetPHPVersion = "5.6";
-        } elseif ($targetPHPVersion === 7 || $targetPHPVersion === '7') {
+        } elseif ($targetPHPVersion === '7') {
             $targetPHPVersion = "7.4";
-        } elseif ($targetPHPVersion === 8 || $targetPHPVersion === '8' || !$targetPHPVersion) {
+        } elseif ($targetPHPVersion === '8' || !$targetPHPVersion) {
             $targetPHPVersion = "8.4";
         }
 

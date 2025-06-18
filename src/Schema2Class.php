@@ -84,7 +84,6 @@ class Schema2Class
                 $output,
                 $file->getTargetNamespace(),
                 $targetDirectory,
-                $className
             );
             $file = $file->withTargetNamespace($targetNamespace);
 
@@ -121,7 +120,7 @@ class Schema2Class
         $output = $output ?? new NullOutput();
         $options = $options ?? new SpecificationOptions();
 
-        $targetNamespace = $this->inferNamespace($output, $targetNamespace, $targetDirectory, $className);
+        $targetNamespace = $this->inferNamespace($output, $targetNamespace, $targetDirectory);
         $output->writeln(
             "using target namespace <comment>{$targetNamespace}</comment> in directory <comment>{$targetDirectory}</comment>"
         );

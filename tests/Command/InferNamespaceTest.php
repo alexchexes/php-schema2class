@@ -18,7 +18,7 @@ class InferNamespaceTest extends TestCase
             private NamespaceInferrer $namespaceInferrer;
             public function __construct(NamespaceInferrer $inf) { $this->namespaceInferrer = $inf; }
             public function infer(string $dir): string {
-                return $this->inferNamespace(new NullOutput(), null, $dir, 'Foo');
+                return $this->inferNamespace(new NullOutput(), null, $dir);
             }
         };
 
