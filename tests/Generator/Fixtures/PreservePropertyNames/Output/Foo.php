@@ -353,8 +353,4 @@ class Foo
 
         return $validator->isValid();
     }
-
-    public function __clone()
-    {
-    }
 }

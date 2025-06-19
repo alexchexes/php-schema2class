@@ -173,8 +173,4 @@ class Address
 
         return $validator->isValid();
     }
-
-    public function __clone()
-    {
-    }
 }

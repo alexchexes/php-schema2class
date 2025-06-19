@@ -37,13 +37,6 @@ class Foo
     private ?array $params = null;
 
     /**
-     *
-     */
-    public function __construct()
-    {
-    }
-
-    /**
      * @return string|null
      */
     public function getName() : ?string
@@ -181,9 +174,5 @@ class Foo
         }
 
         return $validator->isValid();
-    }
-
-    public function __clone()
-    {
     }
 }

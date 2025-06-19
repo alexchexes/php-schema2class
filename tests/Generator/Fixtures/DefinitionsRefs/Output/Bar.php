@@ -26,13 +26,6 @@ class Bar
     private ?string $a = null;
 
     /**
-     *
-     */
-    public function __construct()
-    {
-    }
-
-    /**
      * @return string|null
      */
     public function getA() : ?string
@@ -128,9 +121,5 @@ class Bar
         }
 
         return $validator->isValid();
-    }
-
-    public function __clone()
-    {
     }
 }

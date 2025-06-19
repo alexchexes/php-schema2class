@@ -26,13 +26,6 @@ class Name
     private ?string $first = null;
 
     /**
-     *
-     */
-    public function __construct()
-    {
-    }
-
-    /**
      * @return string|null
      */
     public function getFirst() : ?string
@@ -128,9 +121,5 @@ class Name
         }
 
         return $validator->isValid();
-    }
-
-    public function __clone()
-    {
     }
 }

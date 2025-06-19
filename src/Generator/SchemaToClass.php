@@ -155,6 +155,7 @@ class SchemaToClass
             $codeGenerator->generateValidateMethod(),
             $codeGenerator->generateCloneMethod($propertiesFromSchema),
         ];
+        $methods = array_values(array_filter($methods));
 
         $cls = new ClassGenerator(
             $req->getTargetClass(),

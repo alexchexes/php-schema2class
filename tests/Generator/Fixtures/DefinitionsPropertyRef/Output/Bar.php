@@ -36,13 +36,6 @@ class Bar
     private ?Foo $a = null;
 
     /**
-     *
-     */
-    public function __construct()
-    {
-    }
-
-    /**
      * @return Foo|null
      */
     public function getA() : ?Foo
@@ -132,9 +125,5 @@ class Bar
         }
 
         return $validator->isValid();
-    }
-
-    public function __clone()
-    {
     }
 }

@@ -31,13 +31,6 @@ class Foo
     private ?array $foo = null;
 
     /**
-     *
-     */
-    public function __construct()
-    {
-    }
-
-    /**
      * @return Helmich\Schema2Class\Example\CustomerAddress[]|null
      */
     public function getFoo() : ?array
@@ -133,9 +126,5 @@ class Foo
         }
 
         return $validator->isValid();
-    }
-
-    public function __clone()
-    {
     }
 }
