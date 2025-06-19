@@ -320,9 +320,5 @@ before writing new ones.
 
         return $validator->isValid();
     }
-
-    public function __clone()
-    {
-    }
 }
 

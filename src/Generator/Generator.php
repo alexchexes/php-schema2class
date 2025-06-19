@@ -272,7 +272,7 @@ class Generator
 
     /**
      * @param PropertyCollection $properties
-     * @return MethodGenerator
+     * @return ?MethodGenerator
      */
     public function generateCloneMethod(PropertyCollection $properties): ?MethodGenerator
     {

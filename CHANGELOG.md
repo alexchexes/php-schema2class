@@ -34,6 +34,7 @@ Now it:
 - Omits the default `null` value for properties listed in the `required` schema block.
 - Improves type hints and PHPDoc type generation for complex types like unions, nested arrays, etc.
 - Adds a guard against passing anything other than an array/object to `buildFromInput`, building multi-line validation error messages.
+- Skips emitting empty `__construct` or `__clone` methods.
 
 ### Older PHP version support:
 

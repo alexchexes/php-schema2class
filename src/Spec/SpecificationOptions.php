@@ -168,13 +168,6 @@ handled like in earlier PHP versions.
     private bool $noEnums = false;
 
     /**
-     *
-     */
-    public function __construct()
-    {
-    }
-
-    /**
      * @return bool
      */
     public function getDisableStrictTypes() : bool
