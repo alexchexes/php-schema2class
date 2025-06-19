@@ -61,15 +61,7 @@ class Schema2Class
             $opts = $opts->withTargetPHPVersion($v);
         }
 
-        $tpv = $opts->getTargetPHPVersion();
-
-        if ($tpv === 5 || $tpv === '5') {
-            $tpv = "5.6";
-        } elseif ($tpv === 7 || $tpv === '7') {
-            $tpv = "7.4";
-        } elseif ($tpv === 8 || $tpv === '8') {
-            $tpv = "8.4";
-        }
+        $tpv = GeneratorRequest::normalizeTargetVersion($opts->getTargetPHPVersion());
 
         $opts = $opts->withTargetPHPVersion($tpv);
 
@@ -138,15 +130,7 @@ class Schema2Class
             "using target namespace <comment>{$targetNamespace}</comment> in directory <comment>{$targetDirectory}</comment>"
         );
 
-        $tpv = $options->getTargetPHPVersion();
-
-        if ($tpv === 5 || $tpv === '5') {
-            $tpv = "5.6";
-        } elseif ($tpv === 7 || $tpv === '7') {
-            $tpv = "7.4";
-        } elseif ($tpv === 8 || $tpv === '8') {
-            $tpv = "8.4";
-        }
+        $tpv = GeneratorRequest::normalizeTargetVersion($options->getTargetPHPVersion());
         
         $options = $options->withTargetPHPVersion($tpv);
 

@@ -36,7 +36,7 @@ Now it:
 - Adds a guard against passing anything other than an array/object to `buildFromInput`, building multi-line validation error messages.
 - Skips emitting empty `__construct` or `__clone` methods.
 
-### Older PHP version support:
+### Better support for older PHP versions:
 
 - The generator no longer refuses to generate if the schema has enum types and the target PHP version is less than 8.1.
 
@@ -61,4 +61,8 @@ Now it:
 
 ### Breaking changes?
 
-- Essentially, the public API has only been extended, not changed, so existing functionality should continue to work as expected. However, the generated class code may differ in some aspects due to improved generation logic, so it's recommended to review any changes carefully.
+- Essentially, the main public API (spec-files and CLI options handling) has only been extended, not changed, so existing functionality in a simple case should continue to work as expected.
+
+However, the generated class code may differ in some aspects due to improved generation logic, so it's recommended to review any changes carefully.
+
+Additionally, the internals have changed drastically, so if you run custom hooks or other complex extensions, you may need some adjustements.

@@ -53,6 +53,20 @@ class GeneratorRequestTest extends TestCase
 
     }
 
+    #[TestDox("target PHP version \"7\" satisfies isAtLeastPHP('7.4') check")]
+    public function testTargetPhp7SatisfiesIsAtLeast7_4()
+    {
+        $req = $this->request->withPHPVersion('7');
+        assertTrue($req->isAtLeastPHP('7.4'));
+    }
+
+    #[TestDox("target PHP version \"8\" satisfies isAtLeastPHP('8.4') check")]
+    public function testTargetPhp8SatisfiesIsAtLeast8_4()
+    {
+        $req = $this->request->withPHPVersion('8');
+        assertTrue($req->isAtLeastPHP('8.4'));
+    }
+
     public function testGetTargetNamespace()
     {
         assertSame(self::TARGET_NAMESPACE, $this->request->getTargetNamespace());

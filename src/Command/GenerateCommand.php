@@ -97,16 +97,13 @@ class GenerateCommand extends Command
 
         $spec = new ValidatedSpecificationFilesItem($targetNamespace, $class, $targetDirectory, $cleanTarget);
 
-        if ($targetPHPVersion === '5') {
-            $targetPHPVersion = "5.6";
-        } elseif ($targetPHPVersion === '7') {
-            $targetPHPVersion = "7.4";
-        } elseif ($targetPHPVersion === '8' || !$targetPHPVersion) {
-            $targetPHPVersion = "8.4";
+        if (!$targetPHPVersion) {
+            $targetPHPVersion = GeneratorRequest::DEFAULT_PHP8_VERSION;
+        } else {
+            $targetPHPVersion = GeneratorRequest::normalizeTargetVersion($targetPHPVersion);
         }
 
-        $opts = (new SpecificationOptions())
-            ->withTargetPHPVersion($targetPHPVersion);
+        $opts = (new SpecificationOptions())->withTargetPHPVersion($targetPHPVersion);
 
         $output->writeln("target PHP version: <comment>{$opts->getTargetPHPVersion()}</comment>");
 

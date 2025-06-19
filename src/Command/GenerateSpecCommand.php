@@ -67,16 +67,8 @@ class GenerateSpecCommand extends Command
         if ($v = $specification->getTargetPHPVersion()) {
             $opts = $opts->withTargetPHPVersion($v);
         }
-        $tpv = $opts->getTargetPHPVersion();
-        
-        if ($tpv === 5 || $tpv === '5') {
-            $tpv = "5.6";
-        } elseif ($tpv === 7 || $tpv === '7') {
-            $tpv = "7.4";
-        } elseif ($tpv === 8 || $tpv === '8') {
-            $tpv = "8.4";
-        }
 
+        $tpv = GeneratorRequest::normalizeTargetVersion($opts->getTargetPHPVersion());
         $opts = $opts->withTargetPHPVersion($tpv);
 
         $output->writeln("target PHP version <comment>$tpv</comment>");

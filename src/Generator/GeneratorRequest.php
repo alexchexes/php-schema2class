@@ -16,6 +16,11 @@ use Laminas\Code\Generator\PropertyGenerator;
 class GeneratorRequest
 {
     use GeneratorHookRunner;
+
+    const DEFAULT_PHP5_VERSION = '5.6';
+    const DEFAULT_PHP7_VERSION = '7.4';
+    const DEFAULT_PHP8_VERSION = '8.4';
+
     private array $schema;
     /** @var array<string,mixed>|null Root schema’s definitions, if any */
     private ?array $rootDefinitions = null;
@@ -26,9 +31,23 @@ class GeneratorRequest
     /** @var array<class-string, ReferenceLookup> */
     private array $referenceLookup = [];
 
+    public static function normalizeTargetVersion(int|string $version): string|int
+    {
+        return match ($version) {
+            5, '5' => self::DEFAULT_PHP5_VERSION,
+            7, '7' => self::DEFAULT_PHP7_VERSION,
+            8, '8' => self::DEFAULT_PHP8_VERSION,
+            default => $version,
+        };
+    }
+
     public function __construct(array $schema, ValidatedSpecificationFilesItem $spec, SpecificationOptions $opts)
     {
-        $opts = $opts->withTargetPHPVersion(self::semversifyVersionNumber($opts->getTargetPHPVersion()));
+        $opts = $opts->withTargetPHPVersion(
+            self::semversifyVersionNumber(
+                self::normalizeTargetVersion($opts->getTargetPHPVersion())
+            )
+        );
 
         $this->schema = $schema;
         $this->spec   = $spec;
@@ -56,18 +75,17 @@ class GeneratorRequest
         return $this->rootDefinitions;
     }
 
-
     private static function semversifyVersionNumber(string|int $versionNumber): string
     {
         if (is_int($versionNumber)) {
             return $versionNumber . ".0.0";
         }
 
-        if (substr_count($versionNumber, '.') === 1) {
-            return $versionNumber . ".0";
-        }
-
-        return $versionNumber;
+        return match (substr_count($versionNumber, '.')) {
+            0 => $versionNumber . ".0.0",
+            1 => $versionNumber . ".0",
+            default => $versionNumber
+        };
     }
 
     public function withReferenceLookup(ReferenceLookup $referenceLookup): self
@@ -148,7 +166,11 @@ class GeneratorRequest
     public function withPHPVersion(string $targetPHPVersion): self
     {
         $clone       = clone $this;
-        $clone->opts = $this->opts->withTargetPHPVersion(self::semversifyVersionNumber($targetPHPVersion));
+        $clone->opts = $this->opts->withTargetPHPVersion(
+            self::semversifyVersionNumber(
+                self::normalizeTargetVersion($targetPHPVersion)
+            )
+        );
 
         return $clone;
     }
