@@ -39,13 +39,6 @@ class Foo
     private int $skip = 0;
 
     /**
-     *
-     */
-    public function __construct()
-    {
-    }
-
-    /**
      * @return int
      */
     public function getLimit() : int
@@ -183,9 +176,5 @@ class Foo
         }
 
         return $validator->isValid();
-    }
-
-    public function __clone()
-    {
     }
 }

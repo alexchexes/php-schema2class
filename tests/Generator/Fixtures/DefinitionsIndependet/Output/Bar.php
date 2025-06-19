@@ -26,13 +26,6 @@ class Bar
     private ?int $b = null;
 
     /**
-     *
-     */
-    public function __construct()
-    {
-    }
-
-    /**
      * @return int|null
      */
     public function getB() : ?int
@@ -128,9 +121,5 @@ class Bar
         }
 
         return $validator->isValid();
-    }
-
-    public function __clone()
-    {
     }
 }

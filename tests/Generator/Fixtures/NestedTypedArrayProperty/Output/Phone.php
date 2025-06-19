@@ -26,13 +26,6 @@ class Phone
     private ?string $foo = null;
 
     /**
-     *
-     */
-    public function __construct()
-    {
-    }
-
-    /**
      * @return string|null
      */
     public function getFoo() : ?string
@@ -128,9 +121,5 @@ class Phone
         }
 
         return $validator->isValid();
-    }
-
-    public function __clone()
-    {
     }
 }

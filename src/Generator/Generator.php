@@ -272,9 +272,9 @@ class Generator
 
     /**
      * @param PropertyCollection $properties
-     * @return MethodGenerator
+     * @return ?MethodGenerator
      */
-    public function generateCloneMethod(PropertyCollection $properties): MethodGenerator
+    public function generateCloneMethod(PropertyCollection $properties): ?MethodGenerator
     {
         $clones = [];
 
@@ -283,6 +283,10 @@ class Generator
             if ($c !== null) {
                 $clones[] = $c;
             }
+        }
+
+        if ($clones === []) {
+            return null;
         }
 
         return new MethodGenerator(
@@ -482,7 +486,7 @@ return \$clone;",
         return $unsetMethod;
     }
 
-    public function generateConstructor(PropertyCollection $properties): MethodGenerator
+    public function generateConstructor(PropertyCollection $properties): ?MethodGenerator
     {
         $params      = [];
         $tags        = [];
@@ -503,6 +507,10 @@ return \$clone;",
             );
 
             $assignments[] = "\$this->{$requiredProperty->name()} = \${$paramName};";
+        }
+
+        if ($assignments === []) {
+            return null;
         }
 
         $docBlock = new DocBlockGenerator("", "", $tags);

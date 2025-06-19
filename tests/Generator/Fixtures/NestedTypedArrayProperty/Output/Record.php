@@ -111,13 +111,6 @@ class Record
     private ?array $dataArrayNestedAnyOf = null;
 
     /**
-     *
-     */
-    public function __construct()
-    {
-    }
-
-    /**
      * @return Phone[]|null
      */
     public function getDataArray() : ?array

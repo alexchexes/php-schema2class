@@ -41,13 +41,6 @@ class Record
     private ?array $dataArray = null;
 
     /**
-     *
-     */
-    public function __construct()
-    {
-    }
-
-    /**
      * @return Phone[]|null
      */
     public function getDataArray() : ?array
@@ -143,9 +136,5 @@ class Record
         }
 
         return $validator->isValid();
-    }
-
-    public function __clone()
-    {
     }
 }

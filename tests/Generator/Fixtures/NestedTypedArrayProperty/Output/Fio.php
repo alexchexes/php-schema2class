@@ -29,13 +29,6 @@ class Fio
     private ?string $bar = null;
 
     /**
-     *
-     */
-    public function __construct()
-    {
-    }
-
-    /**
      * @return string|null
      */
     public function getBar() : ?string
@@ -131,9 +124,5 @@ class Fio
         }
 
         return $validator->isValid();
-    }
-
-    public function __clone()
-    {
     }
 }
