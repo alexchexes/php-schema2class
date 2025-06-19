@@ -100,7 +100,7 @@ $schema = [
     ],
 ];
 
-$generator->generateFromSchema($schema, 'MyClass', 'MyDir', 'MyNamespace');
+$generator->generateFromSchema($schema, 'MyDir', 'MyClass', 'MyNamespace');
 ```
 
 See also the [advanced programmatic usage](#advanced-programmatic-usage) section.

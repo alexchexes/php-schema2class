@@ -79,9 +79,9 @@ class Schema2Class
             }
 
             $targetNamespace = $this->inferNamespace(
-                $output,
-                $file->getTargetNamespace(),
                 $targetDirectory,
+                $file->getTargetNamespace(),
+                $output,
             );
             $file = $file->withTargetNamespace($targetNamespace);
 
@@ -115,17 +115,21 @@ class Schema2Class
      */
     public function generateFromSchema(
         array $schema,
-        string $className,
         string $targetDirectory,
+        string $className,
         ?string $targetNamespace = null,
+        bool $cleanTargetDirectory = false,
         ?SpecificationOptions $options = null,
         ?OutputInterface $output = null,
-        bool $cleanTargetDirectory = false,
     ): void {
         $output = $output ?? new NullOutput();
         $options = $options ?? new SpecificationOptions();
 
-        $targetNamespace = $this->inferNamespace($output, $targetNamespace, $targetDirectory);
+        $targetNamespace = $this->inferNamespace(
+            $targetDirectory,
+            $targetNamespace,
+            $output,
+        );
         $output->writeln(
             "using target namespace <comment>{$targetNamespace}</comment> in directory <comment>{$targetDirectory}</comment>"
         );

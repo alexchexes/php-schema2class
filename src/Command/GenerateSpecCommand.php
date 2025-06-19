@@ -87,9 +87,9 @@ class GenerateSpecCommand extends Command
             }
 
             $targetNamespace = $this->inferNamespace(
-                $output,
-                $file->getTargetNamespace(),
                 $targetDirectory,
+                $file->getTargetNamespace(),
+                $output,
             );
             $file = $file->withTargetNamespace($targetNamespace);
 

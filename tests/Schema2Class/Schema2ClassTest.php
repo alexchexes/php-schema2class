@@ -22,7 +22,7 @@ class Schema2ClassTest extends TestCase
         mkdir($dir);
 
         $generator = new Schema2Class();
-        $generator->generateFromSchema($schema, 'Person', $dir, 'My\Ns');
+        $generator->generateFromSchema($schema, $dir, 'Person', 'My\Ns');
 
         $file = $dir . '/Person.php';
         $this->assertFileExists($file);
@@ -78,7 +78,7 @@ class Schema2ClassTest extends TestCase
         file_put_contents($dir . '/Old.php', '<?php');
 
         $generator = new Schema2Class();
-        $generator->generateFromSchema($schema, 'Person', $dir, 'My\\Ns', null, null, true);
+        $generator->generateFromSchema($schema, $dir, 'Person', 'My\\Ns', true);
 
         $this->assertFileDoesNotExist($dir . '/Old.php');
 

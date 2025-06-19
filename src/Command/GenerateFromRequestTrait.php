@@ -14,6 +14,7 @@ use Helmich\Schema2Class\Generator\Property\NestedObjectProperty;
 use Helmich\Schema2Class\Writer\DebugWriter;
 use Helmich\Schema2Class\Writer\FileWriter;
 use Helmich\Schema2Class\Writer\WriterInterface;
+use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -58,14 +59,15 @@ trait GenerateFromRequestTrait
      * Infer the target namespace or fall back to a default class name.
      */
     private function inferNamespace(
-        OutputInterface $output,
-        ?string $givenNamespace,
         string $targetDir,
+        ?string $givenNamespace = null,
+        ?OutputInterface $output = null,
     ): string {
         if ($givenNamespace) {
             return $givenNamespace;
         }
 
+        $output = $output ?? new NullOutput();
         $output->writeln('target namespace not given. inferring from composer.json...');
 
         try {

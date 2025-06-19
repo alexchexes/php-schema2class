@@ -85,7 +85,7 @@ class GenerateCommand extends Command
         $output->writeln("loading schema from <comment>$schemaFile</comment>");
         $schema = $this->loader->loadSchema($schemaFile);
 
-        $targetNamespace = $this->inferNamespace($output, $targetNamespace, $targetDirectory);
+        $targetNamespace = $this->inferNamespace($targetDirectory, $targetNamespace, $output);
 
         $output->writeln("using target namespace <comment>$targetNamespace</comment> in directory <comment>$targetDirectory</comment>");
 
