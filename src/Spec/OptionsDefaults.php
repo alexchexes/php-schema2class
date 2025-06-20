@@ -13,45 +13,50 @@ final class OptionsDefaults
 {
     public static function applyDefaults(SpecificationOptions $options): SpecificationOptions
     {
-        $opts = clone $options;
+        $opts = $options->toArray();
 
-        if ($opts->getCleanTargetDirectory() === null) {
-            $opts = $opts->withCleanTargetDirectory(false);
-        }
-        if ($opts->getDisableStrictTypes() === null) {
-            $opts = $opts->withDisableStrictTypes(false);
-        }
-        if ($opts->getTreatValuesWithDefaultAsOptional() === null) {
-            $opts = $opts->withTreatValuesWithDefaultAsOptional(false);
-        }
-        if ($opts->getInlineAllofReferences() === null) {
-            $opts = $opts->withInlineAllofReferences(false);
-        }
-        if ($opts->getTargetPHPVersion() === null) {
-            $opts = $opts->withTargetPHPVersion(GeneratorRequest::DEFAULT_PHP8_VERSION);
-        }
-        if ($opts->getNewValidatorClassExpr() === null) {
-            $opts = $opts->withNewValidatorClassExpr('new \\JsonSchema\\Validator()');
-        }
-        if ($opts->getPreservePropertyNames() === null) {
-            $opts = $opts->withPreservePropertyNames(false);
-        }
-        if ($opts->getNoGetters() === null) {
-            $opts = $opts->withNoGetters(false);
-        }
-        if ($opts->getNoSetters() === null) {
-            $opts = $opts->withNoSetters(false);
-        }
-        if ($opts->getNoDescriptionsInSchema() === null) {
-            $opts = $opts->withNoDescriptionsInSchema(false);
-        }
-        if ($opts->getSingleLineSchema() === null) {
-            $opts = $opts->withSingleLineSchema(false);
-        }
-        if ($opts->getNoEnums() === null) {
-            $opts = $opts->withNoEnums(false);
+        $defaults = [
+            'cleanTargetDirectory'              => false,
+            'disableStrictTypes'                => false,
+            'treatValuesWithDefaultAsOptional'  => false,
+            'inlineAllofReferences'             => false,
+            'targetPHPVersion'                  => GeneratorRequest::DEFAULT_PHP8_VERSION,
+            'newValidatorClassExpr'             => 'new \JsonSchema\Validator()',
+            'preservePropertyNames'             => false,
+            'noGetters'                         => false,
+            'noSetters'                         => false,
+            'noDescriptionsInSchema'            => false,
+            'singleLineSchema'                  => false,
+            'noEnums'                           => false,
+        ];
+
+        $all_keys = array_unique(array_merge(array_keys($opts), array_keys($defaults)));
+
+        foreach ($all_keys as $key) {
+            if (!isset($opts[$key])) {
+                $opts[$key] = $defaults[$key];
+            }
         }
 
-        return $opts;
+        return SpecificationOptions::buildFromInput($opts);
+    }
+
+    /**
+     * Merge global and file-specific options, with file options taking precedence.
+     */
+    /**
+     * @param SpecificationOptions $base
+     * @param object|null $override SpecificationOptions
+     */
+    public static function mergeOptions(SpecificationOptions $base, object|null $override): SpecificationOptions
+    {
+        if ($override === null) {
+            return self::applyDefaults(clone $base);
+        }
+
+        $merged = array_merge($base->toArray(), $override->toArray());
+        $opts = SpecificationOptions::buildFromInput($merged, validate: false);
+
+        return self::applyDefaults($opts);
     }
 }

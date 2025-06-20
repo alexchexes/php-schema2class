@@ -72,7 +72,7 @@ class GenerateSpecCommand extends Command
         foreach ($specification->getFiles() as $file) {
             $schemaFile = $file->getInput();
 
-            $opts = Schema2Class::mergeOptions($globalOpts, $file->getOptions());
+            $opts = OptionsDefaults::mergeOptions($globalOpts, $file->getOptions());
             $tpv  = GeneratorRequest::normalizeTargetVersion($opts->getTargetPHPVersion());
             $opts = $opts->withTargetPHPVersion($tpv);
 

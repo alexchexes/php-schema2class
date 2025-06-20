@@ -63,7 +63,7 @@ class Schema2Class
         foreach ($config->getFiles() as $file) {
             $schemaFile = $file->getInput();
 
-            $opts = self::mergeOptions($globalOpts, $file->getOptions());
+            $opts = OptionsDefaults::mergeOptions($globalOpts, $file->getOptions());
 
             $tpv = GeneratorRequest::normalizeTargetVersion($opts->getTargetPHPVersion());
             $opts = $opts->withTargetPHPVersion($tpv);
@@ -151,24 +151,5 @@ class Schema2Class
         $req  = new GeneratorRequest($schema, $spec, $options);
 
         $this->generateFromRequest($req, $output, false);
-    }
-
-    /**
-     * Merge global and file-specific options, with file options taking precedence.
-     */
-    /**
-     * @param SpecificationOptions $base
-     * @param object|null $override SpecificationOptions
-     */
-    public static function mergeOptions(SpecificationOptions $base, object|null $override): SpecificationOptions
-    {
-        if ($override === null) {
-            return OptionsDefaults::applyDefaults(clone $base);
-        }
-
-        $merged = array_merge($base->toArray(), $override->toArray());
-        $opts = SpecificationOptions::buildFromInput($merged, validate: false);
-
-        return OptionsDefaults::applyDefaults($opts);
     }
 }
