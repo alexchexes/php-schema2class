@@ -153,7 +153,7 @@ class Schema2Class
      */
     /**
      * @param SpecificationOptions $base
-     * @param object|null $override SpecificationOptions or SpecificationFilesItemOptions
+     * @param object|null $override SpecificationOptions
      */
     public static function mergeOptions(SpecificationOptions $base, object|null $override): SpecificationOptions
     {

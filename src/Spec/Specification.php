@@ -11,221 +11,7 @@ class Specification
      *
      * @var array
      */
-    private static array $schema = [
-        'required' => [
-            'files',
-        ],
-        'additionalProperties' => false,
-        'properties' => [
-            'files' => [
-                'type' => 'array',
-                'items' => [
-                    'required' => [
-                        'input',
-                    ],
-                    'additionalProperties' => false,
-                    'properties' => [
-                        'input' => [
-                            'type' => 'string',
-                        ],
-                        'className' => [
-                            'type' => 'string',
-                        ],
-                        'options' => [
-                            'additionalProperties' => false,
-                            'properties' => [
-                                'targetDirectory' => [
-                                    'type' => 'string',
-                                ],
-                                'targetNamespace' => [
-                                    'type' => 'string',
-                                ],
-                                'cleanTargetDirectory' => [
-                                    'type' => 'boolean',
-                                    'description' => 'When true, the generator removes all files from the target directory
-before writing new ones.
-',
-                                    'default' => false,
-                                ],
-                                'disableStrictTypes' => [
-                                    'type' => 'boolean',
-                                    'default' => false,
-                                ],
-                                'treatValuesWithDefaultAsOptional' => [
-                                    'type' => 'boolean',
-                                    'default' => false,
-                                ],
-                                'inlineAllofReferences' => [
-                                    'type' => 'boolean',
-                                    'default' => false,
-                                ],
-                                'targetPHPVersion' => [
-                                    'oneOf' => [
-                                        [
-                                            'type' => 'integer',
-                                            'enum' => [
-                                                5,
-                                                7,
-                                                8,
-                                            ],
-                                        ],
-                                        [
-                                            'type' => 'string',
-                                        ],
-                                    ],
-                                    'default' => '8.4',
-                                ],
-                                'newValidatorClassExpr' => [
-                                    'type' => 'string',
-                                    'description' => 'The expression to use to create a new instance of the validator class.
-This is useful if you want to use a custom validator class.
-',
-                                    'default' => 'new \\JsonSchema\\Validator()',
-                                ],
-                                'preservePropertyNames' => [
-                                    'type' => 'boolean',
-                                    'description' => 'When true, properties names are not converted to camelCase.
-',
-                                    'default' => false,
-                                ],
-                                'noGetters' => [
-                                    'type' => 'boolean',
-                                    'description' => 'When true, no getters are created and all properties are \'public\'.
-',
-                                    'default' => false,
-                                ],
-                                'noSetters' => [
-                                    'type' => 'boolean',
-                                    'description' => 'When true, no withX() / withoutX() setters/unsetters are created.
-',
-                                    'default' => false,
-                                ],
-                                'noDescriptionsInSchema' => [
-                                    'type' => 'boolean',
-                                    'description' => 'When true, the schema used for validation will not include any description fields
-',
-                                    'default' => false,
-                                ],
-                                'singleLineSchema' => [
-                                    'type' => 'boolean',
-                                    'description' => 'When true, the whole schema used for validation will on a single line in the class property
-',
-                                    'default' => false,
-                                ],
-                                'noEnums' => [
-                                    'type' => 'boolean',
-                                    'description' => 'Disable generating PHP enum classes even on PHP ≥ 8.1. Enum values will be
-handled like in earlier PHP versions.
-',
-                                    'default' => false,
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
-            ],
-            'options' => [
-                '$ref' => '#/definitions/SpecificationOptions',
-            ],
-        ],
-        'definitions' => [
-            'SpecificationOptions' => [
-                'additionalProperties' => false,
-                'properties' => [
-                    'targetDirectory' => [
-                        'type' => 'string',
-                    ],
-                    'targetNamespace' => [
-                        'type' => 'string',
-                    ],
-                    'cleanTargetDirectory' => [
-                        'type' => 'boolean',
-                        'description' => 'When true, the generator removes all files from the target directory
-before writing new ones.
-',
-                        'default' => false,
-                    ],
-                    'disableStrictTypes' => [
-                        'type' => 'boolean',
-                        'default' => false,
-                    ],
-                    'treatValuesWithDefaultAsOptional' => [
-                        'type' => 'boolean',
-                        'default' => false,
-                    ],
-                    'inlineAllofReferences' => [
-                        'type' => 'boolean',
-                        'default' => false,
-                    ],
-                    'targetPHPVersion' => [
-                        'oneOf' => [
-                            [
-                                'type' => 'integer',
-                                'enum' => [
-                                    5,
-                                    7,
-                                    8,
-                                ],
-                            ],
-                            [
-                                'type' => 'string',
-                            ],
-                        ],
-                        'default' => '8.4',
-                    ],
-                    'newValidatorClassExpr' => [
-                        'type' => 'string',
-                        'description' => 'The expression to use to create a new instance of the validator class.
-This is useful if you want to use a custom validator class.
-',
-                        'default' => 'new \\JsonSchema\\Validator()',
-                    ],
-                    'preservePropertyNames' => [
-                        'type' => 'boolean',
-                        'description' => 'When true, properties names are not converted to camelCase.
-',
-                        'default' => false,
-                    ],
-                    'noGetters' => [
-                        'type' => 'boolean',
-                        'description' => 'When true, no getters are created and all properties are \'public\'.
-',
-                        'default' => false,
-                    ],
-                    'noSetters' => [
-                        'type' => 'boolean',
-                        'description' => 'When true, no withX() / withoutX() setters/unsetters are created.
-',
-                        'default' => false,
-                    ],
-                    'noDescriptionsInSchema' => [
-                        'type' => 'boolean',
-                        'description' => 'When true, the schema used for validation will not include any description fields
-',
-                        'default' => false,
-                    ],
-                    'singleLineSchema' => [
-                        'type' => 'boolean',
-                        'description' => 'When true, the whole schema used for validation will on a single line in the class property
-',
-                        'default' => false,
-                    ],
-                    'noEnums' => [
-                        'type' => 'boolean',
-                        'description' => 'Disable generating PHP enum classes even on PHP ≥ 8.1. Enum values will be
-handled like in earlier PHP versions.
-',
-                        'default' => false,
-                    ],
-                ],
-            ],
-        ],
-    ];
-
-    /**
-     * @var SpecificationFilesItem[]
-     */
-    private array $files;
+    private static array $schema = ['properties' => ['options' => ['$ref' => '#/definitions/SpecificationOptions'], 'files' => ['type' => 'array', 'items' => ['properties' => ['input' => ['type' => 'string'], 'className' => ['type' => 'string'], 'options' => ['$ref' => '#/definitions/SpecificationOptions']], 'additionalProperties' => false, 'required' => ['input']]]], 'additionalProperties' => false, 'required' => ['files'], 'definitions' => ['SpecificationOptions' => ['additionalProperties' => false, 'properties' => ['targetDirectory' => ['type' => 'string'], 'targetNamespace' => ['type' => 'string'], 'cleanTargetDirectory' => ['type' => 'boolean', 'default' => false], 'disableStrictTypes' => ['type' => 'boolean', 'default' => false], 'treatValuesWithDefaultAsOptional' => ['type' => 'boolean', 'default' => false], 'inlineAllofReferences' => ['type' => 'boolean', 'default' => false], 'targetPHPVersion' => ['oneOf' => [['type' => 'integer', 'enum' => [5, 7, 8]], ['type' => 'string']], 'default' => '8.4'], 'newValidatorClassExpr' => ['type' => 'string', 'default' => 'new \\JsonSchema\\Validator()'], 'preservePropertyNames' => ['type' => 'boolean', 'default' => false], 'noGetters' => ['type' => 'boolean', 'default' => false], 'noSetters' => ['type' => 'boolean', 'default' => false], 'noDescriptionsInSchema' => ['type' => 'boolean', 'default' => false], 'singleLineSchema' => ['type' => 'boolean', 'default' => false], 'noEnums' => ['type' => 'boolean', 'default' => false]]]]];
 
     /**
      * @var SpecificationOptions|null
@@ -233,19 +19,16 @@ handled like in earlier PHP versions.
     private ?SpecificationOptions $options = null;
 
     /**
+     * @var SpecificationFilesItem[]
+     */
+    private array $files;
+
+    /**
      * @param SpecificationFilesItem[] $files
      */
     public function __construct(array $files)
     {
         $this->files = $files;
-    }
-
-    /**
-     * @return SpecificationFilesItem[]
-     */
-    public function getFiles() : array
-    {
-        return $this->files;
     }
 
     /**
@@ -257,21 +40,11 @@ handled like in earlier PHP versions.
     }
 
     /**
-     * @param SpecificationFilesItem[] $files
-     * @return self
+     * @return SpecificationFilesItem[]
      */
-    public function withFiles(array $files) : self
+    public function getFiles() : array
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($files, self::$schema['properties']['files']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-        }
-
-        $clone = clone $this;
-        $clone->files = $files;
-
-        return $clone;
+        return $this->files;
     }
 
     /**
@@ -298,6 +71,24 @@ handled like in earlier PHP versions.
     }
 
     /**
+     * @param SpecificationFilesItem[] $files
+     * @return self
+     */
+    public function withFiles(array $files) : self
+    {
+        $validator = new \JsonSchema\Validator();
+        $validator->validate($files, self::$schema['properties']['files']);
+        if (!$validator->isValid()) {
+            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        }
+
+        $clone = clone $this;
+        $clone->files = $files;
+
+        return $clone;
+    }
+
+    /**
      * Builds a new instance from an input array
      *
      * @param array|object $input Input data
@@ -312,8 +103,8 @@ handled like in earlier PHP versions.
             static::validateInput($input);
         }
 
-        $files = array_map(fn (array|object $i): SpecificationFilesItem => SpecificationFilesItem::buildFromInput($i, validate: $validate), $input->{'files'});
         $options = isset($input->{'options'}) ? SpecificationOptions::buildFromInput($input->{'options'}, $validate) : null;
+        $files = array_map(fn (array|object $i): SpecificationFilesItem => SpecificationFilesItem::buildFromInput($i, validate: $validate), $input->{'files'});
 
         $obj = new self($files);
         $obj->options = $options;
@@ -328,10 +119,10 @@ handled like in earlier PHP versions.
     public function toArray() : array
     {
         $output = [];
-        $output['files'] = array_map(fn (SpecificationFilesItem $i) => $i->toArray(), $this->files);
         if (isset($this->options)) {
             $output['options'] = $this->options->toArray();
         }
+        $output['files'] = array_map(fn (SpecificationFilesItem $i) => $i->toArray(), $this->files);
 
         return $output;
     }
