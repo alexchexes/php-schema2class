@@ -117,11 +117,11 @@ Both the CLI and specification files accept the following options:
 
 | CLI option                    | Config file option                 | Description                                                                                                                                                                                          |
 | ----------------------------- | ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| _(1st argument)_              | `input` (per‑file)                 | JSON Schema file to read (`.json`, `.yml`, or `.yaml`).                                                                                                                                              |
-| _(2nd argument)_              | `targetDirectory` (per‑file)       | Directory in which the generated files will be placed.                                                                                                                                               |
-| `--clean-dir`                 | `cleanTargetDirectory` (per‑file)  | Remove all files from the target directory before writing new ones.                                                                                                                                  |
-| `--target-namespace`          | `targetNamespace` (per‑file)       | Namespace to use for every generated class (automatically determined from `composer.json` if omitted).                                                                                               |
-| `--class`, `-c`               | `className` (per‑file)             | Class name to generate. Use this only when generating a single class from a schema that contains one top‑level object (not from a schema with multiple `definitions`).                               |
+| _(1st argument)_              | `input`                            | JSON Schema file to read (`.json`, `.yml`, or `.yaml`).                                                                                                                                              |
+| _(2nd argument)_              | `targetDirectory`                  | Directory in which the generated files will be placed.                                                                                                                                               |
+| `--clean-dir`                 | `cleanTargetDirectory`             | Remove all files from the target directory before writing new ones.                                                                                                                                  |
+| `--target-namespace`          | `targetNamespace`                  | Namespace to use for every generated class (automatically determined from `composer.json` if omitted).                                                                                               |
+| `--class`, `-c`               | `className`                        | Class name to generate. Use this only when generating a single class from a schema that contains one top‑level object (not from a schema with multiple `definitions`).                               |
 | `--target-php`, `-p`          | `targetPHPVersion`                 | PHP version **with which** the generated code must be compatible. Numeric value without exact subversion like `5`, `7` or `8` resolves to the latest (`5.6`, `7.4`, `8.x`), not to `5.0`/`7.0`/`8.0` |
 | `--disable-strict-types`      | `disableStrictTypes`               | Omit the `strict_types` declaration.                                                                                                                                                                 |
 | `--treat-default-as-optional` | `treatValuesWithDefaultAsOptional` | Treat properties that have a default value as optional.                                                                                                                                              |
@@ -134,6 +134,9 @@ Both the CLI and specification files accept the following options:
 | `--single-line-schema`        | `singleLineSchema`                 | Store the validation schema on a single line in the generated class to make the `.php` file smaller.                                                                                                 |
 | `--no-enums`                  | `noEnums`                          | Disable generation of PHP `enum` classes even when targeting PHP 8.1 or newer.                                                                                                                       |
 | `--dry-run`                   | –                                  | Print the output to the console instead of writing files.                                                                                                                                            |
+
+Every option except `input` and `className` can appear both at the top level of the config file and within each item in the `files` array to override the default settings.  
+See the [example config file](examples/basic/basic-example-config.yaml).
 
 ## Example workflow
 
