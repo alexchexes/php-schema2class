@@ -1,5 +1,8 @@
-targetPHPVersion: "8.2"
-files:
-- input: src/Spec/Spec.yaml
-  className: Specification
+options:
+  targetPHPVersion: "8.2"
   targetDirectory: src/Spec
+  singleLineSchema: true
+  noDescriptionsInSchema: true
+files:
+  - input: src/Spec/Spec.yaml
+    className: Specification

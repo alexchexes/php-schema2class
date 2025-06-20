@@ -11,34 +11,7 @@ class SpecificationFilesItem
      *
      * @var array
      */
-    private static array $schema = [
-        'required' => [
-            'input',
-            'targetDirectory',
-        ],
-        'additionalProperties' => false,
-        'properties' => [
-            'input' => [
-                'type' => 'string',
-            ],
-            'className' => [
-                'type' => 'string',
-            ],
-            'targetDirectory' => [
-                'type' => 'string',
-            ],
-            'targetNamespace' => [
-                'type' => 'string',
-            ],
-            'cleanTargetDirectory' => [
-                'type' => 'boolean',
-                'description' => 'When true, the generator removes all files from the target directory
-before writing new ones.
-',
-                'default' => false,
-            ],
-        ],
-    ];
+    private static array $schema = ['properties' => ['input' => ['type' => 'string'], 'className' => ['type' => 'string'], 'options' => ['$ref' => '#/definitions/SpecificationOptions']], 'additionalProperties' => false, 'required' => ['input'], 'definitions' => ['SpecificationOptions' => ['additionalProperties' => false, 'properties' => ['targetDirectory' => ['type' => 'string'], 'targetNamespace' => ['type' => 'string'], 'cleanTargetDirectory' => ['type' => 'boolean', 'default' => false], 'disableStrictTypes' => ['type' => 'boolean', 'default' => false], 'treatValuesWithDefaultAsOptional' => ['type' => 'boolean', 'default' => false], 'inlineAllofReferences' => ['type' => 'boolean', 'default' => false], 'targetPHPVersion' => ['oneOf' => [['type' => 'integer', 'enum' => [5, 7, 8]], ['type' => 'string']], 'default' => '8.4'], 'newValidatorClassExpr' => ['type' => 'string', 'default' => 'new \\JsonSchema\\Validator()'], 'preservePropertyNames' => ['type' => 'boolean', 'default' => false], 'noGetters' => ['type' => 'boolean', 'default' => false], 'noSetters' => ['type' => 'boolean', 'default' => false], 'noDescriptionsInSchema' => ['type' => 'boolean', 'default' => false], 'singleLineSchema' => ['type' => 'boolean', 'default' => false], 'noEnums' => ['type' => 'boolean', 'default' => false]]]]];
 
     /**
      * @var string
@@ -51,32 +24,16 @@ before writing new ones.
     private ?string $className = null;
 
     /**
-     * @var string
+     * @var SpecificationOptions|null
      */
-    private string $targetDirectory;
-
-    /**
-     * @var string|null
-     */
-    private ?string $targetNamespace = null;
-
-    /**
-     * When true, the generator removes all files from the target directory
-     * before writing new ones.
-     *
-     *
-     * @var bool
-     */
-    private bool $cleanTargetDirectory = false;
+    private ?SpecificationOptions $options = null;
 
     /**
      * @param string $input
-     * @param string $targetDirectory
      */
-    public function __construct(string $input, string $targetDirectory)
+    public function __construct(string $input)
     {
         $this->input = $input;
-        $this->targetDirectory = $targetDirectory;
     }
 
     /**
@@ -96,31 +53,11 @@ before writing new ones.
     }
 
     /**
-     * @return string
+     * @return SpecificationOptions|null
      */
-    public function getTargetDirectory() : string
+    public function getOptions() : ?SpecificationOptions
     {
-        return $this->targetDirectory;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getTargetNamespace() : ?string
-    {
-        return $this->targetNamespace ?? null;
-    }
-
-    /**
-     * When true, the generator removes all files from the target directory
-     * before writing new ones.
-     *
-     *
-     * @return bool
-     */
-    public function getCleanTargetDirectory() : bool
-    {
-        return $this->cleanTargetDirectory;
+        return $this->options ?? null;
     }
 
     /**
@@ -171,37 +108,13 @@ before writing new ones.
     }
 
     /**
-     * @param string $targetDirectory
+     * @param SpecificationOptions $options
      * @return self
      */
-    public function withTargetDirectory(string $targetDirectory) : self
+    public function withOptions(SpecificationOptions $options) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($targetDirectory, self::$schema['properties']['targetDirectory']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-        }
-
         $clone = clone $this;
-        $clone->targetDirectory = $targetDirectory;
-
-        return $clone;
-    }
-
-    /**
-     * @param string $targetNamespace
-     * @return self
-     */
-    public function withTargetNamespace(string $targetNamespace) : self
-    {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($targetNamespace, self::$schema['properties']['targetNamespace']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-        }
-
-        $clone = clone $this;
-        $clone->targetNamespace = $targetNamespace;
+        $clone->options = $options;
 
         return $clone;
     }
@@ -209,39 +122,10 @@ before writing new ones.
     /**
      * @return self
      */
-    public function withoutTargetNamespace() : self
+    public function withoutOptions() : self
     {
         $clone = clone $this;
-        unset($clone->targetNamespace);
-
-        return $clone;
-    }
-
-    /**
-     * @param bool $cleanTargetDirectory
-     * @return self
-     */
-    public function withCleanTargetDirectory(bool $cleanTargetDirectory) : self
-    {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($cleanTargetDirectory, self::$schema['properties']['cleanTargetDirectory']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-        }
-
-        $clone = clone $this;
-        $clone->cleanTargetDirectory = $cleanTargetDirectory;
-
-        return $clone;
-    }
-
-    /**
-     * @return self
-     */
-    public function withoutCleanTargetDirectory() : self
-    {
-        $clone = clone $this;
-        $clone->cleanTargetDirectory = false;
+        unset($clone->options);
 
         return $clone;
     }
@@ -263,14 +147,11 @@ before writing new ones.
 
         $input = $input2->{'input'};
         $className = isset($input2->{'className'}) ? $input2->{'className'} : null;
-        $targetDirectory = $input2->{'targetDirectory'};
-        $targetNamespace = isset($input2->{'targetNamespace'}) ? $input2->{'targetNamespace'} : null;
-        $cleanTargetDirectory = isset($input2->{'cleanTargetDirectory'}) ? $input2->{'cleanTargetDirectory'} : false;
+        $options = isset($input2->{'options'}) ? SpecificationOptions::buildFromInput($input2->{'options'}, $validate) : null;
 
-        $obj = new self($input, $targetDirectory);
+        $obj = new self($input);
         $obj->className = $className;
-        $obj->targetNamespace = $targetNamespace;
-        $obj->cleanTargetDirectory = $cleanTargetDirectory;
+        $obj->options = $options;
         return $obj;
     }
 
@@ -286,12 +167,8 @@ before writing new ones.
         if (isset($this->className)) {
             $output['className'] = $this->className;
         }
-        $output['targetDirectory'] = $this->targetDirectory;
-        if (isset($this->targetNamespace)) {
-            $output['targetNamespace'] = $this->targetNamespace;
-        }
-        if (isset($this->cleanTargetDirectory)) {
-            $output['cleanTargetDirectory'] = $this->cleanTargetDirectory;
+        if (isset($this->options)) {
+            $output['options'] = $this->options->toArray();
         }
 
         return $output;

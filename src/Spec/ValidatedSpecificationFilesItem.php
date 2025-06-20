@@ -24,12 +24,16 @@ class ValidatedSpecificationFilesItem
         $this->cleanTargetDirectory = $cleanTargetDirectory;
     }
 
-    public static function fromSpecificationFilesItem(SpecificationFilesItem $input, string $fallbackNamespace): ValidatedSpecificationFilesItem {
+    public static function fromSpecificationFilesItem(
+        SpecificationFilesItem $input,
+        SpecificationOptions $options,
+        string $fallbackNamespace
+    ): ValidatedSpecificationFilesItem {
         return new ValidatedSpecificationFilesItem(
-            $input->getTargetNamespace() ?? $fallbackNamespace,
+            $options->getTargetNamespace() ?? $fallbackNamespace,
             $input->getClassName(),
-            $input->getTargetDirectory(),
-            $input->getCleanTargetDirectory(),
+            $options->getTargetDirectory() ?? '',
+            $options->getCleanTargetDirectory(),
         );
     }
 

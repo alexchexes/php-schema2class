@@ -4,14 +4,103 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Spec;
 
-class SpecificationOptions
+class SpecificationFilesItemOptions
 {
     /**
      * Schema used to validate input for creating instances of this class
      *
      * @var array
      */
-    private static array $schema = ['additionalProperties' => false, 'properties' => ['targetDirectory' => ['type' => 'string'], 'targetNamespace' => ['type' => 'string'], 'cleanTargetDirectory' => ['type' => 'boolean', 'default' => false], 'disableStrictTypes' => ['type' => 'boolean', 'default' => false], 'treatValuesWithDefaultAsOptional' => ['type' => 'boolean', 'default' => false], 'inlineAllofReferences' => ['type' => 'boolean', 'default' => false], 'targetPHPVersion' => ['oneOf' => [['type' => 'integer', 'enum' => [5, 7, 8]], ['type' => 'string']], 'default' => '8.4'], 'newValidatorClassExpr' => ['type' => 'string', 'default' => 'new \\JsonSchema\\Validator()'], 'preservePropertyNames' => ['type' => 'boolean', 'default' => false], 'noGetters' => ['type' => 'boolean', 'default' => false], 'noSetters' => ['type' => 'boolean', 'default' => false], 'noDescriptionsInSchema' => ['type' => 'boolean', 'default' => false], 'singleLineSchema' => ['type' => 'boolean', 'default' => false], 'noEnums' => ['type' => 'boolean', 'default' => false]]];
+    private static array $schema = [
+        'additionalProperties' => false,
+        'properties' => [
+            'targetDirectory' => [
+                'type' => 'string',
+            ],
+            'targetNamespace' => [
+                'type' => 'string',
+            ],
+            'cleanTargetDirectory' => [
+                'type' => 'boolean',
+                'description' => 'When true, the generator removes all files from the target directory
+before writing new ones.
+',
+                'default' => false,
+            ],
+            'disableStrictTypes' => [
+                'type' => 'boolean',
+                'default' => false,
+            ],
+            'treatValuesWithDefaultAsOptional' => [
+                'type' => 'boolean',
+                'default' => false,
+            ],
+            'inlineAllofReferences' => [
+                'type' => 'boolean',
+                'default' => false,
+            ],
+            'targetPHPVersion' => [
+                'oneOf' => [
+                    [
+                        'type' => 'integer',
+                        'enum' => [
+                            5,
+                            7,
+                            8,
+                        ],
+                    ],
+                    [
+                        'type' => 'string',
+                    ],
+                ],
+                'default' => '8.4',
+            ],
+            'newValidatorClassExpr' => [
+                'type' => 'string',
+                'description' => 'The expression to use to create a new instance of the validator class.
+This is useful if you want to use a custom validator class.
+',
+                'default' => 'new \\JsonSchema\\Validator()',
+            ],
+            'preservePropertyNames' => [
+                'type' => 'boolean',
+                'description' => 'When true, properties names are not converted to camelCase.
+',
+                'default' => false,
+            ],
+            'noGetters' => [
+                'type' => 'boolean',
+                'description' => 'When true, no getters are created and all properties are \'public\'.
+',
+                'default' => false,
+            ],
+            'noSetters' => [
+                'type' => 'boolean',
+                'description' => 'When true, no withX() / withoutX() setters/unsetters are created.
+',
+                'default' => false,
+            ],
+            'noDescriptionsInSchema' => [
+                'type' => 'boolean',
+                'description' => 'When true, the schema used for validation will not include any description fields
+',
+                'default' => false,
+            ],
+            'singleLineSchema' => [
+                'type' => 'boolean',
+                'description' => 'When true, the whole schema used for validation will on a single line in the class property
+',
+                'default' => false,
+            ],
+            'noEnums' => [
+                'type' => 'boolean',
+                'description' => 'Disable generating PHP enum classes even on PHP ≥ 8.1. Enum values will be
+handled like in earlier PHP versions.
+',
+                'default' => false,
+            ],
+        ],
+    ];
 
     /**
      * @var string|null
@@ -654,10 +743,10 @@ class SpecificationOptions
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
-     * @return SpecificationOptions Created instance
+     * @return SpecificationFilesItemOptions Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : SpecificationOptions
+    public static function buildFromInput(array|object $input, bool $validate = true) : SpecificationFilesItemOptions
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {

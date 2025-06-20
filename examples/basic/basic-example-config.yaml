@@ -1,8 +1,9 @@
-targetPHPVersion: "7.4"
 options:
+  targetPHPVersion: "7.4"
   singleLineSchema: true
   noDescriptionsInSchema: true
 files:
   - input: "examples/basic/basic-example.json"
-    targetDirectory: "examples/basic/generated"
-    targetNamespace: "Example\\Basic"
+    options:
+      targetDirectory: "examples/basic/generated"
+      targetNamespace: "Example\\Basic"

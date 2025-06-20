@@ -45,6 +45,7 @@ Now it:
 - `StringUtils` adds transliteration via `voku/portable-ascii`, robust identifier sanitization, and improved camelCase/PascalCase handling.
 
 ### Enums
+
 - Laminas's immutable EnumGenerator replaced with own mutable implementation PhpParserEnumGenerator built on nikic/php-parser which allows modifications via the hook system.
 
 ### Documentation
@@ -61,7 +62,9 @@ Now it:
 
 ### Breaking changes?
 
-- Essentially, the main public API (spec-files and CLI options handling) has only been extended, not changed, so existing functionality in a simple case should continue to work as expected.
+- Configuration layout has been streamlined: there are now only two top-level keys, `options` and `files`. Each `files` item has exactly three keys: `input`, an optional `className`, and `options`, where the `options` object can override any setting from the top-level `options`.
+
+- In other aspects, the main public API (spec-files and CLI options handling) has only been extended, not changed, so existing functionality in a simple case should continue to work as expected.
 
 However, the generated class code may differ in some aspects due to improved generation logic, so it's recommended to review any changes carefully.
 
