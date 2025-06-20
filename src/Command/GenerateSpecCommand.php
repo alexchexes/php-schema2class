@@ -12,6 +12,7 @@ use Helmich\Schema2Class\Loader\SchemaLoader;
 use Helmich\Schema2Class\Spec\Specification;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
 use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
+use Helmich\Schema2Class\Schema2Class;
 use Helmich\Schema2Class\Util\StringUtils;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -62,20 +63,18 @@ class GenerateSpecCommand extends Command
 
         $dryRun = (bool)$input->getOption("dry-run");
 
-        // prepare target-PHP version
-        $opts = $specification->getOptions() ?? new SpecificationOptions();
-        if ($v = $specification->getTargetPHPVersion()) {
-            $opts = $opts->withTargetPHPVersion($v);
-        }
-
-        $tpv = GeneratorRequest::normalizeTargetVersion($opts->getTargetPHPVersion());
-        $opts = $opts->withTargetPHPVersion($tpv);
-
-        $output->writeln("target PHP version <comment>$tpv</comment>");
+        $globalOpts = $specification->getOptions() ?? new SpecificationOptions();
+        $output->writeln("target PHP version <comment>{$globalOpts->getTargetPHPVersion()}</comment>");
 
         foreach ($specification->getFiles() as $file) {
-            $schemaFile      = $file->getInput();
-            $targetDirectory = $file->getTargetDirectory();
+            $schemaFile = $file->getInput();
+
+            $opts = Schema2Class::mergeOptions($globalOpts, $file->getOptions());
+            $tpv  = GeneratorRequest::normalizeTargetVersion($opts->getTargetPHPVersion());
+            $opts = $opts->withTargetPHPVersion($tpv);
+
+            $targetDirectory = $opts->getTargetDirectory() ?? '';
+            $targetNamespaceOption = $opts->getTargetNamespace();
 
             $output->writeln("loading schema from <comment>$schemaFile</comment>");
 
@@ -88,16 +87,17 @@ class GenerateSpecCommand extends Command
 
             $targetNamespace = $this->inferNamespace(
                 $targetDirectory,
-                $file->getTargetNamespace(),
+                $targetNamespaceOption,
                 $output,
             );
-            $file = $file->withTargetNamespace($targetNamespace);
+            $opts = $opts->withTargetDirectory($targetDirectory)
+                         ->withTargetNamespace($targetNamespace);
 
             $output->writeln("using target namespace <comment>$targetNamespace</comment> in directory <comment>$targetDirectory</comment>");
 
             $schema = $this->loader->loadSchema($schemaFile);
 
-            $validated = ValidatedSpecificationFilesItem::fromSpecificationFilesItem($file, $targetNamespace);
+            $validated = ValidatedSpecificationFilesItem::fromSpecificationFilesItem($file, $opts, $targetNamespace);
 
             if ($validated->getCleanTargetDirectory()) {
                 $this->cleanDirectory($validated->getTargetDirectory(), $output);

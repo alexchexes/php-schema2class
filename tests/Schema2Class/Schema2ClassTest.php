@@ -45,8 +45,10 @@ class Schema2ClassTest extends TestCase
                 [
                     'input' => $schemaFile,
                     'className' => 'Foo',
-                    'targetDirectory' => $dir,
-                    'targetNamespace' => 'My\\Ns',
+                    'options' => [
+                        'targetDirectory' => $dir,
+                        'targetNamespace' => 'My\\Ns',
+                    ],
                 ],
             ],
         ];

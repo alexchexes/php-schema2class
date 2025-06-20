@@ -2,98 +2,145 @@ required:
   - files
 additionalProperties: false
 properties:
-  targetPHPVersion:
-    oneOf:
-      - type: integer
-        enum: [5, 7, 8]
-      - type: string
-
   files:
     type: array
     items:
       required:
         - input
-        - targetDirectory
       additionalProperties: false
       properties:
         input:
           type: string
-
         className:
           type: string
-
-        targetDirectory:
-          type: string
-
-        targetNamespace:
-          type: string
-
-        cleanTargetDirectory:
-          type: boolean
-          description: |
-            When true, the generator removes all files from the target directory
-            before writing new ones.
-          default: false
-
+        options:
+          additionalProperties: false
+          properties:
+            targetDirectory:
+              type: string
+            targetNamespace:
+              type: string
+            cleanTargetDirectory:
+              type: boolean
+              description: |
+                When true, the generator removes all files from the target directory
+                before writing new ones.
+              default: false
+            disableStrictTypes:
+              type: boolean
+              default: false
+            treatValuesWithDefaultAsOptional:
+              type: boolean
+              default: false
+            inlineAllofReferences:
+              type: boolean
+              default: false
+            targetPHPVersion:
+              oneOf:
+                - type: integer
+                  enum: [5, 7, 8]
+                - type: string
+              default: '8.4'
+            newValidatorClassExpr:
+              type: string
+              description: |
+                The expression to use to create a new instance of the validator class.
+                This is useful if you want to use a custom validator class.
+              default: "new \\JsonSchema\\Validator()"
+            preservePropertyNames:
+              type: boolean
+              description: |
+                When true, properties names are not converted to camelCase.
+              default: false
+            noGetters:
+              type: boolean
+              description: |
+                When true, no getters are created and all properties are 'public'.
+              default: false
+            noSetters:
+              type: boolean
+              description: |
+                When true, no withX() / withoutX() setters/unsetters are created.
+              default: false
+            noDescriptionsInSchema:
+              type: boolean
+              description: |
+                When true, the schema used for validation will not include any description fields
+              default: false
+            singleLineSchema:
+              type: boolean
+              description: |
+                When true, the whole schema used for validation will on a single line in the class property
+              default: false
+            noEnums:
+              type: boolean
+              description: |
+                Disable generating PHP enum classes even on PHP ≥ 8.1. Enum values will be
+                handled like in earlier PHP versions.
+              default: false
   options:
+    $ref: '#/definitions/SpecificationOptions'
+
+definitions:
+  SpecificationOptions:
     additionalProperties: false
     properties:
+      targetDirectory:
+        type: string
+      targetNamespace:
+        type: string
+      cleanTargetDirectory:
+        type: boolean
+        description: |
+          When true, the generator removes all files from the target directory
+          before writing new ones.
+        default: false
       disableStrictTypes:
         type: boolean
         default: false
-
       treatValuesWithDefaultAsOptional:
         type: boolean
         default: false
-
       inlineAllofReferences:
         type: boolean
         default: false
-
       targetPHPVersion:
         oneOf:
           - type: integer
             enum: [5, 7, 8]
           - type: string
         default: '8.4'
-
       newValidatorClassExpr:
         type: string
         description: |
           The expression to use to create a new instance of the validator class.
           This is useful if you want to use a custom validator class.
         default: "new \\JsonSchema\\Validator()"
-
       preservePropertyNames:
         type: boolean
         description: |
           When true, properties names are not converted to camelCase.
         default: false
-
       noGetters:
         type: boolean
         description: |
           When true, no getters are created and all properties are 'public'.
         default: false
-
       noSetters:
         type: boolean
         description: |
           When true, no withX() / withoutX() setters/unsetters are created.
         default: false
-
       noDescriptionsInSchema:
         type: boolean
         description: |
           When true, the schema used for validation will not include any description fields
         default: false
-
       singleLineSchema:
         type: boolean
         description: |
           When true, the whole schema used for validation will on a single line in the class property
         default: false
-
       noEnums:
         type: boolean
         description: |

@@ -17,27 +17,11 @@ class Specification
         ],
         'additionalProperties' => false,
         'properties' => [
-            'targetPHPVersion' => [
-                'oneOf' => [
-                    [
-                        'type' => 'integer',
-                        'enum' => [
-                            5,
-                            7,
-                            8,
-                        ],
-                    ],
-                    [
-                        'type' => 'string',
-                    ],
-                ],
-            ],
             'files' => [
                 'type' => 'array',
                 'items' => [
                     'required' => [
                         'input',
-                        'targetDirectory',
                     ],
                     'additionalProperties' => false,
                     'properties' => [
@@ -47,25 +31,120 @@ class Specification
                         'className' => [
                             'type' => 'string',
                         ],
-                        'targetDirectory' => [
-                            'type' => 'string',
-                        ],
-                        'targetNamespace' => [
-                            'type' => 'string',
-                        ],
-                        'cleanTargetDirectory' => [
-                            'type' => 'boolean',
-                            'description' => 'When true, the generator removes all files from the target directory
+                        'options' => [
+                            'additionalProperties' => false,
+                            'properties' => [
+                                'targetDirectory' => [
+                                    'type' => 'string',
+                                ],
+                                'targetNamespace' => [
+                                    'type' => 'string',
+                                ],
+                                'cleanTargetDirectory' => [
+                                    'type' => 'boolean',
+                                    'description' => 'When true, the generator removes all files from the target directory
 before writing new ones.
 ',
-                            'default' => false,
+                                    'default' => false,
+                                ],
+                                'disableStrictTypes' => [
+                                    'type' => 'boolean',
+                                    'default' => false,
+                                ],
+                                'treatValuesWithDefaultAsOptional' => [
+                                    'type' => 'boolean',
+                                    'default' => false,
+                                ],
+                                'inlineAllofReferences' => [
+                                    'type' => 'boolean',
+                                    'default' => false,
+                                ],
+                                'targetPHPVersion' => [
+                                    'oneOf' => [
+                                        [
+                                            'type' => 'integer',
+                                            'enum' => [
+                                                5,
+                                                7,
+                                                8,
+                                            ],
+                                        ],
+                                        [
+                                            'type' => 'string',
+                                        ],
+                                    ],
+                                    'default' => '8.4',
+                                ],
+                                'newValidatorClassExpr' => [
+                                    'type' => 'string',
+                                    'description' => 'The expression to use to create a new instance of the validator class.
+This is useful if you want to use a custom validator class.
+',
+                                    'default' => 'new \\JsonSchema\\Validator()',
+                                ],
+                                'preservePropertyNames' => [
+                                    'type' => 'boolean',
+                                    'description' => 'When true, properties names are not converted to camelCase.
+',
+                                    'default' => false,
+                                ],
+                                'noGetters' => [
+                                    'type' => 'boolean',
+                                    'description' => 'When true, no getters are created and all properties are \'public\'.
+',
+                                    'default' => false,
+                                ],
+                                'noSetters' => [
+                                    'type' => 'boolean',
+                                    'description' => 'When true, no withX() / withoutX() setters/unsetters are created.
+',
+                                    'default' => false,
+                                ],
+                                'noDescriptionsInSchema' => [
+                                    'type' => 'boolean',
+                                    'description' => 'When true, the schema used for validation will not include any description fields
+',
+                                    'default' => false,
+                                ],
+                                'singleLineSchema' => [
+                                    'type' => 'boolean',
+                                    'description' => 'When true, the whole schema used for validation will on a single line in the class property
+',
+                                    'default' => false,
+                                ],
+                                'noEnums' => [
+                                    'type' => 'boolean',
+                                    'description' => 'Disable generating PHP enum classes even on PHP ≥ 8.1. Enum values will be
+handled like in earlier PHP versions.
+',
+                                    'default' => false,
+                                ],
+                            ],
                         ],
                     ],
                 ],
             ],
             'options' => [
+                '$ref' => '#/definitions/SpecificationOptions',
+            ],
+        ],
+        'definitions' => [
+            'SpecificationOptions' => [
                 'additionalProperties' => false,
                 'properties' => [
+                    'targetDirectory' => [
+                        'type' => 'string',
+                    ],
+                    'targetNamespace' => [
+                        'type' => 'string',
+                    ],
+                    'cleanTargetDirectory' => [
+                        'type' => 'boolean',
+                        'description' => 'When true, the generator removes all files from the target directory
+before writing new ones.
+',
+                        'default' => false,
+                    ],
                     'disableStrictTypes' => [
                         'type' => 'boolean',
                         'default' => false,
@@ -144,11 +223,6 @@ handled like in earlier PHP versions.
     ];
 
     /**
-     * @var int|string|null
-     */
-    private int|string|null $targetPHPVersion = null;
-
-    /**
      * @var SpecificationFilesItem[]
      */
     private array $files;
@@ -167,14 +241,6 @@ handled like in earlier PHP versions.
     }
 
     /**
-     * @return int|string|null
-     */
-    public function getTargetPHPVersion() : int|string|null
-    {
-        return $this->targetPHPVersion;
-    }
-
-    /**
      * @return SpecificationFilesItem[]
      */
     public function getFiles() : array
@@ -188,29 +254,6 @@ handled like in earlier PHP versions.
     public function getOptions() : ?SpecificationOptions
     {
         return $this->options ?? null;
-    }
-
-    /**
-     * @param int|string $targetPHPVersion
-     * @return self
-     */
-    public function withTargetPHPVersion(int|string $targetPHPVersion) : self
-    {
-        $clone = clone $this;
-        $clone->targetPHPVersion = $targetPHPVersion;
-
-        return $clone;
-    }
-
-    /**
-     * @return self
-     */
-    public function withoutTargetPHPVersion() : self
-    {
-        $clone = clone $this;
-        unset($clone->targetPHPVersion);
-
-        return $clone;
     }
 
     /**
@@ -269,16 +312,10 @@ handled like in earlier PHP versions.
             static::validateInput($input);
         }
 
-        $targetPHPVersion = isset($input->{'targetPHPVersion'}) ? match (true) {
-            default => null,
-            is_int($input->{'targetPHPVersion'}) => (int)($input->{'targetPHPVersion'}),
-            is_string($input->{'targetPHPVersion'}) => $input->{'targetPHPVersion'},
-        } : null;
         $files = array_map(fn (array|object $i): SpecificationFilesItem => SpecificationFilesItem::buildFromInput($i, validate: $validate), $input->{'files'});
-        $options = isset($input->{'options'}) ? SpecificationOptions::buildFromInput($input->{'options'}, validate: $validate) : null;
+        $options = isset($input->{'options'}) ? SpecificationOptions::buildFromInput($input->{'options'}, $validate) : null;
 
         $obj = new self($files);
-        $obj->targetPHPVersion = $targetPHPVersion;
         $obj->options = $options;
         return $obj;
     }
@@ -291,14 +328,9 @@ handled like in earlier PHP versions.
     public function toArray() : array
     {
         $output = [];
-        if (isset($this->targetPHPVersion)) {
-            $output['targetPHPVersion'] = match (true) {
-                is_int($this->targetPHPVersion), is_string($this->targetPHPVersion) => $this->targetPHPVersion,
-            };
-        }
         $output['files'] = array_map(fn (SpecificationFilesItem $i) => $i->toArray(), $this->files);
         if (isset($this->options)) {
-            $output['options'] = ($this->options)->toArray();
+            $output['options'] = $this->options->toArray();
         }
 
         return $output;
@@ -330,15 +362,7 @@ handled like in earlier PHP versions.
 
     public function __clone()
     {
-        if (isset($this->targetPHPVersion)) {
-            $this->targetPHPVersion = match (true) {
-                is_int($this->targetPHPVersion), is_string($this->targetPHPVersion) => $this->targetPHPVersion,
-            };
-        }
         $this->files = array_map(fn (SpecificationFilesItem $i) => clone $i, $this->files);
-        if (isset($this->options)) {
-            $this->options = clone $this->options;
-        }
     }
 }
 

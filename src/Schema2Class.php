@@ -55,19 +55,18 @@ class Schema2Class
             $config = Specification::buildFromInput($config);
         }
 
-        $opts = $config->getOptions() ?? new SpecificationOptions();
-
-        if ($v = $config->getTargetPHPVersion()) {
-            $opts = $opts->withTargetPHPVersion($v);
-        }
-
-        $tpv = GeneratorRequest::normalizeTargetVersion($opts->getTargetPHPVersion());
-
-        $opts = $opts->withTargetPHPVersion($tpv);
+        $globalOpts = $config->getOptions() ?? new SpecificationOptions();
 
         foreach ($config->getFiles() as $file) {
             $schemaFile = $file->getInput();
-            $targetDirectory = $file->getTargetDirectory();
+
+            $opts = self::mergeOptions($globalOpts, $file->getOptions());
+
+            $tpv = GeneratorRequest::normalizeTargetVersion($opts->getTargetPHPVersion());
+            $opts = $opts->withTargetPHPVersion($tpv);
+
+            $targetDirectory = $opts->getTargetDirectory() ?? '';
+            $targetNamespaceOption = $opts->getTargetNamespace();
 
             $output->writeln("loading schema from <comment>{$schemaFile}</comment>");
 
@@ -80,10 +79,11 @@ class Schema2Class
 
             $targetNamespace = $this->inferNamespace(
                 $targetDirectory,
-                $file->getTargetNamespace(),
+                $targetNamespaceOption,
                 $output,
             );
-            $file = $file->withTargetNamespace($targetNamespace);
+            $opts = $opts->withTargetNamespace($targetNamespace)
+                         ->withTargetDirectory($targetDirectory);
 
             $output->writeln(
                 "using target namespace <comment>{$targetNamespace}</comment> in directory <comment>{$targetDirectory}</comment>"
@@ -91,7 +91,7 @@ class Schema2Class
 
             $schema = $this->loader->loadSchema($schemaFile);
 
-            $validated = ValidatedSpecificationFilesItem::fromSpecificationFilesItem($file, $targetNamespace);
+            $validated = ValidatedSpecificationFilesItem::fromSpecificationFilesItem($file, $opts, $targetNamespace);
 
             if ($validated->getCleanTargetDirectory()) {
                 $this->cleanDirectory($validated->getTargetDirectory(), $output);
@@ -146,5 +146,23 @@ class Schema2Class
         $req  = new GeneratorRequest($schema, $spec, $options);
 
         $this->generateFromRequest($req, $output, false);
+    }
+
+    /**
+     * Merge global and file-specific options, with file options taking precedence.
+     */
+    /**
+     * @param SpecificationOptions $base
+     * @param object|null $override SpecificationOptions or SpecificationFilesItemOptions
+     */
+    public static function mergeOptions(SpecificationOptions $base, object|null $override): SpecificationOptions
+    {
+        if ($override === null) {
+            return clone $base;
+        }
+
+        $merged = array_merge($base->toArray(), $override->toArray());
+
+        return SpecificationOptions::buildFromInput($merged, validate: false);
     }
 }

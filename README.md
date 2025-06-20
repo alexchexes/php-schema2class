@@ -38,14 +38,15 @@ See [all available options](#options).
 1. Create a configuration file, for example `my-config.yaml` (or the equivalent `.json` file):
 
 ```yml
-targetPHPVersion: "7.4" # or "5.6", "8", "8.3", etc.
+options:
+  targetPHPVersion: "7.4" # or "5.6", "8", "8.3", etc.
+  noSetters: true
 files:
   - input: "path/to/schema.json" # On Windows: "D:/path/to/schema.json"
-    targetDirectory: "src/TargetDir"
-    targetNamespace: "MyNamespace"
     className: "MyClass" # Omit this if your schema is a list of definitions
-options:
-  noSetters: true
+    options:
+      targetDirectory: "src/TargetDir"
+      targetNamespace: "MyNamespace"
 ```
 
 2. Run the generator:
@@ -79,12 +80,17 @@ Or from a configuration defined as a PHP array:
 
 ```php
 $generator->generateFromSpec([
+    'options' => [
+        'targetPHPVersion' => '8.4',
+    ],
     'files' => [
         [
-            'input'           => 'path/to/schema.json',
-            'targetDirectory' => 'src/TargetDir',
-            'targetNamespace' => 'MyNamespace',
-            'className'       => 'MyClass',
+            'input'     => 'path/to/schema.json',
+            'className' => 'MyClass',
+            'options'   => [
+                'targetDirectory' => 'src/TargetDir',
+                'targetNamespace' => 'MyNamespace',
+            ],
         ],
     ],
 ]);

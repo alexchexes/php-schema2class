@@ -66,3 +66,5 @@ Now it:
 However, the generated class code may differ in some aspects due to improved generation logic, so it's recommended to review any changes carefully.
 
 Additionally, the internals have changed drastically, so if you run custom hooks or other complex extensions, you may need some adjustements.
+
+- Configuration layout was streamlined: `targetPHPVersion` is now part of the `options` block and can be overridden per file. Update existing `.s2c.yaml` files accordingly.
