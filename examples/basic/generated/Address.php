@@ -24,13 +24,6 @@ class Address
     private ?int $house = null;
 
     /**
-     *
-     */
-    public function __construct()
-    {
-    }
-
-    /**
      * @return string|null
      */
     public function getStreet() : ?string
@@ -174,10 +167,6 @@ class Address
         }
 
         return $validator->isValid();
-    }
-
-    public function __clone()
-    {
     }
 }
 
