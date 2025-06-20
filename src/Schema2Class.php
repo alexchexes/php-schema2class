@@ -10,6 +10,7 @@ use Helmich\Schema2Class\Loader\SchemaLoader;
 use Helmich\Schema2Class\Generator\SchemaToClassFactory;
 use Helmich\Schema2Class\Spec\Specification;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
+use Helmich\Schema2Class\Spec\OptionsDefaults;
 use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
 use Helmich\Schema2Class\Util\StringUtils;
 use Symfony\Component\Console\Output\NullOutput;
@@ -55,7 +56,9 @@ class Schema2Class
             $config = Specification::buildFromInput($config);
         }
 
-        $globalOpts = $config->getOptions() ?? new SpecificationOptions();
+        $globalOpts = OptionsDefaults::applyDefaults(
+            $config->getOptions() ?? new SpecificationOptions()
+        );
 
         foreach ($config->getFiles() as $file) {
             $schemaFile = $file->getInput();
@@ -123,7 +126,9 @@ class Schema2Class
         ?OutputInterface $output = null,
     ): void {
         $output = $output ?? new NullOutput();
-        $options = $options ?? new SpecificationOptions();
+        $options = OptionsDefaults::applyDefaults(
+            $options ?? new SpecificationOptions()
+        );
 
         $targetNamespace = $this->inferNamespace(
             $targetDirectory,
@@ -158,11 +163,12 @@ class Schema2Class
     public static function mergeOptions(SpecificationOptions $base, object|null $override): SpecificationOptions
     {
         if ($override === null) {
-            return clone $base;
+            return OptionsDefaults::applyDefaults(clone $base);
         }
 
         $merged = array_merge($base->toArray(), $override->toArray());
+        $opts = SpecificationOptions::buildFromInput($merged, validate: false);
 
-        return SpecificationOptions::buildFromInput($merged, validate: false);
+        return OptionsDefaults::applyDefaults($opts);
     }
 }

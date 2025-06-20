@@ -87,4 +87,21 @@ class Schema2ClassTest extends TestCase
         unlink($dir . '/Person.php');
         rmdir($dir);
     }
+
+    public function testMergeOptionsHonorsExplicitOverrides(): void
+    {
+        $base = (new \Helmich\Schema2Class\Spec\SpecificationOptions())
+            ->withSingleLineSchema(true);
+
+        $override = new \Helmich\Schema2Class\Spec\SpecificationOptions();
+
+        $merged = Schema2Class::mergeOptions($base, $override);
+        $this->assertTrue($merged->getSingleLineSchema());
+
+        $override = (new \Helmich\Schema2Class\Spec\SpecificationOptions())
+            ->withSingleLineSchema(false);
+
+        $merged = Schema2Class::mergeOptions($base, $override);
+        $this->assertFalse($merged->getSingleLineSchema());
+    }
 }

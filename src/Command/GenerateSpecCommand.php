@@ -11,6 +11,7 @@ use Helmich\Schema2Class\Loader\LoadingException;
 use Helmich\Schema2Class\Loader\SchemaLoader;
 use Helmich\Schema2Class\Spec\Specification;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
+use Helmich\Schema2Class\Spec\OptionsDefaults;
 use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
 use Helmich\Schema2Class\Schema2Class;
 use Helmich\Schema2Class\Util\StringUtils;
@@ -63,7 +64,9 @@ class GenerateSpecCommand extends Command
 
         $dryRun = (bool)$input->getOption("dry-run");
 
-        $globalOpts = $specification->getOptions() ?? new SpecificationOptions();
+        $globalOpts = OptionsDefaults::applyDefaults(
+            $specification->getOptions() ?? new SpecificationOptions()
+        );
         $output->writeln("target PHP version <comment>{$globalOpts->getTargetPHPVersion()}</comment>");
 
         foreach ($specification->getFiles() as $file) {
