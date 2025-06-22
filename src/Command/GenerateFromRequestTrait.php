@@ -9,6 +9,12 @@ use Helmich\Schema2Class\Generator\GeneratorException;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\NamespaceInferrer;
 use Helmich\Schema2Class\Generator\SchemaToClassFactory;
+use Helmich\Schema2Class\Loader\SchemaLoader;
+use Helmich\Schema2Class\Spec\Specification;
+use Helmich\Schema2Class\Spec\SpecificationFilesItem;
+use Helmich\Schema2Class\Spec\SpecificationOptions;
+use Helmich\Schema2Class\Spec\OptionsDefaults;
+use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
 use Helmich\Schema2Class\Util\StringUtils;
 use Helmich\Schema2Class\Generator\Property\NestedObjectProperty;
 use Helmich\Schema2Class\Writer\DebugWriter;
@@ -20,6 +26,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * @property NamespaceInferrer $namespaceInferrer
  * @property SchemaToClassFactory $s2c
+ * @property SchemaLoader $loader
  */
 trait GenerateFromRequestTrait
 {
@@ -89,5 +96,64 @@ trait GenerateFromRequestTrait
         $writer = $this->makeWriter($output, $dryRun);
 
         $this->s2c->build($writer, $output)->schemaToClass($baseRequest);
+    }
+
+    /**
+     * Iterate over a specification and generate classes for each configured file.
+     */
+    private function generateFromSpecification(Specification $spec, OutputInterface $output, bool $dryRun): void
+    {
+        $globalOpts = OptionsDefaults::applyDefaults(
+            $spec->getOptions() ?? new SpecificationOptions()
+        );
+
+        foreach ($spec->getFiles() as $file) {
+            $schemaFile = $file->getInput();
+
+            $opts = OptionsDefaults::mergeOptions($globalOpts, $file->getOptions());
+
+            $tpv = GeneratorRequest::normalizeTargetVersion($opts->getTargetPHPVersion());
+            $opts = $opts->withTargetPHPVersion($tpv);
+
+            $targetDirectory = $opts->getTargetDirectory() ?? '';
+            $targetNamespaceOption = $opts->getTargetNamespace();
+
+            $output->writeln("loading schema from <comment>{$schemaFile}</comment>");
+
+            $className = $file->getClassName();
+            if ($className === null) {
+                $basename = pathinfo($schemaFile, PATHINFO_FILENAME);
+                $className = StringUtils::pascalCase($basename);
+                $file = $file->withClassName($className);
+            }
+
+            $targetNamespace = $this->inferNamespace(
+                $targetDirectory,
+                $targetNamespaceOption,
+                $output,
+            );
+            $opts = $opts->withTargetNamespace($targetNamespace)
+                         ->withTargetDirectory($targetDirectory);
+
+            $output->writeln(
+                "using target namespace <comment>{$targetNamespace}</comment> in directory <comment>{$targetDirectory}</comment>"
+            );
+
+            $schema = $this->loader->loadSchema($schemaFile);
+
+            $validated = ValidatedSpecificationFilesItem::fromSpecificationFilesItem($file, $opts, $targetNamespace);
+
+            if ($validated->getCleanTargetDirectory()) {
+                $this->cleanDirectory($validated->getTargetDirectory(), $output);
+            }
+
+            $baseRequest = new GeneratorRequest(
+                $schema,
+                $validated,
+                $opts
+            );
+
+            $this->generateFromRequest($baseRequest, $output, $dryRun);
+        }
     }
 }
