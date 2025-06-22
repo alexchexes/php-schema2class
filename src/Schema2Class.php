@@ -10,6 +10,7 @@ use Helmich\Schema2Class\Loader\SchemaLoader;
 use Helmich\Schema2Class\Generator\SchemaToClassFactory;
 use Helmich\Schema2Class\Spec\Specification;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
+use Helmich\Schema2Class\Spec\OptionsDefaults;
 use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
 use Helmich\Schema2Class\Util\StringUtils;
 use Symfony\Component\Console\Output\NullOutput;
@@ -55,12 +56,14 @@ class Schema2Class
             $config = Specification::buildFromInput($config);
         }
 
-        $globalOpts = $config->getOptions() ?? new SpecificationOptions();
+        $globalOpts = OptionsDefaults::applyDefaults(
+            $config->getOptions() ?? new SpecificationOptions()
+        );
 
         foreach ($config->getFiles() as $file) {
             $schemaFile = $file->getInput();
 
-            $opts = self::mergeOptions($globalOpts, $file->getOptions());
+            $opts = OptionsDefaults::mergeOptions($globalOpts, $file->getOptions());
 
             $tpv = GeneratorRequest::normalizeTargetVersion($opts->getTargetPHPVersion());
             $opts = $opts->withTargetPHPVersion($tpv);
@@ -123,7 +126,9 @@ class Schema2Class
         ?OutputInterface $output = null,
     ): void {
         $output = $output ?? new NullOutput();
-        $options = $options ?? new SpecificationOptions();
+        $options = OptionsDefaults::applyDefaults(
+            $options ?? new SpecificationOptions()
+        );
 
         $targetNamespace = $this->inferNamespace(
             $targetDirectory,
@@ -146,23 +151,5 @@ class Schema2Class
         $req  = new GeneratorRequest($schema, $spec, $options);
 
         $this->generateFromRequest($req, $output, false);
-    }
-
-    /**
-     * Merge global and file-specific options, with file options taking precedence.
-     */
-    /**
-     * @param SpecificationOptions $base
-     * @param object|null $override SpecificationOptions
-     */
-    public static function mergeOptions(SpecificationOptions $base, object|null $override): SpecificationOptions
-    {
-        if ($override === null) {
-            return clone $base;
-        }
-
-        $merged = array_merge($base->toArray(), $override->toArray());
-
-        return SpecificationOptions::buildFromInput($merged, validate: false);
     }
 }

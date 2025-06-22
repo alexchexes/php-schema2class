@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class;
 
+use Helmich\Schema2Class\Spec\OptionsDefaults;
 use Helmich\Schema2Class\Spec\Specification;
 use PHPUnit\Framework\TestCase;
 
@@ -86,5 +87,22 @@ class Schema2ClassTest extends TestCase
 
         unlink($dir . '/Person.php');
         rmdir($dir);
+    }
+
+    public function testMergeOptionsHonorsExplicitOverrides(): void
+    {
+        $base = (new \Helmich\Schema2Class\Spec\SpecificationOptions())
+            ->withSingleLineSchema(true);
+
+        $override = new \Helmich\Schema2Class\Spec\SpecificationOptions();
+
+        $merged = OptionsDefaults::mergeOptions($base, $override);
+        $this->assertTrue($merged->getSingleLineSchema());
+
+        $override = (new \Helmich\Schema2Class\Spec\SpecificationOptions())
+            ->withSingleLineSchema(false);
+
+        $merged = OptionsDefaults::mergeOptions($base, $override);
+        $this->assertFalse($merged->getSingleLineSchema());
     }
 }

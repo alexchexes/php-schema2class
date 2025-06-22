@@ -9,6 +9,7 @@ use Helmich\Schema2Class\Generator\Hook\AddInterfaceHook;
 use Helmich\Schema2Class\Generator\Hook\AddMethodHook;
 use Helmich\Schema2Class\Generator\Hook\AddPropertyHook;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
+use Helmich\Schema2Class\Spec\OptionsDefaults;
 use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
 use Laminas\Code\Generator\MethodGenerator;
 use Laminas\Code\Generator\PropertyGenerator;
@@ -43,6 +44,7 @@ class GeneratorRequest
 
     public function __construct(array $schema, ValidatedSpecificationFilesItem $spec, SpecificationOptions $opts)
     {
+        $opts = OptionsDefaults::applyDefaults($opts);
         $opts = $opts->withTargetPHPVersion(
             self::semversifyVersionNumber(
                 self::normalizeTargetVersion($opts->getTargetPHPVersion())

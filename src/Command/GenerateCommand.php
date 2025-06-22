@@ -11,6 +11,7 @@ use Helmich\Schema2Class\Generator\SchemaToClassFactory;
 use Helmich\Schema2Class\Loader\LoadingException;
 use Helmich\Schema2Class\Loader\SchemaLoader;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
+use Helmich\Schema2Class\Spec\OptionsDefaults;
 use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
 use Helmich\Schema2Class\Command\GenerateFromRequestTrait;
 use Symfony\Component\Console\Command\Command;
@@ -137,6 +138,8 @@ class GenerateCommand extends Command
         if ($input->getOption('no-enums')) {
             $opts = $opts->withNoEnums(true);
         }
+
+        $opts = OptionsDefaults::applyDefaults($opts);
 
         $baseRequest = new GeneratorRequest($schema, $spec, $opts);
 
