@@ -4,19 +4,15 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Command;
 
-use Helmich\Schema2Class\Generator\DefinitionsReferenceLookup;
 use Helmich\Schema2Class\Generator\GeneratorException;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
-use Helmich\Schema2Class\Generator\NamespaceInferrer;
 use Helmich\Schema2Class\Generator\SchemaToClassFactory;
 use Helmich\Schema2Class\Loader\SchemaLoader;
 use Helmich\Schema2Class\Spec\Specification;
-use Helmich\Schema2Class\Spec\SpecificationFilesItem;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
 use Helmich\Schema2Class\Spec\OptionsDefaults;
 use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
 use Helmich\Schema2Class\Util\StringUtils;
-use Helmich\Schema2Class\Generator\Property\NestedObjectProperty;
 use Helmich\Schema2Class\Writer\DebugWriter;
 use Helmich\Schema2Class\Writer\FileWriter;
 use Helmich\Schema2Class\Writer\WriterInterface;
@@ -24,7 +20,7 @@ use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * @property NamespaceInferrer $namespaceInferrer
+ * @property Helmich\Schema2Class\Generator\NamespaceInferrer $namespaceInferrer
  * @property SchemaToClassFactory $s2c
  * @property SchemaLoader $loader
  */
