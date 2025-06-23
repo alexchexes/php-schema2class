@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class\Generator;
 
 use Helmich\Schema2Class\Codegen\PropertyGenerator;
-use Helmich\Schema2Class\Generator\Definitions\Definition;
 use Helmich\Schema2Class\Generator\Definitions\DefinitionsCollector;
 use Helmich\Schema2Class\Generator\Definitions\DefinitionsGenerator;
 use Helmich\Schema2Class\Generator\DefinitionsReferenceLookup;

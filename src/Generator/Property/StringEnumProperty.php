@@ -21,8 +21,10 @@ class StringEnumProperty extends AbstractProperty
 
     public function isComplex(): bool
     {
-        // Only “complex” if we will generate a PHP 8.1+ enum class
-        return $this->generatorRequest->isAtLeastPHP("8.1") && !$this->generatorRequest->getNoEnums() && isset($this->schema["enum"]);
+        // Only 'complex' if we will generate a PHP 8.1+ enum class
+        return $this->generatorRequest->isAtLeastPHP("8.1")
+            && !$this->generatorRequest->getNoEnums()
+            && isset($this->schema["enum"]);
     }
 
     /**

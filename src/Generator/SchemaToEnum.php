@@ -40,7 +40,7 @@ class SchemaToEnum
                 while (isset($cases[$alt = "{$name}__{$i}"])) {
                     ++$i;
                 }
-                $name = $alt;              // use the first free “…__n”
+                $name = $alt;              // use the first free "…__n"
             }
 
             $cases[$name] = $case;
@@ -109,25 +109,25 @@ class SchemaToEnum
      */
     public static function enumCaseName(string|int $value): string
     {
-        // ❶ numeric *int* stays as before
+        // numeric *int* stays as before
         if (is_int($value)) {
             return 'VALUE_' . $value;
         }
 
-        // ❷ keep “-” by mapping every non-alnum char to “_”
+        // keep "-" by mapping every non-alnum char to "_"
         $clean = preg_replace('/[^a-zA-Z0-9]/', '_', $value);
 
-        // ❸ empty after cleaning  →  use literal “EMPTY”
+        // empty after cleaning  →  use literal "EMPTY"
         if ($clean === '') {
             return 'EMPTY';
         }
 
-        // ❹ starts with a digit or minus?  →  VALUE_…
+        // starts with a digit or minus?  →  VALUE_…
         if (preg_match('/^[0-9\-]/', $clean)) {
             return 'VALUE_' . strtoupper($clean);
         }
 
-        // ❺ otherwise just upper-cased identifier
+        // otherwise just upper-cased identifier
         return strtoupper($clean);
     }
 

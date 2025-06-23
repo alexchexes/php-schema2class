@@ -11,7 +11,6 @@ class PrimitiveUnionEnumProperty extends AbstractProperty
 {
     use TypeConvert;
 
-    /** ──────── 1. Tell the builder when we can handle a schema ──────── */
     public static function canHandleSchema(array $schema): bool
     {
         // must have an enum and a _list_ of primitive types
@@ -28,7 +27,9 @@ class PrimitiveUnionEnumProperty extends AbstractProperty
         return true;
     }
 
-    /** ──────── 2. PHPDoc literal-union of all enum values ───────────── */
+    /**
+     * Generates PHPDoc literal-union of all enum values
+     */
     public function typeAnnotation(): string
     {
         $quote = static fn(string $s): string => "'" . str_replace("'", "\\'", $s) . "'";
@@ -46,11 +47,13 @@ class PrimitiveUnionEnumProperty extends AbstractProperty
         return implode('|', $literals);
     }
 
-    /** ──────── 3. Real type-hint when PHP ≥ 8.0, else none ─────────── */
+    /**
+     * Generates real type-hint when PHP ≥ 8.0
+     */
     public function typeHint(string $phpVersion): ?string
     {
         if (!Semver::satisfies($phpVersion, ">=8.0")) {
-            return null;                 // unions not available
+            return null;
         }
 
         $primitives = array_unique(array_map(
@@ -68,7 +71,9 @@ class PrimitiveUnionEnumProperty extends AbstractProperty
         return implode('|', $primitives);
     }
 
-    /** ──────── 4. Runtime checks & mappings (straight-through) ───────── */
+    /**
+     * Runtime checks & mappings (straight-through)
+     */
     public function generateTypeAssertionExpr(string $expr): string
     {
         $values = var_export($this->schema['enum'], true);
@@ -83,7 +88,7 @@ class PrimitiveUnionEnumProperty extends AbstractProperty
     /**
      * We override the default only to keep ints unquoted.
      * Let Laminas pick the correct representation for everything else,
-     * especially for `null` (so we don’t end up with an empty string!).
+     * especially for `null` (so we don't end up with an empty string!).
      */
     public function formatValue(mixed $value): PropertyValueGenerator
     {

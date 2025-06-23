@@ -23,12 +23,14 @@ class GeneratorRequest
     const DEFAULT_PHP8_VERSION = '8.4';
 
     private array $schema;
-    /** @var array<string,mixed>|null Root schema’s definitions, if any */
+    
+    /** @var array<string,mixed>|null Root schema's definitions, if any */
     private ?array $rootDefinitions = null;
     private array $generatedClassNames = [];
 
     private ValidatedSpecificationFilesItem $spec;
     private SpecificationOptions $opts;
+
     /** @var array<class-string, ReferenceLookup> */
     private array $referenceLookup = [];
 
@@ -57,7 +59,7 @@ class GeneratorRequest
     }
 
     /**
-     * Attach the root schema’s “definitions” block so each class can re‑embed it.
+     * Attach the root schema's "definitions" block so each class can re‑embed it.
      *
      * @param array<string,mixed> $definitions
      * @return self

@@ -65,9 +65,9 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface, Renameabl
         return $this->inner;
     }
 
-    /* We *always* allow null once decorated. */
     public function allowsNull(): bool
     {
+        // We *always* allow null once decorated
         return true;
     }
 
@@ -89,7 +89,7 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface, Renameabl
 
         $expr = $needsGuard
             ? "({$accessor} !== null) ? ({$mapped}) : null"
-            : $mapped;                      // clean one-liner for strings/nulls
+            : $mapped;               // clean one-liner for strings/nulls
 
         return "\${$name} = {$expr};";
     }
@@ -99,13 +99,15 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface, Renameabl
         return $this->inner->convertTypeToArray($out);
     }
 
-    /* ── Add “null” to PHPDoc & type-hint if missing ────────────────── */
     public function typeAnnotation(): string
     {
         $ann = $this->inner->typeAnnotation();
+
+        // Add "null" to PHPDoc & type-hint if missing
         if (!preg_match('/(^|\\|)null(\\||$)/', $ann)) {
             $ann .= '|null';
         }
+
         return $ann;
     }
 
@@ -160,7 +162,7 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface, Renameabl
         // Let the inner property build its own mapping (casts, builder calls, …)
         $inner = $this->inner->generateInputMappingExpr($expr, $asserted);
 
-        // If we’re already inside an `isset()` check (asserted === true),
+        // If we're already inside an `isset()` check (asserted === true),
         // the value cannot be null → no extra guard needed.
         if ($asserted) {
             return $inner;

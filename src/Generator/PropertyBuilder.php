@@ -78,7 +78,7 @@ class PropertyBuilder
             }
         }
 
-        // ─── Handle ["null","primitive"] style optional primitives ──────────────
+        // Handle ["null","primitive"] style optional primitives
         if (isset($definition['type'])
             && is_array($definition['type'])
             && count($definition['type']) === 2
@@ -108,11 +108,8 @@ class PropertyBuilder
                     : new OptionalPropertyDecorator($name, $prop);  // optional
             }
         }
-        // ───────────────────────────────────────────────────────────────────────
 
-
-
-        // ─── Strip out null arms from anyOf/oneOf and wrap the rest as an Optional<…> ──────
+        // Strip out null arms from anyOf/oneOf and wrap the rest as an Optional<…>
         $unionKey = isset($definition['anyOf']) ? 'anyOf'
                 : (isset($definition['oneOf']) ? 'oneOf' : null);
 
@@ -132,10 +129,11 @@ class PropertyBuilder
                 $otherArms = $subs;
                 array_splice($otherArms, $nullIx, 1);
 
-                /**
-                 * ▌CASE A – exactly **one** remaining arm
-                 * ▌        → build *that* schema directly
-                 */
+                //--------------------------------------------------------
+                // CASE A – exactly one remaining arm
+                //         → build that schema directly
+                //--------------------------------------------------------
+
                 if (count($otherArms) === 1) {
                     $singleSchema = $otherArms[0];
                     
@@ -159,10 +157,11 @@ class PropertyBuilder
                         : new OptionalPropertyDecorator($name, $inner);
                 }
 
-                /**
-                 * ▌CASE B – still multiple arms
-                 * ▌        → keep a real UnionProperty
-                 */
+                //--------------------------------------------------------
+                // CASE B – still multiple arms
+                //          → keep a real UnionProperty
+                //--------------------------------------------------------
+                
                 $cleanDef             = $definition;
                 $cleanDef[$unionKey]  = $otherArms;            // without the null arm
                 $unionProp            = new UnionProperty($name, $cleanDef, $req);
@@ -172,7 +171,6 @@ class PropertyBuilder
                     : new OptionalPropertyDecorator($name, $unionProp);
             }
         }
-        // ────────────────────────────────────────────────────────────────────────────────────
 
         foreach (self::$propertyTypes as $propertyType) {
             if ($propertyType::canHandleSchema($definition)) {
@@ -182,7 +180,7 @@ class PropertyBuilder
                 if (isset($definition["default"]) && $req->getOptions()->getTreatValuesWithDefaultAsOptional()) {
                     $property = new DefaultPropertyDecorator($name, $property);
                 } elseif (!$isRequired) {
-                    $property = new OptionalPropertyDecorator($name, $property);  // optional
+                    $property = new OptionalPropertyDecorator($name, $property); // optional
                 } elseif ($property->allowsNull()) {
                     $property = new NullablePropertyDecorator($name, $property); // required + nullable
                 }

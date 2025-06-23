@@ -86,7 +86,7 @@ class UnionProperty extends AbstractProperty
             ? "\${$inputVarName}->{{$keyStr}}"
             : "\${$inputVarName}[{$keyStr}]";
     
-        // Start with a “fallback” that just reassigns the raw value
+        // Start with a "fallback" that just reassigns the raw value
         $conversions = [
             "\$$key = {$accessor};" => ["discriminators" => [], "fallback" => true],
         ];
@@ -97,7 +97,7 @@ class UnionProperty extends AbstractProperty
             $assignment    = "\$$name = {$mapping};";
             $discriminator = $subProp->generateInputAssertionExpr($accessor);
     
-            // If this arm is an “array” type, prefix its test with is_array(...)
+            // If this arm is an "array" type, prefix its test with is_array(...)
             if (
                 $subProp instanceof ReferenceArrayProperty
                 || $subProp instanceof ObjectArrayProperty
@@ -138,7 +138,7 @@ class UnionProperty extends AbstractProperty
             }
         }
     
-        // Join and normalize “}else” → “} else”
+        // Join and normalize "}else" → "} else"
         return str_replace("}\nelse", "} else", join("\n", $branches));
     }
     
