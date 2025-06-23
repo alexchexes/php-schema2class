@@ -61,6 +61,23 @@ class PropertyBuilder
     {
         self::testInvariants($definition);
 
+        // Dereference union definitions / inline references that would not generate a class
+        if (isset($definition['$ref'])) {
+            $refSchema = $req->lookupSchema($definition['$ref']);
+            if (
+                !empty($refSchema) &&
+                (isset($refSchema['oneOf']) || isset($refSchema['anyOf']))
+            ) {
+                foreach (['description', 'title', 'default', 'deprecated'] as $k) {
+                    if (isset($definition[$k]) && !isset($refSchema[$k])) {
+                        $refSchema[$k] = $definition[$k];
+                    }
+                }
+
+                return self::buildPropertyFromSchema($req, $name, $refSchema, $isRequired);
+            }
+        }
+
         // ─── Handle ["null","primitive"] style optional primitives ──────────────
         if (isset($definition['type'])
             && is_array($definition['type'])
@@ -179,8 +196,15 @@ class PropertyBuilder
 
     private static function testInvariants(array $definition): void
     {
-        $hasAdditionalProperties = isset($definition["additionalProperties"]) && is_array($definition["additionalProperties"]) && count($definition["additionalProperties"]) > 0;
-        $hasProperties = isset($definition["properties"]) && is_array($definition["properties"]) && count($definition["properties"]) > 0;
+        $hasAdditionalProperties =
+            isset($definition["additionalProperties"])
+            && is_array($definition["additionalProperties"])
+            && count($definition["additionalProperties"]) > 0;
+
+        $hasProperties =
+            isset($definition["properties"])
+            && is_array($definition["properties"])
+            && count($definition["properties"]) > 0;
 
         if ($hasProperties && $hasAdditionalProperties) {
             throw new GeneratorException("using 'properties' and 'additionalProperties' in the same schema is currently not supported.");
