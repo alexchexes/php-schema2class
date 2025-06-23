@@ -193,7 +193,7 @@ class SchemaToClass
         $ownClasses = $req->getGeneratedClassNames();
         if ($ownClasses) {
             $escapedOwnClasses = array_map(fn ($n) => preg_quote($n, '/'), $ownClasses);
-            $pattern = '/\\\\(' . join('|', $escapedOwnClasses) . ')(?=\s|[,;)]|$)/';
+            $pattern = '/\\\\(' . join('|', $escapedOwnClasses) . ')(?=\s|[,;)|]|$)/';
             $content = preg_replace($pattern, '$1', $content);
         }
 
