@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator;
 
-use Helmich\Schema2Class\Example\CustomerAddress;
+use Helmich\Schema2Class\Example\CustomerAddress; // ← necessary for 'RefList' test though not really exist
 use Helmich\Schema2Class\Loader\SchemaLoader;
 use Helmich\Schema2Class\Command\GenerateCommand;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -91,7 +91,7 @@ class SchemaToClassTest extends TestCase
             public function lookupReference(string $reference): ReferencedType
             {
                 if ($reference === "#/properties/address") {
-                    return new ReferencedTypeClass(CustomerAddress::class);
+                    return new ReferencedTypeClass(CustomerAddress::class); // ← necessary for 'RefList' test though not really exist
                 }
 
                 $result = $this->lookup->lookupReference($reference);
