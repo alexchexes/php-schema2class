@@ -52,6 +52,10 @@ class ReferenceProperty extends AbstractProperty
 
     public function isComplex(): bool
     {
+        if ($this->type instanceof \Helmich\Schema2Class\Generator\ReferencedTypeEnum) {
+            return $this->type->usesNativeEnum($this->generatorRequest);
+        }
+
         return true;
     }
 

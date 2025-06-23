@@ -47,6 +47,8 @@ Now it:
 ### Enums
 
 - Laminas's immutable EnumGenerator replaced with own mutable implementation PhpParserEnumGenerator built on nikic/php-parser which allows modifications via the hook system.
+- Enum definitions referenced from object properties are now handled correctly on
+  all PHP versions.
 
 ### Documentation
 
