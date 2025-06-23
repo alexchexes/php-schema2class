@@ -38,7 +38,7 @@ Now it:
 
 ### Better support for older PHP versions:
 
-- The generator no longer refuses to generate if the schema has enum types and the target PHP version is less than 8.1.
+- Added proper handling for **enums** when the target PHP version is less than 8.1.
 
 ### String utilities
 

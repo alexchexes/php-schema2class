@@ -1,0 +1,16 @@
+definitions:
+  Color:
+    enum: [red, green]
+    type: string
+  Size:
+    enum: [small, big]
+    type: string
+  Foo:
+    type: object
+    additionalProperties: false
+    properties:
+      color:
+        $ref: '#/definitions/Color'
+      size:
+        $ref: '#/definitions/Size'
+    required: [color]

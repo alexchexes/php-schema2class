@@ -21,10 +21,17 @@ class DefinitionsReferenceLookup implements ReferenceLookup
 
     public function lookupReference(string $reference): ReferencedType
     {
-        if (isset($this->definitions[$reference])) {
-            return new ReferencedTypeClass($this->definitions[$reference]->classFQN);
+        if (!isset($this->definitions[$reference])) {
+            return new ReferencedTypeUnknown();
         }
-        return new ReferencedTypeUnknown();
+
+        $def = $this->definitions[$reference];
+
+        if (isset($def->schema['enum'])) {
+            return new ReferencedTypeEnum($def->classFQN, $def->schema);
+        }
+
+        return new ReferencedTypeClass($def->classFQN);
     }
 
     public function lookupSchema(string $reference): array
