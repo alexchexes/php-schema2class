@@ -9,8 +9,6 @@ use Helmich\Schema2Class\Command\GenerateCommand;
 use Symfony\Component\Console\Tester\CommandTester;
 use Helmich\Schema2Class\Generator\NamespaceInferrer;
 use Helmich\Schema2Class\Generator\SchemaToClassFactory;
-use Helmich\Schema2Class\Generator\Property\IntersectProperty;
-use Helmich\Schema2Class\Generator\Property\NestedObjectProperty;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
 use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
 use Helmich\Schema2Class\Writer\DebugWriter;
