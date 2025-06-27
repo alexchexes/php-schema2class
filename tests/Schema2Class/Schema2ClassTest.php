@@ -23,7 +23,7 @@ class Schema2ClassTest extends TestCase
         mkdir($dir);
 
         $generator = new Schema2Class();
-        $generator->generateFromSchema($schema, $dir, 'Person', 'My\Ns');
+        $generator->generateFromSchema($schema, $dir, 'My\Ns', 'Person');
 
         $file = $dir . '/Person.php';
         $this->assertFileExists($file);
@@ -48,7 +48,7 @@ class Schema2ClassTest extends TestCase
         $generator = new Schema2Class();
         $this->expectException(\InvalidArgumentException::class);
         try {
-            $generator->generateFromSchema($schema, $dir, null, 'My\\Ns');
+            $generator->generateFromSchema($schema, $dir, 'My\\Ns');
         } finally {
             if (is_file($dir . '/.php')) {
                 unlink($dir . '/.php');
@@ -66,7 +66,7 @@ class Schema2ClassTest extends TestCase
         mkdir($dir);
 
         $generator = new Schema2Class();
-        $generator->generateFromSchema($schema, $dir, null, 'Ns\\Defs');
+        $generator->generateFromSchema($schema, $dir, 'Ns\\Defs');
 
         $this->assertFileExists($dir . '/Foo.php');
         $this->assertFileExists($dir . '/Bar.php');
@@ -122,7 +122,7 @@ class Schema2ClassTest extends TestCase
         file_put_contents($dir . '/Old.php', '<?php');
 
         $generator = new Schema2Class();
-        $generator->generateFromSchema($schema, $dir, 'Person', 'My\\Ns', true);
+        $generator->generateFromSchema($schema, $dir, 'My\\Ns', 'Person', true);
 
         $this->assertFileDoesNotExist($dir . '/Old.php');
 

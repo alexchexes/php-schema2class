@@ -81,8 +81,8 @@ class Schema2Class
     public function generateFromSchema(
         array $schema,
         string $targetDirectory,
-        ?string $className = null,
         ?string $targetNamespace = null,
+        ?string $className = null,
         bool $cleanTargetDirectory = false,
         ?SpecificationOptions $options = null,
         ?OutputInterface $output = null,
