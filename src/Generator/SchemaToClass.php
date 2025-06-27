@@ -239,7 +239,9 @@ class SchemaToClass
             }
             return ltrim($cls, '\\');
         }, $collected);
-        $generatedClasses[] = $req->getTargetClass();
+        if ($req->getTargetClass() !== null) {
+            $generatedClasses[] = $req->getTargetClass();
+        }
 
         $req = $req
             ->withAdditionalReferenceLookup(new DefinitionsReferenceLookup($collected))
