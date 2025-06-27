@@ -20,7 +20,7 @@ use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * @property Helmich\Schema2Class\Generator\NamespaceInferrer $namespaceInferrer
+ * @property \Helmich\Schema2Class\Generator\NamespaceInferrer $namespaceInferrer
  * @property SchemaToClassFactory $s2c
  * @property SchemaLoader $loader
  */
