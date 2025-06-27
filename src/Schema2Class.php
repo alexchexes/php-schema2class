@@ -14,6 +14,8 @@ use Helmich\Schema2Class\Spec\OptionsDefaults;
 use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
+use Helmich\Schema2Class\Generator\Property\NestedObjectProperty;
+use Helmich\Schema2Class\Generator\Property\IntersectProperty;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -59,6 +61,18 @@ class Schema2Class
     }
 
     /**
+     * Determine if the schema describes a top-level class or enum.
+     *
+     * @param array<string,mixed> $schema
+     */
+    private static function schemaNeedsClass(array $schema): bool
+    {
+        return IntersectProperty::canHandleSchema($schema)
+            || NestedObjectProperty::canHandleSchema($schema)
+            || array_key_exists('enum', $schema);
+    }
+
+    /**
      * Generate classes from a JSON schema that is already parsed into an array.
      *
      * This bypasses reading the schema from disk and can be useful if the
@@ -67,8 +81,8 @@ class Schema2Class
     public function generateFromSchema(
         array $schema,
         string $targetDirectory,
-        string $className,
         ?string $targetNamespace = null,
+        ?string $className = null,
         bool $cleanTargetDirectory = false,
         ?SpecificationOptions $options = null,
         ?OutputInterface $output = null,
@@ -95,6 +109,13 @@ class Schema2Class
             $this->cleanDirectory($targetDirectory, $output);
         }
 
+        if ($className === null) {
+            if (self::schemaNeedsClass($schema)) {
+                throw new \InvalidArgumentException(
+                    'Class name is required when the schema describes a top-level object or enum.'
+                );
+            }
+        }
         $spec = new ValidatedSpecificationFilesItem($targetNamespace, $className, $targetDirectory, $cleanTargetDirectory);
         $req  = new GeneratorRequest($schema, $spec, $options);
 

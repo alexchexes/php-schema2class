@@ -23,7 +23,7 @@ class Schema2ClassTest extends TestCase
         mkdir($dir);
 
         $generator = new Schema2Class();
-        $generator->generateFromSchema($schema, $dir, 'Person', 'My\Ns');
+        $generator->generateFromSchema($schema, $dir, 'My\Ns', 'Person');
 
         $file = $dir . '/Person.php';
         $this->assertFileExists($file);
@@ -32,6 +32,47 @@ class Schema2ClassTest extends TestCase
         $this->assertStringContainsString('class Person', $content);
 
         unlink($file);
+        rmdir($dir);
+    }
+
+    public function testGenerateFromSchemaRequiresClassNameForObjects(): void
+    {
+        $schema = [
+            'required' => ['name'],
+            'properties' => ['name' => ['type' => 'string']],
+        ];
+
+        $dir = sys_get_temp_dir() . '/s2c_' . uniqid();
+        mkdir($dir);
+
+        $generator = new Schema2Class();
+        $this->expectException(\InvalidArgumentException::class);
+        try {
+            $generator->generateFromSchema($schema, $dir, 'My\\Ns');
+        } finally {
+            if (is_file($dir . '/.php')) {
+                unlink($dir . '/.php');
+            }
+            rmdir($dir);
+        }
+    }
+
+    public function testGenerateFromSchemaWithoutClassForDefinitionsOnly(): void
+    {
+        $schemaFile = __DIR__ . '/../Generator/Fixtures/DefinitionsIndependet/schema.json';
+        $schema = json_decode(file_get_contents($schemaFile), true);
+
+        $dir = sys_get_temp_dir() . '/s2c_' . uniqid();
+        mkdir($dir);
+
+        $generator = new Schema2Class();
+        $generator->generateFromSchema($schema, $dir, 'Ns\\Defs');
+
+        $this->assertFileExists($dir . '/Foo.php');
+        $this->assertFileExists($dir . '/Bar.php');
+
+        unlink($dir . '/Foo.php');
+        unlink($dir . '/Bar.php');
         rmdir($dir);
     }
 
@@ -81,7 +122,7 @@ class Schema2ClassTest extends TestCase
         file_put_contents($dir . '/Old.php', '<?php');
 
         $generator = new Schema2Class();
-        $generator->generateFromSchema($schema, $dir, 'Person', 'My\\Ns', true);
+        $generator->generateFromSchema($schema, $dir, 'My\\Ns', 'Person', true);
 
         $this->assertFileDoesNotExist($dir . '/Old.php');
 

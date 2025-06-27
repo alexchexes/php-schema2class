@@ -125,7 +125,7 @@ class GeneratorRequest
         return $clone;
     }
 
-    public function withClass(string $targetClass): self
+    public function withClass(?string $targetClass): self
     {
         $clone       = clone $this;
         $clone->spec = $this->spec->withTargetClass($targetClass);
@@ -260,7 +260,7 @@ class GeneratorRequest
     /**
      * @return string
      */
-    public function getTargetClass(): string
+    public function getTargetClass(): ?string
     {
         return $this->spec->getTargetClass();
     }

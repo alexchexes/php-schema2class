@@ -6,17 +6,17 @@ namespace Helmich\Schema2Class\Spec;
 class ValidatedSpecificationFilesItem
 {
     private string $targetNamespace;
-    private string $targetClass;
+    private ?string $targetClass;
     private string $targetDirectory;
     private bool $cleanTargetDirectory;
 
     /**
      * ValidatedSpecificationFilesItem constructor.
-     * @param string $targetNamespace
-     * @param string $targetClass
-     * @param string $targetDirectory
+     * @param string      $targetNamespace
+     * @param string|null $targetClass
+     * @param string      $targetDirectory
      */
-    public function __construct(string $targetNamespace, string $targetClass, string $targetDirectory, bool $cleanTargetDirectory = false)
+    public function __construct(string $targetNamespace, ?string $targetClass, string $targetDirectory, bool $cleanTargetDirectory = false)
     {
         $this->targetNamespace = $targetNamespace;
         $this->targetClass     = $targetClass;
@@ -46,9 +46,9 @@ class ValidatedSpecificationFilesItem
     }
 
     /**
-     * @return string
+     * @return non-empty-string|null
      */
-    public function getTargetClass(): string
+    public function getTargetClass(): ?string
     {
         return $this->targetClass;
     }
@@ -66,7 +66,7 @@ class ValidatedSpecificationFilesItem
         return $this->cleanTargetDirectory;
     }
 
-    public function withTargetClass(string $targetClass): self
+    public function withTargetClass(?string $targetClass): self
     {
         $c              = clone $this;
         $c->targetClass = $targetClass;

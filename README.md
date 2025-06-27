@@ -106,7 +106,7 @@ $schema = [
     ],
 ];
 
-$generator->generateFromSchema($schema, 'MyDir', 'MyClass', 'MyNamespace');
+$generator->generateFromSchema($schema, 'MyDir', 'MyNamespace', 'MyClass');
 ```
 
 See also the [advanced programmatic usage](#advanced-programmatic-usage) section.
@@ -234,7 +234,7 @@ The generated classes offer:
 - All PHP properties are `private` (unless `--no-getters` is used), with getter methods and explicit return type declarations (PHPDoc for PHP 5 mode).
 - Namespacing: Specify the namespace for all classes with `--target-namespace` (`targetNamespace`). If omitted, the generator inspects your `composer.json` and tries to infer it from the PSR‑4 configuration. If no match is found, the generator falls back to the name of the target directory.
   Generating classes without namespaces is currently not supported.
-- Class names are derived from the names in the `"definitions"` section. If you generate from a schema with a top-level object and no definitions, set the class name with the `--class` (`className`) option.
+- Class names are derived from the names in the `"definitions"` section. If input schema is a top-level object (not `"definitions"`), the class name will be infered from schema file name, unless you set it explicitly with the `--class` (`className`) option.
 - Class/enum names for sub‑objects are derived from property names.
 - Classes generated for array items are suffixed with "Item". See [`Example\Advanced\User::$hobbies`](examples/advanced/generated/User.php#L203).
 - `oneOf`/`anyOf` alternatives are suffixed with "AlternativeX", where _X_ is an incrementing integer. See [`Example\Advanced\User::$payment`](examples/advanced/generated/User.php#L188).
