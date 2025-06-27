@@ -6,7 +6,7 @@ readonly class ReferencedTypeEnum implements ReferencedType
 {
     /**
      * @param string $enumName Fully-qualified enum class name
-     * @param array<array-key, string|int> $schema Schema definition of the enum
+     * @param array<array-key, string|int|array> $schema Schema definition of the enum
      */
     public function __construct(private string $enumName, private array $schema)
     {
