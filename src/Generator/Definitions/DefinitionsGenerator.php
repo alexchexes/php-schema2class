@@ -65,7 +65,9 @@ class DefinitionsGenerator
             }
             return ltrim($cls, '\\');
         }, $definitions);
-        $generatedClasses[] = $request->getTargetClass();
+        if ($request->getTargetClass() !== null) {
+            $generatedClasses[] = $request->getTargetClass();
+        }
 
         $rootDefinitions = $request->getSchema()['definitions'] ?? [];
 

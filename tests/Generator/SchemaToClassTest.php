@@ -208,4 +208,36 @@ class SchemaToClassTest extends TestCase
         unlink($dir . '/Foo.php');
         rmdir($dir);
     }
+
+    public function testCliInfersClassNameFromFilename(): void
+    {
+        $schemaFile = __DIR__ . '/Fixtures/NoEnums/schema.yaml';
+
+        $dir = sys_get_temp_dir() . '/s2c_' . uniqid();
+        mkdir($dir);
+
+        $command = new GenerateCommand(
+            new SchemaLoader(),
+            new NamespaceInferrer(),
+            new SchemaToClassFactory(),
+        );
+
+        $tester = new CommandTester($command);
+        $tester->execute([
+            'schema' => $schemaFile,
+            'target-dir' => $dir,
+            '--target-namespace' => 'Ns\\NoEnums',
+        ]);
+
+        $file = $dir . '/Schema.php';
+        $this->assertFileExists($file);
+        $content = file_get_contents($file);
+        $this->assertStringContainsString('namespace Ns\\NoEnums;', $content);
+        $this->assertStringContainsString('Schema', $content);
+
+        foreach (glob($dir . '/*.php') as $f) {
+            unlink($f);
+        }
+        rmdir($dir);
+    }
 }

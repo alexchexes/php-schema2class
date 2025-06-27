@@ -258,9 +258,9 @@ class GeneratorRequest
     }
 
     /**
-     * @return string
+     * @return non-empty-string|null
      */
-    public function getTargetClass(): string
+    public function getTargetClass(): ?string
     {
         return $this->spec->getTargetClass();
     }

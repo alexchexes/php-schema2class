@@ -25,10 +25,12 @@ You can use this tool in three different ways:
 ### A. Via the CLI, passing options and the schema path directly
 
 ```sh
-vendor/bin/s2c generate:fromschema --class User my-schema.json src/TargetDir   # or ./my-schema.yaml
+vendor/bin/s2c generate:fromschema my-schema.json src/TargetDir   # or ./my-schema.yaml
+# specify the class name explicitly if needed:
+vendor/bin/s2c generate:fromschema --class User my-schema.json src/TargetDir
 
 # On Windows CMD:
-php vendor\bin\s2c generate:fromschema --class User my-schema.json src\TargetDir
+php vendor\bin\s2c generate:fromschema my-schema.json src\TargetDir
 ```
 
 See [all available options](#options).
@@ -106,7 +108,8 @@ $schema = [
     ],
 ];
 
-$generator->generateFromSchema($schema, 'MyDir', 'MyClass', 'MyNamespace');
+$generator->generateFromSchema($schema, 'MyDir', 'User', 'MyNamespace');
+// omit the class name only when the schema consists solely of definitions
 ```
 
 See also the [advanced programmatic usage](#advanced-programmatic-usage) section.
@@ -234,7 +237,7 @@ The generated classes offer:
 - All PHP properties are `private` (unless `--no-getters` is used), with getter methods and explicit return type declarations (PHPDoc for PHP 5 mode).
 - Namespacing: Specify the namespace for all classes with `--target-namespace` (`targetNamespace`). If omitted, the generator inspects your `composer.json` and tries to infer it from the PSR‑4 configuration. If no match is found, the generator falls back to the name of the target directory.
   Generating classes without namespaces is currently not supported.
-- Class names are derived from the names in the `"definitions"` section. If you generate from a schema with a top-level object and no definitions, set the class name with the `--class` (`className`) option.
+  - Class names are derived from the names in the `"definitions"` section. When calling `generate:fromschema` without the `--class` option, the root class name defaults to the schema file's base name. If you generate from a schema with a top-level object and no definitions, set the class name explicitly with `--class` (`className`).
 - Class/enum names for sub‑objects are derived from property names.
 - Classes generated for array items are suffixed with "Item". See [`Example\Advanced\User::$hobbies`](examples/advanced/generated/User.php#L203).
 - `oneOf`/`anyOf` alternatives are suffixed with "AlternativeX", where _X_ is an incrementing integer. See [`Example\Advanced\User::$payment`](examples/advanced/generated/User.php#L188).
