@@ -232,6 +232,7 @@ class SchemaToClass
         $collected  = iterator_to_array($collector->collect($req->getSchema()));
 
         $ns = $req->getTargetNamespace();
+        
         $generatedClasses = array_map(static function(Definitions\Definition $d) use ($ns): string {
             $cls = $d->classFQN;
             if ($ns !== '' && str_starts_with($cls, $ns . '\\')) {
@@ -239,6 +240,7 @@ class SchemaToClass
             }
             return ltrim($cls, '\\');
         }, $collected);
+
         if ($req->getTargetClass() !== null) {
             $generatedClasses[] = $req->getTargetClass();
         }
