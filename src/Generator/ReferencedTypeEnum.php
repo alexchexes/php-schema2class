@@ -35,7 +35,7 @@ readonly class ReferencedTypeEnum implements ReferencedType
     public function typeAnnotation(GeneratorRequest $req): string
     {
         if ($this->useNativeEnum($req)) {
-            return ltrim($this->relativeName($req), '\\');
+            return $this->relativeName($req);
         }
 
         $literals = array_map(fn(string|int $v) => var_export($v, true), $this->schema['enum']);
@@ -64,7 +64,7 @@ readonly class ReferencedTypeEnum implements ReferencedType
     public function typeAssertionExpr(GeneratorRequest $req, string $expr): string
     {
         if ($this->useNativeEnum($req)) {
-            return "({$expr}) instanceof " . ltrim($this->relativeName($req), '\\');
+            return "({$expr}) instanceof " . $this->relativeName($req);
         }
 
         $values = var_export($this->schema['enum'], true);
@@ -74,7 +74,7 @@ readonly class ReferencedTypeEnum implements ReferencedType
     public function inputAssertionExpr(GeneratorRequest $req, string $expr): string
     {
         if ($this->useNativeEnum($req)) {
-            return "" . ltrim($this->relativeName($req), '\\') . "::tryFrom({$expr}) !== null";
+            return "" . $this->relativeName($req) . "::tryFrom({$expr}) !== null";
         }
 
         $values = var_export($this->schema['enum'], true);
@@ -84,7 +84,7 @@ readonly class ReferencedTypeEnum implements ReferencedType
     public function inputMappingExpr(GeneratorRequest $req, string $expr, ?string $validateExpr): string
     {
         if ($this->useNativeEnum($req)) {
-            return ltrim($this->relativeName($req), '\\') . "::from({$expr})";
+            return $this->relativeName($req) . "::from({$expr})";
         }
 
         return $expr;

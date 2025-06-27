@@ -27,7 +27,7 @@ readonly class ReferencedTypeClass implements ReferencedType
 
     public function typeAnnotation(GeneratorRequest $req): string
     {
-        return ltrim($this->relativeName($req), '\\');
+        return $this->relativeName($req);
     }
 
     public function typeHint(GeneratorRequest $req): ?string
@@ -47,7 +47,7 @@ readonly class ReferencedTypeClass implements ReferencedType
 
     public function typeAssertionExpr(GeneratorRequest $req, string $expr): string
     {
-        $cls = ltrim($this->relativeName($req), '\\');
+        $cls = $this->relativeName($req);
         return "({$expr}) instanceof {$cls}";
     }
 
