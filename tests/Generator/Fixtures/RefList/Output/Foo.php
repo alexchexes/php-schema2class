@@ -26,12 +26,12 @@ class Foo
     ];
 
     /**
-     * @var Helmich\Schema2Class\Example\CustomerAddress[]|null
+     * @var \Helmich\Schema2Class\Example\CustomerAddress[]|null
      */
     private ?array $foo = null;
 
     /**
-     * @return Helmich\Schema2Class\Example\CustomerAddress[]|null
+     * @return \Helmich\Schema2Class\Example\CustomerAddress[]|null
      */
     public function getFoo() : ?array
     {
@@ -39,7 +39,7 @@ class Foo
     }
 
     /**
-     * @param Helmich\Schema2Class\Example\CustomerAddress[] $foo
+     * @param \Helmich\Schema2Class\Example\CustomerAddress[] $foo
      * @return self
      */
     public function withFoo(array $foo) : self
