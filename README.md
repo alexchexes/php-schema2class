@@ -46,7 +46,7 @@ files:
     className: "MyClass" # Omit this if your schema is a list of definitions
     options:
       targetDirectory: "src/TargetDir"
-      targetNamespace: "MyNamespace"
+      targetNamespace: "My\\Namespace"
 ```
 
 2. Run the generator:
@@ -85,11 +85,11 @@ $generator->generateFromSpec([
     ],
     'files' => [
         [
-            'input'     => 'path/to/schema.json',
+            'input'     => 'path/to/schema.json', // or inline PHP assoc array
             'className' => 'MyClass',
             'options'   => [
                 'targetDirectory' => 'src/TargetDir',
-                'targetNamespace' => 'MyNamespace',
+                'targetNamespace' => 'My\Namespace',
             ],
         ],
     ],
@@ -106,7 +106,10 @@ $schema = [
     ],
 ];
 
-$generator->generateFromSchema($schema, 'MyDir', 'MyNamespace', 'MyClass');
+$generator->generateFromSchema($schema, 'MyClass', [
+            'targetDirectory' => 'MyDir',
+            'targetNamespace' => 'My\Namespace',
+        ]);
 ```
 
 See also the [advanced programmatic usage](#advanced-programmatic-usage) section.

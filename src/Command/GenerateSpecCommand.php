@@ -32,8 +32,7 @@ class GenerateSpecCommand extends Command
         /** @var string */
         $specFile = $input->getArgument("specfile") ?: getcwd() . "/.s2c.yaml";
         $dryRun = (bool) $input->getOption('dry-run');
-        new Schema2Class()->generateFromSpec($specFile, $output, $dryRun);
+        (new Schema2Class())->generateFromSpec($specFile, $output, $dryRun);
         return 0;
     }
-
 }

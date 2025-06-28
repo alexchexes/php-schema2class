@@ -23,7 +23,10 @@ class Schema2ClassTest extends TestCase
         mkdir($dir);
 
         $generator = new Schema2Class();
-        $generator->generateFromSchema($schema, $dir, 'My\Ns', 'Person');
+        $generator->generateFromSchema($schema, 'Person', [
+            'targetDirectory' => $dir,
+            'targetNamespace' => 'My\Ns',
+        ]);
 
         $file = $dir . '/Person.php';
         $this->assertFileExists($file);
@@ -48,7 +51,10 @@ class Schema2ClassTest extends TestCase
         $generator = new Schema2Class();
         $this->expectException(\InvalidArgumentException::class);
         try {
-            $generator->generateFromSchema($schema, $dir, 'My\\Ns');
+            $generator->generateFromSchema($schema, options: [
+                'targetDirectory' => $dir,
+                'targetNamespace' => 'My\Ns',
+            ]);
         } finally {
             if (is_file($dir . '/.php')) {
                 unlink($dir . '/.php');
@@ -66,7 +72,10 @@ class Schema2ClassTest extends TestCase
         mkdir($dir);
 
         $generator = new Schema2Class();
-        $generator->generateFromSchema($schema, $dir, 'Ns\\Defs');
+        $generator->generateFromSchema($schema, options: [
+            'targetDirectory' => $dir,
+            'targetNamespace' => 'Ns\Defs',
+        ]);
 
         $this->assertFileExists($dir . '/Foo.php');
         $this->assertFileExists($dir . '/Bar.php');
@@ -89,7 +98,7 @@ class Schema2ClassTest extends TestCase
                     'className' => 'Foo',
                     'options' => [
                         'targetDirectory' => $dir,
-                        'targetNamespace' => 'My\\Ns',
+                        'targetNamespace' => 'My\Ns',
                     ],
                 ],
             ],
@@ -103,7 +112,7 @@ class Schema2ClassTest extends TestCase
         $file = $dir . '/Foo.php';
         $this->assertFileExists($file);
         $content = file_get_contents($file);
-        $this->assertStringContainsString('namespace My\\Ns;', $content);
+        $this->assertStringContainsString('namespace My\Ns;', $content);
         $this->assertStringContainsString('class Foo', $content);
 
         unlink($file);
@@ -122,7 +131,11 @@ class Schema2ClassTest extends TestCase
         file_put_contents($dir . '/Old.php', '<?php');
 
         $generator = new Schema2Class();
-        $generator->generateFromSchema($schema, $dir, 'My\\Ns', 'Person', true);
+        $generator->generateFromSchema($schema, 'Person', [
+            'targetDirectory' => $dir,
+            'targetNamespace' => 'My\Ns',
+            'cleanTargetDirectory' => true,
+        ]);
 
         $this->assertFileDoesNotExist($dir . '/Old.php');
 

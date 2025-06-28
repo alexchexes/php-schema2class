@@ -49,7 +49,7 @@ class GenerateCommand extends Command
         $options = [
             'targetDirectory'                   => $input->getArgument('target-dir'),
             'targetNamespace'                   => $input->getOption('target-namespace'),
-            'targetPHPVersion'                  => $input->getOption('target-php') ?: GeneratorRequest::DEFAULT_PHP8_VERSION,
+            'targetPHPVersion'                  => $input->getOption('target-php'),
             'cleanTargetDirectory'              => $input->getOption('clean-dir'),
             'disableStrictTypes'                => $input->getOption('disable-strict-types'),
             'treatValuesWithDefaultAsOptional'  => $input->getOption('treat-default-as-optional'),
@@ -77,7 +77,7 @@ class GenerateCommand extends Command
             'files'   => [ $fileOptions ],
         ];
 
-        new Schema2Class()->generateFromSpec(
+        (new Schema2Class())->generateFromSpec(
             $specArray,
             $output,
             (bool) $input->getOption('dry-run'),

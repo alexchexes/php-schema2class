@@ -64,7 +64,9 @@ Now it:
 
 - Configuration layout has been simplified: there are now only two top-level keys, `options` and `files`. Each `files` item has three keys: `input`, an optional `className`, and `options`, where the `options` object can override any setting from the top-level `options`.
 
-- In other aspects, the main public API (spec-files and CLI options handling) has only been extended, not changed, so existing functionality in a simple case should continue to work as expected.
+- `files[].input` now accepts inline schema arrays in addition to file paths.
+
+In other aspects, the main public API (spec-files and CLI options handling) has only been extended, not changed, so existing functionality in a simple case should continue to work as expected (after adjusting spec-file layout if you use it).
 
 However, the generated class code may differ in some aspects due to improved generation logic, so it's recommended to review any changes carefully.
 
