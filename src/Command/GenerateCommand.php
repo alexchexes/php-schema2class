@@ -6,14 +6,12 @@ namespace Helmich\Schema2Class\Command;
 
 use Helmich\Schema2Class\Generator\GeneratorException;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
-use Helmich\Schema2Class\Generator\NamespaceInferrer;
-use Helmich\Schema2Class\Generator\SchemaToClassFactory;
+use Helmich\Schema2Class\Generator\GenerationRunner;
 use Helmich\Schema2Class\Loader\LoadingException;
 use Helmich\Schema2Class\Loader\SchemaLoader;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
 use Helmich\Schema2Class\Spec\OptionsDefaults;
 use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
-use Helmich\Schema2Class\Command\GenerateFromRequestTrait;
 use Helmich\Schema2Class\Util\StringUtils;
 use Helmich\Schema2Class\Generator\Property\IntersectProperty;
 use Helmich\Schema2Class\Generator\Property\NestedObjectProperty;
@@ -25,19 +23,16 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class GenerateCommand extends Command
 {
-    use GenerateFromRequestTrait;
 
+    private GenerationRunner $runner;
     private SchemaLoader $loader;
-    private NamespaceInferrer $namespaceInferrer;
-    private SchemaToClassFactory $s2c;
 
-    public function __construct(SchemaLoader $loader, NamespaceInferrer $namespaceInferrer, SchemaToClassFactory $s2c)
+    public function __construct(GenerationRunner $runner, SchemaLoader $loader)
     {
         parent::__construct();
 
+        $this->runner = $runner;
         $this->loader = $loader;
-        $this->namespaceInferrer = $namespaceInferrer;
-        $this->s2c = $s2c;
     }
 
     protected function configure(): void
@@ -96,14 +91,14 @@ class GenerateCommand extends Command
             $class = StringUtils::pascalCase($basename);
         }
 
-        $targetNamespace = $this->inferNamespace($targetDirectory, $targetNamespace, $output);
+        $targetNamespace = $this->runner->inferNamespace($targetDirectory, $targetNamespace, $output);
 
         $output->writeln("using target namespace <comment>$targetNamespace</comment> in directory <comment>$targetDirectory</comment>");
 
         $cleanTarget = (bool)$input->getOption('clean-dir');
 
         if ($cleanTarget) {
-            $this->cleanDirectory($targetDirectory, $output);
+            $this->runner->cleanDirectory($targetDirectory, $output);
         }
 
         $spec = new ValidatedSpecificationFilesItem($targetNamespace, $class, $targetDirectory, $cleanTarget);
@@ -153,7 +148,7 @@ class GenerateCommand extends Command
 
         $baseRequest = new GeneratorRequest($schema, $spec, $opts);
 
-        $this->generateFromRequest($baseRequest, $output, (bool)$input->getOption('dry-run'));
+        $this->runner->generateFromRequest($baseRequest, $output, (bool)$input->getOption('dry-run'));
 
         return 0;
     }

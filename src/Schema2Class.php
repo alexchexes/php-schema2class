@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class;
 
-use Helmich\Schema2Class\Command\GenerateFromRequestTrait;
+use Helmich\Schema2Class\Generator\GenerationRunner;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\NamespaceInferrer;
 use Helmich\Schema2Class\Loader\SchemaLoader;
@@ -26,20 +26,18 @@ use Symfony\Component\Yaml\Yaml;
  */
 class Schema2Class
 {
-    use GenerateFromRequestTrait;
-
-    private SchemaLoader $loader;
-    private NamespaceInferrer $namespaceInferrer;
-    private SchemaToClassFactory $s2c;
+    private GenerationRunner $runner;
 
     public function __construct(
         ?SchemaLoader $loader = null,
         ?NamespaceInferrer $namespaceInferrer = null,
         ?SchemaToClassFactory $factory = null
     ) {
-        $this->loader = $loader ?? new SchemaLoader();
-        $this->namespaceInferrer = $namespaceInferrer ?? new NamespaceInferrer();
-        $this->s2c = $factory ?? new SchemaToClassFactory();
+        $loader = $loader ?? new SchemaLoader();
+        $namespaceInferrer = $namespaceInferrer ?? new NamespaceInferrer();
+        $factory = $factory ?? new SchemaToClassFactory();
+
+        $this->runner = new GenerationRunner($loader, $namespaceInferrer, $factory);
     }
 
     /**
@@ -57,7 +55,7 @@ class Schema2Class
             $config = Specification::buildFromInput($config);
         }
 
-        $this->generateFromSpecification($config, $output, false);
+        $this->runner->generateFromSpecification($config, $output, false);
     }
 
     /**
@@ -92,7 +90,7 @@ class Schema2Class
             $options ?? new SpecificationOptions()
         );
 
-        $targetNamespace = $this->inferNamespace(
+        $targetNamespace = $this->runner->inferNamespace(
             $targetDirectory,
             $targetNamespace,
             $output,
@@ -106,7 +104,7 @@ class Schema2Class
         $options = $options->withTargetPHPVersion($tpv);
 
         if ($cleanTargetDirectory) {
-            $this->cleanDirectory($targetDirectory, $output);
+            $this->runner->cleanDirectory($targetDirectory, $output);
         }
 
         if ($className === null) {
@@ -119,6 +117,6 @@ class Schema2Class
         $spec = new ValidatedSpecificationFilesItem($targetNamespace, $className, $targetDirectory, $cleanTargetDirectory);
         $req  = new GeneratorRequest($schema, $spec, $options);
 
-        $this->generateFromRequest($req, $output, false);
+        $this->runner->generateFromRequest($req, $output, false);
     }
 }
