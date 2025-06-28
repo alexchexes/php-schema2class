@@ -6,17 +6,12 @@ namespace Helmich\Schema2Class\Command;
 
 use Helmich\Schema2Class\Generator\GeneratorException;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
-use Helmich\Schema2Class\Generator\NamespaceInferrer;
-use Helmich\Schema2Class\Generator\SchemaToClassFactory;
+use Helmich\Schema2Class\Generator\GenerationRunner;
 use Helmich\Schema2Class\Loader\LoadingException;
-use Helmich\Schema2Class\Loader\SchemaLoader;
+use Helmich\Schema2Class\Spec\Specification;
+use Helmich\Schema2Class\Spec\SpecificationFilesItem;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
 use Helmich\Schema2Class\Spec\OptionsDefaults;
-use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
-use Helmich\Schema2Class\Command\GenerateFromRequestTrait;
-use Helmich\Schema2Class\Util\StringUtils;
-use Helmich\Schema2Class\Generator\Property\IntersectProperty;
-use Helmich\Schema2Class\Generator\Property\NestedObjectProperty;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -25,19 +20,14 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class GenerateCommand extends Command
 {
-    use GenerateFromRequestTrait;
 
-    private SchemaLoader $loader;
-    private NamespaceInferrer $namespaceInferrer;
-    private SchemaToClassFactory $s2c;
+    private GenerationRunner $runner;
 
-    public function __construct(SchemaLoader $loader, NamespaceInferrer $namespaceInferrer, SchemaToClassFactory $s2c)
+    public function __construct(GenerationRunner $runner)
     {
         parent::__construct();
 
-        $this->loader = $loader;
-        $this->namespaceInferrer = $namespaceInferrer;
-        $this->s2c = $s2c;
+        $this->runner = $runner;
     }
 
     protected function configure(): void
@@ -86,37 +76,17 @@ class GenerateCommand extends Command
         /** @var string|null $targetPHPVersion */
         $targetPHPVersion = $input->getOption("target-php");
 
-        $output->writeln("loading schema from <comment>$schemaFile</comment>");
-        $schema = $this->loader->loadSchema($schemaFile);
-        $needsClass = IntersectProperty::canHandleSchema($schema)
-            || NestedObjectProperty::canHandleSchema($schema)
-            || array_key_exists('enum', $schema);
-        if ($class === null && $needsClass) {
-            $basename = pathinfo($schemaFile, PATHINFO_FILENAME);
-            $class = StringUtils::pascalCase($basename);
+        $opts = new SpecificationOptions();
+        $opts = $opts->withTargetDirectory($targetDirectory);
+        if ($targetNamespace) {
+            $opts = $opts->withTargetNamespace($targetNamespace);
         }
-
-        $targetNamespace = $this->inferNamespace($targetDirectory, $targetNamespace, $output);
-
-        $output->writeln("using target namespace <comment>$targetNamespace</comment> in directory <comment>$targetDirectory</comment>");
-
-        $cleanTarget = (bool)$input->getOption('clean-dir');
-
-        if ($cleanTarget) {
-            $this->cleanDirectory($targetDirectory, $output);
-        }
-
-        $spec = new ValidatedSpecificationFilesItem($targetNamespace, $class, $targetDirectory, $cleanTarget);
+        $opts = $opts->withCleanTargetDirectory((bool)$input->getOption('clean-dir'));
 
         if (!$targetPHPVersion) {
             $targetPHPVersion = GeneratorRequest::DEFAULT_PHP8_VERSION;
-        } else {
-            $targetPHPVersion = GeneratorRequest::normalizeTargetVersion($targetPHPVersion);
         }
-
-        $opts = (new SpecificationOptions())->withTargetPHPVersion($targetPHPVersion);
-
-        $output->writeln("target PHP version: <comment>{$opts->getTargetPHPVersion()}</comment>");
+        $opts = $opts->withTargetPHPVersion($targetPHPVersion);
 
         if ($input->getOption("disable-strict-types")) {
             $opts = $opts->withDisableStrictTypes(true);
@@ -151,9 +121,14 @@ class GenerateCommand extends Command
 
         $opts = OptionsDefaults::applyDefaults($opts);
 
-        $baseRequest = new GeneratorRequest($schema, $spec, $opts);
+        $file = new SpecificationFilesItem($schemaFile);
+        if ($class !== null) {
+            $file = $file->withClassName($class);
+        }
 
-        $this->generateFromRequest($baseRequest, $output, (bool)$input->getOption('dry-run'));
+        $spec = (new Specification([$file]))->withOptions($opts);
+
+        $this->runner->generateFromSpecification($spec, $output, (bool)$input->getOption('dry-run'));
 
         return 0;
     }

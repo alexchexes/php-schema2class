@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Command;
 
-use Helmich\Schema2Class\Generator\NamespaceInferrer;
-use Helmich\Schema2Class\Generator\SchemaToClassFactory;
+use Helmich\Schema2Class\Generator\GenerationRunner;
 use Helmich\Schema2Class\Loader\LoadingException;
-use Helmich\Schema2Class\Loader\SchemaLoader;
 use Helmich\Schema2Class\Spec\Specification;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
 use Helmich\Schema2Class\Spec\OptionsDefaults;
@@ -18,25 +16,16 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Yaml\Yaml;
 
-use Helmich\Schema2Class\Command\GenerateFromRequestTrait;
 
 class GenerateSpecCommand extends Command
 {
-    use GenerateFromRequestTrait;
+    private GenerationRunner $runner;
 
-    private SchemaLoader $loader;
-
-    private NamespaceInferrer $namespaceInferrer;
-
-    private SchemaToClassFactory $s2c;
-
-    public function __construct(SchemaLoader $loader, NamespaceInferrer $namespaceInferrer, SchemaToClassFactory $s2c)
+    public function __construct(GenerationRunner $runner)
     {
         parent::__construct();
 
-        $this->loader = $loader;
-        $this->namespaceInferrer = $namespaceInferrer;
-        $this->s2c = $s2c;
+        $this->runner = $runner;
     }
 
     protected function configure(): void
@@ -65,7 +54,7 @@ class GenerateSpecCommand extends Command
         );
         $output->writeln("target PHP version <comment>{$globalOpts->getTargetPHPVersion()}</comment>");
 
-        $this->generateFromSpecification($specification, $output, $dryRun);
+        $this->runner->generateFromSpecification($specification, $output, $dryRun);
 
         return 0;
     }

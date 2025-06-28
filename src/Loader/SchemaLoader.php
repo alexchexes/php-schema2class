@@ -7,12 +7,18 @@ use Symfony\Component\Yaml\Yaml;
 class SchemaLoader
 {
     /**
-     * @param string $filename
+     * @param array|string $input
      * @return array
      * @throws LoadingException
      */
-    public function loadSchema(string $filename): array
+    public function loadSchema(array|string $input): array
     {
+        if (is_array($input)) {
+            return $input;
+        }
+
+        $filename = $input;
+
         if (!file_exists($filename)) {
             throw new LoadingException($filename, "file does not exist");
         }

@@ -3,19 +3,16 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class;
 
-use Helmich\Schema2Class\Command\GenerateFromRequestTrait;
-use Helmich\Schema2Class\Generator\GeneratorRequest;
+use Helmich\Schema2Class\Generator\GenerationRunner;
 use Helmich\Schema2Class\Generator\NamespaceInferrer;
 use Helmich\Schema2Class\Loader\SchemaLoader;
 use Helmich\Schema2Class\Generator\SchemaToClassFactory;
 use Helmich\Schema2Class\Spec\Specification;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
 use Helmich\Schema2Class\Spec\OptionsDefaults;
-use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
+use Helmich\Schema2Class\Spec\SpecificationFilesItem;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
-use Helmich\Schema2Class\Generator\Property\NestedObjectProperty;
-use Helmich\Schema2Class\Generator\Property\IntersectProperty;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -26,20 +23,18 @@ use Symfony\Component\Yaml\Yaml;
  */
 class Schema2Class
 {
-    use GenerateFromRequestTrait;
-
-    private SchemaLoader $loader;
-    private NamespaceInferrer $namespaceInferrer;
-    private SchemaToClassFactory $s2c;
+    private GenerationRunner $runner;
 
     public function __construct(
         ?SchemaLoader $loader = null,
         ?NamespaceInferrer $namespaceInferrer = null,
         ?SchemaToClassFactory $factory = null
     ) {
-        $this->loader = $loader ?? new SchemaLoader();
-        $this->namespaceInferrer = $namespaceInferrer ?? new NamespaceInferrer();
-        $this->s2c = $factory ?? new SchemaToClassFactory();
+        $loader = $loader ?? new SchemaLoader();
+        $namespaceInferrer = $namespaceInferrer ?? new NamespaceInferrer();
+        $factory = $factory ?? new SchemaToClassFactory();
+
+        $this->runner = new GenerationRunner($loader, $namespaceInferrer, $factory);
     }
 
     /**
@@ -57,19 +52,7 @@ class Schema2Class
             $config = Specification::buildFromInput($config);
         }
 
-        $this->generateFromSpecification($config, $output, false);
-    }
-
-    /**
-     * Determine if the schema describes a top-level class or enum.
-     *
-     * @param array<string,mixed> $schema
-     */
-    private static function schemaNeedsClass(array $schema): bool
-    {
-        return IntersectProperty::canHandleSchema($schema)
-            || NestedObjectProperty::canHandleSchema($schema)
-            || array_key_exists('enum', $schema);
+        $this->runner->generateFromSpecification($config, $output, false);
     }
 
     /**
@@ -88,37 +71,22 @@ class Schema2Class
         ?OutputInterface $output = null,
     ): void {
         $output = $output ?? new NullOutput();
-        $options = OptionsDefaults::applyDefaults(
-            $options ?? new SpecificationOptions()
-        );
 
-        $targetNamespace = $this->inferNamespace(
-            $targetDirectory,
-            $targetNamespace,
-            $output,
-        );
-        $output->writeln(
-            "using target namespace <comment>{$targetNamespace}</comment> in directory <comment>{$targetDirectory}</comment>"
-        );
+        $opts = $options ?? new SpecificationOptions();
+        $opts = $opts->withTargetDirectory($targetDirectory);
+        if ($targetNamespace !== null) {
+            $opts = $opts->withTargetNamespace($targetNamespace);
+        }
+        $opts = $opts->withCleanTargetDirectory($cleanTargetDirectory);
+        $opts = OptionsDefaults::applyDefaults($opts);
 
-        $tpv = GeneratorRequest::normalizeTargetVersion($options->getTargetPHPVersion());
-        
-        $options = $options->withTargetPHPVersion($tpv);
-
-        if ($cleanTargetDirectory) {
-            $this->cleanDirectory($targetDirectory, $output);
+        $specFile = new SpecificationFilesItem($schema);
+        if ($className !== null) {
+            $specFile = $specFile->withClassName($className);
         }
 
-        if ($className === null) {
-            if (self::schemaNeedsClass($schema)) {
-                throw new \InvalidArgumentException(
-                    'Class name is required when the schema describes a top-level object or enum.'
-                );
-            }
-        }
-        $spec = new ValidatedSpecificationFilesItem($targetNamespace, $className, $targetDirectory, $cleanTargetDirectory);
-        $req  = new GeneratorRequest($schema, $spec, $options);
+        $spec = (new Specification([$specFile]))->withOptions($opts);
 
-        $this->generateFromRequest($req, $output, false);
+        $this->runner->generateFromSpecification($spec, $output, false);
     }
 }
