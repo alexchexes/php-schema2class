@@ -95,28 +95,5 @@ class Schema2Class
             $output,
             $dryRun,
         );
-
-
-        // //////////////////////////////////////
-
-        // $opts = $options ?? new SpecificationOptions();
-        // $opts = $opts->withTargetDirectory($targetDirectory);
-
-        // if ($targetNamespace !== null) {
-        //     $opts = $opts->withTargetNamespace($targetNamespace);
-        // }
-
-        // $opts = $opts->withCleanTargetDirectory($cleanTargetDirectory);
-        // $opts = OptionsDefaults::applyDefaults($opts);
-
-        // $specFile = new SpecificationFilesItem($schema);
-
-        // if ($className !== null) {
-        //     $specFile = $specFile->withClassName($className);
-        // }
-
-        // $spec = (new Specification([$specFile]))->withOptions($opts);
-
-        // $this->runner->generateFromSpecification($spec, $output, $dryRun);
     }
 }
