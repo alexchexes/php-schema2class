@@ -14,9 +14,9 @@ class SpecificationFilesItem
     private static array $schema = ['properties' => ['input' => ['type' => ['string', 'object']], 'className' => ['type' => 'string'], 'options' => ['$ref' => '#/definitions/SpecificationOptions']], 'additionalProperties' => false, 'required' => ['input'], 'definitions' => ['SpecificationOptions' => ['additionalProperties' => false, 'properties' => ['targetDirectory' => ['type' => 'string'], 'targetNamespace' => ['type' => 'string'], 'targetPHPVersion' => ['oneOf' => [['type' => 'integer', 'enum' => [5, 7, 8]], ['type' => 'string']]], 'cleanTargetDirectory' => ['type' => 'boolean'], 'disableStrictTypes' => ['type' => 'boolean'], 'treatValuesWithDefaultAsOptional' => ['type' => 'boolean'], 'inlineAllofReferences' => ['type' => 'boolean'], 'newValidatorClassExpr' => ['type' => 'string'], 'preservePropertyNames' => ['type' => 'boolean'], 'noGetters' => ['type' => 'boolean'], 'noSetters' => ['type' => 'boolean'], 'noDescriptionsInSchema' => ['type' => 'boolean'], 'singleLineSchema' => ['type' => 'boolean'], 'noEnums' => ['type' => 'boolean']]]]];
 
     /**
-     * @var string|mixed
+     * @var string|array|object
      */
-    private $input;
+    private string|array|object $input;
 
     /**
      * @var string|null
@@ -29,17 +29,17 @@ class SpecificationFilesItem
     private ?SpecificationOptions $options = null;
 
     /**
-     * @param string|mixed $input
+     * @param string|array|object $input
      */
-    public function __construct($input)
+    public function __construct(string|array|object $input)
     {
         $this->input = $input;
     }
 
     /**
-     * @return string|mixed
+     * @return string|array|object
      */
-    public function getInput()
+    public function getInput() : string|array|object
     {
         return $this->input;
     }
@@ -61,10 +61,10 @@ class SpecificationFilesItem
     }
 
     /**
-     * @param string|mixed $input
+     * @param string|array|object $input
      * @return self
      */
-    public function withInput($input) : self
+    public function withInput(string|array|object $input) : self
     {
         $clone = clone $this;
         $clone->input = $input;
@@ -140,7 +140,7 @@ class SpecificationFilesItem
         }
 
         $input = match (true) {
-            is_string($input2->{'input'}), true => $input2->{'input'},
+            is_string($input2->{'input'}), is_array($input2->{'input'}) || is_object($input2->{'input'}) => $input2->{'input'},
             default => throw new \InvalidArgumentException("could not build property 'input' from JSON"),
         };
         $className = isset($input2->{'className'}) ? $input2->{'className'} : null;
@@ -161,7 +161,7 @@ class SpecificationFilesItem
     {
         $output = [];
         $output['input'] = match (true) {
-            is_string($this->input), true => $this->input,
+            is_string($this->input), is_array($this->input) || is_object($this->input) => $this->input,
         };
         if (isset($this->className)) {
             $output['className'] = $this->className;
@@ -200,7 +200,7 @@ class SpecificationFilesItem
     public function __clone()
     {
         $this->input = match (true) {
-            is_string($this->input), true => $this->input,
+            is_string($this->input), is_array($this->input) || is_object($this->input) => $this->input,
         };
     }
 }
