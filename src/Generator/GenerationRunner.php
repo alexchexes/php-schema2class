@@ -14,6 +14,8 @@ use Helmich\Schema2Class\Spec\SpecificationOptions;
 use Helmich\Schema2Class\Spec\OptionsDefaults;
 use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
 use Helmich\Schema2Class\Util\StringUtils;
+use Helmich\Schema2Class\Generator\Property\IntersectProperty;
+use Helmich\Schema2Class\Generator\Property\NestedObjectProperty;
 use Helmich\Schema2Class\Writer\DebugWriter;
 use Helmich\Schema2Class\Writer\FileWriter;
 use Helmich\Schema2Class\Writer\WriterInterface;
@@ -25,6 +27,18 @@ class GenerationRunner
     private SchemaLoader $loader;
     private NamespaceInferrer $namespaceInferrer;
     private SchemaToClassFactory $factory;
+
+    /**
+     * Determine if the schema describes a top-level class or enum.
+     *
+     * @param array<string,mixed> $schema
+     */
+    private static function schemaNeedsClass(array $schema): bool
+    {
+        return IntersectProperty::canHandleSchema($schema)
+            || NestedObjectProperty::canHandleSchema($schema)
+            || array_key_exists('enum', $schema);
+    }
 
     public function __construct(
         SchemaLoader $loader,
@@ -87,6 +101,12 @@ class GenerationRunner
 
     public function generateFromRequest(GeneratorRequest $request, OutputInterface $output, bool $dryRun): void
     {
+        if ($request->getTargetClass() === null && self::schemaNeedsClass($request->getSchema())) {
+            throw new \InvalidArgumentException(
+                'Class name is required when the schema describes a top-level object or enum.'
+            );
+        }
+
         $writer = $this->makeWriter($output, $dryRun);
 
         $this->factory->build($writer, $output)->schemaToClass($request);

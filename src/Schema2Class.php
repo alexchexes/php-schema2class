@@ -10,11 +10,10 @@ use Helmich\Schema2Class\Generator\SchemaToClassFactory;
 use Helmich\Schema2Class\Spec\Specification;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
 use Helmich\Schema2Class\Spec\OptionsDefaults;
-use Helmich\Schema2Class\Spec\SpecificationFilesItem;
+use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
+use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
-use Helmich\Schema2Class\Generator\Property\NestedObjectProperty;
-use Helmich\Schema2Class\Generator\Property\IntersectProperty;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -58,18 +57,6 @@ class Schema2Class
     }
 
     /**
-     * Determine if the schema describes a top-level class or enum.
-     *
-     * @param array<string,mixed> $schema
-     */
-    private static function schemaNeedsClass(array $schema): bool
-    {
-        return IntersectProperty::canHandleSchema($schema)
-            || NestedObjectProperty::canHandleSchema($schema)
-            || array_key_exists('enum', $schema);
-    }
-
-    /**
      * Generate classes from a JSON schema that is already parsed into an array.
      *
      * This bypasses reading the schema from disk and can be useful if the
@@ -89,32 +76,32 @@ class Schema2Class
             $options ?? new SpecificationOptions()
         );
 
-        if ($className === null && self::schemaNeedsClass($schema)) {
-            throw new \InvalidArgumentException(
-                'Class name is required when the schema describes a top-level object or enum.'
-            );
-        }
-
-        $tmpFile = tempnam(sys_get_temp_dir(), 's2c_');
-        $tmpFileYaml = $tmpFile . '.yaml';
-        rename($tmpFile, $tmpFileYaml);
-        file_put_contents($tmpFileYaml, Yaml::dump($schema));
-
-        $file = new SpecificationFilesItem($tmpFileYaml);
-        if ($className !== null) {
-            $file = $file->withClassName($className);
-        }
+        $targetNamespace = $this->runner->inferNamespace(
+            $targetDirectory,
+            $targetNamespace,
+            $output,
+        );
+        $output->writeln(
+            "using target namespace <comment>{$targetNamespace}</comment> in directory <comment>{$targetDirectory}</comment>"
+        );
 
         $specOptions = $options->withTargetDirectory($targetDirectory)
+            ->withTargetNamespace($targetNamespace)
             ->withCleanTargetDirectory($cleanTargetDirectory);
-        if ($targetNamespace !== null) {
-            $specOptions = $specOptions->withTargetNamespace($targetNamespace);
+
+        if ($cleanTargetDirectory) {
+            $this->runner->cleanDirectory($targetDirectory, $output);
         }
 
-        $spec = (new Specification([$file]))->withOptions($specOptions);
+        $validated = new ValidatedSpecificationFilesItem(
+            $targetNamespace,
+            $className,
+            $targetDirectory,
+            $cleanTargetDirectory,
+        );
 
-        $this->runner->generateFromSpecification($spec, $output, false);
+        $req = new GeneratorRequest($schema, $validated, $specOptions);
 
-        unlink($tmpFileYaml);
+        $this->runner->generateFromRequest($req, $output, false);
     }
 }
