@@ -109,7 +109,7 @@ class PropertyBuilder
             }
         }
 
-        // Expand multi-type definitions like ["string", "object"] into a oneOf union
+        // Expand multi-type definitions like ["string", "object"] into an anyOf union
         if (isset($definition['type']) && is_array($definition['type']) && count($definition['type']) > 1) {
             $types      = $definition['type'];
             $subSchemas = [];
@@ -125,7 +125,7 @@ class PropertyBuilder
 
             $unionDef = $definition;
             unset($unionDef['type']);
-            $unionDef['oneOf'] = $subSchemas;
+            $unionDef['anyOf'] = $subSchemas;
 
             return self::buildPropertyFromSchema($req, $name, $unionDef, $isRequired);
         }
