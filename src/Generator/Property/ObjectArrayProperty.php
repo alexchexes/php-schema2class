@@ -48,7 +48,12 @@ class ObjectArrayProperty extends AbstractProperty
             return false;
         }
 
-        return (isset($itemSchema["type"]) && $itemSchema["type"] === "object") || isset($itemSchema["properties"]);
+        $hasProps = isset($itemSchema["properties"]) && is_array($itemSchema["properties"]) && count($itemSchema["properties"]) > 0;
+
+        return (
+            ((isset($itemSchema["type"]) && $itemSchema["type"] === "object") || isset($itemSchema["properties"]))
+            && $hasProps
+        );
     }
 
     public function isComplex(): bool
@@ -62,7 +67,11 @@ class ObjectArrayProperty extends AbstractProperty
         $key  = $this->key;
         $st   = $this->subTypeName();
 
-        if ($this->generatorRequest->isAtLeastPHP("7.4")) {
+        if ($this->itemType instanceof MixedProperty) {
+            return "\${$outputVarName}['$key'] = array_map(fn (\$i) => \$i, \$this->{$name});";
+        }
+
+        if ($this->generatorRequest->isAtLeastPHP('7.4')) {
             return "\${$outputVarName}['$key'] = array_map(fn ($st \$i) => \$i->toArray(), \$this->{$name});";
         }
         return "\${$outputVarName}['$key'] = array_map(function($st \$i) { return \$i->toArray(); }, \$this->{$name});";
@@ -74,6 +83,10 @@ class ObjectArrayProperty extends AbstractProperty
      */
     public function generateSubTypes(SchemaToClass $generator): void
     {
+        if ($this->itemType instanceof MixedProperty) {
+            return;
+        }
+
         $generator->schemaToClass(
             $this->generatorRequest->withSchema($this->itemSchema)->withClass($this->subTypeName())
         );
@@ -91,35 +104,55 @@ class ObjectArrayProperty extends AbstractProperty
 
     public function generateTypeAssertionExpr(string $expr): string
     {
+        if ($this->itemType instanceof MixedProperty) {
+            return "is_array({$expr})";
+        }
+
         $st = $this->subTypeName();
         return "is_array({$expr}) && count(array_filter({$expr}, function({$st} \$item) {return \$item instanceof {$st};})) === count({$expr})";
     }
 
     public function generateInputAssertionExpr(string $expr): string
     {
+        if ($this->itemType instanceof MixedProperty) {
+            return "is_array({$expr})";
+        }
+
         $st = $this->subTypeName();
-        return "is_array({$expr}) && count(array_filter({$expr}, function({$st} \$item) {return {$st}::validateInput(\$item, true)};})) === count({$expr})";
+        return "is_array({$expr}) && count(array_filter({$expr}, function({$st} \$item) {return {$st}::validateInput(\$item, true)};)) === count({$expr})";
     }
 
     public function generateInputMappingExpr(string $expr, bool $asserted = false): string
     {
         $sm       = $this->itemType->generateInputMappingExpr('$i');
+
+        if ($this->itemType instanceof MixedProperty) {
+            return match (true) {
+                $this->generatorRequest->isAtLeastPHP('7.0') => "array_map(fn (\$i) => {$sm}, {$expr})",
+                default => "array_map(function(\$i) { return {$sm}; }, {$expr})",
+            };
+        }
+
         $typeHint = $this->subTypeName();
 
         return match (true) {
-            $this->generatorRequest->isAtLeastPHP("8.0") => "array_map(fn (array|object \$i): {$typeHint} => {$sm}, {$expr})",
-            $this->generatorRequest->isAtLeastPHP("7.4") => "array_map(fn (\$i): {$typeHint} => {$sm}, {$expr})",
-            $this->generatorRequest->isAtLeastPHP("7.0") => "array_map(function(\$i): {$typeHint} use (\$validate) { return {$sm}; }, {$expr})",
+            $this->generatorRequest->isAtLeastPHP('8.0') => "array_map(fn (array|object \$i): {$typeHint} => {$sm}, {$expr})",
+            $this->generatorRequest->isAtLeastPHP('7.4') => "array_map(fn (\$i): {$typeHint} => {$sm}, {$expr})",
+            $this->generatorRequest->isAtLeastPHP('7.0') => "array_map(function(\$i): {$typeHint} use (\$validate) { return {$sm}; }, {$expr})",
             default => "array_map(function(array \$i) use (\$validate) { return {$sm}; }, {$expr})",
         };
     }
 
     public function generateOutputMappingExpr(string $expr): string
     {
+        if ($this->itemType instanceof MixedProperty) {
+            return "array_map(fn (\$i) => \$i, {$expr})";
+        }
+
         $st = $this->subTypeName();
         $sm = $this->itemType->generateOutputMappingExpr('$i');
 
-        if ($this->generatorRequest->isAtLeastPHP("7.4")) {
+        if ($this->generatorRequest->isAtLeastPHP('7.4')) {
             return "array_map(fn ($st \$i) => {$sm}, {$expr})";
         }
         return "array_map(function($st \$i) { return {$sm} }, {$expr})";
@@ -127,9 +160,13 @@ class ObjectArrayProperty extends AbstractProperty
 
     public function generateCloneExpr(string $expr): string
     {
+        if ($this->itemType instanceof MixedProperty) {
+            return "array_map(fn (\$i) => \$i, {$expr})";
+        }
+
         $st = $this->subTypeName();
 
-        if ($this->generatorRequest->isAtLeastPHP("7.4")) {
+        if ($this->generatorRequest->isAtLeastPHP('7.4')) {
             return "array_map(fn ({$st} \$i) => clone \$i, {$expr})";
         }
         return "array_map(function({$st} \$i) { return clone \$i; }, {$expr})";
