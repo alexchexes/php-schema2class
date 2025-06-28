@@ -11,7 +11,7 @@ class SpecificationOptions
      *
      * @var array
      */
-    private static array $schema = ['additionalProperties' => false, 'properties' => ['targetDirectory' => ['type' => 'string'], 'targetNamespace' => ['type' => 'string'], 'cleanTargetDirectory' => ['type' => 'boolean'], 'disableStrictTypes' => ['type' => 'boolean'], 'treatValuesWithDefaultAsOptional' => ['type' => 'boolean'], 'inlineAllofReferences' => ['type' => 'boolean'], 'targetPHPVersion' => ['oneOf' => [['type' => 'integer', 'enum' => [5, 7, 8]], ['type' => 'string']]], 'newValidatorClassExpr' => ['type' => 'string'], 'preservePropertyNames' => ['type' => 'boolean'], 'noGetters' => ['type' => 'boolean'], 'noSetters' => ['type' => 'boolean'], 'noDescriptionsInSchema' => ['type' => 'boolean'], 'singleLineSchema' => ['type' => 'boolean'], 'noEnums' => ['type' => 'boolean']]];
+    private static array $schema = ['additionalProperties' => false, 'properties' => ['targetDirectory' => ['type' => 'string'], 'targetNamespace' => ['type' => 'string'], 'targetPHPVersion' => ['oneOf' => [['type' => 'integer', 'enum' => [5, 7, 8]], ['type' => 'string']]], 'cleanTargetDirectory' => ['type' => 'boolean'], 'disableStrictTypes' => ['type' => 'boolean'], 'treatValuesWithDefaultAsOptional' => ['type' => 'boolean'], 'inlineAllofReferences' => ['type' => 'boolean'], 'newValidatorClassExpr' => ['type' => 'string'], 'preservePropertyNames' => ['type' => 'boolean'], 'noGetters' => ['type' => 'boolean'], 'noSetters' => ['type' => 'boolean'], 'noDescriptionsInSchema' => ['type' => 'boolean'], 'singleLineSchema' => ['type' => 'boolean'], 'noEnums' => ['type' => 'boolean']]];
 
     /**
      * @var string|null
@@ -22,6 +22,11 @@ class SpecificationOptions
      * @var string|null
      */
     private ?string $targetNamespace = null;
+
+    /**
+     * @var int|string|null
+     */
+    private int|string|null $targetPHPVersion = null;
 
     /**
      * When true, the generator removes all files from the target directory
@@ -46,11 +51,6 @@ class SpecificationOptions
      * @var bool|null
      */
     private ?bool $inlineAllofReferences = null;
-
-    /**
-     * @var int|string|null
-     */
-    private int|string|null $targetPHPVersion = null;
 
     /**
      * The expression to use to create a new instance of the validator class.
@@ -127,6 +127,14 @@ class SpecificationOptions
     }
 
     /**
+     * @return int|string|null
+     */
+    public function getTargetPHPVersion() : int|string|null
+    {
+        return $this->targetPHPVersion;
+    }
+
+    /**
      * When true, the generator removes all files from the target directory
      * before writing new ones.
      *
@@ -160,14 +168,6 @@ class SpecificationOptions
     public function getInlineAllofReferences() : ?bool
     {
         return $this->inlineAllofReferences ?? null;
-    }
-
-    /**
-     * @return int|string|null
-     */
-    public function getTargetPHPVersion() : int|string|null
-    {
-        return $this->targetPHPVersion;
     }
 
     /**
@@ -308,6 +308,29 @@ class SpecificationOptions
     }
 
     /**
+     * @param int|string $targetPHPVersion
+     * @return self
+     */
+    public function withTargetPHPVersion(int|string $targetPHPVersion) : self
+    {
+        $clone = clone $this;
+        $clone->targetPHPVersion = $targetPHPVersion;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutTargetPHPVersion() : self
+    {
+        $clone = clone $this;
+        unset($clone->targetPHPVersion);
+
+        return $clone;
+    }
+
+    /**
      * @param bool $cleanTargetDirectory
      * @return self
      */
@@ -419,29 +442,6 @@ class SpecificationOptions
     {
         $clone = clone $this;
         unset($clone->inlineAllofReferences);
-
-        return $clone;
-    }
-
-    /**
-     * @param int|string $targetPHPVersion
-     * @return self
-     */
-    public function withTargetPHPVersion(int|string $targetPHPVersion) : self
-    {
-        $clone = clone $this;
-        $clone->targetPHPVersion = $targetPHPVersion;
-
-        return $clone;
-    }
-
-    /**
-     * @return self
-     */
-    public function withoutTargetPHPVersion() : self
-    {
-        $clone = clone $this;
-        unset($clone->targetPHPVersion);
 
         return $clone;
     }
@@ -666,15 +666,15 @@ class SpecificationOptions
 
         $targetDirectory = isset($input->{'targetDirectory'}) ? $input->{'targetDirectory'} : null;
         $targetNamespace = isset($input->{'targetNamespace'}) ? $input->{'targetNamespace'} : null;
-        $cleanTargetDirectory = isset($input->{'cleanTargetDirectory'}) ? $input->{'cleanTargetDirectory'} : null;
-        $disableStrictTypes = isset($input->{'disableStrictTypes'}) ? $input->{'disableStrictTypes'} : null;
-        $treatValuesWithDefaultAsOptional = isset($input->{'treatValuesWithDefaultAsOptional'}) ? $input->{'treatValuesWithDefaultAsOptional'} : null;
-        $inlineAllofReferences = isset($input->{'inlineAllofReferences'}) ? $input->{'inlineAllofReferences'} : null;
         $targetPHPVersion = isset($input->{'targetPHPVersion'}) ? match (true) {
             default => null,
             is_int($input->{'targetPHPVersion'}) => (int)($input->{'targetPHPVersion'}),
             is_string($input->{'targetPHPVersion'}) => $input->{'targetPHPVersion'},
         } : null;
+        $cleanTargetDirectory = isset($input->{'cleanTargetDirectory'}) ? $input->{'cleanTargetDirectory'} : null;
+        $disableStrictTypes = isset($input->{'disableStrictTypes'}) ? $input->{'disableStrictTypes'} : null;
+        $treatValuesWithDefaultAsOptional = isset($input->{'treatValuesWithDefaultAsOptional'}) ? $input->{'treatValuesWithDefaultAsOptional'} : null;
+        $inlineAllofReferences = isset($input->{'inlineAllofReferences'}) ? $input->{'inlineAllofReferences'} : null;
         $newValidatorClassExpr = isset($input->{'newValidatorClassExpr'}) ? $input->{'newValidatorClassExpr'} : null;
         $preservePropertyNames = isset($input->{'preservePropertyNames'}) ? $input->{'preservePropertyNames'} : null;
         $noGetters = isset($input->{'noGetters'}) ? $input->{'noGetters'} : null;
@@ -686,11 +686,11 @@ class SpecificationOptions
         $obj = new self();
         $obj->targetDirectory = $targetDirectory;
         $obj->targetNamespace = $targetNamespace;
+        $obj->targetPHPVersion = $targetPHPVersion;
         $obj->cleanTargetDirectory = $cleanTargetDirectory;
         $obj->disableStrictTypes = $disableStrictTypes;
         $obj->treatValuesWithDefaultAsOptional = $treatValuesWithDefaultAsOptional;
         $obj->inlineAllofReferences = $inlineAllofReferences;
-        $obj->targetPHPVersion = $targetPHPVersion;
         $obj->newValidatorClassExpr = $newValidatorClassExpr;
         $obj->preservePropertyNames = $preservePropertyNames;
         $obj->noGetters = $noGetters;
@@ -715,6 +715,11 @@ class SpecificationOptions
         if (isset($this->targetNamespace)) {
             $output['targetNamespace'] = $this->targetNamespace;
         }
+        if (isset($this->targetPHPVersion)) {
+            $output['targetPHPVersion'] = match (true) {
+                is_int($this->targetPHPVersion), is_string($this->targetPHPVersion) => $this->targetPHPVersion,
+            };
+        }
         if (isset($this->cleanTargetDirectory)) {
             $output['cleanTargetDirectory'] = $this->cleanTargetDirectory;
         }
@@ -726,11 +731,6 @@ class SpecificationOptions
         }
         if (isset($this->inlineAllofReferences)) {
             $output['inlineAllofReferences'] = $this->inlineAllofReferences;
-        }
-        if (isset($this->targetPHPVersion)) {
-            $output['targetPHPVersion'] = match (true) {
-                is_int($this->targetPHPVersion), is_string($this->targetPHPVersion) => $this->targetPHPVersion,
-            };
         }
         if (isset($this->newValidatorClassExpr)) {
             $output['newValidatorClassExpr'] = $this->newValidatorClassExpr;

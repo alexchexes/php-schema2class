@@ -29,6 +29,11 @@ definitions:
         type: string
       targetNamespace:
         type: string
+      targetPHPVersion:
+        oneOf:
+          - type: integer
+            enum: [5, 7, 8]
+          - type: string
       cleanTargetDirectory:
         type: boolean
         description: |
@@ -40,11 +45,6 @@ definitions:
         type: boolean
       inlineAllofReferences:
         type: boolean
-      targetPHPVersion:
-        oneOf:
-          - type: integer
-            enum: [5, 7, 8]
-          - type: string
       newValidatorClassExpr:
         type: string
         description: |
