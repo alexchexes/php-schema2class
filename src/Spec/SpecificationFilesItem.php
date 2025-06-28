@@ -14,7 +14,7 @@ class SpecificationFilesItem
     private static array $schema = ['properties' => ['input' => ['type' => ['string', 'object']], 'className' => ['type' => 'string'], 'options' => ['$ref' => '#/definitions/SpecificationOptions']], 'additionalProperties' => false, 'required' => ['input'], 'definitions' => ['SpecificationOptions' => ['additionalProperties' => false, 'properties' => ['targetDirectory' => ['type' => 'string'], 'targetNamespace' => ['type' => 'string'], 'targetPHPVersion' => ['oneOf' => [['type' => 'integer', 'enum' => [5, 7, 8]], ['type' => 'string']]], 'cleanTargetDirectory' => ['type' => 'boolean'], 'disableStrictTypes' => ['type' => 'boolean'], 'treatValuesWithDefaultAsOptional' => ['type' => 'boolean'], 'inlineAllofReferences' => ['type' => 'boolean'], 'newValidatorClassExpr' => ['type' => 'string'], 'preservePropertyNames' => ['type' => 'boolean'], 'noGetters' => ['type' => 'boolean'], 'noSetters' => ['type' => 'boolean'], 'noDescriptionsInSchema' => ['type' => 'boolean'], 'singleLineSchema' => ['type' => 'boolean'], 'noEnums' => ['type' => 'boolean']]]]];
 
     /**
-     * @var mixed
+     * @var string|mixed
      */
     private $input;
 
@@ -29,7 +29,7 @@ class SpecificationFilesItem
     private ?SpecificationOptions $options = null;
 
     /**
-     * @param mixed $input
+     * @param string|mixed $input
      */
     public function __construct($input)
     {
@@ -37,7 +37,7 @@ class SpecificationFilesItem
     }
 
     /**
-     * @return mixed
+     * @return string|mixed
      */
     public function getInput()
     {
@@ -61,17 +61,11 @@ class SpecificationFilesItem
     }
 
     /**
-     * @param mixed $input
+     * @param string|mixed $input
      * @return self
      */
     public function withInput($input) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($input, self::$schema['properties']['input']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-        }
-
         $clone = clone $this;
         $clone->input = $input;
 
@@ -145,7 +139,10 @@ class SpecificationFilesItem
             static::validateInput($input2);
         }
 
-        $input = $input2->{'input'};
+        $input = match (true) {
+            is_string($input2->{'input'}), true => $input2->{'input'},
+            default => throw new \InvalidArgumentException("could not build property 'input' from JSON"),
+        };
         $className = isset($input2->{'className'}) ? $input2->{'className'} : null;
         $options = isset($input2->{'options'}) ? SpecificationOptions::buildFromInput($input2->{'options'}, $validate) : null;
 
@@ -163,7 +160,9 @@ class SpecificationFilesItem
     public function toArray() : array
     {
         $output = [];
-        $output['input'] = $this->input;
+        $output['input'] = match (true) {
+            is_string($this->input), true => $this->input,
+        };
         if (isset($this->className)) {
             $output['className'] = $this->className;
         }
@@ -196,6 +195,13 @@ class SpecificationFilesItem
         }
 
         return $validator->isValid();
+    }
+
+    public function __clone()
+    {
+        $this->input = match (true) {
+            is_string($this->input), true => $this->input,
+        };
     }
 }
 
