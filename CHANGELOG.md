@@ -7,9 +7,6 @@ This version introduces a substantial update across the project with new feature
 ### Programmatic API
 
 - A new `Schema2Class` provides a direct PHP interface for generating classes without the CLI. It supports generating from specification files, specification arrays, or directly from a schema passed as an array. Example usage is documented in the README.
-- `Schema2Class::generateFromSchema` now delegates to `GenerationRunner::generateFromSpecification` and specification files support inline schema arrays.
-- `SchemaLoader` accepts arrays in addition to file paths.
-- `GeneratorRequest::normalizeTargetVersion` returns a semver string and is used consistently across the code base.
 
 ### New options (extended specification)
 
