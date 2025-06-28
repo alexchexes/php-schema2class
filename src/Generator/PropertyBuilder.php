@@ -109,6 +109,27 @@ class PropertyBuilder
             }
         }
 
+        // Expand multi-type definitions like ["string", "object"] into a oneOf union
+        if (isset($definition['type']) && is_array($definition['type']) && count($definition['type']) > 1) {
+            $types      = $definition['type'];
+            $subSchemas = [];
+            foreach ($types as $t) {
+                $sub       = $definition;
+                $sub['type'] = $t;
+                // prune object specific fields for non-object arms
+                if ($t !== 'object') {
+                    unset($sub['properties'], $sub['required'], $sub['additionalProperties']);
+                }
+                $subSchemas[] = $sub;
+            }
+
+            $unionDef = $definition;
+            unset($unionDef['type']);
+            $unionDef['oneOf'] = $subSchemas;
+
+            return self::buildPropertyFromSchema($req, $name, $unionDef, $isRequired);
+        }
+
         // Strip out null arms from anyOf/oneOf and wrap the rest as an Optional<…>
         $unionKey = isset($definition['anyOf']) ? 'anyOf'
                 : (isset($definition['oneOf']) ? 'oneOf' : null);

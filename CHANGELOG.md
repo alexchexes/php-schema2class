@@ -33,6 +33,7 @@ Now it:
 - Improves camelCase/PascalCase handling when generating identifier names.
 - Omits the default `null` value for properties listed in the `required` schema block.
 - Improves type hints and PHPDoc type generation for complex types like unions, nested arrays, etc.
+- Handles `type` arrays with multiple entries by emitting proper union properties instead of falling back to `mixed`.
 - Adds a guard against passing anything other than an array/object to `buildFromInput`, building multi-line validation error messages.
 - Skips emitting empty `__construct` or `__clone` methods.
 
