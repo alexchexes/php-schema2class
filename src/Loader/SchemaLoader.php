@@ -6,6 +6,23 @@ use Symfony\Component\Yaml\Yaml;
 
 class SchemaLoader
 {
+    private static function objectToArrayRecursive(object $obj): array
+    {
+        $result = [];
+        foreach ((array)$obj as $k => $v) {
+            if ($v instanceof \stdClass) {
+                $result[$k] = self::objectToArrayRecursive($v);
+            } elseif (is_array($v)) {
+                $result[$k] = array_map(
+                    fn($e) => $e instanceof \stdClass ? self::objectToArrayRecursive($e) : $e,
+                    $v
+                );
+            } else {
+                $result[$k] = $v;
+            }
+        }
+        return $result;
+    }
     /**
      * @param array|string $input
      * @return array
@@ -20,9 +37,14 @@ class SchemaLoader
         if (is_object($input)) {
             if (method_exists($input, 'toArray')) {
                 return $input->toArray();
-            } else {
-                throw new LoadingException(get_class($input), "couldn't transform object to schema array: no 'toArray()' method");
+            } elseif ($input instanceof \stdClass) {
+                return self::objectToArrayRecursive($input);
             }
+
+            throw new LoadingException(
+                get_class($input),
+                "couldn't transform object to schema array: no 'toArray()' method"
+            );
         }
 
         $filename = $input;
