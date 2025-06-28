@@ -7,9 +7,7 @@ use Helmich\Schema2Class\Example\CustomerAddress; // ← necessary for 'RefList'
 use Helmich\Schema2Class\Loader\SchemaLoader;
 use Helmich\Schema2Class\Command\GenerateCommand;
 use Symfony\Component\Console\Tester\CommandTester;
-use Helmich\Schema2Class\Generator\NamespaceInferrer;
 use Helmich\Schema2Class\Generator\SchemaToClassFactory;
-use Helmich\Schema2Class\Generator\GenerationRunner;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
 use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
 use Helmich\Schema2Class\Writer\DebugWriter;
@@ -188,13 +186,7 @@ class SchemaToClassTest extends TestCase
         $dir = sys_get_temp_dir() . '/s2c_' . uniqid();
         mkdir($dir);
 
-        $loader = new SchemaLoader();
-        $runner = new GenerationRunner(
-            $loader,
-            new NamespaceInferrer(),
-            new SchemaToClassFactory(),
-        );
-        $command = new GenerateCommand($runner);
+        $command = new GenerateCommand();
 
         $tester = new CommandTester($command);
         $tester->execute([
@@ -219,13 +211,7 @@ class SchemaToClassTest extends TestCase
         $dir = sys_get_temp_dir() . '/s2c_' . uniqid();
         mkdir($dir);
 
-        $loader = new SchemaLoader();
-        $runner = new GenerationRunner(
-            $loader,
-            new NamespaceInferrer(),
-            new SchemaToClassFactory(),
-        );
-        $command = new GenerateCommand($runner);
+        $command = new GenerateCommand();
 
         $tester = new CommandTester($command);
         $tester->execute([

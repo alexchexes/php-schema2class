@@ -7,6 +7,7 @@ use Helmich\Schema2Class\Generator\GenerationRunner;
 use Helmich\Schema2Class\Generator\NamespaceInferrer;
 use Helmich\Schema2Class\Loader\SchemaLoader;
 use Helmich\Schema2Class\Generator\SchemaToClassFactory;
+use Helmich\Schema2Class\Loader\LoadingException;
 use Helmich\Schema2Class\Spec\Specification;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
 use Helmich\Schema2Class\Spec\OptionsDefaults;
@@ -41,18 +42,21 @@ class Schema2Class
      * Generate classes from a config provided either as a specification file path,
      * as an associative array or as an instance of `Schema2Class\Spec\Specification` object.
      */
-    public function generateFromSpec(string|array|Specification $config, ?OutputInterface $output = null): void
+    public function generateFromSpec(string|array|Specification $config, ?OutputInterface $output = null, bool $dryRun = false): void
     {
         $output = $output ?? new NullOutput();
 
         if (!($config instanceof Specification)) {
             if (is_string($config)) {
+                if (!file_exists($config)) {
+                    throw new LoadingException($config, "specification file not found");
+                }
                 $config = Yaml::parse(file_get_contents($config));
             }
             $config = Specification::buildFromInput($config);
         }
 
-        $this->runner->generateFromSpecification($config, $output, false);
+        $this->runner->generateFromSpecification($config, $output, $dryRun);
     }
 
     /**
@@ -67,6 +71,7 @@ class Schema2Class
         ?string $targetNamespace = null,
         ?string $className = null,
         bool $cleanTargetDirectory = false,
+        bool $dryRun = false,
         ?SpecificationOptions $options = null,
         ?OutputInterface $output = null,
     ): void {
@@ -74,19 +79,22 @@ class Schema2Class
 
         $opts = $options ?? new SpecificationOptions();
         $opts = $opts->withTargetDirectory($targetDirectory);
+
         if ($targetNamespace !== null) {
             $opts = $opts->withTargetNamespace($targetNamespace);
         }
+
         $opts = $opts->withCleanTargetDirectory($cleanTargetDirectory);
         $opts = OptionsDefaults::applyDefaults($opts);
 
         $specFile = new SpecificationFilesItem($schema);
+
         if ($className !== null) {
             $specFile = $specFile->withClassName($className);
         }
 
         $spec = (new Specification([$specFile]))->withOptions($opts);
 
-        $this->runner->generateFromSpecification($spec, $output, false);
+        $this->runner->generateFromSpecification($spec, $output, $dryRun);
     }
 }

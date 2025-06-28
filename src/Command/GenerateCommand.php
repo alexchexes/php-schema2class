@@ -4,14 +4,8 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Command;
 
-use Helmich\Schema2Class\Generator\GeneratorException;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
-use Helmich\Schema2Class\Generator\GenerationRunner;
-use Helmich\Schema2Class\Loader\LoadingException;
-use Helmich\Schema2Class\Spec\Specification;
-use Helmich\Schema2Class\Spec\SpecificationFilesItem;
-use Helmich\Schema2Class\Spec\SpecificationOptions;
-use Helmich\Schema2Class\Spec\OptionsDefaults;
+use Helmich\Schema2Class\Schema2Class;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -20,13 +14,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class GenerateCommand extends Command
 {
-    private GenerationRunner $runner;
-
-    public function __construct(GenerationRunner $runner)
+    public function __construct()
     {
         parent::__construct();
-
-        $this->runner = $runner;
     }
 
     protected function configure(): void
@@ -54,10 +44,6 @@ class GenerateCommand extends Command
         $this->addOption('clean-dir', null, InputOption::VALUE_NONE, 'Remove all files in target directory before writing');
     }
 
-    /**
-     * @throws LoadingException
-     * @throws GeneratorException
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $options = [
@@ -91,8 +77,12 @@ class GenerateCommand extends Command
             'files'   => [ $fileOptions ],
         ];
 
-        $spec = Specification::buildFromInput($specArray);
-        $this->runner->generateFromSpecification($spec, $output, (bool)$input->getOption('dry-run'));
+        new Schema2Class()->generateFromSpec(
+            $specArray,
+            $output,
+            (bool) $input->getOption('dry-run'),
+        );
+
         return 0;
     }
 }

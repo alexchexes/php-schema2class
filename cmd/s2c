@@ -12,12 +12,8 @@ if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
 }
 
 $app = new \Symfony\Component\Console\Application("s2c");
-$loader = new \Helmich\Schema2Class\Loader\SchemaLoader();
-$inferrer = new \Helmich\Schema2Class\Generator\NamespaceInferrer();
-$factory = new \Helmich\Schema2Class\Generator\SchemaToClassFactory();
-$runner = new \Helmich\Schema2Class\Generator\GenerationRunner($loader, $inferrer, $factory);
 
-$app->add(new \Helmich\Schema2Class\Command\GenerateCommand($runner));
-$app->add(new \Helmich\Schema2Class\Command\GenerateSpecCommand($runner));
+$app->add(new \Helmich\Schema2Class\Command\GenerateCommand());
+$app->add(new \Helmich\Schema2Class\Command\GenerateSpecCommand());
 
 $app->run();
