@@ -43,7 +43,7 @@ class SchemaLoader
 
             throw new LoadingException(
                 get_class($input),
-                "couldn't transform object to schema array: no 'toArray()' method"
+                "couldn't transform object to schema array: object is not an instance of 'stdClass' and has no 'toArray()' method"
             );
         }
 
