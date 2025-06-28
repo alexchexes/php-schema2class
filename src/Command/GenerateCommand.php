@@ -20,7 +20,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class GenerateCommand extends Command
 {
-
     private GenerationRunner $runner;
 
     public function __construct(GenerationRunner $runner)
@@ -56,80 +55,44 @@ class GenerateCommand extends Command
     }
 
     /**
-     * @param InputInterface  $input
-     * @param OutputInterface $output
-     * @return int
-     *
      * @throws LoadingException
      * @throws GeneratorException
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        /** @var string $schemaFile */
-        $schemaFile = $input->getArgument("schema");
-        /** @var string $targetDirectory */
-        $targetDirectory = $input->getArgument("target-dir");
-        /** @var string $targetNamespace */
-        $targetNamespace = $input->getOption("target-namespace");
-        /** @var string|null $class */
-        $class = $input->getOption("class");
-        /** @var string|null $targetPHPVersion */
-        $targetPHPVersion = $input->getOption("target-php");
+        $options = [
+            'targetDirectory'                   => $input->getArgument('target-dir'),
+            'targetNamespace'                   => $input->getOption('target-namespace'),
+            'targetPHPVersion'                  => $input->getOption('target-php') ?: GeneratorRequest::DEFAULT_PHP8_VERSION,
+            'cleanTargetDirectory'              => $input->getOption('clean-dir'),
+            'disableStrictTypes'                => $input->getOption('disable-strict-types'),
+            'treatValuesWithDefaultAsOptional'  => $input->getOption('treat-default-as-optional'),
+            'inlineAllofReferences'             => $input->getOption('inline-allof'),
+            'newValidatorClassExpr'             => $input->getOption('validator-expr'),
+            'preservePropertyNames'             => $input->getOption('preserve-property-names'),
+            'noGetters'                         => $input->getOption('no-getters'),
+            'noSetters'                         => $input->getOption('no-setters'),
+            'noDescriptionsInSchema'            => $input->getOption('no-schema-descriptions'),
+            'singleLineSchema'                  => $input->getOption('single-line-schema'),
+            'noEnums'                           => $input->getOption('no-enums'),
+        ];
 
-        $opts = new SpecificationOptions();
-        $opts = $opts->withTargetDirectory($targetDirectory);
-        if ($targetNamespace) {
-            $opts = $opts->withTargetNamespace($targetNamespace);
-        }
-        $opts = $opts->withCleanTargetDirectory((bool)$input->getOption('clean-dir'));
+        $options = array_filter($options);
 
-        if (!$targetPHPVersion) {
-            $targetPHPVersion = GeneratorRequest::DEFAULT_PHP8_VERSION;
-        }
-        $opts = $opts->withTargetPHPVersion($targetPHPVersion);
+        $fileOptions = [
+            'input'     => $input->getArgument("schema"),
+            'className' => $input->getOption("class"),
+        ];
 
-        if ($input->getOption("disable-strict-types")) {
-            $opts = $opts->withDisableStrictTypes(true);
-        }
-        if ($input->getOption("treat-default-as-optional")) {
-            $opts = $opts->withTreatValuesWithDefaultAsOptional(true);
-        }
-        if ($input->getOption("inline-allof")) {
-            $opts = $opts->withInlineAllofReferences(true);
-        }
-        if ($expr = $input->getOption("validator-expr")) {
-            $opts = $opts->withNewValidatorClassExpr((string)$expr);
-        }
-        if ($input->getOption("preserve-property-names")) {
-            $opts = $opts->withPreservePropertyNames(true);
-        }
-        if ($input->getOption("no-getters")) {
-            $opts = $opts->withNoGetters(true);
-        }
-        if ($input->getOption("no-setters")) {
-            $opts = $opts->withNoSetters(true);
-        }
-        if ($input->getOption("no-schema-descriptions")) {
-            $opts = $opts->withNoDescriptionsInSchema(true);
-        }
-        if ($input->getOption("single-line-schema")) {
-            $opts = $opts->withSingleLineSchema(true);
-        }
-        if ($input->getOption('no-enums')) {
-            $opts = $opts->withNoEnums(true);
-        }
+        $fileOptions = array_filter($fileOptions);
 
-        $opts = OptionsDefaults::applyDefaults($opts);
+        $specArray = [
+            'options' => $options,
+            'files'   => [ $fileOptions ],
+        ];
 
-        $file = new SpecificationFilesItem($schemaFile);
-        if ($class !== null) {
-            $file = $file->withClassName($class);
-        }
-
-        $spec = (new Specification([$file]))->withOptions($opts);
-
+        $spec = Specification::buildFromInput($specArray);
         $this->runner->generateFromSpecification($spec, $output, (bool)$input->getOption('dry-run'));
-
         return 0;
     }
 }
