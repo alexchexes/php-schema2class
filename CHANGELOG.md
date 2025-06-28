@@ -66,6 +66,10 @@ Now it:
 
 - In other aspects, the main public API (spec-files and CLI options handling) has only been extended, not changed, so existing functionality in a simple case should continue to work as expected.
 
+### Added
+
+- `files[].input` now accepts inline schema arrays in addition to file paths.
+
 However, the generated class code may differ in some aspects due to improved generation logic, so it's recommended to review any changes carefully.
 
 Additionally, the internals have changed drastically, so if you run custom hooks or other complex extensions, you may need some adjustements.

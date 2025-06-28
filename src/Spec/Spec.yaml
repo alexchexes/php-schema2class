@@ -8,9 +8,7 @@ definitions:
         items:
           properties:
             input:
-              anyOf:
-                - type: string
-                - {}
+              type: [string, object]
             className:
               type: string
             options:
