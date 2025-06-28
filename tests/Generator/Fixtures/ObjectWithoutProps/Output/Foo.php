@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ns\ObjectUnion;
+namespace Ns\ObjectWithoutProps;
 
 class Foo
 {
@@ -14,10 +14,7 @@ class Foo
     private static array $schema = [
         'properties' => [
             'foo' => [
-                'type' => [
-                    'string',
-                    'object',
-                ],
+                'type' => 'object',
             ],
             'bar' => [
                 'type' => 'string',
@@ -29,7 +26,7 @@ class Foo
     ];
 
     /**
-     * @var string|mixed
+     * @var mixed
      */
     private $foo;
 
@@ -39,7 +36,7 @@ class Foo
     private ?string $bar = null;
 
     /**
-     * @param string|mixed $foo
+     * @param mixed $foo
      */
     public function __construct($foo)
     {
@@ -47,7 +44,7 @@ class Foo
     }
 
     /**
-     * @return string|mixed
+     * @return mixed
      */
     public function getFoo()
     {
@@ -63,11 +60,17 @@ class Foo
     }
 
     /**
-     * @param string|mixed $foo
+     * @param mixed $foo
      * @return self
      */
     public function withFoo($foo) : self
     {
+        $validator = new \JsonSchema\Validator();
+        $validator->validate($foo, self::$schema['properties']['foo']);
+        if (!$validator->isValid()) {
+            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        }
+
         $clone = clone $this;
         $clone->foo = $foo;
 
@@ -118,10 +121,7 @@ class Foo
             static::validateInput($input);
         }
 
-        $foo = match (true) {
-            is_string($input->{'foo'}), true => $input->{'foo'},
-            default => throw new \InvalidArgumentException("could not build property 'foo' from JSON"),
-        };
+        $foo = $input->{'foo'};
         $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
 
         $obj = new self($foo);
@@ -137,9 +137,7 @@ class Foo
     public function toArray() : array
     {
         $output = [];
-        $output['foo'] = match (true) {
-            is_string($this->foo), true => $this->foo,
-        };
+        $output['foo'] = $this->foo;
         if (isset($this->bar)) {
             $output['bar'] = $this->bar;
         }
@@ -170,12 +168,4 @@ class Foo
 
         return $validator->isValid();
     }
-
-    public function __clone()
-    {
-        $this->foo = match (true) {
-            is_string($this->foo), true => $this->foo,
-        };
-    }
 }
-
