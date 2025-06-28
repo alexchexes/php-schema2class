@@ -10,7 +10,7 @@ definitions:
             input:
               oneOf:
                 - type: string
-                - type: array
+                - type: object
             className:
               type: string
             options:

@@ -11,10 +11,18 @@ class SchemaLoader
      * @return array
      * @throws LoadingException
      */
-    public function loadSchema(array|string $input): array
+    public function loadSchema(array|string|object $input): array
     {
         if (is_array($input)) {
             return $input;
+        }
+
+        if (is_object($input)) {
+            if (method_exists($input, 'toArray')) {
+                return $input->toArray();
+            } else {
+                throw new LoadingException(get_class($input), "couldn't transform object to schema array: no 'toArray()' method");
+            }
         }
 
         $filename = $input;

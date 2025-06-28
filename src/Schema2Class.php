@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class;
 
 use Helmich\Schema2Class\Generator\GenerationRunner;
+use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\NamespaceInferrer;
 use Helmich\Schema2Class\Loader\SchemaLoader;
 use Helmich\Schema2Class\Generator\SchemaToClassFactory;
@@ -67,34 +68,55 @@ class Schema2Class
      */
     public function generateFromSchema(
         array $schema,
-        string $targetDirectory,
-        ?string $targetNamespace = null,
         ?string $className = null,
-        bool $cleanTargetDirectory = false,
+        array $options = [],
         bool $dryRun = false,
-        ?SpecificationOptions $options = null,
         ?OutputInterface $output = null,
     ): void {
+
         $output = $output ?? new NullOutput();
 
-        $opts = $options ?? new SpecificationOptions();
-        $opts = $opts->withTargetDirectory($targetDirectory);
+        $options = array_filter($options);
 
-        if ($targetNamespace !== null) {
-            $opts = $opts->withTargetNamespace($targetNamespace);
-        }
+        $fileOptions = [
+            'input'     => $schema,
+            'className' => $className,
+        ];
 
-        $opts = $opts->withCleanTargetDirectory($cleanTargetDirectory);
-        $opts = OptionsDefaults::applyDefaults($opts);
+        $fileOptions = array_filter($fileOptions);
 
-        $specFile = new SpecificationFilesItem($schema);
+        $specArray = [
+            'options' => $options,
+            'files'   => [ $fileOptions ],
+        ];
 
-        if ($className !== null) {
-            $specFile = $specFile->withClassName($className);
-        }
+        $this->generateFromSpec(
+            $specArray,
+            $output,
+            $dryRun,
+        );
 
-        $spec = (new Specification([$specFile]))->withOptions($opts);
 
-        $this->runner->generateFromSpecification($spec, $output, $dryRun);
+        // //////////////////////////////////////
+
+        // $opts = $options ?? new SpecificationOptions();
+        // $opts = $opts->withTargetDirectory($targetDirectory);
+
+        // if ($targetNamespace !== null) {
+        //     $opts = $opts->withTargetNamespace($targetNamespace);
+        // }
+
+        // $opts = $opts->withCleanTargetDirectory($cleanTargetDirectory);
+        // $opts = OptionsDefaults::applyDefaults($opts);
+
+        // $specFile = new SpecificationFilesItem($schema);
+
+        // if ($className !== null) {
+        //     $specFile = $specFile->withClassName($className);
+        // }
+
+        // $spec = (new Specification([$specFile]))->withOptions($opts);
+
+        // $this->runner->generateFromSpecification($spec, $output, $dryRun);
     }
 }

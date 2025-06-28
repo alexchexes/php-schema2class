@@ -11,12 +11,12 @@ class SpecificationFilesItem
      *
      * @var array
      */
-    private static array $schema = ['properties' => ['input' => ['oneOf' => [['type' => 'string'], ['type' => 'array']]], 'className' => ['type' => 'string'], 'options' => ['$ref' => '#/definitions/SpecificationOptions']], 'additionalProperties' => false, 'required' => ['input'], 'definitions' => ['SpecificationOptions' => ['additionalProperties' => false, 'properties' => ['targetDirectory' => ['type' => 'string'], 'targetNamespace' => ['type' => 'string'], 'targetPHPVersion' => ['oneOf' => [['type' => 'integer', 'enum' => [5, 7, 8]], ['type' => 'string']]], 'cleanTargetDirectory' => ['type' => 'boolean'], 'disableStrictTypes' => ['type' => 'boolean'], 'treatValuesWithDefaultAsOptional' => ['type' => 'boolean'], 'inlineAllofReferences' => ['type' => 'boolean'], 'newValidatorClassExpr' => ['type' => 'string'], 'preservePropertyNames' => ['type' => 'boolean'], 'noGetters' => ['type' => 'boolean'], 'noSetters' => ['type' => 'boolean'], 'noDescriptionsInSchema' => ['type' => 'boolean'], 'singleLineSchema' => ['type' => 'boolean'], 'noEnums' => ['type' => 'boolean']]]]];
+    private static array $schema = ['properties' => ['input' => ['oneOf' => [['type' => 'string'], ['type' => 'object']]], 'className' => ['type' => 'string'], 'options' => ['$ref' => '#/definitions/SpecificationOptions']], 'additionalProperties' => false, 'required' => ['input'], 'definitions' => ['SpecificationOptions' => ['additionalProperties' => false, 'properties' => ['targetDirectory' => ['type' => 'string'], 'targetNamespace' => ['type' => 'string'], 'targetPHPVersion' => ['oneOf' => [['type' => 'integer', 'enum' => [5, 7, 8]], ['type' => 'string']]], 'cleanTargetDirectory' => ['type' => 'boolean'], 'disableStrictTypes' => ['type' => 'boolean'], 'treatValuesWithDefaultAsOptional' => ['type' => 'boolean'], 'inlineAllofReferences' => ['type' => 'boolean'], 'newValidatorClassExpr' => ['type' => 'string'], 'preservePropertyNames' => ['type' => 'boolean'], 'noGetters' => ['type' => 'boolean'], 'noSetters' => ['type' => 'boolean'], 'noDescriptionsInSchema' => ['type' => 'boolean'], 'singleLineSchema' => ['type' => 'boolean'], 'noEnums' => ['type' => 'boolean']]]]];
 
     /**
-     * @var string|array
+     * @var string|SpecificationFilesItemInputAlternative2
      */
-    private string|array $input;
+    private string|SpecificationFilesItemInputAlternative2 $input;
 
     /**
      * @var string|null
@@ -29,17 +29,17 @@ class SpecificationFilesItem
     private ?SpecificationOptions $options = null;
 
     /**
-     * @param string|array $input
+     * @param string|SpecificationFilesItemInputAlternative2 $input
      */
-    public function __construct(string|array $input)
+    public function __construct(SpecificationFilesItemInputAlternative2|string $input)
     {
         $this->input = $input;
     }
 
     /**
-     * @return string|array
+     * @return string|SpecificationFilesItemInputAlternative2
      */
-    public function getInput() : string|array
+    public function getInput() : SpecificationFilesItemInputAlternative2|string
     {
         return $this->input;
     }
@@ -61,10 +61,10 @@ class SpecificationFilesItem
     }
 
     /**
-     * @param string|array $input
+     * @param string|SpecificationFilesItemInputAlternative2 $input
      * @return self
      */
-    public function withInput(string|array $input) : self
+    public function withInput(SpecificationFilesItemInputAlternative2|string $input) : self
     {
         $clone = clone $this;
         $clone->input = $input;
@@ -140,7 +140,8 @@ class SpecificationFilesItem
         }
 
         $input = match (true) {
-            is_string($input2->{'input'}), is_array($input2->{'input'}) => $input2->{'input'},
+            is_string($input2->{'input'}) => $input2->{'input'},
+            SpecificationFilesItemInputAlternative2::validateInput($input2->{'input'}, true) => SpecificationFilesItemInputAlternative2::buildFromInput($input2->{'input'}, validate: $validate),
             default => throw new \InvalidArgumentException("could not build property 'input' from JSON"),
         };
         $className = isset($input2->{'className'}) ? $input2->{'className'} : null;
@@ -161,7 +162,8 @@ class SpecificationFilesItem
     {
         $output = [];
         $output['input'] = match (true) {
-            is_string($this->input), is_array($this->input) => $this->input,
+            is_string($this->input) => $this->input,
+            $this->input instanceof SpecificationFilesItemInputAlternative2 => ($this->input)->toArray(),
         };
         if (isset($this->className)) {
             $output['className'] = $this->className;
@@ -200,7 +202,8 @@ class SpecificationFilesItem
     public function __clone()
     {
         $this->input = match (true) {
-            is_string($this->input), is_array($this->input) => $this->input,
+            is_string($this->input) => $this->input,
+            $this->input instanceof SpecificationFilesItemInputAlternative2 => clone $this->input,
         };
     }
 }

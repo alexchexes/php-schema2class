@@ -126,13 +126,15 @@ class GenerationRunner
             $tpv = GeneratorRequest::normalizeTargetVersion($opts->getTargetPHPVersion());
             $opts = $opts->withTargetPHPVersion($tpv);
 
+            $output->writeln("Target PHP version <comment>{$opts->getTargetPHPVersion()}</comment>");
+
             $targetDirectory = $opts->getTargetDirectory() ?? '';
             $targetNamespaceOption = $opts->getTargetNamespace();
 
             if (is_string($schemaInput)) {
-                $output->writeln("loading schema from <comment>{$schemaInput}</comment>");
+                $output->writeln("Loading schema from <comment>{$schemaInput}</comment>");
             } else {
-                $output->writeln('loading schema from <comment>inline specification</comment>');
+                $output->writeln('Loading schema from <comment>inline specification</comment>');
             }
 
             $className = $file->getClassName();
@@ -151,7 +153,7 @@ class GenerationRunner
                          ->withTargetDirectory($targetDirectory);
 
             $output->writeln(
-                "using target namespace <comment>{$targetNamespace}</comment> in directory <comment>{$targetDirectory}</comment>"
+                "Using target namespace <comment>{$targetNamespace}</comment> in directory <comment>{$targetDirectory}</comment>"
             );
 
             $schema = $this->loader->loadSchema($schemaInput);
