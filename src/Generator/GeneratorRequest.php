@@ -34,23 +34,23 @@ class GeneratorRequest
     /** @var array<class-string, ReferenceLookup> */
     private array $referenceLookup = [];
 
-    public static function normalizeTargetVersion(int|string $version): string|int
+    public static function normalizeTargetVersion(int|string $version): string
     {
-        return match ($version) {
+        $mapped = match ($version) {
             5, '5' => self::DEFAULT_PHP5_VERSION,
             7, '7' => self::DEFAULT_PHP7_VERSION,
             8, '8' => self::DEFAULT_PHP8_VERSION,
             default => $version,
         };
+
+        return self::semversifyVersionNumber($mapped);
     }
 
     public function __construct(array $schema, ValidatedSpecificationFilesItem $spec, SpecificationOptions $opts)
     {
         $opts = OptionsDefaults::applyDefaults($opts);
         $opts = $opts->withTargetPHPVersion(
-            self::semversifyVersionNumber(
-                self::normalizeTargetVersion($opts->getTargetPHPVersion())
-            )
+            self::normalizeTargetVersion($opts->getTargetPHPVersion())
         );
 
         $this->schema = $schema;
@@ -171,9 +171,7 @@ class GeneratorRequest
     {
         $clone       = clone $this;
         $clone->opts = $this->opts->withTargetPHPVersion(
-            self::semversifyVersionNumber(
-                self::normalizeTargetVersion($targetPHPVersion)
-            )
+            self::normalizeTargetVersion($targetPHPVersion)
         );
 
         return $clone;

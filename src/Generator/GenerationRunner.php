@@ -119,7 +119,7 @@ class GenerationRunner
         );
 
         foreach ($spec->getFiles() as $file) {
-            $schemaFile = $file->getInput();
+            $schemaInput = $file->getInput();
 
             $opts = OptionsDefaults::mergeOptions($globalOpts, $file->getOptions());
 
@@ -129,11 +129,15 @@ class GenerationRunner
             $targetDirectory = $opts->getTargetDirectory() ?? '';
             $targetNamespaceOption = $opts->getTargetNamespace();
 
-            $output->writeln("loading schema from <comment>{$schemaFile}</comment>");
+            if (is_string($schemaInput)) {
+                $output->writeln("loading schema from <comment>{$schemaInput}</comment>");
+            } else {
+                $output->writeln('loading schema from <comment>inline specification</comment>');
+            }
 
             $className = $file->getClassName();
-            if ($className === null) {
-                $basename = pathinfo($schemaFile, PATHINFO_FILENAME);
+            if ($className === null && is_string($schemaInput)) {
+                $basename = pathinfo($schemaInput, PATHINFO_FILENAME);
                 $className = StringUtils::pascalCase($basename);
                 $file = $file->withClassName($className);
             }
@@ -150,7 +154,7 @@ class GenerationRunner
                 "using target namespace <comment>{$targetNamespace}</comment> in directory <comment>{$targetDirectory}</comment>"
             );
 
-            $schema = $this->loader->loadSchema($schemaFile);
+            $schema = $this->loader->loadSchema($schemaInput);
 
             $validated = ValidatedSpecificationFilesItem::fromSpecificationFilesItem($file, $opts, $targetNamespace);
 

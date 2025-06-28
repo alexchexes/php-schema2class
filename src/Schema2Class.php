@@ -10,8 +10,7 @@ use Helmich\Schema2Class\Generator\SchemaToClassFactory;
 use Helmich\Schema2Class\Spec\Specification;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
 use Helmich\Schema2Class\Spec\OptionsDefaults;
-use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
-use Helmich\Schema2Class\Generator\GeneratorRequest;
+use Helmich\Schema2Class\Spec\SpecificationFilesItem;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Yaml\Yaml;
@@ -72,36 +71,22 @@ class Schema2Class
         ?OutputInterface $output = null,
     ): void {
         $output = $output ?? new NullOutput();
-        $options = OptionsDefaults::applyDefaults(
-            $options ?? new SpecificationOptions()
-        );
 
-        $targetNamespace = $this->runner->inferNamespace(
-            $targetDirectory,
-            $targetNamespace,
-            $output,
-        );
-        $output->writeln(
-            "using target namespace <comment>{$targetNamespace}</comment> in directory <comment>{$targetDirectory}</comment>"
-        );
+        $opts = $options ?? new SpecificationOptions();
+        $opts = $opts->withTargetDirectory($targetDirectory);
+        if ($targetNamespace !== null) {
+            $opts = $opts->withTargetNamespace($targetNamespace);
+        }
+        $opts = $opts->withCleanTargetDirectory($cleanTargetDirectory);
+        $opts = OptionsDefaults::applyDefaults($opts);
 
-        $specOptions = $options->withTargetDirectory($targetDirectory)
-            ->withTargetNamespace($targetNamespace)
-            ->withCleanTargetDirectory($cleanTargetDirectory);
-
-        if ($cleanTargetDirectory) {
-            $this->runner->cleanDirectory($targetDirectory, $output);
+        $specFile = new SpecificationFilesItem($schema);
+        if ($className !== null) {
+            $specFile = $specFile->withClassName($className);
         }
 
-        $validated = new ValidatedSpecificationFilesItem(
-            $targetNamespace,
-            $className,
-            $targetDirectory,
-            $cleanTargetDirectory,
-        );
+        $spec = (new Specification([$specFile]))->withOptions($opts);
 
-        $req = new GeneratorRequest($schema, $validated, $specOptions);
-
-        $this->runner->generateFromRequest($req, $output, false);
+        $this->runner->generateFromSpecification($spec, $output, false);
     }
 }

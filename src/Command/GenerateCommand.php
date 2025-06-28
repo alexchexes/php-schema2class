@@ -85,8 +85,6 @@ class GenerateCommand extends Command
 
         if (!$targetPHPVersion) {
             $targetPHPVersion = GeneratorRequest::DEFAULT_PHP8_VERSION;
-        } else {
-            $targetPHPVersion = GeneratorRequest::normalizeTargetVersion($targetPHPVersion);
         }
         $opts = $opts->withTargetPHPVersion($targetPHPVersion);
 
