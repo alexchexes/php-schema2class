@@ -36,8 +36,8 @@ Now it:
 - Handles `type` arrays with multiple entries by emitting proper union properties instead of falling back to `mixed`.
 - Adds a guard against passing anything other than an array/object to `buildFromInput`, building multi-line validation error messages.
 - Skips emitting empty `__construct` or `__clone` methods.
-- Treats bare `object` properties without defined fields as `mixed` instead of
-  generating empty classes.
+- Treats bare `object` properties without defined fields as `array|object` 
+  instead of `mixed`.
 
 ### Better support for older PHP versions:
 

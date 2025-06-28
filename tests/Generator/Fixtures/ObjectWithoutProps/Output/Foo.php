@@ -26,9 +26,9 @@ class Foo
     ];
 
     /**
-     * @var mixed
+     * @var array|object
      */
-    private $foo;
+    private array|object $foo;
 
     /**
      * @var string|null
@@ -36,17 +36,17 @@ class Foo
     private ?string $bar = null;
 
     /**
-     * @param mixed $foo
+     * @param array|object $foo
      */
-    public function __construct($foo)
+    public function __construct(array|object $foo)
     {
         $this->foo = $foo;
     }
 
     /**
-     * @return mixed
+     * @return array|object
      */
-    public function getFoo()
+    public function getFoo() : array|object
     {
         return $this->foo;
     }
@@ -60,10 +60,10 @@ class Foo
     }
 
     /**
-     * @param mixed $foo
+     * @param array|object $foo
      * @return self
      */
-    public function withFoo($foo) : self
+    public function withFoo(array|object $foo) : self
     {
         $validator = new \JsonSchema\Validator();
         $validator->validate($foo, self::$schema['properties']['foo']);

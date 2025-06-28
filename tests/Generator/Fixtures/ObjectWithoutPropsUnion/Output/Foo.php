@@ -29,9 +29,9 @@ class Foo
     ];
 
     /**
-     * @var string|mixed
+     * @var string|array|object
      */
-    private $foo;
+    private string|array|object $foo;
 
     /**
      * @var string|null
@@ -39,17 +39,17 @@ class Foo
     private ?string $bar = null;
 
     /**
-     * @param string|mixed $foo
+     * @param string|array|object $foo
      */
-    public function __construct($foo)
+    public function __construct(string|array|object $foo)
     {
         $this->foo = $foo;
     }
 
     /**
-     * @return string|mixed
+     * @return string|array|object
      */
-    public function getFoo()
+    public function getFoo() : string|array|object
     {
         return $this->foo;
     }
@@ -63,10 +63,10 @@ class Foo
     }
 
     /**
-     * @param string|mixed $foo
+     * @param string|array|object $foo
      * @return self
      */
-    public function withFoo($foo) : self
+    public function withFoo(string|array|object $foo) : self
     {
         $clone = clone $this;
         $clone->foo = $foo;
@@ -119,7 +119,7 @@ class Foo
         }
 
         $foo = match (true) {
-            is_string($input->{'foo'}), true => $input->{'foo'},
+            is_string($input->{'foo'}), is_array($input->{'foo'}) || is_object($input->{'foo'}) => $input->{'foo'},
             default => throw new \InvalidArgumentException("could not build property 'foo' from JSON"),
         };
         $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
@@ -138,7 +138,7 @@ class Foo
     {
         $output = [];
         $output['foo'] = match (true) {
-            is_string($this->foo), true => $this->foo,
+            is_string($this->foo), is_array($this->foo) || is_object($this->foo) => $this->foo,
         };
         if (isset($this->bar)) {
             $output['bar'] = $this->bar;
@@ -174,7 +174,7 @@ class Foo
     public function __clone()
     {
         $this->foo = match (true) {
-            is_string($this->foo), true => $this->foo,
+            is_string($this->foo), is_array($this->foo) || is_object($this->foo) => $this->foo,
         };
     }
 }

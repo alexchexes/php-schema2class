@@ -22,6 +22,7 @@ use Helmich\Schema2Class\Generator\Property\PrimitiveUnionEnumProperty;
 use Helmich\Schema2Class\Generator\Property\PropertyInterface;
 use Helmich\Schema2Class\Generator\Property\ReferenceArrayProperty;
 use Helmich\Schema2Class\Generator\Property\ReferenceProperty;
+use Helmich\Schema2Class\Generator\Property\RawObjectProperty;
 use Helmich\Schema2Class\Generator\Property\StringEnumProperty;
 use Helmich\Schema2Class\Generator\Property\StringProperty;
 use Helmich\Schema2Class\Generator\Property\UnionProperty;
@@ -46,6 +47,7 @@ class PropertyBuilder
         PrimitiveArrayProperty::class,
         BooleanProperty::class,
         ReferenceProperty::class,
+        RawObjectProperty::class,
         MixedProperty::class,
     ];
 
