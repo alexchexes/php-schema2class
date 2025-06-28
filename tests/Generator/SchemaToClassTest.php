@@ -194,7 +194,7 @@ class SchemaToClassTest extends TestCase
             new NamespaceInferrer(),
             new SchemaToClassFactory(),
         );
-        $command = new GenerateCommand($runner, $loader);
+        $command = new GenerateCommand($runner);
 
         $tester = new CommandTester($command);
         $tester->execute([
@@ -225,7 +225,7 @@ class SchemaToClassTest extends TestCase
             new NamespaceInferrer(),
             new SchemaToClassFactory(),
         );
-        $command = new GenerateCommand($runner, $loader);
+        $command = new GenerateCommand($runner);
 
         $tester = new CommandTester($command);
         $tester->execute([

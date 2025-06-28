@@ -4,14 +4,13 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class;
 
 use Helmich\Schema2Class\Generator\GenerationRunner;
-use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\NamespaceInferrer;
 use Helmich\Schema2Class\Loader\SchemaLoader;
 use Helmich\Schema2Class\Generator\SchemaToClassFactory;
 use Helmich\Schema2Class\Spec\Specification;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
 use Helmich\Schema2Class\Spec\OptionsDefaults;
-use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
+use Helmich\Schema2Class\Spec\SpecificationFilesItem;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Helmich\Schema2Class\Generator\Property\NestedObjectProperty;
@@ -90,33 +89,32 @@ class Schema2Class
             $options ?? new SpecificationOptions()
         );
 
-        $targetNamespace = $this->runner->inferNamespace(
-            $targetDirectory,
-            $targetNamespace,
-            $output,
-        );
-        $output->writeln(
-            "using target namespace <comment>{$targetNamespace}</comment> in directory <comment>{$targetDirectory}</comment>"
-        );
-
-        $tpv = GeneratorRequest::normalizeTargetVersion($options->getTargetPHPVersion());
-        
-        $options = $options->withTargetPHPVersion($tpv);
-
-        if ($cleanTargetDirectory) {
-            $this->runner->cleanDirectory($targetDirectory, $output);
+        if ($className === null && self::schemaNeedsClass($schema)) {
+            throw new \InvalidArgumentException(
+                'Class name is required when the schema describes a top-level object or enum.'
+            );
         }
 
-        if ($className === null) {
-            if (self::schemaNeedsClass($schema)) {
-                throw new \InvalidArgumentException(
-                    'Class name is required when the schema describes a top-level object or enum.'
-                );
-            }
-        }
-        $spec = new ValidatedSpecificationFilesItem($targetNamespace, $className, $targetDirectory, $cleanTargetDirectory);
-        $req  = new GeneratorRequest($schema, $spec, $options);
+        $tmpFile = tempnam(sys_get_temp_dir(), 's2c_');
+        $tmpFileYaml = $tmpFile . '.yaml';
+        rename($tmpFile, $tmpFileYaml);
+        file_put_contents($tmpFileYaml, Yaml::dump($schema));
 
-        $this->runner->generateFromRequest($req, $output, false);
+        $file = new SpecificationFilesItem($tmpFileYaml);
+        if ($className !== null) {
+            $file = $file->withClassName($className);
+        }
+
+        $specOptions = $options->withTargetDirectory($targetDirectory)
+            ->withCleanTargetDirectory($cleanTargetDirectory);
+        if ($targetNamespace !== null) {
+            $specOptions = $specOptions->withTargetNamespace($targetNamespace);
+        }
+
+        $spec = (new Specification([$file]))->withOptions($specOptions);
+
+        $this->runner->generateFromSpecification($spec, $output, false);
+
+        unlink($tmpFileYaml);
     }
 }

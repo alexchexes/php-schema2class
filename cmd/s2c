@@ -17,7 +17,7 @@ $inferrer = new \Helmich\Schema2Class\Generator\NamespaceInferrer();
 $factory = new \Helmich\Schema2Class\Generator\SchemaToClassFactory();
 $runner = new \Helmich\Schema2Class\Generator\GenerationRunner($loader, $inferrer, $factory);
 
-$app->add(new \Helmich\Schema2Class\Command\GenerateCommand($runner, $loader));
+$app->add(new \Helmich\Schema2Class\Command\GenerateCommand($runner));
 $app->add(new \Helmich\Schema2Class\Command\GenerateSpecCommand($runner));
 
 $app->run();

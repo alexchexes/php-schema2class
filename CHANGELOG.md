@@ -57,6 +57,8 @@ Now it:
 - Several new classes and interfaces to handle new functionality; extensive refactoring of existing classes.
 - `GenerateFromRequestTrait` has been replaced with a `GenerationRunner` service so
   dependencies are injected instead of relying on trait properties.
+- All commands and programmatic entry points now build a `Specification` and use
+  `GenerationRunner::generateFromSpecification` for generation.
 - **Updated tests and fixtures**: Many new test cases covering new functionality such as typed arrays, non-ASCII identifiers, and the programmatic API.
 - **Dependency updates**:
   - New dependencies: `voku/portable-ascii`, `nikic/php-parser`
