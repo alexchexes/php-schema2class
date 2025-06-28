@@ -31,7 +31,7 @@ class ObjectArrayPropertyTest extends TestCase
 
     public static function allowedSchemas(): array {
         return [
-            "plain object" => [['type' => 'array', 'items' => ['type' => 'object']]]
+            "object with props" => [['type' => 'array', 'items' => ['properties' => ['x' => ['type' => 'string']]]]]
         ];
     }
 
@@ -39,6 +39,8 @@ class ObjectArrayPropertyTest extends TestCase
         return [
             "non-array" => [['type' => 'string']],
             "primitive array" => [['type' => 'array', 'items' => ['type' => 'string']]],
+            "plain object" => [['type' => 'array', 'items' => ['type' => 'object']]],
+            "empty props" => [['type' => 'array', 'items' => ['properties' => []]]],
         ];
     }
 
@@ -56,7 +58,7 @@ class ObjectArrayPropertyTest extends TestCase
 
     public function testConvertInputToTypeWithComplexArray()
     {
-        $underTest = new ObjectArrayProperty('myPropertyName', ['type' => 'array', 'items' => ['properties' => []]], $this->generatorRequest);
+        $underTest = new ObjectArrayProperty('myPropertyName', ['type' => 'array', 'items' => ['properties' => ['foo' => ['type' => 'string']]]], $this->generatorRequest);
 
         assertTrue($underTest->isComplex());
 
@@ -71,7 +73,7 @@ EOCODE;
 
     public function testConvertTypeToArrayWithComplexArray()
     {
-        $underTest = new ObjectArrayProperty('myPropertyName', ['type' => 'array', 'items' => ['properties' => []]], $this->generatorRequest);
+        $underTest = new ObjectArrayProperty('myPropertyName', ['type' => 'array', 'items' => ['properties' => ['foo' => ['type' => 'string']]]], $this->generatorRequest);
 
         $result = $underTest->convertTypeToArray('variable');
 
@@ -84,7 +86,7 @@ EOCODE;
 
     public function testClonePropertyWithComplexArray()
     {
-        $underTest = new ObjectArrayProperty('myPropertyName', ['type' => 'array', 'items' => ['properties' => []]], $this->generatorRequest);
+        $underTest = new ObjectArrayProperty('myPropertyName', ['type' => 'array', 'items' => ['properties' => ['foo' => ['type' => 'string']]]], $this->generatorRequest);
 
         $expected = <<<'EOCODE'
 $this->myPropertyName = array_map(fn (FooMyPropertyNameItem $i) => clone $i, $this->myPropertyName);
@@ -94,7 +96,7 @@ EOCODE;
 
     public function testGetAnnotationAndHintWithComplexArray()
     {
-        $underTest = new ObjectArrayProperty('myPropertyName', ['type' => 'array', 'items' => ['properties' => []]], $this->generatorRequest);
+        $underTest = new ObjectArrayProperty('myPropertyName', ['type' => 'array', 'items' => ['properties' => ['foo' => ['type' => 'string']]]], $this->generatorRequest);
 
         assertSame('FooMyPropertyNameItem[]', $underTest->typeAnnotation());
         assertSame('array', $underTest->typeHint("7.2.0"));
@@ -111,9 +113,7 @@ EOCODE;
 
         $underTest->generateSubTypes($schemaToClass->reveal());
 
-        $schemaToClass->schemaToClass(Argument::that(function (GeneratorRequest $arg) use ($arrayProperties) {
-            return $arg->getSchema() === $arrayProperties;
-        }))->shouldHaveBeenCalled();
+        $schemaToClass->schemaToClass(Argument::any())->shouldNotHaveBeenCalled();
     }
 
 }

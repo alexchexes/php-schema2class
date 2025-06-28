@@ -1,0 +1,9 @@
+required:
+  - input
+properties:
+  input:
+    type: [string, object]
+    required: [foo]
+    properties:
+      foo:
+        type: string

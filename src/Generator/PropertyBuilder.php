@@ -22,6 +22,7 @@ use Helmich\Schema2Class\Generator\Property\PrimitiveUnionEnumProperty;
 use Helmich\Schema2Class\Generator\Property\PropertyInterface;
 use Helmich\Schema2Class\Generator\Property\ReferenceArrayProperty;
 use Helmich\Schema2Class\Generator\Property\ReferenceProperty;
+use Helmich\Schema2Class\Generator\Property\RawObjectProperty;
 use Helmich\Schema2Class\Generator\Property\StringEnumProperty;
 use Helmich\Schema2Class\Generator\Property\StringProperty;
 use Helmich\Schema2Class\Generator\Property\UnionProperty;
@@ -46,6 +47,7 @@ class PropertyBuilder
         PrimitiveArrayProperty::class,
         BooleanProperty::class,
         ReferenceProperty::class,
+        RawObjectProperty::class,
         MixedProperty::class,
     ];
 
@@ -107,6 +109,27 @@ class PropertyBuilder
                     ? new NullablePropertyDecorator($name, $prop)   // required + nullable
                     : new OptionalPropertyDecorator($name, $prop);  // optional
             }
+        }
+
+        // Expand multi-type definitions like ["string", "object"] into an anyOf union
+        if (isset($definition['type']) && is_array($definition['type']) && count($definition['type']) > 1) {
+            $types      = $definition['type'];
+            $subSchemas = [];
+            foreach ($types as $t) {
+                $sub       = $definition;
+                $sub['type'] = $t;
+                // prune object specific fields for non-object arms
+                if ($t !== 'object') {
+                    unset($sub['properties'], $sub['required'], $sub['additionalProperties']);
+                }
+                $subSchemas[] = $sub;
+            }
+
+            $unionDef = $definition;
+            unset($unionDef['type']);
+            $unionDef['anyOf'] = $subSchemas;
+
+            return self::buildPropertyFromSchema($req, $name, $unionDef, $isRequired);
         }
 
         // Strip out null arms from anyOf/oneOf and wrap the rest as an Optional<…>

@@ -1,0 +1,7 @@
+properties:
+  foo:
+    type: object
+  bar:
+    type: string
+required:
+  - foo

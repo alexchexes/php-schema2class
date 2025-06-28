@@ -31,8 +31,9 @@ class NestedObjectPropertyTest extends TestCase
 
     public function testCanHandleSchema()
     {
-        assertTrue(NestedObjectProperty::canHandleSchema(['type' => 'object']));
-        assertTrue(NestedObjectProperty::canHandleSchema(['properties' => []]));
+        assertFalse(NestedObjectProperty::canHandleSchema(['type' => 'object']));
+        assertTrue(NestedObjectProperty::canHandleSchema(['properties' => ['x' => ['type' => 'string']]]));
+        assertFalse(NestedObjectProperty::canHandleSchema(['properties' => []]));
         assertFalse(NestedObjectProperty::canHandleSchema(['type' => 'foo']));
         assertFalse(NestedObjectProperty::canHandleSchema([]));
     }
