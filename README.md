@@ -144,9 +144,9 @@ To demonstrate Schema2Class's capabilities and how to use the generated code, co
 
 1. You have a JSON Schema file [like this](examples/basic/basic-example.json) (can be `.json`, `.yml`, or `.yaml`).
 
-2. You define the desired behaviour of the generator
+2. You define the desired behaviour of the generator and run it:
 
-   - in a [configuration file like this](examples/basic/basic-example-config.yaml)
+   - with a [configuration file like this](examples/basic/basic-example-config.yaml)
      In this case, run:
 
    ```sh
