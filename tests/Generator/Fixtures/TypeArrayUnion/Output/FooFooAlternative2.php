@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Ns\TypeArrayUnion;
 
-class FooInputAlternative2
+class FooFooAlternative2
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -14,10 +14,10 @@ class FooInputAlternative2
     private static array $schema = [
         'type' => 'object',
         'required' => [
-            'foo',
+            'bar',
         ],
         'properties' => [
-            'foo' => [
+            'bar' => [
                 'type' => 'string',
             ],
         ],
@@ -26,38 +26,38 @@ class FooInputAlternative2
     /**
      * @var string
      */
-    private string $foo;
+    private string $bar;
 
     /**
-     * @param string $foo
+     * @param string $bar
      */
-    public function __construct(string $foo)
+    public function __construct(string $bar)
     {
-        $this->foo = $foo;
+        $this->bar = $bar;
     }
 
     /**
      * @return string
      */
-    public function getFoo() : string
+    public function getBar() : string
     {
-        return $this->foo;
+        return $this->bar;
     }
 
     /**
-     * @param string $foo
+     * @param string $bar
      * @return self
      */
-    public function withFoo(string $foo) : self
+    public function withBar(string $bar) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($foo, self::$schema['properties']['foo']);
+        $validator->validate($bar, self::$schema['properties']['bar']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
 
         $clone = clone $this;
-        $clone->foo = $foo;
+        $clone->bar = $bar;
 
         return $clone;
     }
@@ -67,19 +67,19 @@ class FooInputAlternative2
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
-     * @return FooInputAlternative2 Created instance
+     * @return FooFooAlternative2 Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : FooInputAlternative2
+    public static function buildFromInput(array|object $input, bool $validate = true) : FooFooAlternative2
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $foo = $input->{'foo'};
+        $bar = $input->{'bar'};
 
-        $obj = new self($foo);
+        $obj = new self($bar);
 
         return $obj;
     }
@@ -92,7 +92,7 @@ class FooInputAlternative2
     public function toArray() : array
     {
         $output = [];
-        $output['foo'] = $this->foo;
+        $output['bar'] = $this->bar;
 
         return $output;
     }

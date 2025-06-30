@@ -116,11 +116,12 @@ class Generator
 
         $inputVarName = 'input';
         if ($properties->hasPropertyWithKey($inputVarName)) {
+            $inputVarName = '_input';
             $i = 2;
-            do {
-                $inputVarName = 'input' . $i;
+            while ($properties->hasPropertyWithKey($inputVarName)) {
+                $inputVarName = '_input' . $i;
                 $i++;
-            } while ($properties->hasPropertyWithKey($inputVarName));
+            }
         }
 
         $paramType = null;

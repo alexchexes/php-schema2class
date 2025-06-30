@@ -127,24 +127,24 @@ class SpecificationFilesItem
     /**
      * Builds a new instance from an input array
      *
-     * @param array|object $input2 Input data
+     * @param array|object $_input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
      * @return SpecificationFilesItem Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input2, bool $validate = true) : SpecificationFilesItem
+    public static function buildFromInput(array|object $_input, bool $validate = true) : SpecificationFilesItem
     {
-        $input2 = is_array($input2) ? \JsonSchema\Validator::arrayToObjectRecursive($input2) : $input2;
+        $_input = is_array($_input) ? \JsonSchema\Validator::arrayToObjectRecursive($_input) : $_input;
         if ($validate) {
-            static::validateInput($input2);
+            static::validateInput($_input);
         }
 
         $input = match (true) {
-            is_string($input2->{'input'}), is_array($input2->{'input'}) || is_object($input2->{'input'}) => $input2->{'input'},
+            is_string($_input->{'input'}), is_array($_input->{'input'}) || is_object($_input->{'input'}) => $_input->{'input'},
             default => throw new \InvalidArgumentException("could not build property 'input' from JSON"),
         };
-        $className = isset($input2->{'className'}) ? $input2->{'className'} : null;
-        $options = isset($input2->{'options'}) ? SpecificationOptions::buildFromInput($input2->{'options'}, $validate) : null;
+        $className = isset($_input->{'className'}) ? $_input->{'className'} : null;
+        $options = isset($_input->{'options'}) ? SpecificationOptions::buildFromInput($_input->{'options'}, $validate) : null;
 
         $obj = new self($input);
         $obj->className = $className;

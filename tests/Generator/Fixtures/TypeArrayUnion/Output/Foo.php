@@ -13,19 +13,19 @@ class Foo
      */
     private static array $schema = [
         'required' => [
-            'input',
+            'foo',
         ],
         'properties' => [
-            'input' => [
+            'foo' => [
                 'type' => [
                     'string',
                     'object',
                 ],
                 'required' => [
-                    'foo',
+                    'bar',
                 ],
                 'properties' => [
-                    'foo' => [
+                    'bar' => [
                         'type' => 'string',
                     ],
                 ],
@@ -34,34 +34,34 @@ class Foo
     ];
 
     /**
-     * @var string|FooInputAlternative2
+     * @var string|FooFooAlternative2
      */
-    private string|FooInputAlternative2 $input;
+    private string|FooFooAlternative2 $foo;
 
     /**
-     * @param string|FooInputAlternative2 $input
+     * @param string|FooFooAlternative2 $foo
      */
-    public function __construct(FooInputAlternative2|string $input)
+    public function __construct(FooFooAlternative2|string $foo)
     {
-        $this->input = $input;
+        $this->foo = $foo;
     }
 
     /**
-     * @return string|FooInputAlternative2
+     * @return string|FooFooAlternative2
      */
-    public function getInput() : FooInputAlternative2|string
+    public function getFoo() : FooFooAlternative2|string
     {
-        return $this->input;
+        return $this->foo;
     }
 
     /**
-     * @param string|FooInputAlternative2 $input
+     * @param string|FooFooAlternative2 $foo
      * @return self
      */
-    public function withInput(FooInputAlternative2|string $input) : self
+    public function withFoo(FooFooAlternative2|string $foo) : self
     {
         $clone = clone $this;
-        $clone->input = $input;
+        $clone->foo = $foo;
 
         return $clone;
     }
@@ -69,25 +69,25 @@ class Foo
     /**
      * Builds a new instance from an input array
      *
-     * @param array|object $input2 Input data
+     * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
      * @return Foo Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input2, bool $validate = true) : Foo
+    public static function buildFromInput(array|object $input, bool $validate = true) : Foo
     {
-        $input2 = is_array($input2) ? \JsonSchema\Validator::arrayToObjectRecursive($input2) : $input2;
+        $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
-            static::validateInput($input2);
+            static::validateInput($input);
         }
 
-        $input = match (true) {
-            is_string($input2->{'input'}) => $input2->{'input'},
-            FooInputAlternative2::validateInput($input2->{'input'}, true) => FooInputAlternative2::buildFromInput($input2->{'input'}, validate: $validate),
-            default => throw new \InvalidArgumentException("could not build property 'input' from JSON"),
+        $foo = match (true) {
+            is_string($input->{'foo'}) => $input->{'foo'},
+            FooFooAlternative2::validateInput($input->{'foo'}, true) => FooFooAlternative2::buildFromInput($input->{'foo'}, validate: $validate),
+            default => throw new \InvalidArgumentException("could not build property 'foo' from JSON"),
         };
 
-        $obj = new self($input);
+        $obj = new self($foo);
 
         return $obj;
     }
@@ -100,9 +100,9 @@ class Foo
     public function toArray() : array
     {
         $output = [];
-        $output['input'] = match (true) {
-            is_string($this->input) => $this->input,
-            $this->input instanceof FooInputAlternative2 => ($this->input)->toArray(),
+        $output['foo'] = match (true) {
+            is_string($this->foo) => $this->foo,
+            $this->foo instanceof FooFooAlternative2 => ($this->foo)->toArray(),
         };
 
         return $output;
@@ -134,9 +134,9 @@ class Foo
 
     public function __clone()
     {
-        $this->input = match (true) {
-            is_string($this->input) => $this->input,
-            $this->input instanceof FooInputAlternative2 => clone $this->input,
+        $this->foo = match (true) {
+            is_string($this->foo) => $this->foo,
+            $this->foo instanceof FooFooAlternative2 => clone $this->foo,
         };
     }
 }

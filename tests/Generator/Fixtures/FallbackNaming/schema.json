@@ -1,0 +1,32 @@
+{
+  "required": [
+    "input",
+    "validate",
+    "obj",
+    "_POST",
+    "_GET",
+    "_REQUEST",
+    "_SERVER",
+    "_COOKIE",
+    "_SESSION",
+    "_FILES",
+    "_ENV",
+    "_GLOBALS",
+    "GLOBALS"
+  ],
+  "properties": {
+    "input": { "type": "string" },
+    "validate": { "type": "string" },
+    "obj": { "type": "string" },
+    "_POST": { "type": "string" },
+    "_GET": { "type": "string" },
+    "_REQUEST": { "type": "string" },
+    "_SERVER": { "type": "string" },
+    "_COOKIE": { "type": "string" },
+    "_SESSION": { "type": "string" },
+    "_FILES": { "type": "string" },
+    "_ENV": { "type": "string" },
+    "_GLOBALS": { "type": "string" },
+    "GLOBALS": { "type": "string" }
+  }
+}
