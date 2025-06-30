@@ -87,12 +87,12 @@ class Foo
     /**
      * @var string
      */
-    private string $validate;
+    private string $validate_1;
 
     /**
      * @var string
      */
-    private string $obj;
+    private string $obj_1;
 
     /**
      * @var string
@@ -137,18 +137,18 @@ class Foo
     /**
      * @var string
      */
-    private string $GLOBALS;
+    private string $GLOBALS_1;
 
     /**
      * @var string
      */
-    private string $GLOBALS_1;
+    private string $GLOBALS_2;
 
     /**
      * @param string $preservedName
      * @param string $input
-     * @param string $validate
-     * @param string $obj
+     * @param string $validate_1
+     * @param string $obj_1
      * @param string $POST
      * @param string $GET
      * @param string $REQUEST
@@ -157,15 +157,15 @@ class Foo
      * @param string $SESSION
      * @param string $FILES
      * @param string $ENV
-     * @param string $GLOBALS
      * @param string $GLOBALS_1
+     * @param string $GLOBALS_2
      */
-    public function __construct(string $preservedName, string $input, string $validate, string $obj, string $POST, string $GET, string $REQUEST, string $SERVER, string $COOKIE, string $SESSION, string $FILES, string $ENV, string $GLOBALS, string $GLOBALS_1)
+    public function __construct(string $preservedName, string $input, string $validate_1, string $obj_1, string $POST, string $GET, string $REQUEST, string $SERVER, string $COOKIE, string $SESSION, string $FILES, string $ENV, string $GLOBALS_1, string $GLOBALS_2)
     {
         $this->preservedName = $preservedName;
         $this->input = $input;
-        $this->validate = $validate;
-        $this->obj = $obj;
+        $this->validate_1 = $validate_1;
+        $this->obj_1 = $obj_1;
         $this->POST = $POST;
         $this->GET = $GET;
         $this->REQUEST = $REQUEST;
@@ -174,8 +174,8 @@ class Foo
         $this->SESSION = $SESSION;
         $this->FILES = $FILES;
         $this->ENV = $ENV;
-        $this->GLOBALS = $GLOBALS;
         $this->GLOBALS_1 = $GLOBALS_1;
+        $this->GLOBALS_2 = $GLOBALS_2;
     }
 
     /**
@@ -197,17 +197,17 @@ class Foo
     /**
      * @return string
      */
-    public function getValidate() : string
+    public function getValidate1() : string
     {
-        return $this->validate;
+        return $this->validate_1;
     }
 
     /**
      * @return string
      */
-    public function getObj() : string
+    public function getObj1() : string
     {
-        return $this->obj;
+        return $this->obj_1;
     }
 
     /**
@@ -277,17 +277,17 @@ class Foo
     /**
      * @return string
      */
-    public function getGLOBALS() : string
+    public function getGLOBALS1() : string
     {
-        return $this->GLOBALS;
+        return $this->GLOBALS_1;
     }
 
     /**
      * @return string
      */
-    public function getGLOBALS1() : string
+    public function getGLOBALS2() : string
     {
-        return $this->GLOBALS_1;
+        return $this->GLOBALS_2;
     }
 
     /**
@@ -327,37 +327,37 @@ class Foo
     }
 
     /**
-     * @param string $validate
+     * @param string $validate_1
      * @return self
      */
-    public function withValidate(string $validate) : self
+    public function withValidate1(string $validate_1) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($validate, self::$schema['properties']['validate']);
+        $validator->validate($validate_1, self::$schema['properties']['validate']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
 
         $clone = clone $this;
-        $clone->validate = $validate;
+        $clone->validate_1 = $validate_1;
 
         return $clone;
     }
 
     /**
-     * @param string $obj
+     * @param string $obj_1
      * @return self
      */
-    public function withObj(string $obj) : self
+    public function withObj1(string $obj_1) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($obj, self::$schema['properties']['obj']);
+        $validator->validate($obj_1, self::$schema['properties']['obj']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
 
         $clone = clone $this;
-        $clone->obj = $obj;
+        $clone->obj_1 = $obj_1;
 
         return $clone;
     }
@@ -507,37 +507,37 @@ class Foo
     }
 
     /**
-     * @param string $GLOBALS
-     * @return self
-     */
-    public function withGLOBALS(string $GLOBALS) : self
-    {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($GLOBALS, self::$schema['properties']['_GLOBALS']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-        }
-
-        $clone = clone $this;
-        $clone->GLOBALS = $GLOBALS;
-
-        return $clone;
-    }
-
-    /**
      * @param string $GLOBALS_1
      * @return self
      */
     public function withGLOBALS1(string $GLOBALS_1) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($GLOBALS_1, self::$schema['properties']['GLOBALS']);
+        $validator->validate($GLOBALS_1, self::$schema['properties']['_GLOBALS']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
 
         $clone = clone $this;
         $clone->GLOBALS_1 = $GLOBALS_1;
+
+        return $clone;
+    }
+
+    /**
+     * @param string $GLOBALS_2
+     * @return self
+     */
+    public function withGLOBALS2(string $GLOBALS_2) : self
+    {
+        $validator = new \JsonSchema\Validator();
+        $validator->validate($GLOBALS_2, self::$schema['properties']['GLOBALS']);
+        if (!$validator->isValid()) {
+            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        }
+
+        $clone = clone $this;
+        $clone->GLOBALS_2 = $GLOBALS_2;
 
         return $clone;
     }
@@ -559,8 +559,8 @@ class Foo
 
         $preservedName = $_input->{'preserved_name'};
         $input = $_input->{'input'};
-        $validate = $_input->{'validate'};
-        $obj = $_input->{'obj'};
+        $validate_1 = $_input->{'validate'};
+        $obj_1 = $_input->{'obj'};
         $POST = $_input->{'_POST'};
         $GET = $_input->{'_GET'};
         $REQUEST = $_input->{'_REQUEST'};
@@ -569,10 +569,10 @@ class Foo
         $SESSION = $_input->{'_SESSION'};
         $FILES = $_input->{'_FILES'};
         $ENV = $_input->{'_ENV'};
-        $GLOBALS = $_input->{'_GLOBALS'};
-        $GLOBALS_1 = $_input->{'GLOBALS'};
+        $GLOBALS_1 = $_input->{'_GLOBALS'};
+        $GLOBALS_2 = $_input->{'GLOBALS'};
 
-        $obj = new self($preservedName, $input, $validate, $obj, $POST, $GET, $REQUEST, $SERVER, $COOKIE, $SESSION, $FILES, $ENV, $GLOBALS, $GLOBALS_1);
+        $obj = new self($preservedName, $input, $validate_1, $obj_1, $POST, $GET, $REQUEST, $SERVER, $COOKIE, $SESSION, $FILES, $ENV, $GLOBALS_1, $GLOBALS_2);
 
         return $obj;
     }
@@ -587,8 +587,8 @@ class Foo
         $output = [];
         $output['preserved_name'] = $this->preservedName;
         $output['input'] = $this->input;
-        $output['validate'] = $this->validate;
-        $output['obj'] = $this->obj;
+        $output['validate'] = $this->validate_1;
+        $output['obj'] = $this->obj_1;
         $output['_POST'] = $this->POST;
         $output['_GET'] = $this->GET;
         $output['_REQUEST'] = $this->REQUEST;
@@ -597,8 +597,8 @@ class Foo
         $output['_SESSION'] = $this->SESSION;
         $output['_FILES'] = $this->FILES;
         $output['_ENV'] = $this->ENV;
-        $output['_GLOBALS'] = $this->GLOBALS;
-        $output['GLOBALS'] = $this->GLOBALS_1;
+        $output['_GLOBALS'] = $this->GLOBALS_1;
+        $output['GLOBALS'] = $this->GLOBALS_2;
 
         return $output;
     }

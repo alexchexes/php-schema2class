@@ -206,7 +206,8 @@ class SchemaToClass
      */
     private function ensureUniquePropertyNames(PropertyCollection $properties): void
     {
-        $used = [];
+        // Reserved variable names that should never be used for properties
+        $used = ['GLOBALS', 'validate', 'obj', 'validator', 'clone'];
         foreach ($properties as $property) {
             $base = $property->name();
             $unique = $base;

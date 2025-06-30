@@ -104,14 +104,9 @@ class Generator
         $optionalProperties = $properties->filter(PropertyCollectionFilterFactory::optional());
 
         $constructorParams = [];
-        $assignments       = [];
-
+        
         foreach ($requiredProperties as $requiredProperty) {
             $constructorParams[] = '$' . $requiredProperty->name();
-        }
-
-        foreach ($optionalProperties as $optionalProperty) {
-            $assignments[] = "\$obj->{$optionalProperty->name()} = \${$optionalProperty->name()};";
         }
 
         $inputVarName = 'input';
@@ -129,8 +124,34 @@ class Generator
             $paramType = "array|object";
         }
 
+        $validateParamName = 'validate';
+        if ($properties->hasPropertyWithName($validateParamName)) {
+            $validateParamName = '_validate';
+            $i = 2;
+            while ($properties->hasPropertyWithName($validateParamName)) {
+                $validateParamName = '_validate' . $i;
+                $i++;
+            }
+        }
+
+        $objVarName = 'obj';
+        if ($properties->hasPropertyWithName($objVarName)) {
+            $objVarName = '_obj';
+            $i = 2;
+            while ($properties->hasPropertyWithName($objVarName)) {
+                $objVarName = '_obj' . $i;
+                $i++;
+            }
+        }
+
+        $assignments = [];
+        foreach ($optionalProperties as $optionalProperty) {
+            $name = $optionalProperty->name();
+            $assignments[] = sprintf('$%s->%s = $%s;', $objVarName, $name, $name);
+        }
+
         $validationParam = new ParameterGenerator(
-            name: "validate",
+            name: $validateParamName,
             type: "bool",
             defaultValue: true,
         );
@@ -140,7 +161,7 @@ class Generator
             null,
             [
                 new ParamTag($inputVarName, ["array|object"], "Input data"),
-                new ParamTag("validate", ["bool"], "Set this to false to skip validation; use at own risk"),
+                new ParamTag($validateParamName, ["bool"], "Set this to false to skip validation; use at own risk"),
                 new ReturnTag([$this->generatorRequest->getTargetClass()], "Created instance"),
                 new ThrowsTag("\\InvalidArgumentException"),
             ]
@@ -157,24 +178,28 @@ class Generator
                 "}\n\n";
         }
             
+        $aliasLine = $validateParamName !== 'validate' ? "\$validate = \${$validateParamName};\n" : '';
+
         $body = $inputGuard .
             // Conversion into object if input is array
             "\$$inputVarName = is_array(\$$inputVarName) ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$$inputVarName) : \$$inputVarName;\n" .
 
             // Conditional schema validation
-            "if (\$validate) {\n" .
+            "if (\${$validateParamName}) {\n" .
             "    static::validateInput(\$$inputVarName);\n" .
             "}\n\n" .
+
+            $aliasLine .
 
             // Property‐by‐property mapping
             $properties->generateInputToTypeConversionCode($inputVarName, object: true) . "\n\n" .
 
             // Construct & assign optional props
-            '$obj = new self(' . join(", ", $constructorParams) . ');' . "\n" .
+            "\${$objVarName} = new self(" . join(", ", $constructorParams) . ");" . "\n" .
             join("\n", $assignments) . "\n" .
 
             // Return
-            'return $obj;'
+            "return \${$objVarName};"
         ;
 
         $method = new MethodGenerator(
