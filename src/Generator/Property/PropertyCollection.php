@@ -47,6 +47,17 @@ class PropertyCollection implements \Iterator
         return false;
     }
 
+    public function hasPropertyWithName(string $name): bool
+    {
+        foreach ($this->properties as $p) {
+            if ($p->name() === $name) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function filter(PropertyCollectionFilter $filter): PropertyCollection
     {
         $matching = [];
