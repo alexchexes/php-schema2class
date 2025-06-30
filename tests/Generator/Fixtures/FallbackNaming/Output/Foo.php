@@ -13,6 +13,7 @@ class Foo
      */
     private static array $schema = [
         'required' => [
+            'preserved_name',
             'input',
             'validate',
             'obj',
@@ -28,6 +29,9 @@ class Foo
             'GLOBALS',
         ],
         'properties' => [
+            'preserved_name' => [
+                'type' => 'string',
+            ],
             'input' => [
                 'type' => 'string',
             ],
@@ -69,6 +73,11 @@ class Foo
             ],
         ],
     ];
+
+    /**
+     * @var string
+     */
+    private string $preservedName;
 
     /**
      * @var string
@@ -136,6 +145,7 @@ class Foo
     private string $GLOBALS_1;
 
     /**
+     * @param string $preservedName
      * @param string $input
      * @param string $validate
      * @param string $obj
@@ -150,8 +160,9 @@ class Foo
      * @param string $GLOBALS
      * @param string $GLOBALS_1
      */
-    public function __construct(string $input, string $validate, string $obj, string $POST, string $GET, string $REQUEST, string $SERVER, string $COOKIE, string $SESSION, string $FILES, string $ENV, string $GLOBALS, string $GLOBALS_1)
+    public function __construct(string $preservedName, string $input, string $validate, string $obj, string $POST, string $GET, string $REQUEST, string $SERVER, string $COOKIE, string $SESSION, string $FILES, string $ENV, string $GLOBALS, string $GLOBALS_1)
     {
+        $this->preservedName = $preservedName;
         $this->input = $input;
         $this->validate = $validate;
         $this->obj = $obj;
@@ -165,6 +176,14 @@ class Foo
         $this->ENV = $ENV;
         $this->GLOBALS = $GLOBALS;
         $this->GLOBALS_1 = $GLOBALS_1;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPreservedName() : string
+    {
+        return $this->preservedName;
     }
 
     /**
@@ -269,6 +288,24 @@ class Foo
     public function getGLOBALS1() : string
     {
         return $this->GLOBALS_1;
+    }
+
+    /**
+     * @param string $preservedName
+     * @return self
+     */
+    public function withPreservedName(string $preservedName) : self
+    {
+        $validator = new \JsonSchema\Validator();
+        $validator->validate($preservedName, self::$schema['properties']['preserved_name']);
+        if (!$validator->isValid()) {
+            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        }
+
+        $clone = clone $this;
+        $clone->preservedName = $preservedName;
+
+        return $clone;
     }
 
     /**
@@ -520,6 +557,7 @@ class Foo
             static::validateInput($_input);
         }
 
+        $preservedName = $_input->{'preserved_name'};
         $input = $_input->{'input'};
         $validate = $_input->{'validate'};
         $obj = $_input->{'obj'};
@@ -534,7 +572,7 @@ class Foo
         $GLOBALS = $_input->{'_GLOBALS'};
         $GLOBALS_1 = $_input->{'GLOBALS'};
 
-        $obj = new self($input, $validate, $obj, $POST, $GET, $REQUEST, $SERVER, $COOKIE, $SESSION, $FILES, $ENV, $GLOBALS, $GLOBALS_1);
+        $obj = new self($preservedName, $input, $validate, $obj, $POST, $GET, $REQUEST, $SERVER, $COOKIE, $SESSION, $FILES, $ENV, $GLOBALS, $GLOBALS_1);
 
         return $obj;
     }
@@ -547,6 +585,7 @@ class Foo
     public function toArray() : array
     {
         $output = [];
+        $output['preserved_name'] = $this->preservedName;
         $output['input'] = $this->input;
         $output['validate'] = $this->validate;
         $output['obj'] = $this->obj;

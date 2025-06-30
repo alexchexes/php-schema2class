@@ -1,5 +1,6 @@
 {
   "required": [
+    "preserved_name",
     "input",
     "validate",
     "obj",
@@ -15,6 +16,7 @@
     "GLOBALS"
   ],
   "properties": {
+    "preserved_name": { "type": "string" },
     "input": { "type": "string" },
     "validate": { "type": "string" },
     "obj": { "type": "string" },
