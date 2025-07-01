@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Ns\FallbackNaming;
 
-use stdClass;
-
 class Foo
 {
     /**
@@ -163,12 +161,12 @@ class Foo
     /**
      * @var string
      */
-    private string $_GLOBALS;
+    private string $_GLOBALS_2;
 
     /**
      * @var string
      */
-    private string $GLOBALS_1;
+    private string $GLOBALS_3;
 
     /**
      * @var string
@@ -253,17 +251,17 @@ class Foo
     /**
      * @var string
      */
-    private string $buildFromInput;
+    private string $buildFromInput_1;
 
     /**
      * @var string
      */
-    private string $toArray;
+    private string $toArray_1;
 
     /**
      * @var string
      */
-    private string $validateInput;
+    private string $validateInput_1;
 
     /**
      * @var string
@@ -273,71 +271,71 @@ class Foo
     /**
      * @var string
      */
-    private string $__construct;
+    private string $__construct_1;
 
     /**
      * @var string
      */
-    private string $__destruct;
+    private string $__destruct_1;
 
     /**
      * @var string
      */
-    private string $__get;
+    private string $__get_2;
 
     /**
      * @var string
      */
-    private string $__set;
+    private string $__set_1;
 
     /**
      * @var string
      */
-    private string $__call;
+    private string $__call_1;
 
     /**
      * @var string
      */
-    private string $__isset;
+    private string $__isset_1;
 
     /**
      * @var string
      */
-    private string $__unset;
+    private string $__unset_1;
 
     /**
      * @var string
      */
-    private string $__sleep;
+    private string $__sleep_1;
 
     /**
      * @var string
      */
-    private string $__wakeup;
+    private string $__wakeup_1;
 
     /**
      * @var string
      */
-    private string $__toString;
+    private string $__toString_1;
 
     /**
      * @var string
      */
-    private string $__invoke;
+    private string $__invoke_1;
 
     /**
      * @var string
      */
-    private string $__debugInfo;
+    private string $__debugInfo_1;
 
     /**
      * @var string
      */
-    private string $__clone;
+    private string $__clone_2;
 
     /**
-     * @param string $_GLOBALS
-     * @param string $GLOBALS_1
+     * @param string $_GLOBALS_2
+     * @param string $GLOBALS_3
      * @param string $GLOBALS_1_1
      * @param string $_SERVER_1
      * @param string $_GET_1
@@ -354,28 +352,28 @@ class Foo
      * @param string $input
      * @param string $validate
      * @param string $obj
-     * @param string $buildFromInput
-     * @param string $toArray
-     * @param string $validateInput
+     * @param string $buildFromInput_1
+     * @param string $toArray_1
+     * @param string $validateInput_1
      * @param string $clone_1
-     * @param string $__construct
-     * @param string $__destruct
-     * @param string $__get
-     * @param string $__set
-     * @param string $__call
-     * @param string $__isset
-     * @param string $__unset
-     * @param string $__sleep
-     * @param string $__wakeup
-     * @param string $__toString
-     * @param string $__invoke
-     * @param string $__debugInfo
-     * @param string $__clone
+     * @param string $__construct_1
+     * @param string $__destruct_1
+     * @param string $__get_2
+     * @param string $__set_1
+     * @param string $__call_1
+     * @param string $__isset_1
+     * @param string $__unset_1
+     * @param string $__sleep_1
+     * @param string $__wakeup_1
+     * @param string $__toString_1
+     * @param string $__invoke_1
+     * @param string $__debugInfo_1
+     * @param string $__clone_2
      */
-    public function __construct(string $_GLOBALS, string $GLOBALS_1, string $GLOBALS_1_1, string $_SERVER_1, string $_GET_1, string $_POST_1, string $_FILES_1, string $_REQUEST_1, string $_SESSION_1, string $_ENV_1, string $_COOKIE_1, string $php_errormsg_1, string $http_response_header_1, string $argc_1, string $argv_1, string $input, string $validate, string $obj, string $buildFromInput, string $toArray, string $validateInput, string $clone_1, string $__construct, string $__destruct, string $__get, string $__set, string $__call, string $__isset, string $__unset, string $__sleep, string $__wakeup, string $__toString, string $__invoke, string $__debugInfo, string $__clone)
+    public function __construct(string $_GLOBALS_2, string $GLOBALS_3, string $GLOBALS_1_1, string $_SERVER_1, string $_GET_1, string $_POST_1, string $_FILES_1, string $_REQUEST_1, string $_SESSION_1, string $_ENV_1, string $_COOKIE_1, string $php_errormsg_1, string $http_response_header_1, string $argc_1, string $argv_1, string $input, string $validate, string $obj, string $buildFromInput_1, string $toArray_1, string $validateInput_1, string $clone_1, string $__construct_1, string $__destruct_1, string $__get_2, string $__set_1, string $__call_1, string $__isset_1, string $__unset_1, string $__sleep_1, string $__wakeup_1, string $__toString_1, string $__invoke_1, string $__debugInfo_1, string $__clone_2)
     {
-        $this->_GLOBALS = $_GLOBALS;
-        $this->GLOBALS_1 = $GLOBALS_1;
+        $this->_GLOBALS_2 = $_GLOBALS_2;
+        $this->GLOBALS_3 = $GLOBALS_3;
         $this->GLOBALS_1_1 = $GLOBALS_1_1;
         $this->_SERVER_1 = $_SERVER_1;
         $this->_GET_1 = $_GET_1;
@@ -392,39 +390,39 @@ class Foo
         $this->input = $input;
         $this->validate = $validate;
         $this->obj = $obj;
-        $this->buildFromInput = $buildFromInput;
-        $this->toArray = $toArray;
-        $this->validateInput = $validateInput;
+        $this->buildFromInput_1 = $buildFromInput_1;
+        $this->toArray_1 = $toArray_1;
+        $this->validateInput_1 = $validateInput_1;
         $this->clone_1 = $clone_1;
-        $this->__construct = $__construct;
-        $this->__destruct = $__destruct;
-        $this->__get = $__get;
-        $this->__set = $__set;
-        $this->__call = $__call;
-        $this->__isset = $__isset;
-        $this->__unset = $__unset;
-        $this->__sleep = $__sleep;
-        $this->__wakeup = $__wakeup;
-        $this->__toString = $__toString;
-        $this->__invoke = $__invoke;
-        $this->__debugInfo = $__debugInfo;
-        $this->__clone = $__clone;
+        $this->__construct_1 = $__construct_1;
+        $this->__destruct_1 = $__destruct_1;
+        $this->__get_2 = $__get_2;
+        $this->__set_1 = $__set_1;
+        $this->__call_1 = $__call_1;
+        $this->__isset_1 = $__isset_1;
+        $this->__unset_1 = $__unset_1;
+        $this->__sleep_1 = $__sleep_1;
+        $this->__wakeup_1 = $__wakeup_1;
+        $this->__toString_1 = $__toString_1;
+        $this->__invoke_1 = $__invoke_1;
+        $this->__debugInfo_1 = $__debugInfo_1;
+        $this->__clone_2 = $__clone_2;
     }
 
     /**
      * @return string
      */
-    public function getGLOBALS() : string
+    public function getGLOBALS2() : string
     {
-        return $this->_GLOBALS;
+        return $this->_GLOBALS_2;
     }
 
     /**
      * @return string
      */
-    public function getGLOBALS1() : string
+    public function getGLOBALS3() : string
     {
-        return $this->GLOBALS_1;
+        return $this->GLOBALS_3;
     }
 
     /**
@@ -558,25 +556,25 @@ class Foo
     /**
      * @return string
      */
-    public function getBuildFromInput() : string
+    public function getBuildFromInput1() : string
     {
-        return $this->buildFromInput;
+        return $this->buildFromInput_1;
     }
 
     /**
      * @return string
      */
-    public function getToArray() : string
+    public function getToArray1() : string
     {
-        return $this->toArray;
+        return $this->toArray_1;
     }
 
     /**
      * @return string
      */
-    public function getValidateInput() : string
+    public function getValidateInput1() : string
     {
-        return $this->validateInput;
+        return $this->validateInput_1;
     }
 
     /**
@@ -590,139 +588,139 @@ class Foo
     /**
      * @return string
      */
-    public function getConstruct() : string
+    public function getConstruct1() : string
     {
-        return $this->__construct;
+        return $this->__construct_1;
     }
 
     /**
      * @return string
      */
-    public function getDestruct() : string
+    public function getDestruct1() : string
     {
-        return $this->__destruct;
+        return $this->__destruct_1;
     }
 
     /**
      * @return string
      */
-    public function getGet() : string
+    public function getGet2() : string
     {
-        return $this->__get;
+        return $this->__get_2;
     }
 
     /**
      * @return string
      */
-    public function getSet() : string
+    public function getSet1() : string
     {
-        return $this->__set;
+        return $this->__set_1;
     }
 
     /**
      * @return string
      */
-    public function getCall() : string
+    public function getCall1() : string
     {
-        return $this->__call;
+        return $this->__call_1;
     }
 
     /**
      * @return string
      */
-    public function getIsset() : string
+    public function getIsset1() : string
     {
-        return $this->__isset;
+        return $this->__isset_1;
     }
 
     /**
      * @return string
      */
-    public function getUnset() : string
+    public function getUnset1() : string
     {
-        return $this->__unset;
+        return $this->__unset_1;
     }
 
     /**
      * @return string
      */
-    public function getSleep() : string
+    public function getSleep1() : string
     {
-        return $this->__sleep;
+        return $this->__sleep_1;
     }
 
     /**
      * @return string
      */
-    public function getWakeup() : string
+    public function getWakeup1() : string
     {
-        return $this->__wakeup;
+        return $this->__wakeup_1;
     }
 
     /**
      * @return string
      */
-    public function getToString() : string
+    public function getToString1() : string
     {
-        return $this->__toString;
+        return $this->__toString_1;
     }
 
     /**
      * @return string
      */
-    public function getInvoke() : string
+    public function getInvoke1() : string
     {
-        return $this->__invoke;
+        return $this->__invoke_1;
     }
 
     /**
      * @return string
      */
-    public function getDebugInfo() : string
+    public function getDebugInfo1() : string
     {
-        return $this->__debugInfo;
+        return $this->__debugInfo_1;
     }
 
     /**
      * @return string
      */
-    public function getClone() : string
+    public function getClone2() : string
     {
-        return $this->__clone;
+        return $this->__clone_2;
     }
 
     /**
-     * @param string $_GLOBALS
+     * @param string $_GLOBALS_2
      * @return self
      */
-    public function withGLOBALS(string $_GLOBALS) : self
+    public function withGLOBALS2(string $_GLOBALS_2) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($_GLOBALS, self::$schema['properties']['_GLOBALS']);
+        $validator->validate($_GLOBALS_2, self::$schema['properties']['_GLOBALS']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
 
         $clone = clone $this;
-        $clone->_GLOBALS = $_GLOBALS;
+        $clone->_GLOBALS_2 = $_GLOBALS_2;
 
         return $clone;
     }
 
     /**
-     * @param string $GLOBALS_1
+     * @param string $GLOBALS_3
      * @return self
      */
-    public function withGLOBALS1(string $GLOBALS_1) : self
+    public function withGLOBALS3(string $GLOBALS_3) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($GLOBALS_1, self::$schema['properties']['GLOBALS']);
+        $validator->validate($GLOBALS_3, self::$schema['properties']['GLOBALS']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
 
         $clone = clone $this;
-        $clone->GLOBALS_1 = $GLOBALS_1;
+        $clone->GLOBALS_3 = $GLOBALS_3;
 
         return $clone;
     }
@@ -1016,55 +1014,55 @@ class Foo
     }
 
     /**
-     * @param string $buildFromInput
+     * @param string $buildFromInput_1
      * @return self
      */
-    public function withBuildFromInput(string $buildFromInput) : self
+    public function withBuildFromInput1(string $buildFromInput_1) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($buildFromInput, self::$schema['properties']['buildFromInput']);
+        $validator->validate($buildFromInput_1, self::$schema['properties']['buildFromInput']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
 
         $clone = clone $this;
-        $clone->buildFromInput = $buildFromInput;
+        $clone->buildFromInput_1 = $buildFromInput_1;
 
         return $clone;
     }
 
     /**
-     * @param string $toArray
+     * @param string $toArray_1
      * @return self
      */
-    public function withToArray(string $toArray) : self
+    public function withToArray1(string $toArray_1) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($toArray, self::$schema['properties']['toArray']);
+        $validator->validate($toArray_1, self::$schema['properties']['toArray']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
 
         $clone = clone $this;
-        $clone->toArray = $toArray;
+        $clone->toArray_1 = $toArray_1;
 
         return $clone;
     }
 
     /**
-     * @param string $validateInput
+     * @param string $validateInput_1
      * @return self
      */
-    public function withValidateInput(string $validateInput) : self
+    public function withValidateInput1(string $validateInput_1) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($validateInput, self::$schema['properties']['validateInput']);
+        $validator->validate($validateInput_1, self::$schema['properties']['validateInput']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
 
         $clone = clone $this;
-        $clone->validateInput = $validateInput;
+        $clone->validateInput_1 = $validateInput_1;
 
         return $clone;
     }
@@ -1088,235 +1086,235 @@ class Foo
     }
 
     /**
-     * @param string $__construct
+     * @param string $__construct_1
      * @return self
      */
-    public function withConstruct(string $__construct) : self
+    public function withConstruct1(string $__construct_1) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($__construct, self::$schema['properties']['__construct']);
+        $validator->validate($__construct_1, self::$schema['properties']['__construct']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
 
         $clone = clone $this;
-        $clone->__construct = $__construct;
+        $clone->__construct_1 = $__construct_1;
 
         return $clone;
     }
 
     /**
-     * @param string $__destruct
+     * @param string $__destruct_1
      * @return self
      */
-    public function withDestruct(string $__destruct) : self
+    public function withDestruct1(string $__destruct_1) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($__destruct, self::$schema['properties']['__destruct']);
+        $validator->validate($__destruct_1, self::$schema['properties']['__destruct']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
 
         $clone = clone $this;
-        $clone->__destruct = $__destruct;
+        $clone->__destruct_1 = $__destruct_1;
 
         return $clone;
     }
 
     /**
-     * @param string $__get
+     * @param string $__get_2
      * @return self
      */
-    public function withGet(string $__get) : self
+    public function withGet2(string $__get_2) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($__get, self::$schema['properties']['__get']);
+        $validator->validate($__get_2, self::$schema['properties']['__get']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
 
         $clone = clone $this;
-        $clone->__get = $__get;
+        $clone->__get_2 = $__get_2;
 
         return $clone;
     }
 
     /**
-     * @param string $__set
+     * @param string $__set_1
      * @return self
      */
-    public function withSet(string $__set) : self
+    public function withSet1(string $__set_1) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($__set, self::$schema['properties']['__set']);
+        $validator->validate($__set_1, self::$schema['properties']['__set']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
 
         $clone = clone $this;
-        $clone->__set = $__set;
+        $clone->__set_1 = $__set_1;
 
         return $clone;
     }
 
     /**
-     * @param string $__call
+     * @param string $__call_1
      * @return self
      */
-    public function withCall(string $__call) : self
+    public function withCall1(string $__call_1) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($__call, self::$schema['properties']['__call']);
+        $validator->validate($__call_1, self::$schema['properties']['__call']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
 
         $clone = clone $this;
-        $clone->__call = $__call;
+        $clone->__call_1 = $__call_1;
 
         return $clone;
     }
 
     /**
-     * @param string $__isset
+     * @param string $__isset_1
      * @return self
      */
-    public function withIsset(string $__isset) : self
+    public function withIsset1(string $__isset_1) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($__isset, self::$schema['properties']['__isset']);
+        $validator->validate($__isset_1, self::$schema['properties']['__isset']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
 
         $clone = clone $this;
-        $clone->__isset = $__isset;
+        $clone->__isset_1 = $__isset_1;
 
         return $clone;
     }
 
     /**
-     * @param string $__unset
+     * @param string $__unset_1
      * @return self
      */
-    public function withUnset(string $__unset) : self
+    public function withUnset1(string $__unset_1) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($__unset, self::$schema['properties']['__unset']);
+        $validator->validate($__unset_1, self::$schema['properties']['__unset']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
 
         $clone = clone $this;
-        $clone->__unset = $__unset;
+        $clone->__unset_1 = $__unset_1;
 
         return $clone;
     }
 
     /**
-     * @param string $__sleep
+     * @param string $__sleep_1
      * @return self
      */
-    public function withSleep(string $__sleep) : self
+    public function withSleep1(string $__sleep_1) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($__sleep, self::$schema['properties']['__sleep']);
+        $validator->validate($__sleep_1, self::$schema['properties']['__sleep']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
 
         $clone = clone $this;
-        $clone->__sleep = $__sleep;
+        $clone->__sleep_1 = $__sleep_1;
 
         return $clone;
     }
 
     /**
-     * @param string $__wakeup
+     * @param string $__wakeup_1
      * @return self
      */
-    public function withWakeup(string $__wakeup) : self
+    public function withWakeup1(string $__wakeup_1) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($__wakeup, self::$schema['properties']['__wakeup']);
+        $validator->validate($__wakeup_1, self::$schema['properties']['__wakeup']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
 
         $clone = clone $this;
-        $clone->__wakeup = $__wakeup;
+        $clone->__wakeup_1 = $__wakeup_1;
 
         return $clone;
     }
 
     /**
-     * @param string $__toString
+     * @param string $__toString_1
      * @return self
      */
-    public function withToString(string $__toString) : self
+    public function withToString1(string $__toString_1) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($__toString, self::$schema['properties']['__toString']);
+        $validator->validate($__toString_1, self::$schema['properties']['__toString']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
 
         $clone = clone $this;
-        $clone->__toString = $__toString;
+        $clone->__toString_1 = $__toString_1;
 
         return $clone;
     }
 
     /**
-     * @param string $__invoke
+     * @param string $__invoke_1
      * @return self
      */
-    public function withInvoke(string $__invoke) : self
+    public function withInvoke1(string $__invoke_1) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($__invoke, self::$schema['properties']['__invoke']);
+        $validator->validate($__invoke_1, self::$schema['properties']['__invoke']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
 
         $clone = clone $this;
-        $clone->__invoke = $__invoke;
+        $clone->__invoke_1 = $__invoke_1;
 
         return $clone;
     }
 
     /**
-     * @param string $__debugInfo
+     * @param string $__debugInfo_1
      * @return self
      */
-    public function withDebugInfo(string $__debugInfo) : self
+    public function withDebugInfo1(string $__debugInfo_1) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($__debugInfo, self::$schema['properties']['__debugInfo']);
+        $validator->validate($__debugInfo_1, self::$schema['properties']['__debugInfo']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
 
         $clone = clone $this;
-        $clone->__debugInfo = $__debugInfo;
+        $clone->__debugInfo_1 = $__debugInfo_1;
 
         return $clone;
     }
 
     /**
-     * @param string $__clone
+     * @param string $__clone_2
      * @return self
      */
-    public function withClone(string $__clone) : self
+    public function withClone2(string $__clone_2) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($__clone, self::$schema['properties']['__clone']);
+        $validator->validate($__clone_2, self::$schema['properties']['__clone']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
 
         $clone = clone $this;
-        $clone->__clone = $__clone;
+        $clone->__clone_2 = $__clone_2;
 
         return $clone;
     }
@@ -1337,8 +1335,8 @@ class Foo
         }
 
         $validate = $_validate;
-        $_GLOBALS = $_input->{'_GLOBALS'};
-        $GLOBALS_1 = $_input->{'GLOBALS'};
+        $_GLOBALS_2 = $_input->{'_GLOBALS'};
+        $GLOBALS_3 = $_input->{'GLOBALS'};
         $GLOBALS_1_1 = $_input->{'GLOBALS_1'};
         $_SERVER_1 = $_input->{'_SERVER'};
         $_GET_1 = $_input->{'_GET'};
@@ -1355,25 +1353,25 @@ class Foo
         $input = $_input->{'input'};
         $validate = $_input->{'validate'};
         $obj = $_input->{'obj'};
-        $buildFromInput = $_input->{'buildFromInput'};
-        $toArray = $_input->{'toArray'};
-        $validateInput = $_input->{'validateInput'};
+        $buildFromInput_1 = $_input->{'buildFromInput'};
+        $toArray_1 = $_input->{'toArray'};
+        $validateInput_1 = $_input->{'validateInput'};
         $clone_1 = $_input->{'clone'};
-        $__construct = $_input->{'__construct'};
-        $__destruct = $_input->{'__destruct'};
-        $__get = $_input->{'__get'};
-        $__set = $_input->{'__set'};
-        $__call = $_input->{'__call'};
-        $__isset = $_input->{'__isset'};
-        $__unset = $_input->{'__unset'};
-        $__sleep = $_input->{'__sleep'};
-        $__wakeup = $_input->{'__wakeup'};
-        $__toString = $_input->{'__toString'};
-        $__invoke = $_input->{'__invoke'};
-        $__debugInfo = $_input->{'__debugInfo'};
-        $__clone = $_input->{'__clone'};
+        $__construct_1 = $_input->{'__construct'};
+        $__destruct_1 = $_input->{'__destruct'};
+        $__get_2 = $_input->{'__get'};
+        $__set_1 = $_input->{'__set'};
+        $__call_1 = $_input->{'__call'};
+        $__isset_1 = $_input->{'__isset'};
+        $__unset_1 = $_input->{'__unset'};
+        $__sleep_1 = $_input->{'__sleep'};
+        $__wakeup_1 = $_input->{'__wakeup'};
+        $__toString_1 = $_input->{'__toString'};
+        $__invoke_1 = $_input->{'__invoke'};
+        $__debugInfo_1 = $_input->{'__debugInfo'};
+        $__clone_2 = $_input->{'__clone'};
 
-        $_obj = new self($_GLOBALS, $GLOBALS_1, $GLOBALS_1_1, $_SERVER_1, $_GET_1, $_POST_1, $_FILES_1, $_REQUEST_1, $_SESSION_1, $_ENV_1, $_COOKIE_1, $php_errormsg_1, $http_response_header_1, $argc_1, $argv_1, $input, $validate, $obj, $buildFromInput, $toArray, $validateInput, $clone_1, $__construct, $__destruct, $__get, $__set, $__call, $__isset, $__unset, $__sleep, $__wakeup, $__toString, $__invoke, $__debugInfo, $__clone);
+        $_obj = new self($_GLOBALS_2, $GLOBALS_3, $GLOBALS_1_1, $_SERVER_1, $_GET_1, $_POST_1, $_FILES_1, $_REQUEST_1, $_SESSION_1, $_ENV_1, $_COOKIE_1, $php_errormsg_1, $http_response_header_1, $argc_1, $argv_1, $input, $validate, $obj, $buildFromInput_1, $toArray_1, $validateInput_1, $clone_1, $__construct_1, $__destruct_1, $__get_2, $__set_1, $__call_1, $__isset_1, $__unset_1, $__sleep_1, $__wakeup_1, $__toString_1, $__invoke_1, $__debugInfo_1, $__clone_2);
 
         return $_obj;
     }
@@ -1386,8 +1384,8 @@ class Foo
     public function toArray() : array
     {
         $output = [];
-        $output['_GLOBALS'] = $this->_GLOBALS;
-        $output['GLOBALS'] = $this->GLOBALS_1;
+        $output['_GLOBALS'] = $this->_GLOBALS_2;
+        $output['GLOBALS'] = $this->GLOBALS_3;
         $output['GLOBALS_1'] = $this->GLOBALS_1_1;
         $output['_SERVER'] = $this->_SERVER_1;
         $output['_GET'] = $this->_GET_1;
@@ -1404,23 +1402,23 @@ class Foo
         $output['input'] = $this->input;
         $output['validate'] = $this->validate;
         $output['obj'] = $this->obj;
-        $output['buildFromInput'] = $this->buildFromInput;
-        $output['toArray'] = $this->toArray;
-        $output['validateInput'] = $this->validateInput;
+        $output['buildFromInput'] = $this->buildFromInput_1;
+        $output['toArray'] = $this->toArray_1;
+        $output['validateInput'] = $this->validateInput_1;
         $output['clone'] = $this->clone_1;
-        $output['__construct'] = $this->__construct;
-        $output['__destruct'] = $this->__destruct;
-        $output['__get'] = $this->__get;
-        $output['__set'] = $this->__set;
-        $output['__call'] = $this->__call;
-        $output['__isset'] = $this->__isset;
-        $output['__unset'] = $this->__unset;
-        $output['__sleep'] = $this->__sleep;
-        $output['__wakeup'] = $this->__wakeup;
-        $output['__toString'] = $this->__toString;
-        $output['__invoke'] = $this->__invoke;
-        $output['__debugInfo'] = $this->__debugInfo;
-        $output['__clone'] = $this->__clone;
+        $output['__construct'] = $this->__construct_1;
+        $output['__destruct'] = $this->__destruct_1;
+        $output['__get'] = $this->__get_2;
+        $output['__set'] = $this->__set_1;
+        $output['__call'] = $this->__call_1;
+        $output['__isset'] = $this->__isset_1;
+        $output['__unset'] = $this->__unset_1;
+        $output['__sleep'] = $this->__sleep_1;
+        $output['__wakeup'] = $this->__wakeup_1;
+        $output['__toString'] = $this->__toString_1;
+        $output['__invoke'] = $this->__invoke_1;
+        $output['__debugInfo'] = $this->__debugInfo_1;
+        $output['__clone'] = $this->__clone_2;
 
         return $output;
     }
