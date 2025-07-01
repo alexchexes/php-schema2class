@@ -207,46 +207,59 @@ class SchemaToClass
      */
     private function ensureUniquePropertyNames(PropertyCollection $properties): void
     {
-        // Reserved identifiers that should not be used for property names
-        $used = [
-            "_GLOBALS",
-            "GLOBALS",
-            "GLOBALS_1",
-            "_SERVER",
-            "_GET",
-            "_POST",
-            "_FILES",
-            "_REQUEST",
-            "_SESSION",
-            "_ENV",
-            "_COOKIE",
-            "php_errormsg",
-            "http_response_header",
-            "argc",
-            "argv",
-            "buildFromInput",
-            "toArray",
-            "validateInput",
-            "clone",
-            "__construct",
-            "__destruct",
-            "__get",
-            "__set",
-            "__call",
-            "__isset",
-            "__unset",
-            "__sleep",
-            "__wakeup",
-            "__toString",
-            "__invoke",
-            "__debugInfo",
-            "__clone"
+        // Reserved identifiers that should not be used for property names or
+        // would collide with generated method names
+        $reservedPropertyNames = [
+            '_GLOBALS',
+            'GLOBALS',
+            'GLOBALS_1',
+            '_SERVER',
+            '_GET',
+            '_POST',
+            '_FILES',
+            '_REQUEST',
+            '_SESSION',
+            '_ENV',
+            '_COOKIE',
+            'php_errormsg',
+            'http_response_header',
+            'argc',
+            'argv',
         ];
 
-        $usedMethods = array_map(
-            static fn(string $n) => strtolower(StringUtils::pascalCase($n)),
-            $used
-        );
+        $reservedMethodNames = [
+            'buildFromInput',
+            'toArray',
+            'validateInput',
+            'clone',
+            '__construct',
+            '__destruct',
+            '__get',
+            '__set',
+            '__call',
+            '__isset',
+            '__unset',
+            '__sleep',
+            '__wakeup',
+            '__toString',
+            '__invoke',
+            '__debugInfo',
+            '__clone',
+        ];
+
+        $used = [];
+        foreach (array_merge($reservedPropertyNames, $reservedMethodNames) as $n) {
+            $used[] = StringUtils::camelCase($n);
+            $used[] = StringUtils::sanitizeIdentifier($n);
+        }
+        $used = array_values(array_unique($used));
+
+        $usedMethods = [];
+        foreach ($reservedMethodNames as $n) {
+            $usedMethods[] = strtolower(StringUtils::pascalCase(StringUtils::camelCase($n)));
+            $usedMethods[] = strtolower(StringUtils::pascalCase(StringUtils::sanitizeIdentifier($n)));
+        }
+        $usedMethods = array_values(array_unique($usedMethods));
 
         foreach ($properties as $property) {
             $base = $property->name();

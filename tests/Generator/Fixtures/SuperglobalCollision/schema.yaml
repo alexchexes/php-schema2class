@@ -1,0 +1,5 @@
+required:
+  - files
+properties:
+  files:
+    type: string

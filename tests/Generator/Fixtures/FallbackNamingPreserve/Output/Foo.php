@@ -161,12 +161,12 @@ class Foo
     /**
      * @var string
      */
-    private string $_GLOBALS_2;
+    private string $_GLOBALS_1;
 
     /**
      * @var string
      */
-    private string $GLOBALS_3;
+    private string $GLOBALS_2;
 
     /**
      * @var string
@@ -334,8 +334,8 @@ class Foo
     private string $__clone_2;
 
     /**
-     * @param string $_GLOBALS_2
-     * @param string $GLOBALS_3
+     * @param string $_GLOBALS_1
+     * @param string $GLOBALS_2
      * @param string $GLOBALS_1_1
      * @param string $_SERVER_1
      * @param string $_GET_1
@@ -370,10 +370,10 @@ class Foo
      * @param string $__debugInfo_1
      * @param string $__clone_2
      */
-    public function __construct(string $_GLOBALS_2, string $GLOBALS_3, string $GLOBALS_1_1, string $_SERVER_1, string $_GET_1, string $_POST_1, string $_FILES_1, string $_REQUEST_1, string $_SESSION_1, string $_ENV_1, string $_COOKIE_1, string $php_errormsg_1, string $http_response_header_1, string $argc_1, string $argv_1, string $input, string $validate, string $obj, string $buildFromInput_1, string $toArray_1, string $validateInput_1, string $clone_1, string $__construct_1, string $__destruct_1, string $__get_2, string $__set_1, string $__call_1, string $__isset_1, string $__unset_1, string $__sleep_1, string $__wakeup_1, string $__toString_1, string $__invoke_1, string $__debugInfo_1, string $__clone_2)
+    public function __construct(string $_GLOBALS_1, string $GLOBALS_2, string $GLOBALS_1_1, string $_SERVER_1, string $_GET_1, string $_POST_1, string $_FILES_1, string $_REQUEST_1, string $_SESSION_1, string $_ENV_1, string $_COOKIE_1, string $php_errormsg_1, string $http_response_header_1, string $argc_1, string $argv_1, string $input, string $validate, string $obj, string $buildFromInput_1, string $toArray_1, string $validateInput_1, string $clone_1, string $__construct_1, string $__destruct_1, string $__get_2, string $__set_1, string $__call_1, string $__isset_1, string $__unset_1, string $__sleep_1, string $__wakeup_1, string $__toString_1, string $__invoke_1, string $__debugInfo_1, string $__clone_2)
     {
-        $this->_GLOBALS_2 = $_GLOBALS_2;
-        $this->GLOBALS_3 = $GLOBALS_3;
+        $this->_GLOBALS_1 = $_GLOBALS_1;
+        $this->GLOBALS_2 = $GLOBALS_2;
         $this->GLOBALS_1_1 = $GLOBALS_1_1;
         $this->_SERVER_1 = $_SERVER_1;
         $this->_GET_1 = $_GET_1;
@@ -412,17 +412,17 @@ class Foo
     /**
      * @return string
      */
-    public function getGLOBALS2() : string
+    public function getGLOBALS1() : string
     {
-        return $this->_GLOBALS_2;
+        return $this->_GLOBALS_1;
     }
 
     /**
      * @return string
      */
-    public function getGLOBALS3() : string
+    public function getGLOBALS2() : string
     {
-        return $this->GLOBALS_3;
+        return $this->GLOBALS_2;
     }
 
     /**
@@ -690,37 +690,37 @@ class Foo
     }
 
     /**
-     * @param string $_GLOBALS_2
+     * @param string $_GLOBALS_1
      * @return self
      */
-    public function withGLOBALS2(string $_GLOBALS_2) : self
+    public function withGLOBALS1(string $_GLOBALS_1) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($_GLOBALS_2, self::$schema['properties']['_GLOBALS']);
+        $validator->validate($_GLOBALS_1, self::$schema['properties']['_GLOBALS']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
 
         $clone = clone $this;
-        $clone->_GLOBALS_2 = $_GLOBALS_2;
+        $clone->_GLOBALS_1 = $_GLOBALS_1;
 
         return $clone;
     }
 
     /**
-     * @param string $GLOBALS_3
+     * @param string $GLOBALS_2
      * @return self
      */
-    public function withGLOBALS3(string $GLOBALS_3) : self
+    public function withGLOBALS2(string $GLOBALS_2) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($GLOBALS_3, self::$schema['properties']['GLOBALS']);
+        $validator->validate($GLOBALS_2, self::$schema['properties']['GLOBALS']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
 
         $clone = clone $this;
-        $clone->GLOBALS_3 = $GLOBALS_3;
+        $clone->GLOBALS_2 = $GLOBALS_2;
 
         return $clone;
     }
@@ -1335,8 +1335,8 @@ class Foo
         }
 
         $validate = $_validate;
-        $_GLOBALS_2 = $_input->{'_GLOBALS'};
-        $GLOBALS_3 = $_input->{'GLOBALS'};
+        $_GLOBALS_1 = $_input->{'_GLOBALS'};
+        $GLOBALS_2 = $_input->{'GLOBALS'};
         $GLOBALS_1_1 = $_input->{'GLOBALS_1'};
         $_SERVER_1 = $_input->{'_SERVER'};
         $_GET_1 = $_input->{'_GET'};
@@ -1371,7 +1371,7 @@ class Foo
         $__debugInfo_1 = $_input->{'__debugInfo'};
         $__clone_2 = $_input->{'__clone'};
 
-        $_obj = new self($_GLOBALS_2, $GLOBALS_3, $GLOBALS_1_1, $_SERVER_1, $_GET_1, $_POST_1, $_FILES_1, $_REQUEST_1, $_SESSION_1, $_ENV_1, $_COOKIE_1, $php_errormsg_1, $http_response_header_1, $argc_1, $argv_1, $input, $validate, $obj, $buildFromInput_1, $toArray_1, $validateInput_1, $clone_1, $__construct_1, $__destruct_1, $__get_2, $__set_1, $__call_1, $__isset_1, $__unset_1, $__sleep_1, $__wakeup_1, $__toString_1, $__invoke_1, $__debugInfo_1, $__clone_2);
+        $_obj = new self($_GLOBALS_1, $GLOBALS_2, $GLOBALS_1_1, $_SERVER_1, $_GET_1, $_POST_1, $_FILES_1, $_REQUEST_1, $_SESSION_1, $_ENV_1, $_COOKIE_1, $php_errormsg_1, $http_response_header_1, $argc_1, $argv_1, $input, $validate, $obj, $buildFromInput_1, $toArray_1, $validateInput_1, $clone_1, $__construct_1, $__destruct_1, $__get_2, $__set_1, $__call_1, $__isset_1, $__unset_1, $__sleep_1, $__wakeup_1, $__toString_1, $__invoke_1, $__debugInfo_1, $__clone_2);
 
         return $_obj;
     }
@@ -1384,8 +1384,8 @@ class Foo
     public function toArray() : array
     {
         $output = [];
-        $output['_GLOBALS'] = $this->_GLOBALS_2;
-        $output['GLOBALS'] = $this->GLOBALS_3;
+        $output['_GLOBALS'] = $this->_GLOBALS_1;
+        $output['GLOBALS'] = $this->GLOBALS_2;
         $output['GLOBALS_1'] = $this->GLOBALS_1_1;
         $output['_SERVER'] = $this->_SERVER_1;
         $output['_GET'] = $this->_GET_1;
