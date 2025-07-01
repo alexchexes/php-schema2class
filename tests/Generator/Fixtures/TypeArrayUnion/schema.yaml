@@ -1,9 +1,9 @@
 required:
-  - input
+  - foo
 properties:
-  input:
+  foo:
     type: [string, object]
-    required: [foo]
+    required: [bar]
     properties:
-      foo:
+      bar:
         type: string

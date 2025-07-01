@@ -39,7 +39,7 @@ class Foo
     /**
      * @var string
      */
-    private string $fooBar;
+    private string $fooBar_1;
 
     /**
      * @var string|null
@@ -48,19 +48,19 @@ class Foo
     private ?string $bar = null;
 
     /**
-     * @param string $fooBar
+     * @param string $fooBar_1
      */
-    public function __construct(string $fooBar)
+    public function __construct(string $fooBar_1)
     {
-        $this->fooBar = $fooBar;
+        $this->fooBar_1 = $fooBar_1;
     }
 
     /**
      * @return string
      */
-    public function getFooBar() : string
+    public function getFooBar1() : string
     {
-        return $this->fooBar;
+        return $this->fooBar_1;
     }
 
     /**
@@ -73,19 +73,19 @@ class Foo
     }
 
     /**
-     * @param string $fooBar
+     * @param string $fooBar_1
      * @return self
      */
-    public function withFooBar(string $fooBar) : self
+    public function withFooBar1(string $fooBar_1) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($fooBar, self::$schema['properties']['fooBar']);
+        $validator->validate($fooBar_1, self::$schema['properties']['fooBar']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
 
         $clone = clone $this;
-        $clone->fooBar = $fooBar;
+        $clone->fooBar_1 = $fooBar_1;
 
         return $clone;
     }
@@ -136,10 +136,10 @@ class Foo
         }
 
         $foobar = isset($input->{'foobar'}) ? $input->{'foobar'} : null;
-        $fooBar = $input->{'fooBar'};
+        $fooBar_1 = $input->{'fooBar'};
         $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
 
-        $obj = new self($fooBar);
+        $obj = new self($fooBar_1);
         $obj->foobar = $foobar;
         $obj->bar = $bar;
         return $obj;
@@ -156,7 +156,7 @@ class Foo
         if (isset($this->foobar)) {
             $output['foobar'] = $this->foobar;
         }
-        $output['fooBar'] = $this->fooBar;
+        $output['fooBar'] = $this->fooBar_1;
         if (isset($this->bar)) {
             $output['bar'] = $this->bar;
         }

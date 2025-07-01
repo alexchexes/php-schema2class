@@ -12,6 +12,7 @@ use Helmich\Schema2Class\Generator\Property\IntersectProperty;
 use Helmich\Schema2Class\Generator\Property\NestedObjectProperty;
 use Helmich\Schema2Class\Generator\Property\PropertyCollection;
 use Helmich\Schema2Class\Generator\Property\RenameablePropertyInterface;
+use Helmich\Schema2Class\Util\StringUtils;
 use Helmich\Schema2Class\Writer\WriterInterface;
 use Laminas\Code\DeclareStatement;
 use Laminas\Code\Generator\ClassGenerator;
@@ -206,19 +207,65 @@ class SchemaToClass
      */
     private function ensureUniquePropertyNames(PropertyCollection $properties): void
     {
-        $used = [];
+        // Reserved identifiers that should not be used for property names
+        $used = [
+            "_GLOBALS",
+            "GLOBALS",
+            "GLOBALS_1",
+            "_SERVER",
+            "_GET",
+            "_POST",
+            "_FILES",
+            "_REQUEST",
+            "_SESSION",
+            "_ENV",
+            "_COOKIE",
+            "php_errormsg",
+            "http_response_header",
+            "argc",
+            "argv",
+            "buildFromInput",
+            "toArray",
+            "validateInput",
+            "clone",
+            "__construct",
+            "__destruct",
+            "__get",
+            "__set",
+            "__call",
+            "__isset",
+            "__unset",
+            "__sleep",
+            "__wakeup",
+            "__toString",
+            "__invoke",
+            "__debugInfo",
+            "__clone"
+        ];
+
+        $usedMethods = array_map(
+            static fn(string $n) => strtolower(StringUtils::pascalCase($n)),
+            $used
+        );
+
         foreach ($properties as $property) {
             $base = $property->name();
             $unique = $base;
             $i = 1;
-            while (in_array($unique, $used, true)) {
+            $pascal = strtolower(StringUtils::pascalCase($unique));
+
+            while (in_array($unique, $used, true) || in_array($pascal, $usedMethods, true)) {
                 $unique = $base . '_' . $i;
+                $pascal = strtolower(StringUtils::pascalCase($unique));
                 $i++;
             }
+
             if ($unique !== $base && $property instanceof RenameablePropertyInterface) {
                 $property->setName($unique);
             }
+
             $used[] = $unique;
+            $usedMethods[] = $pascal;
         }
     }
 
