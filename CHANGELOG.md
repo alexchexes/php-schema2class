@@ -35,8 +35,6 @@ Now it:
 - Improves type hints and PHPDoc type generation for complex types like unions, nested arrays, etc.
 - Adds a guard against passing anything other than an array/object to `buildFromInput`, building multi-line validation error messages.
 - Skips emitting empty `__construct` or `__clone` methods.
-- Fixed property name collision logic so regular names like `files` are not
-  renamed because of superglobals such as `_FILES`.
 
 ### Better support for older PHP versions:
 
