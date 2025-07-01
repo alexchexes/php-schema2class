@@ -133,10 +133,7 @@ class SchemaToClass
             }
         }
 
-        $this->ensureUniquePropertyNames(
-            $propertiesFromSchema,
-            $req->getOptions()->getPreservePropertyNames()
-        );
+        $this->ensureUniquePropertyNames($propertiesFromSchema);
 
         foreach ($propertiesFromSchema as $property) {
             $property->generateSubTypes($this);
@@ -208,7 +205,7 @@ class SchemaToClass
      * collision is detected, an underscore is prepended until the name is
      * unique within the given property collection.
      */
-    private function ensureUniquePropertyNames(PropertyCollection $properties, bool $preservePropertyNames): void
+    private function ensureUniquePropertyNames(PropertyCollection $properties): void
     {
         // Reserved identifiers that should not be used for property names
         $used = [
@@ -246,22 +243,18 @@ class SchemaToClass
             "__clone"
         ];
 
-        $usedMethods = $preservePropertyNames
-            ? array_map(
-                static fn(string $n) => strtolower(StringUtils::pascalCase($n)),
-                $used
-            )
-            : [];
+        $usedMethods = array_map(
+            static fn(string $n) => strtolower(StringUtils::pascalCase($n)),
+            $used
+        );
 
         foreach ($properties as $property) {
             $base = $property->name();
             $unique = $base;
             $i = 1;
             $pascal = strtolower(StringUtils::pascalCase($unique));
-            while (
-                in_array($unique, $used, true)
-                || ($preservePropertyNames && in_array($pascal, $usedMethods, true))
-            ) {
+
+            while (in_array($unique, $used, true) || in_array($pascal, $usedMethods, true)) {
                 $unique = $base . '_' . $i;
                 $pascal = strtolower(StringUtils::pascalCase($unique));
                 $i++;
@@ -272,9 +265,7 @@ class SchemaToClass
             }
 
             $used[] = $unique;
-            if ($preservePropertyNames) {
-                $usedMethods[] = $pascal;
-            }
+            $usedMethods[] = $pascal;
         }
     }
 
