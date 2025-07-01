@@ -60,10 +60,11 @@ definitions:
         type: boolean
         description: |
           When true, no withX() / withoutX() setters/unsetters are created.
-      noDescriptionsInSchema:
+      noSchemaMetadata:
         type: boolean
         description: |
-          When true, the schema used for validation will not include any description fields
+          When true, the schema used for validation will not include
+          description, title and other non-validation metadata fields
       singleLineSchema:
         type: boolean
         description: |

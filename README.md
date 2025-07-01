@@ -133,7 +133,7 @@ Both the CLI and specification files accept the following options:
 | `--preserve-property-names`   | `preservePropertyNames`            | Keep property names as is instead of converting them to camelCase (non-valid identifiers names will be sanitized).                                                                                   |
 | `--no-getters`                | `noGetters`                        | If **true**, no getter methods are generated and all properties are `public`.                                                                                                                        |
 | `--no-setters`                | `noSetters`                        | Do not generate `withX()` / `withoutX()` methods.                                                                                                                                                    |
-| `--no-schema-descriptions`    | `noDescriptionsInSchema`           | Remove `description` fields from the embedded schema to reduce its size.                                                                                                                             |
+| `--no-schema-metadata`    | `noSchemaMetadata`           | Remove description, title and other non-validation metadata fields from the embedded schema.                                                                                                                             |
 | `--single-line-schema`        | `singleLineSchema`                 | Store the validation schema on a single line in the generated class to make the `.php` file smaller.                                                                                                 |
 | `--no-enums`                  | `noEnums`                          | Disable generation of PHP `enum` classes even when targeting PHP 8.1 or newer.                                                                                                                       |
 | `--dry-run`                   | –                                  | Print the output to the console instead of writing files.                                                                                                                                            |
@@ -164,7 +164,7 @@ To demonstrate Schema2Class's capabilities and how to use the generated code, co
      examples/basic/generated \
      --target-namespace Example\\Basic \
      --target-php 7.4 \
-     --single-line-schema --no-schema-descriptions
+     --single-line-schema --no-schema-metadata
    ```
 
 3. By this point you're all set: Schema2Class has automatically created the PHP classes [\[1\]](examples/basic/generated/User.php) and [\[2\]](examples/basic/generated/Address.php):

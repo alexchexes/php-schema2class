@@ -25,7 +25,7 @@ final class OptionsDefaults
             'preservePropertyNames'             => false,
             'noGetters'                         => false,
             'noSetters'                         => false,
-            'noDescriptionsInSchema'            => false,
+            'noSchemaMetadata'                  => false,
             'singleLineSchema'                  => false,
             'noEnums'                           => false,
         ];

@@ -11,7 +11,7 @@ class SpecificationOptions
      *
      * @var array
      */
-    private static array $schema = ['additionalProperties' => false, 'properties' => ['targetDirectory' => ['type' => 'string'], 'targetNamespace' => ['type' => 'string'], 'targetPHPVersion' => ['oneOf' => [['type' => 'integer', 'enum' => [5, 7, 8]], ['type' => 'string']]], 'cleanTargetDirectory' => ['type' => 'boolean'], 'disableStrictTypes' => ['type' => 'boolean'], 'treatValuesWithDefaultAsOptional' => ['type' => 'boolean'], 'inlineAllofReferences' => ['type' => 'boolean'], 'newValidatorClassExpr' => ['type' => 'string'], 'preservePropertyNames' => ['type' => 'boolean'], 'noGetters' => ['type' => 'boolean'], 'noSetters' => ['type' => 'boolean'], 'noDescriptionsInSchema' => ['type' => 'boolean'], 'singleLineSchema' => ['type' => 'boolean'], 'noEnums' => ['type' => 'boolean']]];
+    private static array $schema = ['additionalProperties' => false, 'properties' => ['targetDirectory' => ['type' => 'string'], 'targetNamespace' => ['type' => 'string'], 'targetPHPVersion' => ['oneOf' => [['type' => 'integer', 'enum' => [5, 7, 8]], ['type' => 'string']]], 'cleanTargetDirectory' => ['type' => 'boolean'], 'disableStrictTypes' => ['type' => 'boolean'], 'treatValuesWithDefaultAsOptional' => ['type' => 'boolean'], 'inlineAllofReferences' => ['type' => 'boolean'], 'newValidatorClassExpr' => ['type' => 'string'], 'preservePropertyNames' => ['type' => 'boolean'], 'noGetters' => ['type' => 'boolean'], 'noSetters' => ['type' => 'boolean'], 'noSchemaMetadata' => ['type' => 'boolean'], 'singleLineSchema' => ['type' => 'boolean'], 'noEnums' => ['type' => 'boolean']]];
 
     /**
      * @var string|null
@@ -86,12 +86,13 @@ class SpecificationOptions
     private ?bool $noSetters = null;
 
     /**
-     * When true, the schema used for validation will not include any description fields
+     * When true, the schema used for validation will not include
+     * description, title and other non-validation metadata fields
      *
      *
      * @var bool|null
      */
-    private ?bool $noDescriptionsInSchema = null;
+    private ?bool $noSchemaMetadata = null;
 
     /**
      * When true, the whole schema used for validation will on a single line in the class property
@@ -216,14 +217,15 @@ class SpecificationOptions
     }
 
     /**
-     * When true, the schema used for validation will not include any description fields
+     * When true, the schema used for validation will not include
+     * description, title and other non-validation metadata fields
      *
      *
      * @return bool|null
      */
-    public function getNoDescriptionsInSchema() : ?bool
+    public function getNoSchemaMetadata() : ?bool
     {
-        return $this->noDescriptionsInSchema ?? null;
+        return $this->noSchemaMetadata ?? null;
     }
 
     /**
@@ -563,19 +565,19 @@ class SpecificationOptions
     }
 
     /**
-     * @param bool $noDescriptionsInSchema
+     * @param bool $noSchemaMetadata
      * @return self
      */
-    public function withNoDescriptionsInSchema(bool $noDescriptionsInSchema) : self
+    public function withNoSchemaMetadata(bool $noSchemaMetadata) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($noDescriptionsInSchema, self::$schema['properties']['noDescriptionsInSchema']);
+        $validator->validate($noSchemaMetadata, self::$schema['properties']['noSchemaMetadata']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
 
         $clone = clone $this;
-        $clone->noDescriptionsInSchema = $noDescriptionsInSchema;
+        $clone->noSchemaMetadata = $noSchemaMetadata;
 
         return $clone;
     }
@@ -583,10 +585,10 @@ class SpecificationOptions
     /**
      * @return self
      */
-    public function withoutNoDescriptionsInSchema() : self
+    public function withoutNoSchemaMetadata() : self
     {
         $clone = clone $this;
-        unset($clone->noDescriptionsInSchema);
+        unset($clone->noSchemaMetadata);
 
         return $clone;
     }
@@ -679,7 +681,7 @@ class SpecificationOptions
         $preservePropertyNames = isset($input->{'preservePropertyNames'}) ? $input->{'preservePropertyNames'} : null;
         $noGetters = isset($input->{'noGetters'}) ? $input->{'noGetters'} : null;
         $noSetters = isset($input->{'noSetters'}) ? $input->{'noSetters'} : null;
-        $noDescriptionsInSchema = isset($input->{'noDescriptionsInSchema'}) ? $input->{'noDescriptionsInSchema'} : null;
+        $noSchemaMetadata = isset($input->{'noSchemaMetadata'}) ? $input->{'noSchemaMetadata'} : null;
         $singleLineSchema = isset($input->{'singleLineSchema'}) ? $input->{'singleLineSchema'} : null;
         $noEnums = isset($input->{'noEnums'}) ? $input->{'noEnums'} : null;
 
@@ -695,7 +697,7 @@ class SpecificationOptions
         $obj->preservePropertyNames = $preservePropertyNames;
         $obj->noGetters = $noGetters;
         $obj->noSetters = $noSetters;
-        $obj->noDescriptionsInSchema = $noDescriptionsInSchema;
+        $obj->noSchemaMetadata = $noSchemaMetadata;
         $obj->singleLineSchema = $singleLineSchema;
         $obj->noEnums = $noEnums;
         return $obj;
@@ -744,8 +746,8 @@ class SpecificationOptions
         if (isset($this->noSetters)) {
             $output['noSetters'] = $this->noSetters;
         }
-        if (isset($this->noDescriptionsInSchema)) {
-            $output['noDescriptionsInSchema'] = $this->noDescriptionsInSchema;
+        if (isset($this->noSchemaMetadata)) {
+            $output['noSchemaMetadata'] = $this->noSchemaMetadata;
         }
         if (isset($this->singleLineSchema)) {
             $output['singleLineSchema'] = $this->singleLineSchema;
