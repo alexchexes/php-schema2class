@@ -15,7 +15,7 @@ New options provide more control over how classes are generated:
 - `preservePropertyNames` - keep generated PHP property names as-is instead of converting them to camelCase
 - `noGetters` - if _true_, no getter methods will be generated, and all properties will be `public`.
 - `noSetters` - don't generate `withX()`/`withoutX()` methods.
-- `noDescriptionsInSchema` - drop `description` fields from the embedded schema to reduce its size.
+- `noSchemaMetadata` - drop description, title and other non-validation metadata fields from the embedded schema.
 - `singleLineSchema` - store the validation schema as a single line in the generated class to reduce the length of .php files.
 - `noEnums` - Disable generation of PHP `enum` classes even when targeting PHP 8.1 or newer.
 - `cleanTargetDirectory` - remove all files from the target directory before generation.

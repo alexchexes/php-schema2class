@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ns\NoDescriptionsInSchema;
+namespace Ns\NoSchemaMetadata;
 
 class Foo
 {
@@ -36,6 +36,7 @@ class Foo
      * Bar description
      *
      * @var int|null
+     * @deprecated
      */
     private ?int $bar = null;
 
@@ -61,6 +62,7 @@ class Foo
      * Bar description
      *
      * @return int|null
+     * @deprecated
      */
     public function getBar() : ?int
     {
@@ -88,6 +90,7 @@ class Foo
     /**
      * @param int $bar
      * @return self
+     * @deprecated
      */
     public function withBar(int $bar) : self
     {

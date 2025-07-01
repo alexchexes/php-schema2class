@@ -83,21 +83,34 @@ class SchemaToClass
         // remove descriptions from schema if such option is set, but keep them
         // for building property documentation
         $validationSchema = $schema;
-        if ($req->getOptions()->getNoDescriptionsInSchema()) {
-            $stripDescriptions = function (&$node) use (&$stripDescriptions) {
+        if ($req->getOptions()->getNoSchemaMetadata()) {
+            $metaFields = [
+                'description',
+                'title',
+                'examples',
+                'deprecated',
+                'default',
+                'readOnly',
+                'writeOnly',
+                '$id',
+                '$schema',
+                '$comment',
+            ];
+
+            $stripMetadata = function (&$node) use (&$stripMetadata, $metaFields) {
                 if (!is_array($node)) {
                     return;
                 }
                 foreach ($node as $key => &$value) {
-                    if ($key === 'description') {
+                    if (in_array($key, $metaFields, true)) {
                         unset($node[$key]);
                     } elseif (is_array($value)) {
                         // recurse into nested arrays
-                        $stripDescriptions($value);
+                        $stripMetadata($value);
                     }
                 }
             };
-            $stripDescriptions($validationSchema);
+            $stripMetadata($validationSchema);
         }
 
         $schemaProperty = new PropertyGenerator(

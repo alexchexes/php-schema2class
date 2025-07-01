@@ -1,7 +1,7 @@
 options:
   targetPHPVersion: "7.4"
   singleLineSchema: true
-  noDescriptionsInSchema: true
+  noSchemaMetadata: true
 files:
   - input: "examples/basic/basic-example.json"
     options:

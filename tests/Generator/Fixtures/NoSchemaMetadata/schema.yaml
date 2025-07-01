@@ -1,9 +1,13 @@
 required:
   - foo
+title: Example
 properties:
   foo:
     type: string
     description: Foo description
+    examples:
+      - sample
   bar:
     type: integer
     description: Bar description
+    deprecated: true

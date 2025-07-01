@@ -80,7 +80,7 @@ This is useful if you want to use a custom validator class.
 ',
                 'default' => false,
             ],
-            'noDescriptionsInSchema' => [
+            'noSchemaMetadata' => [
                 'type' => 'boolean',
                 'description' => 'When true, the schema used for validation will not include any description fields
 ',
@@ -180,7 +180,7 @@ handled like in earlier PHP versions.
      *
      * @var bool
      */
-    private bool $noDescriptionsInSchema = false;
+    private bool $noSchemaMetadata = false;
 
     /**
      * When true, the whole schema used for validation will on a single line in the class property
@@ -310,9 +310,9 @@ handled like in earlier PHP versions.
      *
      * @return bool
      */
-    public function getNoDescriptionsInSchema() : bool
+    public function getNoSchemaMetadata() : bool
     {
-        return $this->noDescriptionsInSchema;
+        return $this->noSchemaMetadata;
     }
 
     /**
@@ -652,19 +652,19 @@ handled like in earlier PHP versions.
     }
 
     /**
-     * @param bool $noDescriptionsInSchema
+     * @param bool $noSchemaMetadata
      * @return self
      */
-    public function withNoDescriptionsInSchema(bool $noDescriptionsInSchema) : self
+    public function withNoSchemaMetadata(bool $noSchemaMetadata) : self
     {
         $validator = new \JsonSchema\Validator();
-        $validator->validate($noDescriptionsInSchema, self::$schema['properties']['noDescriptionsInSchema']);
+        $validator->validate($noSchemaMetadata, self::$schema['properties']['noSchemaMetadata']);
         if (!$validator->isValid()) {
             throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
         }
 
         $clone = clone $this;
-        $clone->noDescriptionsInSchema = $noDescriptionsInSchema;
+        $clone->noSchemaMetadata = $noSchemaMetadata;
 
         return $clone;
     }
@@ -675,7 +675,7 @@ handled like in earlier PHP versions.
     public function withoutNoDescriptionsInSchema() : self
     {
         $clone = clone $this;
-        $clone->noDescriptionsInSchema = false;
+        $clone->noSchemaMetadata = false;
 
         return $clone;
     }
@@ -768,7 +768,7 @@ handled like in earlier PHP versions.
         $preservePropertyNames = isset($input->{'preservePropertyNames'}) ? $input->{'preservePropertyNames'} : false;
         $noGetters = isset($input->{'noGetters'}) ? $input->{'noGetters'} : false;
         $noSetters = isset($input->{'noSetters'}) ? $input->{'noSetters'} : false;
-        $noDescriptionsInSchema = isset($input->{'noDescriptionsInSchema'}) ? $input->{'noDescriptionsInSchema'} : false;
+        $noSchemaMetadata = isset($input->{'noSchemaMetadata'}) ? $input->{'noSchemaMetadata'} : false;
         $singleLineSchema = isset($input->{'singleLineSchema'}) ? $input->{'singleLineSchema'} : false;
         $noEnums = isset($input->{'noEnums'}) ? $input->{'noEnums'} : false;
 
@@ -784,7 +784,7 @@ handled like in earlier PHP versions.
         $obj->preservePropertyNames = $preservePropertyNames;
         $obj->noGetters = $noGetters;
         $obj->noSetters = $noSetters;
-        $obj->noDescriptionsInSchema = $noDescriptionsInSchema;
+        $obj->noSchemaMetadata = $noSchemaMetadata;
         $obj->singleLineSchema = $singleLineSchema;
         $obj->noEnums = $noEnums;
         return $obj;
@@ -833,8 +833,8 @@ handled like in earlier PHP versions.
         if (isset($this->noSetters)) {
             $output['noSetters'] = $this->noSetters;
         }
-        if (isset($this->noDescriptionsInSchema)) {
-            $output['noDescriptionsInSchema'] = $this->noDescriptionsInSchema;
+        if (isset($this->noSchemaMetadata)) {
+            $output['noSchemaMetadata'] = $this->noSchemaMetadata;
         }
         if (isset($this->singleLineSchema)) {
             $output['singleLineSchema'] = $this->singleLineSchema;
