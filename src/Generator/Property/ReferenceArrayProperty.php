@@ -69,7 +69,7 @@ class ReferenceArrayProperty extends AbstractProperty
         } else {
             $closure = "fn(\$i) => {$innerMap}";
         }
-        return "array_map({$closure}, {$expr})";
+        return "array_map(\n    {$closure},\n    {$expr}\n)";
     }
 
     public function generateOutputMappingExpr(string $expr): string

@@ -140,7 +140,8 @@ class SpecificationFilesItem
         }
 
         $input = match (true) {
-            is_string($_input->{'input'}), is_array($_input->{'input'}) || is_object($_input->{'input'}) => $_input->{'input'},
+            is_string($_input->{'input'}),
+            is_array($_input->{'input'}) || is_object($_input->{'input'}) => $_input->{'input'},
             default => throw new \InvalidArgumentException("could not build property 'input' from JSON"),
         };
         $className = isset($_input->{'className'}) ? $_input->{'className'} : null;
@@ -161,7 +162,8 @@ class SpecificationFilesItem
     {
         $output = [];
         $output['input'] = match (true) {
-            is_string($this->input), is_array($this->input) || is_object($this->input) => $this->input,
+            is_string($this->input),
+            is_array($this->input) || is_object($this->input) => $this->input,
         };
         if (isset($this->className)) {
             $output['className'] = $this->className;
@@ -200,7 +202,8 @@ class SpecificationFilesItem
     public function __clone()
     {
         $this->input = match (true) {
-            is_string($this->input), is_array($this->input) || is_object($this->input) => $this->input,
+            is_string($this->input),
+            is_array($this->input) || is_object($this->input) => $this->input,
         };
     }
 }

@@ -69,7 +69,8 @@ EOCODE;
 
         $expected = <<<'EOCODE'
 $variable['myPropertyName'] = match (true) {
-    $this->myPropertyName instanceof FooMyPropertyNameAlternative1, $this->myPropertyName instanceof FooMyPropertyNameAlternative2 => ($this->myPropertyName)->toArray(),
+    $this->myPropertyName instanceof FooMyPropertyNameAlternative1,
+    $this->myPropertyName instanceof FooMyPropertyNameAlternative2 => ($this->myPropertyName)->toArray(),
 };
 EOCODE;
 
@@ -80,7 +81,8 @@ EOCODE;
     {
         $expected = <<<'EOCODE'
 $this->myPropertyName = match (true) {
-    $this->myPropertyName instanceof FooMyPropertyNameAlternative1, $this->myPropertyName instanceof FooMyPropertyNameAlternative2 => clone $this->myPropertyName,
+    $this->myPropertyName instanceof FooMyPropertyNameAlternative1,
+    $this->myPropertyName instanceof FooMyPropertyNameAlternative2 => clone $this->myPropertyName,
 };
 EOCODE;
         assertSame($expected, $this->property->cloneProperty());

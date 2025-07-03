@@ -276,13 +276,14 @@ class UnionProperty extends AbstractProperty
     {
         if ($this->generatorRequest->isAtLeastPHP("8.0")) {
             $match = new MatchGenerator("true");
-            $match->addArm("default", "null");
 
             foreach ($this->subProperties as $subProperty) {
                 $assert = $subProperty->generateInputAssertionExpr($expr);
                 $map    = $subProperty->generateInputMappingExpr($expr);
                 $match->addArm($assert, $map);
             }
+            
+            $match->addArm("default", "null");
 
             return $match->generate();
         }

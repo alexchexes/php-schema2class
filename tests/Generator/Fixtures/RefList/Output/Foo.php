@@ -82,7 +82,10 @@ class Foo
             static::validateInput($input);
         }
 
-        $foo = isset($input->{'foo'}) ? array_map(fn(array|object $i): \Helmich\Schema2Class\Example\CustomerAddress => \Helmich\Schema2Class\Example\CustomerAddress::buildFromInput($i, $validate), $input->{'foo'}) : null;
+        $foo = isset($input->{'foo'}) ? array_map(
+            fn(array|object $i): \Helmich\Schema2Class\Example\CustomerAddress => \Helmich\Schema2Class\Example\CustomerAddress::buildFromInput($i, $validate),
+            $input->{'foo'}
+        ) : null;
 
         $obj = new self();
         $obj->foo = $foo;

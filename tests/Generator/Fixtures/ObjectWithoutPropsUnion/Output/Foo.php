@@ -119,7 +119,8 @@ class Foo
         }
 
         $foo = match (true) {
-            is_string($input->{'foo'}), is_array($input->{'foo'}) || is_object($input->{'foo'}) => $input->{'foo'},
+            is_string($input->{'foo'}),
+            is_array($input->{'foo'}) || is_object($input->{'foo'}) => $input->{'foo'},
             default => throw new \InvalidArgumentException("could not build property 'foo' from JSON"),
         };
         $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
@@ -138,7 +139,8 @@ class Foo
     {
         $output = [];
         $output['foo'] = match (true) {
-            is_string($this->foo), is_array($this->foo) || is_object($this->foo) => $this->foo,
+            is_string($this->foo),
+            is_array($this->foo) || is_object($this->foo) => $this->foo,
         };
         if (isset($this->bar)) {
             $output['bar'] = $this->bar;
@@ -174,7 +176,8 @@ class Foo
     public function __clone()
     {
         $this->foo = match (true) {
-            is_string($this->foo), is_array($this->foo) || is_object($this->foo) => $this->foo,
+            is_string($this->foo),
+            is_array($this->foo) || is_object($this->foo) => $this->foo,
         };
     }
 }

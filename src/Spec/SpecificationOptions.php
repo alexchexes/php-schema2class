@@ -669,9 +669,9 @@ class SpecificationOptions
         $targetDirectory = isset($input->{'targetDirectory'}) ? $input->{'targetDirectory'} : null;
         $targetNamespace = isset($input->{'targetNamespace'}) ? $input->{'targetNamespace'} : null;
         $targetPHPVersion = isset($input->{'targetPHPVersion'}) ? match (true) {
-            default => null,
             is_int($input->{'targetPHPVersion'}) => (int)($input->{'targetPHPVersion'}),
             is_string($input->{'targetPHPVersion'}) => $input->{'targetPHPVersion'},
+            default => null,
         } : null;
         $cleanTargetDirectory = isset($input->{'cleanTargetDirectory'}) ? $input->{'cleanTargetDirectory'} : null;
         $disableStrictTypes = isset($input->{'disableStrictTypes'}) ? $input->{'disableStrictTypes'} : null;
@@ -719,7 +719,8 @@ class SpecificationOptions
         }
         if (isset($this->targetPHPVersion)) {
             $output['targetPHPVersion'] = match (true) {
-                is_int($this->targetPHPVersion), is_string($this->targetPHPVersion) => $this->targetPHPVersion,
+                is_int($this->targetPHPVersion),
+                is_string($this->targetPHPVersion) => $this->targetPHPVersion,
             };
         }
         if (isset($this->cleanTargetDirectory)) {
@@ -787,7 +788,8 @@ class SpecificationOptions
     {
         if (isset($this->targetPHPVersion)) {
             $this->targetPHPVersion = match (true) {
-                is_int($this->targetPHPVersion), is_string($this->targetPHPVersion) => $this->targetPHPVersion,
+                is_int($this->targetPHPVersion),
+                is_string($this->targetPHPVersion) => $this->targetPHPVersion,
             };
         }
     }
