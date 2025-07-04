@@ -44,9 +44,11 @@ class SchemaToClassTest extends TestCase
 
             $optionsFile = join(DIRECTORY_SEPARATOR, [$testCaseDir, $entry, "options.yaml"]);
             $outputDir  = join(DIRECTORY_SEPARATOR, [$testCaseDir, $entry, "Output"]);
+            $inputDir   = join(DIRECTORY_SEPARATOR, [$testCaseDir, $entry, "Input"]);
 
             $expectedFiles = [];
             $schema        = (new SchemaLoader())->loadSchema($schemaFile);
+            $inputFiles    = [];
 
             $opts = (new SpecificationOptions)
                 ->withTargetPHPVersion("8.2")
@@ -67,14 +69,30 @@ class SchemaToClassTest extends TestCase
                 $expectedFiles[$relativePath] = trim(file_get_contents($fileInfo->getPathname()));
             }
 
-            $testCases[$entry] = [$entry, $schema, $expectedFiles, $opts];
+            if (is_dir($inputDir)) {
+                foreach (scandir($inputDir) as $in) {
+                    if ($in[0] === '.') {
+                        continue;
+                    }
+                    $ext = pathinfo($in, PATHINFO_EXTENSION);
+                    $cls = pathinfo($in, PATHINFO_FILENAME);
+                    $path = $inputDir . DIRECTORY_SEPARATOR . $in;
+                    if (in_array($ext, ['json', 'yaml', 'yml'], true)) {
+                        $inputFiles[$cls] = $ext === 'json'
+                            ? json_decode(file_get_contents($path), true)
+                            : Yaml::parseFile($path);
+                    }
+                }
+            }
+
+            $testCases[$entry] = [$entry, $schema, $expectedFiles, $opts, $inputFiles];
         }
 
         return $testCases;
     }
 
     #[DataProvider("loadCodeGenerationTestCases")]
-    public function testCodeGeneration(string $name, array $schema, array $expectedOutput, SpecificationOptions $opts): void
+    public function testCodeGeneration(string $name, array $schema, array $expectedOutput, SpecificationOptions $opts, array $inputs): void
     {
         $req = new GeneratorRequest(
             $schema,
@@ -177,6 +195,22 @@ class SchemaToClassTest extends TestCase
 
             $this->addToAssertionCount(1);
         }
+
+        foreach ($writtenFiles as $code) {
+            $evalCode = preg_replace('/^<\?php/', '', $code);
+            eval($evalCode);
+        }
+
+        foreach ($inputs as $class => $input) {
+            $fqcn = "Ns\\{$name}\\{$class}";
+            $obj = $fqcn::buildFromInput($input);
+            $this->assertInstanceOf($fqcn, $obj);
+            $expectedArray = $input;
+            $actualArray = $obj->toArray();
+            ksort($expectedArray);
+            ksort($actualArray);
+            $this->assertSame($expectedArray, $actualArray);
+        }
     }
 
     public function testCliNoEnumsMatchesFixture(): void
@@ -250,6 +284,6 @@ class SchemaToClassTest extends TestCase
 
         $factory->build($writer, $output)->schemaToClass($req);
 
-        $this->assertStringContainsString('skipping SkippedDef5', $output->fetch());
+        $this->assertStringContainsString('skipping definition SkippedDef5', $output->fetch());
     }
 }
