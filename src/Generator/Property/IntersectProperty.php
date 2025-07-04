@@ -28,10 +28,16 @@ class IntersectProperty extends AbstractProperty
         $propertyTypeName = $this->subTypeName();
         $combined = $this->buildSchemaIntersect();
 
+        $rootDefs = $this->generatorRequest->getRootDefinitions();
+        if ($rootDefs === null) {
+            $rootDefs = $this->generatorRequest->getSchema()['definitions'] ?? [];
+        }
+
         $generator->schemaToClass(
             $this->generatorRequest
                 ->withSchema($combined)
                 ->withClass($propertyTypeName)
+                ->withRootDefinitions($rootDefs)
         );
     }
 

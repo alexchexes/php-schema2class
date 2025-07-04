@@ -20,6 +20,15 @@ class MyClassFilesItem
                 '$ref' => '#/definitions/OptionsObject',
             ],
         ],
+        'definitions' => [
+            'OptionsObject' => [
+                'properties' => [
+                    'output' => [
+                        'type' => 'string',
+                    ],
+                ],
+            ],
+        ],
     ];
 
     /**
