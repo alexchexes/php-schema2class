@@ -87,9 +87,11 @@ class ObjectArrayProperty extends AbstractProperty
             return;
         }
 
-        $generator->schemaToClass(
-            $this->generatorRequest->withSchema($this->itemSchema)->withClass($this->subTypeName())
-        );
+        $req = $this->generatorRequest
+            ->withSchema($this->itemSchema)
+            ->withClass($this->subTypeName());
+
+        $generator->schemaToClass($this->propagateRootDefinitions($req));
     }
 
     public function typeAnnotation(): string

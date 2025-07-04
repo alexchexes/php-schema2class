@@ -1,0 +1,4 @@
+files:
+  - input: somefile.txt
+options:
+  output: mydir

@@ -1,0 +1,17 @@
+properties:
+  files:
+    type: array
+    items:
+      properties:
+        input:
+          type: string
+        options:
+          $ref: "#/definitions/OptionsObject"
+  options:
+    $ref: "#/definitions/OptionsObject"
+
+definitions:
+  OptionsObject:
+    properties:
+      output:
+        type: string
