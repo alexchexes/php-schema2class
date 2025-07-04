@@ -57,7 +57,8 @@ Now it:
 ### Internal
 
 - Several new classes and interfaces to handle new functionality; extensive refactoring of existing classes.
-- **Updated tests and fixtures**: Many new test cases covering new functionality such as typed arrays, non-ASCII identifiers, and the programmatic API.
+- **Updated tests and fixtures**: New test cases covering new functionality such as typed arrays, non-ASCII identifiers, and the programmatic API.
+- Tests can now optionally provide example input next to the schema fixture; if such input is present, it will be used to create a class instance to check if it's usable with that input.
 - **Dependency updates**:
   - New dependencies: `voku/portable-ascii`, `nikic/php-parser`
   - Bumped PHPUnit to 12 and Psalm to 6
