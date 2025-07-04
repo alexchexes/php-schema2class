@@ -38,7 +38,7 @@ class MyClass
     /**
      * @var string|null
      */
-    private ?string $_outbound_1 = null;
+    private ?string $_outbound = null;
 
     /**
      * @return string|null
@@ -59,9 +59,9 @@ class MyClass
     /**
      * @return string|null
      */
-    public function getOutbound1() : ?string
+    public function get_Outbound() : ?string
     {
-        return $this->_outbound_1 ?? null;
+        return $this->_outbound ?? null;
     }
 
     /**
@@ -129,22 +129,22 @@ class MyClass
     }
 
     /**
-     * @param string $_outbound_1
+     * @param string $_outbound
      * @return self
      * @param bool $validate
      */
-    public function withOutbound1(string $_outbound_1, bool $validate = true) : self
+    public function with_Outbound_1(string $_outbound, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($_outbound_1, self::$schema['properties']['_outbound']);
+            $validator->validate($_outbound, self::$schema['properties']['_outbound']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
         }
 
         $clone = clone $this;
-        $clone->_outbound_1 = $_outbound_1;
+        $clone->_outbound = $_outbound;
 
         return $clone;
     }
@@ -152,10 +152,10 @@ class MyClass
     /**
      * @return self
      */
-    public function withoutOutbound1() : self
+    public function with_outOutbound() : self
     {
         $clone = clone $this;
-        unset($clone->_outbound_1);
+        unset($clone->_outbound);
 
         return $clone;
     }
@@ -177,12 +177,12 @@ class MyClass
 
         $bound = isset($input->{'bound'}) ? $input->{'bound'} : null;
         $outbound = isset($input->{'outbound'}) ? $input->{'outbound'} : null;
-        $_outbound_1 = isset($input->{'_outbound'}) ? $input->{'_outbound'} : null;
+        $_outbound = isset($input->{'_outbound'}) ? $input->{'_outbound'} : null;
 
         $obj = new self();
         $obj->bound = $bound;
         $obj->outbound = $outbound;
-        $obj->_outbound_1 = $_outbound_1;
+        $obj->_outbound = $_outbound;
         return $obj;
     }
 
@@ -200,8 +200,8 @@ class MyClass
         if (isset($this->outbound)) {
             $output['outbound'] = $this->outbound;
         }
-        if (isset($this->_outbound_1)) {
-            $output['_outbound'] = $this->_outbound_1;
+        if (isset($this->_outbound)) {
+            $output['_outbound'] = $this->_outbound;
         }
 
         return $output;

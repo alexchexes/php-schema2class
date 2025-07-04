@@ -158,7 +158,10 @@ class SchemaToClass
             }
         }
 
-        $this->ensureUniquePropertyNames($propertiesFromSchema);
+        $this->ensureUniquePropertyNames(
+            $propertiesFromSchema,
+            $req->getOptions()->getPreservePropertyNames(),
+        );
 
         foreach ($propertiesFromSchema as $property) {
             $property->generateSubTypes($this);
@@ -231,7 +234,7 @@ class SchemaToClass
      * collision is detected, an underscore is prepended until the name is
      * unique within the given property collection.
      */
-    private function ensureUniquePropertyNames(PropertyCollection $properties): void
+    private function ensureUniquePropertyNames(PropertyCollection $properties, bool $preservePropertyNames): void
     {
         // Reserved identifiers that should not be used for property names or
         // would collide with generated method names
@@ -293,7 +296,7 @@ class SchemaToClass
             $i = 1;
             $pascal = strtolower(StringUtils::pascalCase($unique));
 
-            while (in_array($unique, $used, true) || in_array($pascal, $usedMethods, true)) {
+            while (in_array($unique, $used, true) || (!$preservePropertyNames && in_array($pascal, $usedMethods, true))) {
                 $unique = $base . '_' . $i;
                 $pascal = strtolower(StringUtils::pascalCase($unique));
                 $i++;
