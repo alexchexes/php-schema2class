@@ -29,6 +29,7 @@ class SchemaToClass
 {
     private WriterInterface $writer;
     private SchemaToEnum $enumGenerator;
+    private OutputInterface $output;
 
     /**
      * @phpstan-ignore constructor.unusedParameter (kept for backwards compatibility)
@@ -37,6 +38,7 @@ class SchemaToClass
     {
         $this->writer = $writer;
         $this->enumGenerator = new SchemaToEnum($writer);
+        $this->output = $output;
     }
 
     /**
@@ -77,6 +79,10 @@ class SchemaToClass
             $schema = (new IntersectProperty($req->getTargetClass(), $schema, $req))->buildSchemaIntersect();
         } elseif (!NestedObjectProperty::canHandleSchema($schema)) {
             // If the schema does not describe an object we only generate definitions
+            $class = $req->getTargetClass();
+            if ($class !== null) {
+                $this->output->writeln("skipping <comment>{$class}</comment> – definition is not an object");
+            }
             return;
         }
 

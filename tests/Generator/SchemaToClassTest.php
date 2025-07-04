@@ -7,6 +7,7 @@ use Helmich\Schema2Class\Example\CustomerAddress; // ← necessary for 'RefList'
 use Helmich\Schema2Class\Loader\SchemaLoader;
 use Helmich\Schema2Class\Command\GenerateCommand;
 use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\Console\Output\BufferedOutput;
 use Helmich\Schema2Class\Generator\SchemaToClassFactory;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
 use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
@@ -230,5 +231,25 @@ class SchemaToClassTest extends TestCase
             unlink($f);
         }
         rmdir($dir);
+    }
+
+    public function testSkipsNonObjectDefinitionsWithNotice(): void
+    {
+        $schemaFile = __DIR__ . '/Fixtures/NonObjectDefs/schema.json';
+        $schema = (new SchemaLoader())->loadSchema($schemaFile);
+
+        $req = new GeneratorRequest(
+            $schema,
+            new ValidatedSpecificationFilesItem('Ns\\NonObjectDefs', null, __DIR__),
+            (new SpecificationOptions())->withTargetPHPVersion('8.2'),
+        );
+
+        $output = new BufferedOutput();
+        $writer = new DebugWriter($output);
+        $factory = new SchemaToClassFactory();
+
+        $factory->build($writer, $output)->schemaToClass($req);
+
+        $this->assertStringContainsString('skipping SkippedDef5', $output->fetch());
     }
 }
