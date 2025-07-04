@@ -36,6 +36,7 @@ Now it:
 - Adds a guard against passing anything other than an array/object to `buildFromInput`, building multi-line validation error messages.
 - Setter methods (`withX()`) now accept an optional `$validate` argument to be able skip validation, mirroring `buildFromInput()`.
 - Skips emitting empty `__construct` or `__clone` methods.
+- Prints a notice when skipping `definitions` that do not describe an object.
 
 ### Better support for older PHP versions:
 
