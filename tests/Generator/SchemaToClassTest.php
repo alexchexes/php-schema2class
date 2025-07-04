@@ -3,21 +3,22 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator;
 
-use Helmich\Schema2Class\Example\CustomerAddress; // ← necessary for 'RefList' test though not really exist
-use Helmich\Schema2Class\Loader\SchemaLoader;
+use function PHPUnit\Framework\assertThat;
+use function PHPUnit\Framework\equalTo;
+
 use Helmich\Schema2Class\Command\GenerateCommand;
-use Symfony\Component\Console\Tester\CommandTester;
-use Symfony\Component\Console\Output\BufferedOutput;
+use Helmich\Schema2Class\Example\CustomerAddress;
 use Helmich\Schema2Class\Generator\SchemaToClassFactory;
+use Helmich\Schema2Class\Loader\SchemaLoader;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
 use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
 use Helmich\Schema2Class\Writer\DebugWriter;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\NullOutput;
+use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Yaml\Yaml;
-use function PHPUnit\Framework\assertThat;
-use function PHPUnit\Framework\equalTo;
 
 class SchemaToClassTest extends TestCase
 {
