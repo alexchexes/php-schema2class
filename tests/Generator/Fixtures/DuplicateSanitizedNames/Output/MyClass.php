@@ -34,16 +34,16 @@ class MyClass
     /**
      * @var string
      */
-    private string $foo_bar_1;
+    private string $_foo_bar;
 
     /**
      * @param string $foo_bar
-     * @param string $foo_bar_1
+     * @param string $_foo_bar
      */
-    public function __construct(string $foo_bar, string $foo_bar_1)
+    public function __construct(string $foo_bar, string $_foo_bar)
     {
         $this->foo_bar = $foo_bar;
-        $this->foo_bar_1 = $foo_bar_1;
+        $this->_foo_bar = $_foo_bar;
     }
 
     /**
@@ -57,9 +57,9 @@ class MyClass
     /**
      * @return string
      */
-    public function getFooBar1() : string
+    public function get_FooBar() : string
     {
-        return $this->foo_bar_1;
+        return $this->_foo_bar;
     }
 
     /**
@@ -84,22 +84,22 @@ class MyClass
     }
 
     /**
-     * @param string $foo_bar_1
+     * @param string $_foo_bar
      * @return self
      * @param bool $validate
      */
-    public function withFooBar1(string $foo_bar_1, bool $validate = true) : self
+    public function with_FooBar(string $_foo_bar, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($foo_bar_1, self::$schema['properties']['foo bar']);
+            $validator->validate($_foo_bar, self::$schema['properties']['foo bar']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
         }
 
         $clone = clone $this;
-        $clone->foo_bar_1 = $foo_bar_1;
+        $clone->_foo_bar = $_foo_bar;
 
         return $clone;
     }
@@ -120,9 +120,9 @@ class MyClass
         }
 
         $foo_bar = $input->{'foo-bar'};
-        $foo_bar_1 = $input->{'foo bar'};
+        $_foo_bar = $input->{'foo bar'};
 
-        $obj = new self($foo_bar, $foo_bar_1);
+        $obj = new self($foo_bar, $_foo_bar);
 
         return $obj;
     }
@@ -136,7 +136,7 @@ class MyClass
     {
         $output = [];
         $output['foo-bar'] = $this->foo_bar;
-        $output['foo bar'] = $this->foo_bar_1;
+        $output['foo bar'] = $this->_foo_bar;
 
         return $output;
     }

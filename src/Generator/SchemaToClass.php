@@ -20,6 +20,7 @@ use Laminas\Code\Generator\ClassGenerator;
 use Laminas\Code\Generator\DocBlock\Tag\GenericTag;
 use Laminas\Code\Generator\DocBlockGenerator;
 use Laminas\Code\Generator\FileGenerator;
+use Laminas\Code\Generator\MethodGenerator;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -158,7 +159,10 @@ class SchemaToClass
             }
         }
 
-        $this->ensureUniquePropertyNames($propertiesFromSchema);
+        $this->ensureUniquePropertyNames(
+            $propertiesFromSchema,
+            $req->getOptions()->getPreservePropertyNames(),
+        );
 
         foreach ($propertiesFromSchema as $property) {
             $property->generateSubTypes($this);
@@ -231,7 +235,7 @@ class SchemaToClass
      * collision is detected, an underscore is prepended until the name is
      * unique within the given property collection.
      */
-    private function ensureUniquePropertyNames(PropertyCollection $properties): void
+    private function ensureUniquePropertyNames(PropertyCollection $properties, bool $preservePropertyNames): void
     {
         // Reserved identifiers that should not be used for property names or
         // would collide with generated method names
@@ -288,22 +292,34 @@ class SchemaToClass
         $usedMethods = array_values(array_unique($usedMethods));
 
         foreach ($properties as $property) {
-            $base = $property->name();
-            $unique = $base;
-            $i = 1;
-            $pascal = strtolower(StringUtils::pascalCase($unique));
+            $base    = $property->name();
+            $unique  = $base;
+            $pascal  = strtolower(StringUtils::pascalCase($unique));
 
-            while (in_array($unique, $used, true) || in_array($pascal, $usedMethods, true)) {
-                $unique = $base . '_' . $i;
-                $pascal = strtolower(StringUtils::pascalCase($unique));
-                $i++;
+            $needsChange = in_array($unique, $used, true)
+                || (!$preservePropertyNames && in_array($pascal, $usedMethods, true));
+
+            if ($needsChange) {
+                if ($base[0] !== '_') {
+                    $unique = '_' . $base;
+                    $pascal = strtolower(StringUtils::pascalCase($unique));
+                }
+
+                $i = 1;
+                $baseUnique = $unique;
+                while (in_array($unique, $used, true)
+                    || (!$preservePropertyNames && in_array($pascal, $usedMethods, true))) {
+                    $unique = $baseUnique . '_' . $i;
+                    $pascal = strtolower(StringUtils::pascalCase($unique));
+                    $i++;
+                }
             }
 
             if ($unique !== $base && $property instanceof RenameablePropertyInterface) {
                 $property->setName($unique);
             }
 
-            $used[] = $unique;
+            $used[]       = $unique;
             $usedMethods[] = $pascal;
         }
     }
@@ -352,7 +368,7 @@ class SchemaToClass
             $prefix    = '';
             $base      = $name;
 
-            if (preg_match('/^(get|with|without)(.+)$/i', $name, $m)) {
+            if (preg_match('/^(get|without|with)(.+)$/', $name, $m)) {
                 $prefix = $m[1];
                 $base   = $m[2];
             }

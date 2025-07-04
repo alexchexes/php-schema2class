@@ -355,7 +355,11 @@ class Generator
         }
 
         $name           = $property->name();
-        $camelCasedName = StringUtils::pascalCase($property->name());
+        if ($this->generatorRequest->getOptions()->getPreservePropertyNames()) {
+            $camelCasedName = StringUtils::pascalCasePreserveOuterUnderscores($property->name());
+        } else {
+            $camelCasedName = StringUtils::pascalCase($property->name());
+        }
         $annotatedType  = $property->typeAnnotation();
 
         $tags = [new ReturnTag($annotatedType)];
@@ -414,9 +418,13 @@ class Generator
 
     public function generateSetterMethod(PropertyInterface $property): MethodGenerator
     {
-        $key           = $property->key();
-        $name          = $property->name();
-        $camelCaseName = StringUtils::pascalCase($name);
+        $key  = $property->key();
+        $name = $property->name();
+        if ($this->generatorRequest->getOptions()->getPreservePropertyNames()) {
+            $camelCaseName = StringUtils::pascalCasePreserveOuterUnderscores($name);
+        } else {
+            $camelCaseName = StringUtils::pascalCase($name);
+        }
 
         $requiredProperty = ($property instanceof OptionalPropertyDecorator) ? $property->unwrap() : $property;
 
@@ -495,8 +503,12 @@ class Generator
      */
     public function generateUnsetterMethod(PropertyInterface $property): MethodGenerator
     {
-        $name           = $property->name();
-        $camelCasedName = StringUtils::pascalCase($name);
+        $name = $property->name();
+        if ($this->generatorRequest->getOptions()->getPreservePropertyNames()) {
+            $camelCasedName = StringUtils::pascalCasePreserveOuterUnderscores($name);
+        } else {
+            $camelCasedName = StringUtils::pascalCase($name);
+        }
 
         $body = "\$clone = clone \$this;\n";
         if (isset($property->schema()["default"])) {

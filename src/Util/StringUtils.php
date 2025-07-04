@@ -21,10 +21,13 @@ class StringUtils
         $transliterated = self::transliterate($input);
         // Replace everything that is not a letter, digit or underscore with underscore
         $sanitized = preg_replace('/[^A-Za-z0-9_]+/', '_', $transliterated);
-        $sanitized = rtrim($sanitized, '_');
+
+        if (str_ends_with($sanitized, '_') && !str_ends_with($input, '_')) {
+            $sanitized = rtrim($sanitized, '_');
+        }
 
         // fallback to hash id if empty or underscores-only
-        if ($sanitized === '') {
+        if ($sanitized === '' || ($sanitized === '_' && $input !== '_')) {
             $hash = substr(md5($input), 0, 8);
             $sanitized = '_' . $hash;
         }
@@ -48,6 +51,31 @@ class StringUtils
     public static function pascalCase(string $input): string
     {
         return self::capitalizeWord(self::camelCase($input));
+    }
+
+    /**
+     * Similar to pascalCase(), but preserves leading and trailing underscores
+     * in the input string. Only underscores in the middle of the string are
+     * removed.
+     */
+    public static function pascalCasePreserveOuterUnderscores(string $input): string
+    {
+        $leading = '';
+        $trailing = '';
+
+        $str = $input;
+        while (str_starts_with($str, '_')) {
+            $leading .= '_';
+            $str = substr($str, 1);
+        }
+        while (str_ends_with($str, '_')) {
+            $trailing .= '_';
+            $str = substr($str, 0, -1);
+        }
+
+        $str = self::pascalCase($str);
+
+        return $leading . $str . $trailing;
     }
 
     public static function camelCase(string $input): string

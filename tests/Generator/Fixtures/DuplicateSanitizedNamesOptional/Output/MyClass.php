@@ -33,7 +33,7 @@ class MyClass
     /**
      * @var string|null
      */
-    private ?string $foo_bar_1 = null;
+    private ?string $_foo_bar = null;
 
     /**
      * @param string $foo_bar
@@ -54,9 +54,9 @@ class MyClass
     /**
      * @return string|null
      */
-    public function getFooBar1() : ?string
+    public function get_FooBar() : ?string
     {
-        return $this->foo_bar_1 ?? null;
+        return $this->_foo_bar ?? null;
     }
 
     /**
@@ -81,22 +81,22 @@ class MyClass
     }
 
     /**
-     * @param string $foo_bar_1
+     * @param string $_foo_bar
      * @return self
      * @param bool $validate
      */
-    public function withFooBar1(string $foo_bar_1, bool $validate = true) : self
+    public function with_FooBar(string $_foo_bar, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($foo_bar_1, self::$schema['properties']['foo bar']);
+            $validator->validate($_foo_bar, self::$schema['properties']['foo bar']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
         }
 
         $clone = clone $this;
-        $clone->foo_bar_1 = $foo_bar_1;
+        $clone->_foo_bar = $_foo_bar;
 
         return $clone;
     }
@@ -104,10 +104,10 @@ class MyClass
     /**
      * @return self
      */
-    public function withoutFooBar1() : self
+    public function without_FooBar() : self
     {
         $clone = clone $this;
-        unset($clone->foo_bar_1);
+        unset($clone->_foo_bar);
 
         return $clone;
     }
@@ -128,10 +128,10 @@ class MyClass
         }
 
         $foo_bar = $input->{'foo-bar'};
-        $foo_bar_1 = isset($input->{'foo bar'}) ? $input->{'foo bar'} : null;
+        $_foo_bar = isset($input->{'foo bar'}) ? $input->{'foo bar'} : null;
 
         $obj = new self($foo_bar);
-        $obj->foo_bar_1 = $foo_bar_1;
+        $obj->_foo_bar = $_foo_bar;
         return $obj;
     }
 
@@ -144,8 +144,8 @@ class MyClass
     {
         $output = [];
         $output['foo-bar'] = $this->foo_bar;
-        if (isset($this->foo_bar_1)) {
-            $output['foo bar'] = $this->foo_bar_1;
+        if (isset($this->_foo_bar)) {
+            $output['foo bar'] = $this->_foo_bar;
         }
 
         return $output;
