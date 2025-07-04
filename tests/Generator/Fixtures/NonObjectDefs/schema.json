@@ -43,6 +43,9 @@
         { "$ref": "#/definitions/SkippedDef2" },
         { "$ref": "#/definitions/SkippedDef3" }
       ]
+    },
+    "SkippedDef5": {
+      "type": "string"
     }
   }
 }
