@@ -72,6 +72,12 @@ class SchemaToClass
             if (SchemaToEnum::canGenerateEnum($schema, $req)) {
                 $this->enumGenerator->schemaToEnum($req);
             }
+
+            $class = $req->getTargetClass();
+            if ($class !== null) {
+                $this->output->writeln("skipping generation of enum <comment>{$class}</comment>");
+            }
+
             return;
         }
 
@@ -81,7 +87,7 @@ class SchemaToClass
             // If the schema does not describe an object we only generate definitions
             $class = $req->getTargetClass();
             if ($class !== null) {
-                $this->output->writeln("skipping definition <comment>{$class}</comment>: not an object");
+                $this->output->writeln("skipping generation of <comment>{$class}</comment>");
             }
             return;
         }

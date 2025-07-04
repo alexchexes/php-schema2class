@@ -22,12 +22,14 @@ class SchemaToEnum
      */
     public static function canGenerateEnum(array $schema, GeneratorRequest $req): bool
     {
-        if (!$req->isAtLeastPHP('8.1') || $req->getNoEnums()) {
-            return false;
-        }
+        return !self::areEnumsDisabled($req) && !self::isMixedEnum($schema);
+    }
 
+    static public function isMixedEnum(array $schema): bool
+    {
         $hasInt = false;
         $hasString = false;
+
         foreach ($schema['enum'] as $case) {
             if (!is_int($case) && !is_string($case)) {
                 return false;
@@ -36,7 +38,12 @@ class SchemaToEnum
             $hasString = $hasString || is_string($case);
         }
 
-        return !($hasInt && $hasString);
+        return $hasInt && $hasString;
+    }
+
+    public static function areEnumsDisabled(GeneratorRequest $req): bool
+    {
+        return !$req->isAtLeastPHP('8.1') || $req->getNoEnums();
     }
 
     public function schemaToEnum(GeneratorRequest $req): void

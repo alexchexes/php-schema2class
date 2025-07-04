@@ -139,4 +139,3 @@ class Foo
         return $validator->isValid();
     }
 }
-
