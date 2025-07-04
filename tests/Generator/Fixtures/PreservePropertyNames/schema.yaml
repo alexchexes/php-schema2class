@@ -1,4 +1,11 @@
 required:
+  - "foo"
+  - "_foo"
+  - "__foo"
+  - "foo_"
+  - "foo__"
+  - "_foo_"
+  - "__foo__"
   - "foo-bar"
   - "foo bar"
   - "baz qux"
@@ -6,19 +13,20 @@ required:
   - "Город"
   - "название юр.лица"
   - "IP-адрес"
+  - "~~tildas~~"
 properties:
-  "foo-bar":
-    type: string
-  "foo bar":
-    type: string
-  "baz qux":
-    type: string
-  "123 qwe":
-    type: string
-  "Город":
-    type: string
-  "название юр.лица":
-    type: string
-  "IP-адрес":
-    type: string
-
+  "foo": { type: string }
+  "_foo": { type: string }
+  "__foo": { type: string }
+  "foo_": { type: string }
+  "foo__": { type: string }
+  "_foo_": { type: string }
+  "__foo__": { type: string }
+  "foo-bar": { type: string }
+  "foo bar": { type: string }
+  "baz qux": { type: string }
+  "123 qwe": { type: string }
+  "Город": { type: string }
+  "название юр.лица": { type: string }
+  "IP-адрес": { type: string }
+  "~~tildas~~": { type: string }
