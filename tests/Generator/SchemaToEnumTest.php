@@ -12,7 +12,7 @@ use function PHPUnit\Framework\assertStringContainsString;
 
 class SchemaToEnumTest extends TestCase
 {
-    public function testMixedEnumTypesThrows(): void
+    public function testMixedEnumTypesAreSkipped(): void
     {
         $schema = [
             'enum' => [1, '1', 2, 'two'],
@@ -28,8 +28,8 @@ class SchemaToEnumTest extends TestCase
         $writer = new DebugWriter(new NullOutput());
         $generator = new SchemaToClassFactory();
 
-        $this->expectException(GeneratorException::class);
         $generator->build($writer, new NullOutput())->schemaToClass($req);
+        $this->assertCount(0, $writer->getWrittenFiles());
     }
 
     public function testEnumCustomizationHook(): void

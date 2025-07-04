@@ -289,6 +289,6 @@ class SchemaToClassTest extends TestCase
 
         $factory->build($writer, $output)->schemaToClass($req);
 
-        $this->assertStringContainsString('skipping definition SkippedDef5', $output->fetch());
+        $this->assertStringContainsString('skipping generation of SkippedDef5', $output->fetch());
     }
 }

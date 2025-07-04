@@ -49,6 +49,7 @@ Now it:
 ### Enums
 
 - Laminas's immutable EnumGenerator replaced with own mutable implementation PhpParserEnumGenerator built on nikic/php-parser which allows modifications via the hook system.
+- Mixed int/string enum values are now skipped with fallback to type hints instead of raising an error.
 
 ### Documentation
 

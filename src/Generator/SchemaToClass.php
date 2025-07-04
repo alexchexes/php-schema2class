@@ -8,6 +8,7 @@ use Helmich\Schema2Class\Codegen\PropertyGenerator;
 use Helmich\Schema2Class\Generator\Definitions\DefinitionsCollector;
 use Helmich\Schema2Class\Generator\Definitions\DefinitionsGenerator;
 use Helmich\Schema2Class\Generator\DefinitionsReferenceLookup;
+use Helmich\Schema2Class\Generator\SchemaToEnum;
 use Helmich\Schema2Class\Generator\Property\IntersectProperty;
 use Helmich\Schema2Class\Generator\Property\NestedObjectProperty;
 use Helmich\Schema2Class\Generator\Property\PropertyCollection;
@@ -67,8 +68,16 @@ class SchemaToClass
         $this->definitionsToSchemas($req);
         $schema = $req->getSchema();
 
-        if (isset($schema["enum"]) && $req->isAtLeastPHP("8.1") && !$req->getNoEnums()) {
-            $this->enumGenerator->schemaToEnum($req);
+        if (isset($schema["enum"])) {
+            if (SchemaToEnum::canGenerateEnum($schema, $req)) {
+                $this->enumGenerator->schemaToEnum($req);
+            }
+
+            $class = $req->getTargetClass();
+            if ($class !== null) {
+                $this->output->writeln("skipping generation of enum <comment>{$class}</comment>");
+            }
+
             return;
         }
 
@@ -78,7 +87,7 @@ class SchemaToClass
             // If the schema does not describe an object we only generate definitions
             $class = $req->getTargetClass();
             if ($class !== null) {
-                $this->output->writeln("skipping definition <comment>{$class}</comment>: not an object");
+                $this->output->writeln("skipping generation of <comment>{$class}</comment>");
             }
             return;
         }

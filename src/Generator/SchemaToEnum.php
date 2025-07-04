@@ -15,10 +15,45 @@ class SchemaToEnum
         $this->writer = $writer;
     }
 
+    /**
+     * Checks if a schema can be represented as a native PHP enum.
+     *
+     * @param array $schema
+     */
+    public static function canGenerateEnum(array $schema, GeneratorRequest $req): bool
+    {
+        return !self::areEnumsDisabled($req) && !self::isMixedEnum($schema);
+    }
+
+    static public function isMixedEnum(array $schema): bool
+    {
+        $hasInt = false;
+        $hasString = false;
+
+        foreach ($schema['enum'] as $case) {
+            if (!is_int($case) && !is_string($case)) {
+                return false;
+            }
+            $hasInt = $hasInt || is_int($case);
+            $hasString = $hasString || is_string($case);
+        }
+
+        return $hasInt && $hasString;
+    }
+
+    public static function areEnumsDisabled(GeneratorRequest $req): bool
+    {
+        return !$req->isAtLeastPHP('8.1') || $req->getNoEnums();
+    }
+
     public function schemaToEnum(GeneratorRequest $req): void
     {
-        if (!$req->isAtLeastPHP("8.1")) {
-            throw new GeneratorException("cannot generate enum classes for PHP versions < 8.1");
+        if (!$req->isAtLeastPHP('8.1')) {
+            throw new GeneratorException('cannot generate enum classes for PHP versions < 8.1');
+        }
+
+        if (!self::canGenerateEnum($req->getSchema(), $req)) {
+            throw new GeneratorException("cannot generate enum classes for mixed int/string enum values");
         }
 
         /** @var array<non-empty-string, string|int> $cases */
@@ -44,10 +79,6 @@ class SchemaToEnum
             }
 
             $cases[$name] = $case;
-        }
-
-        if ($hasInt && $hasString) {
-            throw new GeneratorException("cannot generate enum classes for mixed int/string enum values");
         }
 
         $cases = self::makeCaseNamesConsistent($cases);
