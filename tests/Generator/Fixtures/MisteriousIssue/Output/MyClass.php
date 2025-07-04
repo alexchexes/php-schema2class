@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ns\PropertyRefDefInObject;
+namespace Ns\MisteriousIssue;
 
-class MyClassFilesItem
+class MyClass
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -13,19 +13,38 @@ class MyClassFilesItem
      */
     private static array $schema = [
         'properties' => [
-            'input' => [
-                'type' => 'string',
+            'files' => [
+                'type' => 'array',
+                'items' => [
+                    'properties' => [
+                        'input' => [
+                            'type' => 'string',
+                        ],
+                        'options' => [
+                            '$ref' => '#/definitions/OptionsObject',
+                        ],
+                    ],
+                ],
             ],
             'options' => [
                 '$ref' => '#/definitions/OptionsObject',
             ],
         ],
+        'definitions' => [
+            'OptionsObject' => [
+                'properties' => [
+                    'output' => [
+                        'type' => 'string',
+                    ],
+                ],
+            ],
+        ],
     ];
 
     /**
-     * @var string|null
+     * @var MyClassFilesItem[]|null
      */
-    private ?string $input = null;
+    private ?array $files = null;
 
     /**
      * @var OptionsObject|null
@@ -33,11 +52,11 @@ class MyClassFilesItem
     private ?OptionsObject $options = null;
 
     /**
-     * @return string|null
+     * @return MyClassFilesItem[]|null
      */
-    public function getInput() : ?string
+    public function getFiles() : ?array
     {
-        return $this->input ?? null;
+        return $this->files ?? null;
     }
 
     /**
@@ -49,22 +68,22 @@ class MyClassFilesItem
     }
 
     /**
-     * @param string $input
+     * @param MyClassFilesItem[] $files
      * @return self
      * @param bool $validate
      */
-    public function withInput(string $input, bool $validate = true) : self
+    public function withFiles(array $files, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($input, self::$schema['properties']['input']);
+            $validator->validate($files, self::$schema['properties']['files']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
         }
 
         $clone = clone $this;
-        $clone->input = $input;
+        $clone->files = $files;
 
         return $clone;
     }
@@ -72,10 +91,10 @@ class MyClassFilesItem
     /**
      * @return self
      */
-    public function withoutInput() : self
+    public function withoutFiles() : self
     {
         $clone = clone $this;
-        unset($clone->input);
+        unset($clone->files);
 
         return $clone;
     }
@@ -106,23 +125,23 @@ class MyClassFilesItem
     /**
      * Builds a new instance from an input array
      *
-     * @param array|object $_input Input data
+     * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
-     * @return MyClassFilesItem Created instance
+     * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $_input, bool $validate = true) : MyClassFilesItem
+    public static function buildFromInput(array|object $input, bool $validate = true) : MyClass
     {
-        $_input = is_array($_input) ? \JsonSchema\Validator::arrayToObjectRecursive($_input) : $_input;
+        $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
-            static::validateInput($_input);
+            static::validateInput($input);
         }
 
-        $input = isset($_input->{'input'}) ? $_input->{'input'} : null;
-        $options = isset($_input->{'options'}) ? OptionsObject::buildFromInput($_input->{'options'}, $validate) : null;
+        $files = isset($input->{'files'}) ? array_map(fn (array|object $i): MyClassFilesItem => MyClassFilesItem::buildFromInput($i, validate: $validate), $input->{'files'}) : null;
+        $options = isset($input->{'options'}) ? OptionsObject::buildFromInput($input->{'options'}, $validate) : null;
 
         $obj = new self();
-        $obj->input = $input;
+        $obj->files = $files;
         $obj->options = $options;
         return $obj;
     }
@@ -135,8 +154,8 @@ class MyClassFilesItem
     public function toArray() : array
     {
         $output = [];
-        if (isset($this->input)) {
-            $output['input'] = $this->input;
+        if (isset($this->files)) {
+            $output['files'] = array_map(fn (MyClassFilesItem $i) => $i->toArray(), $this->files);
         }
         if (isset($this->options)) {
             $output['options'] = $this->options->toArray();
@@ -167,5 +186,12 @@ class MyClassFilesItem
         }
 
         return $validator->isValid();
+    }
+
+    public function __clone()
+    {
+        if (isset($this->files)) {
+            $this->files = array_map(fn (MyClassFilesItem $i) => clone $i, $this->files);
+        }
     }
 }

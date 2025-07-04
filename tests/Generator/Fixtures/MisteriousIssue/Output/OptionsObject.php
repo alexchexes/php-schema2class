@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ns\PropertyRefDefInObject;
+namespace Ns\MisteriousIssue;
 
 class OptionsObject
 {
