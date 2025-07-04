@@ -1,0 +1,6 @@
+enum:
+  - 5
+  - 6
+  - "5"
+  - "6"
+type: [integer, string]

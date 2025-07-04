@@ -1,0 +1,11 @@
+definitions:
+  Mixed:
+    enum: [5, 6, "5", "6"]
+    type: [integer, string]
+  Foo:
+    type: object
+    additionalProperties: false
+    properties:
+      val:
+        $ref: '#/definitions/Mixed'
+    required: [val]

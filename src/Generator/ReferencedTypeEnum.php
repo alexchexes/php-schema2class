@@ -2,6 +2,8 @@
 
 namespace Helmich\Schema2Class\Generator;
 
+use Helmich\Schema2Class\Generator\SchemaToEnum;
+
 readonly class ReferencedTypeEnum implements ReferencedType
 {
     /**
@@ -14,7 +16,7 @@ readonly class ReferencedTypeEnum implements ReferencedType
 
     private function useNativeEnum(GeneratorRequest $req): bool
     {
-        return $req->isAtLeastPHP('8.1') && !$req->getNoEnums();
+        return SchemaToEnum::canGenerateEnum($this->schema, $req);
     }
 
     private function relativeName(GeneratorRequest $req): string
@@ -48,7 +50,18 @@ readonly class ReferencedTypeEnum implements ReferencedType
             return $this->relativeName($req);
         }
 
-        return is_int($this->schema['enum'][0]) ? 'int' : 'string';
+        $hasInt = false;
+        $hasString = false;
+        foreach ($this->schema['enum'] as $v) {
+            $hasInt = $hasInt || is_int($v);
+            $hasString = $hasString || is_string($v);
+        }
+
+        if ($hasInt && $hasString) {
+            return $req->isAtLeastPHP('8.0') ? 'int|string' : null;
+        }
+
+        return $hasInt ? 'int' : 'string';
     }
 
     function serializedInputTypeHint(GeneratorRequest $req): ?string
