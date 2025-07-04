@@ -50,6 +50,10 @@ class SchemaToClassTest extends TestCase
             $schema        = (new SchemaLoader())->loadSchema($schemaFile);
             $inputFiles    = [];
 
+            if (!is_dir($outputDir) && getenv('UPDATE_SNAPSHOTS') === '1') {
+                mkdir($outputDir, 0777, true);
+            }
+
             $opts = (new SpecificationOptions)
                 ->withTargetPHPVersion("8.2")
                 ->withInlineAllofReferences(true);
