@@ -54,7 +54,7 @@ class MyClass
     /**
      * @var string
      */
-    private string $foo_bar_1;
+    private string $_foo_bar;
 
     /**
      * @var string
@@ -83,17 +83,17 @@ class MyClass
 
     /**
      * @param string $foo_bar
-     * @param string $foo_bar_1
+     * @param string $_foo_bar
      * @param string $baz_qux
      * @param string $_123_qwe
      * @param string $Gorod
      * @param string $nazvanie_iur_litsa
      * @param string $IP_adres
      */
-    public function __construct(string $foo_bar, string $foo_bar_1, string $baz_qux, string $_123_qwe, string $Gorod, string $nazvanie_iur_litsa, string $IP_adres)
+    public function __construct(string $foo_bar, string $_foo_bar, string $baz_qux, string $_123_qwe, string $Gorod, string $nazvanie_iur_litsa, string $IP_adres)
     {
         $this->foo_bar = $foo_bar;
-        $this->foo_bar_1 = $foo_bar_1;
+        $this->_foo_bar = $_foo_bar;
         $this->baz_qux = $baz_qux;
         $this->_123_qwe = $_123_qwe;
         $this->Gorod = $Gorod;
@@ -112,9 +112,9 @@ class MyClass
     /**
      * @return string
      */
-    public function getFooBar1() : string
+    public function get_FooBar() : string
     {
-        return $this->foo_bar_1;
+        return $this->_foo_bar;
     }
 
     /**
@@ -179,22 +179,22 @@ class MyClass
     }
 
     /**
-     * @param string $foo_bar_1
+     * @param string $_foo_bar
      * @return self
      * @param bool $validate
      */
-    public function withFooBar1(string $foo_bar_1, bool $validate = true) : self
+    public function with_FooBar(string $_foo_bar, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($foo_bar_1, self::$schema['properties']['foo bar']);
+            $validator->validate($_foo_bar, self::$schema['properties']['foo bar']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
         }
 
         $clone = clone $this;
-        $clone->foo_bar_1 = $foo_bar_1;
+        $clone->_foo_bar = $_foo_bar;
 
         return $clone;
     }
@@ -320,14 +320,14 @@ class MyClass
         }
 
         $foo_bar = $input->{'foo-bar'};
-        $foo_bar_1 = $input->{'foo bar'};
+        $_foo_bar = $input->{'foo bar'};
         $baz_qux = $input->{'baz qux'};
         $_123_qwe = $input->{'123 qwe'};
         $Gorod = $input->{'Город'};
         $nazvanie_iur_litsa = $input->{'название юр.лица'};
         $IP_adres = $input->{'IP-адрес'};
 
-        $obj = new self($foo_bar, $foo_bar_1, $baz_qux, $_123_qwe, $Gorod, $nazvanie_iur_litsa, $IP_adres);
+        $obj = new self($foo_bar, $_foo_bar, $baz_qux, $_123_qwe, $Gorod, $nazvanie_iur_litsa, $IP_adres);
 
         return $obj;
     }
@@ -341,7 +341,7 @@ class MyClass
     {
         $output = [];
         $output['foo-bar'] = $this->foo_bar;
-        $output['foo bar'] = $this->foo_bar_1;
+        $output['foo bar'] = $this->_foo_bar;
         $output['baz qux'] = $this->baz_qux;
         $output['123 qwe'] = $this->_123_qwe;
         $output['Город'] = $this->Gorod;

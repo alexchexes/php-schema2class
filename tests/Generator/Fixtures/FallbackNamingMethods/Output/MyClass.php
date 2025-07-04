@@ -152,7 +152,7 @@ class MyClass
     /**
      * @return self
      */
-    public function with_outOutbound() : self
+    public function without_Outbound() : self
     {
         $clone = clone $this;
         unset($clone->_outbound);
