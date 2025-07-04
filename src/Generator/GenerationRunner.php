@@ -52,7 +52,13 @@ class GenerationRunner
 
     private function makeWriter(OutputInterface $output, bool $dryRun): WriterInterface
     {
-        return $dryRun ? new DebugWriter($output) : new FileWriter($output);
+        $writer = $dryRun ? new DebugWriter($output) : new FileWriter($output);
+
+        if (!$dryRun) {
+            $writer = new \Helmich\Schema2Class\Writer\LintingWriter($writer);
+        }
+
+        return $writer;
     }
 
     public function cleanDirectory(string $directory, OutputInterface $output): void
