@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "Foo": {
+      "type": "object",
+      "properties": {
+        "a": { "$ref": "#/definitions/SkippedDef1" }
+      }
+    },
+    "Bar": {
+      "properties": {
+        "b": { "$ref": "#/definitions/SkippedDef2" }
+      }
+    },
+    "Baz": {
+      "type": "object",
+      "properties": {
+        "grox": { "$ref": "#/definitions/SkippedDef3" }
+      }
+    },
+    "Qux": {
+      "type": "object",
+      "properties": {
+        "grox": { "$ref": "#/definitions/SkippedDef4" }
+      }
+    },
+    "SkippedDef1": {
+      "type": "string"
+    },
+    "SkippedDef2": {
+      "type": "array",
+      "items": { "type":"string" }
+    },
+    "SkippedDef3": {
+      "anyOf": [
+        { "$ref": "#/definitions/Foo" },
+        { "$ref": "#/definitions/Bar" }
+      ]
+    },
+    "SkippedDef4": {
+      "anyOf": [
+        { "$ref": "#/definitions/SkippedDef1" },
+        { "$ref": "#/definitions/SkippedDef2" },
+        { "$ref": "#/definitions/SkippedDef3" }
+      ]
+    }
+  }
+}

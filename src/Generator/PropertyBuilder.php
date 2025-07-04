@@ -63,20 +63,25 @@ class PropertyBuilder
     {
         self::testInvariants($definition);
 
-        // Dereference union definitions / inline references that would not generate a class
+        // Dereference references to schemas that will not result in a separate class
         if (isset($definition['$ref'])) {
             $refSchema = $req->lookupSchema($definition['$ref']);
-            if (
-                !empty($refSchema) &&
-                (isset($refSchema['oneOf']) || isset($refSchema['anyOf']))
-            ) {
-                foreach (['description', 'title', 'default', 'deprecated'] as $k) {
-                    if (isset($definition[$k]) && !isset($refSchema[$k])) {
-                        $refSchema[$k] = $definition[$k];
-                    }
-                }
+            if (!empty($refSchema)) {
+                $shouldInline =
+                    (isset($refSchema['oneOf']) || isset($refSchema['anyOf'])) ||
+                    (!NestedObjectProperty::canHandleSchema($refSchema)
+                        && !IntersectProperty::canHandleSchema($refSchema)
+                        && !array_key_exists('enum', $refSchema));
 
-                return self::buildPropertyFromSchema($req, $name, $refSchema, $isRequired);
+                if ($shouldInline) {
+                    foreach (['description', 'title', 'default', 'deprecated'] as $k) {
+                        if (isset($definition[$k]) && !isset($refSchema[$k])) {
+                            $refSchema[$k] = $definition[$k];
+                        }
+                    }
+
+                    return self::buildPropertyFromSchema($req, $name, $refSchema, $isRequired);
+                }
             }
         }
 
