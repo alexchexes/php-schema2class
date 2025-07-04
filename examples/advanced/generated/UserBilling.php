@@ -94,13 +94,16 @@ class UserBilling
     /**
      * @param string $vatID
      * @return self
+     * @param bool $validate
      */
-    public function withVatID(string $vatID) : self
+    public function withVatID(string $vatID, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($vatID, self::$schema['properties']['vatID']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($vatID, self::$schema['properties']['vatID']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;
@@ -112,13 +115,16 @@ class UserBilling
     /**
      * @param int $creditLevel
      * @return self
+     * @param bool $validate
      */
-    public function withCreditLevel(int $creditLevel) : self
+    public function withCreditLevel(int $creditLevel, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($creditLevel, self::$schema['properties']['creditLevel']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($creditLevel, self::$schema['properties']['creditLevel']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;
@@ -141,13 +147,16 @@ class UserBilling
     /**
      * @param int $foo
      * @return self
+     * @param bool $validate
      */
-    public function withFoo(int $foo) : self
+    public function withFoo(int $foo, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($foo, self::$schema['properties']['foo']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($foo, self::$schema['properties']['foo']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;
@@ -170,13 +179,16 @@ class UserBilling
     /**
      * @param string $bar
      * @return self
+     * @param bool $validate
      */
-    public function withBar(string $bar) : self
+    public function withBar(string $bar, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($bar, self::$schema['properties']['bar']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($bar, self::$schema['properties']['bar']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;
@@ -206,12 +218,6 @@ class UserBilling
      */
     public static function buildFromInput(array|object $input, bool $validate = true) : UserBilling
     {
-        if (!is_array($input) && !is_object($input)) {
-            throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($input)
-            );
-        }
-
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
@@ -273,10 +279,6 @@ class UserBilling
         }
 
         return $validator->isValid();
-    }
-
-    public function __clone()
-    {
     }
 }
 

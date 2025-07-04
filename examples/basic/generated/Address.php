@@ -42,13 +42,16 @@ class Address
     /**
      * @param string $street
      * @return self
+     * @param bool $validate
      */
-    public function withStreet(string $street) : self
+    public function withStreet(string $street, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($street, self::$schema['properties']['street']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($street, self::$schema['properties']['street']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;
@@ -71,13 +74,16 @@ class Address
     /**
      * @param int $house
      * @return self
+     * @param bool $validate
      */
-    public function withHouse(int $house) : self
+    public function withHouse(int $house, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($house, self::$schema['properties']['house']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($house, self::$schema['properties']['house']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;

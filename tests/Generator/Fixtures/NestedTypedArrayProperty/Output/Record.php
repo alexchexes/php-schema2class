@@ -145,13 +145,16 @@ class Record
     /**
      * @param Phone[] $dataArray
      * @return self
+     * @param bool $validate
      */
-    public function withDataArray(array $dataArray) : self
+    public function withDataArray(array $dataArray, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($dataArray, self::$schema['properties']['dataArray']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($dataArray, self::$schema['properties']['dataArray']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;
@@ -174,13 +177,16 @@ class Record
     /**
      * @param Phone[][] $dataArrayNested
      * @return self
+     * @param bool $validate
      */
-    public function withDataArrayNested(array $dataArrayNested) : self
+    public function withDataArrayNested(array $dataArrayNested, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($dataArrayNested, self::$schema['properties']['dataArrayNested']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($dataArrayNested, self::$schema['properties']['dataArrayNested']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;
@@ -203,13 +209,16 @@ class Record
     /**
      * @param (Phone|Fio)[] $dataArrayAnyOf
      * @return self
+     * @param bool $validate
      */
-    public function withDataArrayAnyOf(array $dataArrayAnyOf) : self
+    public function withDataArrayAnyOf(array $dataArrayAnyOf, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($dataArrayAnyOf, self::$schema['properties']['dataArrayAnyOf']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($dataArrayAnyOf, self::$schema['properties']['dataArrayAnyOf']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;
@@ -232,13 +241,16 @@ class Record
     /**
      * @param ((Phone|Fio)[])[] $dataArrayNestedAnyOf
      * @return self
+     * @param bool $validate
      */
-    public function withDataArrayNestedAnyOf(array $dataArrayNestedAnyOf) : self
+    public function withDataArrayNestedAnyOf(array $dataArrayNestedAnyOf, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($dataArrayNestedAnyOf, self::$schema['properties']['dataArrayNestedAnyOf']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($dataArrayNestedAnyOf, self::$schema['properties']['dataArrayNestedAnyOf']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;

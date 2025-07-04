@@ -341,13 +341,16 @@ class User
     /**
      * @param string $firstName
      * @return self
+     * @param bool $validate
      */
-    public function withFirstName(string $firstName) : self
+    public function withFirstName(string $firstName, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($firstName, self::$schema['properties']['firstName']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($firstName, self::$schema['properties']['firstName']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;
@@ -359,13 +362,16 @@ class User
     /**
      * @param string $lastName
      * @return self
+     * @param bool $validate
      */
-    public function withLastName(string $lastName) : self
+    public function withLastName(string $lastName, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($lastName, self::$schema['properties']['lastName']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($lastName, self::$schema['properties']['lastName']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;
@@ -377,13 +383,16 @@ class User
     /**
      * @param string $email
      * @return self
+     * @param bool $validate
      */
-    public function withEmail(string $email) : self
+    public function withEmail(string $email, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($email, self::$schema['properties']['email']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($email, self::$schema['properties']['email']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;
@@ -475,13 +484,16 @@ class User
     /**
      * @param string[] $tags
      * @return self
+     * @param bool $validate
      */
-    public function withTags(array $tags) : self
+    public function withTags(array $tags, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($tags, self::$schema['properties']['tags']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($tags, self::$schema['properties']['tags']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;
@@ -504,13 +516,16 @@ class User
     /**
      * @param UserHobbiesItem[] $hobbies
      * @return self
+     * @param bool $validate
      */
-    public function withHobbies(array $hobbies) : self
+    public function withHobbies(array $hobbies, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($hobbies, self::$schema['properties']['hobbies']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($hobbies, self::$schema['properties']['hobbies']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;
@@ -540,12 +555,6 @@ class User
      */
     public static function buildFromInput(array|object $input, bool $validate = true) : User
     {
-        if (!is_array($input) && !is_object($input)) {
-            throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($input)
-            );
-        }
-
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
@@ -558,10 +567,10 @@ class User
         $email = isset($input->{'email'}) ? $input->{'email'} : null;
         $billing = isset($input->{'billing'}) ? UserBilling::buildFromInput($input->{'billing'}, validate: $validate) : null;
         $payment = isset($input->{'payment'}) ? match (true) {
-            default => null,
             UserPaymentAlternative1::validateInput($input->{'payment'}, true) => UserPaymentAlternative1::buildFromInput($input->{'payment'}, validate: $validate),
             UserPaymentAlternative2::validateInput($input->{'payment'}, true) => UserPaymentAlternative2::buildFromInput($input->{'payment'}, validate: $validate),
             is_string($input->{'payment'}) => $input->{'payment'},
+            default => null,
         } : null;
         $address = isset($input->{'address'}) ? UserAddress::buildFromInput($input->{'address'}, validate: $validate) : null;
         $tags = isset($input->{'tags'}) ? $input->{'tags'} : null;
@@ -603,7 +612,8 @@ class User
         }
         if (isset($this->payment)) {
             $output['payment'] = match (true) {
-                $this->payment instanceof UserPaymentAlternative1, $this->payment instanceof UserPaymentAlternative2 => ($this->payment)->toArray(),
+                $this->payment instanceof UserPaymentAlternative1,
+                $this->payment instanceof UserPaymentAlternative2 => ($this->payment)->toArray(),
                 is_string($this->payment) => $this->payment,
             };
         }
@@ -654,7 +664,8 @@ class User
         }
         if (isset($this->payment)) {
             $this->payment = match (true) {
-                $this->payment instanceof UserPaymentAlternative1, $this->payment instanceof UserPaymentAlternative2 => clone $this->payment,
+                $this->payment instanceof UserPaymentAlternative1,
+                $this->payment instanceof UserPaymentAlternative2 => clone $this->payment,
                 is_string($this->payment) => $this->payment,
             };
         }

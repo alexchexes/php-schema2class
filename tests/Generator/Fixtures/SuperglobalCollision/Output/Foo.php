@@ -46,13 +46,16 @@ class Foo
     /**
      * @param string $files
      * @return self
+     * @param bool $validate
      */
-    public function withFiles(string $files) : self
+    public function withFiles(string $files, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($files, self::$schema['properties']['files']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($files, self::$schema['properties']['files']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;

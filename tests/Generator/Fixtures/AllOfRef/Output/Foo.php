@@ -85,13 +85,16 @@ class Foo
     /**
      * @param string $city
      * @return self
+     * @param bool $validate
      */
-    public function withCity(string $city) : self
+    public function withCity(string $city, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($city, self::$schema['properties']['city']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($city, self::$schema['properties']['city']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;
@@ -103,13 +106,16 @@ class Foo
     /**
      * @param string $street
      * @return self
+     * @param bool $validate
      */
-    public function withStreet(string $street) : self
+    public function withStreet(string $street, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($street, self::$schema['properties']['street']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($street, self::$schema['properties']['street']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;
@@ -121,13 +127,16 @@ class Foo
     /**
      * @param string $country
      * @return self
+     * @param bool $validate
      */
-    public function withCountry(string $country) : self
+    public function withCountry(string $country, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($country, self::$schema['properties']['country']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($country, self::$schema['properties']['country']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;

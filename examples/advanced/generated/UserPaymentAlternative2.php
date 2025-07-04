@@ -80,13 +80,16 @@ class UserPaymentAlternative2
     /**
      * @param string $accountNumber
      * @return self
+     * @param bool $validate
      */
-    public function withAccountNumber(string $accountNumber) : self
+    public function withAccountNumber(string $accountNumber, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($accountNumber, self::$schema['properties']['accountNumber']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($accountNumber, self::$schema['properties']['accountNumber']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;
@@ -105,12 +108,6 @@ class UserPaymentAlternative2
      */
     public static function buildFromInput(array|object $input, bool $validate = true) : UserPaymentAlternative2
     {
-        if (!is_array($input) && !is_object($input)) {
-            throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($input)
-            );
-        }
-
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
@@ -160,10 +157,6 @@ class UserPaymentAlternative2
         }
 
         return $validator->isValid();
-    }
-
-    public function __clone()
-    {
     }
 }
 

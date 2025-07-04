@@ -254,13 +254,16 @@ class SpecificationOptions
     /**
      * @param string $targetDirectory
      * @return self
+     * @param bool $validate
      */
-    public function withTargetDirectory(string $targetDirectory) : self
+    public function withTargetDirectory(string $targetDirectory, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($targetDirectory, self::$schema['properties']['targetDirectory']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($targetDirectory, self::$schema['properties']['targetDirectory']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;
@@ -283,13 +286,16 @@ class SpecificationOptions
     /**
      * @param string $targetNamespace
      * @return self
+     * @param bool $validate
      */
-    public function withTargetNamespace(string $targetNamespace) : self
+    public function withTargetNamespace(string $targetNamespace, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($targetNamespace, self::$schema['properties']['targetNamespace']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($targetNamespace, self::$schema['properties']['targetNamespace']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;
@@ -335,13 +341,16 @@ class SpecificationOptions
     /**
      * @param bool $cleanTargetDirectory
      * @return self
+     * @param bool $validate
      */
-    public function withCleanTargetDirectory(bool $cleanTargetDirectory) : self
+    public function withCleanTargetDirectory(bool $cleanTargetDirectory, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($cleanTargetDirectory, self::$schema['properties']['cleanTargetDirectory']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($cleanTargetDirectory, self::$schema['properties']['cleanTargetDirectory']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;
@@ -364,13 +373,16 @@ class SpecificationOptions
     /**
      * @param bool $disableStrictTypes
      * @return self
+     * @param bool $validate
      */
-    public function withDisableStrictTypes(bool $disableStrictTypes) : self
+    public function withDisableStrictTypes(bool $disableStrictTypes, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($disableStrictTypes, self::$schema['properties']['disableStrictTypes']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($disableStrictTypes, self::$schema['properties']['disableStrictTypes']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;
@@ -393,13 +405,16 @@ class SpecificationOptions
     /**
      * @param bool $treatValuesWithDefaultAsOptional
      * @return self
+     * @param bool $validate
      */
-    public function withTreatValuesWithDefaultAsOptional(bool $treatValuesWithDefaultAsOptional) : self
+    public function withTreatValuesWithDefaultAsOptional(bool $treatValuesWithDefaultAsOptional, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($treatValuesWithDefaultAsOptional, self::$schema['properties']['treatValuesWithDefaultAsOptional']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($treatValuesWithDefaultAsOptional, self::$schema['properties']['treatValuesWithDefaultAsOptional']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;
@@ -422,13 +437,16 @@ class SpecificationOptions
     /**
      * @param bool $inlineAllofReferences
      * @return self
+     * @param bool $validate
      */
-    public function withInlineAllofReferences(bool $inlineAllofReferences) : self
+    public function withInlineAllofReferences(bool $inlineAllofReferences, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($inlineAllofReferences, self::$schema['properties']['inlineAllofReferences']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($inlineAllofReferences, self::$schema['properties']['inlineAllofReferences']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;
@@ -451,13 +469,16 @@ class SpecificationOptions
     /**
      * @param string $newValidatorClassExpr
      * @return self
+     * @param bool $validate
      */
-    public function withNewValidatorClassExpr(string $newValidatorClassExpr) : self
+    public function withNewValidatorClassExpr(string $newValidatorClassExpr, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($newValidatorClassExpr, self::$schema['properties']['newValidatorClassExpr']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($newValidatorClassExpr, self::$schema['properties']['newValidatorClassExpr']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;
@@ -480,13 +501,16 @@ class SpecificationOptions
     /**
      * @param bool $preservePropertyNames
      * @return self
+     * @param bool $validate
      */
-    public function withPreservePropertyNames(bool $preservePropertyNames) : self
+    public function withPreservePropertyNames(bool $preservePropertyNames, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($preservePropertyNames, self::$schema['properties']['preservePropertyNames']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($preservePropertyNames, self::$schema['properties']['preservePropertyNames']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;
@@ -509,13 +533,16 @@ class SpecificationOptions
     /**
      * @param bool $noGetters
      * @return self
+     * @param bool $validate
      */
-    public function withNoGetters(bool $noGetters) : self
+    public function withNoGetters(bool $noGetters, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($noGetters, self::$schema['properties']['noGetters']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($noGetters, self::$schema['properties']['noGetters']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;
@@ -538,13 +565,16 @@ class SpecificationOptions
     /**
      * @param bool $noSetters
      * @return self
+     * @param bool $validate
      */
-    public function withNoSetters(bool $noSetters) : self
+    public function withNoSetters(bool $noSetters, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($noSetters, self::$schema['properties']['noSetters']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($noSetters, self::$schema['properties']['noSetters']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;
@@ -567,13 +597,16 @@ class SpecificationOptions
     /**
      * @param bool $noSchemaMetadata
      * @return self
+     * @param bool $validate
      */
-    public function withNoSchemaMetadata(bool $noSchemaMetadata) : self
+    public function withNoSchemaMetadata(bool $noSchemaMetadata, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($noSchemaMetadata, self::$schema['properties']['noSchemaMetadata']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($noSchemaMetadata, self::$schema['properties']['noSchemaMetadata']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;
@@ -596,13 +629,16 @@ class SpecificationOptions
     /**
      * @param bool $singleLineSchema
      * @return self
+     * @param bool $validate
      */
-    public function withSingleLineSchema(bool $singleLineSchema) : self
+    public function withSingleLineSchema(bool $singleLineSchema, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($singleLineSchema, self::$schema['properties']['singleLineSchema']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($singleLineSchema, self::$schema['properties']['singleLineSchema']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;
@@ -625,13 +661,16 @@ class SpecificationOptions
     /**
      * @param bool $noEnums
      * @return self
+     * @param bool $validate
      */
-    public function withNoEnums(bool $noEnums) : self
+    public function withNoEnums(bool $noEnums, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($noEnums, self::$schema['properties']['noEnums']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($noEnums, self::$schema['properties']['noEnums']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;

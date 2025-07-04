@@ -36,13 +36,16 @@ class Foo
     /**
      * @param string $a
      * @return self
+     * @param bool $validate
      */
-    public function withA(string $a) : self
+    public function withA(string $a, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($a, self::$schema['properties']['a']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($a, self::$schema['properties']['a']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;

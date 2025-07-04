@@ -36,13 +36,16 @@ class Name
     /**
      * @param string $first
      * @return self
+     * @param bool $validate
      */
-    public function withFirst(string $first) : self
+    public function withFirst(string $first, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($first, self::$schema['properties']['first']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($first, self::$schema['properties']['first']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;

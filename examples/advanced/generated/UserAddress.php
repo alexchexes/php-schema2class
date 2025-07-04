@@ -66,13 +66,16 @@ class UserAddress
     /**
      * @param string $city
      * @return self
+     * @param bool $validate
      */
-    public function withCity(string $city) : self
+    public function withCity(string $city, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($city, self::$schema['properties']['city']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($city, self::$schema['properties']['city']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;
@@ -84,13 +87,16 @@ class UserAddress
     /**
      * @param string $street
      * @return self
+     * @param bool $validate
      */
-    public function withStreet(string $street) : self
+    public function withStreet(string $street, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($street, self::$schema['properties']['street']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($street, self::$schema['properties']['street']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;
@@ -109,12 +115,6 @@ class UserAddress
      */
     public static function buildFromInput(array|object $input, bool $validate = true) : UserAddress
     {
-        if (!is_array($input) && !is_object($input)) {
-            throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($input)
-            );
-        }
-
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
@@ -164,10 +164,6 @@ class UserAddress
         }
 
         return $validator->isValid();
-    }
-
-    public function __clone()
-    {
     }
 }
 

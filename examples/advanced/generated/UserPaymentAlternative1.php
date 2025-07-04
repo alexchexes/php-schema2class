@@ -68,12 +68,6 @@ class UserPaymentAlternative1
      */
     public static function buildFromInput(array|object $input, bool $validate = true) : UserPaymentAlternative1
     {
-        if (!is_array($input) && !is_object($input)) {
-            throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($input)
-            );
-        }
-
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
@@ -121,10 +115,6 @@ class UserPaymentAlternative1
         }
 
         return $validator->isValid();
-    }
-
-    public function __clone()
-    {
     }
 }
 

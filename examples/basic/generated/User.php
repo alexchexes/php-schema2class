@@ -81,13 +81,16 @@ class User
     /**
      * @param string $name
      * @return self
+     * @param bool $validate
      */
-    public function withName(string $name) : self
+    public function withName(string $name, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($name, self::$schema['properties']['name']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($name, self::$schema['properties']['name']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;
@@ -122,13 +125,16 @@ class User
     /**
      * @param 'customer'|'manager' $status
      * @return self
+     * @param bool $validate
      */
-    public function withStatus(?string $status) : self
+    public function withStatus(?string $status, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($status, self::$schema['properties']['status']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($status, self::$schema['properties']['status']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;

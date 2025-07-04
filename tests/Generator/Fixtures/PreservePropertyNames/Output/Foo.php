@@ -160,13 +160,16 @@ class Foo
     /**
      * @param string $foo_bar
      * @return self
+     * @param bool $validate
      */
-    public function withFooBar(string $foo_bar) : self
+    public function withFooBar(string $foo_bar, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($foo_bar, self::$schema['properties']['foo-bar']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($foo_bar, self::$schema['properties']['foo-bar']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;
@@ -178,13 +181,16 @@ class Foo
     /**
      * @param string $foo_bar_1
      * @return self
+     * @param bool $validate
      */
-    public function withFooBar1(string $foo_bar_1) : self
+    public function withFooBar1(string $foo_bar_1, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($foo_bar_1, self::$schema['properties']['foo bar']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($foo_bar_1, self::$schema['properties']['foo bar']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;
@@ -196,13 +202,16 @@ class Foo
     /**
      * @param string $baz_qux
      * @return self
+     * @param bool $validate
      */
-    public function withBazQux(string $baz_qux) : self
+    public function withBazQux(string $baz_qux, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($baz_qux, self::$schema['properties']['baz qux']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($baz_qux, self::$schema['properties']['baz qux']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;
@@ -214,13 +223,16 @@ class Foo
     /**
      * @param string $_123_qwe
      * @return self
+     * @param bool $validate
      */
-    public function with_123Qwe(string $_123_qwe) : self
+    public function with_123Qwe(string $_123_qwe, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($_123_qwe, self::$schema['properties']['123 qwe']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($_123_qwe, self::$schema['properties']['123 qwe']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;
@@ -232,13 +244,16 @@ class Foo
     /**
      * @param string $Gorod
      * @return self
+     * @param bool $validate
      */
-    public function withGorod(string $Gorod) : self
+    public function withGorod(string $Gorod, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($Gorod, self::$schema['properties']['Город']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($Gorod, self::$schema['properties']['Город']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;
@@ -250,13 +265,16 @@ class Foo
     /**
      * @param string $nazvanie_iur_litsa
      * @return self
+     * @param bool $validate
      */
-    public function withNazvanieIurLitsa(string $nazvanie_iur_litsa) : self
+    public function withNazvanieIurLitsa(string $nazvanie_iur_litsa, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($nazvanie_iur_litsa, self::$schema['properties']['название юр.лица']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($nazvanie_iur_litsa, self::$schema['properties']['название юр.лица']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;
@@ -268,13 +286,16 @@ class Foo
     /**
      * @param string $IP_adres
      * @return self
+     * @param bool $validate
      */
-    public function withIPAdres(string $IP_adres) : self
+    public function withIPAdres(string $IP_adres, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($IP_adres, self::$schema['properties']['IP-адрес']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($IP_adres, self::$schema['properties']['IP-адрес']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;

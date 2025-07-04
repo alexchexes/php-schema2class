@@ -55,13 +55,16 @@ class Foo
     /**
      * @param string $name
      * @return self
+     * @param bool $validate
      */
-    public function withName(string $name) : self
+    public function withName(string $name, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($name, self::$schema['properties']['name']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($name, self::$schema['properties']['name']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;
@@ -84,13 +87,16 @@ class Foo
     /**
      * @param mixed[] $params
      * @return self
+     * @param bool $validate
      */
-    public function withParams(array $params) : self
+    public function withParams(array $params, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($params, self::$schema['properties']['params']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($params, self::$schema['properties']['params']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;

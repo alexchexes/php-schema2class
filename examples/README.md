@@ -24,7 +24,7 @@ cmd/s2c generate:fromschema \
   examples/advanced/advanced-schema.yaml \
   examples/advanced/generated \
   --class User \
-  --target-namespace Example\Advanced
+  --target-namespace Example\\Advanced
 ```
 
 No config file is used.

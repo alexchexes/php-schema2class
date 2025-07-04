@@ -75,13 +75,16 @@ class SpecificationFilesItem
     /**
      * @param string $className
      * @return self
+     * @param bool $validate
      */
-    public function withClassName(string $className) : self
+    public function withClassName(string $className, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($className, self::$schema['properties']['className']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($className, self::$schema['properties']['className']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;

@@ -57,13 +57,16 @@ class Foo
     /**
      * @param int $limit
      * @return self
+     * @param bool $validate
      */
-    public function withLimit(int $limit) : self
+    public function withLimit(int $limit, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($limit, self::$schema['properties']['limit']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($limit, self::$schema['properties']['limit']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;
@@ -75,13 +78,16 @@ class Foo
     /**
      * @param int $skip
      * @return self
+     * @param bool $validate
      */
-    public function withSkip(int $skip) : self
+    public function withSkip(int $skip, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($skip, self::$schema['properties']['skip']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($skip, self::$schema['properties']['skip']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;

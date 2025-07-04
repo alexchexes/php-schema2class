@@ -50,13 +50,16 @@ class Foo
     /**
      * @param 'red'|'green' $color
      * @return self
+     * @param bool $validate
      */
-    public function withColor(string $color) : self
+    public function withColor(string $color, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($color, self::$schema['properties']['color']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($color, self::$schema['properties']['color']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;

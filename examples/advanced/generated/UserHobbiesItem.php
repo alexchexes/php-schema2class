@@ -25,13 +25,6 @@ class UserHobbiesItem
     private ?string $name = null;
 
     /**
-     *
-     */
-    public function __construct()
-    {
-    }
-
-    /**
      * @return string|null
      */
     public function getName() : ?string
@@ -42,13 +35,16 @@ class UserHobbiesItem
     /**
      * @param string $name
      * @return self
+     * @param bool $validate
      */
-    public function withName(string $name) : self
+    public function withName(string $name, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($name, self::$schema['properties']['name']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($name, self::$schema['properties']['name']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;
@@ -78,12 +74,6 @@ class UserHobbiesItem
      */
     public static function buildFromInput(array|object $input, bool $validate = true) : UserHobbiesItem
     {
-        if (!is_array($input) && !is_object($input)) {
-            throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($input)
-            );
-        }
-
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
@@ -133,10 +123,6 @@ class UserHobbiesItem
         }
 
         return $validator->isValid();
-    }
-
-    public function __clone()
-    {
     }
 }
 

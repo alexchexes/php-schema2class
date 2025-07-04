@@ -273,7 +273,7 @@ class Generator
                 new ParameterGenerator("return", $this->generatorRequest->isAtLeastPHP("7.0") ? "bool" : null, false),
             ],
             MethodGenerator::FLAG_PUBLIC | MethodGenerator::FLAG_STATIC,
-            '$validator = ' . $newValidatorClassExpr . ';' . "\n" .
+            '$validator = ' . $newValidatorClassExpr . ";\n" .
             '$input = is_array($input) ? \\JsonSchema\\Validator::arrayToObjectRecursive($input) : $input;' . "\n" .
             '$validator->validate($input, self::$schema);' . "\n\n" .
             'if (!$validator->isValid() && !$return) {' . "\n" .
@@ -434,16 +434,19 @@ class Generator
             || $base instanceof ReferenceArrayProperty
             || $base instanceof TypedArrayProperty;
 
+        $newValidatorClassExpr = $this->generatorRequest->getOptions()->getNewValidatorClassExpr();
+
         if ($property->isComplex() && !$isArray) {
             $setterValidation = "";
         } else {
-            $setterValidation = "\$validator = new \JsonSchema\Validator();
-\$validator->validate(\$$name, self::\$schema['properties']['$key']);
-if (!\$validator->isValid()) {
-    throw new \InvalidArgumentException(\$validator->getErrors()[0]['message']);
-}
-
-";
+            $setterValidation = 
+                "if (\$validate) {\n"
+                . "    \$validator = {$newValidatorClassExpr};\n"
+                . "    \$validator->validate(\$$name, self::\$schema['properties']['$key']);\n"
+                . "    if (!\$validator->isValid()) {\n"
+                . "        throw new \\InvalidArgumentException(\$validator->getErrors()[0]['message']);\n"
+                . "    }\n"
+                . "}\n\n";
         }
 
         $tags = [
@@ -458,14 +461,24 @@ if (!\$validator->isValid()) {
         $docBlock = new DocBlockGenerator(null, null, $tags);
         $docBlock->setWordWrap(false);
 
+        $parameters = [new ParameterGenerator($name, $typeHint)];
+        if ($setterValidation !== "") {
+            $validateParam = new ParameterGenerator('validate', 'bool');
+            $validateParam->setDefaultValue(true);
+            $parameters[] = $validateParam;
+
+            $tags[] = new ParamTag('validate', ['bool']);
+            $docBlock = new DocBlockGenerator(null, null, $tags);
+            $docBlock->setWordWrap(false);
+        }
+
         $setMethod = new MethodGenerator(
             'with' . $camelCaseName,
-            [new ParameterGenerator($name, $typeHint)],
+            $parameters,
             MethodGenerator::FLAG_PUBLIC,
-            $setterValidation . "\$clone = clone \$this;
-\$clone->$name = \$$name;
-
-return \$clone;",
+            $setterValidation . "\$clone = clone \$this;\n" .
+                "\$clone->$name = \$$name;\n\n" .
+                "return \$clone;",
             $docBlock
         );
 

@@ -84,13 +84,16 @@ class Foo
     /**
      * @param string $Gorod
      * @return self
+     * @param bool $validate
      */
-    public function withGorod(string $Gorod) : self
+    public function withGorod(string $Gorod, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($Gorod, self::$schema['properties']['Город']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($Gorod, self::$schema['properties']['Город']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;
@@ -102,13 +105,16 @@ class Foo
     /**
      * @param string $nazvanieIurLitsa
      * @return self
+     * @param bool $validate
      */
-    public function withNazvanieIurLitsa(string $nazvanieIurLitsa) : self
+    public function withNazvanieIurLitsa(string $nazvanieIurLitsa, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($nazvanieIurLitsa, self::$schema['properties']['название юр.лица']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($nazvanieIurLitsa, self::$schema['properties']['название юр.лица']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;
@@ -120,13 +126,16 @@ class Foo
     /**
      * @param string $IPAdres
      * @return self
+     * @param bool $validate
      */
-    public function withIPAdres(string $IPAdres) : self
+    public function withIPAdres(string $IPAdres, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($IPAdres, self::$schema['properties']['IP-адрес']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($IPAdres, self::$schema['properties']['IP-адрес']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;

@@ -36,13 +36,16 @@ class Bar
     /**
      * @param int $b
      * @return self
+     * @param bool $validate
      */
-    public function withB(int $b) : self
+    public function withB(int $b, bool $validate = true) : self
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->validate($b, self::$schema['properties']['b']);
-        if (!$validator->isValid()) {
-            throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($b, self::$schema['properties']['b']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
 
         $clone = clone $this;
