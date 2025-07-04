@@ -104,7 +104,7 @@ class MyClass
     /**
      * @return self
      */
-    public function withoutFooBar() : self
+    public function without_FooBar() : self
     {
         $clone = clone $this;
         unset($clone->_foo_bar);

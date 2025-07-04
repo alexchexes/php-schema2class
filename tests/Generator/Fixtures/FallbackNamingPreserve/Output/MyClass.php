@@ -412,7 +412,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getGLOBALS1() : string
+    public function get_GLOBALS1() : string
     {
         return $this->_GLOBALS_1;
     }
@@ -420,7 +420,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getGLOBALS2() : string
+    public function get_GLOBALS2() : string
     {
         return $this->_GLOBALS_2;
     }
@@ -428,7 +428,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getGLOBALS11() : string
+    public function get_GLOBALS11() : string
     {
         return $this->_GLOBALS_1_1;
     }
@@ -436,7 +436,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getSERVER1() : string
+    public function get_SERVER1() : string
     {
         return $this->_SERVER_1;
     }
@@ -444,7 +444,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getGET1() : string
+    public function get_GET1() : string
     {
         return $this->_GET_1;
     }
@@ -452,7 +452,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getPOST1() : string
+    public function get_POST1() : string
     {
         return $this->_POST_1;
     }
@@ -460,7 +460,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getFILES1() : string
+    public function get_FILES1() : string
     {
         return $this->_FILES_1;
     }
@@ -468,7 +468,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getREQUEST1() : string
+    public function get_REQUEST1() : string
     {
         return $this->_REQUEST_1;
     }
@@ -476,7 +476,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getSESSION1() : string
+    public function get_SESSION1() : string
     {
         return $this->_SESSION_1;
     }
@@ -484,7 +484,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getENV1() : string
+    public function get_ENV1() : string
     {
         return $this->_ENV_1;
     }
@@ -492,7 +492,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getCOOKIE1() : string
+    public function get_COOKIE1() : string
     {
         return $this->_COOKIE_1;
     }
@@ -500,7 +500,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getPhpErrormsg() : string
+    public function get_PhpErrormsg() : string
     {
         return $this->_php_errormsg;
     }
@@ -508,7 +508,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getHttpResponseHeader() : string
+    public function get_HttpResponseHeader() : string
     {
         return $this->_http_response_header;
     }
@@ -516,7 +516,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getArgc() : string
+    public function get_Argc() : string
     {
         return $this->_argc;
     }
@@ -524,7 +524,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getArgv() : string
+    public function get_Argv() : string
     {
         return $this->_argv;
     }
@@ -556,7 +556,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getBuildFromInput() : string
+    public function get_BuildFromInput() : string
     {
         return $this->_buildFromInput;
     }
@@ -564,7 +564,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getToArray() : string
+    public function get_ToArray() : string
     {
         return $this->_toArray;
     }
@@ -572,7 +572,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getValidateInput() : string
+    public function get_ValidateInput() : string
     {
         return $this->_validateInput;
     }
@@ -580,7 +580,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getClone() : string
+    public function get_Clone() : string
     {
         return $this->_clone;
     }
@@ -588,7 +588,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getConstruct1() : string
+    public function get__Construct1() : string
     {
         return $this->__construct_1;
     }
@@ -596,7 +596,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getDestruct1() : string
+    public function get__Destruct1() : string
     {
         return $this->__destruct_1;
     }
@@ -604,7 +604,7 @@ class MyClass
     /**
      * @return string
      */
-    public function get_Get1() : string
+    public function get__Get1() : string
     {
         return $this->__get_1;
     }
@@ -612,7 +612,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getSet1() : string
+    public function get__Set1() : string
     {
         return $this->__set_1;
     }
@@ -620,7 +620,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getCall1() : string
+    public function get__Call1() : string
     {
         return $this->__call_1;
     }
@@ -628,7 +628,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getIsset1() : string
+    public function get__Isset1() : string
     {
         return $this->__isset_1;
     }
@@ -636,7 +636,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getUnset1() : string
+    public function get__Unset1() : string
     {
         return $this->__unset_1;
     }
@@ -644,7 +644,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getSleep1() : string
+    public function get__Sleep1() : string
     {
         return $this->__sleep_1;
     }
@@ -652,7 +652,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getWakeup1() : string
+    public function get__Wakeup1() : string
     {
         return $this->__wakeup_1;
     }
@@ -660,7 +660,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getToString1() : string
+    public function get__ToString1() : string
     {
         return $this->__toString_1;
     }
@@ -668,7 +668,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getInvoke1() : string
+    public function get__Invoke1() : string
     {
         return $this->__invoke_1;
     }
@@ -676,7 +676,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getDebugInfo1() : string
+    public function get__DebugInfo1() : string
     {
         return $this->__debugInfo_1;
     }
@@ -684,7 +684,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getClone1() : string
+    public function get__Clone1() : string
     {
         return $this->__clone_1;
     }
@@ -694,7 +694,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withGLOBALS1(string $_GLOBALS_1, bool $validate = true) : self
+    public function with_GLOBALS1(string $_GLOBALS_1, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -715,7 +715,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withGLOBALS2(string $_GLOBALS_2, bool $validate = true) : self
+    public function with_GLOBALS2(string $_GLOBALS_2, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -736,7 +736,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withGLOBALS11(string $_GLOBALS_1_1, bool $validate = true) : self
+    public function with_GLOBALS11(string $_GLOBALS_1_1, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -757,7 +757,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withSERVER1(string $_SERVER_1, bool $validate = true) : self
+    public function with_SERVER1(string $_SERVER_1, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -778,7 +778,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withGET1(string $_GET_1, bool $validate = true) : self
+    public function with_GET1(string $_GET_1, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -799,7 +799,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withPOST1(string $_POST_1, bool $validate = true) : self
+    public function with_POST1(string $_POST_1, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -820,7 +820,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withFILES1(string $_FILES_1, bool $validate = true) : self
+    public function with_FILES1(string $_FILES_1, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -841,7 +841,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withREQUEST1(string $_REQUEST_1, bool $validate = true) : self
+    public function with_REQUEST1(string $_REQUEST_1, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -862,7 +862,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withSESSION1(string $_SESSION_1, bool $validate = true) : self
+    public function with_SESSION1(string $_SESSION_1, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -883,7 +883,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withENV1(string $_ENV_1, bool $validate = true) : self
+    public function with_ENV1(string $_ENV_1, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -904,7 +904,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withCOOKIE1(string $_COOKIE_1, bool $validate = true) : self
+    public function with_COOKIE1(string $_COOKIE_1, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -925,7 +925,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withPhpErrormsg(string $_php_errormsg, bool $validate = true) : self
+    public function with_PhpErrormsg(string $_php_errormsg, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -946,7 +946,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withHttpResponseHeader(string $_http_response_header, bool $validate = true) : self
+    public function with_HttpResponseHeader(string $_http_response_header, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -967,7 +967,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withArgc(string $_argc, bool $validate = true) : self
+    public function with_Argc(string $_argc, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -988,7 +988,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withArgv(string $_argv, bool $validate = true) : self
+    public function with_Argv(string $_argv, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1072,7 +1072,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withBuildFromInput(string $_buildFromInput, bool $validate = true) : self
+    public function with_BuildFromInput(string $_buildFromInput, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1093,7 +1093,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withToArray(string $_toArray, bool $validate = true) : self
+    public function with_ToArray(string $_toArray, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1114,7 +1114,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withValidateInput(string $_validateInput, bool $validate = true) : self
+    public function with_ValidateInput(string $_validateInput, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1135,7 +1135,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withClone(string $_clone, bool $validate = true) : self
+    public function with_Clone(string $_clone, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1156,7 +1156,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withConstruct1(string $__construct_1, bool $validate = true) : self
+    public function with__Construct1(string $__construct_1, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1177,7 +1177,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withDestruct1(string $__destruct_1, bool $validate = true) : self
+    public function with__Destruct1(string $__destruct_1, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1198,7 +1198,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function with_Get1(string $__get_1, bool $validate = true) : self
+    public function with__Get1(string $__get_1, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1219,7 +1219,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withSet1(string $__set_1, bool $validate = true) : self
+    public function with__Set1(string $__set_1, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1240,7 +1240,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withCall1(string $__call_1, bool $validate = true) : self
+    public function with__Call1(string $__call_1, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1261,7 +1261,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withIsset1(string $__isset_1, bool $validate = true) : self
+    public function with__Isset1(string $__isset_1, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1282,7 +1282,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withUnset1(string $__unset_1, bool $validate = true) : self
+    public function with__Unset1(string $__unset_1, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1303,7 +1303,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withSleep1(string $__sleep_1, bool $validate = true) : self
+    public function with__Sleep1(string $__sleep_1, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1324,7 +1324,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withWakeup1(string $__wakeup_1, bool $validate = true) : self
+    public function with__Wakeup1(string $__wakeup_1, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1345,7 +1345,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withToString1(string $__toString_1, bool $validate = true) : self
+    public function with__ToString1(string $__toString_1, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1366,7 +1366,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withInvoke1(string $__invoke_1, bool $validate = true) : self
+    public function with__Invoke1(string $__invoke_1, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1387,7 +1387,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withDebugInfo1(string $__debugInfo_1, bool $validate = true) : self
+    public function with__DebugInfo1(string $__debugInfo_1, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1408,7 +1408,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withClone1(string $__clone_1, bool $validate = true) : self
+    public function with__Clone1(string $__clone_1, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();

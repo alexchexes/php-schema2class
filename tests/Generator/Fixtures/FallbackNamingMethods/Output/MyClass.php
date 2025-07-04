@@ -133,7 +133,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function with_Outbound_1(string $_outbound, bool $validate = true) : self
+    public function with__Outbound(string $_outbound, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
