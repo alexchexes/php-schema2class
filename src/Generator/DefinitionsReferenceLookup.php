@@ -7,6 +7,7 @@ use Helmich\Schema2Class\Generator\Definitions\Definition;
 use Helmich\Schema2Class\Generator\ReferencedType;
 use Helmich\Schema2Class\Generator\ReferencedTypeClass;
 use Helmich\Schema2Class\Generator\ReferencedTypeUnknown;
+use Helmich\Schema2Class\Generator\ReferencedTypeEnum;
 
 class DefinitionsReferenceLookup implements ReferenceLookup
 {
@@ -19,8 +20,31 @@ class DefinitionsReferenceLookup implements ReferenceLookup
         $this->definitions = $definitions;
     }
 
+    private function canonicalize(string $reference): string
+    {
+        if (isset($this->definitions[$reference])) {
+            return $reference;
+        }
+
+        if (str_starts_with($reference, '#/definitions/')) {
+            $alt = '#/$defs/' . substr($reference, strlen('#/definitions/'));
+            if (isset($this->definitions[$alt])) {
+                return $alt;
+            }
+        } elseif (str_starts_with($reference, '#/$defs/')) {
+            $alt = '#/definitions/' . substr($reference, strlen('#/$defs/'));
+            if (isset($this->definitions[$alt])) {
+                return $alt;
+            }
+        }
+
+        return $reference;
+    }
+
     public function lookupReference(string $reference): ReferencedType
     {
+        $reference = $this->canonicalize($reference);
+
         if (!isset($this->definitions[$reference])) {
             return new ReferencedTypeUnknown();
         }
@@ -36,6 +60,8 @@ class DefinitionsReferenceLookup implements ReferenceLookup
 
     public function lookupSchema(string $reference): array
     {
+        $reference = $this->canonicalize($reference);
+
         return $this->definitions[$reference]->schema ?? [];
     }
 }

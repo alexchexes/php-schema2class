@@ -69,7 +69,10 @@ class DefinitionsGenerator
             $generatedClasses[] = $request->getTargetClass();
         }
 
-        $rootDefinitions = $request->getSchema()['definitions'] ?? [];
+        $rootDefinitions = array_merge(
+            $request->getSchema()['definitions'] ?? [],
+            $request->getSchema()['$defs'] ?? [],
+        );
 
         foreach ($definitions as $definition) {
             $deps        = self::collectLocalRefs($definition->schema, $rootDefinitions);
