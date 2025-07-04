@@ -72,12 +72,13 @@ class SchemaToClass
         if (isset($schema["enum"])) {
             if (SchemaToEnum::canGenerateEnum($schema, $req)) {
                 $this->enumGenerator->schemaToEnum($req);
+            } else {
+                $class = $req->getTargetClass();
+                if ($class !== null) {
+                    $this->output->writeln("skipping generation of enum <comment>{$class}</comment>");
+                }
             }
 
-            $class = $req->getTargetClass();
-            if ($class !== null) {
-                $this->output->writeln("skipping generation of enum <comment>{$class}</comment>");
-            }
 
             return;
         }
