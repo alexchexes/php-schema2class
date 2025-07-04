@@ -2,6 +2,6 @@ properties:
   foo:
     type: [string, object]
   bar:
-    type: string
+    type: [string, object]
 required:
   - foo

@@ -20,7 +20,10 @@ class Foo
                 ],
             ],
             'bar' => [
-                'type' => 'string',
+                'type' => [
+                    'string',
+                    'object',
+                ],
             ],
         ],
         'required' => [
@@ -34,9 +37,9 @@ class Foo
     private string|array|object $foo;
 
     /**
-     * @var string|null
+     * @var string|array|object|null
      */
-    private ?string $bar = null;
+    private string|array|object|null $bar = null;
 
     /**
      * @param string|array|object $foo
@@ -55,11 +58,11 @@ class Foo
     }
 
     /**
-     * @return string|null
+     * @return string|array|object|null
      */
-    public function getBar() : ?string
+    public function getBar() : string|array|object|null
     {
-        return $this->bar ?? null;
+        return $this->bar;
     }
 
     /**
@@ -75,20 +78,11 @@ class Foo
     }
 
     /**
-     * @param string $bar
+     * @param string|array|object $bar
      * @return self
-     * @param bool $validate
      */
-    public function withBar(string $bar, bool $validate = true) : self
+    public function withBar(string|array|object $bar) : self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($bar, self::$schema['properties']['bar']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->bar = $bar;
 
@@ -126,7 +120,11 @@ class Foo
             is_array($input->{'foo'}) || is_object($input->{'foo'}) => $input->{'foo'},
             default => throw new \InvalidArgumentException("could not build property 'foo' from JSON"),
         };
-        $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
+        $bar = isset($input->{'bar'}) ? match (true) {
+            is_string($input->{'bar'}),
+            is_array($input->{'bar'}) || is_object($input->{'bar'}) => $input->{'bar'},
+            default => null,
+        } : null;
 
         $obj = new self($foo);
         $obj->bar = $bar;
@@ -146,7 +144,10 @@ class Foo
             is_array($this->foo) || is_object($this->foo) => $this->foo,
         };
         if (isset($this->bar)) {
-            $output['bar'] = $this->bar;
+            $output['bar'] = match (true) {
+                is_string($this->bar),
+                is_array($this->bar) || is_object($this->bar) => $this->bar,
+            };
         }
 
         return $output;
@@ -182,5 +183,11 @@ class Foo
             is_string($this->foo),
             is_array($this->foo) || is_object($this->foo) => $this->foo,
         };
+        if (isset($this->bar)) {
+            $this->bar = match (true) {
+                is_string($this->bar),
+                is_array($this->bar) || is_object($this->bar) => $this->bar,
+            };
+        }
     }
 }

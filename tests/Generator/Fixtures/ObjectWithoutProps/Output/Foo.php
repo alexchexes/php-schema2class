@@ -17,46 +17,46 @@ class Foo
                 'type' => 'object',
             ],
             'bar' => [
-                'type' => 'string',
+                'type' => 'object',
             ],
         ],
         'required' => [
-            'foo',
+            'bar',
         ],
     ];
 
     /**
+     * @var array|object|null
+     */
+    private array|object|null $foo = null;
+
+    /**
      * @var array|object
      */
-    private array|object $foo;
+    private array|object $bar;
 
     /**
-     * @var string|null
+     * @param array|object $bar
      */
-    private ?string $bar = null;
-
-    /**
-     * @param array|object $foo
-     */
-    public function __construct(array|object $foo)
+    public function __construct(array|object $bar)
     {
-        $this->foo = $foo;
+        $this->bar = $bar;
     }
 
     /**
-     * @return array|object
+     * @return array|object|null
      */
-    public function getFoo() : array|object
+    public function getFoo() : array|object|null
     {
         return $this->foo;
     }
 
     /**
-     * @return string|null
+     * @return array|object
      */
-    public function getBar() : ?string
+    public function getBar() : array|object
     {
-        return $this->bar ?? null;
+        return $this->bar;
     }
 
     /**
@@ -81,11 +81,22 @@ class Foo
     }
 
     /**
-     * @param string $bar
+     * @return self
+     */
+    public function withoutFoo() : self
+    {
+        $clone = clone $this;
+        unset($clone->foo);
+
+        return $clone;
+    }
+
+    /**
+     * @param array|object $bar
      * @return self
      * @param bool $validate
      */
-    public function withBar(string $bar, bool $validate = true) : self
+    public function withBar(array|object $bar, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -97,17 +108,6 @@ class Foo
 
         $clone = clone $this;
         $clone->bar = $bar;
-
-        return $clone;
-    }
-
-    /**
-     * @return self
-     */
-    public function withoutBar() : self
-    {
-        $clone = clone $this;
-        unset($clone->bar);
 
         return $clone;
     }
@@ -127,11 +127,11 @@ class Foo
             static::validateInput($input);
         }
 
-        $foo = $input->{'foo'};
-        $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
+        $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
+        $bar = $input->{'bar'};
 
-        $obj = new self($foo);
-        $obj->bar = $bar;
+        $obj = new self($bar);
+        $obj->foo = $foo;
         return $obj;
     }
 
@@ -143,10 +143,10 @@ class Foo
     public function toArray() : array
     {
         $output = [];
-        $output['foo'] = $this->foo;
-        if (isset($this->bar)) {
-            $output['bar'] = $this->bar;
+        if (isset($this->foo)) {
+            $output['foo'] = $this->foo;
         }
+        $output['bar'] = $this->bar;
 
         return $output;
     }

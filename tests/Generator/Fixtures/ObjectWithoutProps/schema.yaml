@@ -2,6 +2,6 @@ properties:
   foo:
     type: object
   bar:
-    type: string
+    type: object
 required:
-  - foo
+  - bar
