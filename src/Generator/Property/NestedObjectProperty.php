@@ -29,11 +29,16 @@ class NestedObjectProperty extends AbstractProperty
      */
     public function generateSubTypes(SchemaToClass $generator): void
     {
-        $generator->schemaToClass(
-            $this->generatorRequest
-                ->withSchema($this->schema)
-                ->withClass($this->subTypeName())
-        );
+        $req = $this->generatorRequest
+            ->withSchema($this->schema)
+            ->withClass($this->subTypeName());
+
+        $rootDefs = $this->generatorRequest->getRootDefinitions();
+        if ($rootDefs !== null) {
+            $req = $req->withRootDefinitions($rootDefs);
+        }
+
+        $generator->schemaToClass($req);
     }
 
     public function typeAnnotation(): string

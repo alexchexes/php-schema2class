@@ -57,6 +57,13 @@ class SchemaToClass
                 $schema['definitions'] = array_replace($defs, $schema['definitions']);
             }
         }
+        // 2b) otherwise, if this schema has definitions, remember them for nested types
+        elseif (isset($schema['definitions']) || isset($schema['$defs'])) {
+            $req = $req->withRootDefinitions(array_merge(
+                $schema['definitions'] ?? [],
+                $schema['$defs'] ?? [],
+            ));
+        }
 
         // dereference schemas that consist only of a reference
         if (isset($schema['$ref'])) {
