@@ -137,8 +137,10 @@ class GenerationRunner
                 $output->writeln('Loading schema from <comment>inline specification</comment>');
             }
 
+            $schema = $this->loader->loadSchema($schemaInput);
+
             $className = $file->getClassName();
-            if ($className === null && is_string($schemaInput)) {
+            if ($className === null && self::schemaNeedsClass($schema) && is_string($schemaInput)) {
                 $basename = pathinfo($schemaInput, PATHINFO_FILENAME);
                 $className = StringUtils::pascalCase($basename);
                 $file = $file->withClassName($className);
@@ -156,7 +158,6 @@ class GenerationRunner
                 "Using target namespace <comment>{$targetNamespace}</comment> in directory <comment>{$targetDirectory}</comment>"
             );
 
-            $schema = $this->loader->loadSchema($schemaInput);
 
             $validated = ValidatedSpecificationFilesItem::fromSpecificationFilesItem($file, $opts, $targetNamespace);
 
