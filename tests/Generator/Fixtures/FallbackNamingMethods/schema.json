@@ -1,6 +1,7 @@
 {
   "properties": {    
     "bound": { "type": "string" },
-    "outbound": { "type": "string" }
+    "outbound": { "type": "string" },
+    "_outbound": { "type": "string" }
   }
 }
