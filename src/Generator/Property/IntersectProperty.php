@@ -28,11 +28,11 @@ class IntersectProperty extends AbstractProperty
         $propertyTypeName = $this->subTypeName();
         $combined = $this->buildSchemaIntersect();
 
-        $generator->schemaToClass(
-            $this->generatorRequest
-                ->withSchema($combined)
-                ->withClass($propertyTypeName)
-        );
+        $req = $this->generatorRequest
+            ->withSchema($combined)
+            ->withClass($propertyTypeName);
+
+        $generator->schemaToClass($this->propagateRootDefinitions($req));
     }
 
     public function typeAnnotation(): string

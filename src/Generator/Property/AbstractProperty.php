@@ -129,6 +129,24 @@ abstract class AbstractProperty implements PropertyInterface, RenameableProperty
         return $expr;
     }
 
+    /**
+     * Propagate root definitions from the current request to a new request.
+     */
+    protected function propagateRootDefinitions(GeneratorRequest $req): GeneratorRequest
+    {
+        $defs = $this->generatorRequest->getRootDefinitions();
+        if ($defs === null) {
+            $schema = $this->generatorRequest->getSchema();
+            $defs = array_merge($schema['definitions'] ?? [], $schema['$defs'] ?? []);
+        }
+
+        if (count($defs) > 0) {
+            return $req->withRootDefinitions($defs);
+        }
+
+        return $req;
+    }
+
     public function generateSubTypes(SchemaToClass $generator): void
     {
     }

@@ -36,11 +36,11 @@ class StringEnumProperty extends AbstractProperty
     public function generateSubTypes(SchemaToClass $generator): void
     {
         if ($this->generatorRequest->isAtLeastPHP("8.1") && !$this->generatorRequest->getNoEnums()) {
-            $generator->schemaToClass(
-                $this->generatorRequest
-                    ->withSchema($this->schema)
-                    ->withClass($this->subTypeName())
-            );
+            $req = $this->generatorRequest
+                ->withSchema($this->schema)
+                ->withClass($this->subTypeName());
+
+            $generator->schemaToClass($this->propagateRootDefinitions($req));
         }
     }
 

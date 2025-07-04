@@ -209,11 +209,11 @@ class UnionProperty extends AbstractProperty
             $isEnum   = isset($subDef["enum"]);
 
             if ($isObject || $isEnum) {
-                $generator->schemaToClass(
-                    $this->generatorRequest
-                        ->withSchema($subDef)
-                        ->withClass($propertyTypeName)
-                );
+                $req = $this->generatorRequest
+                    ->withSchema($subDef)
+                    ->withClass($propertyTypeName);
+
+                $generator->schemaToClass($this->propagateRootDefinitions($req));
             }
         }
     }
