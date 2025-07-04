@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Writer;
 
-use RuntimeException;
-
 /**
  * Decorator writer that runs a PHP syntax check on the written file.
  */
@@ -17,6 +15,9 @@ class LintingWriter implements WriterInterface
         $this->inner = $inner;
     }
 
+    /** 
+     * @throws \RuntimeException if written file contents is not valid PHP
+     */
     public function writeFile(string $filename, string $contents): void
     {
         $this->inner->writeFile($filename, $contents);
@@ -25,7 +26,7 @@ class LintingWriter implements WriterInterface
         $result = 0;
         exec(PHP_BINARY . ' -l ' . escapeshellarg($filename) . ' 2>&1', $output, $result);
         if ($result !== 0) {
-            throw new RuntimeException(
+            throw new \RuntimeException(
                 sprintf("Generated file %s contains syntax errors:\n%s", $filename, implode("\n", $output))
             );
         }
