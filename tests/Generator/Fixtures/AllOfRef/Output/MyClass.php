@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ns\ObjectWithoutProps;
+namespace Ns\AllOfRef;
 
-class Foo
+class MyClass
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -12,102 +12,135 @@ class Foo
      * @var array
      */
     private static array $schema = [
-        'properties' => [
-            'foo' => [
-                'type' => 'object',
-            ],
-            'bar' => [
-                'type' => 'object',
-            ],
-        ],
         'required' => [
-            'bar',
+            'city',
+            'street',
+            'country',
+        ],
+        'properties' => [
+            'city' => [
+                'type' => 'string',
+                'maxLength' => 32,
+            ],
+            'street' => [
+                'type' => 'string',
+            ],
+            'country' => [
+                'type' => 'string',
+            ],
         ],
     ];
 
     /**
-     * @var array|object|null
+     * @var string
      */
-    private array|object|null $foo = null;
+    private string $city;
 
     /**
-     * @var array|object
+     * @var string
      */
-    private array|object $bar;
+    private string $street;
 
     /**
-     * @param array|object $bar
+     * @var string
      */
-    public function __construct(array|object $bar)
+    private string $country;
+
+    /**
+     * @param string $city
+     * @param string $street
+     * @param string $country
+     */
+    public function __construct(string $city, string $street, string $country)
     {
-        $this->bar = $bar;
+        $this->city = $city;
+        $this->street = $street;
+        $this->country = $country;
     }
 
     /**
-     * @return array|object|null
+     * @return string
      */
-    public function getFoo() : array|object|null
+    public function getCity() : string
     {
-        return $this->foo;
+        return $this->city;
     }
 
     /**
-     * @return array|object
+     * @return string
      */
-    public function getBar() : array|object
+    public function getStreet() : string
     {
-        return $this->bar;
+        return $this->street;
     }
 
     /**
-     * @param array|object $foo
+     * @return string
+     */
+    public function getCountry() : string
+    {
+        return $this->country;
+    }
+
+    /**
+     * @param string $city
      * @return self
      * @param bool $validate
      */
-    public function withFoo(array|object $foo, bool $validate = true) : self
+    public function withCity(string $city, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($foo, self::$schema['properties']['foo']);
+            $validator->validate($city, self::$schema['properties']['city']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
         }
 
         $clone = clone $this;
-        $clone->foo = $foo;
+        $clone->city = $city;
 
         return $clone;
     }
 
     /**
-     * @return self
-     */
-    public function withoutFoo() : self
-    {
-        $clone = clone $this;
-        unset($clone->foo);
-
-        return $clone;
-    }
-
-    /**
-     * @param array|object $bar
+     * @param string $street
      * @return self
      * @param bool $validate
      */
-    public function withBar(array|object $bar, bool $validate = true) : self
+    public function withStreet(string $street, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($bar, self::$schema['properties']['bar']);
+            $validator->validate($street, self::$schema['properties']['street']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
         }
 
         $clone = clone $this;
-        $clone->bar = $bar;
+        $clone->street = $street;
+
+        return $clone;
+    }
+
+    /**
+     * @param string $country
+     * @return self
+     * @param bool $validate
+     */
+    public function withCountry(string $country, bool $validate = true) : self
+    {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($country, self::$schema['properties']['country']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
+        $clone = clone $this;
+        $clone->country = $country;
 
         return $clone;
     }
@@ -117,21 +150,22 @@ class Foo
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
-     * @return Foo Created instance
+     * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : Foo
+    public static function buildFromInput(array|object $input, bool $validate = true) : MyClass
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
-        $bar = $input->{'bar'};
+        $city = $input->{'city'};
+        $street = $input->{'street'};
+        $country = $input->{'country'};
 
-        $obj = new self($bar);
-        $obj->foo = $foo;
+        $obj = new self($city, $street, $country);
+
         return $obj;
     }
 
@@ -143,10 +177,9 @@ class Foo
     public function toArray() : array
     {
         $output = [];
-        if (isset($this->foo)) {
-            $output['foo'] = $this->foo;
-        }
-        $output['bar'] = $this->bar;
+        $output['city'] = $this->city;
+        $output['street'] = $this->street;
+        $output['country'] = $this->country;
 
         return $output;
     }

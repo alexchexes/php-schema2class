@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ns\RefList;
+namespace Ns\JsonFile;
 
-class Foo
+class MyClass
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -12,60 +12,59 @@ class Foo
      * @var array
      */
     private static array $schema = [
-        'required' => [
-            'foo_bar',
-        ],
+        '$schema' => 'http://json-schema.org/draft-07/schema#',
+        '$id' => 'http://json-schema.org/draft-07/schema#',
+        'title' => 'definitions test',
+        'type' => 'object',
+        'additionalProperties' => false,
         'properties' => [
-            'foo' => [
-                'type' => 'array',
-                'items' => [
-                    '$ref' => '#/properties/address',
-                ],
+            'id' => [
+                'type' => 'integer',
             ],
+        ],
+        'required' => [
+            'id',
         ],
     ];
 
     /**
-     * @var \Helmich\Schema2Class\Example\CustomerAddress[]|null
+     * @var int
      */
-    private ?array $foo = null;
+    private int $id;
 
     /**
-     * @return \Helmich\Schema2Class\Example\CustomerAddress[]|null
+     * @param int $id
      */
-    public function getFoo() : ?array
+    public function __construct(int $id)
     {
-        return $this->foo ?? null;
+        $this->id = $id;
     }
 
     /**
-     * @param \Helmich\Schema2Class\Example\CustomerAddress[] $foo
+     * @return int
+     */
+    public function getId() : int
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param int $id
      * @return self
      * @param bool $validate
      */
-    public function withFoo(array $foo, bool $validate = true) : self
+    public function withId(int $id, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($foo, self::$schema['properties']['foo']);
+            $validator->validate($id, self::$schema['properties']['id']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
         }
 
         $clone = clone $this;
-        $clone->foo = $foo;
-
-        return $clone;
-    }
-
-    /**
-     * @return self
-     */
-    public function withoutFoo() : self
-    {
-        $clone = clone $this;
-        unset($clone->foo);
+        $clone->id = $id;
 
         return $clone;
     }
@@ -75,23 +74,20 @@ class Foo
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
-     * @return Foo Created instance
+     * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : Foo
+    public static function buildFromInput(array|object $input, bool $validate = true) : MyClass
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $foo = isset($input->{'foo'}) ? array_map(
-            fn(array|object $i): \Helmich\Schema2Class\Example\CustomerAddress => \Helmich\Schema2Class\Example\CustomerAddress::buildFromInput($i, $validate),
-            $input->{'foo'}
-        ) : null;
+        $id = (int)($input->{'id'});
 
-        $obj = new self();
-        $obj->foo = $foo;
+        $obj = new self($id);
+
         return $obj;
     }
 
@@ -103,9 +99,7 @@ class Foo
     public function toArray() : array
     {
         $output = [];
-        if (isset($this->foo)) {
-            $output['foo'] = array_map(fn(\Helmich\Schema2Class\Example\CustomerAddress $i): array => $i->toArray(), $this->foo);
-        }
+        $output['id'] = $this->id;
 
         return $output;
     }

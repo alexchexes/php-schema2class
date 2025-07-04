@@ -2,29 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Ns\NoSetters;
+namespace Ns\SingleLineSchema;
 
-class Foo
+class MyClass
 {
     /**
      * Schema used to validate input for creating instances of this class
      *
      * @var array
      */
-    private static array $schema = [
-        'required' => [
-            'foo',
-            'bar',
-        ],
-        'properties' => [
-            'foo' => [
-                'type' => 'string',
-            ],
-            'bar' => [
-                'type' => 'integer',
-            ],
-        ],
-    ];
+    private static array $schema = ['required' => ['foo'], 'properties' => ['foo' => ['type' => 'string']]];
 
     /**
      * @var string
@@ -32,18 +19,11 @@ class Foo
     private string $foo;
 
     /**
-     * @var int
-     */
-    private int $bar;
-
-    /**
      * @param string $foo
-     * @param int $bar
      */
-    public function __construct(string $foo, int $bar)
+    public function __construct(string $foo)
     {
         $this->foo = $foo;
-        $this->bar = $bar;
     }
 
     /**
@@ -55,11 +35,24 @@ class Foo
     }
 
     /**
-     * @return int
+     * @param string $foo
+     * @return self
+     * @param bool $validate
      */
-    public function getBar() : int
+    public function withFoo(string $foo, bool $validate = true) : self
     {
-        return $this->bar;
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($foo, self::$schema['properties']['foo']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
+        $clone = clone $this;
+        $clone->foo = $foo;
+
+        return $clone;
     }
 
     /**
@@ -67,10 +60,10 @@ class Foo
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
-     * @return Foo Created instance
+     * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : Foo
+    public static function buildFromInput(array|object $input, bool $validate = true) : MyClass
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -78,9 +71,8 @@ class Foo
         }
 
         $foo = $input->{'foo'};
-        $bar = (int)($input->{'bar'});
 
-        $obj = new self($foo, $bar);
+        $obj = new self($foo);
 
         return $obj;
     }
@@ -94,7 +86,6 @@ class Foo
     {
         $output = [];
         $output['foo'] = $this->foo;
-        $output['bar'] = $this->bar;
 
         return $output;
     }

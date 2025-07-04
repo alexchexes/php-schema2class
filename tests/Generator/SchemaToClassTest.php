@@ -96,7 +96,7 @@ class SchemaToClassTest extends TestCase
     {
         $req = new GeneratorRequest(
             $schema,
-            new ValidatedSpecificationFilesItem("Ns\\{$name}", "Foo", __DIR__),
+            new ValidatedSpecificationFilesItem("Ns\\{$name}", "MyClass", __DIR__),
             $opts,
         );
 
@@ -216,7 +216,7 @@ class SchemaToClassTest extends TestCase
     public function testCliNoEnumsMatchesFixture(): void
     {
         $schemaFile = __DIR__ . '/Fixtures/NoEnums/schema.yaml';
-        $expected   = trim(file_get_contents(__DIR__ . '/Fixtures/NoEnums/Output/Foo.php'));
+        $expected   = trim(file_get_contents(__DIR__ . '/Fixtures/NoEnums/Output/MyClass.php'));
 
         $dir = sys_get_temp_dir() . '/s2c_' . uniqid();
         mkdir($dir);
@@ -228,14 +228,14 @@ class SchemaToClassTest extends TestCase
             'schema' => $schemaFile,
             'target-dir' => $dir,
             '--target-namespace' => 'Ns\\NoEnums',
-            '--class' => 'Foo',
+            '--class' => 'MyClass',
             '--no-enums' => true,
         ]);
 
-        $generated = trim(file_get_contents($dir . '/Foo.php'));
+        $generated = trim(file_get_contents($dir . '/MyClass.php'));
         assertThat($generated, equalTo($expected));
 
-        unlink($dir . '/Foo.php');
+        unlink($dir . '/MyClass.php');
         rmdir($dir);
     }
 

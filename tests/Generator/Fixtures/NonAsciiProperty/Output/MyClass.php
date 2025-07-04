@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ns\DefaultValue;
+namespace Ns\NonAsciiProperty;
 
-class Foo
+class MyClass
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -13,107 +13,133 @@ class Foo
      */
     private static array $schema = [
         'required' => [
-            
+            'Город',
+            'название юр.лица',
+            'IP-адрес',
         ],
         'properties' => [
-            'limit' => [
-                'type' => 'integer',
-                'default' => 10000,
-                'minimum' => 1,
+            'Город' => [
+                'type' => 'string',
             ],
-            'skip' => [
-                'type' => 'integer',
-                'default' => 0,
+            'название юр.лица' => [
+                'type' => 'string',
+            ],
+            'IP-адрес' => [
+                'type' => 'string',
             ],
         ],
     ];
 
     /**
-     * @var int
+     * @var string
      */
-    private int $limit = 10000;
+    private string $Gorod;
 
     /**
-     * @var int
+     * @var string
      */
-    private int $skip = 0;
+    private string $nazvanieIurLitsa;
 
     /**
-     * @return int
+     * @var string
      */
-    public function getLimit() : int
+    private string $IPAdres;
+
+    /**
+     * @param string $Gorod
+     * @param string $nazvanieIurLitsa
+     * @param string $IPAdres
+     */
+    public function __construct(string $Gorod, string $nazvanieIurLitsa, string $IPAdres)
     {
-        return $this->limit;
+        $this->Gorod = $Gorod;
+        $this->nazvanieIurLitsa = $nazvanieIurLitsa;
+        $this->IPAdres = $IPAdres;
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function getSkip() : int
+    public function getGorod() : string
     {
-        return $this->skip;
+        return $this->Gorod;
     }
 
     /**
-     * @param int $limit
+     * @return string
+     */
+    public function getNazvanieIurLitsa() : string
+    {
+        return $this->nazvanieIurLitsa;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIPAdres() : string
+    {
+        return $this->IPAdres;
+    }
+
+    /**
+     * @param string $Gorod
      * @return self
      * @param bool $validate
      */
-    public function withLimit(int $limit, bool $validate = true) : self
+    public function withGorod(string $Gorod, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($limit, self::$schema['properties']['limit']);
+            $validator->validate($Gorod, self::$schema['properties']['Город']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
         }
 
         $clone = clone $this;
-        $clone->limit = $limit;
+        $clone->Gorod = $Gorod;
 
         return $clone;
     }
 
     /**
-     * @return self
-     */
-    public function withoutLimit() : self
-    {
-        $clone = clone $this;
-        $clone->limit = 10000;
-
-        return $clone;
-    }
-
-    /**
-     * @param int $skip
+     * @param string $nazvanieIurLitsa
      * @return self
      * @param bool $validate
      */
-    public function withSkip(int $skip, bool $validate = true) : self
+    public function withNazvanieIurLitsa(string $nazvanieIurLitsa, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($skip, self::$schema['properties']['skip']);
+            $validator->validate($nazvanieIurLitsa, self::$schema['properties']['название юр.лица']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
         }
 
         $clone = clone $this;
-        $clone->skip = $skip;
+        $clone->nazvanieIurLitsa = $nazvanieIurLitsa;
 
         return $clone;
     }
 
     /**
+     * @param string $IPAdres
      * @return self
+     * @param bool $validate
      */
-    public function withoutSkip() : self
+    public function withIPAdres(string $IPAdres, bool $validate = true) : self
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($IPAdres, self::$schema['properties']['IP-адрес']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
-        $clone->skip = 0;
+        $clone->IPAdres = $IPAdres;
 
         return $clone;
     }
@@ -123,22 +149,22 @@ class Foo
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
-     * @return Foo Created instance
+     * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : Foo
+    public static function buildFromInput(array|object $input, bool $validate = true) : MyClass
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $limit = isset($input->{'limit'}) ? $input->{'limit'} : 10000;
-        $skip = isset($input->{'skip'}) ? $input->{'skip'} : 0;
+        $Gorod = $input->{'Город'};
+        $nazvanieIurLitsa = $input->{'название юр.лица'};
+        $IPAdres = $input->{'IP-адрес'};
 
-        $obj = new self();
-        $obj->limit = $limit;
-        $obj->skip = $skip;
+        $obj = new self($Gorod, $nazvanieIurLitsa, $IPAdres);
+
         return $obj;
     }
 
@@ -150,12 +176,9 @@ class Foo
     public function toArray() : array
     {
         $output = [];
-        if (isset($this->limit)) {
-            $output['limit'] = $this->limit;
-        }
-        if (isset($this->skip)) {
-            $output['skip'] = $this->skip;
-        }
+        $output['Город'] = $this->Gorod;
+        $output['название юр.лица'] = $this->nazvanieIurLitsa;
+        $output['IP-адрес'] = $this->IPAdres;
 
         return $output;
     }

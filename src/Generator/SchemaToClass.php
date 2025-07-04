@@ -31,9 +31,6 @@ class SchemaToClass
     private SchemaToEnum $enumGenerator;
     private OutputInterface $output;
 
-    /**
-     * @phpstan-ignore constructor.unusedParameter (kept for backwards compatibility)
-     */
     public function __construct(WriterInterface $writer, OutputInterface $output)
     {
         $this->writer = $writer;

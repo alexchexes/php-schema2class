@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ns\NoSchemaMetadata;
+namespace Ns\ObjectWithoutPropsUnion;
 
-class Foo
+class MyClass
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -12,78 +12,65 @@ class Foo
      * @var array
      */
     private static array $schema = [
-        'required' => [
-            'foo',
-        ],
         'properties' => [
             'foo' => [
-                'type' => 'string',
+                'type' => [
+                    'string',
+                    'object',
+                ],
             ],
             'bar' => [
-                'type' => 'integer',
+                'type' => [
+                    'string',
+                    'object',
+                ],
             ],
+        ],
+        'required' => [
+            'foo',
         ],
     ];
 
     /**
-     * Foo description
-     *
-     * @var string
+     * @var string|array|object
      */
-    private string $foo;
+    private string|array|object $foo;
 
     /**
-     * Bar description
-     *
-     * @var int|null
-     * @deprecated
+     * @var string|array|object|null
      */
-    private ?int $bar = null;
+    private string|array|object|null $bar = null;
 
     /**
-     * @param string $foo
+     * @param string|array|object $foo
      */
-    public function __construct(string $foo)
+    public function __construct(string|array|object $foo)
     {
         $this->foo = $foo;
     }
 
     /**
-     * Foo description
-     *
-     * @return string
+     * @return string|array|object
      */
-    public function getFoo() : string
+    public function getFoo() : string|array|object
     {
         return $this->foo;
     }
 
     /**
-     * Bar description
-     *
-     * @return int|null
-     * @deprecated
+     * @return string|array|object|null
      */
-    public function getBar() : ?int
+    public function getBar() : string|array|object|null
     {
-        return $this->bar ?? null;
+        return $this->bar;
     }
 
     /**
-     * @param string $foo
+     * @param string|array|object $foo
      * @return self
-     * @param bool $validate
      */
-    public function withFoo(string $foo, bool $validate = true) : self
+    public function withFoo(string|array|object $foo) : self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($foo, self::$schema['properties']['foo']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->foo = $foo;
 
@@ -91,21 +78,11 @@ class Foo
     }
 
     /**
-     * @param int $bar
+     * @param string|array|object $bar
      * @return self
-     * @deprecated
-     * @param bool $validate
      */
-    public function withBar(int $bar, bool $validate = true) : self
+    public function withBar(string|array|object $bar) : self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($bar, self::$schema['properties']['bar']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->bar = $bar;
 
@@ -128,18 +105,26 @@ class Foo
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
-     * @return Foo Created instance
+     * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : Foo
+    public static function buildFromInput(array|object $input, bool $validate = true) : MyClass
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $foo = $input->{'foo'};
-        $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
+        $foo = match (true) {
+            is_string($input->{'foo'}),
+            is_array($input->{'foo'}) || is_object($input->{'foo'}) => $input->{'foo'},
+            default => throw new \InvalidArgumentException("could not build property 'foo' from JSON"),
+        };
+        $bar = isset($input->{'bar'}) ? match (true) {
+            is_string($input->{'bar'}),
+            is_array($input->{'bar'}) || is_object($input->{'bar'}) => $input->{'bar'},
+            default => null,
+        } : null;
 
         $obj = new self($foo);
         $obj->bar = $bar;
@@ -154,9 +139,15 @@ class Foo
     public function toArray() : array
     {
         $output = [];
-        $output['foo'] = $this->foo;
+        $output['foo'] = match (true) {
+            is_string($this->foo),
+            is_array($this->foo) || is_object($this->foo) => $this->foo,
+        };
         if (isset($this->bar)) {
-            $output['bar'] = $this->bar;
+            $output['bar'] = match (true) {
+                is_string($this->bar),
+                is_array($this->bar) || is_object($this->bar) => $this->bar,
+            };
         }
 
         return $output;
@@ -184,5 +175,19 @@ class Foo
         }
 
         return $validator->isValid();
+    }
+
+    public function __clone()
+    {
+        $this->foo = match (true) {
+            is_string($this->foo),
+            is_array($this->foo) || is_object($this->foo) => $this->foo,
+        };
+        if (isset($this->bar)) {
+            $this->bar = match (true) {
+                is_string($this->bar),
+                is_array($this->bar) || is_object($this->bar) => $this->bar,
+            };
+        }
     }
 }

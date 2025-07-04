@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ns\SuperglobalCollision;
+namespace Ns\ObjectWithoutProps;
 
-class Foo
+class MyClass
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -12,54 +12,102 @@ class Foo
      * @var array
      */
     private static array $schema = [
-        'required' => [
-            'files',
-        ],
         'properties' => [
-            'files' => [
-                'type' => 'string',
+            'foo' => [
+                'type' => 'object',
             ],
+            'bar' => [
+                'type' => 'object',
+            ],
+        ],
+        'required' => [
+            'bar',
         ],
     ];
 
     /**
-     * @var string
+     * @var array|object|null
      */
-    private string $files;
+    private array|object|null $foo = null;
 
     /**
-     * @param string $files
+     * @var array|object
      */
-    public function __construct(string $files)
+    private array|object $bar;
+
+    /**
+     * @param array|object $bar
+     */
+    public function __construct(array|object $bar)
     {
-        $this->files = $files;
+        $this->bar = $bar;
     }
 
     /**
-     * @return string
+     * @return array|object|null
      */
-    public function getFiles() : string
+    public function getFoo() : array|object|null
     {
-        return $this->files;
+        return $this->foo;
     }
 
     /**
-     * @param string $files
+     * @return array|object
+     */
+    public function getBar() : array|object
+    {
+        return $this->bar;
+    }
+
+    /**
+     * @param array|object $foo
      * @return self
      * @param bool $validate
      */
-    public function withFiles(string $files, bool $validate = true) : self
+    public function withFoo(array|object $foo, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($files, self::$schema['properties']['files']);
+            $validator->validate($foo, self::$schema['properties']['foo']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
         }
 
         $clone = clone $this;
-        $clone->files = $files;
+        $clone->foo = $foo;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutFoo() : self
+    {
+        $clone = clone $this;
+        unset($clone->foo);
+
+        return $clone;
+    }
+
+    /**
+     * @param array|object $bar
+     * @return self
+     * @param bool $validate
+     */
+    public function withBar(array|object $bar, bool $validate = true) : self
+    {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($bar, self::$schema['properties']['bar']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
+        $clone = clone $this;
+        $clone->bar = $bar;
 
         return $clone;
     }
@@ -69,20 +117,21 @@ class Foo
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
-     * @return Foo Created instance
+     * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : Foo
+    public static function buildFromInput(array|object $input, bool $validate = true) : MyClass
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $files = $input->{'files'};
+        $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
+        $bar = $input->{'bar'};
 
-        $obj = new self($files);
-
+        $obj = new self($bar);
+        $obj->foo = $foo;
         return $obj;
     }
 
@@ -94,7 +143,10 @@ class Foo
     public function toArray() : array
     {
         $output = [];
-        $output['files'] = $this->files;
+        if (isset($this->foo)) {
+            $output['foo'] = $this->foo;
+        }
+        $output['bar'] = $this->bar;
 
         return $output;
     }

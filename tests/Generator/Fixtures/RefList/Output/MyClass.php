@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ns\UnionCollapsing;
+namespace Ns\RefList;
 
-class Foo
+class MyClass
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -13,53 +13,59 @@ class Foo
      */
     private static array $schema = [
         'required' => [
-            'foo',
+            'foo_bar',
         ],
         'properties' => [
             'foo' => [
-                'oneOf' => [
-                    [
-                        'type' => 'string',
-                        'format' => 'uuid',
-                    ],
-                    [
-                        'type' => 'string',
-                        'maxLength' => 0,
-                    ],
+                'type' => 'array',
+                'items' => [
+                    '$ref' => '#/properties/address',
                 ],
             ],
         ],
     ];
 
     /**
-     * @var string
+     * @var \Helmich\Schema2Class\Example\CustomerAddress[]|null
      */
-    private string $foo;
+    private ?array $foo = null;
 
     /**
-     * @param string $foo
+     * @return \Helmich\Schema2Class\Example\CustomerAddress[]|null
      */
-    public function __construct(string $foo)
+    public function getFoo() : ?array
     {
-        $this->foo = $foo;
+        return $this->foo ?? null;
     }
 
     /**
-     * @return string
-     */
-    public function getFoo() : string
-    {
-        return $this->foo;
-    }
-
-    /**
-     * @param string $foo
+     * @param \Helmich\Schema2Class\Example\CustomerAddress[] $foo
      * @return self
+     * @param bool $validate
      */
-    public function withFoo(string $foo) : self
+    public function withFoo(array $foo, bool $validate = true) : self
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($foo, self::$schema['properties']['foo']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
         $clone->foo = $foo;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutFoo() : self
+    {
+        $clone = clone $this;
+        unset($clone->foo);
 
         return $clone;
     }
@@ -69,23 +75,23 @@ class Foo
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
-     * @return Foo Created instance
+     * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : Foo
+    public static function buildFromInput(array|object $input, bool $validate = true) : MyClass
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $foo = match (true) {
-            is_string($input->{'foo'}) => $input->{'foo'},
-            default => throw new \InvalidArgumentException("could not build property 'foo' from JSON"),
-        };
+        $foo = isset($input->{'foo'}) ? array_map(
+            fn(array|object $i): \Helmich\Schema2Class\Example\CustomerAddress => \Helmich\Schema2Class\Example\CustomerAddress::buildFromInput($i, $validate),
+            $input->{'foo'}
+        ) : null;
 
-        $obj = new self($foo);
-
+        $obj = new self();
+        $obj->foo = $foo;
         return $obj;
     }
 
@@ -97,9 +103,9 @@ class Foo
     public function toArray() : array
     {
         $output = [];
-        $output['foo'] = match (true) {
-            is_string($this->foo) => $this->foo,
-        };
+        if (isset($this->foo)) {
+            $output['foo'] = array_map(fn(\Helmich\Schema2Class\Example\CustomerAddress $i): array => $i->toArray(), $this->foo);
+        }
 
         return $output;
     }
@@ -126,12 +132,5 @@ class Foo
         }
 
         return $validator->isValid();
-    }
-
-    public function __clone()
-    {
-        $this->foo = match (true) {
-            is_string($this->foo) => $this->foo,
-        };
     }
 }

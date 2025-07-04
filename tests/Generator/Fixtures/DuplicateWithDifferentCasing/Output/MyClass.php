@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ns\AllOfRef;
+namespace Ns\DuplicateWithDifferentCasing;
 
-class Foo
+class MyClass
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -13,134 +13,115 @@ class Foo
      */
     private static array $schema = [
         'required' => [
-            'city',
-            'street',
-            'country',
+            'fooBar',
         ],
         'properties' => [
-            'city' => [
+            'foobar' => [
                 'type' => 'string',
-                'maxLength' => 32,
+                'deprecated' => true,
             ],
-            'street' => [
+            'fooBar' => [
                 'type' => 'string',
             ],
-            'country' => [
+            'bar' => [
                 'type' => 'string',
+                'deprecated' => true,
             ],
         ],
     ];
 
     /**
-     * @var string
+     * @var string|null
+     * @deprecated
      */
-    private string $city;
+    private ?string $foobar = null;
 
     /**
      * @var string
      */
-    private string $street;
+    private string $fooBar_1;
 
     /**
-     * @var string
+     * @var string|null
+     * @deprecated
      */
-    private string $country;
+    private ?string $bar = null;
 
     /**
-     * @param string $city
-     * @param string $street
-     * @param string $country
+     * @param string $fooBar_1
      */
-    public function __construct(string $city, string $street, string $country)
+    public function __construct(string $fooBar_1)
     {
-        $this->city = $city;
-        $this->street = $street;
-        $this->country = $country;
+        $this->fooBar_1 = $fooBar_1;
     }
 
     /**
      * @return string
      */
-    public function getCity() : string
+    public function getFooBar1() : string
     {
-        return $this->city;
+        return $this->fooBar_1;
     }
 
     /**
-     * @return string
+     * @return string|null
+     * @deprecated
      */
-    public function getStreet() : string
+    public function getBar() : ?string
     {
-        return $this->street;
+        return $this->bar ?? null;
     }
 
     /**
-     * @return string
-     */
-    public function getCountry() : string
-    {
-        return $this->country;
-    }
-
-    /**
-     * @param string $city
+     * @param string $fooBar_1
      * @return self
      * @param bool $validate
      */
-    public function withCity(string $city, bool $validate = true) : self
+    public function withFooBar1(string $fooBar_1, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($city, self::$schema['properties']['city']);
+            $validator->validate($fooBar_1, self::$schema['properties']['fooBar']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
         }
 
         $clone = clone $this;
-        $clone->city = $city;
+        $clone->fooBar_1 = $fooBar_1;
 
         return $clone;
     }
 
     /**
-     * @param string $street
+     * @param string $bar
      * @return self
+     * @deprecated
      * @param bool $validate
      */
-    public function withStreet(string $street, bool $validate = true) : self
+    public function withBar(string $bar, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($street, self::$schema['properties']['street']);
+            $validator->validate($bar, self::$schema['properties']['bar']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
         }
 
         $clone = clone $this;
-        $clone->street = $street;
+        $clone->bar = $bar;
 
         return $clone;
     }
 
     /**
-     * @param string $country
      * @return self
-     * @param bool $validate
      */
-    public function withCountry(string $country, bool $validate = true) : self
+    public function withoutBar() : self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($country, self::$schema['properties']['country']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
-        $clone->country = $country;
+        unset($clone->bar);
 
         return $clone;
     }
@@ -150,22 +131,23 @@ class Foo
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
-     * @return Foo Created instance
+     * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : Foo
+    public static function buildFromInput(array|object $input, bool $validate = true) : MyClass
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $city = $input->{'city'};
-        $street = $input->{'street'};
-        $country = $input->{'country'};
+        $foobar = isset($input->{'foobar'}) ? $input->{'foobar'} : null;
+        $fooBar_1 = $input->{'fooBar'};
+        $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
 
-        $obj = new self($city, $street, $country);
-
+        $obj = new self($fooBar_1);
+        $obj->foobar = $foobar;
+        $obj->bar = $bar;
         return $obj;
     }
 
@@ -177,9 +159,13 @@ class Foo
     public function toArray() : array
     {
         $output = [];
-        $output['city'] = $this->city;
-        $output['street'] = $this->street;
-        $output['country'] = $this->country;
+        if (isset($this->foobar)) {
+            $output['foobar'] = $this->foobar;
+        }
+        $output['fooBar'] = $this->fooBar_1;
+        if (isset($this->bar)) {
+            $output['bar'] = $this->bar;
+        }
 
         return $output;
     }

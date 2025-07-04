@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ns\DefaultValueAsOptional;
+namespace Ns\DuplicateSanitizedNames;
 
-class Foo
+class MyClass
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -13,85 +13,93 @@ class Foo
      */
     private static array $schema = [
         'required' => [
-            
+            'foo-bar',
+            'foo bar',
         ],
         'properties' => [
-            'limit' => [
-                'type' => 'integer',
-                'default' => 10000,
-                'minimum' => 1,
+            'foo-bar' => [
+                'type' => 'string',
             ],
-            'skip' => [
-                'type' => 'integer',
-                'default' => 0,
+            'foo bar' => [
+                'type' => 'string',
             ],
         ],
     ];
 
     /**
-     * @var int
+     * @var string
      */
-    private int $limit = 10000;
+    private string $foo_bar;
 
     /**
-     * @var int
+     * @var string
      */
-    private int $skip = 0;
+    private string $foo_bar_1;
 
     /**
-     * @return int
+     * @param string $foo_bar
+     * @param string $foo_bar_1
      */
-    public function getLimit() : int
+    public function __construct(string $foo_bar, string $foo_bar_1)
     {
-        return $this->limit;
+        $this->foo_bar = $foo_bar;
+        $this->foo_bar_1 = $foo_bar_1;
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function getSkip() : int
+    public function getFooBar() : string
     {
-        return $this->skip;
+        return $this->foo_bar;
     }
 
     /**
-     * @param int $limit
+     * @return string
+     */
+    public function getFooBar1() : string
+    {
+        return $this->foo_bar_1;
+    }
+
+    /**
+     * @param string $foo_bar
      * @return self
      * @param bool $validate
      */
-    public function withLimit(int $limit, bool $validate = true) : self
+    public function withFooBar(string $foo_bar, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($limit, self::$schema['properties']['limit']);
+            $validator->validate($foo_bar, self::$schema['properties']['foo-bar']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
         }
 
         $clone = clone $this;
-        $clone->limit = $limit;
+        $clone->foo_bar = $foo_bar;
 
         return $clone;
     }
 
     /**
-     * @param int $skip
+     * @param string $foo_bar_1
      * @return self
      * @param bool $validate
      */
-    public function withSkip(int $skip, bool $validate = true) : self
+    public function withFooBar1(string $foo_bar_1, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($skip, self::$schema['properties']['skip']);
+            $validator->validate($foo_bar_1, self::$schema['properties']['foo bar']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
         }
 
         $clone = clone $this;
-        $clone->skip = $skip;
+        $clone->foo_bar_1 = $foo_bar_1;
 
         return $clone;
     }
@@ -101,28 +109,21 @@ class Foo
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
-     * @return Foo Created instance
+     * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : Foo
+    public static function buildFromInput(array|object $input, bool $validate = true) : MyClass
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $limit = 10000;
-        if (isset($input->{'limit'})) {
-            $limit = (int)($input->{'limit'});
-        }
-        $skip = 0;
-        if (isset($input->{'skip'})) {
-            $skip = (int)($input->{'skip'});
-        }
+        $foo_bar = $input->{'foo-bar'};
+        $foo_bar_1 = $input->{'foo bar'};
 
-        $obj = new self();
-        $obj->limit = $limit;
-        $obj->skip = $skip;
+        $obj = new self($foo_bar, $foo_bar_1);
+
         return $obj;
     }
 
@@ -134,8 +135,8 @@ class Foo
     public function toArray() : array
     {
         $output = [];
-        $output['limit'] = $this->limit;
-        $output['skip'] = $this->skip;
+        $output['foo-bar'] = $this->foo_bar;
+        $output['foo bar'] = $this->foo_bar_1;
 
         return $output;
     }

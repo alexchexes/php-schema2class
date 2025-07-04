@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ns\NonAsciiProperty;
+namespace Ns\Basic;
 
-class Foo
+class MyClass
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -13,133 +13,101 @@ class Foo
      */
     private static array $schema = [
         'required' => [
-            'Город',
-            'название юр.лица',
-            'IP-адрес',
+            'foo_bar',
         ],
         'properties' => [
-            'Город' => [
+            'foo' => [
                 'type' => 'string',
             ],
-            'название юр.лица' => [
-                'type' => 'string',
-            ],
-            'IP-адрес' => [
+            'foo_bar' => [
                 'type' => 'string',
             ],
         ],
     ];
 
     /**
-     * @var string
+     * @var string|null
      */
-    private string $Gorod;
+    private ?string $foo = null;
 
     /**
      * @var string
      */
-    private string $nazvanieIurLitsa;
+    private string $fooBar;
 
     /**
-     * @var string
+     * @param string $fooBar
      */
-    private string $IPAdres;
-
-    /**
-     * @param string $Gorod
-     * @param string $nazvanieIurLitsa
-     * @param string $IPAdres
-     */
-    public function __construct(string $Gorod, string $nazvanieIurLitsa, string $IPAdres)
+    public function __construct(string $fooBar)
     {
-        $this->Gorod = $Gorod;
-        $this->nazvanieIurLitsa = $nazvanieIurLitsa;
-        $this->IPAdres = $IPAdres;
+        $this->fooBar = $fooBar;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getFoo() : ?string
+    {
+        return $this->foo ?? null;
     }
 
     /**
      * @return string
      */
-    public function getGorod() : string
+    public function getFooBar() : string
     {
-        return $this->Gorod;
+        return $this->fooBar;
     }
 
     /**
-     * @return string
-     */
-    public function getNazvanieIurLitsa() : string
-    {
-        return $this->nazvanieIurLitsa;
-    }
-
-    /**
-     * @return string
-     */
-    public function getIPAdres() : string
-    {
-        return $this->IPAdres;
-    }
-
-    /**
-     * @param string $Gorod
+     * @param string $foo
      * @return self
      * @param bool $validate
      */
-    public function withGorod(string $Gorod, bool $validate = true) : self
+    public function withFoo(string $foo, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($Gorod, self::$schema['properties']['Город']);
+            $validator->validate($foo, self::$schema['properties']['foo']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
         }
 
         $clone = clone $this;
-        $clone->Gorod = $Gorod;
+        $clone->foo = $foo;
 
         return $clone;
     }
 
     /**
-     * @param string $nazvanieIurLitsa
      * @return self
-     * @param bool $validate
      */
-    public function withNazvanieIurLitsa(string $nazvanieIurLitsa, bool $validate = true) : self
+    public function withoutFoo() : self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($nazvanieIurLitsa, self::$schema['properties']['название юр.лица']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
-        $clone->nazvanieIurLitsa = $nazvanieIurLitsa;
+        unset($clone->foo);
 
         return $clone;
     }
 
     /**
-     * @param string $IPAdres
+     * @param string $fooBar
      * @return self
      * @param bool $validate
      */
-    public function withIPAdres(string $IPAdres, bool $validate = true) : self
+    public function withFooBar(string $fooBar, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($IPAdres, self::$schema['properties']['IP-адрес']);
+            $validator->validate($fooBar, self::$schema['properties']['foo_bar']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
         }
 
         $clone = clone $this;
-        $clone->IPAdres = $IPAdres;
+        $clone->fooBar = $fooBar;
 
         return $clone;
     }
@@ -149,22 +117,21 @@ class Foo
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
-     * @return Foo Created instance
+     * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : Foo
+    public static function buildFromInput(array|object $input, bool $validate = true) : MyClass
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $Gorod = $input->{'Город'};
-        $nazvanieIurLitsa = $input->{'название юр.лица'};
-        $IPAdres = $input->{'IP-адрес'};
+        $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
+        $fooBar = $input->{'foo_bar'};
 
-        $obj = new self($Gorod, $nazvanieIurLitsa, $IPAdres);
-
+        $obj = new self($fooBar);
+        $obj->foo = $foo;
         return $obj;
     }
 
@@ -176,9 +143,10 @@ class Foo
     public function toArray() : array
     {
         $output = [];
-        $output['Город'] = $this->Gorod;
-        $output['название юр.лица'] = $this->nazvanieIurLitsa;
-        $output['IP-адрес'] = $this->IPAdres;
+        if (isset($this->foo)) {
+            $output['foo'] = $this->foo;
+        }
+        $output['foo_bar'] = $this->fooBar;
 
         return $output;
     }
