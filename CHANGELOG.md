@@ -37,6 +37,7 @@ Now it:
 - Setter methods (`withX()`) now accept an optional `$validate` argument to be able skip validation, mirroring `buildFromInput()`.
 - Skips emitting empty `__construct` or `__clone` methods.
 - Prints a notice when skipping `definitions` that do not describe an object.
+- Validates written files with `php -l` to ensure generated code is syntactically correct.
 
 ### Better support for older PHP versions:
 
