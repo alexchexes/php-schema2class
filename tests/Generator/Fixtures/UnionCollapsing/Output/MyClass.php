@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ns\NoEnums;
+namespace Ns\UnionCollapsing;
 
-class Foo
+class MyClass
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -13,57 +13,53 @@ class Foo
      */
     private static array $schema = [
         'required' => [
-            'color',
+            'foo',
         ],
         'properties' => [
-            'color' => [
-                'type' => 'string',
-                'enum' => [
-                    'red',
-                    'green',
+            'foo' => [
+                'oneOf' => [
+                    [
+                        'type' => 'string',
+                        'format' => 'uuid',
+                    ],
+                    [
+                        'type' => 'string',
+                        'maxLength' => 0,
+                    ],
                 ],
             ],
         ],
     ];
 
     /**
-     * @var 'red'|'green'
+     * @var string
      */
-    private string $color;
+    private string $foo;
 
     /**
-     * @param 'red'|'green' $color
+     * @param string $foo
      */
-    public function __construct(string $color)
+    public function __construct(string $foo)
     {
-        $this->color = $color;
+        $this->foo = $foo;
     }
 
     /**
-     * @return 'red'|'green'
+     * @return string
      */
-    public function getColor() : string
+    public function getFoo() : string
     {
-        return $this->color;
+        return $this->foo;
     }
 
     /**
-     * @param 'red'|'green' $color
+     * @param string $foo
      * @return self
-     * @param bool $validate
      */
-    public function withColor(string $color, bool $validate = true) : self
+    public function withFoo(string $foo) : self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($color, self::$schema['properties']['color']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
-        $clone->color = $color;
+        $clone->foo = $foo;
 
         return $clone;
     }
@@ -73,19 +69,22 @@ class Foo
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
-     * @return Foo Created instance
+     * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : Foo
+    public static function buildFromInput(array|object $input, bool $validate = true) : MyClass
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $color = $input->{'color'};
+        $foo = match (true) {
+            is_string($input->{'foo'}) => $input->{'foo'},
+            default => throw new \InvalidArgumentException("could not build property 'foo' from JSON"),
+        };
 
-        $obj = new self($color);
+        $obj = new self($foo);
 
         return $obj;
     }
@@ -98,7 +97,9 @@ class Foo
     public function toArray() : array
     {
         $output = [];
-        $output['color'] = $this->color;
+        $output['foo'] = match (true) {
+            is_string($this->foo) => $this->foo,
+        };
 
         return $output;
     }
@@ -125,5 +126,12 @@ class Foo
         }
 
         return $validator->isValid();
+    }
+
+    public function __clone()
+    {
+        $this->foo = match (true) {
+            is_string($this->foo) => $this->foo,
+        };
     }
 }

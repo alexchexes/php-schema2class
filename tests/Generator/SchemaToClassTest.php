@@ -44,9 +44,11 @@ class SchemaToClassTest extends TestCase
 
             $optionsFile = join(DIRECTORY_SEPARATOR, [$testCaseDir, $entry, "options.yaml"]);
             $outputDir  = join(DIRECTORY_SEPARATOR, [$testCaseDir, $entry, "Output"]);
+            $inputDir   = join(DIRECTORY_SEPARATOR, [$testCaseDir, $entry, "Input"]);
 
             $expectedFiles = [];
             $schema        = (new SchemaLoader())->loadSchema($schemaFile);
+            $inputFiles    = [];
 
             $opts = (new SpecificationOptions)
                 ->withTargetPHPVersion("8.2")
@@ -67,18 +69,34 @@ class SchemaToClassTest extends TestCase
                 $expectedFiles[$relativePath] = trim(file_get_contents($fileInfo->getPathname()));
             }
 
-            $testCases[$entry] = [$entry, $schema, $expectedFiles, $opts];
+            if (is_dir($inputDir)) {
+                foreach (scandir($inputDir) as $in) {
+                    if ($in[0] === '.') {
+                        continue;
+                    }
+                    $ext = pathinfo($in, PATHINFO_EXTENSION);
+                    $cls = pathinfo($in, PATHINFO_FILENAME);
+                    $path = $inputDir . DIRECTORY_SEPARATOR . $in;
+                    if (in_array($ext, ['json', 'yaml', 'yml'], true)) {
+                        $inputFiles[$cls] = $ext === 'json'
+                            ? json_decode(file_get_contents($path), true)
+                            : Yaml::parseFile($path);
+                    }
+                }
+            }
+
+            $testCases[$entry] = [$entry, $schema, $expectedFiles, $opts, $inputFiles];
         }
 
         return $testCases;
     }
 
     #[DataProvider("loadCodeGenerationTestCases")]
-    public function testCodeGeneration(string $name, array $schema, array $expectedOutput, SpecificationOptions $opts): void
+    public function testCodeGeneration(string $name, array $schema, array $expectedOutput, SpecificationOptions $opts, array $inputs): void
     {
         $req = new GeneratorRequest(
             $schema,
-            new ValidatedSpecificationFilesItem("Ns\\{$name}", "Foo", __DIR__),
+            new ValidatedSpecificationFilesItem("Ns\\{$name}", "MyClass", __DIR__),
             $opts,
         );
 
@@ -177,12 +195,28 @@ class SchemaToClassTest extends TestCase
 
             $this->addToAssertionCount(1);
         }
+
+        foreach ($writtenFiles as $code) {
+            $evalCode = preg_replace('/^<\?php/', '', $code);
+            eval($evalCode);
+        }
+
+        foreach ($inputs as $class => $input) {
+            $fqcn = "Ns\\{$name}\\{$class}";
+            $obj = $fqcn::buildFromInput($input);
+            $this->assertInstanceOf($fqcn, $obj);
+            $expectedArray = $input;
+            $actualArray = $obj->toArray();
+            ksort($expectedArray);
+            ksort($actualArray);
+            $this->assertSame($expectedArray, $actualArray);
+        }
     }
 
     public function testCliNoEnumsMatchesFixture(): void
     {
         $schemaFile = __DIR__ . '/Fixtures/NoEnums/schema.yaml';
-        $expected   = trim(file_get_contents(__DIR__ . '/Fixtures/NoEnums/Output/Foo.php'));
+        $expected   = trim(file_get_contents(__DIR__ . '/Fixtures/NoEnums/Output/MyClass.php'));
 
         $dir = sys_get_temp_dir() . '/s2c_' . uniqid();
         mkdir($dir);
@@ -194,14 +228,14 @@ class SchemaToClassTest extends TestCase
             'schema' => $schemaFile,
             'target-dir' => $dir,
             '--target-namespace' => 'Ns\\NoEnums',
-            '--class' => 'Foo',
+            '--class' => 'MyClass',
             '--no-enums' => true,
         ]);
 
-        $generated = trim(file_get_contents($dir . '/Foo.php'));
+        $generated = trim(file_get_contents($dir . '/MyClass.php'));
         assertThat($generated, equalTo($expected));
 
-        unlink($dir . '/Foo.php');
+        unlink($dir . '/MyClass.php');
         rmdir($dir);
     }
 
@@ -250,6 +284,6 @@ class SchemaToClassTest extends TestCase
 
         $factory->build($writer, $output)->schemaToClass($req);
 
-        $this->assertStringContainsString('skipping SkippedDef5', $output->fetch());
+        $this->assertStringContainsString('skipping definition SkippedDef5', $output->fetch());
     }
 }

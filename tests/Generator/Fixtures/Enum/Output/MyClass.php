@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Ns\Enum;
 
-enum Foo: string {
+enum MyClass: string {
     case FOO = 'Foo';
     case BAR = 'Bar';
     case BAZ = 'Baz';

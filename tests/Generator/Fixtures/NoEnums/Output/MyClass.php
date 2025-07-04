@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ns\AdditionalProps;
+namespace Ns\NoEnums;
 
-class Foo
+class MyClass
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -12,106 +12,58 @@ class Foo
      * @var array
      */
     private static array $schema = [
-        'type' => 'object',
+        'required' => [
+            'color',
+        ],
         'properties' => [
-            'name' => [
+            'color' => [
                 'type' => 'string',
-            ],
-            'params' => [
-                'type' => 'object',
-                'additionalProperties' => [
-                    
+                'enum' => [
+                    'red',
+                    'green',
                 ],
             ],
         ],
     ];
 
     /**
-     * @var string|null
+     * @var 'red'|'green'
      */
-    private ?string $name = null;
+    private string $color;
 
     /**
-     * @var mixed[]|null
+     * @param 'red'|'green' $color
      */
-    private ?array $params = null;
-
-    /**
-     * @return string|null
-     */
-    public function getName() : ?string
+    public function __construct(string $color)
     {
-        return $this->name ?? null;
+        $this->color = $color;
     }
 
     /**
-     * @return mixed[]|null
+     * @return 'red'|'green'
      */
-    public function getParams() : ?array
+    public function getColor() : string
     {
-        return $this->params ?? null;
+        return $this->color;
     }
 
     /**
-     * @param string $name
+     * @param 'red'|'green' $color
      * @return self
      * @param bool $validate
      */
-    public function withName(string $name, bool $validate = true) : self
+    public function withColor(string $color, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($name, self::$schema['properties']['name']);
+            $validator->validate($color, self::$schema['properties']['color']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
         }
 
         $clone = clone $this;
-        $clone->name = $name;
-
-        return $clone;
-    }
-
-    /**
-     * @return self
-     */
-    public function withoutName() : self
-    {
-        $clone = clone $this;
-        unset($clone->name);
-
-        return $clone;
-    }
-
-    /**
-     * @param mixed[] $params
-     * @return self
-     * @param bool $validate
-     */
-    public function withParams(array $params, bool $validate = true) : self
-    {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($params, self::$schema['properties']['params']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
-        $clone = clone $this;
-        $clone->params = $params;
-
-        return $clone;
-    }
-
-    /**
-     * @return self
-     */
-    public function withoutParams() : self
-    {
-        $clone = clone $this;
-        unset($clone->params);
+        $clone->color = $color;
 
         return $clone;
     }
@@ -121,22 +73,20 @@ class Foo
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
-     * @return Foo Created instance
+     * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : Foo
+    public static function buildFromInput(array|object $input, bool $validate = true) : MyClass
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $name = isset($input->{'name'}) ? $input->{'name'} : null;
-        $params = isset($input->{'params'}) ? (array)$input->{'params'} : null;
+        $color = $input->{'color'};
 
-        $obj = new self();
-        $obj->name = $name;
-        $obj->params = $params;
+        $obj = new self($color);
+
         return $obj;
     }
 
@@ -148,12 +98,7 @@ class Foo
     public function toArray() : array
     {
         $output = [];
-        if (isset($this->name)) {
-            $output['name'] = $this->name;
-        }
-        if (isset($this->params)) {
-            $output['params'] = $this->params;
-        }
+        $output['color'] = $this->color;
 
         return $output;
     }

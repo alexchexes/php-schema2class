@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Ns\FallbackNaming;
 
-class Foo
+class MyClass
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -1429,10 +1429,10 @@ class Foo
      *
      * @param array|object $_input Input data
      * @param bool $_validate Set this to false to skip validation; use at own risk
-     * @return Foo Created instance
+     * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $_input, bool $_validate = true) : Foo
+    public static function buildFromInput(array|object $_input, bool $_validate = true) : MyClass
     {
         $_input = is_array($_input) ? \JsonSchema\Validator::arrayToObjectRecursive($_input) : $_input;
         if ($_validate) {

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ns\DuplicateSanitizedNames;
+namespace Ns\NoSchemaMetadata;
 
-class Foo
+class MyClass
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -13,93 +13,112 @@ class Foo
      */
     private static array $schema = [
         'required' => [
-            'foo-bar',
-            'foo bar',
+            'foo',
         ],
         'properties' => [
-            'foo-bar' => [
+            'foo' => [
                 'type' => 'string',
             ],
-            'foo bar' => [
-                'type' => 'string',
+            'bar' => [
+                'type' => 'integer',
             ],
         ],
     ];
 
     /**
+     * Foo description
+     *
      * @var string
      */
-    private string $foo_bar;
+    private string $foo;
 
     /**
-     * @var string
+     * Bar description
+     *
+     * @var int|null
+     * @deprecated
      */
-    private string $foo_bar_1;
+    private ?int $bar = null;
 
     /**
-     * @param string $foo_bar
-     * @param string $foo_bar_1
+     * @param string $foo
      */
-    public function __construct(string $foo_bar, string $foo_bar_1)
+    public function __construct(string $foo)
     {
-        $this->foo_bar = $foo_bar;
-        $this->foo_bar_1 = $foo_bar_1;
+        $this->foo = $foo;
     }
 
     /**
+     * Foo description
+     *
      * @return string
      */
-    public function getFooBar() : string
+    public function getFoo() : string
     {
-        return $this->foo_bar;
+        return $this->foo;
     }
 
     /**
-     * @return string
+     * Bar description
+     *
+     * @return int|null
+     * @deprecated
      */
-    public function getFooBar1() : string
+    public function getBar() : ?int
     {
-        return $this->foo_bar_1;
+        return $this->bar ?? null;
     }
 
     /**
-     * @param string $foo_bar
+     * @param string $foo
      * @return self
      * @param bool $validate
      */
-    public function withFooBar(string $foo_bar, bool $validate = true) : self
+    public function withFoo(string $foo, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($foo_bar, self::$schema['properties']['foo-bar']);
+            $validator->validate($foo, self::$schema['properties']['foo']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
         }
 
         $clone = clone $this;
-        $clone->foo_bar = $foo_bar;
+        $clone->foo = $foo;
 
         return $clone;
     }
 
     /**
-     * @param string $foo_bar_1
+     * @param int $bar
      * @return self
+     * @deprecated
      * @param bool $validate
      */
-    public function withFooBar1(string $foo_bar_1, bool $validate = true) : self
+    public function withBar(int $bar, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($foo_bar_1, self::$schema['properties']['foo bar']);
+            $validator->validate($bar, self::$schema['properties']['bar']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
         }
 
         $clone = clone $this;
-        $clone->foo_bar_1 = $foo_bar_1;
+        $clone->bar = $bar;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutBar() : self
+    {
+        $clone = clone $this;
+        unset($clone->bar);
 
         return $clone;
     }
@@ -109,21 +128,21 @@ class Foo
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
-     * @return Foo Created instance
+     * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : Foo
+    public static function buildFromInput(array|object $input, bool $validate = true) : MyClass
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $foo_bar = $input->{'foo-bar'};
-        $foo_bar_1 = $input->{'foo bar'};
+        $foo = $input->{'foo'};
+        $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
 
-        $obj = new self($foo_bar, $foo_bar_1);
-
+        $obj = new self($foo);
+        $obj->bar = $bar;
         return $obj;
     }
 
@@ -135,8 +154,10 @@ class Foo
     public function toArray() : array
     {
         $output = [];
-        $output['foo-bar'] = $this->foo_bar;
-        $output['foo bar'] = $this->foo_bar_1;
+        $output['foo'] = $this->foo;
+        if (isset($this->bar)) {
+            $output['bar'] = $this->bar;
+        }
 
         return $output;
     }

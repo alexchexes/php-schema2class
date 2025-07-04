@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ns\DuplicateWithDifferentCasing;
+namespace Ns\DefaultValue;
 
-class Foo
+class MyClass
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -13,104 +13,64 @@ class Foo
      */
     private static array $schema = [
         'required' => [
-            'fooBar',
+            
         ],
         'properties' => [
-            'foobar' => [
-                'type' => 'string',
-                'deprecated' => true,
+            'limit' => [
+                'type' => 'integer',
+                'default' => 10000,
+                'minimum' => 1,
             ],
-            'fooBar' => [
-                'type' => 'string',
-            ],
-            'bar' => [
-                'type' => 'string',
-                'deprecated' => true,
+            'skip' => [
+                'type' => 'integer',
+                'default' => 0,
             ],
         ],
     ];
 
     /**
-     * @var string|null
-     * @deprecated
+     * @var int
      */
-    private ?string $foobar = null;
+    private int $limit = 10000;
 
     /**
-     * @var string
+     * @var int
      */
-    private string $fooBar_1;
+    private int $skip = 0;
 
     /**
-     * @var string|null
-     * @deprecated
+     * @return int
      */
-    private ?string $bar = null;
-
-    /**
-     * @param string $fooBar_1
-     */
-    public function __construct(string $fooBar_1)
+    public function getLimit() : int
     {
-        $this->fooBar_1 = $fooBar_1;
+        return $this->limit;
     }
 
     /**
-     * @return string
+     * @return int
      */
-    public function getFooBar1() : string
+    public function getSkip() : int
     {
-        return $this->fooBar_1;
+        return $this->skip;
     }
 
     /**
-     * @return string|null
-     * @deprecated
-     */
-    public function getBar() : ?string
-    {
-        return $this->bar ?? null;
-    }
-
-    /**
-     * @param string $fooBar_1
+     * @param int $limit
      * @return self
      * @param bool $validate
      */
-    public function withFooBar1(string $fooBar_1, bool $validate = true) : self
+    public function withLimit(int $limit, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($fooBar_1, self::$schema['properties']['fooBar']);
+            $validator->validate($limit, self::$schema['properties']['limit']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
         }
 
         $clone = clone $this;
-        $clone->fooBar_1 = $fooBar_1;
-
-        return $clone;
-    }
-
-    /**
-     * @param string $bar
-     * @return self
-     * @deprecated
-     * @param bool $validate
-     */
-    public function withBar(string $bar, bool $validate = true) : self
-    {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($bar, self::$schema['properties']['bar']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
-        $clone = clone $this;
-        $clone->bar = $bar;
+        $clone->limit = $limit;
 
         return $clone;
     }
@@ -118,10 +78,42 @@ class Foo
     /**
      * @return self
      */
-    public function withoutBar() : self
+    public function withoutLimit() : self
     {
         $clone = clone $this;
-        unset($clone->bar);
+        $clone->limit = 10000;
+
+        return $clone;
+    }
+
+    /**
+     * @param int $skip
+     * @return self
+     * @param bool $validate
+     */
+    public function withSkip(int $skip, bool $validate = true) : self
+    {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($skip, self::$schema['properties']['skip']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
+        $clone = clone $this;
+        $clone->skip = $skip;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutSkip() : self
+    {
+        $clone = clone $this;
+        $clone->skip = 0;
 
         return $clone;
     }
@@ -131,23 +123,22 @@ class Foo
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
-     * @return Foo Created instance
+     * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : Foo
+    public static function buildFromInput(array|object $input, bool $validate = true) : MyClass
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $foobar = isset($input->{'foobar'}) ? $input->{'foobar'} : null;
-        $fooBar_1 = $input->{'fooBar'};
-        $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
+        $limit = isset($input->{'limit'}) ? $input->{'limit'} : 10000;
+        $skip = isset($input->{'skip'}) ? $input->{'skip'} : 0;
 
-        $obj = new self($fooBar_1);
-        $obj->foobar = $foobar;
-        $obj->bar = $bar;
+        $obj = new self();
+        $obj->limit = $limit;
+        $obj->skip = $skip;
         return $obj;
     }
 
@@ -159,12 +150,11 @@ class Foo
     public function toArray() : array
     {
         $output = [];
-        if (isset($this->foobar)) {
-            $output['foobar'] = $this->foobar;
+        if (isset($this->limit)) {
+            $output['limit'] = $this->limit;
         }
-        $output['fooBar'] = $this->fooBar_1;
-        if (isset($this->bar)) {
-            $output['bar'] = $this->bar;
+        if (isset($this->skip)) {
+            $output['skip'] = $this->skip;
         }
 
         return $output;

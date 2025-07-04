@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ns\JsonFile;
+namespace Ns\TypeArrayUnion;
 
-class Foo
+class MyClass
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -12,59 +12,56 @@ class Foo
      * @var array
      */
     private static array $schema = [
-        '$schema' => 'http://json-schema.org/draft-07/schema#',
-        '$id' => 'http://json-schema.org/draft-07/schema#',
-        'title' => 'definitions test',
-        'type' => 'object',
-        'additionalProperties' => false,
-        'properties' => [
-            'id' => [
-                'type' => 'integer',
-            ],
-        ],
         'required' => [
-            'id',
+            'foo',
+        ],
+        'properties' => [
+            'foo' => [
+                'type' => [
+                    'string',
+                    'object',
+                ],
+                'required' => [
+                    'bar',
+                ],
+                'properties' => [
+                    'bar' => [
+                        'type' => 'string',
+                    ],
+                ],
+            ],
         ],
     ];
 
     /**
-     * @var int
+     * @var string|MyClassFooAlternative2
      */
-    private int $id;
+    private string|MyClassFooAlternative2 $foo;
 
     /**
-     * @param int $id
+     * @param string|MyClassFooAlternative2 $foo
      */
-    public function __construct(int $id)
+    public function __construct(MyClassFooAlternative2|string $foo)
     {
-        $this->id = $id;
+        $this->foo = $foo;
     }
 
     /**
-     * @return int
+     * @return string|MyClassFooAlternative2
      */
-    public function getId() : int
+    public function getFoo() : MyClassFooAlternative2|string
     {
-        return $this->id;
+        return $this->foo;
     }
 
     /**
-     * @param int $id
+     * @param string|MyClassFooAlternative2 $foo
      * @return self
-     * @param bool $validate
      */
-    public function withId(int $id, bool $validate = true) : self
+    public function withFoo(MyClassFooAlternative2|string $foo) : self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($id, self::$schema['properties']['id']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
-        $clone->id = $id;
+        $clone->foo = $foo;
 
         return $clone;
     }
@@ -74,19 +71,23 @@ class Foo
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
-     * @return Foo Created instance
+     * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : Foo
+    public static function buildFromInput(array|object $input, bool $validate = true) : MyClass
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $id = (int)($input->{'id'});
+        $foo = match (true) {
+            is_string($input->{'foo'}) => $input->{'foo'},
+            MyClassFooAlternative2::validateInput($input->{'foo'}, true) => MyClassFooAlternative2::buildFromInput($input->{'foo'}, validate: $validate),
+            default => throw new \InvalidArgumentException("could not build property 'foo' from JSON"),
+        };
 
-        $obj = new self($id);
+        $obj = new self($foo);
 
         return $obj;
     }
@@ -99,7 +100,10 @@ class Foo
     public function toArray() : array
     {
         $output = [];
-        $output['id'] = $this->id;
+        $output['foo'] = match (true) {
+            is_string($this->foo) => $this->foo,
+            $this->foo instanceof MyClassFooAlternative2 => ($this->foo)->toArray(),
+        };
 
         return $output;
     }
@@ -126,5 +130,13 @@ class Foo
         }
 
         return $validator->isValid();
+    }
+
+    public function __clone()
+    {
+        $this->foo = match (true) {
+            is_string($this->foo) => $this->foo,
+            $this->foo instanceof MyClassFooAlternative2 => clone $this->foo,
+        };
     }
 }
