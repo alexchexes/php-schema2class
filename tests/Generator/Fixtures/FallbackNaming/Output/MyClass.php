@@ -48,6 +48,7 @@ class MyClass
             '__invoke',
             '__debugInfo',
             '__clone',
+            'files',
         ],
         'properties' => [
             '_GLOBALS' => [
@@ -153,6 +154,9 @@ class MyClass
                 'type' => 'string',
             ],
             '__clone' => [
+                'type' => 'string',
+            ],
+            'files' => [
                 'type' => 'string',
             ],
         ],
@@ -334,6 +338,11 @@ class MyClass
     private string $clone_2;
 
     /**
+     * @var string
+     */
+    private string $files;
+
+    /**
      * @param string $GLOBALS_2
      * @param string $GLOBALS_3
      * @param string $GLOBALS1_1
@@ -369,8 +378,9 @@ class MyClass
      * @param string $invoke_1
      * @param string $debugInfo_1
      * @param string $clone_2
+     * @param string $files
      */
-    public function __construct(string $GLOBALS_2, string $GLOBALS_3, string $GLOBALS1_1, string $SERVER_1, string $GET_1, string $POST_1, string $FILES_1, string $REQUEST_1, string $SESSION_1, string $ENV_1, string $COOKIE_1, string $phpErrormsg_1, string $httpResponseHeader_1, string $argc_1, string $argv_1, string $input, string $validate, string $obj, string $buildFromInput_1, string $toArray_1, string $validateInput_1, string $clone_1, string $construct_1, string $destruct_1, string $get_2, string $set_1, string $call_1, string $isset_1, string $unset_1, string $sleep_1, string $wakeup_1, string $toString_1, string $invoke_1, string $debugInfo_1, string $clone_2)
+    public function __construct(string $GLOBALS_2, string $GLOBALS_3, string $GLOBALS1_1, string $SERVER_1, string $GET_1, string $POST_1, string $FILES_1, string $REQUEST_1, string $SESSION_1, string $ENV_1, string $COOKIE_1, string $phpErrormsg_1, string $httpResponseHeader_1, string $argc_1, string $argv_1, string $input, string $validate, string $obj, string $buildFromInput_1, string $toArray_1, string $validateInput_1, string $clone_1, string $construct_1, string $destruct_1, string $get_2, string $set_1, string $call_1, string $isset_1, string $unset_1, string $sleep_1, string $wakeup_1, string $toString_1, string $invoke_1, string $debugInfo_1, string $clone_2, string $files)
     {
         $this->GLOBALS_2 = $GLOBALS_2;
         $this->GLOBALS_3 = $GLOBALS_3;
@@ -407,6 +417,7 @@ class MyClass
         $this->invoke_1 = $invoke_1;
         $this->debugInfo_1 = $debugInfo_1;
         $this->clone_2 = $clone_2;
+        $this->files = $files;
     }
 
     /**
@@ -687,6 +698,14 @@ class MyClass
     public function getClone2() : string
     {
         return $this->clone_2;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFiles() : string
+    {
+        return $this->files;
     }
 
     /**
@@ -1425,6 +1444,27 @@ class MyClass
     }
 
     /**
+     * @param string $files
+     * @return self
+     * @param bool $validate
+     */
+    public function withFiles(string $files, bool $validate = true) : self
+    {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($files, self::$schema['properties']['files']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
+        $clone = clone $this;
+        $clone->files = $files;
+
+        return $clone;
+    }
+
+    /**
      * Builds a new instance from an input array
      *
      * @param array|object $_input Input data
@@ -1475,8 +1515,9 @@ class MyClass
         $invoke_1 = $_input->{'__invoke'};
         $debugInfo_1 = $_input->{'__debugInfo'};
         $clone_2 = $_input->{'__clone'};
+        $files = $_input->{'files'};
 
-        $_obj = new self($GLOBALS_2, $GLOBALS_3, $GLOBALS1_1, $SERVER_1, $GET_1, $POST_1, $FILES_1, $REQUEST_1, $SESSION_1, $ENV_1, $COOKIE_1, $phpErrormsg_1, $httpResponseHeader_1, $argc_1, $argv_1, $input, $validate, $obj, $buildFromInput_1, $toArray_1, $validateInput_1, $clone_1, $construct_1, $destruct_1, $get_2, $set_1, $call_1, $isset_1, $unset_1, $sleep_1, $wakeup_1, $toString_1, $invoke_1, $debugInfo_1, $clone_2);
+        $_obj = new self($GLOBALS_2, $GLOBALS_3, $GLOBALS1_1, $SERVER_1, $GET_1, $POST_1, $FILES_1, $REQUEST_1, $SESSION_1, $ENV_1, $COOKIE_1, $phpErrormsg_1, $httpResponseHeader_1, $argc_1, $argv_1, $input, $validate, $obj, $buildFromInput_1, $toArray_1, $validateInput_1, $clone_1, $construct_1, $destruct_1, $get_2, $set_1, $call_1, $isset_1, $unset_1, $sleep_1, $wakeup_1, $toString_1, $invoke_1, $debugInfo_1, $clone_2, $files);
 
         return $_obj;
     }
@@ -1524,6 +1565,7 @@ class MyClass
         $output['__invoke'] = $this->invoke_1;
         $output['__debugInfo'] = $this->debugInfo_1;
         $output['__clone'] = $this->clone_2;
+        $output['files'] = $this->files;
 
         return $output;
     }

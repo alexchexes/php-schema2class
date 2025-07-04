@@ -37,7 +37,9 @@
     "__toString",
     "__invoke",
     "__debugInfo",
-    "__clone"
+    "__clone",
+
+    "files"
   ],
   "properties": {
     "_GLOBALS": { "type": "string" },
@@ -77,6 +79,8 @@
     "__toString": { "type": "string" },
     "__invoke": { "type": "string" },
     "__debugInfo": { "type": "string" },
-    "__clone": { "type": "string" }
+    "__clone": { "type": "string" },
+
+    "files": { "type": "string" }
   }
 }
