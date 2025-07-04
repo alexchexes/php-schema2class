@@ -181,6 +181,7 @@ class SchemaToClass
             $codeGenerator->generateCloneMethod($propertiesFromSchema),
         ];
         $methods = array_values(array_filter($methods));
+        $this->ensureUniqueMethodNames($methods);
 
         $cls = new ClassGenerator(
             $req->getTargetClass(),
@@ -304,6 +305,74 @@ class SchemaToClass
 
             $used[] = $unique;
             $usedMethods[] = $pascal;
+        }
+    }
+
+    /**
+     * Ensures that generated method names are unique. If a collision occurs,
+     * an underscore is inserted after the common prefix (get/with/without).
+     *
+     * @param MethodGenerator[] $methods
+     */
+    private function ensureUniqueMethodNames(array $methods): void
+    {
+        $reservedMethodNames = [
+            'buildFromInput',
+            'toArray',
+            'validateInput',
+            'clone',
+            '__construct',
+            '__destruct',
+            '__get',
+            '__set',
+            '__call',
+            '__isset',
+            '__unset',
+            '__sleep',
+            '__wakeup',
+            '__toString',
+            '__invoke',
+            '__debugInfo',
+            '__clone',
+        ];
+
+        $reserved = array_map('strtolower', $reservedMethodNames);
+        $used = [];
+
+        foreach ($methods as $method) {
+            $name   = $method->getName();
+            $lcName = strtolower($name);
+
+            if (!in_array($lcName, $used, true) && in_array($lcName, $reserved, true)) {
+                $used[] = $lcName;
+                continue;
+            }
+
+            $candidate = $name;
+            $prefix    = '';
+            $base      = $name;
+
+            if (preg_match('/^(get|with|without)(.+)$/i', $name, $m)) {
+                $prefix = $m[1];
+                $base   = $m[2];
+            }
+
+            $i = 1;
+            while (in_array(strtolower($candidate), $used, true) || in_array(strtolower($candidate), $reserved, true)) {
+                if ($prefix !== '') {
+                    $suffix   = $i > 1 ? $base . '_' . ($i - 1) : $base;
+                    $candidate = $prefix . '_' . $suffix;
+                } else {
+                    $candidate = $name . '_' . $i;
+                }
+                $i++;
+            }
+
+            if ($candidate !== $name) {
+                $method->setName($candidate);
+            }
+
+            $used[] = strtolower($candidate);
         }
     }
 
