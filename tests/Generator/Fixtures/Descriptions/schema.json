@@ -1,0 +1,25 @@
+{
+  "type": "object",
+  "description": "Simple object with two preperties and a description",
+  "properties": {
+    "foo": {
+      "type": "string",
+      "description": "Description for the `foo` property"
+    },
+    "bar": {
+      "$ref": "#/definitions/Baz"
+    }
+  },
+  "definitions": {
+    "Baz": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Description of the `name` property in `Baz` definition"
+        }
+      },
+      "description": "Description  of the `Baz` definition"
+    }
+  }
+}

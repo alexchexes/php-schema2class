@@ -201,6 +201,13 @@ class SchemaToClass
             null
         );
 
+        if (isset($schema['description']) && is_string($schema['description']) && $schema['description'] !== '') {
+            $doc = new DocBlockGenerator($schema['description']);
+            $doc->setWordWrap(false);
+            $cls->setDocBlock($doc);
+        }
+
+
         $req->onClassCreated($cls);
 
         $filename = $req->getTargetDirectory() . '/' . $req->getTargetClass() . '.php';
