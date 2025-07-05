@@ -48,7 +48,10 @@ class DefinitionsCollector
         }
 
         $parts = array_map(
-            static fn(string $part) => str_replace(' ', '', ucwords(str_replace('_', ' ', $part))),
+            static function (string $part): string {
+                $sanitized = \Helmich\Schema2Class\Util\StringUtils::sanitizeIdentifier($part);
+                return \Helmich\Schema2Class\Util\StringUtils::pascalCase($sanitized);
+            },
             $segments
         );
 
