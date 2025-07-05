@@ -72,11 +72,11 @@ final class SchemaDefinitionsCollectorTest extends TestCase
         $this->assertSame('targetDirectory', $definitions['#/definitions/address']->directory);
         $this->assertSame('targetDirectory/Address/Defs', $definitions['#/definitions/address/$defs/name']->directory);
 
-        $this->assertSame('TargetNamespace\Address', $definitions['#/$defs/address']->classFQN);
+        $this->assertSame('TargetNamespace\Address_1', $definitions['#/$defs/address']->classFQN);
         $this->assertSame('TargetNamespace\Address', $definitions['#/definitions/address']->classFQN);
         $this->assertSame('TargetNamespace\Address\Defs\Name', $definitions['#/definitions/address/$defs/name']->classFQN);
 
-        $this->assertSame('Address', $definitions['#/$defs/address']->className);
+        $this->assertSame('Address_1', $definitions['#/$defs/address']->className);
         $this->assertSame('Address', $definitions['#/definitions/address']->className);
         $this->assertSame('Name', $definitions['#/definitions/address/$defs/name']->className);
     }

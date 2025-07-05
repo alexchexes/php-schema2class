@@ -46,23 +46,23 @@ class BarTest
     ];
 
     /**
-     * @var FooTest|null
+     * @var FooTest|FooTest_1|null
      */
-    private ?FooTest $c = null;
+    private FooTest|FooTest_1|null $c = null;
 
     /**
-     * @return FooTest|null
+     * @return FooTest|FooTest_1|null
      */
-    public function getC() : ?FooTest
+    public function getC() : FooTest|FooTest_1|null
     {
-        return $this->c ?? null;
+        return $this->c;
     }
 
     /**
-     * @param FooTest $c
+     * @param FooTest|FooTest_1 $c
      * @return self
      */
-    public function withC(FooTest $c) : self
+    public function withC(FooTest|FooTest_1 $c) : self
     {
         $clone = clone $this;
         $clone->c = $c;
@@ -98,6 +98,7 @@ class BarTest
 
         $c = isset($input->{'c'}) ? match (true) {
             FooTest::validateInput($input->{'c'}, true) => FooTest::buildFromInput($input->{'c'}, $validate),
+            FooTest_1::validateInput($input->{'c'}, true) => FooTest_1::buildFromInput($input->{'c'}, $validate),
             default => null,
         } : null;
 
@@ -116,7 +117,8 @@ class BarTest
         $output = [];
         if (isset($this->c)) {
             $output['c'] = match (true) {
-                ($this->c) instanceof FooTest => $this->c->toArray(),
+                ($this->c) instanceof FooTest,
+                ($this->c) instanceof FooTest_1 => $this->c->toArray(),
             };
         }
 
@@ -151,7 +153,8 @@ class BarTest
     {
         if (isset($this->c)) {
             $this->c = match (true) {
-                ($this->c) instanceof FooTest => $this->c,
+                ($this->c) instanceof FooTest,
+                ($this->c) instanceof FooTest_1 => $this->c,
             };
         }
     }
