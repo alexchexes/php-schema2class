@@ -49,6 +49,20 @@ class SchemaToClass
         // 1) start with whatever schema the request already has
         $schema = $req->getSchema();
 
+        $decodeRefs = function (&$node) use (&$decodeRefs): void {
+            if (!is_array($node)) {
+                return;
+            }
+            foreach ($node as $k => &$v) {
+                if ($k === '$ref' && is_string($v)) {
+                    $v = rawurldecode($v);
+                } elseif (is_array($v)) {
+                    $decodeRefs($v);
+                }
+            }
+        };
+        $decodeRefs($schema);
+
         // 2) collect definitions and prepare lookups before dereferencing
         $this->definitionsToSchemas($req);
 

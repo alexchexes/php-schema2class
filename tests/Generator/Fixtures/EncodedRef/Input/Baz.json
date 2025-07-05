@@ -1,0 +1,11 @@
+{
+  "a": {
+    "foo": "alpha value"
+  },
+  "b": {
+    "foo": "bravo value"
+  },
+  "c": {
+    "bar": "charlie value"
+  }
+}

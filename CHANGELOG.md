@@ -39,6 +39,8 @@ Now it:
 - Skips emitting empty `__construct` or `__clone` methods.
 - Prints a notice when skipping `definitions` that do not describe an object.
 - Validates written files with `php -l` to ensure generated code is syntactically correct.
+- Handles URL-encoded references
+- Handles definition descriptions and/or top-level schema description and adds it to a class' PHPDoc
 
 ### Better support for older PHP versions:
 

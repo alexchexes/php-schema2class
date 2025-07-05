@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "Foo<Test>": {
+      "type": "object",
+      "properties": {
+        "foo": { "type": "string" }
+      }
+    },
+    "Bar<Test>": {
+      "type": "object",
+      "properties": {
+        "bar": { "type": "string" }
+      }
+    },
+    "Baz": {
+      "type": "object",
+      "properties": {
+        "a": { "$ref": "#/definitions/Foo%3CTest%3E" },
+        "b": { "$ref": "#/definitions/Foo<Test>" },
+        "c": { "$ref": "#/definitions/Bar<Test>" }
+      }
+    }
+  }
+}
