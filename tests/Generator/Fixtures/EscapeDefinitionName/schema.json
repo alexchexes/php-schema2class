@@ -1,10 +1,27 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "definitions": {
-    "GenericFromTypeScript<Test>": {
+    "Foo<Test>": {
       "type": "object",
       "properties": {
-        "foo": { "type": "string" }
+        "a": { "type": "string" }
+      }
+    },
+    "FooTest": {
+      "type": "object",
+      "properties": {
+        "b": { "type": "string" }
+      }
+    },
+    "Bar<Test>": {
+      "type": "object",
+      "properties": {
+        "c": {
+          "anyOf": [
+            { "$ref": "#/definitions/Foo<Test>" },
+            { "$ref": "#/definitions/FooTest" }
+          ]
+        }
       }
     }
   }

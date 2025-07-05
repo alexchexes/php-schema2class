@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Ns\EscapeDefinitionName;
 
-class GenericFromTypeScriptTest
+class FooTest
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -14,7 +14,7 @@ class GenericFromTypeScriptTest
     private static array $schema = [
         'type' => 'object',
         'properties' => [
-            'foo' => [
+            'b' => [
                 'type' => 'string',
             ],
         ],
@@ -23,33 +23,33 @@ class GenericFromTypeScriptTest
     /**
      * @var string|null
      */
-    private ?string $foo = null;
+    private ?string $b = null;
 
     /**
      * @return string|null
      */
-    public function getFoo() : ?string
+    public function getB() : ?string
     {
-        return $this->foo ?? null;
+        return $this->b ?? null;
     }
 
     /**
-     * @param string $foo
+     * @param string $b
      * @return self
      * @param bool $validate
      */
-    public function withFoo(string $foo, bool $validate = true) : self
+    public function withB(string $b, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($foo, self::$schema['properties']['foo']);
+            $validator->validate($b, self::$schema['properties']['b']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
         }
 
         $clone = clone $this;
-        $clone->foo = $foo;
+        $clone->b = $b;
 
         return $clone;
     }
@@ -57,10 +57,10 @@ class GenericFromTypeScriptTest
     /**
      * @return self
      */
-    public function withoutFoo() : self
+    public function withoutB() : self
     {
         $clone = clone $this;
-        unset($clone->foo);
+        unset($clone->b);
 
         return $clone;
     }
@@ -70,20 +70,20 @@ class GenericFromTypeScriptTest
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
-     * @return GenericFromTypeScriptTest Created instance
+     * @return FooTest Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : GenericFromTypeScriptTest
+    public static function buildFromInput(array|object $input, bool $validate = true) : FooTest
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
+        $b = isset($input->{'b'}) ? $input->{'b'} : null;
 
         $obj = new self();
-        $obj->foo = $foo;
+        $obj->b = $b;
         return $obj;
     }
 
@@ -95,8 +95,8 @@ class GenericFromTypeScriptTest
     public function toArray() : array
     {
         $output = [];
-        if (isset($this->foo)) {
-            $output['foo'] = $this->foo;
+        if (isset($this->b)) {
+            $output['b'] = $this->b;
         }
 
         return $output;
