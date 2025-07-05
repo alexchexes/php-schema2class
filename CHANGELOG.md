@@ -30,6 +30,7 @@ Now it:
 
 - Automatically creates classes for schemas with a `definitions` block (no more `cannot generate class for types other than 'object'`).
 - Supports non-ASCII property names. Any identifier is sanitized (with a uniqueness check), including when used with the `preservePropertyNames` option.
+- Sanitization now also checks for class name collisions and appends numeric suffixes when necessary.
 - Improves camelCase/PascalCase handling when generating identifier names.
 - Omits the default `null` value for properties listed in the `required` schema block.
 - Improves type hints and PHPDoc type generation for complex types like unions, nested arrays, etc.

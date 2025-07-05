@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "Foo<Test>": {
+      "type": "object",
+      "properties": {
+        "a": { "type": "string" }
+      }
+    },
+    "FooTest": {
+      "type": "object",
+      "properties": {
+        "b": { "type": "string" }
+      }
+    },
+    "МойКласс": {
+      "type": "object",
+      "properties": {
+        "c": { "type": "string" }
+      }
+    },
+    "Bar<Test>": {
+      "type": "object",
+      "properties": {
+        "exampleProp": {
+          "anyOf": [
+            { "$ref": "#/definitions/Foo<Test>" },
+            { "$ref": "#/definitions/МойКласс" },
+            { "$ref": "#/definitions/FooTest" }
+          ]
+        }
+      }
+    }
+  }
+}
