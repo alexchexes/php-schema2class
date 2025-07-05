@@ -33,8 +33,34 @@ class GenerationRunner
      *
      * @param array<string,mixed> $schema
      */
+    private static function dereference(array $schema, string $ref): ?array
+    {
+        if (!str_starts_with($ref, '#/')) {
+            return null;
+        }
+
+        $segments = explode('/', substr($ref, 2));
+        $node = $schema;
+
+        foreach ($segments as $seg) {
+            if (!is_array($node) || !array_key_exists($seg, $node)) {
+                return null;
+            }
+            $node = $node[$seg];
+        }
+
+        return is_array($node) ? $node : null;
+    }
+
     private static function schemaNeedsClass(array $schema): bool
     {
+        if (isset($schema['$ref']) && is_string($schema['$ref'])) {
+            $resolved = self::dereference($schema, $schema['$ref']);
+            if (is_array($resolved)) {
+                $schema = $resolved;
+            }
+        }
+
         return IntersectProperty::canHandleSchema($schema)
             || NestedObjectProperty::canHandleSchema($schema)
             || array_key_exists('enum', $schema);
@@ -171,10 +197,12 @@ class GenerationRunner
                 $this->cleanDirectory($validated->getTargetDirectory(), $output);
             }
 
-            $baseRequest = new GeneratorRequest(
+            $baseRequest = (new GeneratorRequest(
                 $schema,
                 $validated,
                 $opts,
+            ))->withRootDefinitions(
+                array_merge($schema['definitions'] ?? [], $schema['$defs'] ?? [])
             );
 
             $this->generateFromRequest($baseRequest, $output, $dryRun);
