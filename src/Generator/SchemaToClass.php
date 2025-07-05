@@ -49,7 +49,10 @@ class SchemaToClass
         // 1) start with whatever schema the request already has
         $schema = $req->getSchema();
 
-        // 2) if the caller supplied root definitions, *always* splice them in here
+        // 2) collect definitions and prepare lookups before dereferencing
+        $this->definitionsToSchemas($req);
+
+        // 3) if the caller supplied root definitions, *always* splice them in here
         if (($defs = $req->getRootDefinitions()) !== null && count($defs) > 0) {
             // don't overwrite if the schema already carried its own definitions
             if (!isset($schema['definitions'])) {
@@ -60,13 +63,12 @@ class SchemaToClass
             }
         }
 
-        // dereference schemas that consist only of a reference
+        // 4) dereference schemas that consist only of a reference
         if (isset($schema['$ref'])) {
             $schema = $req->lookupSchema($schema['$ref']);
         }
 
         $req = $req->withSchema($schema);
-        $this->definitionsToSchemas($req);
         $schema = $req->getSchema();
 
         if (isset($schema["enum"])) {
@@ -399,8 +401,10 @@ class SchemaToClass
             return;
         }
 
+        $rootRef = $req->getSchema()['$ref'] ?? null;
+
         $collector = new DefinitionsCollector($req);
-        $collected  = iterator_to_array($collector->collect($req->getSchema()));
+        $allDefinitions  = iterator_to_array($collector->collect($req->getSchema()));
 
         $ns = $req->getTargetNamespace();
         
@@ -410,17 +414,36 @@ class SchemaToClass
                 return substr($cls, strlen($ns) + 1);
             }
             return ltrim($cls, '\\');
-        }, $collected);
+        }, $allDefinitions);
 
         if ($req->getTargetClass() !== null) {
             $generatedClasses[] = $req->getTargetClass();
         }
 
         $req = $req
-            ->withAdditionalReferenceLookup(new DefinitionsReferenceLookup($collected))
+            ->withAdditionalReferenceLookup(new DefinitionsReferenceLookup($allDefinitions))
             ->withGeneratedClassNames($generatedClasses);
 
+        $definitionsToGenerate = $allDefinitions;
+        if (is_string($rootRef)) {
+            $canonical = $rootRef;
+            if (!isset($definitionsToGenerate[$canonical])) {
+                if (str_starts_with($rootRef, '#/definitions/')) {
+                    $alt = '#/$defs/' . substr($rootRef, 14);
+                    if (isset($definitionsToGenerate[$alt])) {
+                        $canonical = $alt;
+                    }
+                } elseif (str_starts_with($rootRef, '#/$defs/')) {
+                    $alt = '#/definitions/' . substr($rootRef, 7);
+                    if (isset($definitionsToGenerate[$alt])) {
+                        $canonical = $alt;
+                    }
+                }
+            }
+            unset($definitionsToGenerate[$canonical]);
+        }
+
         $generator = new DefinitionsGenerator($this);
-        $generator->generate($collected, $req);
+        $generator->generate($definitionsToGenerate, $req);
     }
 }
