@@ -15,7 +15,7 @@ class Baz
         'type' => 'object',
         'properties' => [
             'a' => [
-                '$ref' => '#/definitions/Foo%3CTest%3E',
+                '$ref' => '#/definitions/Foo<Test>',
             ],
             'b' => [
                 '$ref' => '#/definitions/Foo<Test>',
@@ -45,9 +45,9 @@ class Baz
     ];
 
     /**
-     * @var mixed|null
+     * @var FooTest|null
      */
-    private mixed $a = null;
+    private ?FooTest $a = null;
 
     /**
      * @var FooTest|null
@@ -60,11 +60,11 @@ class Baz
     private ?BarTest $c = null;
 
     /**
-     * @return mixed|null
+     * @return FooTest|null
      */
-    public function getA() : mixed
+    public function getA() : ?FooTest
     {
-        return $this->a;
+        return $this->a ?? null;
     }
 
     /**
@@ -84,10 +84,10 @@ class Baz
     }
 
     /**
-     * @param mixed $a
+     * @param FooTest $a
      * @return self
      */
-    public function withA(mixed $a) : self
+    public function withA(FooTest $a) : self
     {
         $clone = clone $this;
         $clone->a = $a;
@@ -167,7 +167,7 @@ class Baz
             static::validateInput($input);
         }
 
-        $a = isset($input->{'a'}) ? $input->{'a'} : null;
+        $a = isset($input->{'a'}) ? FooTest::buildFromInput($input->{'a'}, $validate) : null;
         $b = isset($input->{'b'}) ? FooTest::buildFromInput($input->{'b'}, $validate) : null;
         $c = isset($input->{'c'}) ? BarTest::buildFromInput($input->{'c'}, $validate) : null;
 
@@ -187,7 +187,7 @@ class Baz
     {
         $output = [];
         if (isset($this->a)) {
-            $output['a'] = $this->a;
+            $output['a'] = $this->a->toArray();
         }
         if (isset($this->b)) {
             $output['b'] = $this->b->toArray();

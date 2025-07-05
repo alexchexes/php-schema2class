@@ -22,6 +22,8 @@ class DefinitionsReferenceLookup implements ReferenceLookup
 
     private function canonicalize(string $reference): string
     {
+        $reference = rawurldecode($reference);
+
         if (isset($this->definitions[$reference])) {
             return $reference;
         }
