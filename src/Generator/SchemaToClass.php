@@ -62,6 +62,26 @@ class SchemaToClass
             }
         };
         $decodeRefs($schema);
+        $rootDefs = array_merge($schema['definitions'] ?? [], $schema['$defs'] ?? []);
+
+        $usesRootDefs = function ($node) use (&$usesRootDefs): bool {
+            if (!is_array($node)) {
+                return false;
+            }
+            if (isset($node['$ref']) && is_string($node['$ref'])) {
+                $r = rawurldecode($node['$ref']);
+                if (str_starts_with($r, '#/definitions/') || str_starts_with($r, '#/$defs/')) {
+                    return true;
+                }
+            }
+            foreach ($node as $v) {
+                if (is_array($v) && $usesRootDefs($v)) {
+                    return true;
+                }
+            }
+
+            return false;
+        };
 
         // 2) collect definitions and prepare lookups before dereferencing
         $this->definitionsToSchemas($req);
@@ -75,11 +95,31 @@ class SchemaToClass
                 // merge – let local keys override, just in case
                 $schema['definitions'] = array_replace($defs, $schema['definitions']);
             }
+            $rootDefs = array_replace($rootDefs, $defs);
         }
 
         // 4) dereference schemas that consist only of a reference
         if (isset($schema['$ref'])) {
             $schema = $req->lookupSchema($schema['$ref']);
+            $decodeRefs($schema); // decode refs inside the dereferenced schema
+
+            $needsDefs = $usesRootDefs($schema);
+
+            if ($needsDefs && ($defs = $req->getRootDefinitions()) !== null && count($defs) > 0) {
+                if (!isset($schema['definitions'])) {
+                    $schema['definitions'] = $defs;
+                } else {
+                    $schema['definitions'] = array_replace($defs, $schema['definitions']);
+                }
+            }
+
+            if ($needsDefs && count($rootDefs) > 0) {
+                if (!isset($schema['definitions'])) {
+                    $schema['definitions'] = $rootDefs;
+                } else {
+                    $schema['definitions'] = array_replace($rootDefs, $schema['definitions']);
+                }
+            }
         }
 
         $req = $req->withSchema($schema);

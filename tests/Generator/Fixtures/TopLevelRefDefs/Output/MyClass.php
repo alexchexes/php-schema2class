@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ns\ObjectWithoutProps;
+namespace Ns\TopLevelRefDefs;
 
 class MyClass
 {
@@ -14,14 +14,29 @@ class MyClass
     private static array $schema = [
         'properties' => [
             'foo' => [
-                'type' => 'object',
+                '$ref' => '#/definitions/Bar',
             ],
-            'bar' => [
-                'type' => 'object',
+            'encoded' => [
+                '$ref' => '#/definitions/Encoded<Test>',
             ],
         ],
-        'required' => [
-            'bar',
+        'definitions' => [
+            'Foo' => [
+                'properties' => [
+                    'foo' => [
+                        '$ref' => '#/definitions/Bar',
+                    ],
+                    'encoded' => [
+                        '$ref' => '#/definitions/Encoded<Test>',
+                    ],
+                ],
+            ],
+            'Bar' => [
+                'type' => 'object',
+            ],
+            'Encoded<Test>' => [
+                'type' => 'object',
+            ],
         ],
     ];
 
@@ -31,17 +46,9 @@ class MyClass
     private array|object|null $foo = null;
 
     /**
-     * @var array|object
+     * @var array|object|null
      */
-    private array|object $bar;
-
-    /**
-     * @param array|object $bar
-     */
-    public function __construct(array|object $bar)
-    {
-        $this->bar = $bar;
-    }
+    private array|object|null $encoded = null;
 
     /**
      * @return array|object|null
@@ -52,11 +59,11 @@ class MyClass
     }
 
     /**
-     * @return array|object
+     * @return array|object|null
      */
-    public function getBar() : array|object
+    public function getEncoded() : array|object|null
     {
-        return $this->bar;
+        return $this->encoded;
     }
 
     /**
@@ -92,22 +99,33 @@ class MyClass
     }
 
     /**
-     * @param array|object $bar
+     * @param array|object $encoded
      * @return self
      * @param bool $validate
      */
-    public function withBar(array|object $bar, bool $validate = true) : self
+    public function withEncoded(array|object $encoded, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($bar, self::$schema['properties']['bar']);
+            $validator->validate($encoded, self::$schema['properties']['encoded']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
         }
 
         $clone = clone $this;
-        $clone->bar = $bar;
+        $clone->encoded = $encoded;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutEncoded() : self
+    {
+        $clone = clone $this;
+        unset($clone->encoded);
 
         return $clone;
     }
@@ -128,10 +146,11 @@ class MyClass
         }
 
         $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
-        $bar = $input->{'bar'};
+        $encoded = isset($input->{'encoded'}) ? $input->{'encoded'} : null;
 
-        $obj = new self($bar);
+        $obj = new self();
         $obj->foo = $foo;
+        $obj->encoded = $encoded;
         return $obj;
     }
 
@@ -146,7 +165,9 @@ class MyClass
         if (isset($this->foo)) {
             $output['foo'] = json_decode(json_encode($this->foo), true);
         }
-        $output['bar'] = json_decode(json_encode($this->bar), true);
+        if (isset($this->encoded)) {
+            $output['encoded'] = json_decode(json_encode($this->encoded), true);
+        }
 
         return $output;
     }

@@ -1,0 +1,22 @@
+{
+  "$ref": "#/definitions/Foo",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "Foo": {
+      "properties": {
+        "foo": {
+          "$ref": "#/definitions/Bar"
+        },
+        "encoded": {
+          "$ref": "#/definitions/Encoded%3CTest%3E"
+        }
+      }
+    },
+    "Bar": {
+      "type": "object"
+    },
+    "Encoded<Test>": {
+      "type": "object"
+    }
+  }
+}

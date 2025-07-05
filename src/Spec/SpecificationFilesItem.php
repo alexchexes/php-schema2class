@@ -165,8 +165,8 @@ class SpecificationFilesItem
     {
         $output = [];
         $output['input'] = match (true) {
-            is_string($this->input),
-            is_array($this->input) || is_object($this->input) => $this->input,
+            is_string($this->input) => $this->input,
+            is_array($this->input) || is_object($this->input) => json_decode(json_encode($this->input), true),
         };
         if (isset($this->className)) {
             $output['className'] = $this->className;

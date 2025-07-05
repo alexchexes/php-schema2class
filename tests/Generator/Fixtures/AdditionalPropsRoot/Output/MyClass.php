@@ -152,7 +152,7 @@ class MyClass
             $output['name'] = $this->name;
         }
         if (isset($this->params)) {
-            $output['params'] = $this->params;
+            $output['params'] = json_decode(json_encode($this->params), true);
         }
 
         return $output;
