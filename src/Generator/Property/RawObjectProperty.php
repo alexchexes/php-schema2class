@@ -38,4 +38,9 @@ class RawObjectProperty extends AbstractProperty
     {
         return 'is_array(' . $expr . ') || is_object(' . $expr . ')';
     }
+
+    public function generateOutputMappingExpr(string $expr): string
+    {
+        return sprintf('is_object(%1$s) ? json_decode(json_encode(%1$s), true) : %1$s', $expr);
+    }
 }

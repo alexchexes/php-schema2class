@@ -48,6 +48,7 @@ class SchemaToClass
     {
         // 1) start with whatever schema the request already has
         $schema = $req->getSchema();
+        $rootSchema = $schema;
 
         $decodeRefs = function (&$node) use (&$decodeRefs): void {
             if (!is_array($node)) {
@@ -63,23 +64,29 @@ class SchemaToClass
         };
         $decodeRefs($schema);
 
+        $req = $req->withSchema($schema);
+
         // 2) collect definitions and prepare lookups before dereferencing
         $this->definitionsToSchemas($req);
 
-        // 3) if the caller supplied root definitions, *always* splice them in here
-        if (($defs = $req->getRootDefinitions()) !== null && count($defs) > 0) {
-            // don't overwrite if the schema already carried its own definitions
+        // 3) dereference schemas that consist only of a reference
+        if (isset($schema['$ref'])) {
+            $schema = $req->lookupSchema($schema['$ref']);
+            // decode references in the dereferenced schema as well
+            $decodeRefs($schema);
+        }
+
+        // 4) if root definitions are present, splice them back in after dereferencing
+        $defs = $req->getRootDefinitions();
+        if ($defs === null) {
+            $defs = array_merge($rootSchema['definitions'] ?? [], $rootSchema['$defs'] ?? []);
+        }
+        if (count($defs) > 0) {
             if (!isset($schema['definitions'])) {
                 $schema['definitions'] = $defs;
             } else {
-                // merge – let local keys override, just in case
                 $schema['definitions'] = array_replace($defs, $schema['definitions']);
             }
-        }
-
-        // 4) dereference schemas that consist only of a reference
-        if (isset($schema['$ref'])) {
-            $schema = $req->lookupSchema($schema['$ref']);
         }
 
         $req = $req->withSchema($schema);

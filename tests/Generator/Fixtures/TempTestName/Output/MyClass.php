@@ -17,7 +17,25 @@ class MyClass
                 '$ref' => '#/definitions/Bar',
             ],
             'encoded' => [
-                '$ref' => '#/definitions/Encoded%3CTest%3E',
+                '$ref' => '#/definitions/Encoded<Test>',
+            ],
+        ],
+        'definitions' => [
+            'Foo' => [
+                'properties' => [
+                    'foo' => [
+                        '$ref' => '#/definitions/Bar',
+                    ],
+                    'encoded' => [
+                        '$ref' => '#/definitions/Encoded%3CTest%3E',
+                    ],
+                ],
+            ],
+            'Bar' => [
+                'type' => 'object',
+            ],
+            'Encoded<Test>' => [
+                'type' => 'object',
             ],
         ],
     ];
@@ -145,10 +163,10 @@ class MyClass
     {
         $output = [];
         if (isset($this->foo)) {
-            $output['foo'] = $this->foo;
+            $output['foo'] = is_object($this->foo) ? json_decode(json_encode($this->foo), true) : $this->foo;
         }
         if (isset($this->encoded)) {
-            $output['encoded'] = $this->encoded;
+            $output['encoded'] = is_object($this->encoded) ? json_decode(json_encode($this->encoded), true) : $this->encoded;
         }
 
         return $output;
