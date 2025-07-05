@@ -14,10 +14,13 @@ class BarTest
     private static array $schema = [
         'type' => 'object',
         'properties' => [
-            'c' => [
+            'exampleProp' => [
                 'anyOf' => [
                     [
                         '$ref' => '#/definitions/Foo<Test>',
+                    ],
+                    [
+                        '$ref' => '#/definitions/МойКласс',
                     ],
                     [
                         '$ref' => '#/definitions/FooTest',
@@ -42,30 +45,38 @@ class BarTest
                     ],
                 ],
             ],
+            'МойКласс' => [
+                'type' => 'object',
+                'properties' => [
+                    'c' => [
+                        'type' => 'string',
+                    ],
+                ],
+            ],
         ],
     ];
 
     /**
-     * @var FooTest|FooTest_1|null
+     * @var FooTest|MoiKlass|FooTest_1|null
      */
-    private FooTest|FooTest_1|null $c = null;
+    private FooTest|MoiKlass|FooTest_1|null $exampleProp = null;
 
     /**
-     * @return FooTest|FooTest_1|null
+     * @return FooTest|MoiKlass|FooTest_1|null
      */
-    public function getC() : FooTest|FooTest_1|null
+    public function getExampleProp() : FooTest|FooTest_1|MoiKlass|null
     {
-        return $this->c;
+        return $this->exampleProp;
     }
 
     /**
-     * @param FooTest|FooTest_1 $c
+     * @param FooTest|MoiKlass|FooTest_1 $exampleProp
      * @return self
      */
-    public function withC(FooTest|FooTest_1 $c) : self
+    public function withExampleProp(FooTest|FooTest_1|MoiKlass $exampleProp) : self
     {
         $clone = clone $this;
-        $clone->c = $c;
+        $clone->exampleProp = $exampleProp;
 
         return $clone;
     }
@@ -73,10 +84,10 @@ class BarTest
     /**
      * @return self
      */
-    public function withoutC() : self
+    public function withoutExampleProp() : self
     {
         $clone = clone $this;
-        unset($clone->c);
+        unset($clone->exampleProp);
 
         return $clone;
     }
@@ -96,14 +107,15 @@ class BarTest
             static::validateInput($input);
         }
 
-        $c = isset($input->{'c'}) ? match (true) {
-            FooTest::validateInput($input->{'c'}, true) => FooTest::buildFromInput($input->{'c'}, $validate),
-            FooTest_1::validateInput($input->{'c'}, true) => FooTest_1::buildFromInput($input->{'c'}, $validate),
+        $exampleProp = isset($input->{'exampleProp'}) ? match (true) {
+            FooTest::validateInput($input->{'exampleProp'}, true) => FooTest::buildFromInput($input->{'exampleProp'}, $validate),
+            MoiKlass::validateInput($input->{'exampleProp'}, true) => MoiKlass::buildFromInput($input->{'exampleProp'}, $validate),
+            FooTest_1::validateInput($input->{'exampleProp'}, true) => FooTest_1::buildFromInput($input->{'exampleProp'}, $validate),
             default => null,
         } : null;
 
         $obj = new self();
-        $obj->c = $c;
+        $obj->exampleProp = $exampleProp;
         return $obj;
     }
 
@@ -115,10 +127,11 @@ class BarTest
     public function toArray() : array
     {
         $output = [];
-        if (isset($this->c)) {
-            $output['c'] = match (true) {
-                ($this->c) instanceof FooTest,
-                ($this->c) instanceof FooTest_1 => $this->c->toArray(),
+        if (isset($this->exampleProp)) {
+            $output['exampleProp'] = match (true) {
+                ($this->exampleProp) instanceof FooTest,
+                ($this->exampleProp) instanceof MoiKlass,
+                ($this->exampleProp) instanceof FooTest_1 => $this->exampleProp->toArray(),
             };
         }
 
@@ -151,10 +164,11 @@ class BarTest
 
     public function __clone()
     {
-        if (isset($this->c)) {
-            $this->c = match (true) {
-                ($this->c) instanceof FooTest,
-                ($this->c) instanceof FooTest_1 => $this->c,
+        if (isset($this->exampleProp)) {
+            $this->exampleProp = match (true) {
+                ($this->exampleProp) instanceof FooTest,
+                ($this->exampleProp) instanceof MoiKlass,
+                ($this->exampleProp) instanceof FooTest_1 => $this->exampleProp,
             };
         }
     }

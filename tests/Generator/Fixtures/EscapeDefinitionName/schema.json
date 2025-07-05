@@ -13,12 +13,19 @@
         "b": { "type": "string" }
       }
     },
+    "МойКласс": {
+      "type": "object",
+      "properties": {
+        "c": { "type": "string" }
+      }
+    },
     "Bar<Test>": {
       "type": "object",
       "properties": {
-        "c": {
+        "exampleProp": {
           "anyOf": [
             { "$ref": "#/definitions/Foo<Test>" },
+            { "$ref": "#/definitions/МойКласс" },
             { "$ref": "#/definitions/FooTest" }
           ]
         }
