@@ -90,8 +90,9 @@ EOCODE;
 
     public static function dataForAnnotationAndHintWithSimpleArray(): array
     {
+        $php8Ver = GeneratorRequest::DEFAULT_PHP8_VERSION;
         return [
-            'php 8.2' => ['8.2.0', '\BarNs\FooMyPropertyNameAlternative1|\BarNs\FooMyPropertyNameAlternative2'],
+            "php {$php8Ver}" => [$php8Ver, '\BarNs\FooMyPropertyNameAlternative1|\BarNs\FooMyPropertyNameAlternative2'],
             'php 7.2' => ['7.2.0', null],
             'php 5.6' => ['5.6.0', null],
         ];

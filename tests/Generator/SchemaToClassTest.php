@@ -56,14 +56,20 @@ class SchemaToClassTest extends TestCase
             }
 
             $opts = (new SpecificationOptions)
-                ->withTargetPHPVersion("8.2")
+                ->withTargetPHPVersion(GeneratorRequest::DEFAULT_PHP8_VERSION)
                 ->withInlineAllofReferences(true);
+
             if (file_exists($optionsFile)) {
                 $optsYaml = Yaml::parseFile($optionsFile);
                 $opts = SpecificationOptions::buildFromInput($optsYaml);
             }
 
-            $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($outputDir));
+            if (is_dir($outputDir)) {
+                $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($outputDir));
+            } else {
+                $iterator = new \ArrayIterator([]);
+            }
+            
             foreach ($iterator as $fileInfo) {
                 if (!$fileInfo->isFile() || $fileInfo->getExtension() !== 'php') {
                     continue;
@@ -280,7 +286,7 @@ class SchemaToClassTest extends TestCase
         $req = new GeneratorRequest(
             $schema,
             new ValidatedSpecificationFilesItem('Ns\\NonObjectDefs', null, __DIR__),
-            (new SpecificationOptions())->withTargetPHPVersion('8.2'),
+            (new SpecificationOptions())->withTargetPHPVersion(GeneratorRequest::DEFAULT_PHP8_VERSION),
         );
 
         $output = new BufferedOutput();
