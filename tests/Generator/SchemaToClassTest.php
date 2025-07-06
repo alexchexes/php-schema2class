@@ -89,9 +89,11 @@ class SchemaToClassTest extends TestCase
                     $cls = pathinfo($in, PATHINFO_FILENAME);
                     $path = $inputDir . DIRECTORY_SEPARATOR . $in;
                     if (in_array($ext, ['json', 'yaml', 'yml'], true)) {
-                        $inputFiles[$cls] = $ext === 'json'
-                            ? json_decode(file_get_contents($path), true)
-                            : Yaml::parseFile($path);
+                        if ($ext === 'json') {
+                            $inputFiles[$cls] = json_decode(file_get_contents($path));
+                        } else {
+                            $inputFiles[$cls] = Yaml::parseFile($path);
+                        }
                     }
                 }
             }
@@ -216,7 +218,7 @@ class SchemaToClassTest extends TestCase
             $fqcn = "Ns\\{$name}\\{$class}";
             $obj = $fqcn::buildFromInput($input);
             $this->assertInstanceOf($fqcn, $obj);
-            $expectedArray = $input;
+            $expectedArray = json_decode(json_encode($input), true);
             $actualArray = $obj->toArray();
             ksort($expectedArray);
             ksort($actualArray);
