@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ns\Basic;
+namespace Ns\Basic_8_4;
 
 class MyClass
 {

@@ -26,6 +26,37 @@ class SchemaToClassTest extends TestCase
     {
     }
 
+    private static function cleanUnusedOutputDirs(string $fixtureDir, array $versions): void
+    {
+        $existing = [];
+        if (is_dir($fixtureDir . '/Output')) {
+            $existing[GeneratorRequest::DEFAULT_PHP8_VERSION] = $fixtureDir . '/Output';
+        }
+
+        foreach (scandir($fixtureDir) as $entry) {
+            if (preg_match('/^Output-(.+)$/', $entry, $m)) {
+                $existing[$m[1]] = $fixtureDir . DIRECTORY_SEPARATOR . $entry;
+            }
+        }
+
+        foreach ($existing as $version => $dir) {
+            if (!in_array($version, $versions, true)) {
+                $iterator = new \RecursiveIteratorIterator(
+                    new \RecursiveDirectoryIterator($dir, \FilesystemIterator::SKIP_DOTS),
+                    \RecursiveIteratorIterator::CHILD_FIRST,
+                );
+                foreach ($iterator as $fileInfo) {
+                    if ($fileInfo->isFile()) {
+                        unlink($fileInfo->getPathname());
+                    } else {
+                        @rmdir($fileInfo->getPathname());
+                    }
+                }
+                @rmdir($dir);
+            }
+        }
+    }
+
     public static function loadCodeGenerationTestCases(): array
     {
         $testCases   = [];
@@ -104,6 +135,8 @@ class SchemaToClassTest extends TestCase
                         $versions = [GeneratorRequest::DEFAULT_PHP5_VERSION, GeneratorRequest::DEFAULT_PHP7_VERSION, GeneratorRequest::DEFAULT_PHP8_VERSION];
                     }
                 }
+
+                self::cleanUnusedOutputDirs($fixtureDir, $versions);
             } else {
                 if (is_dir($fixtureDir . '/Output')) {
                     $versions[] = GeneratorRequest::DEFAULT_PHP8_VERSION;
