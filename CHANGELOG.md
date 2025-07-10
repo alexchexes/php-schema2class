@@ -63,6 +63,7 @@ Now it:
 
 - Several new classes and interfaces to handle new functionality; extensive refactoring of existing classes.
 - **Updated tests and fixtures**: New test cases covering new functionality such as typed arrays, non-ASCII identifiers, and the programmatic API.
+- Tests now exercise all main target PHP versions. If PHPUnit is run with `UPDATE_SNAPSHOTS=1`, then output for PHP 5.6, PHP 7.4, and PHP 8.4 will be generated, unless specific version(s) are given in the optional `versions.yaml` file in the fixture folder.
 - Tests can now optionally provide example input next to the schema fixture; if such input is present, it will be used to create a class instance to check if it's usable with that input.
 - **Dependency updates**:
   - New dependencies: `voku/portable-ascii`, `nikic/php-parser`

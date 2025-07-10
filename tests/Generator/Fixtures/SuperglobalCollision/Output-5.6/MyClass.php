@@ -1,0 +1,129 @@
+<?php
+
+namespace Ns\SuperglobalCollision_5_6;
+
+class MyClass
+{
+    /**
+     * Schema used to validate input for creating instances of this class
+     *
+     * @var array
+     */
+    private static $schema = [
+        'required' => [
+            'files',
+        ],
+        'properties' => [
+            'files' => [
+                'type' => 'string',
+            ],
+        ],
+    ];
+
+    /**
+     * @var string
+     */
+    private $files;
+
+    /**
+     * @param string $files
+     */
+    public function __construct($files)
+    {
+        $this->files = $files;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFiles()
+    {
+        return $this->files;
+    }
+
+    /**
+     * @param string $files
+     * @return self
+     * @param bool $validate
+     */
+    public function withFiles($files, bool $validate = true)
+    {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($files, self::$schema['properties']['files']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
+        $clone = clone $this;
+        $clone->files = $files;
+
+        return $clone;
+    }
+
+    /**
+     * Builds a new instance from an input array
+     *
+     * @param array|object $input Input data
+     * @param bool $validate Set this to false to skip validation; use at own risk
+     * @return MyClass Created instance
+     * @throws \InvalidArgumentException
+     */
+    public static function buildFromInput($input, bool $validate = true)
+    {
+        if (!is_array($input) && !is_object($input)) {
+            throw new \InvalidArgumentException(
+                'Input to buildFromInput must be array or object, got ' . gettype($input)
+            );
+        }
+
+        $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
+        if ($validate) {
+            static::validateInput($input);
+        }
+
+        $files = $input->{'files'};
+
+        $obj = new self($files);
+
+        return $obj;
+    }
+
+    /**
+     * Converts this object back to a simple array that can be JSON-serialized
+     *
+     * @return array Converted array
+     */
+    public function toArray()
+    {
+        $output = [];
+        $output['files'] = $this->files;
+
+        return $output;
+    }
+
+    /**
+     * Validates an input array
+     *
+     * @param array|object $input Input data
+     * @param bool $return Return instead of throwing errors
+     * @return bool Validation result
+     * @throws \InvalidArgumentException
+     */
+    public static function validateInput($input, $return = false)
+    {
+        $validator = new \JsonSchema\Validator();
+        $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
+        $validator->validate($input, self::$schema);
+
+        if (!$validator->isValid() && !$return) {
+            $errors = array_map(function($e) {
+                return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];
+            }, $validator->getErrors());
+            throw new \InvalidArgumentException(join(".\n", $errors));
+        }
+
+        return $validator->isValid();
+    }
+}
