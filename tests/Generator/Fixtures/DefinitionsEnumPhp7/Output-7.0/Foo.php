@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ns\DefinitionsEnumPhp7_7_4;
+namespace Ns\DefinitionsEnumPhp7_7_0;
 
 class Foo
 {
@@ -11,7 +11,7 @@ class Foo
      *
      * @var array
      */
-    private static array $schema = [
+    private static $schema = [
         'type' => 'object',
         'additionalProperties' => false,
         'properties' => [
@@ -46,12 +46,12 @@ class Foo
     /**
      * @var 'red'|'green'
      */
-    private string $color;
+    private $color;
 
     /**
      * @var 'small'|'big'|null
      */
-    private ?string $size = null;
+    private $size = null;
 
     /**
      * @param 'red'|'green' $color
@@ -72,9 +72,9 @@ class Foo
     /**
      * @return 'small'|'big'|null
      */
-    public function getSize() : ?string
+    public function getSize() : string
     {
-        return $this->size ?? null;
+        return $this->size;
     }
 
     /**

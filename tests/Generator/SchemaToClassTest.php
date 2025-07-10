@@ -22,6 +22,27 @@ use Symfony\Component\Yaml\Yaml;
 
 class SchemaToClassTest extends TestCase
 {
+    private static function removeDir(string $dir): void
+    {
+        if (!is_dir($dir)) {
+            return;
+        }
+
+        $iterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($dir, \FilesystemIterator::SKIP_DOTS),
+            \RecursiveIteratorIterator::CHILD_FIRST,
+        );
+
+        foreach ($iterator as $fileInfo) {
+            if ($fileInfo->isDir()) {
+                @rmdir($fileInfo->getPathname());
+            } else {
+                @unlink($fileInfo->getPathname());
+            }
+        }
+
+        @rmdir($dir);
+    }
     protected function setUp(): void
     {
     }
@@ -92,17 +113,16 @@ class SchemaToClassTest extends TestCase
                 } elseif (file_exists($versionsFile)) {
                     $versions = Yaml::parseFile($versionsFile);
                 } else {
-                    foreach (scandir($fixtureDir) as $dirEntry) {
-                        if (preg_match('/^Output-(.+)$/', $dirEntry, $m)) {
-                            $versions[] = $m[1];
-                        }
-                    }
-                    if (!$versions) {
-                        $versions = [
-                            GeneratorRequest::DEFAULT_PHP5_VERSION,
-                            GeneratorRequest::DEFAULT_PHP7_VERSION,
-                            GeneratorRequest::DEFAULT_PHP8_VERSION
-                        ];
+                    $versions = [
+                        GeneratorRequest::DEFAULT_PHP5_VERSION,
+                        GeneratorRequest::DEFAULT_PHP7_VERSION,
+                        GeneratorRequest::DEFAULT_PHP8_VERSION
+                    ];
+                }
+
+                foreach (scandir($fixtureDir) as $dirEntry) {
+                    if (preg_match('/^Output-(.+)$/', $dirEntry, $m) && !in_array($m[1], $versions, true)) {
+                        self::removeDir($fixtureDir . DIRECTORY_SEPARATOR . $dirEntry);
                     }
                 }
             } else {
