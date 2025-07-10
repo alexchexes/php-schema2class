@@ -29,55 +29,41 @@ class SchemaToClassTest extends TestCase
     public static function loadCodeGenerationTestCases(): array
     {
         $testCases   = [];
-        $testCaseDir = join(DIRECTORY_SEPARATOR, [__DIR__, "Fixtures"]);
+        $testCaseDir = join(DIRECTORY_SEPARATOR, [__DIR__, 'Fixtures']);
 
         $dir = opendir($testCaseDir);
 
         while ($entry = readdir($dir)) {
-            if ($entry[0] === ".") {
+            if ($entry[0] === '.') {
                 continue;
             }
 
-            $schemaFile = join(DIRECTORY_SEPARATOR, [$testCaseDir, $entry, "schema.yaml"]);
+            $fixtureDir = join(DIRECTORY_SEPARATOR, [$testCaseDir, $entry]);
+
+            $schemaFile = join(DIRECTORY_SEPARATOR, [$fixtureDir, 'schema.yaml']);
             if (!file_exists($schemaFile)) {
-                $schemaFile = join(DIRECTORY_SEPARATOR, [$testCaseDir, $entry, "schema.json"]);
+                $schemaFile = join(DIRECTORY_SEPARATOR, [$fixtureDir, 'schema.json']);
             }
 
-            $optionsFile = join(DIRECTORY_SEPARATOR, [$testCaseDir, $entry, "options.yaml"]);
-            $outputDir  = join(DIRECTORY_SEPARATOR, [$testCaseDir, $entry, "Output"]);
-            $inputDir   = join(DIRECTORY_SEPARATOR, [$testCaseDir, $entry, "Input"]);
+            $optionsFile  = join(DIRECTORY_SEPARATOR, [$fixtureDir, 'options.yaml']);
+            $versionsFile = join(DIRECTORY_SEPARATOR, [$fixtureDir, 'versions.yaml']);
+            $inputDir     = join(DIRECTORY_SEPARATOR, [$fixtureDir, 'Input']);
 
-            $expectedFiles = [];
-            $schema        = (new SchemaLoader())->loadSchema($schemaFile);
-            $inputFiles    = [];
-
-            if (!is_dir($outputDir) && getenv('UPDATE_SNAPSHOTS') === '1') {
-                mkdir($outputDir, 0777, true);
-            }
+            $schema     = (new SchemaLoader())->loadSchema($schemaFile);
+            $inputFiles = [];
 
             $opts = (new SpecificationOptions)
                 ->withTargetPHPVersion(GeneratorRequest::DEFAULT_PHP8_VERSION)
                 ->withInlineAllofReferences(true);
 
+            $optsYaml = [];
             if (file_exists($optionsFile)) {
                 $optsYaml = Yaml::parseFile($optionsFile);
                 $opts = SpecificationOptions::buildFromInput($optsYaml);
             }
 
-            if (is_dir($outputDir)) {
-                $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($outputDir));
-            } else {
-                $iterator = new \ArrayIterator([]);
-            }
-            
-            foreach ($iterator as $fileInfo) {
-                if (!$fileInfo->isFile() || $fileInfo->getExtension() !== 'php') {
-                    continue;
-                }
-
-                $relativePath = substr($fileInfo->getPathname(), strlen($outputDir) + 1);
-                $relativePath = str_replace('\\', '/', $relativePath);
-                $expectedFiles[$relativePath] = trim(file_get_contents($fileInfo->getPathname()));
+            if (!isset($optsYaml['inlineAllofReferences'])) {
+                $opts = $opts->withInlineAllofReferences(true);
             }
 
             if (is_dir($inputDir)) {
@@ -98,18 +84,88 @@ class SchemaToClassTest extends TestCase
                 }
             }
 
-            $testCases[$entry] = [$entry, $schema, $expectedFiles, $opts, $inputFiles];
+            $versions = [];
+
+            if (getenv('UPDATE_SNAPSHOTS') === '1') {
+                if ($opts->getTargetPHPVersion() !== null && $opts->getTargetPHPVersion() !== GeneratorRequest::DEFAULT_PHP8_VERSION) {
+                    $versions = [GeneratorRequest::normalizeTargetVersion($opts->getTargetPHPVersion())];
+                } elseif (file_exists($versionsFile)) {
+                    $versions = Yaml::parseFile($versionsFile);
+                } else {
+                    if (is_dir($fixtureDir . '/Output')) {
+                        $versions[] = GeneratorRequest::DEFAULT_PHP8_VERSION;
+                    }
+                    foreach (scandir($fixtureDir) as $dirEntry) {
+                        if (preg_match('/^Output-(.+)$/', $dirEntry, $m)) {
+                            $versions[] = $m[1];
+                        }
+                    }
+                    if (!$versions) {
+                        $versions = [GeneratorRequest::DEFAULT_PHP5_VERSION, GeneratorRequest::DEFAULT_PHP7_VERSION, GeneratorRequest::DEFAULT_PHP8_VERSION];
+                    }
+                }
+            } else {
+                if (is_dir($fixtureDir . '/Output')) {
+                    $versions[] = GeneratorRequest::DEFAULT_PHP8_VERSION;
+                }
+                foreach (scandir($fixtureDir) as $dirEntry) {
+                    if (preg_match('/^Output-(.+)$/', $dirEntry, $m)) {
+                        $versions[] = $m[1];
+                    }
+                }
+
+                if (!$versions) {
+                    $v = $opts->getTargetPHPVersion() ?? GeneratorRequest::DEFAULT_PHP8_VERSION;
+                    $versions[] = GeneratorRequest::normalizeTargetVersion($v);
+                }
+            }
+
+            $multipleVersions = count($versions) > 1;
+            foreach ($versions as $version) {
+                $dirName = $version === GeneratorRequest::DEFAULT_PHP8_VERSION ? 'Output' : 'Output-' . $version;
+                $outputDir = join(DIRECTORY_SEPARATOR, [$fixtureDir, $dirName]);
+
+                if (!is_dir($outputDir) && getenv('UPDATE_SNAPSHOTS') === '1') {
+                    mkdir($outputDir, 0777, true);
+                }
+
+                if (is_dir($outputDir)) {
+                    $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($outputDir));
+                } else {
+                    $iterator = new \ArrayIterator([]);
+                }
+
+                $expectedFiles = [];
+                foreach ($iterator as $fileInfo) {
+                    if (!$fileInfo->isFile() || $fileInfo->getExtension() !== 'php') {
+                        continue;
+                    }
+                    $relativePath = substr($fileInfo->getPathname(), strlen($outputDir) + 1);
+                    $relativePath = str_replace('\\', '/', $relativePath);
+                    $expectedFiles[$relativePath] = trim(file_get_contents($fileInfo->getPathname()));
+                }
+
+                $optsData = $optsYaml;
+                if (!isset($optsData['inlineAllofReferences'])) {
+                    $optsData['inlineAllofReferences'] = true;
+                }
+                $optsData['targetPHPVersion'] = $version;
+                $optsVersion = SpecificationOptions::buildFromInput($optsData);
+
+                $ns = $multipleVersions ? $entry . '_' . str_replace('.', '_', $version) : $entry;
+                $testCases[$entry . '-' . $version] = [$entry, $ns, $schema, $expectedFiles, $optsVersion, $inputFiles, $version];
+            }
         }
 
         return $testCases;
     }
 
     #[DataProvider("loadCodeGenerationTestCases")]
-    public function testCodeGeneration(string $name, array $schema, array $expectedOutput, SpecificationOptions $opts, array $inputs): void
+    public function testCodeGeneration(string $fixture, string $nsName, array $schema, array $expectedOutput, SpecificationOptions $opts, array $inputs, string $version): void
     {
         $req = new GeneratorRequest(
             $schema,
-            new ValidatedSpecificationFilesItem("Ns\\{$name}", "MyClass", __DIR__),
+            new ValidatedSpecificationFilesItem("Ns\\{$nsName}", "MyClass", __DIR__),
             $opts,
         );
 
@@ -181,7 +237,8 @@ class SchemaToClassTest extends TestCase
                 assertThat($actualContent, equalTo($content));
             }
         } else {
-            $outputDir = join(DIRECTORY_SEPARATOR, [__DIR__, 'Fixtures', $name, 'Output']);
+            $dirName = $version === GeneratorRequest::DEFAULT_PHP8_VERSION ? 'Output' : 'Output-' . $version;
+            $outputDir = join(DIRECTORY_SEPARATOR, [__DIR__, 'Fixtures', $fixture, $dirName]);
             if (is_dir($outputDir)) {
                 $iterator = new \RecursiveIteratorIterator(
                     new \RecursiveDirectoryIterator($outputDir, \FilesystemIterator::SKIP_DOTS),
@@ -199,7 +256,8 @@ class SchemaToClassTest extends TestCase
             foreach ($writtenFiles as $filename => $content) {
                 $relative = substr($filename, strlen(__DIR__) + 1);
                 $relative = str_replace('\\', '/', $relative);
-                $outputFilename = join(DIRECTORY_SEPARATOR, [__DIR__, 'Fixtures', $name, 'Output', $relative]);
+                $dirName = $version === GeneratorRequest::DEFAULT_PHP8_VERSION ? 'Output' : 'Output-' . $version;
+                $outputFilename = join(DIRECTORY_SEPARATOR, [__DIR__, 'Fixtures', $fixture, $dirName, $relative]);
                 if (!is_dir(dirname($outputFilename))) {
                     mkdir(dirname($outputFilename), 0777, true);
                 }
@@ -215,7 +273,7 @@ class SchemaToClassTest extends TestCase
         }
 
         foreach ($inputs as $class => $input) {
-            $fqcn = "Ns\\{$name}\\{$class}";
+            $fqcn = "Ns\\{$nsName}\\{$class}";
             $obj = $fqcn::buildFromInput($input);
             $this->assertInstanceOf($fqcn, $obj);
             $expectedArray = json_decode(json_encode($input), true);

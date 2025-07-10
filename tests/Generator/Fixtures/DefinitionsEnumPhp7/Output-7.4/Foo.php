@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ns\DefinitionsEnumPhp7_8_4;
+namespace Ns\DefinitionsEnumPhp7_7_4;
 
 class Foo
 {
@@ -44,45 +44,54 @@ class Foo
     ];
 
     /**
-     * @var Color
+     * @var 'red'|'green'
      */
-    private Color $color;
+    private string $color;
 
     /**
-     * @var Size|null
+     * @var 'small'|'big'|null
      */
-    private ?Size $size = null;
+    private ?string $size = null;
 
     /**
-     * @param Color $color
+     * @param 'red'|'green' $color
      */
-    public function __construct(Color $color)
+    public function __construct(string $color)
     {
         $this->color = $color;
     }
 
     /**
-     * @return Color
+     * @return 'red'|'green'
      */
-    public function getColor() : Color
+    public function getColor() : string
     {
         return $this->color;
     }
 
     /**
-     * @return Size|null
+     * @return 'small'|'big'|null
      */
-    public function getSize() : ?Size
+    public function getSize() : ?string
     {
         return $this->size ?? null;
     }
 
     /**
-     * @param Color $color
+     * @param 'red'|'green' $color
      * @return self
+     * @param bool $validate
      */
-    public function withColor(Color $color) : self
+    public function withColor(string $color, bool $validate = true) : self
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($color, self::$schema['properties']['color']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
         $clone->color = $color;
 
@@ -90,11 +99,20 @@ class Foo
     }
 
     /**
-     * @param Size $size
+     * @param 'small'|'big' $size
      * @return self
+     * @param bool $validate
      */
-    public function withSize(Size $size) : self
+    public function withSize(string $size, bool $validate = true) : self
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($size, self::$schema['properties']['size']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
         $clone->size = $size;
 
@@ -120,15 +138,21 @@ class Foo
      * @return Foo Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : Foo
+    public static function buildFromInput($input, bool $validate = true) : Foo
     {
+        if (!is_array($input) && !is_object($input)) {
+            throw new \InvalidArgumentException(
+                'Input to buildFromInput must be array or object, got ' . gettype($input)
+            );
+        }
+
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $color = Color::from($input->{'color'});
-        $size = isset($input->{'size'}) ? Size::from($input->{'size'}) : null;
+        $color = $input->{'color'};
+        $size = isset($input->{'size'}) ? $input->{'size'} : null;
 
         $obj = new self($color);
         $obj->size = $size;
@@ -143,9 +167,9 @@ class Foo
     public function toArray() : array
     {
         $output = [];
-        $output['color'] = $this->color->value;
+        $output['color'] = $this->color;
         if (isset($this->size)) {
-            $output['size'] = $this->size->value;
+            $output['size'] = $this->size;
         }
 
         return $output;
@@ -159,7 +183,7 @@ class Foo
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput(array|object $input, bool $return = false) : bool
+    public static function validateInput($input, bool $return = false) : bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;

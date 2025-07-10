@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ns\DefinitionsEnumPhp7_8_4;
+namespace Ns\Basic_7_4;
 
-class Foo
+class MyClass
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -12,102 +12,102 @@ class Foo
      * @var array
      */
     private static array $schema = [
-        'type' => 'object',
-        'additionalProperties' => false,
-        'properties' => [
-            'color' => [
-                '$ref' => '#/definitions/Color',
-            ],
-            'size' => [
-                '$ref' => '#/definitions/Size',
-            ],
-        ],
         'required' => [
-            'color',
+            'foo_bar',
         ],
-        'definitions' => [
-            'Color' => [
-                'enum' => [
-                    'red',
-                    'green',
-                ],
+        'properties' => [
+            'foo' => [
                 'type' => 'string',
             ],
-            'Size' => [
-                'enum' => [
-                    'small',
-                    'big',
-                ],
+            'foo_bar' => [
                 'type' => 'string',
             ],
         ],
     ];
 
     /**
-     * @var Color
+     * @var string|null
      */
-    private Color $color;
+    private ?string $foo = null;
 
     /**
-     * @var Size|null
+     * @var string
      */
-    private ?Size $size = null;
+    private string $fooBar;
 
     /**
-     * @param Color $color
+     * @param string $fooBar
      */
-    public function __construct(Color $color)
+    public function __construct(string $fooBar)
     {
-        $this->color = $color;
+        $this->fooBar = $fooBar;
     }
 
     /**
-     * @return Color
+     * @return string|null
      */
-    public function getColor() : Color
+    public function getFoo() : ?string
     {
-        return $this->color;
+        return $this->foo ?? null;
     }
 
     /**
-     * @return Size|null
+     * @return string
      */
-    public function getSize() : ?Size
+    public function getFooBar() : string
     {
-        return $this->size ?? null;
+        return $this->fooBar;
     }
 
     /**
-     * @param Color $color
+     * @param string $foo
      * @return self
+     * @param bool $validate
      */
-    public function withColor(Color $color) : self
+    public function withFoo(string $foo, bool $validate = true) : self
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($foo, self::$schema['properties']['foo']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
-        $clone->color = $color;
+        $clone->foo = $foo;
 
         return $clone;
     }
 
     /**
-     * @param Size $size
      * @return self
      */
-    public function withSize(Size $size) : self
+    public function withoutFoo() : self
     {
         $clone = clone $this;
-        $clone->size = $size;
+        unset($clone->foo);
 
         return $clone;
     }
 
     /**
+     * @param string $fooBar
      * @return self
+     * @param bool $validate
      */
-    public function withoutSize() : self
+    public function withFooBar(string $fooBar, bool $validate = true) : self
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($fooBar, self::$schema['properties']['foo_bar']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
-        unset($clone->size);
+        $clone->fooBar = $fooBar;
 
         return $clone;
     }
@@ -117,21 +117,27 @@ class Foo
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
-     * @return Foo Created instance
+     * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : Foo
+    public static function buildFromInput($input, bool $validate = true) : MyClass
     {
+        if (!is_array($input) && !is_object($input)) {
+            throw new \InvalidArgumentException(
+                'Input to buildFromInput must be array or object, got ' . gettype($input)
+            );
+        }
+
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $color = Color::from($input->{'color'});
-        $size = isset($input->{'size'}) ? Size::from($input->{'size'}) : null;
+        $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
+        $fooBar = $input->{'foo_bar'};
 
-        $obj = new self($color);
-        $obj->size = $size;
+        $obj = new self($fooBar);
+        $obj->foo = $foo;
         return $obj;
     }
 
@@ -143,10 +149,10 @@ class Foo
     public function toArray() : array
     {
         $output = [];
-        $output['color'] = $this->color->value;
-        if (isset($this->size)) {
-            $output['size'] = $this->size->value;
+        if (isset($this->foo)) {
+            $output['foo'] = $this->foo;
         }
+        $output['foo_bar'] = $this->fooBar;
 
         return $output;
     }
@@ -159,7 +165,7 @@ class Foo
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput(array|object $input, bool $return = false) : bool
+    public static function validateInput($input, bool $return = false) : bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
