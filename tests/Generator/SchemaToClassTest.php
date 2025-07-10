@@ -14,6 +14,7 @@ use Helmich\Schema2Class\Spec\SpecificationOptions;
 use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
 use Helmich\Schema2Class\Writer\DebugWriter;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\NullOutput;
@@ -126,10 +127,28 @@ class SchemaToClassTest extends TestCase
                     }
                 }
             } else {
+                $expectedVersions = [];
+                if (file_exists($versionsFile)) {
+                    $expectedVersions = array_map('strval', Yaml::parseFile($versionsFile));
+                }
+
                 foreach (scandir($fixtureDir) as $dirEntry) {
                     if (preg_match('/^Output-(.+)$/', $dirEntry, $m)) {
                         $versions[] = $m[1];
                     }
+                }
+
+                if ($expectedVersions) {
+                    $unexpected = array_diff($versions, $expectedVersions);
+                    $missing    = array_diff($expectedVersions, $versions);
+                    Assert::assertEmpty(
+                        $unexpected,
+                        sprintf('Unexpected output for PHP versions [%s] in fixture %s', implode(', ', $unexpected), $entry)
+                    );
+                    Assert::assertEmpty(
+                        $missing,
+                        sprintf('Missing output for PHP versions [%s] in fixture %s', implode(', ', $missing), $entry)
+                    );
                 }
 
                 if (!$versions) {

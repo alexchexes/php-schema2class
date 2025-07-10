@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ns\Enum_8_4;
+namespace Ns\Enum;
 
 enum MyClass: string {
     case FOO = 'Foo';

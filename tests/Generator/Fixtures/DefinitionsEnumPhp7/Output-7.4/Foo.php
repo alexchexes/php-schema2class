@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ns\DefinitionsEnumPhp7_7_4;
+namespace Ns\DefinitionsEnumPhp7;
 
 class Foo
 {
