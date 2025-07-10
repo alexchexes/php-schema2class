@@ -92,22 +92,20 @@ class SchemaToClassTest extends TestCase
                 } elseif (file_exists($versionsFile)) {
                     $versions = Yaml::parseFile($versionsFile);
                 } else {
-                    if (is_dir($fixtureDir . '/Output')) {
-                        $versions[] = GeneratorRequest::DEFAULT_PHP8_VERSION;
-                    }
                     foreach (scandir($fixtureDir) as $dirEntry) {
                         if (preg_match('/^Output-(.+)$/', $dirEntry, $m)) {
                             $versions[] = $m[1];
                         }
                     }
                     if (!$versions) {
-                        $versions = [GeneratorRequest::DEFAULT_PHP5_VERSION, GeneratorRequest::DEFAULT_PHP7_VERSION, GeneratorRequest::DEFAULT_PHP8_VERSION];
+                        $versions = [
+                            GeneratorRequest::DEFAULT_PHP5_VERSION,
+                            GeneratorRequest::DEFAULT_PHP7_VERSION,
+                            GeneratorRequest::DEFAULT_PHP8_VERSION
+                        ];
                     }
                 }
             } else {
-                if (is_dir($fixtureDir . '/Output')) {
-                    $versions[] = GeneratorRequest::DEFAULT_PHP8_VERSION;
-                }
                 foreach (scandir($fixtureDir) as $dirEntry) {
                     if (preg_match('/^Output-(.+)$/', $dirEntry, $m)) {
                         $versions[] = $m[1];
@@ -122,7 +120,7 @@ class SchemaToClassTest extends TestCase
 
             $multipleVersions = count($versions) > 1;
             foreach ($versions as $version) {
-                $dirName = $version === GeneratorRequest::DEFAULT_PHP8_VERSION ? 'Output' : 'Output-' . $version;
+                $dirName = 'Output-' . $version;
                 $outputDir = join(DIRECTORY_SEPARATOR, [$fixtureDir, $dirName]);
 
                 if (!is_dir($outputDir) && getenv('UPDATE_SNAPSHOTS') === '1') {
@@ -237,7 +235,7 @@ class SchemaToClassTest extends TestCase
                 assertThat($actualContent, equalTo($content));
             }
         } else {
-            $dirName = $version === GeneratorRequest::DEFAULT_PHP8_VERSION ? 'Output' : 'Output-' . $version;
+            $dirName = 'Output-' . $version;
             $outputDir = join(DIRECTORY_SEPARATOR, [__DIR__, 'Fixtures', $fixture, $dirName]);
             if (is_dir($outputDir)) {
                 $iterator = new \RecursiveIteratorIterator(
@@ -256,7 +254,7 @@ class SchemaToClassTest extends TestCase
             foreach ($writtenFiles as $filename => $content) {
                 $relative = substr($filename, strlen(__DIR__) + 1);
                 $relative = str_replace('\\', '/', $relative);
-                $dirName = $version === GeneratorRequest::DEFAULT_PHP8_VERSION ? 'Output' : 'Output-' . $version;
+                $dirName = 'Output-' . $version;
                 $outputFilename = join(DIRECTORY_SEPARATOR, [__DIR__, 'Fixtures', $fixture, $dirName, $relative]);
                 if (!is_dir(dirname($outputFilename))) {
                     mkdir(dirname($outputFilename), 0777, true);
@@ -287,7 +285,7 @@ class SchemaToClassTest extends TestCase
     public function testCliNoEnumsMatchesFixture(): void
     {
         $schemaFile = __DIR__ . '/Fixtures/NoEnums/schema.yaml';
-        $expected   = trim(file_get_contents(__DIR__ . '/Fixtures/NoEnums/Output/MyClass.php'));
+        $expected   = trim(file_get_contents(__DIR__ . '/Fixtures/NoEnums/Output-8.4/MyClass.php'));
 
         $dir = sys_get_temp_dir() . '/s2c_' . uniqid();
         mkdir($dir);
@@ -296,11 +294,11 @@ class SchemaToClassTest extends TestCase
 
         $tester = new CommandTester($command);
         $tester->execute([
-            'schema' => $schemaFile,
-            'target-dir' => $dir,
-            '--target-namespace' => 'Ns\\NoEnums',
-            '--class' => 'MyClass',
-            '--no-enums' => true,
+            'schema'                => $schemaFile,
+            'target-dir'            => $dir,
+            '--target-namespace'    => 'Ns\\NoEnums_8_4',
+            '--class'               => 'MyClass',
+            '--no-enums'            => true,
         ]);
 
         $generated = trim(file_get_contents($dir . '/MyClass.php'));
