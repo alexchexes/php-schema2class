@@ -15,45 +15,73 @@ class Pets
         'type' => 'object',
         'properties' => [
             'pet' => [
-                '$ref' => '#/definitions/schemas/GenericPet',
+                '$ref' => '#/definitions/GenericPet',
             ],
             'cat' => [
-                '$ref' => '#/definitions/schemas/Cat',
+                '$ref' => '#/definitions/Cat',
+            ],
+        ],
+        'definitions' => [
+            'GenericPet' => [
+                'type' => 'object',
+                'properties' => [
+                    'hasFur' => [
+                        '$ref' => '#/definitions/furBoolean',
+                    ],
+                ],
+            ],
+            'Cat' => [
+                'type' => 'object',
+                'properties' => [
+                    'hasFur' => [
+                        '$ref' => '#/definitions/furBoolean',
+                        'description' => 'Whether the cat has fur. True by default for most cats',
+                        'default' => true,
+                    ],
+                ],
+            ],
+            'furBoolean' => [
+                'description' => 'Whether the animal has fur (true), doesn\'t (false), or it\'s unknown or varies (null)',
+                'type' => [
+                    'boolean',
+                    'null',
+                ],
+                'default' => false,
             ],
         ],
     ];
 
     /**
-     * @var mixed|null
+     * @var GenericPet|null
      */
-    private mixed $pet = null;
+    private ?GenericPet $pet = null;
 
     /**
-     * @var mixed|null
+     * @var Cat|null
      */
-    private mixed $cat = null;
+    private ?Cat $cat = null;
 
     /**
-     * @return mixed|null
+     * @return GenericPet|null
      */
-    public function getPet() : mixed
+    public function getPet() : ?GenericPet
     {
-        return $this->pet;
+        return $this->pet ?? null;
     }
 
     /**
-     * @return mixed|null
+     * @return Cat|null
      */
-    public function getCat() : mixed
+    public function getCat() : ?Cat
     {
-        return $this->cat;
+        return $this->cat ?? null;
     }
 
     /**
-     * @param mixed $pet
+     * @param GenericPet $pet
      * @return self
      */
-    public function withPet(mixed $pet) : self
+    public function withPet(GenericPet $pet) : self
     {
         $clone = clone $this;
         $clone->pet = $pet;
@@ -73,10 +101,10 @@ class Pets
     }
 
     /**
-     * @param mixed $cat
+     * @param Cat $cat
      * @return self
      */
-    public function withCat(mixed $cat) : self
+    public function withCat(Cat $cat) : self
     {
         $clone = clone $this;
         $clone->cat = $cat;
@@ -110,8 +138,8 @@ class Pets
             static::validateInput($input);
         }
 
-        $pet = isset($input->{'pet'}) ? $input->{'pet'} : null;
-        $cat = isset($input->{'cat'}) ? $input->{'cat'} : null;
+        $pet = isset($input->{'pet'}) ? GenericPet::buildFromInput($input->{'pet'}, $validate) : null;
+        $cat = isset($input->{'cat'}) ? Cat::buildFromInput($input->{'cat'}, $validate) : null;
 
         $obj = new self();
         $obj->pet = $pet;
@@ -128,10 +156,10 @@ class Pets
     {
         $output = [];
         if (isset($this->pet)) {
-            $output['pet'] = $this->pet;
+            $output['pet'] = $this->pet->toArray();
         }
         if (isset($this->cat)) {
-            $output['cat'] = $this->cat;
+            $output['cat'] = $this->cat->toArray();
         }
 
         return $output;

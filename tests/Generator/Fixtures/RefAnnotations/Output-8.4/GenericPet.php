@@ -15,30 +15,53 @@ class GenericPet
         'type' => 'object',
         'properties' => [
             'hasFur' => [
-                '$ref' => '#/definitions/schemas/furBoolean',
+                '$ref' => '#/definitions/furBoolean',
+            ],
+        ],
+        'definitions' => [
+            'furBoolean' => [
+                'description' => 'Whether the animal has fur (true), doesn\'t (false), or it\'s unknown or varies (null)',
+                'type' => [
+                    'boolean',
+                    'null',
+                ],
+                'default' => false,
             ],
         ],
     ];
 
     /**
-     * @var mixed|null
+     * Whether the animal has fur (true), doesn't (false), or it's unknown or varies (null)
+     *
+     * @var bool
      */
-    private mixed $hasFur = null;
+    private bool $hasFur = false;
 
     /**
-     * @return mixed|null
+     * Whether the animal has fur (true), doesn't (false), or it's unknown or varies (null)
+     *
+     * @return bool
      */
-    public function getHasFur() : mixed
+    public function getHasFur() : bool
     {
         return $this->hasFur;
     }
 
     /**
-     * @param mixed $hasFur
+     * @param bool $hasFur
      * @return self
+     * @param bool $validate
      */
-    public function withHasFur(mixed $hasFur) : self
+    public function withHasFur(bool $hasFur, bool $validate = true) : self
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($hasFur, self::$schema['properties']['hasFur']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
         $clone->hasFur = $hasFur;
 
@@ -51,7 +74,7 @@ class GenericPet
     public function withoutHasFur() : self
     {
         $clone = clone $this;
-        unset($clone->hasFur);
+        $clone->hasFur = false;
 
         return $clone;
     }
@@ -71,7 +94,7 @@ class GenericPet
             static::validateInput($input);
         }
 
-        $hasFur = isset($input->{'hasFur'}) ? $input->{'hasFur'} : null;
+        $hasFur = isset($input->{'hasFur'}) ? $input->{'hasFur'} : false;
 
         $obj = new self();
         $obj->hasFur = $hasFur;

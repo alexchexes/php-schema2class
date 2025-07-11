@@ -15,36 +15,55 @@ class Cat
         'type' => 'object',
         'properties' => [
             'hasFur' => [
-                '$ref' => '#/definitions/schemas/furBoolean',
+                '$ref' => '#/definitions/furBoolean',
                 'description' => 'Whether the cat has fur. True by default for most cats',
                 'default' => true,
+            ],
+        ],
+        'definitions' => [
+            'furBoolean' => [
+                'description' => 'Whether the animal has fur (true), doesn\'t (false), or it\'s unknown or varies (null)',
+                'type' => [
+                    'boolean',
+                    'null',
+                ],
+                'default' => false,
             ],
         ],
     ];
 
     /**
-     * Whether the cat has fur. True by default for most cats
+     * Whether the animal has fur (true), doesn't (false), or it's unknown or varies (null)
      *
-     * @var mixed
+     * @var bool
      */
-    private mixed $hasFur = true;
+    private bool $hasFur = false;
 
     /**
-     * Whether the cat has fur. True by default for most cats
+     * Whether the animal has fur (true), doesn't (false), or it's unknown or varies (null)
      *
-     * @return mixed
+     * @return bool
      */
-    public function getHasFur() : mixed
+    public function getHasFur() : bool
     {
         return $this->hasFur;
     }
 
     /**
-     * @param mixed $hasFur
+     * @param bool $hasFur
      * @return self
+     * @param bool $validate
      */
-    public function withHasFur(mixed $hasFur) : self
+    public function withHasFur(bool $hasFur, bool $validate = true) : self
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($hasFur, self::$schema['properties']['hasFur']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
         $clone->hasFur = $hasFur;
 
@@ -57,7 +76,7 @@ class Cat
     public function withoutHasFur() : self
     {
         $clone = clone $this;
-        $clone->hasFur = true;
+        $clone->hasFur = false;
 
         return $clone;
     }
@@ -77,7 +96,7 @@ class Cat
             static::validateInput($input);
         }
 
-        $hasFur = isset($input->{'hasFur'}) ? $input->{'hasFur'} : true;
+        $hasFur = isset($input->{'hasFur'}) ? $input->{'hasFur'} : false;
 
         $obj = new self();
         $obj->hasFur = $hasFur;

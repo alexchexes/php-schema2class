@@ -3,15 +3,15 @@
     "Pets": {
       "type": "object",
       "properties": {
-        "pet": { "$ref": "#/definitions/schemas/GenericPet" },
-        "cat": { "$ref": "#/definitions/schemas/Cat" }
+        "pet": { "$ref": "#/definitions/GenericPet" },
+        "cat": { "$ref": "#/definitions/Cat" }
       }
     },
     "GenericPet": {
       "type": "object",
       "properties": {
         "hasFur": {
-          "$ref": "#/definitions/schemas/furBoolean"
+          "$ref": "#/definitions/furBoolean"
         }
       }
     },
@@ -19,7 +19,7 @@
       "type": "object",
       "properties": {
         "hasFur": {
-          "$ref": "#/definitions/schemas/furBoolean",
+          "$ref": "#/definitions/furBoolean",
           "description": "Whether the cat has fur. True by default for most cats",
           "default": true
         }
