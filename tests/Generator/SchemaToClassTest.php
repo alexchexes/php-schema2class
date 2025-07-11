@@ -64,11 +64,29 @@ class SchemaToClassTest extends TestCase
 
             $schemaFile = join(DIRECTORY_SEPARATOR, [$fixtureDir, 'schema.yaml']);
             if (!file_exists($schemaFile)) {
+                $schemaFile = join(DIRECTORY_SEPARATOR, [$fixtureDir, 'schema.yml']);
+            }
+            if (!file_exists($schemaFile)) {
                 $schemaFile = join(DIRECTORY_SEPARATOR, [$fixtureDir, 'schema.json']);
             }
 
             $optionsFile  = join(DIRECTORY_SEPARATOR, [$fixtureDir, 'options.yaml']);
+            if (!file_exists($optionsFile)) {
+                $optionsFile = join(DIRECTORY_SEPARATOR, [$fixtureDir, 'options.yml']);
+            }
+            if (!file_exists($optionsFile)) {
+                $optionsFile = join(DIRECTORY_SEPARATOR, [$fixtureDir, 'options.json']);
+            }
+
             $versionsFile = join(DIRECTORY_SEPARATOR, [$fixtureDir, 'versions.yaml']);
+            if (!file_exists($versionsFile)) {
+                $versionsFile = join(DIRECTORY_SEPARATOR, [$fixtureDir, 'versions.yml']);
+            }
+            if (!file_exists($versionsFile)) {
+                $versionsFile = join(DIRECTORY_SEPARATOR, [$fixtureDir, 'versions.json']);
+            }
+
+            
             $inputDir     = join(DIRECTORY_SEPARATOR, [$fixtureDir, 'Input']);
 
             $schema     = (new SchemaLoader())->loadSchema($schemaFile);
