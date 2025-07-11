@@ -279,7 +279,7 @@ class GeneratorRequest
     public function lookupReference(string $ref): ReferencedType
     {
         if (empty($this->referenceLookup)) {
-            return new ReferencedTypeUnknown();
+            throw new GeneratorException("unresolvable reference: {$ref}");
         }
 
         foreach ($this->referenceLookup as $lookup) {
@@ -289,13 +289,13 @@ class GeneratorRequest
             }
         }
 
-        return new ReferencedTypeUnknown();
+        throw new GeneratorException("unresolvable reference: {$ref}");
     }
 
     public function lookupSchema(string $ref): array
     {
         if (empty($this->referenceLookup)) {
-            return [];
+            throw new GeneratorException("unresolvable reference: {$ref}");
         }
 
         foreach ($this->referenceLookup as $lookup) {
@@ -305,6 +305,6 @@ class GeneratorRequest
             }
         }
 
-        return [];
+        throw new GeneratorException("unresolvable reference: {$ref}");
     }
 }
