@@ -159,4 +159,46 @@ class Schema2ClassTest extends TestCase
         $merged = OptionsDefaults::mergeOptions($base, $override);
         $this->assertFalse($merged->getSingleLineSchema());
     }
+
+    public function testUnresolvableRefThrows(): void
+    {
+        $schema = [
+            'definitions' => [
+                'Cat' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'hasFur' => [
+                            '$ref' => '#/definitions/schemas/furBoolean',
+                        ],
+                    ],
+                ],
+                'furBoolean' => [
+                    'type' => 'boolean',
+                ],
+            ],
+        ];
+
+        $dir = sys_get_temp_dir() . '/s2c_' . uniqid();
+        mkdir($dir);
+
+        $generator = new Schema2Class();
+
+        $this->expectException(\Helmich\Schema2Class\Generator\GeneratorException::class);
+
+        try {
+            $generator->generateFromSchema(
+                $schema,
+                'Cat',
+                [
+                    'targetDirectory' => $dir,
+                    'targetNamespace' => 'My\\Ns',
+                ]
+            );
+        } finally {
+            foreach (glob($dir . '/*.php') ?: [] as $file) {
+                unlink($file);
+            }
+            rmdir($dir);
+        }
+    }
 }
