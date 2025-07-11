@@ -329,7 +329,13 @@ class SchemaToClassTest extends TestCase
 
         foreach ($inputs as $class => $input) {
             $fqcn = "Ns\\{$nsName}\\{$class}";
-            $obj = $fqcn::buildFromInput($input);
+
+            try {
+                $obj = $fqcn::buildFromInput($input);
+            } catch (\Throwable $th) {
+                throw new \Exception("Failed to build {$fqcn} from input", 0, $th);
+            }
+
             $this->assertInstanceOf($fqcn, $obj);
             $expectedArray = json_decode(json_encode($input), true);
             $actualArray = $obj->toArray();
