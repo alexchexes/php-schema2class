@@ -1,0 +1,8 @@
+{
+  "pet": {
+    "hasFur": null
+  },
+  "cat": {
+    "hasFur": true
+  }
+}
