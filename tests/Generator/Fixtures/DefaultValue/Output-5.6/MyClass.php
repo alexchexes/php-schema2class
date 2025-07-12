@@ -27,12 +27,12 @@ class MyClass
     ];
 
     /**
-     * @var int
+     * @var int|null
      */
     private $limit = 10000;
 
     /**
-     * @var int
+     * @var int|null
      */
     private $skip = 0;
 

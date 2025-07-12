@@ -29,14 +29,14 @@ class MyClass
     ];
 
     /**
-     * @var int
+     * @var int|null
      */
-    private int $limit = 10000;
+    private ?int $limit = 10000;
 
     /**
-     * @var int
+     * @var int|null
      */
-    private int $skip = 0;
+    private ?int $skip = 0;
 
     /**
      * @return int

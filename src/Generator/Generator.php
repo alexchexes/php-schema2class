@@ -60,7 +60,7 @@ class Generator
 
             if ($property instanceof OptionalPropertyDecorator || $property instanceof DefaultPropertyDecorator) {
                 $isOptional = true;
-                if (isset($schema["default"])) {
+                if (isset($schema["default"]) && !$property->allowsNull()) {
                     $property = $property->unwrap();
                 }
             }

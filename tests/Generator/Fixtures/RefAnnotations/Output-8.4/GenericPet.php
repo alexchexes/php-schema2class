@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ns\NestedTypedArrayProperty_8_4;
+namespace Ns\RefAnnotations;
 
-class Fio
+class GenericPet
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -14,45 +14,56 @@ class Fio
     private static array $schema = [
         'type' => 'object',
         'properties' => [
-            'bar' => [
+            'hasFur' => [
+                '$ref' => '#/definitions/furBoolean',
+            ],
+        ],
+        'definitions' => [
+            'furBoolean' => [
+                'description' => 'Whether the animal has fur (true), doesn\'t (false), or it\'s unknown or varies (null)',
                 'type' => [
+                    'boolean',
                     'null',
-                    'string',
                 ],
+                'default' => false,
             ],
         ],
     ];
 
     /**
-     * @var string|null
+     * Whether the animal has fur (true), doesn't (false), or it's unknown or varies (null)
+     *
+     * @var bool|null
      */
-    private ?string $bar = null;
+    private ?bool $hasFur = false;
 
     /**
-     * @return string|null
+     * Whether the animal has fur (true), doesn't (false), or it's unknown or varies (null)
+     *
+     * @return bool
      */
-    public function getBar() : ?string
+    public function getHasFur() : bool
     {
-        return $this->bar ?? null;
+        return $this->hasFur;
     }
 
     /**
-     * @param string $bar
+     * @param bool $hasFur
      * @return self
      * @param bool $validate
      */
-    public function withBar(string $bar, bool $validate = true) : self
+    public function withHasFur(bool $hasFur, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($bar, self::$schema['properties']['bar']);
+            $validator->validate($hasFur, self::$schema['properties']['hasFur']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
         }
 
         $clone = clone $this;
-        $clone->bar = $bar;
+        $clone->hasFur = $hasFur;
 
         return $clone;
     }
@@ -60,10 +71,10 @@ class Fio
     /**
      * @return self
      */
-    public function withoutBar() : self
+    public function withoutHasFur() : self
     {
         $clone = clone $this;
-        unset($clone->bar);
+        $clone->hasFur = false;
 
         return $clone;
     }
@@ -73,20 +84,20 @@ class Fio
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
-     * @return Fio Created instance
+     * @return GenericPet Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : Fio
+    public static function buildFromInput(array|object $input, bool $validate = true) : GenericPet
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
+        $hasFur = property_exists($input, 'hasFur') ? $input->{'hasFur'} : false;
 
         $obj = new self();
-        $obj->bar = $bar;
+        $obj->hasFur = $hasFur;
         return $obj;
     }
 
@@ -98,7 +109,7 @@ class Fio
     public function toArray() : array
     {
         $output = [];
-        $output['bar'] = $this->bar;
+        $output['hasFur'] = $this->hasFur;
 
         return $output;
     }

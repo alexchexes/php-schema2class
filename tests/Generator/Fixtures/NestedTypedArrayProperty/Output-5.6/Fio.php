@@ -102,9 +102,7 @@ class Fio
     public function toArray()
     {
         $output = [];
-        if (isset($this->bar)) {
-            $output['bar'] = $this->bar;
-        }
+        $output['bar'] = $this->bar;
 
         return $output;
     }

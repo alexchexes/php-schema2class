@@ -1,0 +1,34 @@
+{
+  "definitions": {
+    "Pets": {
+      "type": "object",
+      "properties": {
+        "pet": { "$ref": "#/definitions/GenericPet" },
+        "cat": { "$ref": "#/definitions/Cat" }
+      }
+    },
+    "GenericPet": {
+      "type": "object",
+      "properties": {
+        "hasFur": {
+          "$ref": "#/definitions/furBoolean"
+        }
+      }
+    },
+    "Cat": {
+      "type": "object",
+      "properties": {
+        "hasFur": {
+          "$ref": "#/definitions/furBoolean",
+          "description": "Whether the cat has fur. True by default for most cats",
+          "default": true
+        }
+      }
+    },
+    "furBoolean": {
+      "description": "Whether the animal has fur (true), doesn't (false), or it's unknown or varies (null)",
+      "type": ["boolean", "null"],
+      "default": false
+    }
+  }
+}
