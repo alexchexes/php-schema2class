@@ -137,8 +137,8 @@ class MyClass
             static::validateInput($input);
         }
 
-        $files = property_exists($input, 'files') ? array_map(fn (array|object $i): MyClassFilesItem => MyClassFilesItem::buildFromInput($i, validate: $validate), $input->{'files'}) : null;
-        $options = property_exists($input, 'options') ? OptionsObject::buildFromInput($input->{'options'}, $validate) : null;
+        $files = isset($input->{'files'}) ? array_map(fn (array|object $i): MyClassFilesItem => MyClassFilesItem::buildFromInput($i, validate: $validate), $input->{'files'}) : null;
+        $options = isset($input->{'options'}) ? OptionsObject::buildFromInput($input->{'options'}, $validate) : null;
 
         $obj = new self();
         $obj->files = $files;

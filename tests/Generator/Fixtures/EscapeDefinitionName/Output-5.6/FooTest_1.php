@@ -84,7 +84,7 @@ class FooTest_1
             static::validateInput($input);
         }
 
-        $b = property_exists($input, 'b') ? $input->{'b'} : null;
+        $b = isset($input->{'b'}) ? $input->{'b'} : null;
 
         $obj = new self();
         $obj->b = $b;

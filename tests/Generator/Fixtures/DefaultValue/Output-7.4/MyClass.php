@@ -139,8 +139,8 @@ class MyClass
             static::validateInput($input);
         }
 
-        $limit = property_exists($input, 'limit') ? $input->{'limit'} : 10000;
-        $skip = property_exists($input, 'skip') ? $input->{'skip'} : 0;
+        $limit = isset($input->{'limit'}) ? $input->{'limit'} : 10000;
+        $skip = isset($input->{'skip'}) ? $input->{'skip'} : 0;
 
         $obj = new self();
         $obj->limit = $limit;

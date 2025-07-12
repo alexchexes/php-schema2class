@@ -107,7 +107,7 @@ class BarTest
             static::validateInput($input);
         }
 
-        $exampleProp = property_exists($input, 'exampleProp') ? match (true) {
+        $exampleProp = isset($input->{'exampleProp'}) ? match (true) {
             FooTest::validateInput($input->{'exampleProp'}, true) => FooTest::buildFromInput($input->{'exampleProp'}, $validate),
             MoiKlass::validateInput($input->{'exampleProp'}, true) => MoiKlass::buildFromInput($input->{'exampleProp'}, $validate),
             FooTest_1::validateInput($input->{'exampleProp'}, true) => FooTest_1::buildFromInput($input->{'exampleProp'}, $validate),

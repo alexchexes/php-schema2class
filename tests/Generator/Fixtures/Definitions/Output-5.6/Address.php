@@ -133,7 +133,7 @@ class Address
             static::validateInput($input);
         }
 
-        $name = property_exists($input, 'name') ? Address\Defs\Name::buildFromInput($input->{'name'}, $validate) : null;
+        $name = isset($input->{'name'}) ? Address\Defs\Name::buildFromInput($input->{'name'}, $validate) : null;
         $city = $input->{'city'};
 
         $obj = new self($city);

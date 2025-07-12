@@ -84,7 +84,7 @@ class Name
             static::validateInput($input);
         }
 
-        $first = property_exists($input, 'first') ? $input->{'first'} : null;
+        $first = isset($input->{'first'}) ? $input->{'first'} : null;
 
         $obj = new self();
         $obj->first = $first;

@@ -128,7 +128,7 @@ class MyClass
         }
 
         $foo_bar = $input->{'foo-bar'};
-        $_foo_bar = property_exists($input, 'foo bar') ? $input->{'foo bar'} : null;
+        $_foo_bar = isset($input->{'foo bar'}) ? $input->{'foo bar'} : null;
 
         $obj = new self($foo_bar);
         $obj->_foo_bar = $_foo_bar;

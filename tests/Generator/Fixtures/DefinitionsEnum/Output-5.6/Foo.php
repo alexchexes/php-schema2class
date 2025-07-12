@@ -150,7 +150,7 @@ class Foo
         }
 
         $color = $input->{'color'};
-        $size = property_exists($input, 'size') ? $input->{'size'} : null;
+        $size = isset($input->{'size'}) ? $input->{'size'} : null;
 
         $obj = new self($color);
         $obj->size = $size;

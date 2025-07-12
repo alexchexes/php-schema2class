@@ -138,8 +138,8 @@ class Pets
             static::validateInput($input);
         }
 
-        $pet = property_exists($input, 'pet') ? GenericPet::buildFromInput($input->{'pet'}, $validate) : null;
-        $cat = property_exists($input, 'cat') ? Cat::buildFromInput($input->{'cat'}, $validate) : null;
+        $pet = isset($input->{'pet'}) ? GenericPet::buildFromInput($input->{'pet'}, $validate) : null;
+        $cat = isset($input->{'cat'}) ? Cat::buildFromInput($input->{'cat'}, $validate) : null;
 
         $obj = new self();
         $obj->pet = $pet;

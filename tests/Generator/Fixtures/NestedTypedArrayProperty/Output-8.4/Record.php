@@ -285,20 +285,20 @@ class Record
             static::validateInput($input);
         }
 
-        $dataArray = property_exists($input, 'dataArray') ? array_map(
+        $dataArray = isset($input->{'dataArray'}) ? array_map(
             fn(array|object $i): Phone => Phone::buildFromInput($i, $validate),
             $input->{'dataArray'}
         ) : null;
-        $dataArrayNested = property_exists($input, 'dataArrayNested') ? array_map(fn($i) => array_map(
+        $dataArrayNested = isset($input->{'dataArrayNested'}) ? array_map(fn($i) => array_map(
             fn(array|object $i): Phone => Phone::buildFromInput($i, $validate),
             $i
         ), $input->{'dataArrayNested'}) : null;
-        $dataArrayAnyOf = property_exists($input, 'dataArrayAnyOf') ? array_map(fn($i) => match (true) {
+        $dataArrayAnyOf = isset($input->{'dataArrayAnyOf'}) ? array_map(fn($i) => match (true) {
             Phone::validateInput($i, true) => Phone::buildFromInput($i, $validate),
             Fio::validateInput($i, true) => Fio::buildFromInput($i, $validate),
             default => null,
         }, $input->{'dataArrayAnyOf'}) : null;
-        $dataArrayNestedAnyOf = property_exists($input, 'dataArrayNestedAnyOf') ? array_map(fn($i) => array_map(fn($i) => match (true) {
+        $dataArrayNestedAnyOf = isset($input->{'dataArrayNestedAnyOf'}) ? array_map(fn($i) => array_map(fn($i) => match (true) {
             Phone::validateInput($i, true) => Phone::buildFromInput($i, $validate),
             Fio::validateInput($i, true) => Fio::buildFromInput($i, $validate),
             default => null,

@@ -289,16 +289,16 @@ class Record
             static::validateInput($input);
         }
 
-        $dataArray = property_exists($input, 'dataArray') ? array_map(
+        $dataArray = isset($input->{'dataArray'}) ? array_map(
             fn($i) => Phone::buildFromInput($i, $validate),
             $input->{'dataArray'}
         ) : null;
-        $dataArrayNested = property_exists($input, 'dataArrayNested') ? array_map(function($i) use ($validate) { return array_map(
+        $dataArrayNested = isset($input->{'dataArrayNested'}) ? array_map(function($i) use ($validate) { return array_map(
             fn($i) => Phone::buildFromInput($i, $validate),
             $i
         ); }, $input->{'dataArrayNested'}) : null;
-        $dataArrayAnyOf = property_exists($input, 'dataArrayAnyOf') ? array_map(function($i) use ($validate) { return (Fio::validateInput($i, true)) ? (Fio::buildFromInput($i, $validate)) : ((Phone::validateInput($i, true)) ? (Phone::buildFromInput($i, $validate)) : (null)); }, $input->{'dataArrayAnyOf'}) : null;
-        $dataArrayNestedAnyOf = property_exists($input, 'dataArrayNestedAnyOf') ? array_map(function($i) use ($validate) { return array_map(function($i) use ($validate) { return (Fio::validateInput($i, true)) ? (Fio::buildFromInput($i, $validate)) : ((Phone::validateInput($i, true)) ? (Phone::buildFromInput($i, $validate)) : (null)); }, $i); }, $input->{'dataArrayNestedAnyOf'}) : null;
+        $dataArrayAnyOf = isset($input->{'dataArrayAnyOf'}) ? array_map(function($i) use ($validate) { return (Fio::validateInput($i, true)) ? (Fio::buildFromInput($i, $validate)) : ((Phone::validateInput($i, true)) ? (Phone::buildFromInput($i, $validate)) : (null)); }, $input->{'dataArrayAnyOf'}) : null;
+        $dataArrayNestedAnyOf = isset($input->{'dataArrayNestedAnyOf'}) ? array_map(function($i) use ($validate) { return array_map(function($i) use ($validate) { return (Fio::validateInput($i, true)) ? (Fio::buildFromInput($i, $validate)) : ((Phone::validateInput($i, true)) ? (Phone::buildFromInput($i, $validate)) : (null)); }, $i); }, $input->{'dataArrayNestedAnyOf'}) : null;
 
         $obj = new self();
         $obj->dataArray = $dataArray;

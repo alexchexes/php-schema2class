@@ -49,8 +49,27 @@ class OptionalPropertyDecoratorTest extends TestCase
 
         $result = $this->decorator->convertInputToType('variable');
 
-        $expected = '$myPropertyName = array_key_exists(\'myPropertyName\', $variable) ? INNER_EXPR : null;';
+        $expected = '$myPropertyName = isset($variable[\'myPropertyName\']) ? INNER_EXPR : null;';
 
+        assertSame($expected, $result);
+    }
+
+    public function testConvertInputToTypeWithNullableDefault()
+    {
+        $prophecy = $this->prophesize(PropertyInterface::class);
+        $prophecy->schema()->willReturn(['default' => false]);
+        $prophecy->allowsNull()->willReturn(true);
+        $prophecy->name()->willReturn('myPropertyName');
+        $prophecy
+            ->generateInputMappingExpr('$variable[\'myPropertyName\']', true)
+            ->willReturn('INNER_EXPR');
+        $prophecy->formatValue(false)->willReturn(new PropertyValueGenerator(false));
+
+        $decorator = new OptionalPropertyDecorator('myPropertyName', $prophecy->reveal());
+
+        $result = $decorator->convertInputToType('variable');
+
+        $expected = '$myPropertyName = array_key_exists(\'myPropertyName\', $variable) ? INNER_EXPR : false;';
         assertSame($expected, $result);
     }
 

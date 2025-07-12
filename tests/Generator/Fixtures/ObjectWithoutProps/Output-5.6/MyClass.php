@@ -131,7 +131,7 @@ class MyClass
             static::validateInput($input);
         }
 
-        $foo = property_exists($input, 'foo') ? $input->{'foo'} : null;
+        $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
         $bar = $input->{'bar'};
 
         $obj = new self($bar);
