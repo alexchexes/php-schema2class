@@ -86,7 +86,7 @@ class Phone
             static::validateInput($input);
         }
 
-        $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
+        $foo = property_exists($input, 'foo') ? $input->{'foo'} : null;
 
         $obj = new self();
         $obj->foo = $foo;

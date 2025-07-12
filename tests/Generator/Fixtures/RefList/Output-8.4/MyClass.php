@@ -85,7 +85,7 @@ class MyClass
             static::validateInput($input);
         }
 
-        $foo = isset($input->{'foo'}) ? array_map(
+        $foo = property_exists($input, 'foo') ? array_map(
             fn(array|object $i): \Helmich\Schema2Class\Example\CustomerAddress => \Helmich\Schema2Class\Example\CustomerAddress::buildFromInput($i, $validate),
             $input->{'foo'}
         ) : null;

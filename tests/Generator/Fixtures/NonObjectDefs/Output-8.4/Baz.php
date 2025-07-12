@@ -107,7 +107,7 @@ class Baz
             static::validateInput($input);
         }
 
-        $grox = isset($input->{'grox'}) ? match (true) {
+        $grox = property_exists($input, 'grox') ? match (true) {
             Foo::validateInput($input->{'grox'}, true) => Foo::buildFromInput($input->{'grox'}, $validate),
             Bar::validateInput($input->{'grox'}, true) => Bar::buildFromInput($input->{'grox'}, $validate),
             default => null,

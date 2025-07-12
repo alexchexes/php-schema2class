@@ -154,7 +154,7 @@ class MyClass
         }
 
         $id = (int)($input->{'id'});
-        $address = isset($input->{'address'}) ? Address::buildFromInput($input->{'address'}, $validate) : null;
+        $address = property_exists($input, 'address') ? Address::buildFromInput($input->{'address'}, $validate) : null;
 
         $obj = new self($id);
         $obj->address = $address;

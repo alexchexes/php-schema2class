@@ -74,8 +74,18 @@ class PropertyBuilder
                         && !array_key_exists('enum', $refSchema));
 
                 if ($shouldInline) {
-                    foreach (['description', 'title', 'default', 'deprecated'] as $k) {
-                        if (isset($definition[$k]) && !isset($refSchema[$k])) {
+                    foreach ([
+                        'title',
+                        'description',
+                        'summary',
+                        'default',
+                        'deprecated',
+                        'readOnly',
+                        'writeOnly',
+                        'examples',
+                        'example',
+                    ] as $k) {
+                        if (array_key_exists($k, $definition)) {
                             $refSchema[$k] = $definition[$k];
                         }
                     }

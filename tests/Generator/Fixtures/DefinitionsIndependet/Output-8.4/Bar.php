@@ -80,7 +80,7 @@ class Bar
             static::validateInput($input);
         }
 
-        $b = isset($input->{'b'}) ? $input->{'b'} : null;
+        $b = property_exists($input, 'b') ? $input->{'b'} : null;
 
         $obj = new self();
         $obj->b = $b;

@@ -85,7 +85,7 @@ class OptionsObject
             static::validateInput($input);
         }
 
-        $output = isset($input->{'output'}) ? $input->{'output'} : null;
+        $output = property_exists($input, 'output') ? $input->{'output'} : null;
 
         $obj = new self();
         $obj->output = $output;

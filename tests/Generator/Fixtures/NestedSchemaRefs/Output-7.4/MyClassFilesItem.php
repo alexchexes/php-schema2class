@@ -133,8 +133,8 @@ class MyClassFilesItem
             static::validateInput($_input);
         }
 
-        $input = isset($_input->{'input'}) ? $_input->{'input'} : null;
-        $options = isset($_input->{'options'}) ? OptionsObject::buildFromInput($_input->{'options'}, $validate) : null;
+        $input = property_exists($_input, 'input') ? $_input->{'input'} : null;
+        $options = property_exists($_input, 'options') ? OptionsObject::buildFromInput($_input->{'options'}, $validate) : null;
 
         $obj = new self();
         $obj->input = $input;

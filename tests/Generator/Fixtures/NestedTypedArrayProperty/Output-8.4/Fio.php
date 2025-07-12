@@ -83,7 +83,7 @@ class Fio
             static::validateInput($input);
         }
 
-        $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
+        $bar = property_exists($input, 'bar') ? $input->{'bar'} : null;
 
         $obj = new self();
         $obj->bar = $bar;
@@ -98,9 +98,7 @@ class Fio
     public function toArray() : array
     {
         $output = [];
-        if (isset($this->bar)) {
-            $output['bar'] = $this->bar;
-        }
+        $output['bar'] = $this->bar;
 
         return $output;
     }

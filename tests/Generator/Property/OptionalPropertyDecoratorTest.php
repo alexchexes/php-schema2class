@@ -49,7 +49,7 @@ class OptionalPropertyDecoratorTest extends TestCase
 
         $result = $this->decorator->convertInputToType('variable');
 
-        $expected = '$myPropertyName = isset($variable[\'myPropertyName\']) ? INNER_EXPR : null;';
+        $expected = '$myPropertyName = array_key_exists(\'myPropertyName\', $variable) ? INNER_EXPR : null;';
 
         assertSame($expected, $result);
     }
@@ -57,6 +57,7 @@ class OptionalPropertyDecoratorTest extends TestCase
     public function testConvertTypeToArray()
     {
         $this->innerProperty->name()->shouldBeCalled()->willReturn('myPropertyName');
+        $this->innerProperty->allowsNull()->shouldBeCalled()->willReturn(false);
         $this->innerProperty->convertTypeToArray('variable')->shouldBeCalled()->willReturn('echo "InnerCode";');
 
         $result = $this->decorator->convertTypeToArray('variable');

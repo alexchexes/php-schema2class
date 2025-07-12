@@ -29,14 +29,14 @@ class MyClass
     ];
 
     /**
-     * @var int
+     * @var int|null
      */
-    private int $limit = 10000;
+    private ?int $limit = 10000;
 
     /**
-     * @var int
+     * @var int|null
      */
-    private int $skip = 0;
+    private ?int $skip = 0;
 
     /**
      * @return int
@@ -133,8 +133,8 @@ class MyClass
             static::validateInput($input);
         }
 
-        $limit = isset($input->{'limit'}) ? $input->{'limit'} : 10000;
-        $skip = isset($input->{'skip'}) ? $input->{'skip'} : 0;
+        $limit = property_exists($input, 'limit') ? $input->{'limit'} : 10000;
+        $skip = property_exists($input, 'skip') ? $input->{'skip'} : 0;
 
         $obj = new self();
         $obj->limit = $limit;

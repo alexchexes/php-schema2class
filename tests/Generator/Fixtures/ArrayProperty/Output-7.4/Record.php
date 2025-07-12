@@ -101,7 +101,7 @@ class Record
             static::validateInput($input);
         }
 
-        $dataArray = isset($input->{'dataArray'}) ? array_map(
+        $dataArray = property_exists($input, 'dataArray') ? array_map(
             fn($i) => Phone::buildFromInput($i, $validate),
             $input->{'dataArray'}
         ) : null;

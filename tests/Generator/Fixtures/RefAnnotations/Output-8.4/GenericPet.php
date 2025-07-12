@@ -33,9 +33,9 @@ class GenericPet
     /**
      * Whether the animal has fur (true), doesn't (false), or it's unknown or varies (null)
      *
-     * @var bool
+     * @var bool|null
      */
-    private bool $hasFur = false;
+    private ?bool $hasFur = false;
 
     /**
      * Whether the animal has fur (true), doesn't (false), or it's unknown or varies (null)
@@ -94,7 +94,7 @@ class GenericPet
             static::validateInput($input);
         }
 
-        $hasFur = isset($input->{'hasFur'}) ? $input->{'hasFur'} : false;
+        $hasFur = property_exists($input, 'hasFur') ? $input->{'hasFur'} : false;
 
         $obj = new self();
         $obj->hasFur = $hasFur;
@@ -109,9 +109,7 @@ class GenericPet
     public function toArray() : array
     {
         $output = [];
-        if (isset($this->hasFur)) {
-            $output['hasFur'] = $this->hasFur;
-        }
+        $output['hasFur'] = $this->hasFur;
 
         return $output;
     }

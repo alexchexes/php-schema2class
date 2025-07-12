@@ -28,7 +28,11 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator implements Ren
         $default    = isset($this->schema()["default"]) ? $this->schema()["default"] : null;
         $defaultExp = rtrim($this->formatValue($default)->generate(), ";");
 
-        return "\${$name} = isset($accessor) ? {$mapped} : {$defaultExp};";
+        $existsCheck = $object
+            ? "property_exists(\${$inputVarName}, '$key')"
+            : "array_key_exists('$key', \${$inputVarName})";
+
+        return "\${$name} = {$existsCheck} ? {$mapped} : {$defaultExp};";
     }
 
     /**
@@ -39,6 +43,10 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator implements Ren
     {
         $name  = $this->inner->name();
         $inner = $this->inner->convertTypeToArray($outputVarName);
+
+        if ($this->inner->allowsNull()) {
+            return $inner;
+        }
 
         return "if (isset(\$this->{$name})) {\n" . $this->indentCode($inner, 1) . "\n}";
     }

@@ -33,14 +33,14 @@ class Cat
     ];
 
     /**
-     * Whether the animal has fur (true), doesn't (false), or it's unknown or varies (null)
+     * Whether the cat has fur. True by default for most cats
      *
-     * @var bool
+     * @var bool|null
      */
-    private bool $hasFur = false;
+    private ?bool $hasFur = true;
 
     /**
-     * Whether the animal has fur (true), doesn't (false), or it's unknown or varies (null)
+     * Whether the cat has fur. True by default for most cats
      *
      * @return bool
      */
@@ -76,7 +76,7 @@ class Cat
     public function withoutHasFur() : self
     {
         $clone = clone $this;
-        $clone->hasFur = false;
+        $clone->hasFur = true;
 
         return $clone;
     }
@@ -96,7 +96,7 @@ class Cat
             static::validateInput($input);
         }
 
-        $hasFur = isset($input->{'hasFur'}) ? $input->{'hasFur'} : false;
+        $hasFur = property_exists($input, 'hasFur') ? $input->{'hasFur'} : true;
 
         $obj = new self();
         $obj->hasFur = $hasFur;
@@ -111,9 +111,7 @@ class Cat
     public function toArray() : array
     {
         $output = [];
-        if (isset($this->hasFur)) {
-            $output['hasFur'] = $this->hasFur;
-        }
+        $output['hasFur'] = $this->hasFur;
 
         return $output;
     }

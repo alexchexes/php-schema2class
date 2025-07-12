@@ -120,7 +120,7 @@ class MyClass
             is_array($input->{'foo'}) || is_object($input->{'foo'}) => $input->{'foo'},
             default => throw new \InvalidArgumentException("could not build property 'foo' from JSON"),
         };
-        $bar = isset($input->{'bar'}) ? match (true) {
+        $bar = property_exists($input, 'bar') ? match (true) {
             is_string($input->{'bar'}),
             is_array($input->{'bar'}) || is_object($input->{'bar'}) => $input->{'bar'},
             default => null,

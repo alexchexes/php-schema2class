@@ -128,7 +128,7 @@ class Foo
         }
 
         $color = Color::from($input->{'color'});
-        $size = isset($input->{'size'}) ? Size::from($input->{'size'}) : null;
+        $size = property_exists($input, 'size') ? Size::from($input->{'size'}) : null;
 
         $obj = new self($color);
         $obj->size = $size;

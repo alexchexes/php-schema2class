@@ -144,8 +144,8 @@ class MyClass
             static::validateInput($input);
         }
 
-        $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
-        $bar = isset($input->{'bar'}) ? Baz::buildFromInput($input->{'bar'}, $validate) : null;
+        $foo = property_exists($input, 'foo') ? $input->{'foo'} : null;
+        $bar = property_exists($input, 'bar') ? Baz::buildFromInput($input->{'bar'}, $validate) : null;
 
         $obj = new self();
         $obj->foo = $foo;

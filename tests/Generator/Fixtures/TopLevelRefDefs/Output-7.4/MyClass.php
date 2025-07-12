@@ -151,8 +151,8 @@ class MyClass
             static::validateInput($input);
         }
 
-        $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
-        $encoded = isset($input->{'encoded'}) ? $input->{'encoded'} : null;
+        $foo = property_exists($input, 'foo') ? $input->{'foo'} : null;
+        $encoded = property_exists($input, 'encoded') ? $input->{'encoded'} : null;
 
         $obj = new self();
         $obj->foo = $foo;

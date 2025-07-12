@@ -80,7 +80,7 @@ class MoiKlass
             static::validateInput($input);
         }
 
-        $c = isset($input->{'c'}) ? $input->{'c'} : null;
+        $c = property_exists($input, 'c') ? $input->{'c'} : null;
 
         $obj = new self();
         $obj->c = $c;
