@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ns\MatchExpressionsFormatting;
+namespace Ns\MatchExpressionFormatting;
 
 class Cat
 {
