@@ -1,0 +1,24 @@
+{
+  definitions: {
+    Cat: {
+      type: "object",
+      properties: {
+        hasFur: {
+          anyOf: [
+            { "$ref": "#/definitions/foo" },
+            { "$ref": "#/definitions/bar" }
+          ]
+        }
+      }
+    },
+    # See, for example, method __clone() - array uses old PHP array() syntax with redundant indexes, wrong intendation
+    foo: {
+      type: "string",
+      enum: ["a", "b"]
+    },
+    bar: {
+      type: "array",
+      items: { type: "string" }
+    }
+  }
+}
