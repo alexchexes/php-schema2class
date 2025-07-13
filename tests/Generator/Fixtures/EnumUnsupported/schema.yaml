@@ -17,6 +17,10 @@ definitions:
           - false
       boolEnumRef:
         $ref: "#/definitions/EnumBool"
+      requiredBoolEnumRef:
+        $ref: "#/definitions/EnumBool"
+    required:
+      - requiredBoolEnumRef
   EnumFloat:
     type: number
     enum:

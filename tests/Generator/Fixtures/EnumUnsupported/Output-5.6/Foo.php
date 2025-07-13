@@ -33,6 +33,12 @@ class Foo
             'boolEnumRef' => [
                 '$ref' => '#/definitions/EnumBool',
             ],
+            'requiredBoolEnumRef' => [
+                '$ref' => '#/definitions/EnumBool',
+            ],
+        ],
+        'required' => [
+            'requiredBoolEnumRef',
         ],
         'definitions' => [
             'EnumFloat' => [
@@ -74,6 +80,19 @@ class Foo
     private $boolEnumRef = null;
 
     /**
+     * @var
+     */
+    private $requiredBoolEnumRef;
+
+    /**
+     * @param 0 $requiredBoolEnumRef
+     */
+    public function __construct(string $requiredBoolEnumRef)
+    {
+        $this->requiredBoolEnumRef = $requiredBoolEnumRef;
+    }
+
+    /**
      * @return int|float|null
      */
     public function getFloatEnum()
@@ -103,6 +122,14 @@ class Foo
     public function getBoolEnumRef()
     {
         return $this->boolEnumRef;
+    }
+
+    /**
+     * @return
+     */
+    public function getRequiredBoolEnumRef()
+    {
+        return $this->requiredBoolEnumRef;
     }
 
     /**
@@ -234,6 +261,27 @@ class Foo
     }
 
     /**
+     * @param 0 $requiredBoolEnumRef
+     * @return self
+     * @param bool $validate
+     */
+    public function withRequiredBoolEnumRef(string $requiredBoolEnumRef, bool $validate = true)
+    {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($requiredBoolEnumRef, self::$schema['properties']['requiredBoolEnumRef']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
+        $clone = clone $this;
+        $clone->requiredBoolEnumRef = $requiredBoolEnumRef;
+
+        return $clone;
+    }
+
+    /**
      * Builds a new instance from an input array
      *
      * @param array|object $input Input data
@@ -258,8 +306,9 @@ class Foo
         $floatEnumRef = isset($input->{'floatEnumRef'}) ? $input->{'floatEnumRef'} : null;
         $boolEnum = isset($input->{'boolEnum'}) ? $input->{'boolEnum'} : null;
         $boolEnumRef = isset($input->{'boolEnumRef'}) ? $input->{'boolEnumRef'} : null;
+        $requiredBoolEnumRef = $input->{'requiredBoolEnumRef'};
 
-        $obj = new self();
+        $obj = new self($requiredBoolEnumRef);
         $obj->floatEnum = $floatEnum;
         $obj->floatEnumRef = $floatEnumRef;
         $obj->boolEnum = $boolEnum;
@@ -287,6 +336,7 @@ class Foo
         if (isset($this->boolEnumRef)) {
             $output['boolEnumRef'] = $this->boolEnumRef;
         }
+        $output['requiredBoolEnumRef'] = $this->requiredBoolEnumRef;
 
         return $output;
     }
