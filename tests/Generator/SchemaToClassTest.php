@@ -69,6 +69,10 @@ class SchemaToClassTest extends TestCase
             if (!file_exists($schemaFile)) {
                 $schemaFile = join(DIRECTORY_SEPARATOR, [$fixtureDir, 'schema.json']);
             }
+            if (!file_exists($schemaFile)) {
+                trigger_error("Skipping dir without schema file: $fixtureDir", E_USER_WARNING);
+                continue;
+            }
 
             $optionsFile  = join(DIRECTORY_SEPARATOR, [$fixtureDir, 'options.yaml']);
             if (!file_exists($optionsFile)) {
