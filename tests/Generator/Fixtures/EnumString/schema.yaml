@@ -1,0 +1,16 @@
+enum:
+  - Foo
+  - Bar
+  - Baz
+  - Foo-Bar
+  - Foo
+  - "-Foo"
+  - "~Foo"
+  - "Foo!"
+  - "Foo~"
+  - 1Foo
+  - 1_Foo
+  - "1"
+  - "-1"
+  - "~1"
+type: string
