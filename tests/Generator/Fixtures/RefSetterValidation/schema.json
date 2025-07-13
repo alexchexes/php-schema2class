@@ -1,0 +1,15 @@
+{
+  "definitions": {
+    "Cat": {
+      "type": "object",
+      "properties": {
+        "hasFur": {
+          "$ref": "#/definitions/furBoolean"
+        }
+      }
+    },
+    "furBoolean": {
+      "type": ["boolean", "null"]
+    }
+  }
+}
