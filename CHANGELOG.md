@@ -15,6 +15,8 @@ New options provide more control over how classes are generated:
 - `preservePropertyNames` - keep generated PHP property names as-is instead of converting them to camelCase
 - `noGetters` - if _true_, no getter methods will be generated, and all properties will be `public`.
 - `noSetters` - don't generate `withX()`/`withoutX()` methods.
+- `mutableSetters` - generate mutable `setX()` methods instead of immutable
+  `withX()`/`withoutX()`. Use the value `"chainable"` to make setters return `$this`.
 - `noSchemaMetadata` - drop description, title and other non-validation metadata fields from the embedded schema.
 - `singleLineSchema` - store the validation schema as a single line in the generated class to reduce the length of .php files.
 - `noEnums` - Disable generation of PHP `enum` classes even when targeting PHP 8.1 or newer.
@@ -36,6 +38,7 @@ Now it:
 - Improves type hints and PHPDoc type generation for complex types like unions, nested arrays, etc.
 - Adds a guard against passing anything other than an array/object to `buildFromInput`, building multi-line validation error messages.
 - Setter methods (`withX()`) now accept an optional `$validate` argument to be able skip validation, mirroring `buildFromInput()`.
+- Option `mutableSetters` allows generating mutable `setX()` methods (optionally chainable).
 - Skips emitting empty `__construct` or `__clone` methods.
 - Prints a notice when skipping `definitions` that do not describe an object.
 - Validates written files with `php -l` to ensure generated code is syntactically correct.

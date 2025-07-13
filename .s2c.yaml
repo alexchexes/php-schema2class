@@ -3,5 +3,6 @@ options:
   targetDirectory: src/Spec
   singleLineSchema: true
   noSchemaMetadata: true
+  noEnums: true
 files:
   - input: src/Spec/Spec.yaml

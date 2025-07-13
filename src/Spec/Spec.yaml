@@ -60,6 +60,16 @@ definitions:
         type: boolean
         description: |
           When true, no withX() / withoutX() setters/unsetters are created.
+      mutableSetters:
+        oneOf:
+          - type: boolean
+            enum: [true]
+          - type: string
+            enum: ['chainable']
+        description: |
+          If set, generate classic setX() methods instead of immutable
+          withX()/withoutX(). When the value is "chainable", the setter
+          returns $this.
       noSchemaMetadata:
         type: boolean
         description: |

@@ -38,6 +38,7 @@ class GenerateCommand extends Command
         $this->addOption("preserve-property-names", null, InputOption::VALUE_NONE, "Do not convert property names to camelCase");
         $this->addOption("no-getters", null, InputOption::VALUE_NONE, "Do not generate getter methods");
         $this->addOption("no-setters", null, InputOption::VALUE_NONE, "Do not generate withX()/withoutX() methods");
+        $this->addOption('mutable-setters', null, InputOption::VALUE_OPTIONAL, 'Generate mutable setX() methods (pass "chainable" to return $this)');
         $this->addOption("no-schema-metadata", null, InputOption::VALUE_NONE, "Omit metadata fields from schema property");
         $this->addOption("single-line-schema", null, InputOption::VALUE_NONE, "Store schema property as single line");
         $this->addOption('no-enums', null, InputOption::VALUE_NONE, 'Disable PHP enum generation');
@@ -58,6 +59,9 @@ class GenerateCommand extends Command
             'preservePropertyNames'             => $input->getOption('preserve-property-names'),
             'noGetters'                         => $input->getOption('no-getters'),
             'noSetters'                         => $input->getOption('no-setters'),
+            'mutableSetters'                    => $input->hasParameterOption('--mutable-setters')
+                ? ($input->getOption('mutable-setters') ?: true)
+                : null,
             'noSchemaMetadata'            => $input->getOption('no-schema-metadata'),
             'singleLineSchema'                  => $input->getOption('single-line-schema'),
             'noEnums'                           => $input->getOption('no-enums'),
