@@ -20,6 +20,7 @@ class PrimitiveUnionEnumProperty extends AbstractProperty
 
         // allow only string/int/number/null in that list
         foreach ($schema['type'] as $t) {
+            $t = $t === null ? 'null' : $t;
             if (!in_array($t, ['string', 'integer', 'int', 'number', 'null'], true)) {
                 return false;
             }

@@ -9,6 +9,7 @@ use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\MatchGenerator;
 use Helmich\Schema2Class\Generator\PropertyBuilder;
 use Helmich\Schema2Class\Generator\SchemaToClass;
+use Helmich\Schema2Class\Generator\Property\NullProperty;
 
 class UnionProperty extends AbstractProperty
 {
@@ -233,6 +234,10 @@ class UnionProperty extends AbstractProperty
             foreach ($this->subProperties as $subProp) {
                 $th = $subProp->typeHint($phpVersion);
                 if ($th === null) {
+                    if ($subProp instanceof NullProperty) {
+                        $subTypeHints['null'] = true;
+                        continue;
+                    }
                     return null;
                 }
 
