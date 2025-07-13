@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ns\MixedEnum_7_4;
+namespace Ns\EnumMixed_7_4;
 
 class MyClass
 {

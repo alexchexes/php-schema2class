@@ -1,6 +1,6 @@
 <?php
 
-namespace Ns\MixedEnum_5_6;
+namespace Ns\EnumMixed_5_6;
 
 class MyClass
 {
