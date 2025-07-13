@@ -52,6 +52,20 @@ class MyClass
                     null,
                 ],
             ],
+            'contradiction2' => [
+                'type' => [
+                    'string',
+                    'integer',
+                    'number',
+                ],
+                'enum' => [
+                    1,
+                    2,
+                    'one',
+                    false,
+                    null,
+                ],
+            ],
             'nullable' => [
                 'type' => [
                     'string',
@@ -68,6 +82,7 @@ class MyClass
             'bar',
             'baz',
             'contradiction',
+            'contradiction2',
             'nullable',
         ],
     ];
@@ -83,14 +98,19 @@ class MyClass
     private $bar;
 
     /**
-     * @var 'red'|'amber'|'green'|'42'|42|42.5|false|NULL|null
+     * @var 'red'|'amber'|'green'|'42'|42|42.5|false|null
      */
     private $baz;
 
     /**
-     * @var int|null
+     * @var int
      */
     private $contradiction;
+
+    /**
+     * @var 1|2|'one'
+     */
+    private $contradiction2;
 
     /**
      * @var 'red'|'green'|null
@@ -100,16 +120,18 @@ class MyClass
     /**
      * @param 1|2|'1'|'2' $foo
      * @param 3|4|'3'|'4' $bar
-     * @param 'red'|'amber'|'green'|'42'|42|42.5|false|NULL|null $baz
-     * @param int|null $contradiction
+     * @param 'red'|'amber'|'green'|'42'|42|42.5|false|null $baz
+     * @param int $contradiction
+     * @param 1|2|'one' $contradiction2
      * @param 'red'|'green'|null $nullable
      */
-    public function __construct($foo, $bar, $baz, $contradiction, string $nullable)
+    public function __construct($foo, $bar, $baz, $contradiction, $contradiction2, string $nullable)
     {
         $this->foo = $foo;
         $this->bar = $bar;
         $this->baz = $baz;
         $this->contradiction = $contradiction;
+        $this->contradiction2 = $contradiction2;
         $this->nullable = $nullable;
     }
 
@@ -130,7 +152,7 @@ class MyClass
     }
 
     /**
-     * @return 'red'|'amber'|'green'|'42'|42|42.5|false|NULL|null
+     * @return 'red'|'amber'|'green'|'42'|42|42.5|false|null
      */
     public function getBaz()
     {
@@ -138,11 +160,19 @@ class MyClass
     }
 
     /**
-     * @return int|null
+     * @return int
      */
     public function getContradiction()
     {
         return $this->contradiction;
+    }
+
+    /**
+     * @return 1|2|'one'
+     */
+    public function getContradiction2()
+    {
+        return $this->contradiction2;
     }
 
     /**
@@ -196,7 +226,7 @@ class MyClass
     }
 
     /**
-     * @param 'red'|'amber'|'green'|'42'|42|42.5|false|NULL $baz
+     * @param 'red'|'amber'|'green'|'42'|42|42.5|false $baz
      * @return self
      * @param bool $validate
      */
@@ -233,6 +263,27 @@ class MyClass
 
         $clone = clone $this;
         $clone->contradiction = $contradiction;
+
+        return $clone;
+    }
+
+    /**
+     * @param 1|2|'one' $contradiction2
+     * @return self
+     * @param bool $validate
+     */
+    public function withContradiction2($contradiction2, bool $validate = true)
+    {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($contradiction2, self::$schema['properties']['contradiction2']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
+        $clone = clone $this;
+        $clone->contradiction2 = $contradiction2;
 
         return $clone;
     }
@@ -282,10 +333,11 @@ class MyClass
         $foo = $input->{'foo'};
         $bar = $input->{'bar'};
         $baz = ($input->{'baz'} !== null) ? ($input->{'baz'}) : null;
-        $contradiction = ($input->{'contradiction'} !== null) ? ((int)($input->{'contradiction'})) : null;
+        $contradiction = (int)($input->{'contradiction'});
+        $contradiction2 = $input->{'contradiction2'};
         $nullable = ($input->{'nullable'} !== null) ? ($input->{'nullable'}) : null;
 
-        $obj = new self($foo, $bar, $baz, $contradiction, $nullable);
+        $obj = new self($foo, $bar, $baz, $contradiction, $contradiction2, $nullable);
 
         return $obj;
     }
@@ -302,6 +354,7 @@ class MyClass
         $output['bar'] = $this->bar;
         $output['baz'] = $this->baz;
         $output['contradiction'] = $this->contradiction;
+        $output['contradiction2'] = $this->contradiction2;
         $output['nullable'] = $this->nullable;
 
         return $output;

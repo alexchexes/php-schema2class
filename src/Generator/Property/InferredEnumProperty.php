@@ -39,7 +39,19 @@ class InferredEnumProperty extends AbstractProperty
 
     public function typeAnnotation(): string
     {
-        $values = array_map(fn($v) => var_export($v, true), $this->schema['enum']);
+        $quote = static fn(string $s): string => "'" . str_replace("'", "\\'", $s) . "'";
+
+        $values = array_map(static function ($v) use ($quote) {
+            return match (true) {
+                $v === null      => 'null',
+                is_bool($v)      => $v ? 'true' : 'false',
+                is_string($v)    => $quote($v),
+                is_int($v),
+                is_float($v)     => (string) $v,
+                default          => 'null',
+            };
+        }, $this->schema['enum']);
+
         return implode('|', $values);
     }
 

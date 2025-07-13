@@ -65,6 +65,8 @@ class PropertyBuilder
     {
         self::testInvariants($definition);
 
+        $definition = self::sanitizeEnum($definition);
+
         // Dereference references to schemas that will not result in a separate class
         if (isset($definition['$ref'])) {
             $refSchema = $req->lookupSchema($definition['$ref']);
@@ -277,5 +279,83 @@ class PropertyBuilder
         if ($hasProperties && $hasAdditionalProperties) {
             throw new GeneratorException("using 'properties' and 'additionalProperties' in the same schema is currently not supported.");
         }
+    }
+
+    /**
+     * Remove enum values that do not match the declared type and drop
+     * type entries that are not represented in the remaining enum.
+     */
+    private static function sanitizeEnum(array $definition): array
+    {
+        if (!isset($definition['enum']) || !isset($definition['type'])) {
+            return $definition;
+        }
+
+        $originalIsArray = is_array($definition['type']);
+        $types = $originalIsArray ? $definition['type'] : [$definition['type']];
+        $types = array_map(static function ($t) {
+            return $t === 'int' ? 'integer' : ($t === null ? 'null' : $t);
+        }, $types);
+
+        $allowed = [];
+        foreach ($definition['enum'] as $v) {
+            $t = match (true) {
+                $v === null      => 'null',
+                is_string($v)    => 'string',
+                is_int($v)       => 'integer',
+                is_float($v)     => 'number',
+                is_bool($v)      => 'boolean',
+                default          => null,
+            };
+            if ($t === null) {
+                continue;
+            }
+            if (in_array($t, $types, true) || ($t === 'integer' && in_array('number', $types, true))) {
+                $allowed[] = $v;
+            }
+        }
+
+        $definition['enum'] = $allowed;
+
+        $foundTypes = [];
+        foreach ($allowed as $v) {
+            $t = match (true) {
+                $v === null      => 'null',
+                is_string($v)    => 'string',
+                is_int($v)       => 'integer',
+                is_float($v)     => 'number',
+                is_bool($v)      => 'boolean',
+                default          => null,
+            };
+            if ($t !== null) {
+                $foundTypes[$t] = true;
+            }
+        }
+
+        $newTypes = array_values(array_filter($types, static function ($t) use ($foundTypes) {
+            if ($t === 'null') {
+                return true; // keep null if declared
+            }
+            if ($t === 'number') {
+                return isset($foundTypes['number']) || isset($foundTypes['integer']);
+            }
+            return isset($foundTypes[$t]);
+        }));
+
+        if (count($newTypes) === 1 && !$originalIsArray) {
+            $definition['type'] = $newTypes[0];
+        } else {
+            $definition['type'] = $newTypes;
+        }
+
+        if (is_array($definition['type']) && count($definition['type']) === 1 && !$originalIsArray) {
+            $definition['type'] = $definition['type'][0];
+        }
+
+        if (is_array($definition['type']) && count($definition['type']) > 1) {
+            $definition['type'] = array_values($definition['type']);
+        }
+
+        return $definition;
     }
 }
