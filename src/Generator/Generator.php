@@ -402,14 +402,20 @@ class Generator
             return [];
         }
 
+        $mutable = $this->generatorRequest->getMutableSetters();
+
         $methods    = [];
         $properties = $properties->filter(PropertyCollectionFilterFactory::withoutDeprecatedAndSameName($properties));
 
         foreach ($properties as $property) {
-            $methods[] = $this->generateSetterMethod($property);
+            if ($mutable !== null) {
+                $methods[] = $this->generateMutableSetterMethod($property, $mutable === 'chainable');
+            } else {
+                $methods[] = $this->generateSetterMethod($property);
 
-            if ($property instanceof OptionalPropertyDecorator) {
-                $methods[] = $this->generateUnsetterMethod($property);
+                if ($property instanceof OptionalPropertyDecorator) {
+                    $methods[] = $this->generateUnsetterMethod($property);
+                }
             }
         }
 
@@ -492,6 +498,89 @@ class Generator
 
         if ($this->generatorRequest->isAtLeastPHP("7.0")) {
             $setMethod->setReturnType("self");
+        }
+
+        return $setMethod;
+    }
+
+    private function generateMutableSetterMethod(PropertyInterface $property, bool $chainable): MethodGenerator
+    {
+        $key  = $property->key();
+        $name = $property->name();
+        $camelCaseName = $this->generatorRequest->getOptions()->getPreservePropertyNames()
+            ? StringUtils::pascalCasePreserveOuterUnderscores($name)
+            : StringUtils::pascalCase($name);
+
+        $requiredProperty = ($property instanceof OptionalPropertyDecorator) ? $property->unwrap() : $property;
+        $annotatedType = $requiredProperty->typeAnnotation();
+        $typeHint = $requiredProperty->typeHint($this->generatorRequest->getTargetPHPVersion());
+
+        $base = $property;
+        while ($base instanceof PropertyDecoratorInterface) {
+            /** @var PropertyDecoratorInterface $base */
+            $base = $base->unwrap();
+        }
+
+        $isArray = $base instanceof PrimitiveArrayProperty
+            || $base instanceof ObjectArrayProperty
+            || $base instanceof ReferenceArrayProperty
+            || $base instanceof TypedArrayProperty;
+
+        $newValidatorClassExpr = $this->generatorRequest->getOptions()->getNewValidatorClassExpr();
+
+        if ($property->isComplex() && !$isArray) {
+            $setterValidation = '';
+        } else {
+            $setterValidation =
+                "if (\$validate) {\n" .
+                "    \$validator = {$newValidatorClassExpr};\n" .
+                "    \$validator->validate(\$$name, self::\$schema['properties']['$key']);\n" .
+                "    if (!\$validator->isValid()) {\n" .
+                "        throw new \\InvalidArgumentException(\$validator->getErrors()[0]['message']);\n" .
+                "    }\n" .
+                "}\n\n";
+        }
+
+        $tags = [new ParamTag($name, [str_replace('|null', '', $annotatedType)])];
+        if ($chainable) {
+            $tags[] = new ReturnTag('self');
+        }
+        if (PropertyQuery::isDeprecated($property)) {
+            $tags[] = new GenericTag('deprecated');
+        }
+        $docBlock = new DocBlockGenerator(null, null, $tags);
+        $docBlock->setWordWrap(false);
+
+        $parameters = [new ParameterGenerator($name, $typeHint)];
+        if ($setterValidation !== '') {
+            $validateParam = new ParameterGenerator('validate', 'bool');
+            $validateParam->setDefaultValue(true);
+            $parameters[] = $validateParam;
+
+            $tags[] = new ParamTag('validate', ['bool']);
+            $docBlock = new DocBlockGenerator(null, null, $tags);
+            $docBlock->setWordWrap(false);
+        }
+
+        $body = $setterValidation . "\$this->$name = \$$name;";
+        if ($chainable) {
+            $body .= "\n\nreturn \$this;";
+        }
+
+        $setMethod = new MethodGenerator(
+            'set' . $camelCaseName,
+            $parameters,
+            MethodGenerator::FLAG_PUBLIC,
+            $body,
+            $docBlock
+        );
+
+        if ($chainable && $this->generatorRequest->isAtLeastPHP('7.0')) {
+            $setMethod->setReturnType('self');
+        } elseif (!$chainable) {
+            if ($this->generatorRequest->isAtLeastPHP('7.1')) {
+                $setMethod->setReturnType('void');
+            }
         }
 
         return $setMethod;

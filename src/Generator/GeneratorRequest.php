@@ -229,6 +229,11 @@ class GeneratorRequest
         return $this->opts->getNoSetters();
     }
 
+    public function getMutableSetters(): bool|string|null
+    {
+        return $this->opts->getMutableSetters();
+    }
+
     public function getNoEnums(): bool
     {
         return $this->opts->getNoEnums();

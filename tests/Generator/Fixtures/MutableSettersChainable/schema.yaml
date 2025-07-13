@@ -1,0 +1,15 @@
+required:
+  - bar
+properties:
+  foo:
+    type: string
+  bar:
+    $ref: '#/definitions/Baz'
+  opt:
+    type: ["string", "null"]
+definitions:
+  Baz:
+    type: object
+    properties:
+      name:
+        type: string

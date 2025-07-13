@@ -11,7 +11,7 @@ class SpecificationOptions
      *
      * @var array
      */
-    private static array $schema = ['additionalProperties' => false, 'properties' => ['targetDirectory' => ['type' => 'string'], 'targetNamespace' => ['type' => 'string'], 'targetPHPVersion' => ['oneOf' => [['type' => 'integer', 'enum' => [5, 7, 8]], ['type' => 'string']]], 'cleanTargetDirectory' => ['type' => 'boolean'], 'disableStrictTypes' => ['type' => 'boolean'], 'treatValuesWithDefaultAsOptional' => ['type' => 'boolean'], 'inlineAllofReferences' => ['type' => 'boolean'], 'newValidatorClassExpr' => ['type' => 'string'], 'preservePropertyNames' => ['type' => 'boolean'], 'noGetters' => ['type' => 'boolean'], 'noSetters' => ['type' => 'boolean'], 'noSchemaMetadata' => ['type' => 'boolean'], 'singleLineSchema' => ['type' => 'boolean'], 'noEnums' => ['type' => 'boolean']]];
+    private static array $schema = ['additionalProperties' => false, 'properties' => ['targetDirectory' => ['type' => 'string'], 'targetNamespace' => ['type' => 'string'], 'targetPHPVersion' => ['oneOf' => [['type' => 'integer', 'enum' => [5, 7, 8]], ['type' => 'string']]], 'cleanTargetDirectory' => ['type' => 'boolean'], 'disableStrictTypes' => ['type' => 'boolean'], 'treatValuesWithDefaultAsOptional' => ['type' => 'boolean'], 'inlineAllofReferences' => ['type' => 'boolean'], 'newValidatorClassExpr' => ['type' => 'string'], 'preservePropertyNames' => ['type' => 'boolean'], 'noGetters' => ['type' => 'boolean'], 'noSetters' => ['type' => 'boolean'], 'mutableSetters' => ['oneOf' => [['type' => 'boolean', 'enum' => [true]], ['type' => 'string', 'enum' => ['chainable']]]], 'noSchemaMetadata' => ['type' => 'boolean'], 'singleLineSchema' => ['type' => 'boolean'], 'noEnums' => ['type' => 'boolean']]];
 
     /**
      * @var string|null
@@ -84,6 +84,16 @@ class SpecificationOptions
      * @var bool|null
      */
     private ?bool $noSetters = null;
+
+    /**
+     * If set, generate classic setX() methods instead of immutable
+     * withX()/withoutX(). When the value is "chainable", the setter
+     * returns $this.
+     *
+     *
+     * @var bool|'chainable'|null
+     */
+    private bool|string|null $mutableSetters = null;
 
     /**
      * When true, the schema used for validation will not include
@@ -214,6 +224,19 @@ class SpecificationOptions
     public function getNoSetters() : ?bool
     {
         return $this->noSetters ?? null;
+    }
+
+    /**
+     * If set, generate classic setX() methods instead of immutable
+     * withX()/withoutX(). When the value is "chainable", the setter
+     * returns $this.
+     *
+     *
+     * @return bool|'chainable'|null
+     */
+    public function getMutableSetters() : bool|string|null
+    {
+        return $this->mutableSetters;
     }
 
     /**
@@ -595,6 +618,29 @@ class SpecificationOptions
     }
 
     /**
+     * @param bool|'chainable' $mutableSetters
+     * @return self
+     */
+    public function withMutableSetters(bool|string $mutableSetters) : self
+    {
+        $clone = clone $this;
+        $clone->mutableSetters = $mutableSetters;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutMutableSetters() : self
+    {
+        $clone = clone $this;
+        unset($clone->mutableSetters);
+
+        return $clone;
+    }
+
+    /**
      * @param bool $noSchemaMetadata
      * @return self
      * @param bool $validate
@@ -720,6 +766,13 @@ class SpecificationOptions
         $preservePropertyNames = isset($input->{'preservePropertyNames'}) ? $input->{'preservePropertyNames'} : null;
         $noGetters = isset($input->{'noGetters'}) ? $input->{'noGetters'} : null;
         $noSetters = isset($input->{'noSetters'}) ? $input->{'noSetters'} : null;
+        $mutableSetters = isset($input->{'mutableSetters'}) ? match (true) {
+            is_bool($input->{'mutableSetters'}) => (bool)($input->{'mutableSetters'}),
+            in_array($input->{'mutableSetters'}, array (
+          0 => 'chainable',
+        ), true) => $input->{'mutableSetters'},
+            default => null,
+        } : null;
         $noSchemaMetadata = isset($input->{'noSchemaMetadata'}) ? $input->{'noSchemaMetadata'} : null;
         $singleLineSchema = isset($input->{'singleLineSchema'}) ? $input->{'singleLineSchema'} : null;
         $noEnums = isset($input->{'noEnums'}) ? $input->{'noEnums'} : null;
@@ -736,6 +789,7 @@ class SpecificationOptions
         $obj->preservePropertyNames = $preservePropertyNames;
         $obj->noGetters = $noGetters;
         $obj->noSetters = $noSetters;
+        $obj->mutableSetters = $mutableSetters;
         $obj->noSchemaMetadata = $noSchemaMetadata;
         $obj->singleLineSchema = $singleLineSchema;
         $obj->noEnums = $noEnums;
@@ -786,6 +840,14 @@ class SpecificationOptions
         if (isset($this->noSetters)) {
             $output['noSetters'] = $this->noSetters;
         }
+        if (isset($this->mutableSetters)) {
+            $output['mutableSetters'] = match (true) {
+                is_bool($this->mutableSetters),
+                is_string($this->mutableSetters) && in_array($this->mutableSetters, array (
+              0 => 'chainable',
+            ), true) => $this->mutableSetters,
+            };
+        }
         if (isset($this->noSchemaMetadata)) {
             $output['noSchemaMetadata'] = $this->noSchemaMetadata;
         }
@@ -829,6 +891,14 @@ class SpecificationOptions
             $this->targetPHPVersion = match (true) {
                 is_int($this->targetPHPVersion),
                 is_string($this->targetPHPVersion) => $this->targetPHPVersion,
+            };
+        }
+        if (isset($this->mutableSetters)) {
+            $this->mutableSetters = match (true) {
+                is_bool($this->mutableSetters),
+                is_string($this->mutableSetters) && in_array($this->mutableSetters, array (
+              0 => 'chainable',
+            ), true) => $this->mutableSetters,
             };
         }
     }
