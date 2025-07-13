@@ -1,0 +1,16 @@
+properties:
+  # Currently incorrectly generates type-hint with non-existent MyClassFooAlternative2 class
+  foo:
+    type: [integer, string]
+    enum:
+      - 1
+      - 2
+      - "1"
+      - "2"
+  # Should infer type
+  bar:
+    enum:
+      - 3
+      - 4
+      - "3"
+      - "4"
