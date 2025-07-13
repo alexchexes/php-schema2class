@@ -2,22 +2,32 @@ definitions:
   Foo:
     type: object
     properties:
-      foo:
+      floatEnum:
+        type: number
         enum:
           - 0
           - 1.5
           - 2.5
           - 3.5
-        type: number
-      bar:
-        $ref: "#/definitions/Bar"
-  Bar:
+      floatEnumRef:
+        $ref: "#/definitions/EnumFloat"
+      boolEnum:
+        type: boolean
+        enum:
+          - false
+      boolEnumRef:
+        $ref: "#/definitions/EnumBool"
+  EnumFloat:
     type: number
     enum:
       - 0
       - 1.5
       - 2.5
       - 3.5
+  EnumBool:
+    type: boolean
+    enum:
+      - false
 
 # 8.0 fails 
 # 7.4:
