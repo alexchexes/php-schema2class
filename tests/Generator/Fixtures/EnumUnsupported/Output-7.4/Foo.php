@@ -67,29 +67,29 @@ class Foo
     private $floatEnum = null;
 
     /**
-     * @var 0|1|2|3|null
+     * @var 0|1.5|2.5|3.5|null
      */
-    private ?int $floatEnumRef = null;
+    private $floatEnumRef = null;
 
     /**
-     * @var bool|null
+     * @var false|null
      */
     private ?bool $boolEnum = null;
 
     /**
-     * @var 0|null
+     * @var false|null
      */
-    private ?string $boolEnumRef = null;
+    private ?bool $boolEnumRef = null;
 
     /**
-     * @var
+     * @var false
      */
-    private string $requiredBoolEnumRef;
+    private bool $requiredBoolEnumRef;
 
     /**
-     * @param 0 $requiredBoolEnumRef
+     * @param false $requiredBoolEnumRef
      */
-    public function __construct(string $requiredBoolEnumRef)
+    public function __construct(bool $requiredBoolEnumRef)
     {
         $this->requiredBoolEnumRef = $requiredBoolEnumRef;
     }
@@ -103,15 +103,15 @@ class Foo
     }
 
     /**
-     * @return 0|1|2|3|null
+     * @return 0|1.5|2.5|3.5|null
      */
-    public function getFloatEnumRef() : ?int
+    public function getFloatEnumRef()
     {
-        return $this->floatEnumRef ?? null;
+        return $this->floatEnumRef;
     }
 
     /**
-     * @return bool|null
+     * @return false|null
      */
     public function getBoolEnum() : ?bool
     {
@@ -119,17 +119,17 @@ class Foo
     }
 
     /**
-     * @return 0|null
+     * @return false|null
      */
-    public function getBoolEnumRef() : ?string
+    public function getBoolEnumRef() : ?bool
     {
         return $this->boolEnumRef ?? null;
     }
 
     /**
-     * @return
+     * @return false
      */
-    public function getRequiredBoolEnumRef() : string
+    public function getRequiredBoolEnumRef() : bool
     {
         return $this->requiredBoolEnumRef;
     }
@@ -167,11 +167,11 @@ class Foo
     }
 
     /**
-     * @param 0|1|2|3 $floatEnumRef
+     * @param 0|1.5|2.5|3.5 $floatEnumRef
      * @return self
      * @param bool $validate
      */
-    public function withFloatEnumRef(int $floatEnumRef, bool $validate = true) : self
+    public function withFloatEnumRef($floatEnumRef, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -199,7 +199,7 @@ class Foo
     }
 
     /**
-     * @param bool $boolEnum
+     * @param false $boolEnum
      * @return self
      * @param bool $validate
      */
@@ -231,11 +231,11 @@ class Foo
     }
 
     /**
-     * @param 0 $boolEnumRef
+     * @param false $boolEnumRef
      * @return self
      * @param bool $validate
      */
-    public function withBoolEnumRef(string $boolEnumRef, bool $validate = true) : self
+    public function withBoolEnumRef(bool $boolEnumRef, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -263,11 +263,11 @@ class Foo
     }
 
     /**
-     * @param 0 $requiredBoolEnumRef
+     * @param false $requiredBoolEnumRef
      * @return self
      * @param bool $validate
      */
-    public function withRequiredBoolEnumRef(string $requiredBoolEnumRef, bool $validate = true) : self
+    public function withRequiredBoolEnumRef(bool $requiredBoolEnumRef, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();

@@ -1,6 +1,8 @@
 <?php
 
-namespace Ns\EnumUnsupported_5_6;
+declare(strict_types=1);
+
+namespace Ns\EnumUnsupported_8_4;
 
 class Foo
 {
@@ -9,7 +11,7 @@ class Foo
      *
      * @var array
      */
-    private static $schema = [
+    private static array $schema = [
         'type' => 'object',
         'properties' => [
             'floatEnum' => [
@@ -62,27 +64,27 @@ class Foo
     /**
      * @var int|float|null
      */
-    private $floatEnum = null;
+    private int|float|null $floatEnum = null;
 
     /**
      * @var 0|1.5|2.5|3.5|null
      */
-    private $floatEnumRef = null;
+    private int|float|null $floatEnumRef = null;
 
     /**
      * @var false|null
      */
-    private $boolEnum = null;
+    private ?bool $boolEnum = null;
 
     /**
      * @var false|null
      */
-    private $boolEnumRef = null;
+    private ?bool $boolEnumRef = null;
 
     /**
      * @var false
      */
-    private $requiredBoolEnumRef;
+    private bool $requiredBoolEnumRef;
 
     /**
      * @param false $requiredBoolEnumRef
@@ -95,7 +97,7 @@ class Foo
     /**
      * @return int|float|null
      */
-    public function getFloatEnum()
+    public function getFloatEnum() : int|float|null
     {
         return $this->floatEnum;
     }
@@ -103,7 +105,7 @@ class Foo
     /**
      * @return 0|1.5|2.5|3.5|null
      */
-    public function getFloatEnumRef()
+    public function getFloatEnumRef() : int|float|null
     {
         return $this->floatEnumRef;
     }
@@ -111,23 +113,23 @@ class Foo
     /**
      * @return false|null
      */
-    public function getBoolEnum()
+    public function getBoolEnum() : ?bool
     {
-        return $this->boolEnum;
+        return $this->boolEnum ?? null;
     }
 
     /**
      * @return false|null
      */
-    public function getBoolEnumRef()
+    public function getBoolEnumRef() : ?bool
     {
-        return $this->boolEnumRef;
+        return $this->boolEnumRef ?? null;
     }
 
     /**
      * @return false
      */
-    public function getRequiredBoolEnumRef()
+    public function getRequiredBoolEnumRef() : bool
     {
         return $this->requiredBoolEnumRef;
     }
@@ -137,7 +139,7 @@ class Foo
      * @return self
      * @param bool $validate
      */
-    public function withFloatEnum($floatEnum, bool $validate = true)
+    public function withFloatEnum(int|float $floatEnum, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -156,7 +158,7 @@ class Foo
     /**
      * @return self
      */
-    public function withoutFloatEnum()
+    public function withoutFloatEnum() : self
     {
         $clone = clone $this;
         unset($clone->floatEnum);
@@ -169,7 +171,7 @@ class Foo
      * @return self
      * @param bool $validate
      */
-    public function withFloatEnumRef($floatEnumRef, bool $validate = true)
+    public function withFloatEnumRef(int|float $floatEnumRef, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -188,7 +190,7 @@ class Foo
     /**
      * @return self
      */
-    public function withoutFloatEnumRef()
+    public function withoutFloatEnumRef() : self
     {
         $clone = clone $this;
         unset($clone->floatEnumRef);
@@ -201,7 +203,7 @@ class Foo
      * @return self
      * @param bool $validate
      */
-    public function withBoolEnum($boolEnum, bool $validate = true)
+    public function withBoolEnum(bool $boolEnum, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -220,7 +222,7 @@ class Foo
     /**
      * @return self
      */
-    public function withoutBoolEnum()
+    public function withoutBoolEnum() : self
     {
         $clone = clone $this;
         unset($clone->boolEnum);
@@ -233,7 +235,7 @@ class Foo
      * @return self
      * @param bool $validate
      */
-    public function withBoolEnumRef(bool $boolEnumRef, bool $validate = true)
+    public function withBoolEnumRef(bool $boolEnumRef, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -252,7 +254,7 @@ class Foo
     /**
      * @return self
      */
-    public function withoutBoolEnumRef()
+    public function withoutBoolEnumRef() : self
     {
         $clone = clone $this;
         unset($clone->boolEnumRef);
@@ -265,7 +267,7 @@ class Foo
      * @return self
      * @param bool $validate
      */
-    public function withRequiredBoolEnumRef(bool $requiredBoolEnumRef, bool $validate = true)
+    public function withRequiredBoolEnumRef(bool $requiredBoolEnumRef, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -289,14 +291,8 @@ class Foo
      * @return Foo Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true)
+    public static function buildFromInput(array|object $input, bool $validate = true) : Foo
     {
-        if (!is_array($input) && !is_object($input)) {
-            throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($input)
-            );
-        }
-
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
@@ -321,7 +317,7 @@ class Foo
      *
      * @return array Converted array
      */
-    public function toArray()
+    public function toArray() : array
     {
         $output = [];
         if (isset($this->floatEnum)) {
@@ -349,14 +345,14 @@ class Foo
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput($input, $return = false)
+    public static function validateInput(array|object $input, bool $return = false) : bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         $validator->validate($input, self::$schema);
 
         if (!$validator->isValid() && !$return) {
-            $errors = array_map(function($e) {
+            $errors = array_map(function(array $e): string {
                 return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];
             }, $validator->getErrors());
             throw new \InvalidArgumentException(join(".\n", $errors));

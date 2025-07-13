@@ -40,7 +40,12 @@ readonly class ReferencedTypeEnum implements ReferencedType
             return $this->relativeName($req);
         }
 
-        $literals = array_map(fn(string|int $v) => var_export($v, true), $this->schema['enum']);
+        $literals = array_map(
+            static function ($v): string {
+                return var_export($v, true);
+            },
+            $this->schema['enum']
+        );
         return implode('|', $literals);
     }
 
@@ -50,18 +55,31 @@ readonly class ReferencedTypeEnum implements ReferencedType
             return $this->relativeName($req);
         }
 
-        $hasInt = false;
-        $hasString = false;
+        $types = [];
         foreach ($this->schema['enum'] as $v) {
-            $hasInt = $hasInt || is_int($v);
-            $hasString = $hasString || is_string($v);
+            if ($v === null) {
+                $types['null'] = 'null';
+            } elseif (is_string($v)) {
+                $types['string'] = 'string';
+            } elseif (is_int($v)) {
+                $types['int'] = 'int';
+            } elseif (is_float($v)) {
+                $types['float'] = 'float';
+            } elseif (is_bool($v)) {
+                $types['bool'] = 'bool';
+            }
         }
 
-        if ($hasInt && $hasString) {
-            return $req->isAtLeastPHP('8.0') ? 'int|string' : null;
+        if (!$req->isAtLeastPHP('8.0') && count($types) !== 1) {
+            return null;
         }
 
-        return $hasInt ? 'int' : 'string';
+        if (isset($types['int']) && isset($types['float'])) {
+            $types['int'] = 'int';
+            $types['float'] = 'float';
+        }
+
+        return implode('|', array_values($types));
     }
 
     function serializedInputTypeHint(GeneratorRequest $req): ?string
