@@ -1,5 +1,5 @@
 properties:
-  # Currently incorrectly generates type-hint with non-existent MyClassFooAlternative2 class
+  # Shouldn't have incorrectly generated type-hint with non-existent MyClassFooAlternative2 class. Given that PHP doesn't support mixed enums, we might just fallback to usual generation as if we generate with target-verion <8.1 or with --no-enums setting
   foo:
     type: [integer, string]
     enum:
@@ -7,10 +7,42 @@ properties:
       - 2
       - "1"
       - "2"
-  # Should infer type
+  # Should infer type int|string
   bar:
     enum:
       - 3
       - 4
       - "3"
       - "4"
+  # Should infer type: string|int|float|bool|null
+  baz:
+    enum:
+    - "red"
+    - "amber"
+    - "green"
+    - "42"
+    - 42
+    - 42.5
+    - false
+    - null
+  # Should generate type int|string without bool or null, since json-schema validates against type first so "false" and "null" enum values are dead-code here
+  contradiction:
+    type: integer
+    enum:
+      - 1
+      - "one"
+      - false
+      - null
+  # When generating with enums support, the "MyClassNullableAlternative1" + "MyClassNullableAlternative2" enum classes are generated. They are identicall, plus, only "MyClassNullableAlternative1" is used. Type is `MyClassNullableAlternative1|mixed`. Should've be only one enum and null instead of "mixed".
+  # When generating without enums support the type should be `?string` in type-hint and `'red'|'green'|null` in PHPDoc, not 'red'|'green'|mixed as it is now.
+  nullable:
+    type: [string, null]
+    enum:
+      - "red"
+      - "green"
+required:
+  - foo
+  - bar
+  - baz
+  - contradiction
+  - nullable
