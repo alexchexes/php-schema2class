@@ -1,15 +1,34 @@
 {
+  "type": "object",
+  "properties": {
+    "foo": { "$ref": "#/definitions/Foo" }
+  },
   "definitions": {
     "Cat": {
       "type": "object",
       "properties": {
-        "hasFur": {
-          "$ref": "#/definitions/furBoolean"
+        "foo": { "$ref": "#/definitions/Bar" },
+        "bar": {
+          "anyOf": [
+            { "type": "string" },
+            { "$ref": "#/definitions/Bar" }
+          ]
+        },
+        "baz": {
+          "type": "object",
+          "properties": {
+            "nestedFoo": { "$ref": "#/definitions/Bar" }
+          }
         }
       }
     },
-    "furBoolean": {
-      "type": ["boolean", "null"]
+    "Foo": {
+      "type": "string",
+      "enum": ["a", "b"]
+    },
+    "Bar": {
+      "type": "number",
+      "enum": [1, 2]
     }
   }
 }

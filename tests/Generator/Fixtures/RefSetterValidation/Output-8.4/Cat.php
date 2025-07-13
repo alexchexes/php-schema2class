@@ -14,50 +14,95 @@ class Cat
     private static array $schema = [
         'type' => 'object',
         'properties' => [
-            'hasFur' => [
-                '$ref' => '#/definitions/furBoolean',
+            'foo' => [
+                '$ref' => '#/definitions/Bar',
+            ],
+            'bar' => [
+                'anyOf' => [
+                    [
+                        'type' => 'string',
+                    ],
+                    [
+                        '$ref' => '#/definitions/Bar',
+                    ],
+                ],
+            ],
+            'baz' => [
+                'type' => 'object',
+                'properties' => [
+                    'nestedFoo' => [
+                        '$ref' => '#/definitions/Bar',
+                    ],
+                ],
             ],
         ],
         'definitions' => [
-            'furBoolean' => [
-                'type' => [
-                    'boolean',
-                    'null',
+            'Bar' => [
+                'type' => 'number',
+                'enum' => [
+                    1,
+                    2,
                 ],
             ],
         ],
     ];
 
     /**
-     * @var bool|null
+     * @var 1|2|null
      */
-    private ?bool $hasFur = null;
+    private ?int $foo = null;
 
     /**
-     * @return bool|null
+     * @var string|1|2|null
      */
-    public function getHasFur() : ?bool
+    private string|int|null $bar = null;
+
+    /**
+     * @var CatBaz|null
+     */
+    private ?CatBaz $baz = null;
+
+    /**
+     * @return 1|2|null
+     */
+    public function getFoo() : ?int
     {
-        return $this->hasFur ?? null;
+        return $this->foo ?? null;
     }
 
     /**
-     * @param bool $hasFur
+     * @return string|1|2|null
+     */
+    public function getBar() : int|string|null
+    {
+        return $this->bar;
+    }
+
+    /**
+     * @return CatBaz|null
+     */
+    public function getBaz() : ?CatBaz
+    {
+        return $this->baz ?? null;
+    }
+
+    /**
+     * @param 1|2 $foo
      * @return self
      * @param bool $validate
      */
-    public function withHasFur(bool $hasFur, bool $validate = true) : self
+    public function withFoo(int $foo, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($hasFur, self::$schema['properties']['hasFur']);
+            $validator->validate($foo, self::$schema['properties']['foo']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
         }
 
         $clone = clone $this;
-        $clone->hasFur = $hasFur;
+        $clone->foo = $foo;
 
         return $clone;
     }
@@ -65,10 +110,56 @@ class Cat
     /**
      * @return self
      */
-    public function withoutHasFur() : self
+    public function withoutFoo() : self
     {
         $clone = clone $this;
-        unset($clone->hasFur);
+        unset($clone->foo);
+
+        return $clone;
+    }
+
+    /**
+     * @param string|1|2 $bar
+     * @return self
+     */
+    public function withBar(int|string $bar) : self
+    {
+        $clone = clone $this;
+        $clone->bar = $bar;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutBar() : self
+    {
+        $clone = clone $this;
+        unset($clone->bar);
+
+        return $clone;
+    }
+
+    /**
+     * @param CatBaz $baz
+     * @return self
+     */
+    public function withBaz(CatBaz $baz) : self
+    {
+        $clone = clone $this;
+        $clone->baz = $baz;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutBaz() : self
+    {
+        $clone = clone $this;
+        unset($clone->baz);
 
         return $clone;
     }
@@ -88,10 +179,21 @@ class Cat
             static::validateInput($input);
         }
 
-        $hasFur = isset($input->{'hasFur'}) ? $input->{'hasFur'} : null;
+        $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
+        $bar = isset($input->{'bar'}) ? match (true) {
+            is_string($input->{'bar'}),
+            in_array($input->{'bar'}, array (
+          0 => 1,
+          1 => 2,
+        ), true) => $input->{'bar'},
+            default => null,
+        } : null;
+        $baz = isset($input->{'baz'}) ? CatBaz::buildFromInput($input->{'baz'}, validate: $validate) : null;
 
         $obj = new self();
-        $obj->hasFur = $hasFur;
+        $obj->foo = $foo;
+        $obj->bar = $bar;
+        $obj->baz = $baz;
         return $obj;
     }
 
@@ -103,7 +205,21 @@ class Cat
     public function toArray() : array
     {
         $output = [];
-        $output['hasFur'] = $this->hasFur;
+        if (isset($this->foo)) {
+            $output['foo'] = $this->foo;
+        }
+        if (isset($this->bar)) {
+            $output['bar'] = match (true) {
+                is_string($this->bar),
+                in_array($this->bar, array (
+              0 => 1,
+              1 => 2,
+            ), true) => $this->bar,
+            };
+        }
+        if (isset($this->baz)) {
+            $output['baz'] = ($this->baz)->toArray();
+        }
 
         return $output;
     }
@@ -130,5 +246,21 @@ class Cat
         }
 
         return $validator->isValid();
+    }
+
+    public function __clone()
+    {
+        if (isset($this->bar)) {
+            $this->bar = match (true) {
+                is_string($this->bar),
+                in_array($this->bar, array (
+              0 => 1,
+              1 => 2,
+            ), true) => $this->bar,
+            };
+        }
+        if (isset($this->baz)) {
+            $this->baz = clone $this->baz;
+        }
     }
 }
