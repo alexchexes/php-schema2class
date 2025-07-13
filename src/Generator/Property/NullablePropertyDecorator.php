@@ -133,7 +133,10 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface, Renameabl
         }
 
         if (Semver::satisfies($phpVersion, ">=8.0") && str_contains($hint, "|")) {
-            return "{$hint}|null";
+            if (!preg_match('/(^|\\|)null(\\||$)/', $hint)) {
+                return "{$hint}|null";
+            }
+            return $hint;
         }
 
         if (Semver::satisfies($phpVersion, ">=7.1.0") && strpos($hint, "?") !== 0) {

@@ -83,7 +83,12 @@ class SchemaToEnum
 
         $cases = self::makeCaseNamesConsistent($cases);
 
-        $type     = $req->getSchema()["type"] === "string" ? "string" : "int";
+        $typeField = $req->getSchema()["type"] ?? null;
+        if (is_array($typeField)) {
+            $type = in_array('string', $typeField, true) ? 'string' : 'int';
+        } else {
+            $type = $typeField === 'string' ? 'string' : 'int';
+        }
         $enumName = $req->getTargetNamespace() . "\\" . $req->getTargetClass();
         $enum     = new PhpParserEnumGenerator($enumName, $type, $cases);
 
