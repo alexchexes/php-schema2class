@@ -75,19 +75,19 @@ class MyClass
     ];
 
     /**
-     * @var int|MyClassFooAlternative2
+     * @var 1|2|'1'|'2'
      */
-    private int|MyClassFooAlternative2 $foo;
+    private int|string $foo;
 
     /**
-     * @var mixed
+     * @var 3|4|'3'|'4'
      */
-    private $bar;
+    private int|string $bar;
 
     /**
-     * @var mixed|null
+     * @var 'red'|'amber'|'green'|'42'|42|42.5|false|NULL|null
      */
-    private $baz;
+    private string|int|float|bool|null $baz;
 
     /**
      * @var int|null
@@ -95,18 +95,18 @@ class MyClass
     private ?int $contradiction;
 
     /**
-     * @var MyClassNullableAlternative1|mixed
+     * @var MyClassNullable|null
      */
-    private $nullable;
+    private ?MyClassNullable $nullable;
 
     /**
-     * @param int|MyClassFooAlternative2 $foo
-     * @param mixed $bar
-     * @param mixed|null $baz
+     * @param 1|2|'1'|'2' $foo
+     * @param 3|4|'3'|'4' $bar
+     * @param 'red'|'amber'|'green'|'42'|42|42.5|false|NULL|null $baz
      * @param int|null $contradiction
-     * @param MyClassNullableAlternative1|mixed $nullable
+     * @param MyClassNullable|null $nullable
      */
-    public function __construct(MyClassFooAlternative2|int $foo, $bar, $baz, ?int $contradiction, $nullable)
+    public function __construct(int|string $foo, int|string $bar, bool|int|float|string|null $baz, ?int $contradiction, ?MyClassNullable $nullable)
     {
         $this->foo = $foo;
         $this->bar = $bar;
@@ -116,25 +116,25 @@ class MyClass
     }
 
     /**
-     * @return int|MyClassFooAlternative2
+     * @return 1|2|'1'|'2'
      */
-    public function getFoo() : MyClassFooAlternative2|int
+    public function getFoo() : int|string
     {
         return $this->foo;
     }
 
     /**
-     * @return mixed
+     * @return 3|4|'3'|'4'
      */
-    public function getBar()
+    public function getBar() : int|string
     {
         return $this->bar;
     }
 
     /**
-     * @return mixed|null
+     * @return 'red'|'amber'|'green'|'42'|42|42.5|false|NULL|null
      */
-    public function getBaz()
+    public function getBaz() : bool|int|float|string|null
     {
         return $this->baz;
     }
@@ -148,19 +148,28 @@ class MyClass
     }
 
     /**
-     * @return MyClassNullableAlternative1|mixed
+     * @return MyClassNullable|null
      */
-    public function getNullable()
+    public function getNullable() : ?MyClassNullable
     {
-        return $this->nullable;
+        return $this->nullable ?? null;
     }
 
     /**
-     * @param int|MyClassFooAlternative2 $foo
+     * @param 1|2|'1'|'2' $foo
      * @return self
+     * @param bool $validate
      */
-    public function withFoo(MyClassFooAlternative2|int $foo) : self
+    public function withFoo(int|string $foo, bool $validate = true) : self
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($foo, self::$schema['properties']['foo']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
         $clone->foo = $foo;
 
@@ -168,11 +177,11 @@ class MyClass
     }
 
     /**
-     * @param mixed $bar
+     * @param 3|4|'3'|'4' $bar
      * @return self
      * @param bool $validate
      */
-    public function withBar($bar, bool $validate = true) : self
+    public function withBar(int|string $bar, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -189,11 +198,11 @@ class MyClass
     }
 
     /**
-     * @param mixed $baz
+     * @param 'red'|'amber'|'green'|'42'|42|42.5|false|NULL $baz
      * @return self
      * @param bool $validate
      */
-    public function withBaz($baz, bool $validate = true) : self
+    public function withBaz(bool|int|float|string|null $baz, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -231,10 +240,10 @@ class MyClass
     }
 
     /**
-     * @param MyClassNullableAlternative1|mixed $nullable
+     * @param MyClassNullable $nullable
      * @return self
      */
-    public function withNullable($nullable) : self
+    public function withNullable(?MyClassNullable $nullable) : self
     {
         $clone = clone $this;
         $clone->nullable = $nullable;
@@ -257,19 +266,11 @@ class MyClass
             static::validateInput($input);
         }
 
-        $foo = match (true) {
-            is_int($input->{'foo'}) => $input->{'foo'},
-            MyClassFooAlternative2::tryFrom($input->{'foo'}) !== null => MyClassFooAlternative2::from($input->{'foo'}),
-            default => throw new \InvalidArgumentException("could not build property 'foo' from JSON"),
-        };
+        $foo = $input->{'foo'};
         $bar = $input->{'bar'};
         $baz = ($input->{'baz'} !== null) ? ($input->{'baz'}) : null;
         $contradiction = ($input->{'contradiction'} !== null) ? ((int)($input->{'contradiction'})) : null;
-        $nullable = match (true) {
-            MyClassNullableAlternative1::tryFrom($input->{'nullable'}) !== null => MyClassNullableAlternative1::from($input->{'nullable'}),
-            true => $input->{'nullable'},
-            default => throw new \InvalidArgumentException("could not build property 'nullable' from JSON"),
-        };
+        $nullable = ($input->{'nullable'} !== null) ? (MyClassNullable::from($input->{'nullable'})) : null;
 
         $obj = new self($foo, $bar, $baz, $contradiction, $nullable);
 
@@ -284,17 +285,11 @@ class MyClass
     public function toArray() : array
     {
         $output = [];
-        $output['foo'] = match (true) {
-            is_int($this->foo) => $this->foo,
-            $this->foo instanceof MyClassFooAlternative2 => ($this->foo)->value,
-        };
+        $output['foo'] = $this->foo;
         $output['bar'] = $this->bar;
         $output['baz'] = $this->baz;
         $output['contradiction'] = $this->contradiction;
-        $output['nullable'] = match (true) {
-            $this->nullable instanceof MyClassNullableAlternative1 => ($this->nullable)->value,
-            true => $this->nullable,
-        };
+        $output['nullable'] = ($this->nullable)->value;
 
         return $output;
     }
@@ -321,17 +316,5 @@ class MyClass
         }
 
         return $validator->isValid();
-    }
-
-    public function __clone()
-    {
-        $this->foo = match (true) {
-            is_int($this->foo),
-            $this->foo instanceof MyClassFooAlternative2 => $this->foo,
-        };
-        $this->nullable = match (true) {
-            $this->nullable instanceof MyClassNullableAlternative1,
-            true => $this->nullable,
-        };
     }
 }

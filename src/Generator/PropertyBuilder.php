@@ -10,6 +10,7 @@ use Helmich\Schema2Class\Generator\Property\NumberProperty;
 use Helmich\Schema2Class\Generator\Property\ObjectArrayProperty;
 use Helmich\Schema2Class\Generator\Property\TypedArrayProperty;
 use Helmich\Schema2Class\Generator\Property\PrimitiveArrayProperty;
+use Helmich\Schema2Class\Generator\Property\InferredEnumProperty;
 use Helmich\Schema2Class\Generator\Property\DateProperty;
 use Helmich\Schema2Class\Generator\Property\IntegerProperty;
 use Helmich\Schema2Class\Generator\Property\IntersectProperty;
@@ -36,6 +37,7 @@ class PropertyBuilder
         DateProperty::class,
         StringEnumProperty::class,
         PrimitiveUnionEnumProperty::class,
+        InferredEnumProperty::class,
         NullProperty::class,
         StringProperty::class,
         IntegerProperty::class,
@@ -99,13 +101,17 @@ class PropertyBuilder
         if (isset($definition['type'])
             && is_array($definition['type'])
             && count($definition['type']) === 2
-            && in_array('null', $definition['type'], true)
+            && (in_array('null', $definition['type'], true) || in_array(null, $definition['type'], true))
         ) {
             [$a, $b] = $definition['type'];
             $prim = $a === 'null' ? $b : $a;
             switch ($prim) {
                 case 'string':
-                    $prop = new StringProperty($name, $definition, $req);
+                    if (isset($definition['enum'])) {
+                        $prop = new StringEnumProperty($name, $definition, $req);
+                    } else {
+                        $prop = new StringProperty($name, $definition, $req);
+                    }
                     break;
                 case 'integer':
                     $prop = new IntegerProperty($name, $definition, $req);
@@ -124,6 +130,32 @@ class PropertyBuilder
                     ? new NullablePropertyDecorator($name, $prop)   // required + nullable
                     : new OptionalPropertyDecorator($name, $prop);  // optional
             }
+        }
+
+        if (PrimitiveUnionEnumProperty::canHandleSchema($definition)) {
+            $property = new PrimitiveUnionEnumProperty($name, $definition, $req);
+            if (isset($definition['default']) && $req->getOptions()->getTreatValuesWithDefaultAsOptional()) {
+                $property = new DefaultPropertyDecorator($name, $property);
+            } elseif (!$isRequired) {
+                $property = new OptionalPropertyDecorator($name, $property);
+            } elseif ($property->allowsNull()) {
+                $property = new NullablePropertyDecorator($name, $property);
+            }
+
+            return $property;
+        }
+
+        if (InferredEnumProperty::canHandleSchema($definition)) {
+            $property = new InferredEnumProperty($name, $definition, $req);
+            if (isset($definition['default']) && $req->getOptions()->getTreatValuesWithDefaultAsOptional()) {
+                $property = new DefaultPropertyDecorator($name, $property);
+            } elseif (!$isRequired) {
+                $property = new OptionalPropertyDecorator($name, $property);
+            } elseif ($property->allowsNull()) {
+                $property = new NullablePropertyDecorator($name, $property);
+            }
+
+            return $property;
         }
 
         // Expand multi-type definitions like ["string", "object"] into an anyOf union

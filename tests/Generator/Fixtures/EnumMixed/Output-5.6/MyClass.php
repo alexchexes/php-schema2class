@@ -73,17 +73,17 @@ class MyClass
     ];
 
     /**
-     * @var int|1|2|'1'|'2'
+     * @var 1|2|'1'|'2'
      */
     private $foo;
 
     /**
-     * @var mixed
+     * @var 3|4|'3'|'4'
      */
     private $bar;
 
     /**
-     * @var mixed|null
+     * @var 'red'|'amber'|'green'|'42'|42|42.5|false|NULL|null
      */
     private $baz;
 
@@ -93,18 +93,18 @@ class MyClass
     private $contradiction;
 
     /**
-     * @var 'red'|'green'|mixed
+     * @var 'red'|'green'|null
      */
     private $nullable;
 
     /**
-     * @param int|1|2|'1'|'2' $foo
-     * @param mixed $bar
-     * @param mixed|null $baz
+     * @param 1|2|'1'|'2' $foo
+     * @param 3|4|'3'|'4' $bar
+     * @param 'red'|'amber'|'green'|'42'|42|42.5|false|NULL|null $baz
      * @param int|null $contradiction
-     * @param 'red'|'green'|mixed $nullable
+     * @param 'red'|'green'|null $nullable
      */
-    public function __construct($foo, $bar, $baz, $contradiction, $nullable)
+    public function __construct($foo, $bar, $baz, $contradiction, string $nullable)
     {
         $this->foo = $foo;
         $this->bar = $bar;
@@ -114,7 +114,7 @@ class MyClass
     }
 
     /**
-     * @return int|1|2|'1'|'2'
+     * @return 1|2|'1'|'2'
      */
     public function getFoo()
     {
@@ -122,7 +122,7 @@ class MyClass
     }
 
     /**
-     * @return mixed
+     * @return 3|4|'3'|'4'
      */
     public function getBar()
     {
@@ -130,7 +130,7 @@ class MyClass
     }
 
     /**
-     * @return mixed|null
+     * @return 'red'|'amber'|'green'|'42'|42|42.5|false|NULL|null
      */
     public function getBaz()
     {
@@ -146,7 +146,7 @@ class MyClass
     }
 
     /**
-     * @return 'red'|'green'|mixed
+     * @return 'red'|'green'|null
      */
     public function getNullable()
     {
@@ -154,11 +154,20 @@ class MyClass
     }
 
     /**
-     * @param int|1|2|'1'|'2' $foo
+     * @param 1|2|'1'|'2' $foo
      * @return self
+     * @param bool $validate
      */
-    public function withFoo($foo)
+    public function withFoo($foo, bool $validate = true)
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($foo, self::$schema['properties']['foo']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
         $clone->foo = $foo;
 
@@ -166,7 +175,7 @@ class MyClass
     }
 
     /**
-     * @param mixed $bar
+     * @param 3|4|'3'|'4' $bar
      * @return self
      * @param bool $validate
      */
@@ -187,7 +196,7 @@ class MyClass
     }
 
     /**
-     * @param mixed $baz
+     * @param 'red'|'amber'|'green'|'42'|42|42.5|false|NULL $baz
      * @return self
      * @param bool $validate
      */
@@ -229,11 +238,20 @@ class MyClass
     }
 
     /**
-     * @param 'red'|'green'|mixed $nullable
+     * @param 'red'|'green' $nullable
      * @return self
+     * @param bool $validate
      */
-    public function withNullable($nullable)
+    public function withNullable(string $nullable, bool $validate = true)
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($nullable, self::$schema['properties']['nullable']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
         $clone->nullable = $nullable;
 
@@ -265,7 +283,7 @@ class MyClass
         $bar = $input->{'bar'};
         $baz = ($input->{'baz'} !== null) ? ($input->{'baz'}) : null;
         $contradiction = ($input->{'contradiction'} !== null) ? ((int)($input->{'contradiction'})) : null;
-        $nullable = $input->{'nullable'};
+        $nullable = ($input->{'nullable'} !== null) ? ($input->{'nullable'}) : null;
 
         $obj = new self($foo, $bar, $baz, $contradiction, $nullable);
 
@@ -280,23 +298,11 @@ class MyClass
     public function toArray()
     {
         $output = [];
-        if ((is_int($this->foo)) || (is_string($this->foo) && in_array($this->foo, array (
-          0 => 1,
-          1 => 2,
-          2 => '1',
-          3 => '2',
-        ), true))) {
-            $output['foo'] = $this->foo;
-        }
+        $output['foo'] = $this->foo;
         $output['bar'] = $this->bar;
         $output['baz'] = $this->baz;
         $output['contradiction'] = $this->contradiction;
-        if ((is_string($this->nullable) && in_array($this->nullable, array (
-          0 => 'red',
-          1 => 'green',
-        ), true)) || (true)) {
-            $output['nullable'] = $this->nullable;
-        }
+        $output['nullable'] = $this->nullable;
 
         return $output;
     }
@@ -323,19 +329,5 @@ class MyClass
         }
 
         return $validator->isValid();
-    }
-
-    public function __clone()
-    {
-        $this->foo = (is_string($this->foo) && in_array($this->foo, array (
-          0 => 1,
-          1 => 2,
-          2 => '1',
-          3 => '2',
-        ), true)) ? ($this->foo) : ((is_int($this->foo)) ? ($this->foo) : ($this->foo));
-        $this->nullable = (true) ? ($this->nullable) : ((is_string($this->nullable) && in_array($this->nullable, array (
-          0 => 'red',
-          1 => 'green',
-        ), true)) ? ($this->nullable) : ($this->nullable));
     }
 }
