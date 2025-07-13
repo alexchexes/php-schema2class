@@ -517,6 +517,7 @@ class Generator
 
         $base = $property;
         while ($base instanceof PropertyDecoratorInterface) {
+            /** @var PropertyDecoratorInterface $base */
             $base = $base->unwrap();
         }
 
