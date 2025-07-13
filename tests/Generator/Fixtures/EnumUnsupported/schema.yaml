@@ -1,0 +1,25 @@
+definitions:
+  Foo:
+    type: object
+    properties:
+      foo:
+        enum:
+          - 0
+          - 1.5
+          - 2.5
+          - 3.5
+        type: number
+      bar:
+        $ref: "#/definitions/Bar"
+  Bar:
+    type: number
+    enum:
+      - 0
+      - 1.5
+      - 2.5
+      - 3.5
+
+# 8.0 fails 
+# 7.4:
+#   $foo is @var int|float|null 
+#   $bar is @var 0|1|2|3|null    [sic!]
