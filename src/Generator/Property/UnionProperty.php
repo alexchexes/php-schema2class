@@ -221,9 +221,16 @@ class UnionProperty extends AbstractProperty
 
     public function typeAnnotation(): string
     {
-        $types = array_map(fn (PropertyInterface $prop): string => $prop->typeAnnotation(), $this->subProperties);
-        $types = array_unique($types);
-        return join("|", $types);
+        $types = [];
+
+        foreach ($this->subProperties as $prop) {
+            $ann = $prop->typeAnnotation();
+            foreach (explode('|', $ann) as $t) {
+                $types[$t] = true;
+            }
+        }
+
+        return join('|', array_keys($types));
     }
 
     public function typeHint(string $phpVersion): ?string
@@ -241,15 +248,17 @@ class UnionProperty extends AbstractProperty
                     return null;
                 }
 
-                if (strpos($th, "?") === 0) {
-                    $subTypeHints["null"] = true;
-                    $th                   = substr($th, 1);
+                if (str_starts_with($th, '?')) {
+                    $subTypeHints['null'] = true;
+                    $th = substr($th, 1);
                 }
 
-                $subTypeHints[$th] = true;
+                foreach (explode('|', $th) as $part) {
+                    $subTypeHints[$part] = true;
+                }
             }
 
-            return join("|", array_keys($subTypeHints));
+            return join('|', array_keys($subTypeHints));
         }
 
         return null;

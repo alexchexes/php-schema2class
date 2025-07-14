@@ -1,0 +1,193 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Ns\UnionWithRepeatedType;
+
+class Cat
+{
+    /**
+     * Schema used to validate input for creating instances of this class
+     *
+     * @var array
+     */
+    private static array $schema = [
+        'type' => 'object',
+        'properties' => [
+            'hasFur' => [
+                'anyOf' => [
+                    [
+                        '$ref' => '#/definitions/foo',
+                    ],
+                    [
+                        '$ref' => '#/definitions/bar',
+                    ],
+                    [
+                        '$ref' => '#/definitions/baz',
+                    ],
+                ],
+            ],
+        ],
+        'definitions' => [
+            'foo' => [
+                'type' => [
+                    'boolean',
+                    'null',
+                ],
+            ],
+            'bar' => [
+                'type' => [
+                    'string',
+                    'number',
+                    'null',
+                ],
+            ],
+            'baz' => [
+                'type' => [
+                    'string',
+                    'number',
+                    'boolean',
+                ],
+            ],
+        ],
+    ];
+
+    /**
+     * @var bool|null|string|int|float
+     */
+    private null|bool|string|int|float $hasFur = null;
+
+    /**
+     * @return bool|null|string|int|float
+     */
+    public function getHasFur() : bool|int|float|string|null
+    {
+        return $this->hasFur;
+    }
+
+    /**
+     * @param bool|string|int|float $hasFur
+     * @return self
+     */
+    public function withHasFur(bool|int|float|string|null $hasFur) : self
+    {
+        $clone = clone $this;
+        $clone->hasFur = $hasFur;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutHasFur() : self
+    {
+        $clone = clone $this;
+        unset($clone->hasFur);
+
+        return $clone;
+    }
+
+    /**
+     * Builds a new instance from an input array
+     *
+     * @param array|object $input Input data
+     * @param bool $validate Set this to false to skip validation; use at own risk
+     * @return Cat Created instance
+     * @throws \InvalidArgumentException
+     */
+    public static function buildFromInput(array|object $input, bool $validate = true) : Cat
+    {
+        $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
+        if ($validate) {
+            static::validateInput($input);
+        }
+
+        $hasFur = isset($input->{'hasFur'}) ? match (true) {
+            (($input->{'hasFur'}) === null) || (is_bool($input->{'hasFur'})) => ($input->{'hasFur'} !== null) ? ((bool)($input->{'hasFur'})) : null,
+            (($input->{'hasFur'}) === null) || ((is_string($input->{'hasFur'})) || (is_int($input->{'hasFur'}) || is_float($input->{'hasFur'}))) => ($input->{'hasFur'} !== null) ? (match (true) {
+            is_string($input->{'hasFur'}) => $input->{'hasFur'},
+            is_int($input->{'hasFur'}) || is_float($input->{'hasFur'}) => str_contains((string)($input->{'hasFur'}), '.') ? (float)($input->{'hasFur'}) : (int)($input->{'hasFur'}),
+            default => null,
+        }) : null,
+            (is_string($input->{'hasFur'})) || (is_int($input->{'hasFur'}) || is_float($input->{'hasFur'})) || (is_bool($input->{'hasFur'})) => match (true) {
+            is_string($input->{'hasFur'}) => $input->{'hasFur'},
+            is_int($input->{'hasFur'}) || is_float($input->{'hasFur'}) => str_contains((string)($input->{'hasFur'}), '.') ? (float)($input->{'hasFur'}) : (int)($input->{'hasFur'}),
+            is_bool($input->{'hasFur'}) => (bool)($input->{'hasFur'}),
+            default => null,
+        },
+            default => null,
+        } : null;
+
+        $obj = new self();
+        $obj->hasFur = $hasFur;
+        return $obj;
+    }
+
+    /**
+     * Converts this object back to a simple array that can be JSON-serialized
+     *
+     * @return array Converted array
+     */
+    public function toArray() : array
+    {
+        $output = [];
+        if (isset($this->hasFur)) {
+            $output['hasFur'] = match (true) {
+                (($this->hasFur) === null) || (is_bool($this->hasFur)) => ($this->hasFur !== null) ? ($this->hasFur) : null,
+                (($this->hasFur) === null) || ((is_string($this->hasFur)) || (is_int($this->hasFur) || is_float($this->hasFur))) => ($this->hasFur !== null) ? (match (true) {
+                default => null,
+                is_string($this->hasFur),
+                is_int($this->hasFur) || is_float($this->hasFur) => $this->hasFur,
+            }) : null,
+                (is_string($this->hasFur)) || (is_int($this->hasFur) || is_float($this->hasFur)) || (is_bool($this->hasFur)) => match (true) {
+                default => null,
+                is_string($this->hasFur),
+                is_int($this->hasFur) || is_float($this->hasFur),
+                is_bool($this->hasFur) => $this->hasFur,
+            },
+            };
+        }
+
+        return $output;
+    }
+
+    /**
+     * Validates an input array
+     *
+     * @param array|object $input Input data
+     * @param bool $return Return instead of throwing errors
+     * @return bool Validation result
+     * @throws \InvalidArgumentException
+     */
+    public static function validateInput(array|object $input, bool $return = false) : bool
+    {
+        $validator = new \JsonSchema\Validator();
+        $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
+        $validator->validate($input, self::$schema);
+
+        if (!$validator->isValid() && !$return) {
+            $errors = array_map(function(array $e): string {
+                return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];
+            }, $validator->getErrors());
+            throw new \InvalidArgumentException(join(".\n", $errors));
+        }
+
+        return $validator->isValid();
+    }
+
+    public function __clone()
+    {
+        if (isset($this->hasFur)) {
+            $this->hasFur = match (true) {
+                (($this->hasFur) === null) || (is_bool($this->hasFur)),
+                (($this->hasFur) === null) || ((is_string($this->hasFur)) || (is_int($this->hasFur) || is_float($this->hasFur))) => isset($this->hasFur) ? (clone $this->hasFur) : null,
+                (is_string($this->hasFur)) || (is_int($this->hasFur) || is_float($this->hasFur)) || (is_bool($this->hasFur)) => match (true) {
+                is_string($this->hasFur),
+                is_int($this->hasFur) || is_float($this->hasFur),
+                is_bool($this->hasFur) => $this->hasFur,
+            },
+            };
+        }
+    }
+}
