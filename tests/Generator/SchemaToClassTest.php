@@ -44,6 +44,7 @@ class SchemaToClassTest extends TestCase
 
         @rmdir($dir);
     }
+
     protected function setUp(): void
     {
     }
@@ -115,14 +116,34 @@ class SchemaToClassTest extends TestCase
                     if ($in[0] === '.') {
                         continue;
                     }
-                    $ext = pathinfo($in, PATHINFO_EXTENSION);
-                    $cls = pathinfo($in, PATHINFO_FILENAME);
                     $path = $inputDir . DIRECTORY_SEPARATOR . $in;
-                    if (in_array($ext, ['json', 'yaml', 'yml'], true)) {
-                        if ($ext === 'json') {
-                            $inputFiles[$cls] = json_decode(file_get_contents($path));
-                        } else {
-                            $inputFiles[$cls] = Yaml::parseFile($path);
+
+                    if (is_dir($path)) {
+                        $cls = $in;
+                        foreach (scandir($path) as $file) {
+                            if ($file[0] === '.') {
+                                continue;
+                            }
+                            $ext = pathinfo($file, PATHINFO_EXTENSION);
+                            $inputName = pathinfo($file, PATHINFO_FILENAME);
+                            $filePath = $path . DIRECTORY_SEPARATOR . $file;
+                            if (in_array($ext, ['json', 'yaml', 'yml'], true)) {
+                                if ($ext === 'json') {
+                                    $inputFiles[$cls][$inputName] = json_decode(file_get_contents($filePath));
+                                } else {
+                                    $inputFiles[$cls][$inputName] = Yaml::parseFile($filePath);
+                                }
+                            }
+                        }
+                    } else {
+                        $ext = pathinfo($in, PATHINFO_EXTENSION);
+                        $cls = pathinfo($in, PATHINFO_FILENAME);
+                        if (in_array($ext, ['json', 'yaml', 'yml'], true)) {
+                            if ($ext === 'json') {
+                                $inputFiles[$cls][$cls] = json_decode(file_get_contents($path));
+                            } else {
+                                $inputFiles[$cls][$cls] = Yaml::parseFile($path);
+                            }
                         }
                     }
                 }
@@ -331,21 +352,27 @@ class SchemaToClassTest extends TestCase
             eval($evalCode);
         }
 
-        foreach ($inputs as $class => $input) {
+        foreach ($inputs as $class => $classInputs) {
             $fqcn = "Ns\\{$nsName}\\{$class}";
 
-            try {
-                $obj = $fqcn::buildFromInput($input);
-            } catch (\Throwable $th) {
-                throw new \Exception("Failed to build {$fqcn} from input", 0, $th);
-            }
+            foreach ($classInputs as $inputName => $input) {
+                try {
+                    $obj = $fqcn::buildFromInput($input);
+                } catch (\Throwable $th) {
+                    throw new \Exception("Failed to build {$fqcn} from input {$inputName}", 0, $th);
+                }
 
-            $this->assertInstanceOf($fqcn, $obj);
-            $expectedArray = json_decode(json_encode($input), true);
-            $actualArray = $obj->toArray();
-            ksort($expectedArray);
-            ksort($actualArray);
-            $this->assertSame($expectedArray, $actualArray);
+                $this->assertInstanceOf($fqcn, $obj);
+                $expectedArray = json_decode(json_encode($input), true);
+                $actualArray = $obj->toArray();
+                ksort($expectedArray);
+                ksort($actualArray);
+                $this->assertSame(
+                    $expectedArray,
+                    $actualArray,
+                    "Array returned from {$fqcn}->toArray() doesn't match input array from file '{$inputName}'."
+                );
+            }
         }
     }
 
