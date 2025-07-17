@@ -132,22 +132,20 @@ class Cat
     public function toArray() : array
     {
         $output = [];
-        if (isset($this->hasFur)) {
-            $output['hasFur'] = match (true) {
-                (($this->hasFur) === null) || (is_bool($this->hasFur)) => ($this->hasFur !== null) ? ($this->hasFur) : null,
-                (($this->hasFur) === null) || ((is_string($this->hasFur)) || (is_int($this->hasFur) || is_float($this->hasFur))) => ($this->hasFur !== null) ? (match (true) {
-                default => null,
-                is_string($this->hasFur),
-                is_int($this->hasFur) || is_float($this->hasFur) => $this->hasFur,
-            }) : null,
-                (is_string($this->hasFur)) || (is_int($this->hasFur) || is_float($this->hasFur)) || (is_bool($this->hasFur)) => match (true) {
-                default => null,
-                is_string($this->hasFur),
-                is_int($this->hasFur) || is_float($this->hasFur),
-                is_bool($this->hasFur) => $this->hasFur,
-            },
-            };
-        }
+        $output['hasFur'] = match (true) {
+            (($this->hasFur) === null) || (is_bool($this->hasFur)) => ($this->hasFur !== null) ? ($this->hasFur) : null,
+            (($this->hasFur) === null) || ((is_string($this->hasFur)) || (is_int($this->hasFur) || is_float($this->hasFur))) => ($this->hasFur !== null) ? (match (true) {
+            default => null,
+            is_string($this->hasFur),
+            is_int($this->hasFur) || is_float($this->hasFur) => $this->hasFur,
+        }) : null,
+            (is_string($this->hasFur)) || (is_int($this->hasFur) || is_float($this->hasFur)) || (is_bool($this->hasFur)) => match (true) {
+            default => null,
+            is_string($this->hasFur),
+            is_int($this->hasFur) || is_float($this->hasFur),
+            is_bool($this->hasFur) => $this->hasFur,
+        },
+        };
 
         return $output;
     }

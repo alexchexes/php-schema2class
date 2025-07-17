@@ -364,6 +364,17 @@ class UnionProperty extends AbstractProperty
         return $out;
     }
 
+    public function allowsNull(): bool
+    {
+        foreach ($this->subProperties as $prop) {
+            if ($prop->allowsNull()) {
+                return true;
+            }
+        }
+
+        return parent::allowsNull();
+    }
+
     private function subTypeName(int $idx = 0): string
     {
         return $this->generatorRequest->getTargetClass() . $this->capitalizedName . "Alternative" . ($idx + 1);
