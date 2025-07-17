@@ -13,6 +13,7 @@ use Helmich\Schema2Class\Generator\Property\IntersectProperty;
 use Helmich\Schema2Class\Generator\Property\NestedObjectProperty;
 use Helmich\Schema2Class\Generator\Property\PropertyCollection;
 use Helmich\Schema2Class\Generator\Property\RenameablePropertyInterface;
+use Helmich\Schema2Class\Generator\Property\OptionalPropertyDecorator;
 use Helmich\Schema2Class\Util\StringUtils;
 use Helmich\Schema2Class\Writer\WriterInterface;
 use Laminas\Code\DeclareStatement;
@@ -227,6 +228,14 @@ class SchemaToClass
 
         $codeGenerator = new Generator($req);
 
+        $hasOptionalNullable = false;
+        foreach ($propertiesFromSchema as $p) {
+            if ($p instanceof OptionalPropertyDecorator && method_exists($p, 'isOptionalNullable') && $p->isOptionalNullable()) {
+                $hasOptionalNullable = true;
+                break;
+            }
+        }
+
         $properties = [
             ...$properties,
             ...$codeGenerator->generateProperties($propertiesFromSchema),
@@ -240,6 +249,7 @@ class SchemaToClass
             $codeGenerator->generateToArrayMethod($propertiesFromSchema),
             $codeGenerator->generateValidateMethod(),
             $codeGenerator->generateCloneMethod($propertiesFromSchema),
+            $hasOptionalNullable ? $codeGenerator->generateIsSetMethod() : null,
         ];
         $methods = array_values(array_filter($methods));
         $this->ensureUniqueMethodNames($methods);

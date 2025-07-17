@@ -33,6 +33,13 @@ class Cat
     ];
 
     /**
+     * @var array
+     */
+    private $_optionalNullableSet = [
+        
+    ];
+
+    /**
      * Whether the cat has fur. True by default for most cats
      *
      * @var bool|null
@@ -66,6 +73,7 @@ class Cat
 
         $clone = clone $this;
         $clone->hasFur = $hasFur;
+        $clone->_optionalNullableSet['hasFur'] = true;
 
         return $clone;
     }
@@ -77,6 +85,7 @@ class Cat
     {
         $clone = clone $this;
         $clone->hasFur = true;
+        unset($clone->_optionalNullableSet['hasFur']);
 
         return $clone;
     }
@@ -96,10 +105,13 @@ class Cat
             static::validateInput($input);
         }
 
+        $__optNullables = [];
         $hasFur = property_exists($input, 'hasFur') ? $input->{'hasFur'} : true;
+        if (property_exists($input, 'hasFur')) { $__optNullables['hasFur'] = true; }
 
         $obj = new self();
         $obj->hasFur = $hasFur;
+        $obj->_optionalNullableSet = $__optNullables;
         return $obj;
     }
 
@@ -111,7 +123,9 @@ class Cat
     public function toArray() : array
     {
         $output = [];
-        $output['hasFur'] = $this->hasFur;
+        if (isset($this->hasFur) || array_key_exists('hasFur', $this->_optionalNullableSet)) {
+            $output['hasFur'] = $this->hasFur;
+        }
 
         return $output;
     }
@@ -138,5 +152,14 @@ class Cat
         }
 
         return $validator->isValid();
+    }
+
+    /**
+     * @param string $propertyName
+     * @return bool
+     */
+    public function isSet(string $propertyName) : bool
+    {
+        return array_key_exists($propertyName, $this->_optionalNullableSet);
     }
 }

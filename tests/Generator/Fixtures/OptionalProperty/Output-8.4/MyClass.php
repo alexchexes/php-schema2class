@@ -33,6 +33,13 @@ class MyClass
     ];
 
     /**
+     * @var array
+     */
+    private $_optionalNullableSet = [
+        
+    ];
+
+    /**
      * @var string
      */
     private string $foo;
@@ -149,6 +156,7 @@ class MyClass
 
         $clone = clone $this;
         $clone->baz = $baz;
+        $clone->_optionalNullableSet['baz'] = true;
 
         return $clone;
     }
@@ -160,6 +168,7 @@ class MyClass
     {
         $clone = clone $this;
         unset($clone->baz);
+        unset($clone->_optionalNullableSet['baz']);
 
         return $clone;
     }
@@ -179,13 +188,16 @@ class MyClass
             static::validateInput($input);
         }
 
+        $__optNullables = [];
         $foo = $input->{'foo'};
         $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
-        $baz = isset($input->{'baz'}) ? $input->{'baz'} : null;
+        $baz = property_exists($input, 'baz') ? $input->{'baz'} : null;
+        if (property_exists($input, 'baz')) { $__optNullables['baz'] = true; }
 
         $obj = new self($foo);
         $obj->bar = $bar;
         $obj->baz = $baz;
+        $obj->_optionalNullableSet = $__optNullables;
         return $obj;
     }
 
@@ -201,7 +213,9 @@ class MyClass
         if (isset($this->bar)) {
             $output['bar'] = $this->bar;
         }
-        $output['baz'] = $this->baz;
+        if (isset($this->baz) || array_key_exists('baz', $this->_optionalNullableSet)) {
+            $output['baz'] = $this->baz;
+        }
 
         return $output;
     }
@@ -228,5 +242,14 @@ class MyClass
         }
 
         return $validator->isValid();
+    }
+
+    /**
+     * @param string $propertyName
+     * @return bool
+     */
+    public function isSet(string $propertyName) : bool
+    {
+        return array_key_exists($propertyName, $this->_optionalNullableSet);
     }
 }

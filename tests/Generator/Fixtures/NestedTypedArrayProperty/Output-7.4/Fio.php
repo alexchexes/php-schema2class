@@ -24,6 +24,13 @@ class Fio
     ];
 
     /**
+     * @var array
+     */
+    private $_optionalNullableSet = [
+        
+    ];
+
+    /**
      * @var string|null
      */
     private ?string $bar = null;
@@ -53,6 +60,7 @@ class Fio
 
         $clone = clone $this;
         $clone->bar = $bar;
+        $clone->_optionalNullableSet['bar'] = true;
 
         return $clone;
     }
@@ -64,6 +72,7 @@ class Fio
     {
         $clone = clone $this;
         unset($clone->bar);
+        unset($clone->_optionalNullableSet['bar']);
 
         return $clone;
     }
@@ -89,10 +98,13 @@ class Fio
             static::validateInput($input);
         }
 
-        $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
+        $__optNullables = [];
+        $bar = property_exists($input, 'bar') ? $input->{'bar'} : null;
+        if (property_exists($input, 'bar')) { $__optNullables['bar'] = true; }
 
         $obj = new self();
         $obj->bar = $bar;
+        $obj->_optionalNullableSet = $__optNullables;
         return $obj;
     }
 
@@ -104,7 +116,9 @@ class Fio
     public function toArray() : array
     {
         $output = [];
-        $output['bar'] = $this->bar;
+        if (isset($this->bar) || array_key_exists('bar', $this->_optionalNullableSet)) {
+            $output['bar'] = $this->bar;
+        }
 
         return $output;
     }
@@ -131,5 +145,14 @@ class Fio
         }
 
         return $validator->isValid();
+    }
+
+    /**
+     * @param string $propertyName
+     * @return bool
+     */
+    public function isSet(string $propertyName) : bool
+    {
+        return array_key_exists($propertyName, $this->_optionalNullableSet);
     }
 }

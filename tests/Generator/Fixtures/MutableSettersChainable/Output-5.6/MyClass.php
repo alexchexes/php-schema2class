@@ -40,6 +40,13 @@ class MyClass
     ];
 
     /**
+     * @var array
+     */
+    private $_optionalNullableSet = [
+        
+    ];
+
+    /**
      * @var string|null
      */
     private $foo = null;
@@ -133,6 +140,18 @@ class MyClass
         }
 
         $this->opt = $opt;
+        $this->_optionalNullableSet['opt'] = true;
+
+        return $this;
+    }
+
+    /**
+     * @return self
+     */
+    public function unsetOpt()
+    {
+        $this->opt = null;
+        unset($this->_optionalNullableSet['opt']);
 
         return $this;
     }
@@ -158,13 +177,16 @@ class MyClass
             static::validateInput($input);
         }
 
+        $__optNullables = [];
         $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
         $bar = Baz::buildFromInput($input->{'bar'}, $validate);
-        $opt = isset($input->{'opt'}) ? $input->{'opt'} : null;
+        $opt = property_exists($input, 'opt') ? $input->{'opt'} : null;
+        if (property_exists($input, 'opt')) { $__optNullables['opt'] = true; }
 
         $obj = new self($bar);
         $obj->foo = $foo;
         $obj->opt = $opt;
+        $obj->_optionalNullableSet = $__optNullables;
         return $obj;
     }
 
@@ -180,7 +202,9 @@ class MyClass
             $output['foo'] = $this->foo;
         }
         $output['bar'] = $this->bar->toArray();
-        $output['opt'] = $this->opt;
+        if (isset($this->opt) || array_key_exists('opt', $this->_optionalNullableSet)) {
+            $output['opt'] = $this->opt;
+        }
 
         return $output;
     }
@@ -207,5 +231,14 @@ class MyClass
         }
 
         return $validator->isValid();
+    }
+
+    /**
+     * @param string $propertyName
+     * @return bool
+     */
+    public function isSet(string $propertyName)
+    {
+        return array_key_exists($propertyName, $this->_optionalNullableSet);
     }
 }

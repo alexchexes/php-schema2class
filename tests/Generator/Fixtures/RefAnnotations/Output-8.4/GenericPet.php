@@ -31,6 +31,13 @@ class GenericPet
     ];
 
     /**
+     * @var array
+     */
+    private $_optionalNullableSet = [
+        
+    ];
+
+    /**
      * Whether the animal has fur (true), doesn't (false), or it's unknown or varies (null)
      *
      * @var bool|null
@@ -64,6 +71,7 @@ class GenericPet
 
         $clone = clone $this;
         $clone->hasFur = $hasFur;
+        $clone->_optionalNullableSet['hasFur'] = true;
 
         return $clone;
     }
@@ -75,6 +83,7 @@ class GenericPet
     {
         $clone = clone $this;
         $clone->hasFur = false;
+        unset($clone->_optionalNullableSet['hasFur']);
 
         return $clone;
     }
@@ -94,10 +103,13 @@ class GenericPet
             static::validateInput($input);
         }
 
+        $__optNullables = [];
         $hasFur = property_exists($input, 'hasFur') ? $input->{'hasFur'} : false;
+        if (property_exists($input, 'hasFur')) { $__optNullables['hasFur'] = true; }
 
         $obj = new self();
         $obj->hasFur = $hasFur;
+        $obj->_optionalNullableSet = $__optNullables;
         return $obj;
     }
 
@@ -109,7 +121,9 @@ class GenericPet
     public function toArray() : array
     {
         $output = [];
-        $output['hasFur'] = $this->hasFur;
+        if (isset($this->hasFur) || array_key_exists('hasFur', $this->_optionalNullableSet)) {
+            $output['hasFur'] = $this->hasFur;
+        }
 
         return $output;
     }
@@ -136,5 +150,14 @@ class GenericPet
         }
 
         return $validator->isValid();
+    }
+
+    /**
+     * @param string $propertyName
+     * @return bool
+     */
+    public function isSet(string $propertyName) : bool
+    {
+        return array_key_exists($propertyName, $this->_optionalNullableSet);
     }
 }

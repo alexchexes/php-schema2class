@@ -45,9 +45,28 @@ class Generator
     {
         $propertyGenerators = [];
 
+        $hasOptionalNullable = false;
+        foreach ($properties as $p) {
+            if ($p instanceof OptionalPropertyDecorator && method_exists($p, 'isOptionalNullable') && $p->isOptionalNullable()) {
+                $hasOptionalNullable = true;
+                break;
+            }
+        }
+
         $visibility = $this->generatorRequest->getNoGetters()
             ? PropertyGenerator::FLAG_PUBLIC
             : PropertyGenerator::FLAG_PRIVATE;
+
+        if ($hasOptionalNullable) {
+            $setVisibility = ($this->generatorRequest->getNoGetters() && $this->generatorRequest->getNoSetters())
+                ? PropertyGenerator::FLAG_PUBLIC
+                : PropertyGenerator::FLAG_PRIVATE;
+
+            $setProp = new PropertyGenerator('_optionalNullableSet', [] , $setVisibility);
+            $setProp->setDefaultValue([]);
+            $setProp->setDocBlock(new DocBlockGenerator(null, null, [new GenericTag('var', 'array')]));
+            $propertyGenerators[] = $setProp;
+        }
 
         foreach ($properties as $property) {
             $schema     = $property->schema();
@@ -102,6 +121,14 @@ class Generator
     {
         $requiredProperties = $properties->filter(PropertyCollectionFilterFactory::required());
         $optionalProperties = $properties->filter(PropertyCollectionFilterFactory::optional());
+
+        $hasOptionalNullable = false;
+        foreach ($properties as $p) {
+            if ($p instanceof OptionalPropertyDecorator && method_exists($p, 'isOptionalNullable') && $p->isOptionalNullable()) {
+                $hasOptionalNullable = true;
+                break;
+            }
+        }
 
         $constructorParams = [];
         
@@ -191,12 +218,15 @@ class Generator
 
             $aliasLine .
 
+            ($hasOptionalNullable ? "\$__optNullables = [];\n" : '') .
+
             // Property‐by‐property mapping
             $properties->generateInputToTypeConversionCode($inputVarName, object: true) . "\n\n" .
 
             // Construct & assign optional props
             "\${$objVarName} = new self(" . join(", ", $constructorParams) . ");" . "\n" .
             join("\n", $assignments) . "\n" .
+            ($hasOptionalNullable ? "\${$objVarName}->_optionalNullableSet = \$__optNullables;\n" : '') .
 
             // Return
             "return \${$objVarName};"
@@ -323,6 +353,29 @@ class Generator
         );
     }
 
+    public function generateIsSetMethod(): MethodGenerator
+    {
+        $doc = new DocBlockGenerator(null, null, [
+            new ParamTag('propertyName', ['string']),
+            new ReturnTag('bool'),
+        ]);
+        $doc->setWordWrap(false);
+
+        $method = new MethodGenerator(
+            'isSet',
+            [new ParameterGenerator('propertyName', 'string')],
+            MethodGenerator::FLAG_PUBLIC,
+            'return array_key_exists($propertyName, $this->_optionalNullableSet);',
+            $doc
+        );
+
+        if ($this->generatorRequest->isAtLeastPHP("7.0")) {
+            $method->setReturnType('bool');
+        }
+
+        return $method;
+    }
+
     /**
      * @param PropertyCollection $properties
      * @return MethodGenerator[]
@@ -410,6 +463,9 @@ class Generator
         foreach ($properties as $property) {
             if ($mutable !== null) {
                 $methods[] = $this->generateMutableSetterMethod($property, $mutable === 'chainable');
+                if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
+                    $methods[] = $this->generateMutableUnsetterMethod($property, $mutable === 'chainable');
+                }
             } else {
                 $methods[] = $this->generateSetterMethod($property);
 
@@ -486,13 +542,20 @@ class Generator
             $docBlock->setWordWrap(false);
         }
 
+        $body = $setterValidation . "\$clone = clone \$this;\n" .
+            "\$clone->$name = \$$name;\n";
+
+        if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
+            $body .= "\$clone->_optionalNullableSet['$key'] = true;\n";
+        }
+
+        $body .= "\nreturn \$clone;";
+
         $setMethod = new MethodGenerator(
             'with' . $camelCaseName,
             $parameters,
             MethodGenerator::FLAG_PUBLIC,
-            $setterValidation . "\$clone = clone \$this;\n" .
-                "\$clone->$name = \$$name;\n\n" .
-                "return \$clone;",
+            $body,
             $docBlock
         );
 
@@ -562,7 +625,10 @@ class Generator
             $docBlock->setWordWrap(false);
         }
 
-        $body = $setterValidation . "\$this->$name = \$$name;";
+        $body = $setterValidation . "\$this->{$name} = \$$name;";
+        if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
+            $body .= "\n\$this->_optionalNullableSet['$key'] = true;";
+        }
         if ($chainable) {
             $body .= "\n\nreturn \$this;";
         }
@@ -586,6 +652,39 @@ class Generator
         return $setMethod;
     }
 
+    private function generateMutableUnsetterMethod(PropertyInterface $property, bool $chainable): MethodGenerator
+    {
+        $key  = $property->key();
+        $name = $property->name();
+        $camelCaseName = $this->generatorRequest->getOptions()->getPreservePropertyNames()
+            ? StringUtils::pascalCasePreserveOuterUnderscores($name)
+            : StringUtils::pascalCase($name);
+
+        $body = "\$this->{$name} = null;\n";
+        if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
+            $body .= "unset(\$this->_optionalNullableSet['$key']);\n";
+        }
+        if ($chainable) {
+            $body .= "\nreturn \$this;";
+        }
+
+        $unsetMethod = new MethodGenerator(
+            'unset' . $camelCaseName,
+            [],
+            MethodGenerator::FLAG_PUBLIC,
+            $body,
+            new DocBlockGenerator(null, null, $chainable ? [new ReturnTag('self')] : [])
+        );
+
+        if ($chainable && $this->generatorRequest->isAtLeastPHP('7.0')) {
+            $unsetMethod->setReturnType('self');
+        } elseif (!$chainable && $this->generatorRequest->isAtLeastPHP('7.1')) {
+            $unsetMethod->setReturnType('void');
+        }
+
+        return $unsetMethod;
+    }
+
     /**
      * @param PropertyInterface $property
      * @return MethodGenerator
@@ -593,6 +692,7 @@ class Generator
     public function generateUnsetterMethod(PropertyInterface $property): MethodGenerator
     {
         $name = $property->name();
+        $key  = $property->key();
         if ($this->generatorRequest->getOptions()->getPreservePropertyNames()) {
             $camelCasedName = StringUtils::pascalCasePreserveOuterUnderscores($name);
         } else {
@@ -605,6 +705,10 @@ class Generator
             $body .= "\$clone->$name = " . $value . "\n";
         } else {
             $body .= "unset(\$clone->$name);\n";
+        }
+
+        if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
+            $body .= "unset(\$clone->_optionalNullableSet['$key']);\n";
         }
 
         $body .= "\nreturn \$clone;";

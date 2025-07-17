@@ -7,6 +7,38 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator implements Ren
 {
     use CodeFormatting;
 
+    private bool $optionalNullable = false;
+
+    public function markOptionalNullable(): void
+    {
+        $this->optionalNullable = true;
+    }
+
+    public function isOptionalNullable(): bool
+    {
+        return $this->optionalNullable;
+    }
+
+    public function generateIssetCheckExpr(string $inputVarName = 'input', bool $object = false): string
+    {
+        $key = $this->key;
+        $accessor = $object ? "\${$inputVarName}->{'$key'}" : "\${$inputVarName}['$key']";
+
+        $default = $this->schema()['default'] ?? null;
+        $existsCheck = "isset($accessor)";
+        if ($default !== null && $this->inner->allowsNull()) {
+            $existsCheck = $object
+                ? "property_exists(\${$inputVarName}, '$key')"
+                : "array_key_exists('$key', \${$inputVarName})";
+        } elseif ($this->optionalNullable) {
+            $existsCheck = $object
+                ? "property_exists(\${$inputVarName}, '$key')"
+                : "array_key_exists('$key', \${$inputVarName})";
+        }
+
+        return $existsCheck;
+    }
+
     /**
      * @param string $inputVarName
      * @param bool $object
@@ -28,14 +60,15 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator implements Ren
         $default    = isset($this->schema()["default"]) ? $this->schema()["default"] : null;
         $defaultExp = rtrim($this->formatValue($default)->generate(), ";");
 
-        $existsCheck = "isset($accessor)";
-        if ($default !== null && $this->inner->allowsNull()) {
-            $existsCheck = $object
-                ? "property_exists(\${$inputVarName}, '$key')"
-                : "array_key_exists('$key', \${$inputVarName})";
+        $existsCheck = $this->generateIssetCheckExpr($inputVarName, $object);
+
+        $code = "\${$name} = {$existsCheck} ? {$mapped} : {$defaultExp};";
+
+        if ($this->optionalNullable) {
+            $code .= "\nif ({$existsCheck}) { \$__optNullables['" . $this->key . "'] = true; }";
         }
 
-        return "\${$name} = {$existsCheck} ? {$mapped} : {$defaultExp};";
+        return $code;
     }
 
     /**
@@ -46,6 +79,11 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator implements Ren
     {
         $name  = $this->inner->name();
         $inner = $this->inner->convertTypeToArray($outputVarName);
+
+        if ($this->optionalNullable) {
+            $check = "isset(\$this->{$name}) || array_key_exists('" . $this->key . "', \$this->_optionalNullableSet)";
+            return "if ({$check}) {\n" . $this->indentCode($inner, 1) . "\n}";
+        }
 
         if ($this->inner->allowsNull()) {
             return $inner;
