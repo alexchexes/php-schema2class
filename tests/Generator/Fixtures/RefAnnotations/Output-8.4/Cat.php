@@ -137,6 +137,7 @@ class Cat
     /**
      * Converts this object back to a simple array that can be JSON-serialized
      *
+     * @param bool $includeDefaults Add defaults for missing properties
      * @return array Converted array
      */
     public function toArray(bool $includeDefaults = false) : array

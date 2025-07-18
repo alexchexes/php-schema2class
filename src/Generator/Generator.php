@@ -294,10 +294,16 @@ class Generator
      */
     public function generateToArrayMethod(PropertyCollection $properties, bool $hasDefaults = false): MethodGenerator
     {
+        $tags = [];
+        if ($hasDefaults) {
+            $tags[] = new ParamTag('includeDefaults', ['bool'], 'Add defaults for missing properties');
+        }
+        $tags[] = new ReturnTag(["array"], "Converted array");
+
         $docBlock = new DocBlockGenerator(
             "Converts this object back to a simple array that can be JSON-serialized",
             null,
-            [new ReturnTag(["array"], "Converted array")]
+            $tags
         );
         $docBlock->setWordWrap(false);
 
@@ -308,9 +314,17 @@ class Generator
 
         $body = '$output = [];' . "\n" .
             $properties->generateTypeToArrayConversionCode('output') . "\n";
+
         if ($hasDefaults) {
-            $body .= "\nif (\$includeDefaults) {\n    foreach (self::\$_defaults as \$__k => \$__v) {\n        if (!array_key_exists(\$__k, \$output)) {\n            \$output[\$__k] = \$__v;\n        }\n    }\n}\n";
+            $body .= "\nif (\$includeDefaults) {\n" . 
+            "    foreach (self::\$_defaults as \$__k => \$__v) {\n" . 
+            "        if (!array_key_exists(\$__k, \$output)) {\n" . 
+            "            \$output[\$__k] = \$__v;\n" . 
+            "        }\n" . 
+            "    }\n" . 
+            "}\n";
         }
+        
         $body .= "\nreturn \$output;";
 
         $method = new MethodGenerator(
