@@ -81,7 +81,7 @@ class MyClass
     ];
 
     /**
-     * Default values defined in the schema
+     * Default values from the schema
      *
      * @var array
      */

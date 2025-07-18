@@ -209,7 +209,7 @@ class SchemaToClass
         if ($defaults !== []) {
             $defaultsProp = new PropertyGenerator('_defaults', $defaults, PropertyGenerator::FLAG_PRIVATE | PropertyGenerator::FLAG_STATIC);
             $defaultsProp->setDocBlock(new DocBlockGenerator(
-                'Default values defined in the schema',
+                'Default values from the schema',
                 null,
                 [new GenericTag('var', 'array')]
             ));

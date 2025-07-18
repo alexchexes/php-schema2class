@@ -33,7 +33,7 @@ class Cat
     ];
 
     /**
-     * Default values defined in the schema
+     * Default values from the schema
      *
      * @var array
      */
