@@ -181,9 +181,9 @@ class MyClass
         }
 
         if ($includeDefaults) {
-            foreach (self::$_defaults as $__k => $__v) {
-                if (!array_key_exists($__k, $output)) {
-                    $output[$__k] = $__v;
+            foreach (self::$_defaults as $k => $v) {
+                if (!array_key_exists($k, $output)) {
+                    $output[$k] = $v;
                 }
             }
         }

@@ -317,14 +317,14 @@ class Generator
 
         if ($hasDefaults) {
             $body .= "\nif (\$includeDefaults) {\n" . 
-            "    foreach (self::\$_defaults as \$__k => \$__v) {\n" . 
-            "        if (!array_key_exists(\$__k, \$output)) {\n" . 
-            "            \$output[\$__k] = \$__v;\n" . 
+            "    foreach (self::\$_defaults as \$k => \$v) {\n" . 
+            "        if (!array_key_exists(\$k, \$output)) {\n" . 
+            "            \$output[\$k] = \$v;\n" . 
             "        }\n" . 
             "    }\n" . 
             "}\n";
         }
-        
+
         $body .= "\nreturn \$output;";
 
         $method = new MethodGenerator(
