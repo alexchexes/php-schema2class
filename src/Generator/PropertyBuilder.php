@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class\Generator;
 
 use Helmich\Schema2Class\Generator\Property\BooleanProperty;
-use Helmich\Schema2Class\Generator\Property\DefaultPropertyDecorator;
 use Helmich\Schema2Class\Generator\Property\NumberProperty;
 use Helmich\Schema2Class\Generator\Property\ObjectArrayProperty;
 use Helmich\Schema2Class\Generator\Property\TypedArrayProperty;
@@ -144,7 +143,11 @@ class PropertyBuilder
         if (PrimitiveUnionEnumProperty::canHandleSchema($definition)) {
             $property = new PrimitiveUnionEnumProperty($name, $definition, $req);
             if (isset($definition['default']) && $req->getOptions()->getTreatValuesWithDefaultAsOptional()) {
-                $property = new DefaultPropertyDecorator($name, $property);
+                $decorator = new OptionalPropertyDecorator($name, $property);
+                if (self::definitionAllowsNull($definition)) {
+                    $decorator->markOptionalNullable();
+                }
+                $property = $decorator;
             } elseif (!$isRequired) {
                 $decorator = new OptionalPropertyDecorator($name, $property);
                 if (self::definitionAllowsNull($definition)) {
@@ -161,7 +164,11 @@ class PropertyBuilder
         if (InferredEnumProperty::canHandleSchema($definition)) {
             $property = new InferredEnumProperty($name, $definition, $req);
             if (isset($definition['default']) && $req->getOptions()->getTreatValuesWithDefaultAsOptional()) {
-                $property = new DefaultPropertyDecorator($name, $property);
+                $decorator = new OptionalPropertyDecorator($name, $property);
+                if (self::definitionAllowsNull($definition)) {
+                    $decorator->markOptionalNullable();
+                }
+                $property = $decorator;
             } elseif (!$isRequired) {
                 $decorator = new OptionalPropertyDecorator($name, $property);
                 if (self::definitionAllowsNull($definition)) {
@@ -279,7 +286,11 @@ class PropertyBuilder
                 $property = new $propertyType($name, $definition, $req);
 
                 if (isset($definition["default"]) && $req->getOptions()->getTreatValuesWithDefaultAsOptional()) {
-                    $property = new DefaultPropertyDecorator($name, $property);
+                    $decorator = new OptionalPropertyDecorator($name, $property); // treat default as optional
+                    if (self::definitionAllowsNull($definition)) {
+                        $decorator->markOptionalNullable();
+                    }
+                    $property = $decorator;
                 } elseif (!$isRequired) {
                     $decorator = new OptionalPropertyDecorator($name, $property); // optional
                     if (self::definitionAllowsNull($definition)) {

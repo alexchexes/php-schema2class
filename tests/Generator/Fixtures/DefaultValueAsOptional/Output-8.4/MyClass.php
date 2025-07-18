@@ -29,29 +29,39 @@ class MyClass
     ];
 
     /**
-     * @var int
+     * Default values defined in the schema
+     *
+     * @var array
      */
-    private int $limit = 10000;
+    private static array $_defaults = [
+        'limit' => 10000,
+        'skip' => 0,
+    ];
 
     /**
-     * @var int
+     * @var int|null
      */
-    private int $skip = 0;
+    private ?int $limit = null;
 
     /**
-     * @return int
+     * @var int|null
      */
-    public function getLimit() : int
+    private ?int $skip = null;
+
+    /**
+     * @return int|null
+     */
+    public function getLimit() : ?int
     {
-        return $this->limit;
+        return $this->limit ?? null;
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getSkip() : int
+    public function getSkip() : ?int
     {
-        return $this->skip;
+        return $this->skip ?? null;
     }
 
     /**
@@ -71,6 +81,17 @@ class MyClass
 
         $clone = clone $this;
         $clone->limit = $limit;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutLimit() : self
+    {
+        $clone = clone $this;
+        $clone->limit = 10000;
 
         return $clone;
     }
@@ -97,28 +118,41 @@ class MyClass
     }
 
     /**
+     * @return self
+     */
+    public function withoutSkip() : self
+    {
+        $clone = clone $this;
+        $clone->skip = 0;
+
+        return $clone;
+    }
+
+    /**
      * Builds a new instance from an input array
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param bool $materializeDefaults Apply defaults defined in schema when missing
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : MyClass
+    public static function buildFromInput(array|object $input, bool $validate = true, bool $materializeDefaults = false) : MyClass
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
+        if ($materializeDefaults) {
+            foreach (self::$_defaults as $__k => $__v) {
+                if (!property_exists($input, $__k)) {
+                    $input->{$__k} = is_array($__v) ? \JsonSchema\Validator::arrayToObjectRecursive($__v) : $__v;
+                }
+            }
+        }
         if ($validate) {
             static::validateInput($input);
         }
 
-        $limit = 10000;
-        if (isset($input->{'limit'})) {
-            $limit = (int)($input->{'limit'});
-        }
-        $skip = 0;
-        if (isset($input->{'skip'})) {
-            $skip = (int)($input->{'skip'});
-        }
+        $limit = isset($input->{'limit'}) ? $input->{'limit'} : null;
+        $skip = isset($input->{'skip'}) ? $input->{'skip'} : null;
 
         $obj = new self();
         $obj->limit = $limit;
@@ -131,11 +165,23 @@ class MyClass
      *
      * @return array Converted array
      */
-    public function toArray() : array
+    public function toArray(bool $includeDefaults = false) : array
     {
         $output = [];
-        $output['limit'] = $this->limit;
-        $output['skip'] = $this->skip;
+        if (isset($this->limit)) {
+            $output['limit'] = $this->limit;
+        }
+        if (isset($this->skip)) {
+            $output['skip'] = $this->skip;
+        }
+
+        if ($includeDefaults) {
+            foreach (self::$_defaults as $__k => $__v) {
+                if (!array_key_exists($__k, $output)) {
+                    $output[$__k] = $__v;
+                }
+            }
+        }
 
         return $output;
     }

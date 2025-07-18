@@ -204,7 +204,23 @@ class SchemaToClass
             $schemaProperty->setSingleLineDefaultValue(true);
         }
 
+        $defaults = $this->collectDefaults($schema, $req);
         $properties = [$schemaProperty];
+        if ($defaults !== []) {
+            $defaultsProp = new PropertyGenerator('_defaults', $defaults, PropertyGenerator::FLAG_PRIVATE | PropertyGenerator::FLAG_STATIC);
+            $defaultsProp->setDocBlock(new DocBlockGenerator(
+                'Default values defined in the schema',
+                null,
+                [new GenericTag('var', 'array')]
+            ));
+            if ($req->isAtLeastPHP('7.4')) {
+                $defaultsProp->setTypeHint('array');
+            }
+            if ($req->getOptions()->getSingleLineSchema()) {
+                $defaultsProp->setSingleLineDefaultValue(true);
+            }
+            $properties[] = $defaultsProp;
+        }
 
         $propertiesFromSchema = new PropertyCollection();
 
@@ -227,6 +243,7 @@ class SchemaToClass
         }
 
         $codeGenerator = new Generator($req);
+        $hasDefaults = $defaults !== [];
 
         $hasOptionalNullable = false;
         foreach ($propertiesFromSchema as $p) {
@@ -245,8 +262,8 @@ class SchemaToClass
             $codeGenerator->generateConstructor($propertiesFromSchema),
             ...$codeGenerator->generateGetterMethods($propertiesFromSchema),
             ...$codeGenerator->generateSetterMethods($propertiesFromSchema),
-            $codeGenerator->generateBuildMethod($propertiesFromSchema),
-            $codeGenerator->generateToArrayMethod($propertiesFromSchema),
+            $codeGenerator->generateBuildMethod($propertiesFromSchema, $hasDefaults),
+            $codeGenerator->generateToArrayMethod($propertiesFromSchema, $hasDefaults),
             $codeGenerator->generateValidateMethod(),
             $codeGenerator->generateCloneMethod($propertiesFromSchema),
             $hasOptionalNullable ? $codeGenerator->generateIsSetMethod() : null,
@@ -516,5 +533,47 @@ class SchemaToClass
 
         $generator = new DefinitionsGenerator($this);
         $generator->generate($definitionsToGenerate, $req);
+    }
+
+    private function collectDefaults(array $schema, GeneratorRequest $req): array
+    {
+        $defaults = [];
+        if (!isset($schema['properties']) || !is_array($schema['properties'])) {
+            return $defaults;
+        }
+
+        foreach ($schema['properties'] as $key => $def) {
+            $d = $this->extractDefault($def, $req);
+            if ($d !== null) {
+                $defaults[$key] = $d;
+            }
+        }
+
+        return $defaults;
+    }
+
+    private function extractDefault(array $def, GeneratorRequest $req): mixed
+    {
+        if (array_key_exists('default', $def)) {
+            return $def['default'];
+        }
+
+        foreach (['anyOf', 'oneOf', 'allOf'] as $k) {
+            if (isset($def[$k]) && is_array($def[$k])) {
+                foreach ($def[$k] as $sub) {
+                    if (isset($sub['$ref'])) {
+                        $sub = $req->lookupSchema($sub['$ref']);
+                    }
+                    if (is_array($sub)) {
+                        $d = $this->extractDefault($sub, $req);
+                        if ($d !== null) {
+                            return $d;
+                        }
+                    }
+                }
+            }
+        }
+
+        return null;
     }
 }

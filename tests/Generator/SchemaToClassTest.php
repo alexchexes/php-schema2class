@@ -359,7 +359,11 @@ class SchemaToClassTest extends TestCase
 
                 foreach ($classInputs as $inputName => $input) {
                     try {
-                        $obj = $fqcn::buildFromInput($input);
+                        if (property_exists($fqcn, '_defaults')) {
+                            $obj = $fqcn::buildFromInput($input, validate: true, materializeDefaults: true);
+                        } else {
+                            $obj = $fqcn::buildFromInput($input);
+                        }
                     } catch (\Throwable $th) {
                         throw new \Exception("Failed to build {$fqcn} from input {$inputName}", 0, $th);
                     }

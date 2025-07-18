@@ -6,7 +6,6 @@ namespace Helmich\Schema2Class\Generator;
 
 use Helmich\Schema2Class\Codegen\PropertyGenerator;
 use Helmich\Schema2Class\Generator\Property\CodeFormatting;
-use Helmich\Schema2Class\Generator\Property\DefaultPropertyDecorator;
 use Helmich\Schema2Class\Generator\Property\OptionalPropertyDecorator;
 use Helmich\Schema2Class\Generator\Property\PropertyCollection;
 use Helmich\Schema2Class\Generator\Property\PropertyCollectionFilterFactory;
@@ -81,15 +80,12 @@ class Generator
             $isOptional = false;
             $prop       = new PropertyGenerator(
                 $property->name(),
-                $property->formatValue($schema["default"] ?? null),
+                $property->formatValue(null),
                 $visibility
             );
 
-            if ($property instanceof OptionalPropertyDecorator || $property instanceof DefaultPropertyDecorator) {
+            if ($property instanceof OptionalPropertyDecorator) {
                 $isOptional = true;
-                if (isset($schema["default"]) && !$property->allowsNull()) {
-                    $property = $property->unwrap();
-                }
             }
 
             $tags = [new GenericTag("var", trim($property->typeAnnotation()))];
@@ -112,8 +108,7 @@ class Generator
             }
 
             // omit default `null` for every required field, unsless default is specified in the schema
-            $hasSchemaDefault = array_key_exists('default', $property->schema());
-            $prop->omitDefaultValue(!$isOptional && !$hasSchemaDefault);
+            $prop->omitDefaultValue(!$isOptional);
 
             $propertyGenerators[] = $prop;
         }
@@ -125,7 +120,7 @@ class Generator
      * @param PropertyCollection $properties
      * @return MethodGenerator
      */
-    public function generateBuildMethod(PropertyCollection $properties): MethodGenerator
+    public function generateBuildMethod(PropertyCollection $properties, bool $hasDefaults = false): MethodGenerator
     {
         $requiredProperties = $properties->filter(PropertyCollectionFilterFactory::required());
         $optionalProperties = $properties->filter(PropertyCollectionFilterFactory::optional());
@@ -169,6 +164,16 @@ class Generator
             }
         }
 
+        $materializeParamName = 'materializeDefaults';
+        if ($hasDefaults && $properties->hasPropertyWithName($materializeParamName)) {
+            $materializeParamName = '_materializeDefaults';
+            $i = 2;
+            while ($properties->hasPropertyWithName($materializeParamName)) {
+                $materializeParamName = '_materializeDefaults' . $i;
+                $i++;
+            }
+        }
+
         $objVarName = 'obj';
         if ($properties->hasPropertyWithName($objVarName)) {
             $objVarName = '_obj';
@@ -190,16 +195,26 @@ class Generator
             type: "bool",
             defaultValue: true,
         );
+        $materializeParam = $hasDefaults ? new ParameterGenerator(
+            name: $materializeParamName,
+            type: "bool",
+            defaultValue: false,
+        ) : null;
+
+        $docBlockParams = [
+            new ParamTag($inputVarName, ["array|object"], "Input data"),
+            new ParamTag($validateParamName, ["bool"], "Set this to false to skip validation; use at own risk"),
+        ];
+        if ($hasDefaults) {
+            $docBlockParams[] = new ParamTag($materializeParamName, ["bool"], "Apply defaults defined in schema when missing");
+        }
+        $docBlockParams[] = new ReturnTag([$this->generatorRequest->getTargetClass()], "Created instance");
+        $docBlockParams[] = new ThrowsTag("\\InvalidArgumentException");
 
         $docBlock = new DocBlockGenerator(
             "Builds a new instance from an input array",
             null,
-            [
-                new ParamTag($inputVarName, ["array|object"], "Input data"),
-                new ParamTag($validateParamName, ["bool"], "Set this to false to skip validation; use at own risk"),
-                new ReturnTag([$this->generatorRequest->getTargetClass()], "Created instance"),
-                new ThrowsTag("\\InvalidArgumentException"),
-            ]
+            $docBlockParams
         );
         $docBlock->setWordWrap(false);
 
@@ -214,10 +229,22 @@ class Generator
         }
             
         $aliasLine = $validateParamName !== 'validate' ? "\$validate = \${$validateParamName};\n" : '';
+        $materializeAliasLine = '';
+        if ($hasDefaults) {
+            $materializeAliasLine = $materializeParamName !== 'materializeDefaults' ? "\$materializeDefaults = \${$materializeParamName};\n" : '';
+        }
 
         $body = $inputGuard .
             // Conversion into object if input is array
             "\$$inputVarName = is_array(\$$inputVarName) ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$$inputVarName) : \$$inputVarName;\n" .
+
+            ($hasDefaults ? ("if (\$materializeDefaults) {\n" .
+            "    foreach (self::\$_defaults as \$__k => \$__v) {\n" .
+            "        if (!property_exists(\$$inputVarName, \$__k)) {\n" .
+            "            \${$inputVarName}->{\$__k} = is_array(\$__v) ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$__v) : \$__v;\n" .
+            "        }\n" .
+            "    }\n" .
+            "}\n") : '') .
 
             // Conditional schema validation
             "if (\${$validateParamName}) {\n" .
@@ -225,6 +252,7 @@ class Generator
             "}\n\n" .
 
             $aliasLine .
+            $materializeAliasLine .
 
             ($hasOptionalNullable ? "\$__explicitlySet = [];\n" : '') .
 
@@ -240,9 +268,14 @@ class Generator
             "return \${$objVarName};"
         ;
 
+        $params = [new ParameterGenerator($inputVarName, $paramType), $validationParam];
+        if ($hasDefaults) {
+            $params[] = $materializeParam;
+        }
+
         $method = new MethodGenerator(
             'buildFromInput',
-            [new ParameterGenerator($inputVarName, $paramType), $validationParam],
+            $params,
             MethodGenerator::FLAG_PUBLIC | MethodGenerator::FLAG_STATIC,
             $body,
             $docBlock
@@ -259,7 +292,7 @@ class Generator
      * @param PropertyCollection $properties
      * @return MethodGenerator
      */
-    public function generateToArrayMethod(PropertyCollection $properties): MethodGenerator
+    public function generateToArrayMethod(PropertyCollection $properties, bool $hasDefaults = false): MethodGenerator
     {
         $docBlock = new DocBlockGenerator(
             "Converts this object back to a simple array that can be JSON-serialized",
@@ -268,13 +301,23 @@ class Generator
         );
         $docBlock->setWordWrap(false);
 
+        $params = [];
+        if ($hasDefaults) {
+            $params[] = new ParameterGenerator('includeDefaults', 'bool', false);
+        }
+
+        $body = '$output = [];' . "\n" .
+            $properties->generateTypeToArrayConversionCode('output') . "\n";
+        if ($hasDefaults) {
+            $body .= "\nif (\$includeDefaults) {\n    foreach (self::\$_defaults as \$__k => \$__v) {\n        if (!array_key_exists(\$__k, \$output)) {\n            \$output[\$__k] = \$__v;\n        }\n    }\n}\n";
+        }
+        $body .= "\nreturn \$output;";
+
         $method = new MethodGenerator(
             'toArray',
-            [],
+            $params,
             MethodGenerator::FLAG_PUBLIC,
-            '$output = [];' . "\n" .
-            $properties->generateTypeToArrayConversionCode('output') . "\n\n" .
-            'return $output;',
+            $body,
             $docBlock
         );
 
@@ -415,9 +458,6 @@ class Generator
      */
     public function generateGetterMethod(PropertyInterface $property): MethodGenerator
     {
-        if (isset($property->schema()["default"]) && $property instanceof OptionalPropertyDecorator) {
-            $property = $property->unwrap();
-        }
 
         $name           = $property->name();
         if ($this->generatorRequest->getOptions()->getPreservePropertyNames()) {

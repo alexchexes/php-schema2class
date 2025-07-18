@@ -42,16 +42,16 @@ class GenericPet
      *
      * @var bool|null
      */
-    private ?bool $hasFur = false;
+    private ?bool $hasFur = null;
 
     /**
      * Whether the animal has fur (true), doesn't (false), or it's unknown or varies (null)
      *
-     * @return bool
+     * @return bool|null
      */
-    public function getHasFur() : bool
+    public function getHasFur() : ?bool
     {
-        return $this->hasFur;
+        return $this->hasFur ?? null;
     }
 
     /**
@@ -104,7 +104,7 @@ class GenericPet
         }
 
         $__explicitlySet = [];
-        $hasFur = property_exists($input, 'hasFur') ? $input->{'hasFur'} : false;
+        $hasFur = property_exists($input, 'hasFur') ? $input->{'hasFur'} : null;
         if (property_exists($input, 'hasFur')) {
             $__explicitlySet['hasFur'] = true;
         }

@@ -83,6 +83,22 @@ class MyClass
     ];
 
     /**
+     * Default values defined in the schema
+     *
+     * @var array
+     */
+    private static array $_defaults = [
+        'qux' => 'a qux string',
+        'quux' => 'a quux string',
+        'xyyz' => 'a xyyz string',
+        'thud' => 'a thud string',
+        'grox' => [
+            'a' => 'a string',
+            'b' => 123,
+        ],
+    ];
+
+    /**
      * Optional nullable property names that were explicitly set
      *
      * @var array<string,true>
@@ -115,38 +131,35 @@ class MyClass
      *
      * @var string|null
      */
-    private ?string $qux = 'a qux string';
+    private ?string $qux = null;
 
     /**
      * required, nullable, with default
      *
      * @var string|null
      */
-    private ?string $quux = 'a quux string';
+    private ?string $quux;
 
     /**
      * optional, not nullable, with default
      *
      * @var string|null
      */
-    private ?string $xyyz = 'a xyyz string';
+    private ?string $xyyz = null;
 
     /**
      * required, not nullable, with default
      *
      * @var string
      */
-    private string $thud = 'a thud string';
+    private string $thud;
 
     /**
      * optional, nullable, with default, object
      *
      * @var MyClassGrox|null
      */
-    private ?MyClassGrox $grox = [
-        'a' => 'a string',
-        'b' => 123,
-    ];
+    private ?MyClassGrox $grox = null;
 
     /**
      * @param string $foo
@@ -193,11 +206,11 @@ class MyClass
     /**
      * optional, nullable, with default
      *
-     * @return string
+     * @return string|null
      */
-    public function getQux() : string
+    public function getQux() : ?string
     {
-        return $this->qux;
+        return $this->qux ?? null;
     }
 
     /**
@@ -213,11 +226,11 @@ class MyClass
     /**
      * optional, not nullable, with default
      *
-     * @return string
+     * @return string|null
      */
-    public function getXyyz() : string
+    public function getXyyz() : ?string
     {
-        return $this->xyyz;
+        return $this->xyyz ?? null;
     }
 
     /**
@@ -468,12 +481,20 @@ class MyClass
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param bool $materializeDefaults Apply defaults defined in schema when missing
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : MyClass
+    public static function buildFromInput(array|object $input, bool $validate = true, bool $materializeDefaults = false) : MyClass
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
+        if ($materializeDefaults) {
+            foreach (self::$_defaults as $__k => $__v) {
+                if (!property_exists($input, $__k)) {
+                    $input->{$__k} = is_array($__v) ? \JsonSchema\Validator::arrayToObjectRecursive($__v) : $__v;
+                }
+            }
+        }
         if ($validate) {
             static::validateInput($input);
         }
@@ -485,17 +506,14 @@ class MyClass
         if (property_exists($input, 'baz')) {
             $__explicitlySet['baz'] = true;
         }
-        $qux = property_exists($input, 'qux') ? $input->{'qux'} : 'a qux string';
+        $qux = property_exists($input, 'qux') ? $input->{'qux'} : null;
         if (property_exists($input, 'qux')) {
             $__explicitlySet['qux'] = true;
         }
         $quux = $input->{'quux'};
-        $xyyz = isset($input->{'xyyz'}) ? $input->{'xyyz'} : 'a xyyz string';
+        $xyyz = isset($input->{'xyyz'}) ? $input->{'xyyz'} : null;
         $thud = $input->{'thud'};
-        $grox = property_exists($input, 'grox') ? MyClassGrox::buildFromInput($input->{'grox'}, validate: $validate) : [
-                'a' => 'a string',
-                'b' => 123,
-            ];
+        $grox = property_exists($input, 'grox') ? MyClassGrox::buildFromInput($input->{'grox'}, validate: $validate) : null;
         if (property_exists($input, 'grox')) {
             $__explicitlySet['grox'] = true;
         }
@@ -515,7 +533,7 @@ class MyClass
      *
      * @return array Converted array
      */
-    public function toArray() : array
+    public function toArray(bool $includeDefaults = false) : array
     {
         $output = [];
         $output['foo'] = $this->foo;
@@ -536,6 +554,14 @@ class MyClass
         if (isset($this->grox) || array_key_exists('grox', $this->_explicitlySet)) {
             if (isset($this->grox)) {
                 $output['grox'] = ($this->grox)->toArray();
+            }
+        }
+
+        if ($includeDefaults) {
+            foreach (self::$_defaults as $__k => $__v) {
+                if (!array_key_exists($__k, $output)) {
+                    $output[$__k] = $__v;
+                }
             }
         }
 

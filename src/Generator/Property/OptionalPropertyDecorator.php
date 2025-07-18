@@ -24,13 +24,8 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator implements Ren
         $key = $this->key;
         $accessor = $object ? "\${$inputVarName}->{'$key'}" : "\${$inputVarName}['$key']";
 
-        $default = $this->schema()['default'] ?? null;
         $existsCheck = "isset($accessor)";
-        if ($default !== null && $this->inner->allowsNull()) {
-            $existsCheck = $object
-                ? "property_exists(\${$inputVarName}, '$key')"
-                : "array_key_exists('$key', \${$inputVarName})";
-        } elseif ($this->optionalNullable) {
+        if ($this->inner->allowsNull() || $this->optionalNullable) {
             $existsCheck = $object
                 ? "property_exists(\${$inputVarName}, '$key')"
                 : "array_key_exists('$key', \${$inputVarName})";
@@ -57,12 +52,9 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator implements Ren
         // Single mapping expression (with null-guard if the property is nullable)
         $mapped   = $this->generateInputMappingExpr($accessor, true);
 
-        $default    = isset($this->schema()["default"]) ? $this->schema()["default"] : null;
-        $defaultExp = rtrim($this->formatValue($default)->generate(), ";");
-
         $existsCheck = $this->generateIssetCheckExpr($inputVarName, $object);
 
-        $code = "\${$name} = {$existsCheck} ? {$mapped} : {$defaultExp};";
+        $code = "\${$name} = {$existsCheck} ? {$mapped} : null;";
 
         if ($this->optionalNullable) {
             $code .= "\nif ({$existsCheck}) {\n    \$__explicitlySet['{$this->key}'] = true;\n}";

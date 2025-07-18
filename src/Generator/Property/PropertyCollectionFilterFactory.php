@@ -42,7 +42,7 @@ readonly class PropertyCollectionFilterFactory
         return new class implements PropertyCollectionFilter {
             public function apply(PropertyInterface $property): bool
             {
-                return $property instanceof OptionalPropertyDecorator || $property instanceof DefaultPropertyDecorator;
+                return $property instanceof OptionalPropertyDecorator;
             }
         };
     }

@@ -103,7 +103,7 @@ class Cat
             static::validateInput($input);
         }
 
-        $hasFur = isset($input->{'hasFur'}) ? match (true) {
+        $hasFur = property_exists($input, 'hasFur') ? match (true) {
             (($input->{'hasFur'}) === null) || (is_bool($input->{'hasFur'})) => ($input->{'hasFur'} !== null) ? ((bool)($input->{'hasFur'})) : null,
             (($input->{'hasFur'}) === null) || ((is_string($input->{'hasFur'})) || (is_int($input->{'hasFur'}) || is_float($input->{'hasFur'}))) => ($input->{'hasFur'} !== null) ? (match (true) {
             is_string($input->{'hasFur'}) => $input->{'hasFur'},
