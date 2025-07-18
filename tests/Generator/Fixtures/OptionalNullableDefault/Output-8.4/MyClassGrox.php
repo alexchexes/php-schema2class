@@ -2,9 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Ns\RefAnnotations;
+namespace Ns\OptionalNullableDefault_8_4;
 
-class GenericPet
+/**
+ * optional, nullable, with default, object
+ */
+class MyClassGrox
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -13,65 +16,64 @@ class GenericPet
      */
     private static array $schema = [
         'type' => 'object',
+        'description' => 'optional, nullable, with default, object',
         'properties' => [
-            'hasFur' => [
-                '$ref' => '#/definitions/furBoolean',
+            'a' => [
+                'type' => 'string',
+            ],
+            'b' => [
+                'type' => 'number',
             ],
         ],
-        'definitions' => [
-            'furBoolean' => [
-                'description' => 'Whether the animal has fur (true), doesn\'t (false), or it\'s unknown or varies (null)',
-                'type' => [
-                    'boolean',
-                    'null',
-                ],
-                'default' => false,
-            ],
+        'default' => [
+            'a' => 'a string',
+            'b' => 123,
         ],
     ];
 
     /**
-     * Optional nullable property names that were explicitly set
-     *
-     * @var array<string,true>
+     * @var string|null
      */
-    private array $_explicitlySet = [];
+    private ?string $a = null;
 
     /**
-     * Whether the animal has fur (true), doesn't (false), or it's unknown or varies (null)
-     *
-     * @var bool|null
+     * @var int|float|null
      */
-    private ?bool $hasFur = false;
+    private int|float|null $b = null;
 
     /**
-     * Whether the animal has fur (true), doesn't (false), or it's unknown or varies (null)
-     *
-     * @return bool
+     * @return string|null
      */
-    public function getHasFur() : bool
+    public function getA() : ?string
     {
-        return $this->hasFur;
+        return $this->a ?? null;
     }
 
     /**
-     * @param bool $hasFur
+     * @return int|float|null
+     */
+    public function getB() : int|float|null
+    {
+        return $this->b;
+    }
+
+    /**
+     * @param string $a
      * @return self
      * @param bool $validate
      */
-    public function withHasFur(bool $hasFur, bool $validate = true) : self
+    public function withA(string $a, bool $validate = true) : self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($hasFur, self::$schema['properties']['hasFur']);
+            $validator->validate($a, self::$schema['properties']['a']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
         }
 
         $clone = clone $this;
-        $clone->hasFur = $hasFur;
-        $clone->_explicitlySet['hasFur'] = true;
+        $clone->a = $a;
 
         return $clone;
     }
@@ -79,11 +81,42 @@ class GenericPet
     /**
      * @return self
      */
-    public function withoutHasFur() : self
+    public function withoutA() : self
     {
         $clone = clone $this;
-        $clone->hasFur = false;
-        unset($clone->_explicitlySet['hasFur']);
+        unset($clone->a);
+
+        return $clone;
+    }
+
+    /**
+     * @param int|float $b
+     * @return self
+     * @param bool $validate
+     */
+    public function withB(int|float $b, bool $validate = true) : self
+    {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($b, self::$schema['properties']['b']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
+        $clone = clone $this;
+        $clone->b = $b;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutB() : self
+    {
+        $clone = clone $this;
+        unset($clone->b);
 
         return $clone;
     }
@@ -93,25 +126,22 @@ class GenericPet
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
-     * @return GenericPet Created instance
+     * @return MyClassGrox Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : GenericPet
+    public static function buildFromInput(array|object $input, bool $validate = true) : MyClassGrox
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $__explicitlySet = [];
-        $hasFur = property_exists($input, 'hasFur') ? $input->{'hasFur'} : false;
-        if (property_exists($input, 'hasFur')) {
-            $__explicitlySet['hasFur'] = true;
-        }
+        $a = isset($input->{'a'}) ? $input->{'a'} : null;
+        $b = isset($input->{'b'}) ? $input->{'b'} : null;
 
         $obj = new self();
-        $obj->hasFur = $hasFur;
-        $obj->_explicitlySet = $__explicitlySet;
+        $obj->a = $a;
+        $obj->b = $b;
         return $obj;
     }
 
@@ -123,8 +153,11 @@ class GenericPet
     public function toArray() : array
     {
         $output = [];
-        if (isset($this->hasFur) || array_key_exists('hasFur', $this->_explicitlySet)) {
-            $output['hasFur'] = $this->hasFur;
+        if (isset($this->a)) {
+            $output['a'] = $this->a;
+        }
+        if (isset($this->b)) {
+            $output['b'] = $this->b;
         }
 
         return $output;
@@ -152,16 +185,5 @@ class GenericPet
         }
 
         return $validator->isValid();
-    }
-
-    /**
-     * Checks if an optional nullable property was set
-     *
-     * @param string $propertyName
-     * @return bool
-     */
-    public function isDefined(string $propertyName) : bool
-    {
-        return array_key_exists($propertyName, $this->_explicitlySet);
     }
 }

@@ -65,7 +65,7 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator implements Ren
         $code = "\${$name} = {$existsCheck} ? {$mapped} : {$defaultExp};";
 
         if ($this->optionalNullable) {
-            $code .= "\nif ({$existsCheck}) { \$__optNullables['" . $this->key . "'] = true; }";
+            $code .= "\nif ({$existsCheck}) {\n    \$__explicitlySet['{$this->key}'] = true;\n}";
         }
 
         return $code;
@@ -81,15 +81,15 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator implements Ren
         $inner = $this->inner->convertTypeToArray($outputVarName);
 
         if ($this->optionalNullable) {
-            $check = "isset(\$this->{$name}) || array_key_exists('" . $this->key . "', \$this->_optionalNullableSet)";
-            return "if ({$check}) {\n" . $this->indentCode($inner, 1) . "\n}";
+            $check = "isset(\$this->{$name}) || array_key_exists('{$this->key}', \$this->_explicitlySet)";
+            return "if ({$check}) {\n{$this->indentCode($inner, 1)}\n}";
         }
 
         if ($this->inner->allowsNull()) {
             return $inner;
         }
 
-        return "if (isset(\$this->{$name})) {\n" . $this->indentCode($inner, 1) . "\n}";
+        return "if (isset(\$this->{$name})) {\n{$this->indentCode($inner, 1)}\n}";
     }
 
     /**
@@ -101,7 +101,7 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator implements Ren
         $inner = $this->inner->cloneProperty();
 
         if ($inner !== null) {
-            return "if (isset(\$this->{$name})) {\n" . $this->indentCode($inner, 1) . "\n}";
+            return "if (isset(\$this->{$name})) {\n{$this->indentCode($inner, 1)}\n}";
         }
 
         return null;

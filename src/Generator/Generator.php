@@ -62,9 +62,17 @@ class Generator
                 ? PropertyGenerator::FLAG_PUBLIC
                 : PropertyGenerator::FLAG_PRIVATE;
 
-            $setProp = new PropertyGenerator('_optionalNullableSet', [] , $setVisibility);
+            $setProp = new PropertyGenerator('_explicitlySet', [] , $setVisibility);
             $setProp->setDefaultValue([]);
-            $setProp->setDocBlock(new DocBlockGenerator(null, null, [new GenericTag('var', 'array')]));
+            $setProp->setSingleLineDefaultValue(true);
+            if ($this->generatorRequest->isAtLeastPHP("7.4")) {
+                $setProp->setTypeHint("array");
+            }
+            $setProp->setDocBlock(new DocBlockGenerator(
+                "Optional nullable property names that were explicitly set",
+                null,
+                [new GenericTag('var', 'array<string,true>')]
+            ));
             $propertyGenerators[] = $setProp;
         }
 
@@ -218,7 +226,7 @@ class Generator
 
             $aliasLine .
 
-            ($hasOptionalNullable ? "\$__optNullables = [];\n" : '') .
+            ($hasOptionalNullable ? "\$__explicitlySet = [];\n" : '') .
 
             // Property‐by‐property mapping
             $properties->generateInputToTypeConversionCode($inputVarName, object: true) . "\n\n" .
@@ -226,7 +234,7 @@ class Generator
             // Construct & assign optional props
             "\${$objVarName} = new self(" . join(", ", $constructorParams) . ");" . "\n" .
             join("\n", $assignments) . "\n" .
-            ($hasOptionalNullable ? "\${$objVarName}->_optionalNullableSet = \$__optNullables;\n" : '') .
+            ($hasOptionalNullable ? "\${$objVarName}->_explicitlySet = \$__explicitlySet;\n" : '') .
 
             // Return
             "return \${$objVarName};"
@@ -355,17 +363,21 @@ class Generator
 
     public function generateIsSetMethod(): MethodGenerator
     {
-        $doc = new DocBlockGenerator(null, null, [
-            new ParamTag('propertyName', ['string']),
-            new ReturnTag('bool'),
-        ]);
+        $doc = new DocBlockGenerator(
+            'Checks if an optional nullable property was set',
+            null,
+            [
+                new ParamTag('propertyName', ['string']),
+                new ReturnTag('bool'),
+            ]
+        );
         $doc->setWordWrap(false);
 
         $method = new MethodGenerator(
-            'isSet',
+            'isDefined',
             [new ParameterGenerator('propertyName', 'string')],
             MethodGenerator::FLAG_PUBLIC,
-            'return array_key_exists($propertyName, $this->_optionalNullableSet);',
+            'return array_key_exists($propertyName, $this->_explicitlySet);',
             $doc
         );
 
@@ -546,7 +558,7 @@ class Generator
             "\$clone->$name = \$$name;\n";
 
         if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
-            $body .= "\$clone->_optionalNullableSet['$key'] = true;\n";
+            $body .= "\$clone->_explicitlySet['$key'] = true;\n";
         }
 
         $body .= "\nreturn \$clone;";
@@ -627,7 +639,7 @@ class Generator
 
         $body = $setterValidation . "\$this->{$name} = \$$name;";
         if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
-            $body .= "\n\$this->_optionalNullableSet['$key'] = true;";
+            $body .= "\n\$this->_explicitlySet['$key'] = true;";
         }
         if ($chainable) {
             $body .= "\n\nreturn \$this;";
@@ -662,7 +674,7 @@ class Generator
 
         $body = "\$this->{$name} = null;\n";
         if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
-            $body .= "unset(\$this->_optionalNullableSet['$key']);\n";
+            $body .= "unset(\$this->_explicitlySet['$key']);\n";
         }
         if ($chainable) {
             $body .= "\nreturn \$this;";
@@ -708,7 +720,7 @@ class Generator
         }
 
         if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
-            $body .= "unset(\$clone->_optionalNullableSet['$key']);\n";
+            $body .= "unset(\$clone->_explicitlySet['$key']);\n";
         }
 
         $body .= "\nreturn \$clone;";

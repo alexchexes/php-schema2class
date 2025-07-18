@@ -24,11 +24,11 @@ class Fio
     ];
 
     /**
-     * @var array
+     * Optional nullable property names that were explicitly set
+     *
+     * @var array<string,true>
      */
-    private $_optionalNullableSet = [
-        
-    ];
+    private array $_explicitlySet = [];
 
     /**
      * @var string|null
@@ -60,7 +60,7 @@ class Fio
 
         $clone = clone $this;
         $clone->bar = $bar;
-        $clone->_optionalNullableSet['bar'] = true;
+        $clone->_explicitlySet['bar'] = true;
 
         return $clone;
     }
@@ -72,7 +72,7 @@ class Fio
     {
         $clone = clone $this;
         unset($clone->bar);
-        unset($clone->_optionalNullableSet['bar']);
+        unset($clone->_explicitlySet['bar']);
 
         return $clone;
     }
@@ -98,13 +98,15 @@ class Fio
             static::validateInput($input);
         }
 
-        $__optNullables = [];
+        $__explicitlySet = [];
         $bar = property_exists($input, 'bar') ? $input->{'bar'} : null;
-        if (property_exists($input, 'bar')) { $__optNullables['bar'] = true; }
+        if (property_exists($input, 'bar')) {
+            $__explicitlySet['bar'] = true;
+        }
 
         $obj = new self();
         $obj->bar = $bar;
-        $obj->_optionalNullableSet = $__optNullables;
+        $obj->_explicitlySet = $__explicitlySet;
         return $obj;
     }
 
@@ -116,7 +118,7 @@ class Fio
     public function toArray() : array
     {
         $output = [];
-        if (isset($this->bar) || array_key_exists('bar', $this->_optionalNullableSet)) {
+        if (isset($this->bar) || array_key_exists('bar', $this->_explicitlySet)) {
             $output['bar'] = $this->bar;
         }
 
@@ -148,11 +150,13 @@ class Fio
     }
 
     /**
+     * Checks if an optional nullable property was set
+     *
      * @param string $propertyName
      * @return bool
      */
-    public function isSet(string $propertyName) : bool
+    public function isDefined(string $propertyName) : bool
     {
-        return array_key_exists($propertyName, $this->_optionalNullableSet);
+        return array_key_exists($propertyName, $this->_explicitlySet);
     }
 }

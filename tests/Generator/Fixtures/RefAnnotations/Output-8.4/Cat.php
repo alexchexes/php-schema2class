@@ -33,11 +33,11 @@ class Cat
     ];
 
     /**
-     * @var array
+     * Optional nullable property names that were explicitly set
+     *
+     * @var array<string,true>
      */
-    private $_optionalNullableSet = [
-        
-    ];
+    private array $_explicitlySet = [];
 
     /**
      * Whether the cat has fur. True by default for most cats
@@ -73,7 +73,7 @@ class Cat
 
         $clone = clone $this;
         $clone->hasFur = $hasFur;
-        $clone->_optionalNullableSet['hasFur'] = true;
+        $clone->_explicitlySet['hasFur'] = true;
 
         return $clone;
     }
@@ -85,7 +85,7 @@ class Cat
     {
         $clone = clone $this;
         $clone->hasFur = true;
-        unset($clone->_optionalNullableSet['hasFur']);
+        unset($clone->_explicitlySet['hasFur']);
 
         return $clone;
     }
@@ -105,13 +105,15 @@ class Cat
             static::validateInput($input);
         }
 
-        $__optNullables = [];
+        $__explicitlySet = [];
         $hasFur = property_exists($input, 'hasFur') ? $input->{'hasFur'} : true;
-        if (property_exists($input, 'hasFur')) { $__optNullables['hasFur'] = true; }
+        if (property_exists($input, 'hasFur')) {
+            $__explicitlySet['hasFur'] = true;
+        }
 
         $obj = new self();
         $obj->hasFur = $hasFur;
-        $obj->_optionalNullableSet = $__optNullables;
+        $obj->_explicitlySet = $__explicitlySet;
         return $obj;
     }
 
@@ -123,7 +125,7 @@ class Cat
     public function toArray() : array
     {
         $output = [];
-        if (isset($this->hasFur) || array_key_exists('hasFur', $this->_optionalNullableSet)) {
+        if (isset($this->hasFur) || array_key_exists('hasFur', $this->_explicitlySet)) {
             $output['hasFur'] = $this->hasFur;
         }
 
@@ -155,11 +157,13 @@ class Cat
     }
 
     /**
+     * Checks if an optional nullable property was set
+     *
      * @param string $propertyName
      * @return bool
      */
-    public function isSet(string $propertyName) : bool
+    public function isDefined(string $propertyName) : bool
     {
-        return array_key_exists($propertyName, $this->_optionalNullableSet);
+        return array_key_exists($propertyName, $this->_explicitlySet);
     }
 }

@@ -347,31 +347,34 @@ class SchemaToClassTest extends TestCase
             $this->addToAssertionCount(1);
         }
 
-        foreach ($writtenFiles as $code) {
-            $evalCode = preg_replace('/^<\?php/', '', $code);
-            eval($evalCode);
-        }
+        if (getenv('SKIP_EVAL') !== '1') {
+            // load classes in memory by evaluating the generated code
+            foreach ($writtenFiles as $code) {
+                $evalCode = preg_replace('/^<\?php/', '', $code);
+                eval($evalCode);
+            }
 
-        foreach ($inputs as $class => $classInputs) {
-            $fqcn = "Ns\\{$nsName}\\{$class}";
+            foreach ($inputs as $class => $classInputs) {
+                $fqcn = "Ns\\{$nsName}\\{$class}";
 
-            foreach ($classInputs as $inputName => $input) {
-                try {
-                    $obj = $fqcn::buildFromInput($input);
-                } catch (\Throwable $th) {
-                    throw new \Exception("Failed to build {$fqcn} from input {$inputName}", 0, $th);
+                foreach ($classInputs as $inputName => $input) {
+                    try {
+                        $obj = $fqcn::buildFromInput($input);
+                    } catch (\Throwable $th) {
+                        throw new \Exception("Failed to build {$fqcn} from input {$inputName}", 0, $th);
+                    }
+
+                    $this->assertInstanceOf($fqcn, $obj);
+                    $expectedArray = json_decode(json_encode($input), true);
+                    $actualArray = $obj->toArray();
+                    ksort($expectedArray);
+                    ksort($actualArray);
+                    $this->assertSame(
+                        $expectedArray,
+                        $actualArray,
+                        "Array returned from {$fqcn}->toArray() doesn't match input array from file '{$inputName}'."
+                    );
                 }
-
-                $this->assertInstanceOf($fqcn, $obj);
-                $expectedArray = json_decode(json_encode($input), true);
-                $actualArray = $obj->toArray();
-                ksort($expectedArray);
-                ksort($actualArray);
-                $this->assertSame(
-                    $expectedArray,
-                    $actualArray,
-                    "Array returned from {$fqcn}->toArray() doesn't match input array from file '{$inputName}'."
-                );
             }
         }
     }

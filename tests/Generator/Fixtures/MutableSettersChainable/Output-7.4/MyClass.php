@@ -42,11 +42,11 @@ class MyClass
     ];
 
     /**
-     * @var array
+     * Optional nullable property names that were explicitly set
+     *
+     * @var array<string,true>
      */
-    private $_optionalNullableSet = [
-        
-    ];
+    private array $_explicitlySet = [];
 
     /**
      * @var string|null
@@ -142,7 +142,7 @@ class MyClass
         }
 
         $this->opt = $opt;
-        $this->_optionalNullableSet['opt'] = true;
+        $this->_explicitlySet['opt'] = true;
 
         return $this;
     }
@@ -153,7 +153,7 @@ class MyClass
     public function unsetOpt() : self
     {
         $this->opt = null;
-        unset($this->_optionalNullableSet['opt']);
+        unset($this->_explicitlySet['opt']);
 
         return $this;
     }
@@ -179,16 +179,18 @@ class MyClass
             static::validateInput($input);
         }
 
-        $__optNullables = [];
+        $__explicitlySet = [];
         $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
         $bar = Baz::buildFromInput($input->{'bar'}, $validate);
         $opt = property_exists($input, 'opt') ? $input->{'opt'} : null;
-        if (property_exists($input, 'opt')) { $__optNullables['opt'] = true; }
+        if (property_exists($input, 'opt')) {
+            $__explicitlySet['opt'] = true;
+        }
 
         $obj = new self($bar);
         $obj->foo = $foo;
         $obj->opt = $opt;
-        $obj->_optionalNullableSet = $__optNullables;
+        $obj->_explicitlySet = $__explicitlySet;
         return $obj;
     }
 
@@ -204,7 +206,7 @@ class MyClass
             $output['foo'] = $this->foo;
         }
         $output['bar'] = $this->bar->toArray();
-        if (isset($this->opt) || array_key_exists('opt', $this->_optionalNullableSet)) {
+        if (isset($this->opt) || array_key_exists('opt', $this->_explicitlySet)) {
             $output['opt'] = $this->opt;
         }
 
@@ -236,11 +238,13 @@ class MyClass
     }
 
     /**
+     * Checks if an optional nullable property was set
+     *
      * @param string $propertyName
      * @return bool
      */
-    public function isSet(string $propertyName) : bool
+    public function isDefined(string $propertyName) : bool
     {
-        return array_key_exists($propertyName, $this->_optionalNullableSet);
+        return array_key_exists($propertyName, $this->_explicitlySet);
     }
 }

@@ -1,8 +1,11 @@
 <?php
 
-namespace Ns\MutableSetters_5_6;
+namespace Ns\OptionalNullableDefault_5_6;
 
-class MyClass
+/**
+ * optional, nullable, with default, object
+ */
+class MyClassGrox
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -10,139 +13,110 @@ class MyClass
      * @var array
      */
     private static $schema = [
-        'required' => [
-            'bar',
-        ],
+        'type' => 'object',
+        'description' => 'optional, nullable, with default, object',
         'properties' => [
-            'foo' => [
+            'a' => [
                 'type' => 'string',
             ],
-            'bar' => [
-                '$ref' => '#/definitions/Baz',
-            ],
-            'opt' => [
-                'type' => [
-                    'string',
-                    'null',
-                ],
+            'b' => [
+                'type' => 'number',
             ],
         ],
-        'definitions' => [
-            'Baz' => [
-                'type' => 'object',
-                'properties' => [
-                    'name' => [
-                        'type' => 'string',
-                    ],
-                ],
-            ],
+        'default' => [
+            'a' => 'a string',
+            'b' => 123,
         ],
     ];
 
     /**
-     * Optional nullable property names that were explicitly set
-     *
-     * @var array<string,true>
-     */
-    private $_explicitlySet = [];
-
-    /**
      * @var string|null
      */
-    private $foo = null;
+    private $a = null;
 
     /**
-     * @var Baz
+     * @var int|float|null
      */
-    private $bar;
-
-    /**
-     * @var string|null
-     */
-    private $opt = null;
-
-    /**
-     * @param Baz $bar
-     */
-    public function __construct(Baz $bar)
-    {
-        $this->bar = $bar;
-    }
+    private $b = null;
 
     /**
      * @return string|null
      */
-    public function getFoo()
+    public function getA()
     {
-        return $this->foo;
+        return $this->a;
     }
 
     /**
-     * @return Baz
+     * @return int|float|null
      */
-    public function getBar()
+    public function getB()
     {
-        return $this->bar;
+        return $this->b;
     }
 
     /**
-     * @return string|null
-     */
-    public function getOpt()
-    {
-        return $this->opt;
-    }
-
-    /**
-     * @param string $foo
+     * @param string $a
+     * @return self
      * @param bool $validate
      */
-    public function setFoo($foo, bool $validate = true)
+    public function withA($a, bool $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($foo, self::$schema['properties']['foo']);
+            $validator->validate($a, self::$schema['properties']['a']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
         }
 
-        $this->foo = $foo;
+        $clone = clone $this;
+        $clone->a = $a;
+
+        return $clone;
     }
 
     /**
-     * @param Baz $bar
+     * @return self
      */
-    public function setBar(Baz $bar)
+    public function withoutA()
     {
-        $this->bar = $bar;
+        $clone = clone $this;
+        unset($clone->a);
+
+        return $clone;
     }
 
     /**
-     * @param string $opt
+     * @param int|float $b
+     * @return self
      * @param bool $validate
      */
-    public function setOpt($opt, bool $validate = true)
+    public function withB($b, bool $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($opt, self::$schema['properties']['opt']);
+            $validator->validate($b, self::$schema['properties']['b']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
         }
 
-        $this->opt = $opt;
-        $this->_explicitlySet['opt'] = true;
+        $clone = clone $this;
+        $clone->b = $b;
+
+        return $clone;
     }
 
     /**
-     *
+     * @return self
      */
-    public function unsetOpt()
+    public function withoutB()
     {
-        $this->opt = null;
-        unset($this->_explicitlySet['opt']);
+        $clone = clone $this;
+        unset($clone->b);
+
+        return $clone;
     }
 
     /**
@@ -150,7 +124,7 @@ class MyClass
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
-     * @return MyClass Created instance
+     * @return MyClassGrox Created instance
      * @throws \InvalidArgumentException
      */
     public static function buildFromInput($input, bool $validate = true)
@@ -166,18 +140,12 @@ class MyClass
             static::validateInput($input);
         }
 
-        $__explicitlySet = [];
-        $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
-        $bar = Baz::buildFromInput($input->{'bar'}, $validate);
-        $opt = property_exists($input, 'opt') ? $input->{'opt'} : null;
-        if (property_exists($input, 'opt')) {
-            $__explicitlySet['opt'] = true;
-        }
+        $a = isset($input->{'a'}) ? $input->{'a'} : null;
+        $b = isset($input->{'b'}) ? $input->{'b'} : null;
 
-        $obj = new self($bar);
-        $obj->foo = $foo;
-        $obj->opt = $opt;
-        $obj->_explicitlySet = $__explicitlySet;
+        $obj = new self();
+        $obj->a = $a;
+        $obj->b = $b;
         return $obj;
     }
 
@@ -189,12 +157,11 @@ class MyClass
     public function toArray()
     {
         $output = [];
-        if (isset($this->foo)) {
-            $output['foo'] = $this->foo;
+        if (isset($this->a)) {
+            $output['a'] = $this->a;
         }
-        $output['bar'] = $this->bar->toArray();
-        if (isset($this->opt) || array_key_exists('opt', $this->_explicitlySet)) {
-            $output['opt'] = $this->opt;
+        if (isset($this->b)) {
+            $output['b'] = $this->b;
         }
 
         return $output;
@@ -222,16 +189,5 @@ class MyClass
         }
 
         return $validator->isValid();
-    }
-
-    /**
-     * Checks if an optional nullable property was set
-     *
-     * @param string $propertyName
-     * @return bool
-     */
-    public function isDefined(string $propertyName)
-    {
-        return array_key_exists($propertyName, $this->_explicitlySet);
     }
 }
