@@ -34,6 +34,9 @@ class GeneratorRequest
     /** @var array<class-string, ReferenceLookup> */
     private array $referenceLookup = [];
 
+    /** @var array<string,mixed> */
+    private array $schemaDefaults = [];
+
     public static function normalizeTargetVersion(int|string $version): string
     {
         $mapped = match ($version) {
@@ -56,6 +59,18 @@ class GeneratorRequest
         $this->schema = $schema;
         $this->spec   = $spec;
         $this->opts   = $opts;
+    }
+
+    public function withSchemaDefaults(array $defaults): self
+    {
+        $clone = clone $this;
+        $clone->schemaDefaults = $defaults;
+        return $clone;
+    }
+
+    public function getSchemaDefaults(): array
+    {
+        return $this->schemaDefaults;
     }
 
     /**

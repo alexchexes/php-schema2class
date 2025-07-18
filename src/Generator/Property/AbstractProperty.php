@@ -84,7 +84,7 @@ abstract class AbstractProperty implements PropertyInterface, RenameableProperty
         return null;
     }
 
-    public function convertInputToType(string $inputVarName = 'input', bool $object = false): string
+    public function convertInputToType(string $inputVarName = 'input', bool $object = false, bool $ignoreDefault = false): string
     {
         $name = $this->name;
         $key  = $this->key;

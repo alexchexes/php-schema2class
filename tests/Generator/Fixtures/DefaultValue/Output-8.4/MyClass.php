@@ -29,14 +29,24 @@ class MyClass
     ];
 
     /**
-     * @var int|null
+     * Default values defined in the schema
+     *
+     * @var array<string,mixed>
      */
-    private ?int $limit = 10000;
+    private static array $defaults = [
+        'limit' => 10000,
+        'skip' => 0,
+    ];
 
     /**
      * @var int|null
      */
-    private ?int $skip = 0;
+    private ?int $limit = null;
+
+    /**
+     * @var int|null
+     */
+    private ?int $skip = null;
 
     /**
      * @return int
@@ -123,18 +133,28 @@ class MyClass
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param bool $materializeDefaults Apply defaults from schema when missing
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : MyClass
+    public static function buildFromInput(array|object $input, bool $validate = true, bool $materializeDefaults = false) : MyClass
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
+        $__defaultsApplied = [];
+        if ($materializeDefaults) {
+            foreach (self::$defaults as $__k => $__v) {
+                if (!property_exists($input, $__k)) {
+                    $input->{$__k} = is_array($__v) ? \JsonSchema\Validator::arrayToObjectRecursive($__v) : $__v;
+                    $__defaultsApplied[$__k] = true;
+                }
+            }
+        }
         if ($validate) {
             static::validateInput($input);
         }
 
-        $limit = isset($input->{'limit'}) ? $input->{'limit'} : 10000;
-        $skip = isset($input->{'skip'}) ? $input->{'skip'} : 0;
+        $limit = isset($input->{'limit'}) ? $input->{'limit'} : null;
+        $skip = isset($input->{'skip'}) ? $input->{'skip'} : null;
 
         $obj = new self();
         $obj->limit = $limit;
@@ -145,9 +165,10 @@ class MyClass
     /**
      * Converts this object back to a simple array that can be JSON-serialized
      *
+     * @param bool $includeDefaults Add defaults for missing properties
      * @return array Converted array
      */
-    public function toArray() : array
+    public function toArray(bool $includeDefaults = false) : array
     {
         $output = [];
         if (isset($this->limit)) {
@@ -155,6 +176,14 @@ class MyClass
         }
         if (isset($this->skip)) {
             $output['skip'] = $this->skip;
+        }
+
+        if ($includeDefaults) {
+            foreach (self::$defaults as $k => $v) {
+                if (!array_key_exists($k, $output)) {
+                    $output[$k] = $v;
+                }
+            }
         }
 
         return $output;

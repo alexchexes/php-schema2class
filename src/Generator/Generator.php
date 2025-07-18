@@ -31,10 +31,12 @@ class Generator
     use CodeFormatting;
 
     private GeneratorRequest $generatorRequest;
+    private array $defaults;
 
     public function __construct(GeneratorRequest $generatorRequest)
     {
         $this->generatorRequest = $generatorRequest;
+        $this->defaults = $generatorRequest->getSchemaDefaults();
     }
 
     /**
@@ -79,9 +81,17 @@ class Generator
         foreach ($properties as $property) {
             $schema     = $property->schema();
             $isOptional = false;
+            if ($property instanceof DefaultPropertyDecorator) {
+                $defaultVal = $schema['default'] ?? null;
+            } elseif (isset($schema['default']) && $this->defaults !== []) {
+                $defaultVal = null;
+            } else {
+                $defaultVal = $schema['default'] ?? null;
+            }
+            $defaultValue = $property->formatValue($defaultVal);
             $prop       = new PropertyGenerator(
                 $property->name(),
-                $property->formatValue($schema["default"] ?? null),
+                $defaultValue,
                 $visibility
             );
 
@@ -113,7 +123,9 @@ class Generator
 
             // omit default `null` for every required field, unsless default is specified in the schema
             $hasSchemaDefault = array_key_exists('default', $property->schema());
-            $prop->omitDefaultValue(!$isOptional && !$hasSchemaDefault);
+            $prop->omitDefaultValue(
+                !$isOptional && (!$hasSchemaDefault || $this->defaults !== [])
+            );
 
             $propertyGenerators[] = $prop;
         }
@@ -190,16 +202,29 @@ class Generator
             type: "bool",
             defaultValue: true,
         );
+        $defaultsParam = null;
+        if ($this->defaults !== []) {
+            $defaultsParam = new ParameterGenerator(
+                name: 'materializeDefaults',
+                type: 'bool',
+                defaultValue: false,
+            );
+        }
+
+        $tags = [
+            new ParamTag($inputVarName, ["array|object"], "Input data"),
+            new ParamTag($validateParamName, ["bool"], "Set this to false to skip validation; use at own risk"),
+        ];
+        if ($defaultsParam !== null) {
+            $tags[] = new ParamTag('materializeDefaults', ['bool'], 'Apply defaults from schema when missing');
+        }
+        $tags[] = new ReturnTag([$this->generatorRequest->getTargetClass()], "Created instance");
+        $tags[] = new ThrowsTag("\\InvalidArgumentException");
 
         $docBlock = new DocBlockGenerator(
             "Builds a new instance from an input array",
             null,
-            [
-                new ParamTag($inputVarName, ["array|object"], "Input data"),
-                new ParamTag($validateParamName, ["bool"], "Set this to false to skip validation; use at own risk"),
-                new ReturnTag([$this->generatorRequest->getTargetClass()], "Created instance"),
-                new ThrowsTag("\\InvalidArgumentException"),
-            ]
+            $tags,
         );
         $docBlock->setWordWrap(false);
 
@@ -218,6 +243,7 @@ class Generator
         $body = $inputGuard .
             // Conversion into object if input is array
             "\$$inputVarName = is_array(\$$inputVarName) ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$$inputVarName) : \$$inputVarName;\n" .
+            ($this->defaults !== [] ? "\$__defaultsApplied = [];\nif (\$materializeDefaults) {\n    foreach (self::\$defaults as \$__k => \$__v) {\n        if (!property_exists(\$$inputVarName, \$__k)) {\n            \$$inputVarName->{\$__k} = is_array(\$__v) ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$__v) : \$__v;\n            \$__defaultsApplied[\$__k] = true;\n        }\n    }\n}\n" : '') .
 
             // Conditional schema validation
             "if (\${$validateParamName}) {\n" .
@@ -229,7 +255,12 @@ class Generator
             ($hasOptionalNullable ? "\$__explicitlySet = [];\n" : '') .
 
             // Property‐by‐property mapping
-            $properties->generateInputToTypeConversionCode($inputVarName, object: true) . "\n\n" .
+            $properties->generateInputToTypeConversionCode(
+                $inputVarName,
+                object: true,
+                ignoreDefaults: $this->defaults !== []
+            ) . "\n\n" .
+            ($this->defaults !== [] && $hasOptionalNullable ? "foreach (array_keys(\$__defaultsApplied) as \$__p) { unset(\$__explicitlySet[\$__p]); }\n" : '') .
 
             // Construct & assign optional props
             "\${$objVarName} = new self(" . join(", ", $constructorParams) . ");" . "\n" .
@@ -240,9 +271,14 @@ class Generator
             "return \${$objVarName};"
         ;
 
+        $params = [new ParameterGenerator($inputVarName, $paramType), $validationParam];
+        if ($defaultsParam !== null) {
+            $params[] = $defaultsParam;
+        }
+
         $method = new MethodGenerator(
             'buildFromInput',
-            [new ParameterGenerator($inputVarName, $paramType), $validationParam],
+            $params,
             MethodGenerator::FLAG_PUBLIC | MethodGenerator::FLAG_STATIC,
             $body,
             $docBlock
@@ -261,20 +297,42 @@ class Generator
      */
     public function generateToArrayMethod(PropertyCollection $properties): MethodGenerator
     {
+        $tags = [];
+        if ($this->defaults !== []) {
+            $tags[] = new ParamTag('includeDefaults', ['bool'], 'Add defaults for missing properties');
+        }
+        $tags[] = new ReturnTag(["array"], "Converted array");
+
         $docBlock = new DocBlockGenerator(
             "Converts this object back to a simple array that can be JSON-serialized",
             null,
-            [new ReturnTag(["array"], "Converted array")]
+            $tags
         );
         $docBlock->setWordWrap(false);
 
+        $params = [];
+        if ($this->defaults !== []) {
+            $params[] = new ParameterGenerator('includeDefaults', 'bool', false);
+        }
+
+        $body = '$output = [];' . "\n" .
+            $properties->generateTypeToArrayConversionCode('output') . "\n";
+        if ($this->defaults !== []) {
+            $body .= "\nif (\$includeDefaults) {\n" .
+                     "    foreach (self::\$defaults as \$k => \$v) {\n" .
+                     "        if (!array_key_exists(\$k, \$output)) {\n" .
+                     "            \$output[\$k] = \$v;\n" .
+                     "        }\n" .
+                     "    }\n" .
+                     "}\n";
+        }
+        $body .= "\nreturn \$output;";
+
         $method = new MethodGenerator(
             'toArray',
-            [],
+            $params,
             MethodGenerator::FLAG_PUBLIC,
-            '$output = [];' . "\n" .
-            $properties->generateTypeToArrayConversionCode('output') . "\n\n" .
-            'return $output;',
+            $body,
             $docBlock
         );
 

@@ -452,4 +452,78 @@ class SchemaToClassTest extends TestCase
 
         $this->assertStringContainsString('skipping generation of SkippedDef5', $output->fetch());
     }
+
+    public function testMaterializeDefaults(): void
+    {
+        $schemaFile = __DIR__ . '/Fixtures/OptionalNullableDefault/schema.json';
+        $schema = (new SchemaLoader())->loadSchema($schemaFile);
+
+        $req = new GeneratorRequest(
+            $schema,
+            new ValidatedSpecificationFilesItem('Ns\\OptDef', 'MyClass', __DIR__),
+            (new SpecificationOptions())->withTargetPHPVersion(GeneratorRequest::DEFAULT_PHP8_VERSION),
+        );
+
+        $writer = new DebugWriter(new NullOutput());
+        (new SchemaToClassFactory())->build($writer, new NullOutput())->schemaToClass($req);
+
+        foreach ($writer->getWrittenFiles() as $code) {
+            eval(str_replace('<?php', '', $code));
+        }
+
+        $fqcn = 'Ns\\OptDef\\MyClass';
+        $obj = $fqcn::buildFromInput(['foo' => 'combo-string'], materializeDefaults: true);
+
+        $expected = [
+            'foo'  => 'combo-string',
+            'qux'  => 'a qux string',
+            'quux' => 'a quux string',
+            'xyyz' => 'a xyyz string',
+            'thud' => 'a thud string',
+            'grox' => ['a' => 'a string', 'b' => 123],
+        ];
+        ksort($expected);
+        $actual = $obj->toArray();
+        ksort($actual);
+        $this->assertSame($expected, $actual);
+    }
+
+    public function testIncludeDefaults(): void
+    {
+        $schemaFile = __DIR__ . '/Fixtures/OptionalNullableDefault/schema.json';
+        $schema = (new SchemaLoader())->loadSchema($schemaFile);
+
+        $req = new GeneratorRequest(
+            $schema,
+            new ValidatedSpecificationFilesItem('Ns\\OptDef2', 'MyClass', __DIR__),
+            (new SpecificationOptions())->withTargetPHPVersion(GeneratorRequest::DEFAULT_PHP8_VERSION),
+        );
+
+        $writer = new DebugWriter(new NullOutput());
+        (new SchemaToClassFactory())->build($writer, new NullOutput())->schemaToClass($req);
+
+        foreach ($writer->getWrittenFiles() as $code) {
+            eval(str_replace('<?php', '', $code));
+        }
+
+        $fqcn = 'Ns\\OptDef2\\MyClass';
+        $obj = $fqcn::buildFromInput([
+            'foo' => 'combo-string',
+            'quux' => 'q',
+            'thud' => 't'
+        ]);
+
+        $expected = [
+            'foo'  => 'combo-string',
+            'quux' => 'q',
+            'thud' => 't',
+            'qux'  => 'a qux string',
+            'xyyz' => 'a xyyz string',
+            'grox' => ['a' => 'a string', 'b' => 123],
+        ];
+        ksort($expected);
+        $actual = $obj->toArray(includeDefaults: true);
+        ksort($actual);
+        $this->assertSame($expected, $actual);
+    }
 }

@@ -24,9 +24,9 @@ class PropertyCollection implements \Iterator
         $this->properties[] = $propertyGenerator;
     }
 
-    public function generateInputToTypeConversionCode(string $inputVarName = 'input', bool $object = false): string
+    public function generateInputToTypeConversionCode(string $inputVarName = 'input', bool $object = false, bool $ignoreDefaults = false): string
     {
-        $conv = array_map(fn ($p) => $p->convertInputToType($inputVarName, $object), $this->properties);
+        $conv = array_map(fn ($p) => $p->convertInputToType($inputVarName, $object, $ignoreDefaults), $this->properties);
         return join("\n", $conv);
     }
 

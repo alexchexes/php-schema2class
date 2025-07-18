@@ -1,4 +1,6 @@
 {
   "foo": "combo-string",
-  "baz": "delta"
+  "baz": "delta",
+  "quux": "a quux string",
+  "thud": "a thud string"
 }

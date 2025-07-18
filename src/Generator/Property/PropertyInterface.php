@@ -50,7 +50,7 @@ interface PropertyInterface
      * @param bool   $object
      * @return string
      */
-    public function convertInputToType(string $inputVarName = 'input', bool $object = false): string;
+    public function convertInputToType(string $inputVarName = 'input', bool $object = false, bool $ignoreDefault = false): string;
 
     /**
      * @param string $outputVarName

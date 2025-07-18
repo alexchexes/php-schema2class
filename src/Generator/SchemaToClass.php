@@ -226,6 +226,33 @@ class SchemaToClass
             $property->generateSubTypes($this);
         }
 
+        $defaults = [];
+        foreach ($propertiesFromSchema as $property) {
+            $sch = $property->schema();
+            if (array_key_exists('default', $sch)) {
+                $defaults[$property->key()] = $sch['default'];
+            }
+        }
+
+        if ($defaults !== []) {
+            $defaultsProperty = new PropertyGenerator(
+                'defaults',
+                $defaults,
+                PropertyGenerator::FLAG_PRIVATE | PropertyGenerator::FLAG_STATIC,
+            );
+            $defaultsProperty->setDocBlock(new DocBlockGenerator(
+                'Default values defined in the schema',
+                null,
+                [new GenericTag('var', 'array<string,mixed>')]
+            ));
+            if ($req->isAtLeastPHP('7.4')) {
+                $defaultsProperty->setTypeHint('array');
+            }
+            $properties[] = $defaultsProperty;
+        }
+
+        $req = $req->withSchemaDefaults($defaults);
+
         $codeGenerator = new Generator($req);
 
         $hasOptionalNullable = false;

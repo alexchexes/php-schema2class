@@ -44,7 +44,7 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator implements Ren
      * @param bool $object
      * @return string
      */
-    public function convertInputToType(string $inputVarName = 'input', bool $object = false): string
+    public function convertInputToType(string $inputVarName = 'input', bool $object = false, bool $ignoreDefault = false): string
     {
         $key   = $this->key;
         $name  = $this->inner->name();
@@ -58,7 +58,7 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator implements Ren
         $mapped   = $this->generateInputMappingExpr($accessor, true);
 
         $default    = isset($this->schema()["default"]) ? $this->schema()["default"] : null;
-        $defaultExp = rtrim($this->formatValue($default)->generate(), ";");
+        $defaultExp = rtrim($this->formatValue($ignoreDefault ? null : $default)->generate(), ";");
 
         $existsCheck = $this->generateIssetCheckExpr($inputVarName, $object);
 

@@ -33,6 +33,15 @@ class Cat
     ];
 
     /**
+     * Default values defined in the schema
+     *
+     * @var array<string,mixed>
+     */
+    private static array $defaults = [
+        'hasFur' => true,
+    ];
+
+    /**
      * Optional nullable property names that were explicitly set
      *
      * @var array<string,true>
@@ -44,7 +53,7 @@ class Cat
      *
      * @var bool|null
      */
-    private ?bool $hasFur = true;
+    private ?bool $hasFur = null;
 
     /**
      * Whether the cat has fur. True by default for most cats
@@ -95,22 +104,33 @@ class Cat
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param bool $materializeDefaults Apply defaults from schema when missing
      * @return Cat Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : Cat
+    public static function buildFromInput(array|object $input, bool $validate = true, bool $materializeDefaults = false) : Cat
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
+        $__defaultsApplied = [];
+        if ($materializeDefaults) {
+            foreach (self::$defaults as $__k => $__v) {
+                if (!property_exists($input, $__k)) {
+                    $input->{$__k} = is_array($__v) ? \JsonSchema\Validator::arrayToObjectRecursive($__v) : $__v;
+                    $__defaultsApplied[$__k] = true;
+                }
+            }
+        }
         if ($validate) {
             static::validateInput($input);
         }
 
         $__explicitlySet = [];
-        $hasFur = property_exists($input, 'hasFur') ? $input->{'hasFur'} : true;
+        $hasFur = property_exists($input, 'hasFur') ? $input->{'hasFur'} : null;
         if (property_exists($input, 'hasFur')) {
             $__explicitlySet['hasFur'] = true;
         }
 
+        foreach (array_keys($__defaultsApplied) as $__p) { unset($__explicitlySet[$__p]); }
         $obj = new self();
         $obj->hasFur = $hasFur;
         $obj->_explicitlySet = $__explicitlySet;
@@ -120,13 +140,22 @@ class Cat
     /**
      * Converts this object back to a simple array that can be JSON-serialized
      *
+     * @param bool $includeDefaults Add defaults for missing properties
      * @return array Converted array
      */
-    public function toArray() : array
+    public function toArray(bool $includeDefaults = false) : array
     {
         $output = [];
         if (isset($this->hasFur) || array_key_exists('hasFur', $this->_explicitlySet)) {
             $output['hasFur'] = $this->hasFur;
+        }
+
+        if ($includeDefaults) {
+            foreach (self::$defaults as $k => $v) {
+                if (!array_key_exists($k, $output)) {
+                    $output[$k] = $v;
+                }
+            }
         }
 
         return $output;

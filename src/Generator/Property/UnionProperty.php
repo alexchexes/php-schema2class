@@ -72,7 +72,7 @@ class UnionProperty extends AbstractProperty
         return "\${$name} = {$match->generate()};";
     }
 
-    public function convertInputToType(string $inputVarName = 'input', bool $object = false): string
+    public function convertInputToType(string $inputVarName = 'input', bool $object = false, bool $ignoreDefault = false): string
     {
         // PHP 8+ uses match() which already guards correctly
         if ($this->generatorRequest->isAtLeastPHP("8.0")) {
