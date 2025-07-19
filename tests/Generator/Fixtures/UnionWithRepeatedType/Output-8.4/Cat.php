@@ -53,6 +53,13 @@ class Cat
     ];
 
     /**
+     * Map of optional nullable property names that were explicitly set to `null`
+     *
+     * @var array<string,true>
+     */
+    private array $_explicitNulls = [];
+
+    /**
      * @var bool|null|string|int|float
      */
     private null|bool|string|int|float $hasFur = null;
@@ -73,6 +80,7 @@ class Cat
     {
         $clone = clone $this;
         $clone->hasFur = $hasFur;
+        $clone->_explicitNulls['hasFur'] = true;
 
         return $clone;
     }
@@ -84,6 +92,7 @@ class Cat
     {
         $clone = clone $this;
         unset($clone->hasFur);
+        unset($clone->_explicitNulls['hasFur']);
 
         return $clone;
     }
@@ -103,6 +112,7 @@ class Cat
             static::validateInput($input);
         }
 
+        $__explicitNulls = [];
         $hasFur = property_exists($input, 'hasFur') ? match (true) {
             (($input->{'hasFur'}) === null) || (is_bool($input->{'hasFur'})) => ($input->{'hasFur'} !== null) ? ((bool)($input->{'hasFur'})) : null,
             (($input->{'hasFur'}) === null) || ((is_string($input->{'hasFur'})) || (is_int($input->{'hasFur'}) || is_float($input->{'hasFur'}))) => ($input->{'hasFur'} !== null) ? (match (true) {
@@ -118,9 +128,13 @@ class Cat
         },
             default => null,
         } : null;
+        if (property_exists($input, 'hasFur')) {
+            $__explicitNulls['hasFur'] = true;
+        }
 
         $obj = new self();
         $obj->hasFur = $hasFur;
+        $obj->_explicitNulls = $__explicitNulls;
         return $obj;
     }
 
@@ -132,20 +146,22 @@ class Cat
     public function toArray() : array
     {
         $output = [];
-        $output['hasFur'] = match (true) {
-            (($this->hasFur) === null) || (is_bool($this->hasFur)) => ($this->hasFur !== null) ? ($this->hasFur) : null,
-            (($this->hasFur) === null) || ((is_string($this->hasFur)) || (is_int($this->hasFur) || is_float($this->hasFur))) => ($this->hasFur !== null) ? (match (true) {
-            default => null,
-            is_string($this->hasFur),
-            is_int($this->hasFur) || is_float($this->hasFur) => $this->hasFur,
-        }) : null,
-            (is_string($this->hasFur)) || (is_int($this->hasFur) || is_float($this->hasFur)) || (is_bool($this->hasFur)) => match (true) {
-            default => null,
-            is_string($this->hasFur),
-            is_int($this->hasFur) || is_float($this->hasFur),
-            is_bool($this->hasFur) => $this->hasFur,
-        },
-        };
+        if (isset($this->hasFur) || array_key_exists('hasFur', $this->_explicitNulls)) {
+            $output['hasFur'] = match (true) {
+                (($this->hasFur) === null) || (is_bool($this->hasFur)) => ($this->hasFur !== null) ? ($this->hasFur) : null,
+                (($this->hasFur) === null) || ((is_string($this->hasFur)) || (is_int($this->hasFur) || is_float($this->hasFur))) => ($this->hasFur !== null) ? (match (true) {
+                default => null,
+                is_string($this->hasFur),
+                is_int($this->hasFur) || is_float($this->hasFur) => $this->hasFur,
+            }) : null,
+                (is_string($this->hasFur)) || (is_int($this->hasFur) || is_float($this->hasFur)) || (is_bool($this->hasFur)) => match (true) {
+                default => null,
+                is_string($this->hasFur),
+                is_int($this->hasFur) || is_float($this->hasFur),
+                is_bool($this->hasFur) => $this->hasFur,
+            },
+            };
+        }
 
         return $output;
     }
@@ -187,5 +203,16 @@ class Cat
             },
             };
         }
+    }
+
+    /**
+     * Checks if an optional nullable property was explicitly set to `null`
+     *
+     * @param string $propertyName property name as appears in the schema
+     * @return bool
+     */
+    public function isExplicitNull(string $propertyName) : bool
+    {
+        return array_key_exists($propertyName, $this->_explicitNulls);
     }
 }

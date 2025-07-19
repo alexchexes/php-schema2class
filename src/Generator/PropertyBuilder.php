@@ -132,7 +132,7 @@ class PropertyBuilder
                 }
 
                 $decorator = new OptionalPropertyDecorator($name, $prop);  // optional
-                if (self::definitionAllowsNull($definition)) {
+                if (self::definitionAllowsNull($definition) || $property->allowsNull()) {
                     $decorator->markOptionalNullable();
                 }
 
@@ -144,13 +144,13 @@ class PropertyBuilder
             $property = new PrimitiveUnionEnumProperty($name, $definition, $req);
             if (isset($definition['default']) && $req->getOptions()->getTreatValuesWithDefaultAsOptional()) {
                 $decorator = new OptionalPropertyDecorator($name, $property);
-                if (self::definitionAllowsNull($definition)) {
+                if (self::definitionAllowsNull($definition) || $property->allowsNull()) {
                     $decorator->markOptionalNullable();
                 }
                 $property = $decorator;
             } elseif (!$isRequired) {
                 $decorator = new OptionalPropertyDecorator($name, $property);
-                if (self::definitionAllowsNull($definition)) {
+                if (self::definitionAllowsNull($definition) || $property->allowsNull()) {
                     $decorator->markOptionalNullable();
                 }
                 $property = $decorator;
@@ -165,13 +165,13 @@ class PropertyBuilder
             $property = new InferredEnumProperty($name, $definition, $req);
             if (isset($definition['default']) && $req->getOptions()->getTreatValuesWithDefaultAsOptional()) {
                 $decorator = new OptionalPropertyDecorator($name, $property);
-                if (self::definitionAllowsNull($definition)) {
+                if (self::definitionAllowsNull($definition) || $property->allowsNull()) {
                     $decorator->markOptionalNullable();
                 }
                 $property = $decorator;
             } elseif (!$isRequired) {
                 $decorator = new OptionalPropertyDecorator($name, $property);
-                if (self::definitionAllowsNull($definition)) {
+                if (self::definitionAllowsNull($definition) || $property->allowsNull()) {
                     $decorator->markOptionalNullable();
                 }
                 $property = $decorator;
@@ -251,7 +251,7 @@ class PropertyBuilder
                     }
 
                     $decorator = new OptionalPropertyDecorator($name, $inner);
-                    if (self::definitionAllowsNull($definition)) {
+                    if (self::definitionAllowsNull($definition) || $inner->allowsNull()) {
                         $decorator->markOptionalNullable();
                     }
 
@@ -272,7 +272,7 @@ class PropertyBuilder
                 }
 
                 $decorator = new OptionalPropertyDecorator($name, $unionProp);
-                if (self::definitionAllowsNull($definition)) {
+                if (self::definitionAllowsNull($definition) || $unionProp->allowsNull()) {
                     $decorator->markOptionalNullable();
                 }
 
@@ -287,13 +287,13 @@ class PropertyBuilder
 
                 if (isset($definition["default"]) && $req->getOptions()->getTreatValuesWithDefaultAsOptional()) {
                     $decorator = new OptionalPropertyDecorator($name, $property); // treat default as optional
-                    if (self::definitionAllowsNull($definition)) {
+                    if (self::definitionAllowsNull($definition) || $property->allowsNull()) {
                         $decorator->markOptionalNullable();
                     }
                     $property = $decorator;
                 } elseif (!$isRequired) {
                     $decorator = new OptionalPropertyDecorator($name, $property); // optional
-                    if (self::definitionAllowsNull($definition)) {
+                    if (self::definitionAllowsNull($definition) || $property->allowsNull()) {
                         $decorator->markOptionalNullable();
                     }
                     $property = $decorator;
