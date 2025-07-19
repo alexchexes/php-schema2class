@@ -232,7 +232,7 @@ class SchemaToClassTest extends TestCase
                 $optsData['targetPHPVersion'] = $version;
                 $optsVersion = SpecificationOptions::buildFromInput($optsData);
 
-                $ns = $multipleVersions ? $entry . '_' . str_replace('.', '_', $version) : $entry;
+                $ns = $entry . '_' . str_replace('.', '_', $version);
                 $testCases[$entry . '-' . $version] = [$entry, $ns, $schema, $expectedFiles, $optsVersion, $inputFiles, $version];
             }
         }

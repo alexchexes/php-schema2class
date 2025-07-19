@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ns\MaterializeDefaults;
+namespace Ns\MaterializeDefaults_8_4;
 
 class MyClass
 {
