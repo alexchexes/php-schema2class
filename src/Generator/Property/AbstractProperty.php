@@ -11,6 +11,25 @@ use Laminas\Code\Generator\PropertyValueGenerator;
 
 abstract class AbstractProperty implements PropertyInterface, RenameablePropertyInterface
 {
+    /**
+     * Name of the $validate argument in the currently generated buildFromInput method.
+     * This is set from the Generator during generation.
+     * @internal
+     */
+    protected static string $buildValidateParam = 'validate';
+
+    /**
+     * Name of the $materializeDefaults argument in the currently generated buildFromInput method
+     * (null when the argument is not generated). This is set from the Generator.
+     * @internal
+     */
+    protected static ?string $buildMaterializeParam = 'materializeDefaults';
+
+    public static function setBuildFromInputParameterNames(string $validateParam, ?string $materializeParam): void
+    {
+        self::$buildValidateParam = $validateParam;
+        self::$buildMaterializeParam = $materializeParam;
+    }
     protected string $key;
 
     protected string $name;

@@ -16,6 +16,7 @@ use Helmich\Schema2Class\Generator\Property\ReferenceArrayProperty;
 use Helmich\Schema2Class\Generator\Property\NullablePropertyDecorator;
 use Helmich\Schema2Class\Generator\Property\PropertyDecoratorInterface;
 use Helmich\Schema2Class\Generator\Property\TypedArrayProperty;
+use Helmich\Schema2Class\Generator\Property\AbstractProperty;
 use Helmich\Schema2Class\Util\StringUtils;
 use Laminas\Code\Generator\DocBlock\Tag\GenericTag;
 use Laminas\Code\Generator\DocBlock\Tag\ParamTag;
@@ -183,6 +184,11 @@ class Generator
                 $i++;
             }
         }
+
+        AbstractProperty::setBuildFromInputParameterNames(
+            $validateParamName,
+            $hasDefaults ? $materializeParamName : null
+        );
 
         $assignments = [];
         foreach ($optionalProperties as $optionalProperty) {

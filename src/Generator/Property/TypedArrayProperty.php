@@ -89,7 +89,11 @@ class TypedArrayProperty extends AbstractProperty
         if ($this->generatorRequest->isAtLeastPHP('7.4')) {
             return "array_map(fn(\$i) => {$map}, {$expr})";
         }
-        return "array_map(function(\$i) use (\$validate) { return {$map}; }, {$expr})";
+        $use = ['$' . AbstractProperty::$buildValidateParam];
+        if (AbstractProperty::$buildMaterializeParam !== null) {
+            $use[] = '$' . AbstractProperty::$buildMaterializeParam;
+        }
+        return sprintf('array_map(function($i) use (%s) { return %s; }, %s)', implode(', ', $use), $map, $expr);
     }
 
     public function generateOutputMappingExpr(string $expr): string

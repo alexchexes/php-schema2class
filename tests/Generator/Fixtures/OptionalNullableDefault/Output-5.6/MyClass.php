@@ -518,7 +518,7 @@ class MyClass
         $quux = $input->{'quux'};
         $xyyz = isset($input->{'xyyz'}) ? $input->{'xyyz'} : null;
         $thud = $input->{'thud'};
-        $grox = property_exists($input, 'grox') ? MyClassGrox::buildFromInput($input->{'grox'}, $validate) : null;
+        $grox = property_exists($input, 'grox') ? MyClassGrox::buildFromInput($input->{'grox'}, $validate, $materializeDefaults) : null;
         if (property_exists($input, 'grox')) {
             $__explicitNulls['grox'] = true;
         }

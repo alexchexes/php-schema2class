@@ -65,10 +65,13 @@ class NestedObjectProperty extends AbstractProperty
 
     public function generateInputMappingExpr(string $expr, bool $asserted = false): string
     {
-        if ($this->generatorRequest->isAtLeastPHP("8.0")) {
-            return "{$this->subTypeName()}::buildFromInput({$expr}, validate: \$validate)";
+        $validateArg = '$' . AbstractProperty::$buildValidateParam;
+        $materialize = AbstractProperty::$buildMaterializeParam;
+        $args = [$expr, $validateArg];
+        if ($materialize !== null) {
+            $args[] = '$' . $materialize;
         }
-        return "{$this->subTypeName()}::buildFromInput({$expr}, \$validate)";
+        return sprintf('%s::buildFromInput(%s)', $this->subTypeName(), implode(', ', $args));
     }
 
     public function generateOutputMappingExpr(string $expr): string
