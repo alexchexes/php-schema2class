@@ -19,6 +19,8 @@
     "input",
     "validate",
     "obj",
+    "materializeDefaults",
+    "includeDefaults",
 
     "buildFromInput",
     "toArray",
@@ -64,6 +66,9 @@
     "input": { "type": "string" },
     "validate": { "type": "string" },
     "obj": { "type": "string" },
+    "materializeDefaults": { "type": "string" },
+    "includeDefaults": { "type": "string" },
+    "testObj": { "type": "object", "properties": { "a": {"type": "string"} } },
 
     "buildFromInput": { "type": "string" },
     "toArray": { "type": "string" },
@@ -88,6 +93,6 @@
     "__debugInfo": { "type": "string" },
     "__clone": { "type": "string" },
 
-    "files": { "type": "string" }
+    "files": { "type": "string" }    
   }
 }

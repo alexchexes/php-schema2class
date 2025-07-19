@@ -110,7 +110,10 @@ class Cat
      */
     public static function buildFromInput(array|object $input, bool $validate = true, bool $materializeDefaults = false) : Cat
     {
-        $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
+        $input = is_array($input)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($input)
+            : ($materializeDefaults ? clone $input : $input);
+
         if ($materializeDefaults) {
             foreach (self::$_defaults as $__k => $__v) {
                 if (!property_exists($input, $__k)) {
@@ -118,6 +121,7 @@ class Cat
                 }
             }
         }
+
         if ($validate) {
             static::validateInput($input);
         }

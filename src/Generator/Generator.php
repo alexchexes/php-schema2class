@@ -227,32 +227,35 @@ class Generator
                 "    );\n" .
                 "}\n\n";
         }
-            
-        $aliasLine = $validateParamName !== 'validate' ? "\$validate = \${$validateParamName};\n" : '';
-        $materializeAliasLine = '';
+    
         if ($hasDefaults) {
-            $materializeAliasLine = $materializeParamName !== 'materializeDefaults' ? "\$materializeDefaults = \${$materializeParamName};\n" : '';
+            // If generating the "$materializeParamName" param, we must ensure that
+            // if the input is an object, it is cloned when the param is true, as it might be modified
+            $convertInputLine =
+                "\$$inputVarName = is_array(\$$inputVarName)\n" .
+                "    ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$$inputVarName)\n" .
+                "    : (\$$materializeParamName ? clone \$$inputVarName : \$$inputVarName);\n\n";
+        } else {
+            $convertInputLine =
+                "\$$inputVarName = is_array(\$$inputVarName) ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$$inputVarName) : \$$inputVarName;\n";
         }
 
         $body = $inputGuard .
             // Conversion into object if input is array
-            "\$$inputVarName = is_array(\$$inputVarName) ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$$inputVarName) : \$$inputVarName;\n" .
+            $convertInputLine .
 
-            ($hasDefaults ? ("if (\$materializeDefaults) {\n" .
+            ($hasDefaults ? ("if (\$$materializeParamName) {\n" .
             "    foreach (self::\$_defaults as \$__k => \$__v) {\n" .
             "        if (!property_exists(\$$inputVarName, \$__k)) {\n" .
             "            \${$inputVarName}->{\$__k} = is_array(\$__v) ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$__v) : \$__v;\n" .
             "        }\n" .
             "    }\n" .
-            "}\n") : '') .
+            "}\n\n") : '') .
 
             // Conditional schema validation
             "if (\${$validateParamName}) {\n" .
             "    static::validateInput(\$$inputVarName);\n" .
             "}\n\n" .
-
-            $aliasLine .
-            $materializeAliasLine .
 
             ($hasOptionalNullable ? "\$__explicitNulls = [];\n" : '') .
 

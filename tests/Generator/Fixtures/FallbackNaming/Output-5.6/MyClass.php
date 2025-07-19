@@ -29,6 +29,8 @@ class MyClass
             'input',
             'validate',
             'obj',
+            'materializeDefaults',
+            'includeDefaults',
             'buildFromInput',
             'toArray',
             'validateInput',
@@ -104,6 +106,20 @@ class MyClass
             ],
             'obj' => [
                 'type' => 'string',
+            ],
+            'materializeDefaults' => [
+                'type' => 'string',
+            ],
+            'includeDefaults' => [
+                'type' => 'string',
+            ],
+            'testObj' => [
+                'type' => 'object',
+                'properties' => [
+                    'a' => [
+                        'type' => 'string',
+                    ],
+                ],
             ],
             'buildFromInput' => [
                 'type' => 'string',
@@ -271,6 +287,21 @@ class MyClass
     /**
      * @var string
      */
+    private $materializeDefaults;
+
+    /**
+     * @var string
+     */
+    private $includeDefaults;
+
+    /**
+     * @var MyClassTestObj|null
+     */
+    private $testObj = null;
+
+    /**
+     * @var string
+     */
     private $_buildFromInput_1;
 
     /**
@@ -387,6 +418,8 @@ class MyClass
      * @param string $input
      * @param string $validate
      * @param string $obj
+     * @param string $materializeDefaults
+     * @param string $includeDefaults
      * @param string $_buildFromInput_1
      * @param string $_toArray_1
      * @param string $_validateInput_1
@@ -408,7 +441,7 @@ class MyClass
      * @param string $_clone_2
      * @param string $files
      */
-    public function __construct($_GLOBALS_1, $_GLOBALS_2, $_GLOBALS1_1, $_SERVER_1, $_GET_1, $_POST_1, $_FILES_1, $_REQUEST_1, $_SESSION_1, $_ENV_1, $_COOKIE_1, $_phpErrormsg, $_httpResponseHeader, $_argc, $_argv, $input, $validate, $obj, $_buildFromInput_1, $_toArray_1, $_validateInput_1, $_schema, $_defaults_1, $_clone_1, $_construct_1, $_destruct_1, $_get_2, $_set_1, $_call_1, $_isset_1, $_unset_1, $_sleep_1, $_wakeup_1, $_toString_1, $_invoke_1, $_debugInfo_1, $_clone_2, $files)
+    public function __construct($_GLOBALS_1, $_GLOBALS_2, $_GLOBALS1_1, $_SERVER_1, $_GET_1, $_POST_1, $_FILES_1, $_REQUEST_1, $_SESSION_1, $_ENV_1, $_COOKIE_1, $_phpErrormsg, $_httpResponseHeader, $_argc, $_argv, $input, $validate, $obj, $materializeDefaults, $includeDefaults, $_buildFromInput_1, $_toArray_1, $_validateInput_1, $_schema, $_defaults_1, $_clone_1, $_construct_1, $_destruct_1, $_get_2, $_set_1, $_call_1, $_isset_1, $_unset_1, $_sleep_1, $_wakeup_1, $_toString_1, $_invoke_1, $_debugInfo_1, $_clone_2, $files)
     {
         $this->_GLOBALS_1 = $_GLOBALS_1;
         $this->_GLOBALS_2 = $_GLOBALS_2;
@@ -428,6 +461,8 @@ class MyClass
         $this->input = $input;
         $this->validate = $validate;
         $this->obj = $obj;
+        $this->materializeDefaults = $materializeDefaults;
+        $this->includeDefaults = $includeDefaults;
         $this->_buildFromInput_1 = $_buildFromInput_1;
         $this->_toArray_1 = $_toArray_1;
         $this->_validateInput_1 = $_validateInput_1;
@@ -592,6 +627,30 @@ class MyClass
     public function getObj()
     {
         return $this->obj;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMaterializeDefaults()
+    {
+        return $this->materializeDefaults;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIncludeDefaults()
+    {
+        return $this->includeDefaults;
+    }
+
+    /**
+     * @return MyClassTestObj|null
+     */
+    public function getTestObj()
+    {
+        return $this->testObj;
     }
 
     /**
@@ -1133,6 +1192,71 @@ class MyClass
     }
 
     /**
+     * @param string $materializeDefaults
+     * @return self
+     * @param bool $validate
+     */
+    public function withMaterializeDefaults($materializeDefaults, bool $validate = true)
+    {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($materializeDefaults, self::$schema['properties']['materializeDefaults']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
+        $clone = clone $this;
+        $clone->materializeDefaults = $materializeDefaults;
+
+        return $clone;
+    }
+
+    /**
+     * @param string $includeDefaults
+     * @return self
+     * @param bool $validate
+     */
+    public function withIncludeDefaults($includeDefaults, bool $validate = true)
+    {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($includeDefaults, self::$schema['properties']['includeDefaults']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
+        $clone = clone $this;
+        $clone->includeDefaults = $includeDefaults;
+
+        return $clone;
+    }
+
+    /**
+     * @param MyClassTestObj $testObj
+     * @return self
+     */
+    public function withTestObj(MyClassTestObj $testObj)
+    {
+        $clone = clone $this;
+        $clone->testObj = $testObj;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutTestObj()
+    {
+        $clone = clone $this;
+        unset($clone->testObj);
+
+        return $clone;
+    }
+
+    /**
      * @param string $_buildFromInput_1
      * @return self
      * @param bool $validate
@@ -1557,11 +1681,11 @@ class MyClass
      *
      * @param array|object $_input Input data
      * @param bool $_validate Set this to false to skip validation; use at own risk
-     * @param bool $materializeDefaults Apply defaults defined in schema when missing
+     * @param bool $_materializeDefaults Apply defaults defined in schema when missing
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($_input, bool $_validate = true, bool $materializeDefaults = false)
+    public static function buildFromInput($_input, bool $_validate = true, bool $_materializeDefaults = false)
     {
         if (!is_array($_input) && !is_object($_input)) {
             throw new \InvalidArgumentException(
@@ -1569,19 +1693,22 @@ class MyClass
             );
         }
 
-        $_input = is_array($_input) ? \JsonSchema\Validator::arrayToObjectRecursive($_input) : $_input;
-        if ($materializeDefaults) {
+        $_input = is_array($_input)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($_input)
+            : ($_materializeDefaults ? clone $_input : $_input);
+
+        if ($_materializeDefaults) {
             foreach (self::$_defaults as $__k => $__v) {
                 if (!property_exists($_input, $__k)) {
                     $_input->{$__k} = is_array($__v) ? \JsonSchema\Validator::arrayToObjectRecursive($__v) : $__v;
                 }
             }
         }
+
         if ($_validate) {
             static::validateInput($_input);
         }
 
-        $validate = $_validate;
         $_GLOBALS_1 = $_input->{'_GLOBALS'};
         $_GLOBALS_2 = $_input->{'GLOBALS'};
         $_GLOBALS1_1 = $_input->{'GLOBALS_1'};
@@ -1600,6 +1727,9 @@ class MyClass
         $input = $_input->{'input'};
         $validate = $_input->{'validate'};
         $obj = $_input->{'obj'};
+        $materializeDefaults = $_input->{'materializeDefaults'};
+        $includeDefaults = $_input->{'includeDefaults'};
+        $testObj = isset($_input->{'testObj'}) ? MyClassTestObj::buildFromInput($_input->{'testObj'}, $validate) : null;
         $_buildFromInput_1 = $_input->{'buildFromInput'};
         $_toArray_1 = $_input->{'toArray'};
         $_validateInput_1 = $_input->{'validateInput'};
@@ -1621,8 +1751,8 @@ class MyClass
         $_clone_2 = $_input->{'__clone'};
         $files = $_input->{'files'};
 
-        $_obj = new self($_GLOBALS_1, $_GLOBALS_2, $_GLOBALS1_1, $_SERVER_1, $_GET_1, $_POST_1, $_FILES_1, $_REQUEST_1, $_SESSION_1, $_ENV_1, $_COOKIE_1, $_phpErrormsg, $_httpResponseHeader, $_argc, $_argv, $input, $validate, $obj, $_buildFromInput_1, $_toArray_1, $_validateInput_1, $_schema, $_defaults_1, $_clone_1, $_construct_1, $_destruct_1, $_get_2, $_set_1, $_call_1, $_isset_1, $_unset_1, $_sleep_1, $_wakeup_1, $_toString_1, $_invoke_1, $_debugInfo_1, $_clone_2, $files);
-
+        $_obj = new self($_GLOBALS_1, $_GLOBALS_2, $_GLOBALS1_1, $_SERVER_1, $_GET_1, $_POST_1, $_FILES_1, $_REQUEST_1, $_SESSION_1, $_ENV_1, $_COOKIE_1, $_phpErrormsg, $_httpResponseHeader, $_argc, $_argv, $input, $validate, $obj, $materializeDefaults, $includeDefaults, $_buildFromInput_1, $_toArray_1, $_validateInput_1, $_schema, $_defaults_1, $_clone_1, $_construct_1, $_destruct_1, $_get_2, $_set_1, $_call_1, $_isset_1, $_unset_1, $_sleep_1, $_wakeup_1, $_toString_1, $_invoke_1, $_debugInfo_1, $_clone_2, $files);
+        $_obj->testObj = $testObj;
         return $_obj;
     }
 
@@ -1653,6 +1783,11 @@ class MyClass
         $output['input'] = $this->input;
         $output['validate'] = $this->validate;
         $output['obj'] = $this->obj;
+        $output['materializeDefaults'] = $this->materializeDefaults;
+        $output['includeDefaults'] = $this->includeDefaults;
+        if (isset($this->testObj)) {
+            $output['testObj'] = ($this->testObj)->toArray();
+        }
         $output['buildFromInput'] = $this->_buildFromInput_1;
         $output['toArray'] = $this->_toArray_1;
         $output['validateInput'] = $this->_validateInput_1;
@@ -1707,5 +1842,12 @@ class MyClass
         }
 
         return $validator->isValid();
+    }
+
+    public function __clone()
+    {
+        if (isset($this->testObj)) {
+            $this->testObj = clone $this->testObj;
+        }
     }
 }

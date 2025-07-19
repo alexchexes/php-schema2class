@@ -145,7 +145,10 @@ class MyClass
             );
         }
 
-        $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
+        $input = is_array($input)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($input)
+            : ($materializeDefaults ? clone $input : $input);
+
         if ($materializeDefaults) {
             foreach (self::$_defaults as $__k => $__v) {
                 if (!property_exists($input, $__k)) {
@@ -153,6 +156,7 @@ class MyClass
                 }
             }
         }
+
         if ($validate) {
             static::validateInput($input);
         }

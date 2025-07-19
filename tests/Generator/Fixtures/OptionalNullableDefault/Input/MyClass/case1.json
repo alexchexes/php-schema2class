@@ -1,5 +1,7 @@
 {
   "foo": "combo-string",
   "bar": "something",
-  "baz": "delta"
+  "baz": "delta",
+  "quux": null,
+  "thud": "gamma"
 }
