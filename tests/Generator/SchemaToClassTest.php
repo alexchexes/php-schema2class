@@ -347,31 +347,34 @@ class SchemaToClassTest extends TestCase
             $this->addToAssertionCount(1);
         }
 
-        foreach ($writtenFiles as $code) {
-            $evalCode = preg_replace('/^<\?php/', '', $code);
-            eval($evalCode);
-        }
+        if (getenv('SKIP_EVAL') !== '1') {
+            // load classes in memory by evaluating the generated code
+            foreach ($writtenFiles as $code) {
+                $evalCode = preg_replace('/^<\?php/', '', $code);
+                eval($evalCode);
+            }
 
-        foreach ($inputs as $class => $classInputs) {
-            $fqcn = "Ns\\{$nsName}\\{$class}";
+            foreach ($inputs as $class => $classInputs) {
+                $fqcn = "Ns\\{$nsName}\\{$class}";
 
-            foreach ($classInputs as $inputName => $input) {
-                try {
-                    $obj = $fqcn::buildFromInput($input);
-                } catch (\Throwable $th) {
-                    throw new \Exception("Failed to build {$fqcn} from input {$inputName}", 0, $th);
+                foreach ($classInputs as $inputName => $input) {
+                    try {
+                        $obj = $fqcn::buildFromInput($input);
+                    } catch (\Throwable $th) {
+                        throw new \Exception("Failed to build {$fqcn} from input {$inputName}", 0, $th);
+                    }
+
+                    $this->assertInstanceOf($fqcn, $obj);
+                    $expectedArray = json_decode(json_encode($input), true);
+                    $actualArray = $obj->toArray();
+                    ksort($expectedArray);
+                    ksort($actualArray);
+                    $this->assertSame(
+                        $expectedArray,
+                        $actualArray,
+                        "Array returned from {$fqcn}->toArray() doesn't match input array from file '{$inputName}'."
+                    );
                 }
-
-                $this->assertInstanceOf($fqcn, $obj);
-                $expectedArray = json_decode(json_encode($input), true);
-                $actualArray = $obj->toArray();
-                ksort($expectedArray);
-                ksort($actualArray);
-                $this->assertSame(
-                    $expectedArray,
-                    $actualArray,
-                    "Array returned from {$fqcn}->toArray() doesn't match input array from file '{$inputName}'."
-                );
             }
         }
     }
@@ -448,5 +451,44 @@ class SchemaToClassTest extends TestCase
         $factory->build($writer, $output)->schemaToClass($req);
 
         $this->assertStringContainsString('skipping generation of SkippedDef5', $output->fetch());
+    }
+
+    public function testMaterializeDefaults(): void
+    {
+        $schemaFile = __DIR__ . '/Fixtures/MaterializeDefaults/schema.json';
+        $inputFile  = __DIR__ . '/Fixtures/MaterializeDefaults/input.testMaterializeDefaults.json';
+
+        $schema = (new SchemaLoader())->loadSchema($schemaFile);
+
+        $req = new GeneratorRequest(
+            $schema,
+            new ValidatedSpecificationFilesItem('Ns\\MaterializeDefaults', '_MyClass', __DIR__),
+            (new SpecificationOptions())->withTargetPHPVersion(GeneratorRequest::DEFAULT_PHP8_VERSION),
+        );
+
+        $output  = new NullOutput();
+        $writer  = new DebugWriter($output);
+        $factory = new SchemaToClassFactory();
+
+        $factory->build($writer, $output)->schemaToClass($req);
+
+        foreach ($writer->getWrittenFiles() as $code) {
+            $evalCode = preg_replace('/^<\?php/', '', $code);
+            eval($evalCode);
+        }
+
+        $fqcn = 'Ns\\MaterializeDefaults\\_MyClass';
+        $input = json_decode(file_get_contents($inputFile));
+
+        $obj = $fqcn::buildFromInput($input, true, true);
+
+        $this->assertSame(
+            [
+                'foo' => 'some default value for foo',
+                'bar' => ['nestedFoo' => "some value inside default value for 'bar' object"],
+                'baz' => 'sanity-check',
+            ],
+            $obj->toArray(),
+        );
     }
 }

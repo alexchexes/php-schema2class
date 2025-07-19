@@ -65,7 +65,7 @@ class ObjectArrayPropertyTest extends TestCase
         $result = $underTest->convertInputToType('variable');
 
         $expected = <<<'EOCODE'
-$myPropertyName = array_map(fn (array|object $i): FooMyPropertyNameItem => FooMyPropertyNameItem::buildFromInput($i, validate: $validate), $variable['myPropertyName']);
+$myPropertyName = array_map(fn (array|object $i): FooMyPropertyNameItem => FooMyPropertyNameItem::buildFromInput($i, $validate, $materializeDefaults), $variable['myPropertyName']);
 EOCODE;
 
         assertSame($expected, $result);

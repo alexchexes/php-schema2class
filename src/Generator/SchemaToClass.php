@@ -13,6 +13,7 @@ use Helmich\Schema2Class\Generator\Property\IntersectProperty;
 use Helmich\Schema2Class\Generator\Property\NestedObjectProperty;
 use Helmich\Schema2Class\Generator\Property\PropertyCollection;
 use Helmich\Schema2Class\Generator\Property\RenameablePropertyInterface;
+use Helmich\Schema2Class\Generator\Property\OptionalPropertyDecorator;
 use Helmich\Schema2Class\Util\StringUtils;
 use Helmich\Schema2Class\Writer\WriterInterface;
 use Laminas\Code\DeclareStatement;
@@ -150,7 +151,7 @@ class SchemaToClass
             return;
         }
 
-        // remove descriptions from schema if such option is set, but keep them
+        // remove metadata like descriptions from schema if such option is set, but keep them
         // for building property documentation
         $validationSchema = $schema;
         if ($req->getOptions()->getNoSchemaMetadata()) {
@@ -203,7 +204,23 @@ class SchemaToClass
             $schemaProperty->setSingleLineDefaultValue(true);
         }
 
+        $defaults = $this->collectDefaults($schema, $req);
         $properties = [$schemaProperty];
+        if ($defaults !== []) {
+            $defaultsProp = new PropertyGenerator('_defaults', $defaults, PropertyGenerator::FLAG_PRIVATE | PropertyGenerator::FLAG_STATIC);
+            $defaultsProp->setDocBlock(new DocBlockGenerator(
+                'Default values from the schema',
+                null,
+                [new GenericTag('var', 'array')]
+            ));
+            if ($req->isAtLeastPHP('7.4')) {
+                $defaultsProp->setTypeHint('array');
+            }
+            if ($req->getOptions()->getSingleLineSchema()) {
+                $defaultsProp->setSingleLineDefaultValue(true);
+            }
+            $properties[] = $defaultsProp;
+        }
 
         $propertiesFromSchema = new PropertyCollection();
 
@@ -226,6 +243,15 @@ class SchemaToClass
         }
 
         $codeGenerator = new Generator($req);
+        $hasDefaults = $defaults !== [];
+
+        $hasOptionalNullable = false;
+        foreach ($propertiesFromSchema as $p) {
+            if ($p instanceof OptionalPropertyDecorator && method_exists($p, 'isOptionalNullable') && $p->isOptionalNullable()) {
+                $hasOptionalNullable = true;
+                break;
+            }
+        }
 
         $properties = [
             ...$properties,
@@ -236,10 +262,11 @@ class SchemaToClass
             $codeGenerator->generateConstructor($propertiesFromSchema),
             ...$codeGenerator->generateGetterMethods($propertiesFromSchema),
             ...$codeGenerator->generateSetterMethods($propertiesFromSchema),
-            $codeGenerator->generateBuildMethod($propertiesFromSchema),
-            $codeGenerator->generateToArrayMethod($propertiesFromSchema),
+            $codeGenerator->generateBuildMethod($propertiesFromSchema, $hasDefaults),
+            $codeGenerator->generateToArrayMethod($propertiesFromSchema, $hasDefaults),
             $codeGenerator->generateValidateMethod(),
             $codeGenerator->generateCloneMethod($propertiesFromSchema),
+            $hasOptionalNullable ? $codeGenerator->generateIsSetMethod() : null,
         ];
         $methods = array_values(array_filter($methods));
         $this->ensureUniqueMethodNames($methods);
@@ -319,6 +346,8 @@ class SchemaToClass
             'http_response_header',
             'argc',
             'argv',
+            'schema',
+            '_defaults',
         ];
 
         $reservedMethodNames = [
@@ -506,5 +535,47 @@ class SchemaToClass
 
         $generator = new DefinitionsGenerator($this);
         $generator->generate($definitionsToGenerate, $req);
+    }
+
+    private function collectDefaults(array $schema, GeneratorRequest $req): array
+    {
+        $defaults = [];
+        if (!isset($schema['properties']) || !is_array($schema['properties'])) {
+            return $defaults;
+        }
+
+        foreach ($schema['properties'] as $key => $def) {
+            $d = $this->extractDefault($def, $req);
+            if ($d !== null) {
+                $defaults[$key] = $d;
+            }
+        }
+
+        return $defaults;
+    }
+
+    private function extractDefault(array $def, GeneratorRequest $req): mixed
+    {
+        if (array_key_exists('default', $def)) {
+            return $def['default'];
+        }
+
+        foreach (['anyOf', 'oneOf', 'allOf'] as $k) {
+            if (isset($def[$k]) && is_array($def[$k])) {
+                foreach ($def[$k] as $sub) {
+                    if (isset($sub['$ref'])) {
+                        $sub = $req->lookupSchema($sub['$ref']);
+                    }
+                    if (is_array($sub)) {
+                        $d = $this->extractDefault($sub, $req);
+                        if ($d !== null) {
+                            return $d;
+                        }
+                    }
+                }
+            }
+        }
+
+        return null;
     }
 }
