@@ -32,6 +32,8 @@ class MyClass
             'buildFromInput',
             'toArray',
             'validateInput',
+            'schema',
+            '_defaults',
             'clone',
             '__construct',
             '__destruct',
@@ -112,6 +114,13 @@ class MyClass
             'validateInput' => [
                 'type' => 'string',
             ],
+            'schema' => [
+                'type' => 'string',
+            ],
+            '_defaults' => [
+                'type' => 'string',
+                'default' => 'foo',
+            ],
             'clone' => [
                 'type' => 'string',
             ],
@@ -158,6 +167,15 @@ class MyClass
                 'type' => 'string',
             ],
         ],
+    ];
+
+    /**
+     * Default values from the schema
+     *
+     * @var array
+     */
+    private static $_defaults = [
+        '_defaults' => 'foo',
     ];
 
     /**
@@ -268,6 +286,16 @@ class MyClass
     /**
      * @var string
      */
+    private $_schema;
+
+    /**
+     * @var string
+     */
+    private $_defaults_1;
+
+    /**
+     * @var string
+     */
     private $_clone_1;
 
     /**
@@ -362,6 +390,8 @@ class MyClass
      * @param string $_buildFromInput_1
      * @param string $_toArray_1
      * @param string $_validateInput_1
+     * @param string $_schema
+     * @param string $_defaults_1
      * @param string $_clone_1
      * @param string $_construct_1
      * @param string $_destruct_1
@@ -378,7 +408,7 @@ class MyClass
      * @param string $_clone_2
      * @param string $files
      */
-    public function __construct($_GLOBALS_1, $_GLOBALS_2, $_GLOBALS1_1, $_SERVER_1, $_GET_1, $_POST_1, $_FILES_1, $_REQUEST_1, $_SESSION_1, $_ENV_1, $_COOKIE_1, $_phpErrormsg, $_httpResponseHeader, $_argc, $_argv, $input, $validate, $obj, $_buildFromInput_1, $_toArray_1, $_validateInput_1, $_clone_1, $_construct_1, $_destruct_1, $_get_2, $_set_1, $_call_1, $_isset_1, $_unset_1, $_sleep_1, $_wakeup_1, $_toString_1, $_invoke_1, $_debugInfo_1, $_clone_2, $files)
+    public function __construct($_GLOBALS_1, $_GLOBALS_2, $_GLOBALS1_1, $_SERVER_1, $_GET_1, $_POST_1, $_FILES_1, $_REQUEST_1, $_SESSION_1, $_ENV_1, $_COOKIE_1, $_phpErrormsg, $_httpResponseHeader, $_argc, $_argv, $input, $validate, $obj, $_buildFromInput_1, $_toArray_1, $_validateInput_1, $_schema, $_defaults_1, $_clone_1, $_construct_1, $_destruct_1, $_get_2, $_set_1, $_call_1, $_isset_1, $_unset_1, $_sleep_1, $_wakeup_1, $_toString_1, $_invoke_1, $_debugInfo_1, $_clone_2, $files)
     {
         $this->_GLOBALS_1 = $_GLOBALS_1;
         $this->_GLOBALS_2 = $_GLOBALS_2;
@@ -401,6 +431,8 @@ class MyClass
         $this->_buildFromInput_1 = $_buildFromInput_1;
         $this->_toArray_1 = $_toArray_1;
         $this->_validateInput_1 = $_validateInput_1;
+        $this->_schema = $_schema;
+        $this->_defaults_1 = $_defaults_1;
         $this->_clone_1 = $_clone_1;
         $this->_construct_1 = $_construct_1;
         $this->_destruct_1 = $_destruct_1;
@@ -584,6 +616,22 @@ class MyClass
     public function getValidateInput1()
     {
         return $this->_validateInput_1;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSchema()
+    {
+        return $this->_schema;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDefaults1()
+    {
+        return $this->_defaults_1;
     }
 
     /**
@@ -1148,6 +1196,48 @@ class MyClass
     }
 
     /**
+     * @param string $_schema
+     * @return self
+     * @param bool $validate
+     */
+    public function withSchema($_schema, bool $validate = true)
+    {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($_schema, self::$schema['properties']['schema']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
+        $clone = clone $this;
+        $clone->_schema = $_schema;
+
+        return $clone;
+    }
+
+    /**
+     * @param string $_defaults_1
+     * @return self
+     * @param bool $validate
+     */
+    public function withDefaults1($_defaults_1, bool $validate = true)
+    {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($_defaults_1, self::$schema['properties']['_defaults']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
+        $clone = clone $this;
+        $clone->_defaults_1 = $_defaults_1;
+
+        return $clone;
+    }
+
+    /**
      * @param string $_clone_1
      * @return self
      * @param bool $validate
@@ -1467,10 +1557,11 @@ class MyClass
      *
      * @param array|object $_input Input data
      * @param bool $_validate Set this to false to skip validation; use at own risk
+     * @param bool $materializeDefaults Apply defaults defined in schema when missing
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($_input, bool $_validate = true)
+    public static function buildFromInput($_input, bool $_validate = true, bool $materializeDefaults = false)
     {
         if (!is_array($_input) && !is_object($_input)) {
             throw new \InvalidArgumentException(
@@ -1479,6 +1570,13 @@ class MyClass
         }
 
         $_input = is_array($_input) ? \JsonSchema\Validator::arrayToObjectRecursive($_input) : $_input;
+        if ($materializeDefaults) {
+            foreach (self::$_defaults as $__k => $__v) {
+                if (!property_exists($_input, $__k)) {
+                    $_input->{$__k} = is_array($__v) ? \JsonSchema\Validator::arrayToObjectRecursive($__v) : $__v;
+                }
+            }
+        }
         if ($_validate) {
             static::validateInput($_input);
         }
@@ -1505,6 +1603,8 @@ class MyClass
         $_buildFromInput_1 = $_input->{'buildFromInput'};
         $_toArray_1 = $_input->{'toArray'};
         $_validateInput_1 = $_input->{'validateInput'};
+        $_schema = $_input->{'schema'};
+        $_defaults_1 = $_input->{'_defaults'};
         $_clone_1 = $_input->{'clone'};
         $_construct_1 = $_input->{'__construct'};
         $_destruct_1 = $_input->{'__destruct'};
@@ -1521,7 +1621,7 @@ class MyClass
         $_clone_2 = $_input->{'__clone'};
         $files = $_input->{'files'};
 
-        $_obj = new self($_GLOBALS_1, $_GLOBALS_2, $_GLOBALS1_1, $_SERVER_1, $_GET_1, $_POST_1, $_FILES_1, $_REQUEST_1, $_SESSION_1, $_ENV_1, $_COOKIE_1, $_phpErrormsg, $_httpResponseHeader, $_argc, $_argv, $input, $validate, $obj, $_buildFromInput_1, $_toArray_1, $_validateInput_1, $_clone_1, $_construct_1, $_destruct_1, $_get_2, $_set_1, $_call_1, $_isset_1, $_unset_1, $_sleep_1, $_wakeup_1, $_toString_1, $_invoke_1, $_debugInfo_1, $_clone_2, $files);
+        $_obj = new self($_GLOBALS_1, $_GLOBALS_2, $_GLOBALS1_1, $_SERVER_1, $_GET_1, $_POST_1, $_FILES_1, $_REQUEST_1, $_SESSION_1, $_ENV_1, $_COOKIE_1, $_phpErrormsg, $_httpResponseHeader, $_argc, $_argv, $input, $validate, $obj, $_buildFromInput_1, $_toArray_1, $_validateInput_1, $_schema, $_defaults_1, $_clone_1, $_construct_1, $_destruct_1, $_get_2, $_set_1, $_call_1, $_isset_1, $_unset_1, $_sleep_1, $_wakeup_1, $_toString_1, $_invoke_1, $_debugInfo_1, $_clone_2, $files);
 
         return $_obj;
     }
@@ -1529,9 +1629,10 @@ class MyClass
     /**
      * Converts this object back to a simple array that can be JSON-serialized
      *
+     * @param bool $includeDefaults Add defaults for missing properties
      * @return array Converted array
      */
-    public function toArray()
+    public function toArray(bool $includeDefaults = false)
     {
         $output = [];
         $output['_GLOBALS'] = $this->_GLOBALS_1;
@@ -1555,6 +1656,8 @@ class MyClass
         $output['buildFromInput'] = $this->_buildFromInput_1;
         $output['toArray'] = $this->_toArray_1;
         $output['validateInput'] = $this->_validateInput_1;
+        $output['schema'] = $this->_schema;
+        $output['_defaults'] = $this->_defaults_1;
         $output['clone'] = $this->_clone_1;
         $output['__construct'] = $this->_construct_1;
         $output['__destruct'] = $this->_destruct_1;
@@ -1570,6 +1673,14 @@ class MyClass
         $output['__debugInfo'] = $this->_debugInfo_1;
         $output['__clone'] = $this->_clone_2;
         $output['files'] = $this->files;
+
+        if ($includeDefaults) {
+            foreach (self::$_defaults as $k => $v) {
+                if (!array_key_exists($k, $output)) {
+                    $output[$k] = $v;
+                }
+            }
+        }
 
         return $output;
     }

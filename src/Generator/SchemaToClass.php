@@ -151,7 +151,7 @@ class SchemaToClass
             return;
         }
 
-        // remove descriptions from schema if such option is set, but keep them
+        // remove metadata like descriptions from schema if such option is set, but keep them
         // for building property documentation
         $validationSchema = $schema;
         if ($req->getOptions()->getNoSchemaMetadata()) {
@@ -346,6 +346,8 @@ class SchemaToClass
             'http_response_header',
             'argc',
             'argv',
+            'schema',
+            '_defaults',
         ];
 
         $reservedMethodNames = [

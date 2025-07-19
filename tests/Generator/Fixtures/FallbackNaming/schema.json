@@ -24,6 +24,9 @@
     "toArray",
     "validateInput",
 
+    "schema",
+    "_defaults",
+
     "clone",
     "__construct",
     "__destruct",
@@ -65,6 +68,10 @@
     "buildFromInput": { "type": "string" },
     "toArray": { "type": "string" },
     "validateInput": { "type": "string" },
+
+    "schema": { "type": "string" },
+    "_defaults": { "type": "string", "default": "foo" },
+
 
     "clone": { "type": "string" },
     "__construct": { "type": "string" },
