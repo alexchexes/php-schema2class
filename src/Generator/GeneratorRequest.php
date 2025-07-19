@@ -325,25 +325,21 @@ class GeneratorRequest
         throw new GeneratorException("unresolvable reference: {$ref}");
     }
 
-    public function withCurrValidateArgName(string $currValidateArgName): self
-    {
-        $clone = clone $this;
-        $clone->currValidateArgName = $currValidateArgName;
-        return $clone;
-    }
-
-    public function withCurrMaterializeArgName(?string $currMaterializeArgName): self
-    {
-        $clone = clone $this;
-        $clone->currMaterializeArgName = $currMaterializeArgName;
-        return $clone;
-    }
-
+    /**
+     * This method is deliberately mutating (not `with...`) so that the active
+     * argument names can be updated for all property generators during code generation
+     * to ensure consistent variable names in nested contexts
+     */
     public function setCurrValidateArgName(string $currValidateArgName): void
     {
         $this->currValidateArgName = $currValidateArgName;
     }
 
+    /**
+     * This method is deliberately mutating (not `with...`) so that the active
+     * argument names can be updated for all property generators during code generation
+     * to ensure consistent variable names in nested contexts
+     */
     public function setCurrMaterializeArgName(?string $currMaterializeArgName): void
     {
         $this->currMaterializeArgName = $currMaterializeArgName;
