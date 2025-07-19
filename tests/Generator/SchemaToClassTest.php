@@ -453,16 +453,16 @@ class SchemaToClassTest extends TestCase
         $this->assertStringContainsString('skipping generation of SkippedDef5', $output->fetch());
     }
 
-    public function testMaterializeDefaultsNestedObject(): void
+    public function testMaterializeDefaults(): void
     {
-        $schemaFile = __DIR__ . '/Fixtures/MaterializeDefaultsNested/schema.json';
-        $inputFile  = __DIR__ . '/Fixtures/MaterializeDefaultsNested/input.testMaterializeDefaultsNestedObject.json';
+        $schemaFile = __DIR__ . '/Fixtures/MaterializeDefaults/schema.json';
+        $inputFile  = __DIR__ . '/Fixtures/MaterializeDefaults/input.testMaterializeDefaults.json';
 
         $schema = (new SchemaLoader())->loadSchema($schemaFile);
 
         $req = new GeneratorRequest(
             $schema,
-            new ValidatedSpecificationFilesItem('Ns\\MaterializeDefaultsNested', '_MyClass', __DIR__),
+            new ValidatedSpecificationFilesItem('Ns\\MaterializeDefaults', '_MyClass', __DIR__),
             (new SpecificationOptions())->withTargetPHPVersion(GeneratorRequest::DEFAULT_PHP8_VERSION),
         );
 
@@ -477,7 +477,7 @@ class SchemaToClassTest extends TestCase
             eval($evalCode);
         }
 
-        $fqcn = 'Ns\\MaterializeDefaultsNested\\_MyClass';
+        $fqcn = 'Ns\\MaterializeDefaults\\_MyClass';
         $input = json_decode(file_get_contents($inputFile));
 
         $obj = $fqcn::buildFromInput($input, true, true);
