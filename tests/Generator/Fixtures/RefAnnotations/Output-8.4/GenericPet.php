@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ns\RefAnnotations;
+namespace Ns\RefAnnotations_8_4;
 
 class GenericPet
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ns\UnionWithRepeatedType;
+namespace Ns\UnionWithRepeatedType_8_4;
 
 class Cat
 {
