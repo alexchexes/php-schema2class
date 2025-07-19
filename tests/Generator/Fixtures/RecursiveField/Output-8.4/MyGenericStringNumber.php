@@ -98,7 +98,7 @@ class MyGenericStringNumber
             static::validateInput($input);
         }
 
-        $field = MyGenericStringNumberField::buildFromInput($input->{'field'}, $validate);
+        $field = MyGenericStringNumberField::buildFromInput($input->{'field'}, $validate, $materializeDefaults);
 
         $obj = new self($field);
 

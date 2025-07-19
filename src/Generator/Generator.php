@@ -13,10 +13,8 @@ use Helmich\Schema2Class\Generator\Property\PropertyInterface;
 use Helmich\Schema2Class\Generator\Property\PrimitiveArrayProperty;
 use Helmich\Schema2Class\Generator\Property\ObjectArrayProperty;
 use Helmich\Schema2Class\Generator\Property\ReferenceArrayProperty;
-use Helmich\Schema2Class\Generator\Property\NullablePropertyDecorator;
 use Helmich\Schema2Class\Generator\Property\PropertyDecoratorInterface;
 use Helmich\Schema2Class\Generator\Property\TypedArrayProperty;
-use Helmich\Schema2Class\Generator\Property\AbstractProperty;
 use Helmich\Schema2Class\Util\StringUtils;
 use Laminas\Code\Generator\DocBlock\Tag\GenericTag;
 use Laminas\Code\Generator\DocBlock\Tag\ParamTag;
@@ -155,22 +153,22 @@ class Generator
             $paramType = "array|object";
         }
 
-        $validateParamName = 'validate';
-        if ($properties->hasPropertyWithName($validateParamName)) {
-            $validateParamName = '_validate';
+        $validateArgName = 'validate';
+        if ($properties->hasPropertyWithName($validateArgName)) {
+            $validateArgName = '_validate';
             $i = 2;
-            while ($properties->hasPropertyWithName($validateParamName)) {
-                $validateParamName = '_validate' . $i;
+            while ($properties->hasPropertyWithName($validateArgName)) {
+                $validateArgName = '_validate' . $i;
                 $i++;
             }
         }
 
-        $materializeParamName = 'materializeDefaults';
-        if ($hasDefaults && $properties->hasPropertyWithName($materializeParamName)) {
-            $materializeParamName = '_materializeDefaults';
+        $materializeArgName = 'materializeDefaults';
+        if ($hasDefaults && $properties->hasPropertyWithName($materializeArgName)) {
+            $materializeArgName = '_materializeDefaults';
             $i = 2;
-            while ($properties->hasPropertyWithName($materializeParamName)) {
-                $materializeParamName = '_materializeDefaults' . $i;
+            while ($properties->hasPropertyWithName($materializeArgName)) {
+                $materializeArgName = '_materializeDefaults' . $i;
                 $i++;
             }
         }
@@ -185,10 +183,8 @@ class Generator
             }
         }
 
-        AbstractProperty::setBuildFromInputParameterNames(
-            $validateParamName,
-            $hasDefaults ? $materializeParamName : null
-        );
+        $this->generatorRequest = $this->generatorRequest->withCurrValidateArgName($validateArgName);
+        $this->generatorRequest = $this->generatorRequest->withCurrMaterializeArgName($hasDefaults ? $materializeArgName : null);
 
         $assignments = [];
         foreach ($optionalProperties as $optionalProperty) {
@@ -197,22 +193,22 @@ class Generator
         }
 
         $validationParam = new ParameterGenerator(
-            name: $validateParamName,
+            name: $validateArgName,
             type: "bool",
             defaultValue: true,
         );
         $materializeParam = $hasDefaults ? new ParameterGenerator(
-            name: $materializeParamName,
+            name: $materializeArgName,
             type: "bool",
             defaultValue: false,
         ) : null;
 
         $docBlockParams = [
             new ParamTag($inputVarName, ["array|object"], "Input data"),
-            new ParamTag($validateParamName, ["bool"], "Set this to false to skip validation; use at own risk"),
+            new ParamTag($validateArgName, ["bool"], "Set this to false to skip validation; use at own risk"),
         ];
         if ($hasDefaults) {
-            $docBlockParams[] = new ParamTag($materializeParamName, ["bool"], "Apply defaults defined in schema when missing");
+            $docBlockParams[] = new ParamTag($materializeArgName, ["bool"], "Apply defaults defined in schema when missing");
         }
         $docBlockParams[] = new ReturnTag([$this->generatorRequest->getTargetClass()], "Created instance");
         $docBlockParams[] = new ThrowsTag("\\InvalidArgumentException");
@@ -235,12 +231,12 @@ class Generator
         }
     
         if ($hasDefaults) {
-            // If generating the "$materializeParamName" param, we must ensure that
+            // If generating the "$materializeArgName" param, we must ensure that
             // if the input is an object, it is cloned when the param is true, as it might be modified
             $convertInputLine =
                 "\$$inputVarName = is_array(\$$inputVarName)\n" .
                 "    ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$$inputVarName)\n" .
-                "    : (\$$materializeParamName ? clone \$$inputVarName : \$$inputVarName);\n\n";
+                "    : (\$$materializeArgName ? clone \$$inputVarName : \$$inputVarName);\n\n";
         } else {
             $convertInputLine =
                 "\$$inputVarName = is_array(\$$inputVarName) ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$$inputVarName) : \$$inputVarName;\n";
@@ -250,7 +246,7 @@ class Generator
             // Conversion into object if input is array
             $convertInputLine .
 
-            ($hasDefaults ? ("if (\$$materializeParamName) {\n" .
+            ($hasDefaults ? ("if (\$$materializeArgName) {\n" .
             "    foreach (self::\$_defaults as \$__k => \$__v) {\n" .
             "        if (!property_exists(\$$inputVarName, \$__k)) {\n" .
             "            \${$inputVarName}->{\$__k} = is_array(\$__v) ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$__v) : \$__v;\n" .
@@ -259,7 +255,7 @@ class Generator
             "}\n\n") : '') .
 
             // Conditional schema validation
-            "if (\${$validateParamName}) {\n" .
+            "if (\${$validateArgName}) {\n" .
             "    static::validateInput(\$$inputVarName);\n" .
             "}\n\n" .
 

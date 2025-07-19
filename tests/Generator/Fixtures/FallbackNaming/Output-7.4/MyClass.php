@@ -1731,7 +1731,7 @@ class MyClass
         $obj = $_input->{'obj'};
         $materializeDefaults = $_input->{'materializeDefaults'};
         $includeDefaults = $_input->{'includeDefaults'};
-        $testObj = isset($_input->{'testObj'}) ? MyClassTestObj::buildFromInput($_input->{'testObj'}, $_validate, $_materializeDefaults) : null;
+        $testObj = isset($_input->{'testObj'}) ? MyClassTestObj::buildFromInput($_input->{'testObj'}, $validate, $materializeDefaults) : null;
         $_buildFromInput_1 = $_input->{'buildFromInput'};
         $_toArray_1 = $_input->{'toArray'};
         $_validateInput_1 = $_input->{'validateInput'};

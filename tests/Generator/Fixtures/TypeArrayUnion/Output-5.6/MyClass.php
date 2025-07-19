@@ -86,7 +86,7 @@ class MyClass
         }
 
         if ((MyClassFooAlternative2::validateInput($input->{'foo'}, true))) {
-            $foo = MyClassFooAlternative2::buildFromInput($input->{'foo'}, $validate);
+            $foo = MyClassFooAlternative2::buildFromInput($input->{'foo'}, $validate, $materializeDefaults);
         } else {
             $foo = $input->{'foo'};
         }

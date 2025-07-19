@@ -57,12 +57,14 @@ class IntersectProperty extends AbstractProperty
 
     public function generateInputMappingExpr(string $expr, bool $asserted = false): string
     {
-        $validateArg = '$' . AbstractProperty::$buildValidateParam;
-        $materialize = AbstractProperty::$buildMaterializeParam;
-        $args = [$expr, $validateArg];
-        if ($materialize !== null) {
-            $args[] = '$' . $materialize;
+        $validateArg = $this->generatorRequest->getCurrValidateArgName();
+        $materializeArg = $this->generatorRequest->getCurrMaterializeArgName();
+
+        $args = [$expr, '$' . $validateArg];
+        if ($materializeArg !== null) {
+            $args[] = '$' . $materializeArg;
         }
+
         return sprintf('%s::buildFromInput(%s)', $this->subTypeName(), implode(', ', $args));
     }
 
