@@ -160,7 +160,7 @@ class ObjectArrayProperty extends AbstractProperty
                 => "array_map(function(\$i): {$typeHint} use ({$this->buildUseClause()}) { return {$sm}; }, {$expr})",
 
             default
-                => "array_map(function(\$i): use ({$this->buildUseClause()}) { return {$sm}; }, {$expr})",
+                => "array_map(function(\$i) use ({$this->buildUseClause()}) { return {$sm}; }, {$expr})",
         };
     }
 

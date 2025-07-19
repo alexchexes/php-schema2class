@@ -83,7 +83,7 @@ class MyClass
 
         $foo = match (true) {
             is_string($input->{'foo'}) => $input->{'foo'},
-            MyClassFooAlternative2::validateInput($input->{'foo'}, true) => MyClassFooAlternative2::buildFromInput($input->{'foo'}, $validate, $materializeDefaults),
+            MyClassFooAlternative2::validateInput($input->{'foo'}, true) => MyClassFooAlternative2::buildFromInput($input->{'foo'}, $validate),
             default => throw new \InvalidArgumentException("could not build property 'foo' from JSON"),
         };
 

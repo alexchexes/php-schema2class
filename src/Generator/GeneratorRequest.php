@@ -339,6 +339,16 @@ class GeneratorRequest
         return $clone;
     }
 
+    public function setCurrValidateArgName(string $currValidateArgName): void
+    {
+        $this->currValidateArgName = $currValidateArgName;
+    }
+
+    public function setCurrMaterializeArgName(?string $currMaterializeArgName): void
+    {
+        $this->currMaterializeArgName = $currMaterializeArgName;
+    }
+
     public function getCurrValidateArgName(): string
     {
         return $this->currValidateArgName;

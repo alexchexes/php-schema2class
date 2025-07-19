@@ -183,8 +183,8 @@ class Generator
             }
         }
 
-        $this->generatorRequest = $this->generatorRequest->withCurrValidateArgName($validateArgName);
-        $this->generatorRequest = $this->generatorRequest->withCurrMaterializeArgName($hasDefaults ? $materializeArgName : null);
+        $this->generatorRequest->setCurrValidateArgName($validateArgName);
+        $this->generatorRequest->setCurrMaterializeArgName($hasDefaults ? $materializeArgName : null);
 
         $assignments = [];
         foreach ($optionalProperties as $optionalProperty) {
