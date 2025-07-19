@@ -22,11 +22,11 @@ class Fio
     ];
 
     /**
-     * Optional nullable property names that were explicitly set
+     * Map of optional nullable property names that were explicitly set to `null`
      *
      * @var array<string,true>
      */
-    private $_explicitlySet = [];
+    private $_explicitNulls = [];
 
     /**
      * @var string|null
@@ -58,7 +58,7 @@ class Fio
 
         $clone = clone $this;
         $clone->bar = $bar;
-        $clone->_explicitlySet['bar'] = true;
+        $clone->_explicitNulls['bar'] = true;
 
         return $clone;
     }
@@ -70,7 +70,7 @@ class Fio
     {
         $clone = clone $this;
         unset($clone->bar);
-        unset($clone->_explicitlySet['bar']);
+        unset($clone->_explicitNulls['bar']);
 
         return $clone;
     }
@@ -96,15 +96,15 @@ class Fio
             static::validateInput($input);
         }
 
-        $__explicitlySet = [];
+        $__explicitNulls = [];
         $bar = property_exists($input, 'bar') ? $input->{'bar'} : null;
         if (property_exists($input, 'bar')) {
-            $__explicitlySet['bar'] = true;
+            $__explicitNulls['bar'] = true;
         }
 
         $obj = new self();
         $obj->bar = $bar;
-        $obj->_explicitlySet = $__explicitlySet;
+        $obj->_explicitNulls = $__explicitNulls;
         return $obj;
     }
 
@@ -116,7 +116,7 @@ class Fio
     public function toArray()
     {
         $output = [];
-        if (isset($this->bar) || array_key_exists('bar', $this->_explicitlySet)) {
+        if (isset($this->bar) || array_key_exists('bar', $this->_explicitNulls)) {
             $output['bar'] = $this->bar;
         }
 
@@ -148,13 +148,13 @@ class Fio
     }
 
     /**
-     * Checks if an optional nullable property was set
+     * Checks if an optional nullable property was explicitly set to `null`
      *
-     * @param string $propertyName
+     * @param string $propertyName property name as appears in the schema
      * @return bool
      */
-    public function isDefined(string $propertyName)
+    public function isExplicitNull(string $propertyName)
     {
-        return array_key_exists($propertyName, $this->_explicitlySet);
+        return array_key_exists($propertyName, $this->_explicitNulls);
     }
 }

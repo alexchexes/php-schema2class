@@ -40,11 +40,11 @@ class MyClass
     ];
 
     /**
-     * Optional nullable property names that were explicitly set
+     * Map of optional nullable property names that were explicitly set to `null`
      *
      * @var array<string,true>
      */
-    private $_explicitlySet = [];
+    private $_explicitNulls = [];
 
     /**
      * @var string|null
@@ -133,7 +133,7 @@ class MyClass
         }
 
         $this->opt = $opt;
-        $this->_explicitlySet['opt'] = true;
+        $this->_explicitNulls['opt'] = true;
     }
 
     /**
@@ -142,7 +142,7 @@ class MyClass
     public function unsetOpt()
     {
         $this->opt = null;
-        unset($this->_explicitlySet['opt']);
+        unset($this->_explicitNulls['opt']);
     }
 
     /**
@@ -166,18 +166,18 @@ class MyClass
             static::validateInput($input);
         }
 
-        $__explicitlySet = [];
+        $__explicitNulls = [];
         $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
         $bar = Baz::buildFromInput($input->{'bar'}, $validate);
         $opt = property_exists($input, 'opt') ? $input->{'opt'} : null;
         if (property_exists($input, 'opt')) {
-            $__explicitlySet['opt'] = true;
+            $__explicitNulls['opt'] = true;
         }
 
         $obj = new self($bar);
         $obj->foo = $foo;
         $obj->opt = $opt;
-        $obj->_explicitlySet = $__explicitlySet;
+        $obj->_explicitNulls = $__explicitNulls;
         return $obj;
     }
 
@@ -193,7 +193,7 @@ class MyClass
             $output['foo'] = $this->foo;
         }
         $output['bar'] = $this->bar->toArray();
-        if (isset($this->opt) || array_key_exists('opt', $this->_explicitlySet)) {
+        if (isset($this->opt) || array_key_exists('opt', $this->_explicitNulls)) {
             $output['opt'] = $this->opt;
         }
 
@@ -225,13 +225,13 @@ class MyClass
     }
 
     /**
-     * Checks if an optional nullable property was set
+     * Checks if an optional nullable property was explicitly set to `null`
      *
-     * @param string $propertyName
+     * @param string $propertyName property name as appears in the schema
      * @return bool
      */
-    public function isDefined(string $propertyName)
+    public function isExplicitNull(string $propertyName)
     {
-        return array_key_exists($propertyName, $this->_explicitlySet);
+        return array_key_exists($propertyName, $this->_explicitNulls);
     }
 }

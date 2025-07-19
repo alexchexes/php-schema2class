@@ -99,11 +99,11 @@ class MyClass
     ];
 
     /**
-     * Optional nullable property names that were explicitly set
+     * Map of optional nullable property names that were explicitly set to `null`
      *
      * @var array<string,true>
      */
-    private array $_explicitlySet = [];
+    private array $_explicitNulls = [];
 
     /**
      * required, not nullable, no default
@@ -323,7 +323,7 @@ class MyClass
 
         $clone = clone $this;
         $clone->baz = $baz;
-        $clone->_explicitlySet['baz'] = true;
+        $clone->_explicitNulls['baz'] = true;
 
         return $clone;
     }
@@ -335,7 +335,7 @@ class MyClass
     {
         $clone = clone $this;
         unset($clone->baz);
-        unset($clone->_explicitlySet['baz']);
+        unset($clone->_explicitNulls['baz']);
 
         return $clone;
     }
@@ -357,7 +357,7 @@ class MyClass
 
         $clone = clone $this;
         $clone->qux = $qux;
-        $clone->_explicitlySet['qux'] = true;
+        $clone->_explicitNulls['qux'] = true;
 
         return $clone;
     }
@@ -368,8 +368,8 @@ class MyClass
     public function withoutQux() : self
     {
         $clone = clone $this;
-        $clone->qux = 'a qux string';
-        unset($clone->_explicitlySet['qux']);
+        unset($clone->qux);
+        unset($clone->_explicitNulls['qux']);
 
         return $clone;
     }
@@ -422,7 +422,7 @@ class MyClass
     public function withoutXyyz() : self
     {
         $clone = clone $this;
-        $clone->xyyz = 'a xyyz string';
+        unset($clone->xyyz);
 
         return $clone;
     }
@@ -456,7 +456,7 @@ class MyClass
     {
         $clone = clone $this;
         $clone->grox = $grox;
-        $clone->_explicitlySet['grox'] = true;
+        $clone->_explicitNulls['grox'] = true;
 
         return $clone;
     }
@@ -467,11 +467,8 @@ class MyClass
     public function withoutGrox() : self
     {
         $clone = clone $this;
-        $clone->grox = [
-                'a' => 'a string',
-                'b' => 123,
-            ];
-        unset($clone->_explicitlySet['grox']);
+        unset($clone->grox);
+        unset($clone->_explicitNulls['grox']);
 
         return $clone;
     }
@@ -499,23 +496,23 @@ class MyClass
             static::validateInput($input);
         }
 
-        $__explicitlySet = [];
+        $__explicitNulls = [];
         $foo = $input->{'foo'};
         $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
         $baz = property_exists($input, 'baz') ? $input->{'baz'} : null;
         if (property_exists($input, 'baz')) {
-            $__explicitlySet['baz'] = true;
+            $__explicitNulls['baz'] = true;
         }
         $qux = property_exists($input, 'qux') ? $input->{'qux'} : null;
         if (property_exists($input, 'qux')) {
-            $__explicitlySet['qux'] = true;
+            $__explicitNulls['qux'] = true;
         }
         $quux = $input->{'quux'};
         $xyyz = isset($input->{'xyyz'}) ? $input->{'xyyz'} : null;
         $thud = $input->{'thud'};
         $grox = property_exists($input, 'grox') ? MyClassGrox::buildFromInput($input->{'grox'}, validate: $validate) : null;
         if (property_exists($input, 'grox')) {
-            $__explicitlySet['grox'] = true;
+            $__explicitNulls['grox'] = true;
         }
 
         $obj = new self($foo, $quux, $thud);
@@ -524,7 +521,7 @@ class MyClass
         $obj->qux = $qux;
         $obj->xyyz = $xyyz;
         $obj->grox = $grox;
-        $obj->_explicitlySet = $__explicitlySet;
+        $obj->_explicitNulls = $__explicitNulls;
         return $obj;
     }
 
@@ -541,10 +538,10 @@ class MyClass
         if (isset($this->bar)) {
             $output['bar'] = $this->bar;
         }
-        if (isset($this->baz) || array_key_exists('baz', $this->_explicitlySet)) {
+        if (isset($this->baz) || array_key_exists('baz', $this->_explicitNulls)) {
             $output['baz'] = $this->baz;
         }
-        if (isset($this->qux) || array_key_exists('qux', $this->_explicitlySet)) {
+        if (isset($this->qux) || array_key_exists('qux', $this->_explicitNulls)) {
             $output['qux'] = $this->qux;
         }
         $output['quux'] = $this->quux;
@@ -552,7 +549,7 @@ class MyClass
             $output['xyyz'] = $this->xyyz;
         }
         $output['thud'] = $this->thud;
-        if (isset($this->grox) || array_key_exists('grox', $this->_explicitlySet)) {
+        if (isset($this->grox) || array_key_exists('grox', $this->_explicitNulls)) {
             if (isset($this->grox)) {
                 $output['grox'] = ($this->grox)->toArray();
             }
@@ -603,13 +600,13 @@ class MyClass
     }
 
     /**
-     * Checks if an optional nullable property was set
+     * Checks if an optional nullable property was explicitly set to `null`
      *
-     * @param string $propertyName
+     * @param string $propertyName property name as appears in the schema
      * @return bool
      */
-    public function isDefined(string $propertyName) : bool
+    public function isExplicitNull(string $propertyName) : bool
     {
-        return array_key_exists($propertyName, $this->_explicitlySet);
+        return array_key_exists($propertyName, $this->_explicitNulls);
     }
 }

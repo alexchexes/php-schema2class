@@ -89,7 +89,7 @@ class MyClass
     public function withoutLimit()
     {
         $clone = clone $this;
-        $clone->limit = 10000;
+        unset($clone->limit);
 
         return $clone;
     }
@@ -121,7 +121,7 @@ class MyClass
     public function withoutSkip()
     {
         $clone = clone $this;
-        $clone->skip = 0;
+        unset($clone->skip);
 
         return $clone;
     }
