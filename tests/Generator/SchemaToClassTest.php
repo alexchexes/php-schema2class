@@ -452,4 +452,43 @@ class SchemaToClassTest extends TestCase
 
         $this->assertStringContainsString('skipping generation of SkippedDef5', $output->fetch());
     }
+
+    public function testMaterializeDefaultsNestedObject(): void
+    {
+        $schemaFile = __DIR__ . '/Fixtures/MaterializeDefaultsNested/schema.json';
+        $inputFile  = __DIR__ . '/Fixtures/MaterializeDefaultsNested/InputForTest/MyClass/case1.json';
+
+        $schema = (new SchemaLoader())->loadSchema($schemaFile);
+
+        $req = new GeneratorRequest(
+            $schema,
+            new ValidatedSpecificationFilesItem('Ns\\MaterializeDefaultsNested', 'MyClass', __DIR__),
+            (new SpecificationOptions())->withTargetPHPVersion(GeneratorRequest::DEFAULT_PHP8_VERSION),
+        );
+
+        $output  = new NullOutput();
+        $writer  = new DebugWriter($output);
+        $factory = new SchemaToClassFactory();
+
+        $factory->build($writer, $output)->schemaToClass($req);
+
+        foreach ($writer->getWrittenFiles() as $code) {
+            $evalCode = preg_replace('/^<\?php/', '', $code);
+            eval($evalCode);
+        }
+
+        $fqcn = 'Ns\\MaterializeDefaultsNested\\MyClass';
+        $input = json_decode(file_get_contents($inputFile));
+
+        $obj = $fqcn::buildFromInput($input, true, true);
+
+        $this->assertSame(
+            [
+                'foo' => 'some default value for foo',
+                'bar' => ['nestedFoo' => "some value inside default value for 'bar' object"],
+                'baz' => 'sanity-check',
+            ],
+            $obj->toArray(),
+        );
+    }
 }
