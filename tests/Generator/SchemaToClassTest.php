@@ -456,13 +456,13 @@ class SchemaToClassTest extends TestCase
     public function testMaterializeDefaultsNestedObject(): void
     {
         $schemaFile = __DIR__ . '/Fixtures/MaterializeDefaultsNested/schema.json';
-        $inputFile  = __DIR__ . '/Fixtures/MaterializeDefaultsNested/InputForTest/MyClass/case1.json';
+        $inputFile  = __DIR__ . '/Fixtures/MaterializeDefaultsNested/input.testMaterializeDefaultsNestedObject.json';
 
         $schema = (new SchemaLoader())->loadSchema($schemaFile);
 
         $req = new GeneratorRequest(
             $schema,
-            new ValidatedSpecificationFilesItem('Ns\\MaterializeDefaultsNested', 'MyClass', __DIR__),
+            new ValidatedSpecificationFilesItem('Ns\\MaterializeDefaultsNested', '_MyClass', __DIR__),
             (new SpecificationOptions())->withTargetPHPVersion(GeneratorRequest::DEFAULT_PHP8_VERSION),
         );
 
@@ -477,7 +477,7 @@ class SchemaToClassTest extends TestCase
             eval($evalCode);
         }
 
-        $fqcn = 'Ns\\MaterializeDefaultsNested\\MyClass';
+        $fqcn = 'Ns\\MaterializeDefaultsNested\\_MyClass';
         $input = json_decode(file_get_contents($inputFile));
 
         $obj = $fqcn::buildFromInput($input, true, true);

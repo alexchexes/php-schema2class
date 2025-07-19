@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ns\MaterializeDefaultsNested_8_4;
+namespace Ns\MaterializeDefaultsNested;
 
 class MyClass
 {
