@@ -186,6 +186,9 @@ class Generator
             }
         }
 
+        // Store validate/materialize aliases globally on the request, from where they are read by
+        // property generators, unlike the `input` alias, which is passed directly to every nested
+        // mapping call since it may change at certain levels
         $this->generatorRequest->setCurrValidateArgAlias($validateArgAlias);
         $this->generatorRequest->setCurrMaterializeArgAlias($hasDefaults ? $materializeArgAlias : null);
 
