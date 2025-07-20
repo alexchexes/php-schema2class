@@ -232,7 +232,15 @@ class SchemaToClassTest extends TestCase
                 $specOpts = SpecificationOptions::buildFromInput($optsData);
 
                 $nsName = $fixtureName . '_' . str_replace('.', '_', $version);
-                $testCases[$fixtureName . '-' . $version] = [$fixtureName, $nsName, $schema, $expectedFiles, $specOpts, $inputFiles, $version];
+                $testCases[$fixtureName . '-' . $version] = [
+                    $fixtureName,
+                    $nsName,
+                    $schema,
+                    $expectedFiles,
+                    $specOpts,
+                    $inputFiles,
+                    $version,
+                ];
             }
         }
 
@@ -240,7 +248,15 @@ class SchemaToClassTest extends TestCase
     }
 
     #[DataProvider("loadCodeGenerationTestCases")]
-    public function testCodeGeneration(string $fixtureName, string $nsName, array $schema, array $expectedFiles, SpecificationOptions $specOpts, array $inputFiles, string $version): void
+    public function testCodeGeneration(
+        string $fixtureName,
+        string $nsName,
+        array $schema,
+        array $expectedFiles,
+        SpecificationOptions $specOpts,
+        array $inputFiles,
+        string $version,
+    ): void
     {
         $req = new GeneratorRequest(
             $schema,
