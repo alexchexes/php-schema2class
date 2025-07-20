@@ -185,6 +185,66 @@ class MyClass
             'files' => [
                 'type' => 'string',
             ],
+            'ensureArgs1' => [
+                'oneOf' => [
+                    [
+                        'properties' => [
+                            'type' => [
+                                'type' => 'string',
+                                'enum' => [
+                                    'invoice',
+                                ],
+                                'default' => 'invoice',
+                            ],
+                        ],
+                    ],
+                    [
+                        'required' => [
+                            'type',
+                            'accountNumber',
+                        ],
+                        'properties' => [
+                            'type' => [
+                                'type' => 'string',
+                                'default' => 'debit',
+                            ],
+                            'accountNumber' => [
+                                'type' => 'string',
+                            ],
+                        ],
+                    ],
+                    [
+                        'type' => 'string',
+                    ],
+                ],
+            ],
+            'ensureArgs2' => [
+                'required' => [
+                    'city',
+                    'street',
+                ],
+                'properties' => [
+                    'city' => [
+                        'type' => 'string',
+                        'maxLength' => 32,
+                    ],
+                    'street' => [
+                        'type' => 'string',
+                        'default' => '-',
+                    ],
+                ],
+            ],
+            'ensureArgs3' => [
+                'type' => 'array',
+                'items' => [
+                    'properties' => [
+                        'name' => [
+                            'type' => 'string',
+                            'default' => '-',
+                        ],
+                    ],
+                ],
+            ],
         ],
     ];
 
@@ -408,6 +468,21 @@ class MyClass
      * @var string
      */
     private string $files;
+
+    /**
+     * @var MyClassEnsureArgs1Alternative1|MyClassEnsureArgs1Alternative2|string|null
+     */
+    private $ensureArgs1 = null;
+
+    /**
+     * @var MyClassEnsureArgs2|null
+     */
+    private ?MyClassEnsureArgs2 $ensureArgs2 = null;
+
+    /**
+     * @var MyClassEnsureArgs3Item[]|null
+     */
+    private ?array $ensureArgs3 = null;
 
     /**
      * @param string $_GLOBALS_1
@@ -817,6 +892,30 @@ class MyClass
     public function getFiles(): string
     {
         return $this->files;
+    }
+
+    /**
+     * @return MyClassEnsureArgs1Alternative1|MyClassEnsureArgs1Alternative2|string|null
+     */
+    public function getEnsureArgs1()
+    {
+        return $this->ensureArgs1;
+    }
+
+    /**
+     * @return MyClassEnsureArgs2|null
+     */
+    public function getEnsureArgs2(): ?MyClassEnsureArgs2
+    {
+        return $this->ensureArgs2 ?? null;
+    }
+
+    /**
+     * @return MyClassEnsureArgs3Item[]|null
+     */
+    public function getEnsureArgs3(): ?array
+    {
+        return $this->ensureArgs3 ?? null;
     }
 
     /**
@@ -1707,6 +1806,84 @@ class MyClass
     }
 
     /**
+     * @param MyClassEnsureArgs1Alternative1|MyClassEnsureArgs1Alternative2|string $ensureArgs1
+     * @return self
+     */
+    public function withEnsureArgs1($ensureArgs1): self
+    {
+        $clone = clone $this;
+        $clone->ensureArgs1 = $ensureArgs1;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutEnsureArgs1(): self
+    {
+        $clone = clone $this;
+        unset($clone->ensureArgs1);
+
+        return $clone;
+    }
+
+    /**
+     * @param MyClassEnsureArgs2 $ensureArgs2
+     * @return self
+     */
+    public function withEnsureArgs2(MyClassEnsureArgs2 $ensureArgs2): self
+    {
+        $clone = clone $this;
+        $clone->ensureArgs2 = $ensureArgs2;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutEnsureArgs2(): self
+    {
+        $clone = clone $this;
+        unset($clone->ensureArgs2);
+
+        return $clone;
+    }
+
+    /**
+     * @param MyClassEnsureArgs3Item[] $ensureArgs3
+     * @return self
+     * @param bool $validate
+     */
+    public function withEnsureArgs3(array $ensureArgs3, bool $validate = true): self
+    {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($ensureArgs3, self::$schema['properties']['ensureArgs3']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
+        $clone = clone $this;
+        $clone->ensureArgs3 = $ensureArgs3;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutEnsureArgs3(): self
+    {
+        $clone = clone $this;
+        unset($clone->ensureArgs3);
+
+        return $clone;
+    }
+
+    /**
      * Builds a new instance from an input array
      *
      * @param array|object $input Input data
@@ -1791,11 +1968,17 @@ class MyClass
         $_debugInfo_1 = $_input->{'__debugInfo'};
         $_clone_2 = $_input->{'__clone'};
         $files = $_input->{'files'};
+        $ensureArgs1 = isset($_input->{'ensureArgs1'}) ? (is_string($_input->{'ensureArgs1'})) ? ($_input->{'ensureArgs1'}) : ((MyClassEnsureArgs1Alternative2::validateInput($_input->{'ensureArgs1'}, true)) ? (MyClassEnsureArgs1Alternative2::buildFromInput($_input->{'ensureArgs1'}, $_validate, $_materializeDefaults)) : ((MyClassEnsureArgs1Alternative1::validateInput($_input->{'ensureArgs1'}, true)) ? (MyClassEnsureArgs1Alternative1::buildFromInput($_input->{'ensureArgs1'}, $_validate, $_materializeDefaults)) : (null))) : null;
+        $ensureArgs2 = isset($_input->{'ensureArgs2'}) ? MyClassEnsureArgs2::buildFromInput($_input->{'ensureArgs2'}, $_validate, $_materializeDefaults) : null;
+        $ensureArgs3 = isset($_input->{'ensureArgs3'}) ? array_map(fn ($i): MyClassEnsureArgs3Item => MyClassEnsureArgs3Item::buildFromInput($i, $_validate, $_materializeDefaults), $_input->{'ensureArgs3'}) : null;
 
         $_obj = new self($_GLOBALS_1, $_GLOBALS_2, $_GLOBALS1_1, $_SERVER_1, $_GET_1, $_POST_1, $_FILES_1, $_REQUEST_1, $_SESSION_1, $_ENV_1, $_COOKIE_1, $_phpErrormsg, $_httpResponseHeader, $_argc, $_argv, $input, $obj, $includeDefaults, $_buildFromInput_1, $_toArray_1, $_validateInput_1, $_schema, $_defaults_1, $_clone_1, $_construct_1, $_destruct_1, $_get_2, $_set_1, $_call_1, $_isset_1, $_unset_1, $_sleep_1, $_wakeup_1, $_toString_1, $_invoke_1, $_debugInfo_1, $_clone_2, $files);
         $_obj->validate = $validate;
         $_obj->materializeDefaults = $materializeDefaults;
         $_obj->testObj = $testObj;
+        $_obj->ensureArgs1 = $ensureArgs1;
+        $_obj->ensureArgs2 = $ensureArgs2;
+        $_obj->ensureArgs3 = $ensureArgs3;
         $_obj->_providedOptionals = $__providedOptionals;
         return $_obj;
     }
@@ -1856,6 +2039,19 @@ class MyClass
         $output['__debugInfo'] = $this->_debugInfo_1;
         $output['__clone'] = $this->_clone_2;
         $output['files'] = $this->files;
+        if (isset($this->ensureArgs1)) {
+            if (($this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative1) || ($this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative2)) {
+                $output['ensureArgs1'] = ($this->ensureArgs1)->toArray();
+            } else if ((is_string($this->ensureArgs1))) {
+                $output['ensureArgs1'] = $this->ensureArgs1;
+            }
+        }
+        if (isset($this->ensureArgs2)) {
+            $output['ensureArgs2'] = ($this->ensureArgs2)->toArray();
+        }
+        if (isset($this->ensureArgs3)) {
+            $output['ensureArgs3'] = array_map(fn (MyClassEnsureArgs3Item $i) => $i->toArray(), $this->ensureArgs3);
+        }
 
         if ($includeDefaults) {
             foreach (self::$_defaults as $k => $v) {
@@ -1896,6 +2092,15 @@ class MyClass
     {
         if (isset($this->testObj)) {
             $this->testObj = clone $this->testObj;
+        }
+        if (isset($this->ensureArgs1)) {
+            $this->ensureArgs1 = (is_string($this->ensureArgs1)) ? ($this->ensureArgs1) : (($this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative2) ? (clone $this->ensureArgs1) : (($this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative1) ? (clone $this->ensureArgs1) : ($this->ensureArgs1)));
+        }
+        if (isset($this->ensureArgs2)) {
+            $this->ensureArgs2 = clone $this->ensureArgs2;
+        }
+        if (isset($this->ensureArgs3)) {
+            $this->ensureArgs3 = array_map(fn (MyClassEnsureArgs3Item $i) => clone $i, $this->ensureArgs3);
         }
     }
 

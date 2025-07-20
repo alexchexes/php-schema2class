@@ -25,6 +25,9 @@ properties:
       -
         type: number
         default: 42
+  zyx:
+    type: string
+    default: ''
 definitions:
   Def1:
     type: string

@@ -57,6 +57,10 @@ class MyClass
                     ],
                 ],
             ],
+            'zyx' => [
+                'type' => 'string',
+                'default' => '',
+            ],
         ],
         'definitions' => [
             'Def1' => [
@@ -84,6 +88,7 @@ class MyClass
         'thud' => 'more specific default near the "$ref"',
         'grox' => 'default near the "$ref"',
         'qwert' => 'default from the referenced definition',
+        'zyx' => '',
     ];
 
     /**
@@ -133,6 +138,11 @@ class MyClass
      * @var string|int|float|null
      */
     private string|int|float|null $qwert = null;
+
+    /**
+     * @var string|null
+     */
+    private ?string $zyx = null;
 
     /**
      * @return int|null
@@ -194,6 +204,14 @@ class MyClass
     public function getQwert(): int|float|string|null
     {
         return $this->qwert;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getZyx(): ?string
+    {
+        return $this->zyx ?? null;
     }
 
     /**
@@ -414,6 +432,38 @@ class MyClass
     }
 
     /**
+     * @param string $zyx
+     * @return self
+     * @param bool $validate
+     */
+    public function withZyx(string $zyx, bool $validate = true): self
+    {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($zyx, self::$schema['properties']['zyx']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
+        $clone = clone $this;
+        $clone->zyx = $zyx;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutZyx(): self
+    {
+        $clone = clone $this;
+        unset($clone->zyx);
+
+        return $clone;
+    }
+
+    /**
      * Builds a new instance from an input array
      *
      * @param array|object $input Input data
@@ -455,6 +505,7 @@ class MyClass
             is_int($input->{'qwert'}) || is_float($input->{'qwert'}) => str_contains((string)($input->{'qwert'}), '.') ? (float)($input->{'qwert'}) : (int)($input->{'qwert'}),
             default => null,
         } : null;
+        $zyx = isset($input->{'zyx'}) ? $input->{'zyx'} : null;
 
         $obj = new self();
         $obj->foo = $foo;
@@ -464,6 +515,7 @@ class MyClass
         $obj->thud = $thud;
         $obj->grox = $grox;
         $obj->qwert = $qwert;
+        $obj->zyx = $zyx;
         $obj->_providedOptionals = $__providedOptionals;
         return $obj;
     }
@@ -500,6 +552,9 @@ class MyClass
                 is_string($this->qwert),
                 is_int($this->qwert) || is_float($this->qwert) => $this->qwert,
             };
+        }
+        if (isset($this->zyx)) {
+            $output['zyx'] = $this->zyx;
         }
 
         if ($includeDefaults) {

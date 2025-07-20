@@ -66,7 +66,10 @@
     "materializeDefaults": { "type": ["string", "null"] },
     "obj": { "type": "string" },
     "includeDefaults": { "type": "string" },
-    "testObj": { "type": "object", "properties": { "a": {"type": "string"} } },
+    "testObj": {
+      "type": "object",
+      "properties": { "a": { "type": "string" } }
+    },
 
     "buildFromInput": { "type": "string" },
     "toArray": { "type": "string" },
@@ -74,7 +77,6 @@
 
     "schema": { "type": "string" },
     "_defaults": { "type": "string", "default": "foo" },
-
 
     "clone": { "type": "string" },
     "__construct": { "type": "string" },
@@ -91,6 +93,46 @@
     "__debugInfo": { "type": "string" },
     "__clone": { "type": "string" },
 
-    "files": { "type": "string" }    
+    "files": { "type": "string" },
+
+    "ensureArgs1": {
+      "oneOf": [
+        {
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["invoice"],
+              "default": "invoice"
+            }
+          }
+        },
+        {
+          "required": ["type", "accountNumber"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "default": "debit"
+            },
+            "accountNumber": { "type": "string" }
+          }
+        },
+        { "type": "string" }
+      ]
+    },
+    "ensureArgs2": {
+      "required": ["city", "street"],
+      "properties": {
+        "city": { "type": "string", "maxLength": 32 },
+        "street": { "type": "string", "default": "-" }
+      }
+    },
+    "ensureArgs3": {
+      "type": "array",
+      "items": {
+        "properties": {
+          "name": { "type": "string", "default": "-" }
+        }
+      }
+    }
   }
 }
