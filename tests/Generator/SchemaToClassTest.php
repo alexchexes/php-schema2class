@@ -382,6 +382,11 @@ class SchemaToClassTest extends TestCase
                         $actualObject,
                         "Object returned from {$fqcn}->toStdClass() doesn't match input from file '{$inputName}'."
                     );
+                    try {
+                        $obj = $fqcn::buildFromInput($actualObject);
+                    } catch (\Throwable $th) {
+                        throw new \Exception("Failed to build {$fqcn} from input {$inputName} after the round trip", 0, $th);
+                    }
                 }
             }
         }
