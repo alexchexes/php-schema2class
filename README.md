@@ -244,7 +244,8 @@ The generated classes offer:
 - `oneOf`/`anyOf` alternatives are suffixed with "AlternativeX", where _X_ is an incrementing integer. See [`Example\Advanced\User::$payment`](examples/advanced/generated/User.php#L188).
 - The static method `buildFromInput(array $data[, bool $validate = true])` accepts an array (for example the result of `json_decode(..., true)`), validates it against the schema, and creates the full object graph. No additional mapping is required.
   **Note:** Do not instantiate the class directly; always use `buildFromInput(...)`.
-- To disable validation, pass `false` as the second argument: `buildFromInput($data, false)`. Use at your own risk.
+- To disable validation, pass `false` as the second argument of `buildFromInput($data, false)`. Use at your own risk.
+- If your schema has default values and you want to use them to populate the object properties that are not set in the input, pass the parameter `materializeDefaults = true` to `buildFromInput`. The parameter is generated only when the schema has default values.
 - The method `toArray()` returns a plain array ready for `json_encode()`.
 - Properties are immutable by default; use `withX()` (or `withoutX()` for optional values) to create modified copies. Pass `--mutable-setters` to generate classic `setX()` methods instead.
 

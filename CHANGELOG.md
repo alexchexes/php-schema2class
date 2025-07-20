@@ -55,8 +55,12 @@ Now it:
 
 ### Enums
 
-- Laminas's immutable EnumGenerator replaced with own mutable implementation PhpParserEnumGenerator built on nikic/php-parser which allows modifications via the hook system.
-- Mixed int/string enum values are now skipped with fallback to type hints instead of raising an error.
+- Laminas's immutable `EnumGenerator` replaced with own mutable implementation `PhpParserEnumGenerator` built on `nikic/php-parser` which allows modifications via the hook system.
+- Unsupported enum types are now skipped with fallback to type hints instead of raising an error.
+
+### Defaults handling
+
+- Now, if the schema has a default for some property, the generated class includes the parameter `$materializeDefaults` in `buildFromInput` and `$includeDefaults` in `toArray()`.
 
 ### Documentation
 
@@ -73,7 +77,9 @@ Now it:
   - New dependencies: `voku/portable-ascii`, `nikic/php-parser`
   - Bumped PHPUnit to 12 and Psalm to 6
 
-### Breaking changes?
+### Breaking changes
+
+- The `toJson` method of the generated class was renamed to `toArray` to reflect its purpose.
 
 - Configuration layout has been simplified: there are now only two top-level keys, `options` and `files`. Each `files` item has three keys: `input`, an optional `className`, and `options`, where the `options` object can override any setting from the top-level `options`.
 
