@@ -1,0 +1,13 @@
+{
+  "type": "object",
+  "properties": {
+    "a": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "b": {
+      "type": "object",
+      "properties": {}
+    }
+  }
+}
