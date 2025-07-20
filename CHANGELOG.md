@@ -80,6 +80,7 @@ Now it:
 ### Breaking changes
 
 - The `toJson` method of the generated class was renamed to `toArray` to reflect its purpose.
+- Added a new `toStdClass` method to get an `stdClass` representation (similar to `json_decode()` without flags).
 
 - The `treatValuesWithDefaultAsOptional` option was removed in favor of the runtime options `$materializeDefaults` in `buildFromInput()` and `$includeDefaults` in `toArray()`.
 

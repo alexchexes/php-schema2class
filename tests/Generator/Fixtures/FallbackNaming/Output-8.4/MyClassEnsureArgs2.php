@@ -174,6 +174,18 @@ class MyClassEnsureArgs2
     }
 
     /**
+     * Converts this object back to an stdClass that can be JSON-serialized
+     *
+     * @param bool $includeDefaults Add defaults for missing properties
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(bool $includeDefaults = false): \stdClass
+    {
+        $array = $this->toArray($includeDefaults);
+        return json_decode(json_encode($array));
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data

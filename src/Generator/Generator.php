@@ -371,6 +371,50 @@ class Generator
     }
 
     /**
+     * @param PropertyCollection $properties
+     * @return MethodGenerator
+     */
+    public function generateToStdClassMethod(PropertyCollection $properties, bool $hasDefaults = false): MethodGenerator
+    {
+        $tags = [];
+        if ($hasDefaults) {
+            $tags[] = new ParamTag('includeDefaults', ['bool'], 'Add defaults for missing properties');
+        }
+        $tags[] = new ReturnTag(['\\stdClass'], 'Converted object');
+
+        $docBlock = new DocBlockGenerator(
+            'Converts this object back to an stdClass that can be JSON-serialized',
+            null,
+            $tags
+        );
+        $docBlock->setWordWrap(false);
+
+        $params = [];
+        $call = '';
+        if ($hasDefaults) {
+            $params[] = new ParameterGenerator('includeDefaults', 'bool', false);
+            $call = '$includeDefaults';
+        }
+
+        $body = '$array = $this->toArray(' . $call . ');' . "\n" .
+            'return json_decode(json_encode($array));';
+
+        $method = new MethodGenerator(
+            'toStdClass',
+            $params,
+            MethodGenerator::FLAG_PUBLIC,
+            $body,
+            $docBlock
+        );
+
+        if ($this->generatorRequest->isAtLeastPHP("7.0")) {
+            $method->setReturnType("\\stdClass");
+        }
+
+        return $method;
+    }
+
+    /**
      * @return MethodGenerator
      */
     public function generateValidateMethod(): MethodGenerator
