@@ -56,12 +56,12 @@ class SchemaToClassTest extends TestCase
 
         $dir = opendir($testCaseDir);
 
-        while ($entry = readdir($dir)) {
-            if ($entry[0] === '.') {
+        while ($fixtureName = readdir($dir)) {
+            if ($fixtureName[0] === '.') {
                 continue;
             }
 
-            $fixtureDir = join(DIRECTORY_SEPARATOR, [$testCaseDir, $entry]);
+            $fixtureDir = join(DIRECTORY_SEPARATOR, [$testCaseDir, $fixtureName]);
 
             $schemaFile = join(DIRECTORY_SEPARATOR, [$fixtureDir, 'schema.yaml']);
             if (!file_exists($schemaFile)) {
@@ -186,11 +186,11 @@ class SchemaToClassTest extends TestCase
                     $missing    = array_diff($expectedVersions, $versions);
                     Assert::assertEmpty(
                         $unexpected,
-                        sprintf('Unexpected output for PHP versions [%s] in fixture %s', implode(', ', $unexpected), $entry)
+                        sprintf('Unexpected output for PHP versions [%s] in fixture %s', implode(', ', $unexpected), $fixtureName)
                     );
                     Assert::assertEmpty(
                         $missing,
-                        sprintf('Missing output for PHP versions [%s] in fixture %s', implode(', ', $missing), $entry)
+                        sprintf('Missing output for PHP versions [%s] in fixture %s', implode(', ', $missing), $fixtureName)
                     );
                 }
 
@@ -200,7 +200,6 @@ class SchemaToClassTest extends TestCase
                 }
             }
 
-            $multipleVersions = count($versions) > 1;
             foreach ($versions as $version) {
                 $dirName = 'Output-' . $version;
                 $outputDir = join(DIRECTORY_SEPARATOR, [$fixtureDir, $dirName]);
@@ -230,10 +229,10 @@ class SchemaToClassTest extends TestCase
                     $optsData['inlineAllofReferences'] = true;
                 }
                 $optsData['targetPHPVersion'] = $version;
-                $optsVersion = SpecificationOptions::buildFromInput($optsData);
+                $specOpts = SpecificationOptions::buildFromInput($optsData);
 
-                $ns = $entry . '_' . str_replace('.', '_', $version);
-                $testCases[$entry . '-' . $version] = [$entry, $ns, $schema, $expectedFiles, $optsVersion, $inputFiles, $version];
+                $nsName = $fixtureName . '_' . str_replace('.', '_', $version);
+                $testCases[$fixtureName . '-' . $version] = [$fixtureName, $nsName, $schema, $expectedFiles, $specOpts, $inputFiles, $version];
             }
         }
 
@@ -241,12 +240,12 @@ class SchemaToClassTest extends TestCase
     }
 
     #[DataProvider("loadCodeGenerationTestCases")]
-    public function testCodeGeneration(string $fixture, string $nsName, array $schema, array $expectedOutput, SpecificationOptions $opts, array $inputs, string $version): void
+    public function testCodeGeneration(string $fixtureName, string $nsName, array $schema, array $expectedFiles, SpecificationOptions $specOpts, array $inputFiles, string $version): void
     {
         $req = new GeneratorRequest(
             $schema,
             new ValidatedSpecificationFilesItem("Ns\\{$nsName}", "MyClass", __DIR__),
-            $opts,
+            $specOpts,
         );
 
         $definitions = $schema['definitions'] ?? [];
@@ -302,23 +301,23 @@ class SchemaToClassTest extends TestCase
 
         if (getenv('UPDATE_SNAPSHOTS') !== '1') {
             $this->assertCount(
-                expectedCount: count($expectedOutput),
+                expectedCount: count($expectedFiles),
                 haystack: $writtenFiles,
                 message: sprintf(
                     'Expected file count [%s] does not match the written file count [%s]',
-                    implode(', ', array_keys($expectedOutput)),
+                    implode(', ', array_keys($expectedFiles)),
                     implode(', ', array_keys($writtenFiles)),
                 ),
             );
 
-            foreach ($expectedOutput as $file => $content) {
+            foreach ($expectedFiles as $file => $content) {
                 $filename = __DIR__ . '/' . str_replace('\\', '/', $file);
                 $actualContent = $writtenFiles[$filename];
                 assertThat($actualContent, equalTo($content));
             }
         } else {
             $dirName = 'Output-' . $version;
-            $outputDir = join(DIRECTORY_SEPARATOR, [__DIR__, 'Fixtures', $fixture, $dirName]);
+            $outputDir = join(DIRECTORY_SEPARATOR, [__DIR__, 'Fixtures', $fixtureName, $dirName]);
             if (is_dir($outputDir)) {
                 $iterator = new \RecursiveIteratorIterator(
                     new \RecursiveDirectoryIterator($outputDir, \FilesystemIterator::SKIP_DOTS),
@@ -337,7 +336,7 @@ class SchemaToClassTest extends TestCase
                 $relative = substr($filename, strlen(__DIR__) + 1);
                 $relative = str_replace('\\', '/', $relative);
                 $dirName = 'Output-' . $version;
-                $outputFilename = join(DIRECTORY_SEPARATOR, [__DIR__, 'Fixtures', $fixture, $dirName, $relative]);
+                $outputFilename = join(DIRECTORY_SEPARATOR, [__DIR__, 'Fixtures', $fixtureName, $dirName, $relative]);
                 if (!is_dir(dirname($outputFilename))) {
                     mkdir(dirname($outputFilename), 0777, true);
                 }
@@ -354,7 +353,7 @@ class SchemaToClassTest extends TestCase
                 eval($evalCode);
             }
 
-            foreach ($inputs as $class => $classInputs) {
+            foreach ($inputFiles as $class => $classInputs) {
                 $fqcn = "Ns\\{$nsName}\\{$class}";
 
                 foreach ($classInputs as $inputName => $input) {
@@ -383,7 +382,7 @@ class SchemaToClassTest extends TestCase
                         "Object returned from {$fqcn}->toStdClass() doesn't match input from file '{$inputName}'."
                     );
                     try {
-                        $obj = $fqcn::buildFromInput($actualObject);
+                        $obj2 = $fqcn::buildFromInput($actualObject);
                     } catch (\Throwable $th) {
                         throw new \Exception("Failed to build {$fqcn} from input {$inputName} after the round trip", 0, $th);
                     }
