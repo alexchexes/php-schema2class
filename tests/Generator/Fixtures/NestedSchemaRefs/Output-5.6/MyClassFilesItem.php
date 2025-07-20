@@ -113,13 +113,16 @@ class MyClassFilesItem
     /**
      * Builds a new instance from an input array
      *
-     * @param array|object $_input Input data
+     * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
      * @return MyClassFilesItem Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($_input, bool $validate = true)
+    public static function buildFromInput($input, bool $validate = true)
     {
+        $_input = $input;
+        unset($input);
+
         if (!is_array($_input) && !is_object($_input)) {
             throw new \InvalidArgumentException(
                 'Input to buildFromInput must be array or object, got ' . gettype($_input)

@@ -90,8 +90,8 @@ class TypedArrayProperty extends AbstractProperty
             return "array_map(fn(\$i) => {$map}, {$expr})";
         }
 
-        $validateArg = $this->generatorRequest->getCurrValidateArgName();
-        $materializeArg = $this->generatorRequest->getCurrMaterializeArgName();
+        $validateArg = $this->generatorRequest->getCurrValidateArgAlias();
+        $materializeArg = $this->generatorRequest->getCurrMaterializeArgAlias();
 
         $use = ['$' . $validateArg];
         if ($materializeArg !== null) {

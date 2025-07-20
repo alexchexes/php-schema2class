@@ -138,12 +138,13 @@ class Generator
             $constructorParams[] = '$' . $requiredProperty->name();
         }
 
-        $inputVarName = 'input';
-        if ($properties->hasPropertyWithKey($inputVarName)) {
-            $inputVarName = '_input';
+        $inputArgName = 'input';
+        $inputArgAlias = $inputArgName;
+        if ($properties->hasPropertyWithKey($inputArgAlias)) {
+            $inputArgAlias = '_input';
             $i = 2;
-            while ($properties->hasPropertyWithKey($inputVarName)) {
-                $inputVarName = '_input' . $i;
+            while ($properties->hasPropertyWithKey($inputArgAlias)) {
+                $inputArgAlias = '_input' . $i;
                 $i++;
             }
         }
@@ -154,21 +155,23 @@ class Generator
         }
 
         $validateArgName = 'validate';
-        if ($properties->hasPropertyWithName($validateArgName)) {
-            $validateArgName = '_validate';
+        $validateArgAlias = $validateArgName;
+        if ($properties->hasPropertyWithName($validateArgAlias)) {
+            $validateArgAlias = '_validate';
             $i = 2;
-            while ($properties->hasPropertyWithName($validateArgName)) {
-                $validateArgName = '_validate' . $i;
+            while ($properties->hasPropertyWithName($validateArgAlias)) {
+                $validateArgAlias = '_validate' . $i;
                 $i++;
             }
         }
 
         $materializeArgName = 'materializeDefaults';
-        if ($hasDefaults && $properties->hasPropertyWithName($materializeArgName)) {
-            $materializeArgName = '_materializeDefaults';
+        $materializeArgAlias = $materializeArgName;
+        if ($hasDefaults && $properties->hasPropertyWithName($materializeArgAlias)) {
+            $materializeArgAlias = '_materializeDefaults';
             $i = 2;
-            while ($properties->hasPropertyWithName($materializeArgName)) {
-                $materializeArgName = '_materializeDefaults' . $i;
+            while ($properties->hasPropertyWithName($materializeArgAlias)) {
+                $materializeArgAlias = '_materializeDefaults' . $i;
                 $i++;
             }
         }
@@ -183,8 +186,8 @@ class Generator
             }
         }
 
-        $this->generatorRequest->setCurrValidateArgName($validateArgName);
-        $this->generatorRequest->setCurrMaterializeArgName($hasDefaults ? $materializeArgName : null);
+        $this->generatorRequest->setCurrValidateArgAlias($validateArgAlias);
+        $this->generatorRequest->setCurrMaterializeArgAlias($hasDefaults ? $materializeArgAlias : null);
 
         $assignments = [];
         foreach ($optionalProperties as $optionalProperty) {
@@ -204,7 +207,7 @@ class Generator
         ) : null;
 
         $docBlockParams = [
-            new ParamTag($inputVarName, ["array|object"], "Input data"),
+            new ParamTag($inputArgName, ["array|object"], "Input data"),
             new ParamTag($validateArgName, ["bool"], "Set this to false to skip validation; use at own risk"),
         ];
         if ($hasDefaults) {
@@ -220,49 +223,66 @@ class Generator
         );
         $docBlock->setWordWrap(false);
 
+        $aliasesLines = '';
+        if ($inputArgName !== $inputArgAlias) {
+            $aliasesLines .= "\${$inputArgAlias} = \${$inputArgName};\nunset(\${$inputArgName});\n";
+        }
+        if ($validateArgName !== $validateArgAlias) {
+            $aliasesLines .= "\${$validateArgAlias} = \${$validateArgName};\nunset(\${$validateArgName});\n";
+        }
+        if ($materializeArgName !== $materializeArgAlias) {
+            $aliasesLines .= "\${$materializeArgAlias} = \${$materializeArgName};\nunset(\${$materializeArgName});\n";
+        }
+        if ($aliasesLines) {
+            $aliasesLines .= "\n";
+        }
+
         $inputGuard = '';
         if (!$this->generatorRequest->isAtLeastPHP('8.0')) {
             $inputGuard = 
-                "if (!is_array(\$$inputVarName) && !is_object(\$$inputVarName)) {\n" .
+                "if (!is_array(\$$inputArgAlias) && !is_object(\$$inputArgAlias)) {\n" .
                 "    throw new \\InvalidArgumentException(\n" .
-                "        'Input to buildFromInput must be array or object, got ' . gettype(\$$inputVarName)\n" .
+                "        'Input to buildFromInput must be array or object, got ' . gettype(\$$inputArgAlias)\n" .
                 "    );\n" .
                 "}\n\n";
         }
-    
+
         if ($hasDefaults) {
-            // If generating the "$materializeArgName" param, we must ensure that
+            // If generating the "$materializeDefaults" param, we must ensure that
             // if the input is an object, it is cloned when the param is true, as it might be modified
             $convertInputLine =
-                "\$$inputVarName = is_array(\$$inputVarName)\n" .
-                "    ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$$inputVarName)\n" .
-                "    : (\$$materializeArgName ? clone \$$inputVarName : \$$inputVarName);\n\n";
+                "\$$inputArgAlias = is_array(\$$inputArgAlias)\n" .
+                "    ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$$inputArgAlias)\n" .
+                "    : (\$$materializeArgAlias ? clone \$$inputArgAlias : \$$inputArgAlias);\n\n";
         } else {
             $convertInputLine =
-                "\$$inputVarName = is_array(\$$inputVarName) ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$$inputVarName) : \$$inputVarName;\n";
+                "\$$inputArgAlias = is_array(\$$inputArgAlias) ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$$inputArgAlias) : \$$inputArgAlias;\n";
         }
 
-        $body = $inputGuard .
+        $body =
+            $aliasesLines .
+            $inputGuard .
+            
             // Conversion into object if input is array
             $convertInputLine .
 
-            ($hasDefaults ? ("if (\$$materializeArgName) {\n" .
+            ($hasDefaults ? ("if (\$$materializeArgAlias) {\n" .
             "    foreach (self::\$_defaults as \$__k => \$__v) {\n" .
-            "        if (!property_exists(\$$inputVarName, \$__k)) {\n" .
-            "            \${$inputVarName}->{\$__k} = is_array(\$__v) ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$__v) : \$__v;\n" .
+            "        if (!property_exists(\$$inputArgAlias, \$__k)) {\n" .
+            "            \${$inputArgAlias}->{\$__k} = is_array(\$__v) ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$__v) : \$__v;\n" .
             "        }\n" .
             "    }\n" .
             "}\n\n") : '') .
 
             // Conditional schema validation
-            "if (\${$validateArgName}) {\n" .
-            "    static::validateInput(\$$inputVarName);\n" .
+            "if (\${$validateArgAlias}) {\n" .
+            "    static::validateInput(\$$inputArgAlias);\n" .
             "}\n\n" .
 
             ($hasOptionalNullable ? "\$__explicitNulls = [];\n" : '') .
 
             // Property‐by‐property mapping
-            $properties->generateInputToTypeConversionCode($inputVarName, object: true) . "\n\n" .
+            $properties->generateInputToTypeConversionCode($inputArgAlias, object: true) . "\n\n" .
 
             // Construct & assign optional props
             "\${$objVarName} = new self(" . join(", ", $constructorParams) . ");" . "\n" .
@@ -273,7 +293,7 @@ class Generator
             "return \${$objVarName};"
         ;
 
-        $params = [new ParameterGenerator($inputVarName, $paramType), $validationParam];
+        $params = [new ParameterGenerator($inputArgName, $paramType), $validationParam];
         if ($hasDefaults) {
             $params[] = $materializeParam;
         }

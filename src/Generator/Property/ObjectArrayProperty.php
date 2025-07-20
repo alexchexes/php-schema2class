@@ -14,8 +14,8 @@ class ObjectArrayProperty extends AbstractProperty
 
     private function buildUseClause(): string
     {
-        $validateArg = $this->generatorRequest->getCurrValidateArgName();
-        $materializeArg = $this->generatorRequest->getCurrMaterializeArgName();
+        $validateArg = $this->generatorRequest->getCurrValidateArgAlias();
+        $materializeArg = $this->generatorRequest->getCurrMaterializeArgAlias();
         
         $vars = ['$' . $validateArg];
         if ($materializeArg !== null) {

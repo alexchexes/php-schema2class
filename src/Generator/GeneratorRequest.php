@@ -38,13 +38,13 @@ class GeneratorRequest
      * Name of the $validate argument in the currently generated buildFromInput method.
      * This is set from the Generator during generation.
      */
-    private string $currValidateArgName = 'validate';
+    private string $currValidateArgAlias = 'validate';
 
     /**
      * Name of the $materializeDefaults argument in the currently generated buildFromInput method
      * (null when the argument is not generated). This is set from the Generator.
      */
-    private ?string $currMaterializeArgName = 'materializeDefaults';
+    private ?string $currMaterializeArgAlias = 'materializeDefaults';
 
     public static function normalizeTargetVersion(int|string $version): string
     {
@@ -330,9 +330,9 @@ class GeneratorRequest
      * argument names can be updated for all property generators during code generation
      * to ensure consistent variable names in nested contexts
      */
-    public function setCurrValidateArgName(string $currValidateArgName): void
+    public function setCurrValidateArgAlias(string $currValidateArgAlias): void
     {
-        $this->currValidateArgName = $currValidateArgName;
+        $this->currValidateArgAlias = $currValidateArgAlias;
     }
 
     /**
@@ -340,18 +340,18 @@ class GeneratorRequest
      * argument names can be updated for all property generators during code generation
      * to ensure consistent variable names in nested contexts
      */
-    public function setCurrMaterializeArgName(?string $currMaterializeArgName): void
+    public function setCurrMaterializeArgAlias(?string $currMaterializeArgAlias): void
     {
-        $this->currMaterializeArgName = $currMaterializeArgName;
+        $this->currMaterializeArgAlias = $currMaterializeArgAlias;
     }
 
-    public function getCurrValidateArgName(): string
+    public function getCurrValidateArgAlias(): string
     {
-        return $this->currValidateArgName;
+        return $this->currValidateArgAlias;
     }
 
-    public function getCurrMaterializeArgName(): ?string
+    public function getCurrMaterializeArgAlias(): ?string
     {
-        return $this->currMaterializeArgName;
+        return $this->currMaterializeArgAlias;
     }
 }

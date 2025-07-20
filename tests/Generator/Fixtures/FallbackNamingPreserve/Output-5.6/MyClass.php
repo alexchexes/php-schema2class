@@ -1679,14 +1679,21 @@ class MyClass
     /**
      * Builds a new instance from an input array
      *
-     * @param array|object $_input Input data
-     * @param bool $_validate Set this to false to skip validation; use at own risk
-     * @param bool $_materializeDefaults Apply defaults defined in schema when missing
+     * @param array|object $input Input data
+     * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param bool $materializeDefaults Apply defaults defined in schema when missing
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($_input, bool $_validate = true, bool $_materializeDefaults = false)
+    public static function buildFromInput($input, bool $validate = true, bool $materializeDefaults = false)
     {
+        $_input = $input;
+        unset($input);
+        $_validate = $validate;
+        unset($validate);
+        $_materializeDefaults = $materializeDefaults;
+        unset($materializeDefaults);
+
         if (!is_array($_input) && !is_object($_input)) {
             throw new \InvalidArgumentException(
                 'Input to buildFromInput must be array or object, got ' . gettype($_input)

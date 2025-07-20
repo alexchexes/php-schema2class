@@ -65,8 +65,8 @@ class NestedObjectProperty extends AbstractProperty
 
     public function generateInputMappingExpr(string $expr, bool $asserted = false): string
     {
-        $validateArg = $this->generatorRequest->getCurrValidateArgName();
-        $materializeArg = $this->generatorRequest->getCurrMaterializeArgName();
+        $validateArg = $this->generatorRequest->getCurrValidateArgAlias();
+        $materializeArg = $this->generatorRequest->getCurrMaterializeArgAlias();
 
         $args = [$expr, '$' . $validateArg];
         if ($materializeArg !== null) {

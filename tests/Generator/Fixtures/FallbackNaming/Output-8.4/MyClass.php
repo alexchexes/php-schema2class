@@ -29,9 +29,7 @@ class MyClass
             'argc',
             'argv',
             'input',
-            'validate',
             'obj',
-            'materializeDefaults',
             'includeDefaults',
             'buildFromInput',
             'toArray',
@@ -106,10 +104,13 @@ class MyClass
             'validate' => [
                 'type' => 'string',
             ],
-            'obj' => [
-                'type' => 'string',
-            ],
             'materializeDefaults' => [
+                'type' => [
+                    'string',
+                    'null',
+                ],
+            ],
+            'obj' => [
                 'type' => 'string',
             ],
             'includeDefaults' => [
@@ -197,6 +198,13 @@ class MyClass
     ];
 
     /**
+     * Map of optional nullable property names that were explicitly set to `null`
+     *
+     * @var array<string,true>
+     */
+    private array $_explicitNulls = [];
+
+    /**
      * @var string
      */
     private string $_GLOBALS_1;
@@ -277,19 +285,19 @@ class MyClass
     private string $input;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private string $validate;
+    private ?string $validate = null;
+
+    /**
+     * @var string|null
+     */
+    private ?string $materializeDefaults = null;
 
     /**
      * @var string
      */
     private string $obj;
-
-    /**
-     * @var string
-     */
-    private string $materializeDefaults;
 
     /**
      * @var string
@@ -418,9 +426,7 @@ class MyClass
      * @param string $_argc
      * @param string $_argv
      * @param string $input
-     * @param string $validate
      * @param string $obj
-     * @param string $materializeDefaults
      * @param string $includeDefaults
      * @param string $_buildFromInput_1
      * @param string $_toArray_1
@@ -443,7 +449,7 @@ class MyClass
      * @param string $_clone_2
      * @param string $files
      */
-    public function __construct(string $_GLOBALS_1, string $_GLOBALS_2, string $_GLOBALS1_1, string $_SERVER_1, string $_GET_1, string $_POST_1, string $_FILES_1, string $_REQUEST_1, string $_SESSION_1, string $_ENV_1, string $_COOKIE_1, string $_phpErrormsg, string $_httpResponseHeader, string $_argc, string $_argv, string $input, string $validate, string $obj, string $materializeDefaults, string $includeDefaults, string $_buildFromInput_1, string $_toArray_1, string $_validateInput_1, string $_schema, string $_defaults_1, string $_clone_1, string $_construct_1, string $_destruct_1, string $_get_2, string $_set_1, string $_call_1, string $_isset_1, string $_unset_1, string $_sleep_1, string $_wakeup_1, string $_toString_1, string $_invoke_1, string $_debugInfo_1, string $_clone_2, string $files)
+    public function __construct(string $_GLOBALS_1, string $_GLOBALS_2, string $_GLOBALS1_1, string $_SERVER_1, string $_GET_1, string $_POST_1, string $_FILES_1, string $_REQUEST_1, string $_SESSION_1, string $_ENV_1, string $_COOKIE_1, string $_phpErrormsg, string $_httpResponseHeader, string $_argc, string $_argv, string $input, string $obj, string $includeDefaults, string $_buildFromInput_1, string $_toArray_1, string $_validateInput_1, string $_schema, string $_defaults_1, string $_clone_1, string $_construct_1, string $_destruct_1, string $_get_2, string $_set_1, string $_call_1, string $_isset_1, string $_unset_1, string $_sleep_1, string $_wakeup_1, string $_toString_1, string $_invoke_1, string $_debugInfo_1, string $_clone_2, string $files)
     {
         $this->_GLOBALS_1 = $_GLOBALS_1;
         $this->_GLOBALS_2 = $_GLOBALS_2;
@@ -461,9 +467,7 @@ class MyClass
         $this->_argc = $_argc;
         $this->_argv = $_argv;
         $this->input = $input;
-        $this->validate = $validate;
         $this->obj = $obj;
-        $this->materializeDefaults = $materializeDefaults;
         $this->includeDefaults = $includeDefaults;
         $this->_buildFromInput_1 = $_buildFromInput_1;
         $this->_toArray_1 = $_toArray_1;
@@ -616,11 +620,19 @@ class MyClass
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getValidate(): string
+    public function getValidate(): ?string
     {
-        return $this->validate;
+        return $this->validate ?? null;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getMaterializeDefaults(): ?string
+    {
+        return $this->materializeDefaults ?? null;
     }
 
     /**
@@ -629,14 +641,6 @@ class MyClass
     public function getObj(): string
     {
         return $this->obj;
-    }
-
-    /**
-     * @return string
-     */
-    public function getMaterializeDefaults(): string
-    {
-        return $this->materializeDefaults;
     }
 
     /**
@@ -1173,22 +1177,12 @@ class MyClass
     }
 
     /**
-     * @param string $obj
      * @return self
-     * @param bool $validate
      */
-    public function withObj(string $obj, bool $validate = true): self
+    public function withoutValidate(): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($obj, self::$schema['properties']['obj']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
-        $clone->obj = $obj;
+        unset($clone->validate);
 
         return $clone;
     }
@@ -1210,6 +1204,40 @@ class MyClass
 
         $clone = clone $this;
         $clone->materializeDefaults = $materializeDefaults;
+        $clone->_explicitNulls['materializeDefaults'] = true;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutMaterializeDefaults(): self
+    {
+        $clone = clone $this;
+        unset($clone->materializeDefaults);
+        unset($clone->_explicitNulls['materializeDefaults']);
+
+        return $clone;
+    }
+
+    /**
+     * @param string $obj
+     * @return self
+     * @param bool $validate
+     */
+    public function withObj(string $obj, bool $validate = true): self
+    {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($obj, self::$schema['properties']['obj']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
+        $clone = clone $this;
+        $clone->obj = $obj;
 
         return $clone;
     }
@@ -1681,14 +1709,21 @@ class MyClass
     /**
      * Builds a new instance from an input array
      *
-     * @param array|object $_input Input data
-     * @param bool $_validate Set this to false to skip validation; use at own risk
-     * @param bool $_materializeDefaults Apply defaults defined in schema when missing
+     * @param array|object $input Input data
+     * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param bool $materializeDefaults Apply defaults defined in schema when missing
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $_input, bool $_validate = true, bool $_materializeDefaults = false): MyClass
+    public static function buildFromInput(array|object $input, bool $validate = true, bool $materializeDefaults = false): MyClass
     {
+        $_input = $input;
+        unset($input);
+        $_validate = $validate;
+        unset($validate);
+        $_materializeDefaults = $materializeDefaults;
+        unset($materializeDefaults);
+
         $_input = is_array($_input)
             ? \JsonSchema\Validator::arrayToObjectRecursive($_input)
             : ($_materializeDefaults ? clone $_input : $_input);
@@ -1705,6 +1740,7 @@ class MyClass
             static::validateInput($_input);
         }
 
+        $__explicitNulls = [];
         $_GLOBALS_1 = $_input->{'_GLOBALS'};
         $_GLOBALS_2 = $_input->{'GLOBALS'};
         $_GLOBALS1_1 = $_input->{'GLOBALS_1'};
@@ -1721,9 +1757,12 @@ class MyClass
         $_argc = $_input->{'argc'};
         $_argv = $_input->{'argv'};
         $input = $_input->{'input'};
-        $validate = $_input->{'validate'};
+        $validate = isset($_input->{'validate'}) ? $_input->{'validate'} : null;
+        $materializeDefaults = property_exists($_input, 'materializeDefaults') ? $_input->{'materializeDefaults'} : null;
+        if (property_exists($_input, 'materializeDefaults')) {
+            $__explicitNulls['materializeDefaults'] = true;
+        }
         $obj = $_input->{'obj'};
-        $materializeDefaults = $_input->{'materializeDefaults'};
         $includeDefaults = $_input->{'includeDefaults'};
         $testObj = isset($_input->{'testObj'}) ? MyClassTestObj::buildFromInput($_input->{'testObj'}, $_validate, $_materializeDefaults) : null;
         $_buildFromInput_1 = $_input->{'buildFromInput'};
@@ -1747,8 +1786,11 @@ class MyClass
         $_clone_2 = $_input->{'__clone'};
         $files = $_input->{'files'};
 
-        $_obj = new self($_GLOBALS_1, $_GLOBALS_2, $_GLOBALS1_1, $_SERVER_1, $_GET_1, $_POST_1, $_FILES_1, $_REQUEST_1, $_SESSION_1, $_ENV_1, $_COOKIE_1, $_phpErrormsg, $_httpResponseHeader, $_argc, $_argv, $input, $validate, $obj, $materializeDefaults, $includeDefaults, $_buildFromInput_1, $_toArray_1, $_validateInput_1, $_schema, $_defaults_1, $_clone_1, $_construct_1, $_destruct_1, $_get_2, $_set_1, $_call_1, $_isset_1, $_unset_1, $_sleep_1, $_wakeup_1, $_toString_1, $_invoke_1, $_debugInfo_1, $_clone_2, $files);
+        $_obj = new self($_GLOBALS_1, $_GLOBALS_2, $_GLOBALS1_1, $_SERVER_1, $_GET_1, $_POST_1, $_FILES_1, $_REQUEST_1, $_SESSION_1, $_ENV_1, $_COOKIE_1, $_phpErrormsg, $_httpResponseHeader, $_argc, $_argv, $input, $obj, $includeDefaults, $_buildFromInput_1, $_toArray_1, $_validateInput_1, $_schema, $_defaults_1, $_clone_1, $_construct_1, $_destruct_1, $_get_2, $_set_1, $_call_1, $_isset_1, $_unset_1, $_sleep_1, $_wakeup_1, $_toString_1, $_invoke_1, $_debugInfo_1, $_clone_2, $files);
+        $_obj->validate = $validate;
+        $_obj->materializeDefaults = $materializeDefaults;
         $_obj->testObj = $testObj;
+        $_obj->_explicitNulls = $__explicitNulls;
         return $_obj;
     }
 
@@ -1777,9 +1819,13 @@ class MyClass
         $output['argc'] = $this->_argc;
         $output['argv'] = $this->_argv;
         $output['input'] = $this->input;
-        $output['validate'] = $this->validate;
+        if (isset($this->validate)) {
+            $output['validate'] = $this->validate;
+        }
+        if (isset($this->materializeDefaults) || array_key_exists('materializeDefaults', $this->_explicitNulls)) {
+            $output['materializeDefaults'] = $this->materializeDefaults;
+        }
         $output['obj'] = $this->obj;
-        $output['materializeDefaults'] = $this->materializeDefaults;
         $output['includeDefaults'] = $this->includeDefaults;
         if (isset($this->testObj)) {
             $output['testObj'] = ($this->testObj)->toArray();
@@ -1845,5 +1891,16 @@ class MyClass
         if (isset($this->testObj)) {
             $this->testObj = clone $this->testObj;
         }
+    }
+
+    /**
+     * Checks if an optional nullable property was explicitly set to `null`
+     *
+     * @param string $propertyName property name as appears in the schema
+     * @return bool
+     */
+    public function isExplicitNull(string $propertyName): bool
+    {
+        return array_key_exists($propertyName, $this->_explicitNulls);
     }
 }

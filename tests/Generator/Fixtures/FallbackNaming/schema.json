@@ -17,9 +17,7 @@
     "argv",
 
     "input",
-    "validate",
     "obj",
-    "materializeDefaults",
     "includeDefaults",
 
     "buildFromInput",
@@ -65,8 +63,8 @@
 
     "input": { "type": "string" },
     "validate": { "type": "string" },
+    "materializeDefaults": { "type": ["string", "null"] },
     "obj": { "type": "string" },
-    "materializeDefaults": { "type": "string" },
     "includeDefaults": { "type": "string" },
     "testObj": { "type": "object", "properties": { "a": {"type": "string"} } },
 
