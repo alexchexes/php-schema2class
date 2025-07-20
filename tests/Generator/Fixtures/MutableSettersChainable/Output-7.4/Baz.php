@@ -38,7 +38,7 @@ class Baz
      * @return self
      * @param bool $validate
      */
-    public function setName(string $name, bool $validate = true) : self
+    public function setName(string $name, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();

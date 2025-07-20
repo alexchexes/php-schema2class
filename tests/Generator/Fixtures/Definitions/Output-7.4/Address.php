@@ -74,7 +74,7 @@ class Address
      * @param Address\Defs\Name $name
      * @return self
      */
-    public function withName(Address\Defs\Name $name) : self
+    public function withName(Address\Defs\Name $name): self
     {
         $clone = clone $this;
         $clone->name = $name;
@@ -85,7 +85,7 @@ class Address
     /**
      * @return self
      */
-    public function withoutName() : self
+    public function withoutName(): self
     {
         $clone = clone $this;
         unset($clone->name);
@@ -98,7 +98,7 @@ class Address
      * @return self
      * @param bool $validate
      */
-    public function withCity(string $city, bool $validate = true) : self
+    public function withCity(string $city, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();

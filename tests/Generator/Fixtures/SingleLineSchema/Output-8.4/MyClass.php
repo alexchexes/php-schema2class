@@ -39,7 +39,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withFoo(string $foo, bool $validate = true) : self
+    public function withFoo(string $foo, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();

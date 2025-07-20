@@ -38,7 +38,7 @@ class MoiKlass
      * @return self
      * @param bool $validate
      */
-    public function withC(string $c, bool $validate = true) : self
+    public function withC(string $c, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -57,7 +57,7 @@ class MoiKlass
     /**
      * @return self
      */
-    public function withoutC() : self
+    public function withoutC(): self
     {
         $clone = clone $this;
         unset($clone->c);

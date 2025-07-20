@@ -52,7 +52,7 @@ class MyClassBar
      * @return self
      * @param bool $validate
      */
-    public function withNestedFoo(string $nestedFoo, bool $validate = true) : self
+    public function withNestedFoo(string $nestedFoo, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();

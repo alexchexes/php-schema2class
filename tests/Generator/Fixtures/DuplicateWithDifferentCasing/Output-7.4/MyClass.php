@@ -77,7 +77,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withFooBar1(string $_fooBar_1, bool $validate = true) : self
+    public function withFooBar1(string $_fooBar_1, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -99,7 +99,7 @@ class MyClass
      * @deprecated
      * @param bool $validate
      */
-    public function withBar(string $bar, bool $validate = true) : self
+    public function withBar(string $bar, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -118,7 +118,7 @@ class MyClass
     /**
      * @return self
      */
-    public function withoutBar() : self
+    public function withoutBar(): self
     {
         $clone = clone $this;
         unset($clone->bar);

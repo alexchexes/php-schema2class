@@ -38,7 +38,7 @@ class FooTest_1
      * @return self
      * @param bool $validate
      */
-    public function withB(string $b, bool $validate = true) : self
+    public function withB(string $b, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -57,7 +57,7 @@ class FooTest_1
     /**
      * @return self
      */
-    public function withoutB() : self
+    public function withoutB(): self
     {
         $clone = clone $this;
         unset($clone->b);

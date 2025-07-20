@@ -52,7 +52,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withColor(string $color, bool $validate = true) : self
+    public function withColor(string $color, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();

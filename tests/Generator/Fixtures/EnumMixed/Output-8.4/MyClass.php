@@ -190,7 +190,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withFoo(int|string $foo, bool $validate = true) : self
+    public function withFoo(int|string $foo, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -211,7 +211,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withBar(int|string $bar, bool $validate = true) : self
+    public function withBar(int|string $bar, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -232,7 +232,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withBaz(bool|int|float|string|null $baz, bool $validate = true) : self
+    public function withBaz(bool|int|float|string|null $baz, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -253,7 +253,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withContradiction(int $contradiction, bool $validate = true) : self
+    public function withContradiction(int $contradiction, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -274,7 +274,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withContradiction2(int|string $contradiction2, bool $validate = true) : self
+    public function withContradiction2(int|string $contradiction2, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -294,7 +294,7 @@ class MyClass
      * @param MyClassNullable $nullable
      * @return self
      */
-    public function withNullable(?MyClassNullable $nullable) : self
+    public function withNullable(?MyClassNullable $nullable): self
     {
         $clone = clone $this;
         $clone->nullable = $nullable;

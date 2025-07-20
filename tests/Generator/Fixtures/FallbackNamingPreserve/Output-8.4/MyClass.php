@@ -820,7 +820,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function with_GLOBALS1(string $_GLOBALS_1, bool $validate = true) : self
+    public function with_GLOBALS1(string $_GLOBALS_1, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -841,7 +841,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function with_GLOBALS2(string $_GLOBALS_2, bool $validate = true) : self
+    public function with_GLOBALS2(string $_GLOBALS_2, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -862,7 +862,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function with_GLOBALS11(string $_GLOBALS_1_1, bool $validate = true) : self
+    public function with_GLOBALS11(string $_GLOBALS_1_1, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -883,7 +883,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function with_SERVER1(string $_SERVER_1, bool $validate = true) : self
+    public function with_SERVER1(string $_SERVER_1, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -904,7 +904,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function with_GET1(string $_GET_1, bool $validate = true) : self
+    public function with_GET1(string $_GET_1, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -925,7 +925,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function with_POST1(string $_POST_1, bool $validate = true) : self
+    public function with_POST1(string $_POST_1, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -946,7 +946,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function with_FILES1(string $_FILES_1, bool $validate = true) : self
+    public function with_FILES1(string $_FILES_1, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -967,7 +967,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function with_REQUEST1(string $_REQUEST_1, bool $validate = true) : self
+    public function with_REQUEST1(string $_REQUEST_1, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -988,7 +988,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function with_SESSION1(string $_SESSION_1, bool $validate = true) : self
+    public function with_SESSION1(string $_SESSION_1, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1009,7 +1009,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function with_ENV1(string $_ENV_1, bool $validate = true) : self
+    public function with_ENV1(string $_ENV_1, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1030,7 +1030,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function with_COOKIE1(string $_COOKIE_1, bool $validate = true) : self
+    public function with_COOKIE1(string $_COOKIE_1, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1051,7 +1051,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function with_PhpErrormsg(string $_php_errormsg, bool $validate = true) : self
+    public function with_PhpErrormsg(string $_php_errormsg, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1072,7 +1072,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function with_HttpResponseHeader(string $_http_response_header, bool $validate = true) : self
+    public function with_HttpResponseHeader(string $_http_response_header, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1093,7 +1093,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function with_Argc(string $_argc, bool $validate = true) : self
+    public function with_Argc(string $_argc, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1114,7 +1114,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function with_Argv(string $_argv, bool $validate = true) : self
+    public function with_Argv(string $_argv, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1135,7 +1135,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withInput(string $input, bool $validate = true) : self
+    public function withInput(string $input, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1156,7 +1156,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withValidate(bool $validate = true) : self
+    public function withValidate(bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1177,7 +1177,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withObj(string $obj, bool $validate = true) : self
+    public function withObj(string $obj, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1198,7 +1198,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withMaterializeDefaults(string $materializeDefaults, bool $validate = true) : self
+    public function withMaterializeDefaults(string $materializeDefaults, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1219,7 +1219,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withIncludeDefaults(string $includeDefaults, bool $validate = true) : self
+    public function withIncludeDefaults(string $includeDefaults, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1239,7 +1239,7 @@ class MyClass
      * @param MyClassTestObj $testObj
      * @return self
      */
-    public function withTestObj(MyClassTestObj $testObj) : self
+    public function withTestObj(MyClassTestObj $testObj): self
     {
         $clone = clone $this;
         $clone->testObj = $testObj;
@@ -1250,7 +1250,7 @@ class MyClass
     /**
      * @return self
      */
-    public function withoutTestObj() : self
+    public function withoutTestObj(): self
     {
         $clone = clone $this;
         unset($clone->testObj);
@@ -1263,7 +1263,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function with_BuildFromInput(string $_buildFromInput, bool $validate = true) : self
+    public function with_BuildFromInput(string $_buildFromInput, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1284,7 +1284,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function with_ToArray(string $_toArray, bool $validate = true) : self
+    public function with_ToArray(string $_toArray, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1305,7 +1305,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function with_ValidateInput(string $_validateInput, bool $validate = true) : self
+    public function with_ValidateInput(string $_validateInput, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1326,7 +1326,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function with_Schema(string $_schema, bool $validate = true) : self
+    public function with_Schema(string $_schema, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1347,7 +1347,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function with_Defaults1(string $_defaults_1, bool $validate = true) : self
+    public function with_Defaults1(string $_defaults_1, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1368,7 +1368,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function with_Clone(string $_clone, bool $validate = true) : self
+    public function with_Clone(string $_clone, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1389,7 +1389,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function with__Construct1(string $__construct_1, bool $validate = true) : self
+    public function with__Construct1(string $__construct_1, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1410,7 +1410,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function with__Destruct1(string $__destruct_1, bool $validate = true) : self
+    public function with__Destruct1(string $__destruct_1, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1431,7 +1431,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function with__Get1(string $__get_1, bool $validate = true) : self
+    public function with__Get1(string $__get_1, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1452,7 +1452,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function with__Set1(string $__set_1, bool $validate = true) : self
+    public function with__Set1(string $__set_1, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1473,7 +1473,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function with__Call1(string $__call_1, bool $validate = true) : self
+    public function with__Call1(string $__call_1, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1494,7 +1494,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function with__Isset1(string $__isset_1, bool $validate = true) : self
+    public function with__Isset1(string $__isset_1, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1515,7 +1515,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function with__Unset1(string $__unset_1, bool $validate = true) : self
+    public function with__Unset1(string $__unset_1, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1536,7 +1536,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function with__Sleep1(string $__sleep_1, bool $validate = true) : self
+    public function with__Sleep1(string $__sleep_1, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1557,7 +1557,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function with__Wakeup1(string $__wakeup_1, bool $validate = true) : self
+    public function with__Wakeup1(string $__wakeup_1, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1578,7 +1578,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function with__ToString1(string $__toString_1, bool $validate = true) : self
+    public function with__ToString1(string $__toString_1, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1599,7 +1599,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function with__Invoke1(string $__invoke_1, bool $validate = true) : self
+    public function with__Invoke1(string $__invoke_1, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1620,7 +1620,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function with__DebugInfo1(string $__debugInfo_1, bool $validate = true) : self
+    public function with__DebugInfo1(string $__debugInfo_1, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1641,7 +1641,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function with__Clone1(string $__clone_1, bool $validate = true) : self
+    public function with__Clone1(string $__clone_1, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1662,7 +1662,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withFiles(string $files, bool $validate = true) : self
+    public function withFiles(string $files, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();

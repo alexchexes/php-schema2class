@@ -87,7 +87,7 @@ class Baz
      * @param FooTest $a
      * @return self
      */
-    public function withA(FooTest $a) : self
+    public function withA(FooTest $a): self
     {
         $clone = clone $this;
         $clone->a = $a;
@@ -98,7 +98,7 @@ class Baz
     /**
      * @return self
      */
-    public function withoutA() : self
+    public function withoutA(): self
     {
         $clone = clone $this;
         unset($clone->a);
@@ -110,7 +110,7 @@ class Baz
      * @param FooTest $b
      * @return self
      */
-    public function withB(FooTest $b) : self
+    public function withB(FooTest $b): self
     {
         $clone = clone $this;
         $clone->b = $b;
@@ -121,7 +121,7 @@ class Baz
     /**
      * @return self
      */
-    public function withoutB() : self
+    public function withoutB(): self
     {
         $clone = clone $this;
         unset($clone->b);
@@ -133,7 +133,7 @@ class Baz
      * @param BarTest $c
      * @return self
      */
-    public function withC(BarTest $c) : self
+    public function withC(BarTest $c): self
     {
         $clone = clone $this;
         $clone->c = $c;
@@ -144,7 +144,7 @@ class Baz
     /**
      * @return self
      */
-    public function withoutC() : self
+    public function withoutC(): self
     {
         $clone = clone $this;
         unset($clone->c);

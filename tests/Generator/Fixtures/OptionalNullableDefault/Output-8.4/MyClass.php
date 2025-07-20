@@ -258,7 +258,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withFoo(string $foo, bool $validate = true) : self
+    public function withFoo(string $foo, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -279,7 +279,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withBar(string $bar, bool $validate = true) : self
+    public function withBar(string $bar, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -298,7 +298,7 @@ class MyClass
     /**
      * @return self
      */
-    public function withoutBar() : self
+    public function withoutBar(): self
     {
         $clone = clone $this;
         unset($clone->bar);
@@ -311,7 +311,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withBaz(string $baz, bool $validate = true) : self
+    public function withBaz(string $baz, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -331,7 +331,7 @@ class MyClass
     /**
      * @return self
      */
-    public function withoutBaz() : self
+    public function withoutBaz(): self
     {
         $clone = clone $this;
         unset($clone->baz);
@@ -345,7 +345,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withQux(string $qux, bool $validate = true) : self
+    public function withQux(string $qux, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -365,7 +365,7 @@ class MyClass
     /**
      * @return self
      */
-    public function withoutQux() : self
+    public function withoutQux(): self
     {
         $clone = clone $this;
         unset($clone->qux);
@@ -379,7 +379,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withQuux(?string $quux, bool $validate = true) : self
+    public function withQuux(?string $quux, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -400,7 +400,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withXyyz(string $xyyz, bool $validate = true) : self
+    public function withXyyz(string $xyyz, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -419,7 +419,7 @@ class MyClass
     /**
      * @return self
      */
-    public function withoutXyyz() : self
+    public function withoutXyyz(): self
     {
         $clone = clone $this;
         unset($clone->xyyz);
@@ -432,7 +432,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withThud(string $thud, bool $validate = true) : self
+    public function withThud(string $thud, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -452,7 +452,7 @@ class MyClass
      * @param MyClassGrox $grox
      * @return self
      */
-    public function withGrox(?MyClassGrox $grox) : self
+    public function withGrox(?MyClassGrox $grox): self
     {
         $clone = clone $this;
         $clone->grox = $grox;
@@ -464,7 +464,7 @@ class MyClass
     /**
      * @return self
      */
-    public function withoutGrox() : self
+    public function withoutGrox(): self
     {
         $clone = clone $this;
         unset($clone->grox);

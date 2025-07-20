@@ -81,7 +81,7 @@ class Foo
      * @param Color $color
      * @return self
      */
-    public function withColor(Color $color) : self
+    public function withColor(Color $color): self
     {
         $clone = clone $this;
         $clone->color = $color;
@@ -93,7 +93,7 @@ class Foo
      * @param Size $size
      * @return self
      */
-    public function withSize(Size $size) : self
+    public function withSize(Size $size): self
     {
         $clone = clone $this;
         $clone->size = $size;
@@ -104,7 +104,7 @@ class Foo
     /**
      * @return self
      */
-    public function withoutSize() : self
+    public function withoutSize(): self
     {
         $clone = clone $this;
         unset($clone->size);

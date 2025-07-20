@@ -69,7 +69,7 @@ class MyClass
      * @param string|array|object $foo
      * @return self
      */
-    public function withFoo($foo) : self
+    public function withFoo($foo): self
     {
         $clone = clone $this;
         $clone->foo = $foo;
@@ -81,7 +81,7 @@ class MyClass
      * @param string|array|object $bar
      * @return self
      */
-    public function withBar($bar) : self
+    public function withBar($bar): self
     {
         $clone = clone $this;
         $clone->bar = $bar;
@@ -92,7 +92,7 @@ class MyClass
     /**
      * @return self
      */
-    public function withoutBar() : self
+    public function withoutBar(): self
     {
         $clone = clone $this;
         unset($clone->bar);

@@ -69,7 +69,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withLimit(int $limit, bool $validate = true) : self
+    public function withLimit(int $limit, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -88,7 +88,7 @@ class MyClass
     /**
      * @return self
      */
-    public function withoutLimit() : self
+    public function withoutLimit(): self
     {
         $clone = clone $this;
         unset($clone->limit);
@@ -101,7 +101,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withSkip(int $skip, bool $validate = true) : self
+    public function withSkip(int $skip, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -120,7 +120,7 @@ class MyClass
     /**
      * @return self
      */
-    public function withoutSkip() : self
+    public function withoutSkip(): self
     {
         $clone = clone $this;
         unset($clone->skip);

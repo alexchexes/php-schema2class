@@ -51,7 +51,7 @@ class Specification
      * @param SpecificationOptions $options
      * @return self
      */
-    public function withOptions(SpecificationOptions $options) : self
+    public function withOptions(SpecificationOptions $options): self
     {
         $clone = clone $this;
         $clone->options = $options;
@@ -62,7 +62,7 @@ class Specification
     /**
      * @return self
      */
-    public function withoutOptions() : self
+    public function withoutOptions(): self
     {
         $clone = clone $this;
         unset($clone->options);
@@ -75,7 +75,7 @@ class Specification
      * @return self
      * @param bool $validate
      */
-    public function withFiles(array $files, bool $validate = true) : self
+    public function withFiles(array $files, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();

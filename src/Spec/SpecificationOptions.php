@@ -279,7 +279,7 @@ class SpecificationOptions
      * @return self
      * @param bool $validate
      */
-    public function withTargetDirectory(string $targetDirectory, bool $validate = true) : self
+    public function withTargetDirectory(string $targetDirectory, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -298,7 +298,7 @@ class SpecificationOptions
     /**
      * @return self
      */
-    public function withoutTargetDirectory() : self
+    public function withoutTargetDirectory(): self
     {
         $clone = clone $this;
         unset($clone->targetDirectory);
@@ -311,7 +311,7 @@ class SpecificationOptions
      * @return self
      * @param bool $validate
      */
-    public function withTargetNamespace(string $targetNamespace, bool $validate = true) : self
+    public function withTargetNamespace(string $targetNamespace, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -330,7 +330,7 @@ class SpecificationOptions
     /**
      * @return self
      */
-    public function withoutTargetNamespace() : self
+    public function withoutTargetNamespace(): self
     {
         $clone = clone $this;
         unset($clone->targetNamespace);
@@ -342,7 +342,7 @@ class SpecificationOptions
      * @param int|string $targetPHPVersion
      * @return self
      */
-    public function withTargetPHPVersion(int|string $targetPHPVersion) : self
+    public function withTargetPHPVersion(int|string $targetPHPVersion): self
     {
         $clone = clone $this;
         $clone->targetPHPVersion = $targetPHPVersion;
@@ -353,7 +353,7 @@ class SpecificationOptions
     /**
      * @return self
      */
-    public function withoutTargetPHPVersion() : self
+    public function withoutTargetPHPVersion(): self
     {
         $clone = clone $this;
         unset($clone->targetPHPVersion);
@@ -366,7 +366,7 @@ class SpecificationOptions
      * @return self
      * @param bool $validate
      */
-    public function withCleanTargetDirectory(bool $cleanTargetDirectory, bool $validate = true) : self
+    public function withCleanTargetDirectory(bool $cleanTargetDirectory, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -385,7 +385,7 @@ class SpecificationOptions
     /**
      * @return self
      */
-    public function withoutCleanTargetDirectory() : self
+    public function withoutCleanTargetDirectory(): self
     {
         $clone = clone $this;
         unset($clone->cleanTargetDirectory);
@@ -398,7 +398,7 @@ class SpecificationOptions
      * @return self
      * @param bool $validate
      */
-    public function withDisableStrictTypes(bool $disableStrictTypes, bool $validate = true) : self
+    public function withDisableStrictTypes(bool $disableStrictTypes, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -417,7 +417,7 @@ class SpecificationOptions
     /**
      * @return self
      */
-    public function withoutDisableStrictTypes() : self
+    public function withoutDisableStrictTypes(): self
     {
         $clone = clone $this;
         unset($clone->disableStrictTypes);
@@ -430,7 +430,7 @@ class SpecificationOptions
      * @return self
      * @param bool $validate
      */
-    public function withTreatValuesWithDefaultAsOptional(bool $treatValuesWithDefaultAsOptional, bool $validate = true) : self
+    public function withTreatValuesWithDefaultAsOptional(bool $treatValuesWithDefaultAsOptional, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -449,7 +449,7 @@ class SpecificationOptions
     /**
      * @return self
      */
-    public function withoutTreatValuesWithDefaultAsOptional() : self
+    public function withoutTreatValuesWithDefaultAsOptional(): self
     {
         $clone = clone $this;
         unset($clone->treatValuesWithDefaultAsOptional);
@@ -462,7 +462,7 @@ class SpecificationOptions
      * @return self
      * @param bool $validate
      */
-    public function withInlineAllofReferences(bool $inlineAllofReferences, bool $validate = true) : self
+    public function withInlineAllofReferences(bool $inlineAllofReferences, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -481,7 +481,7 @@ class SpecificationOptions
     /**
      * @return self
      */
-    public function withoutInlineAllofReferences() : self
+    public function withoutInlineAllofReferences(): self
     {
         $clone = clone $this;
         unset($clone->inlineAllofReferences);
@@ -494,7 +494,7 @@ class SpecificationOptions
      * @return self
      * @param bool $validate
      */
-    public function withNewValidatorClassExpr(string $newValidatorClassExpr, bool $validate = true) : self
+    public function withNewValidatorClassExpr(string $newValidatorClassExpr, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -513,7 +513,7 @@ class SpecificationOptions
     /**
      * @return self
      */
-    public function withoutNewValidatorClassExpr() : self
+    public function withoutNewValidatorClassExpr(): self
     {
         $clone = clone $this;
         unset($clone->newValidatorClassExpr);
@@ -526,7 +526,7 @@ class SpecificationOptions
      * @return self
      * @param bool $validate
      */
-    public function withPreservePropertyNames(bool $preservePropertyNames, bool $validate = true) : self
+    public function withPreservePropertyNames(bool $preservePropertyNames, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -545,7 +545,7 @@ class SpecificationOptions
     /**
      * @return self
      */
-    public function withoutPreservePropertyNames() : self
+    public function withoutPreservePropertyNames(): self
     {
         $clone = clone $this;
         unset($clone->preservePropertyNames);
@@ -558,7 +558,7 @@ class SpecificationOptions
      * @return self
      * @param bool $validate
      */
-    public function withNoGetters(bool $noGetters, bool $validate = true) : self
+    public function withNoGetters(bool $noGetters, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -577,7 +577,7 @@ class SpecificationOptions
     /**
      * @return self
      */
-    public function withoutNoGetters() : self
+    public function withoutNoGetters(): self
     {
         $clone = clone $this;
         unset($clone->noGetters);
@@ -590,7 +590,7 @@ class SpecificationOptions
      * @return self
      * @param bool $validate
      */
-    public function withNoSetters(bool $noSetters, bool $validate = true) : self
+    public function withNoSetters(bool $noSetters, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -609,7 +609,7 @@ class SpecificationOptions
     /**
      * @return self
      */
-    public function withoutNoSetters() : self
+    public function withoutNoSetters(): self
     {
         $clone = clone $this;
         unset($clone->noSetters);
@@ -621,7 +621,7 @@ class SpecificationOptions
      * @param bool|'chainable' $mutableSetters
      * @return self
      */
-    public function withMutableSetters(bool|string $mutableSetters) : self
+    public function withMutableSetters(bool|string $mutableSetters): self
     {
         $clone = clone $this;
         $clone->mutableSetters = $mutableSetters;
@@ -632,7 +632,7 @@ class SpecificationOptions
     /**
      * @return self
      */
-    public function withoutMutableSetters() : self
+    public function withoutMutableSetters(): self
     {
         $clone = clone $this;
         unset($clone->mutableSetters);
@@ -645,7 +645,7 @@ class SpecificationOptions
      * @return self
      * @param bool $validate
      */
-    public function withNoSchemaMetadata(bool $noSchemaMetadata, bool $validate = true) : self
+    public function withNoSchemaMetadata(bool $noSchemaMetadata, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -664,7 +664,7 @@ class SpecificationOptions
     /**
      * @return self
      */
-    public function withoutNoSchemaMetadata() : self
+    public function withoutNoSchemaMetadata(): self
     {
         $clone = clone $this;
         unset($clone->noSchemaMetadata);
@@ -677,7 +677,7 @@ class SpecificationOptions
      * @return self
      * @param bool $validate
      */
-    public function withSingleLineSchema(bool $singleLineSchema, bool $validate = true) : self
+    public function withSingleLineSchema(bool $singleLineSchema, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -696,7 +696,7 @@ class SpecificationOptions
     /**
      * @return self
      */
-    public function withoutSingleLineSchema() : self
+    public function withoutSingleLineSchema(): self
     {
         $clone = clone $this;
         unset($clone->singleLineSchema);
@@ -709,7 +709,7 @@ class SpecificationOptions
      * @return self
      * @param bool $validate
      */
-    public function withNoEnums(bool $noEnums, bool $validate = true) : self
+    public function withNoEnums(bool $noEnums, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -728,7 +728,7 @@ class SpecificationOptions
     /**
      * @return self
      */
-    public function withoutNoEnums() : self
+    public function withoutNoEnums(): self
     {
         $clone = clone $this;
         unset($clone->noEnums);
