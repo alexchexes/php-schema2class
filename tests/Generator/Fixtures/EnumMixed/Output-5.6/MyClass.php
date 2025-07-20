@@ -361,6 +361,24 @@ class MyClass
     }
 
     /**
+     * Converts this object back to a stdClass that can be JSON-encoded
+     *
+     * @return \stdClass Converted object
+     */
+    public function toObject()
+    {
+        $output = [];
+        $output['foo'] = $this->foo;
+        $output['bar'] = $this->bar;
+        $output['baz'] = $this->baz;
+        $output['contradiction'] = $this->contradiction;
+        $output['contradiction2'] = $this->contradiction2;
+        $output['nullable'] = $this->nullable;
+
+        return \JsonSchema\Validator::arrayToObjectRecursive($output);
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data

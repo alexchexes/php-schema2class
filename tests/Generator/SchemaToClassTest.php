@@ -374,6 +374,14 @@ class SchemaToClassTest extends TestCase
                         $actualArray,
                         "Array returned from {$fqcn}->toArray() doesn't match input array from file '{$inputName}'."
                     );
+
+                    $expectedObject = \JsonSchema\Validator::arrayToObjectRecursive($expectedArray);
+                    $actualObject = $obj->toObject();
+                    $this->assertEquals(
+                        $expectedObject,
+                        $actualObject,
+                        "Object returned from {$fqcn}->toObject() doesn't match expected object for file '{$inputName}'."
+                    );
                 }
             }
         }
@@ -489,6 +497,16 @@ class SchemaToClassTest extends TestCase
                 'baz' => 'sanity-check',
             ],
             $obj->toArray(),
+        );
+
+        $expectedObject = \JsonSchema\Validator::arrayToObjectRecursive([
+            'foo' => 'some default value for foo',
+            'bar' => ['nestedFoo' => "some value inside default value for 'bar' object"],
+            'baz' => 'sanity-check',
+        ]);
+        $this->assertEquals(
+            $expectedObject,
+            $obj->toObject(),
         );
     }
 }

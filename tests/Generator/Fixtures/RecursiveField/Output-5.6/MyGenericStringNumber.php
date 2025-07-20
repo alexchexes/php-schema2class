@@ -123,6 +123,19 @@ class MyGenericStringNumber
     }
 
     /**
+     * Converts this object back to a stdClass that can be JSON-encoded
+     *
+     * @return \stdClass Converted object
+     */
+    public function toObject()
+    {
+        $output = [];
+        $output['field'] = ($this->field)->toArray();
+
+        return \JsonSchema\Validator::arrayToObjectRecursive($output);
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data

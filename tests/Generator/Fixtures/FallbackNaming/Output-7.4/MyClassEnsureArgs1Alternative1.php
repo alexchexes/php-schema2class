@@ -142,6 +142,30 @@ class MyClassEnsureArgs1Alternative1
     }
 
     /**
+     * Converts this object back to a stdClass that can be JSON-encoded
+     *
+     * @param bool $includeDefaults Add defaults for missing properties
+     * @return \stdClass Converted object
+     */
+    public function toObject(bool $includeDefaults = false): \stdClass
+    {
+        $output = [];
+        if (isset($this->type)) {
+            $output['type'] = $this->type;
+        }
+
+        if ($includeDefaults) {
+            foreach (self::$_defaults as $k => $v) {
+                if (!array_key_exists($k, $output)) {
+                    $output[$k] = $v;
+                }
+            }
+        }
+
+        return \JsonSchema\Validator::arrayToObjectRecursive($output);
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data

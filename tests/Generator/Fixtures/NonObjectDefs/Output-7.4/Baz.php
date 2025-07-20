@@ -138,6 +138,23 @@ class Baz
     }
 
     /**
+     * Converts this object back to a stdClass that can be JSON-encoded
+     *
+     * @return \stdClass Converted object
+     */
+    public function toObject(): \stdClass
+    {
+        $output = [];
+        if (isset($this->grox)) {
+            if ((($this->grox) instanceof Foo) || (($this->grox) instanceof Bar)) {
+                $output['grox'] = $this->grox->toArray();
+            }
+        }
+
+        return \JsonSchema\Validator::arrayToObjectRecursive($output);
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data

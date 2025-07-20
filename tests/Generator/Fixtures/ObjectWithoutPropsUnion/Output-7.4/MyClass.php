@@ -154,6 +154,30 @@ class MyClass
     }
 
     /**
+     * Converts this object back to a stdClass that can be JSON-encoded
+     *
+     * @return \stdClass Converted object
+     */
+    public function toObject(): \stdClass
+    {
+        $output = [];
+        if ((is_string($this->foo))) {
+            $output['foo'] = $this->foo;
+        } else if ((is_array($this->foo) || is_object($this->foo))) {
+            $output['foo'] = json_decode(json_encode($this->foo), true);
+        }
+        if (isset($this->bar)) {
+            if ((is_string($this->bar))) {
+                $output['bar'] = $this->bar;
+            } else if ((is_array($this->bar) || is_object($this->bar))) {
+                $output['bar'] = json_decode(json_encode($this->bar), true);
+            }
+        }
+
+        return \JsonSchema\Validator::arrayToObjectRecursive($output);
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data

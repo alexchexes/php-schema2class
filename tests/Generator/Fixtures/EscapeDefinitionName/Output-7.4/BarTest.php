@@ -138,6 +138,23 @@ class BarTest
     }
 
     /**
+     * Converts this object back to a stdClass that can be JSON-encoded
+     *
+     * @return \stdClass Converted object
+     */
+    public function toObject(): \stdClass
+    {
+        $output = [];
+        if (isset($this->exampleProp)) {
+            if ((($this->exampleProp) instanceof FooTest) || (($this->exampleProp) instanceof MoiKlass) || (($this->exampleProp) instanceof FooTest_1)) {
+                $output['exampleProp'] = $this->exampleProp->toArray();
+            }
+        }
+
+        return \JsonSchema\Validator::arrayToObjectRecursive($output);
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data

@@ -166,6 +166,24 @@ class Pets
     }
 
     /**
+     * Converts this object back to a stdClass that can be JSON-encoded
+     *
+     * @return \stdClass Converted object
+     */
+    public function toObject(): \stdClass
+    {
+        $output = [];
+        if (isset($this->pet)) {
+            $output['pet'] = $this->pet->toArray();
+        }
+        if (isset($this->cat)) {
+            $output['cat'] = $this->cat->toArray();
+        }
+
+        return \JsonSchema\Validator::arrayToObjectRecursive($output);
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data

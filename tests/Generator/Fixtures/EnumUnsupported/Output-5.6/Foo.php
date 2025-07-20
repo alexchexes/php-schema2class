@@ -342,6 +342,31 @@ class Foo
     }
 
     /**
+     * Converts this object back to a stdClass that can be JSON-encoded
+     *
+     * @return \stdClass Converted object
+     */
+    public function toObject()
+    {
+        $output = [];
+        if (isset($this->floatEnum)) {
+            $output['floatEnum'] = $this->floatEnum;
+        }
+        if (isset($this->floatEnumRef)) {
+            $output['floatEnumRef'] = $this->floatEnumRef;
+        }
+        if (isset($this->boolEnum)) {
+            $output['boolEnum'] = $this->boolEnum;
+        }
+        if (isset($this->boolEnumRef)) {
+            $output['boolEnumRef'] = $this->boolEnumRef;
+        }
+        $output['requiredBoolEnumRef'] = $this->requiredBoolEnumRef;
+
+        return \JsonSchema\Validator::arrayToObjectRecursive($output);
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data

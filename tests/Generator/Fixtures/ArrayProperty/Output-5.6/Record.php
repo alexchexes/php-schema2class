@@ -125,6 +125,21 @@ class Record
     }
 
     /**
+     * Converts this object back to a stdClass that can be JSON-encoded
+     *
+     * @return \stdClass Converted object
+     */
+    public function toObject()
+    {
+        $output = [];
+        if (isset($this->dataArray)) {
+            $output['dataArray'] = array_map(fn(Phone $i): array => $i->toArray(), $this->dataArray);
+        }
+
+        return \JsonSchema\Validator::arrayToObjectRecursive($output);
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data
