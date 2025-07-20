@@ -33,13 +33,24 @@ class MyClass
                 'default' => null,
             ],
             'qux' => [
-                '$ref' => '#/definitions/QuxDef',
+                '$ref' => '#/definitions/Def1',
+            ],
+            'thud' => [
+                '$ref' => '#/definitions/Def1',
+                'default' => 'more specific default near the $ref',
+            ],
+            'grox' => [
+                '$ref' => '#/definitions/Def2',
+                'default' => 'default near the $ref',
             ],
         ],
         'definitions' => [
-            'QuxDef' => [
+            'Def1' => [
                 'type' => 'string',
-                'default' => 'xyz',
+                'default' => 'default from the referenced definition',
+            ],
+            'Def2' => [
+                'type' => 'string',
             ],
         ],
     ];
@@ -52,6 +63,8 @@ class MyClass
     private static array $_defaults = [
         'foo' => 0,
         'bar' => 'xyz',
+        'thud' => 'more specific default near the $ref',
+        'grox' => 'default near the $ref',
     ];
 
     /**
@@ -80,6 +93,16 @@ class MyClass
      * @var string|null
      */
     private ?string $qux = null;
+
+    /**
+     * @var string|null
+     */
+    private ?string $thud = null;
+
+    /**
+     * @var string|null
+     */
+    private ?string $grox = null;
 
     /**
      * @return int|null
@@ -111,6 +134,22 @@ class MyClass
     public function getQux(): ?string
     {
         return $this->qux ?? null;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getThud(): ?string
+    {
+        return $this->thud ?? null;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getGrox(): ?string
+    {
+        return $this->grox ?? null;
     }
 
     /**
@@ -244,6 +283,70 @@ class MyClass
     }
 
     /**
+     * @param string $thud
+     * @return self
+     * @param bool $validate
+     */
+    public function withThud(string $thud, bool $validate = true): self
+    {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($thud, self::$schema['properties']['thud']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
+        $clone = clone $this;
+        $clone->thud = $thud;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutThud(): self
+    {
+        $clone = clone $this;
+        unset($clone->thud);
+
+        return $clone;
+    }
+
+    /**
+     * @param string $grox
+     * @return self
+     * @param bool $validate
+     */
+    public function withGrox(string $grox, bool $validate = true): self
+    {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($grox, self::$schema['properties']['grox']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
+        $clone = clone $this;
+        $clone->grox = $grox;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutGrox(): self
+    {
+        $clone = clone $this;
+        unset($clone->grox);
+
+        return $clone;
+    }
+
+    /**
      * Builds a new instance from an input array
      *
      * @param array|object $input Input data
@@ -278,12 +381,16 @@ class MyClass
             $__explicitNulls['baz'] = true;
         }
         $qux = isset($input->{'qux'}) ? $input->{'qux'} : null;
+        $thud = isset($input->{'thud'}) ? $input->{'thud'} : null;
+        $grox = isset($input->{'grox'}) ? $input->{'grox'} : null;
 
         $obj = new self();
         $obj->foo = $foo;
         $obj->bar = $bar;
         $obj->baz = $baz;
         $obj->qux = $qux;
+        $obj->thud = $thud;
+        $obj->grox = $grox;
         $obj->_explicitNulls = $__explicitNulls;
         return $obj;
     }
@@ -308,6 +415,12 @@ class MyClass
         }
         if (isset($this->qux)) {
             $output['qux'] = $this->qux;
+        }
+        if (isset($this->thud)) {
+            $output['thud'] = $this->thud;
+        }
+        if (isset($this->grox)) {
+            $output['grox'] = $this->grox;
         }
 
         if ($includeDefaults) {

@@ -11,8 +11,16 @@ properties:
     type: [integer, 'null']
     default: null
   qux:
-    $ref: '#/definitions/QuxDef'
+    $ref: '#/definitions/Def1'
+  thud:
+    $ref: '#/definitions/Def1'
+    default: 'more specific default near the $ref'
+  grox:
+    $ref: '#/definitions/Def2'
+    default: 'default near the $ref'
 definitions:
-  QuxDef:
+  Def1:
     type: string
-    default: 'xyz'
+    default: 'default from the referenced definition'
+  Def2:
+    type: string
