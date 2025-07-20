@@ -37,20 +37,36 @@ class MyClass
             ],
             'thud' => [
                 '$ref' => '#/definitions/Def1',
-                'default' => 'more specific default near the $ref',
+                'default' => 'more specific default near the "$ref"',
             ],
             'grox' => [
                 '$ref' => '#/definitions/Def2',
-                'default' => 'default near the $ref',
+                'default' => 'default near the "$ref"',
+            ],
+            'qwert' => [
+                'anyOf' => [
+                    [
+                        '$ref' => '#/definitions/Def2',
+                    ],
+                    [
+                        '$ref' => '#/definitions/Def1',
+                    ],
+                    [
+                        'type' => 'number',
+                        'default' => 42,
+                    ],
+                ],
             ],
         ],
         'definitions' => [
             'Def1' => [
                 'type' => 'string',
+                'description' => 'Description of Def1 (string) which has default value',
                 'default' => 'default from the referenced definition',
             ],
             'Def2' => [
                 'type' => 'string',
+                'description' => 'Description of Def2 (string) which doesn\'t have default value',
             ],
         ],
     ];
@@ -65,8 +81,9 @@ class MyClass
         'bar' => 'xyz',
         'baz' => null,
         'qux' => 'default from the referenced definition',
-        'thud' => 'more specific default near the $ref',
-        'grox' => 'default near the $ref',
+        'thud' => 'more specific default near the "$ref"',
+        'grox' => 'default near the "$ref"',
+        'qwert' => 'default from the referenced definition',
     ];
 
     /**
@@ -92,19 +109,30 @@ class MyClass
     private ?int $baz = null;
 
     /**
+     * Description of Def1 (string) which has default value
+     *
      * @var string|null
      */
     private ?string $qux = null;
 
     /**
+     * Description of Def1 (string) which has default value
+     *
      * @var string|null
      */
     private ?string $thud = null;
 
     /**
+     * Description of Def2 (string) which doesn't have default value
+     *
      * @var string|null
      */
     private ?string $grox = null;
+
+    /**
+     * @var string|int|float|null
+     */
+    private string|int|float|null $qwert = null;
 
     /**
      * @return int|null
@@ -131,6 +159,8 @@ class MyClass
     }
 
     /**
+     * Description of Def1 (string) which has default value
+     *
      * @return string|null
      */
     public function getQux(): ?string
@@ -139,6 +169,8 @@ class MyClass
     }
 
     /**
+     * Description of Def1 (string) which has default value
+     *
      * @return string|null
      */
     public function getThud(): ?string
@@ -147,11 +179,21 @@ class MyClass
     }
 
     /**
+     * Description of Def2 (string) which doesn't have default value
+     *
      * @return string|null
      */
     public function getGrox(): ?string
     {
         return $this->grox ?? null;
+    }
+
+    /**
+     * @return string|int|float|null
+     */
+    public function getQwert(): int|float|string|null
+    {
+        return $this->qwert;
     }
 
     /**
@@ -349,6 +391,29 @@ class MyClass
     }
 
     /**
+     * @param string|int|float $qwert
+     * @return self
+     */
+    public function withQwert(int|float|string $qwert): self
+    {
+        $clone = clone $this;
+        $clone->qwert = $qwert;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutQwert(): self
+    {
+        $clone = clone $this;
+        unset($clone->qwert);
+
+        return $clone;
+    }
+
+    /**
      * Builds a new instance from an input array
      *
      * @param array|object $input Input data
@@ -385,6 +450,11 @@ class MyClass
         $qux = isset($input->{'qux'}) ? $input->{'qux'} : null;
         $thud = isset($input->{'thud'}) ? $input->{'thud'} : null;
         $grox = isset($input->{'grox'}) ? $input->{'grox'} : null;
+        $qwert = isset($input->{'qwert'}) ? match (true) {
+            is_string($input->{'qwert'}) => $input->{'qwert'},
+            is_int($input->{'qwert'}) || is_float($input->{'qwert'}) => str_contains((string)($input->{'qwert'}), '.') ? (float)($input->{'qwert'}) : (int)($input->{'qwert'}),
+            default => null,
+        } : null;
 
         $obj = new self();
         $obj->foo = $foo;
@@ -393,6 +463,7 @@ class MyClass
         $obj->qux = $qux;
         $obj->thud = $thud;
         $obj->grox = $grox;
+        $obj->qwert = $qwert;
         $obj->_explicitNulls = $__explicitNulls;
         return $obj;
     }
@@ -423,6 +494,12 @@ class MyClass
         }
         if (isset($this->grox)) {
             $output['grox'] = $this->grox;
+        }
+        if (isset($this->qwert)) {
+            $output['qwert'] = match (true) {
+                is_string($this->qwert),
+                is_int($this->qwert) || is_float($this->qwert) => $this->qwert,
+            };
         }
 
         if ($includeDefaults) {
@@ -458,6 +535,16 @@ class MyClass
         }
 
         return $validator->isValid();
+    }
+
+    public function __clone()
+    {
+        if (isset($this->qwert)) {
+            $this->qwert = match (true) {
+                is_string($this->qwert),
+                is_int($this->qwert) || is_float($this->qwert) => $this->qwert,
+            };
+        }
     }
 
     /**

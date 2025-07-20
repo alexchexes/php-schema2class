@@ -14,13 +14,22 @@ properties:
     $ref: '#/definitions/Def1'
   thud:
     $ref: '#/definitions/Def1'
-    default: 'more specific default near the $ref'
+    default: 'more specific default near the "$ref"'
   grox:
     $ref: '#/definitions/Def2'
-    default: 'default near the $ref'
+    default: 'default near the "$ref"'
+  qwert:
+    anyOf:
+      - $ref: '#/definitions/Def2'
+      - $ref: '#/definitions/Def1'
+      -
+        type: number
+        default: 42
 definitions:
   Def1:
     type: string
+    description: Description of Def1 (string) which has default value
     default: 'default from the referenced definition'
   Def2:
     type: string
+    description: Description of Def2 (string) which doesn't have default value
