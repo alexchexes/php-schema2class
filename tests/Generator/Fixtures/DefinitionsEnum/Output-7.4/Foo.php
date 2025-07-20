@@ -64,7 +64,7 @@ class Foo
     /**
      * @return 'red'|'green'
      */
-    public function getColor() : string
+    public function getColor(): string
     {
         return $this->color;
     }
@@ -72,7 +72,7 @@ class Foo
     /**
      * @return 'small'|'big'|null
      */
-    public function getSize() : ?string
+    public function getSize(): ?string
     {
         return $this->size ?? null;
     }
@@ -138,7 +138,7 @@ class Foo
      * @return Foo Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true) : Foo
+    public static function buildFromInput($input, bool $validate = true): Foo
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
@@ -164,7 +164,7 @@ class Foo
      *
      * @return array Converted array
      */
-    public function toArray() : array
+    public function toArray(): array
     {
         $output = [];
         $output['color'] = $this->color;
@@ -183,7 +183,7 @@ class Foo
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput($input, bool $return = false) : bool
+    public static function validateInput($input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;

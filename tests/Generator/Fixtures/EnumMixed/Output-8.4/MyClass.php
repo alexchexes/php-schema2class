@@ -140,7 +140,7 @@ class MyClass
     /**
      * @return 1|2|'1'|'2'
      */
-    public function getFoo() : int|string
+    public function getFoo(): int|string
     {
         return $this->foo;
     }
@@ -148,7 +148,7 @@ class MyClass
     /**
      * @return 3|4|'3'|'4'
      */
-    public function getBar() : int|string
+    public function getBar(): int|string
     {
         return $this->bar;
     }
@@ -156,7 +156,7 @@ class MyClass
     /**
      * @return 'red'|'amber'|'green'|'42'|42|42.5|false|null
      */
-    public function getBaz() : bool|int|float|string|null
+    public function getBaz(): bool|int|float|string|null
     {
         return $this->baz;
     }
@@ -164,7 +164,7 @@ class MyClass
     /**
      * @return int
      */
-    public function getContradiction() : int
+    public function getContradiction(): int
     {
         return $this->contradiction;
     }
@@ -172,7 +172,7 @@ class MyClass
     /**
      * @return 1|2|'one'
      */
-    public function getContradiction2() : int|string
+    public function getContradiction2(): int|string
     {
         return $this->contradiction2;
     }
@@ -180,7 +180,7 @@ class MyClass
     /**
      * @return MyClassNullable|null
      */
-    public function getNullable() : ?MyClassNullable
+    public function getNullable(): ?MyClassNullable
     {
         return $this->nullable ?? null;
     }
@@ -310,7 +310,7 @@ class MyClass
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : MyClass
+    public static function buildFromInput(array|object $input, bool $validate = true): MyClass
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -334,7 +334,7 @@ class MyClass
      *
      * @return array Converted array
      */
-    public function toArray() : array
+    public function toArray(): array
     {
         $output = [];
         $output['foo'] = $this->foo;
@@ -355,7 +355,7 @@ class MyClass
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput(array|object $input, bool $return = false) : bool
+    public static function validateInput(array|object $input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;

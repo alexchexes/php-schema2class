@@ -51,7 +51,7 @@ class User
      *
      * @return string
      */
-    public function getName() : string
+    public function getName(): string
     {
         return $this->name;
     }
@@ -61,7 +61,7 @@ class User
      *
      * @return Address|null
      */
-    public function getAddress() : ?Address
+    public function getAddress(): ?Address
     {
         return $this->address ?? null;
     }
@@ -73,7 +73,7 @@ class User
      *
      * @return 'customer'|'manager'|null
      */
-    public function getStatus() : ?string
+    public function getStatus(): ?string
     {
         return $this->status ?? null;
     }
@@ -151,7 +151,7 @@ class User
      * @return User Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true) : User
+    public static function buildFromInput($input, bool $validate = true): User
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
@@ -178,7 +178,7 @@ class User
      *
      * @return array Converted array
      */
-    public function toArray() : array
+    public function toArray(): array
     {
         $output = [];
         $output['name'] = $this->name;
@@ -198,7 +198,7 @@ class User
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput($input, bool $return = false) : bool
+    public static function validateInput($input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;

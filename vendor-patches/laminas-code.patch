@@ -1,0 +1,13 @@
+diff --git a/src/Generator/MethodGenerator.php b/src/Generator/MethodGenerator.php
+index 584e8ee..2bac709 100644
+--- a/src/Generator/MethodGenerator.php
++++ b/src/Generator/MethodGenerator.php
+@@ -376,7 +376,7 @@ class MethodGenerator extends AbstractMemberGenerator implements Stringable
+         $output .= ')';
+ 
+         if ($this->returnType) {
+-            $output .= ' : ' . $this->returnType->generate();
++            $output .= ': ' . $this->returnType->generate();
+         }
+ 
+         if ($this->isAbstract()) {

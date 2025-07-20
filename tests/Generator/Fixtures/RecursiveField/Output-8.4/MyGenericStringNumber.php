@@ -66,7 +66,7 @@ class MyGenericStringNumber
     /**
      * @return MyGenericStringNumberField
      */
-    public function getField() : MyGenericStringNumberField
+    public function getField(): MyGenericStringNumberField
     {
         return $this->field;
     }
@@ -91,14 +91,14 @@ class MyGenericStringNumber
      * @return MyGenericStringNumber Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : MyGenericStringNumber
+    public static function buildFromInput(array|object $input, bool $validate = true): MyGenericStringNumber
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $field = MyGenericStringNumberField::buildFromInput($input->{'field'}, validate: $validate);
+        $field = MyGenericStringNumberField::buildFromInput($input->{'field'}, $validate);
 
         $obj = new self($field);
 
@@ -110,7 +110,7 @@ class MyGenericStringNumber
      *
      * @return array Converted array
      */
-    public function toArray() : array
+    public function toArray(): array
     {
         $output = [];
         $output['field'] = ($this->field)->toArray();
@@ -126,7 +126,7 @@ class MyGenericStringNumber
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput(array|object $input, bool $return = false) : bool
+    public static function validateInput(array|object $input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;

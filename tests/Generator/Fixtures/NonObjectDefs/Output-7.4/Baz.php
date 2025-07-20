@@ -100,7 +100,7 @@ class Baz
      * @return Baz Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true) : Baz
+    public static function buildFromInput($input, bool $validate = true): Baz
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
@@ -125,7 +125,7 @@ class Baz
      *
      * @return array Converted array
      */
-    public function toArray() : array
+    public function toArray(): array
     {
         $output = [];
         if (isset($this->grox)) {
@@ -145,7 +145,7 @@ class Baz
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput($input, bool $return = false) : bool
+    public static function validateInput($input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;

@@ -6,7 +6,6 @@ namespace Helmich\Schema2Class\Generator;
 
 use Helmich\Schema2Class\Codegen\PropertyGenerator;
 use Helmich\Schema2Class\Generator\Property\CodeFormatting;
-use Helmich\Schema2Class\Generator\Property\DefaultPropertyDecorator;
 use Helmich\Schema2Class\Generator\Property\OptionalPropertyDecorator;
 use Helmich\Schema2Class\Generator\Property\PropertyCollection;
 use Helmich\Schema2Class\Generator\Property\PropertyCollectionFilterFactory;
@@ -14,7 +13,6 @@ use Helmich\Schema2Class\Generator\Property\PropertyInterface;
 use Helmich\Schema2Class\Generator\Property\PrimitiveArrayProperty;
 use Helmich\Schema2Class\Generator\Property\ObjectArrayProperty;
 use Helmich\Schema2Class\Generator\Property\ReferenceArrayProperty;
-use Helmich\Schema2Class\Generator\Property\NullablePropertyDecorator;
 use Helmich\Schema2Class\Generator\Property\PropertyDecoratorInterface;
 use Helmich\Schema2Class\Generator\Property\TypedArrayProperty;
 use Helmich\Schema2Class\Util\StringUtils;
@@ -45,24 +43,48 @@ class Generator
     {
         $propertyGenerators = [];
 
+        $hasOptionalNullable = false;
+        foreach ($properties as $p) {
+            if ($p instanceof OptionalPropertyDecorator && method_exists($p, 'isOptionalNullable') && $p->isOptionalNullable()) {
+                $hasOptionalNullable = true;
+                break;
+            }
+        }
+
         $visibility = $this->generatorRequest->getNoGetters()
             ? PropertyGenerator::FLAG_PUBLIC
             : PropertyGenerator::FLAG_PRIVATE;
+
+        if ($hasOptionalNullable) {
+            $setVisibility = ($this->generatorRequest->getNoGetters() && $this->generatorRequest->getNoSetters())
+                ? PropertyGenerator::FLAG_PUBLIC
+                : PropertyGenerator::FLAG_PRIVATE;
+
+            $setProp = new PropertyGenerator('_explicitNulls', [] , $setVisibility);
+            $setProp->setDefaultValue([]);
+            $setProp->setSingleLineDefaultValue(true);
+            if ($this->generatorRequest->isAtLeastPHP("7.4")) {
+                $setProp->setTypeHint("array");
+            }
+            $setProp->setDocBlock(new DocBlockGenerator(
+                "Map of optional nullable property names that were explicitly set to `null`",
+                null,
+                [new GenericTag('var', 'array<string,true>')]
+            ));
+            $propertyGenerators[] = $setProp;
+        }
 
         foreach ($properties as $property) {
             $schema     = $property->schema();
             $isOptional = false;
             $prop       = new PropertyGenerator(
                 $property->name(),
-                $property->formatValue($schema["default"] ?? null),
+                $property->formatValue(null),
                 $visibility
             );
 
-            if ($property instanceof OptionalPropertyDecorator || $property instanceof DefaultPropertyDecorator) {
+            if ($property instanceof OptionalPropertyDecorator) {
                 $isOptional = true;
-                if (isset($schema["default"]) && !$property->allowsNull()) {
-                    $property = $property->unwrap();
-                }
             }
 
             $tags = [new GenericTag("var", trim($property->typeAnnotation()))];
@@ -85,8 +107,7 @@ class Generator
             }
 
             // omit default `null` for every required field, unsless default is specified in the schema
-            $hasSchemaDefault = array_key_exists('default', $property->schema());
-            $prop->omitDefaultValue(!$isOptional && !$hasSchemaDefault);
+            $prop->omitDefaultValue(!$isOptional);
 
             $propertyGenerators[] = $prop;
         }
@@ -98,10 +119,18 @@ class Generator
      * @param PropertyCollection $properties
      * @return MethodGenerator
      */
-    public function generateBuildMethod(PropertyCollection $properties): MethodGenerator
+    public function generateBuildMethod(PropertyCollection $properties, bool $hasDefaults = false): MethodGenerator
     {
         $requiredProperties = $properties->filter(PropertyCollectionFilterFactory::required());
         $optionalProperties = $properties->filter(PropertyCollectionFilterFactory::optional());
+
+        $hasOptionalNullable = false;
+        foreach ($properties as $p) {
+            if ($p instanceof OptionalPropertyDecorator && method_exists($p, 'isOptionalNullable') && $p->isOptionalNullable()) {
+                $hasOptionalNullable = true;
+                break;
+            }
+        }
 
         $constructorParams = [];
         
@@ -124,12 +153,22 @@ class Generator
             $paramType = "array|object";
         }
 
-        $validateParamName = 'validate';
-        if ($properties->hasPropertyWithName($validateParamName)) {
-            $validateParamName = '_validate';
+        $validateArgName = 'validate';
+        if ($properties->hasPropertyWithName($validateArgName)) {
+            $validateArgName = '_validate';
             $i = 2;
-            while ($properties->hasPropertyWithName($validateParamName)) {
-                $validateParamName = '_validate' . $i;
+            while ($properties->hasPropertyWithName($validateArgName)) {
+                $validateArgName = '_validate' . $i;
+                $i++;
+            }
+        }
+
+        $materializeArgName = 'materializeDefaults';
+        if ($hasDefaults && $properties->hasPropertyWithName($materializeArgName)) {
+            $materializeArgName = '_materializeDefaults';
+            $i = 2;
+            while ($properties->hasPropertyWithName($materializeArgName)) {
+                $materializeArgName = '_materializeDefaults' . $i;
                 $i++;
             }
         }
@@ -144,6 +183,9 @@ class Generator
             }
         }
 
+        $this->generatorRequest->setCurrValidateArgName($validateArgName);
+        $this->generatorRequest->setCurrMaterializeArgName($hasDefaults ? $materializeArgName : null);
+
         $assignments = [];
         foreach ($optionalProperties as $optionalProperty) {
             $name = $optionalProperty->name();
@@ -151,20 +193,30 @@ class Generator
         }
 
         $validationParam = new ParameterGenerator(
-            name: $validateParamName,
+            name: $validateArgName,
             type: "bool",
             defaultValue: true,
         );
+        $materializeParam = $hasDefaults ? new ParameterGenerator(
+            name: $materializeArgName,
+            type: "bool",
+            defaultValue: false,
+        ) : null;
+
+        $docBlockParams = [
+            new ParamTag($inputVarName, ["array|object"], "Input data"),
+            new ParamTag($validateArgName, ["bool"], "Set this to false to skip validation; use at own risk"),
+        ];
+        if ($hasDefaults) {
+            $docBlockParams[] = new ParamTag($materializeArgName, ["bool"], "Apply defaults defined in schema when missing");
+        }
+        $docBlockParams[] = new ReturnTag([$this->generatorRequest->getTargetClass()], "Created instance");
+        $docBlockParams[] = new ThrowsTag("\\InvalidArgumentException");
 
         $docBlock = new DocBlockGenerator(
             "Builds a new instance from an input array",
             null,
-            [
-                new ParamTag($inputVarName, ["array|object"], "Input data"),
-                new ParamTag($validateParamName, ["bool"], "Set this to false to skip validation; use at own risk"),
-                new ReturnTag([$this->generatorRequest->getTargetClass()], "Created instance"),
-                new ThrowsTag("\\InvalidArgumentException"),
-            ]
+            $docBlockParams
         );
         $docBlock->setWordWrap(false);
 
@@ -177,19 +229,37 @@ class Generator
                 "    );\n" .
                 "}\n\n";
         }
-            
-        $aliasLine = $validateParamName !== 'validate' ? "\$validate = \${$validateParamName};\n" : '';
+    
+        if ($hasDefaults) {
+            // If generating the "$materializeArgName" param, we must ensure that
+            // if the input is an object, it is cloned when the param is true, as it might be modified
+            $convertInputLine =
+                "\$$inputVarName = is_array(\$$inputVarName)\n" .
+                "    ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$$inputVarName)\n" .
+                "    : (\$$materializeArgName ? clone \$$inputVarName : \$$inputVarName);\n\n";
+        } else {
+            $convertInputLine =
+                "\$$inputVarName = is_array(\$$inputVarName) ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$$inputVarName) : \$$inputVarName;\n";
+        }
 
         $body = $inputGuard .
             // Conversion into object if input is array
-            "\$$inputVarName = is_array(\$$inputVarName) ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$$inputVarName) : \$$inputVarName;\n" .
+            $convertInputLine .
+
+            ($hasDefaults ? ("if (\$$materializeArgName) {\n" .
+            "    foreach (self::\$_defaults as \$__k => \$__v) {\n" .
+            "        if (!property_exists(\$$inputVarName, \$__k)) {\n" .
+            "            \${$inputVarName}->{\$__k} = is_array(\$__v) ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$__v) : \$__v;\n" .
+            "        }\n" .
+            "    }\n" .
+            "}\n\n") : '') .
 
             // Conditional schema validation
-            "if (\${$validateParamName}) {\n" .
+            "if (\${$validateArgName}) {\n" .
             "    static::validateInput(\$$inputVarName);\n" .
             "}\n\n" .
 
-            $aliasLine .
+            ($hasOptionalNullable ? "\$__explicitNulls = [];\n" : '') .
 
             // Property‐by‐property mapping
             $properties->generateInputToTypeConversionCode($inputVarName, object: true) . "\n\n" .
@@ -197,14 +267,20 @@ class Generator
             // Construct & assign optional props
             "\${$objVarName} = new self(" . join(", ", $constructorParams) . ");" . "\n" .
             join("\n", $assignments) . "\n" .
+            ($hasOptionalNullable ? "\${$objVarName}->_explicitNulls = \$__explicitNulls;\n" : '') .
 
             // Return
             "return \${$objVarName};"
         ;
 
+        $params = [new ParameterGenerator($inputVarName, $paramType), $validationParam];
+        if ($hasDefaults) {
+            $params[] = $materializeParam;
+        }
+
         $method = new MethodGenerator(
             'buildFromInput',
-            [new ParameterGenerator($inputVarName, $paramType), $validationParam],
+            $params,
             MethodGenerator::FLAG_PUBLIC | MethodGenerator::FLAG_STATIC,
             $body,
             $docBlock
@@ -221,22 +297,46 @@ class Generator
      * @param PropertyCollection $properties
      * @return MethodGenerator
      */
-    public function generateToArrayMethod(PropertyCollection $properties): MethodGenerator
+    public function generateToArrayMethod(PropertyCollection $properties, bool $hasDefaults = false): MethodGenerator
     {
+        $tags = [];
+        if ($hasDefaults) {
+            $tags[] = new ParamTag('includeDefaults', ['bool'], 'Add defaults for missing properties');
+        }
+        $tags[] = new ReturnTag(["array"], "Converted array");
+
         $docBlock = new DocBlockGenerator(
             "Converts this object back to a simple array that can be JSON-serialized",
             null,
-            [new ReturnTag(["array"], "Converted array")]
+            $tags
         );
         $docBlock->setWordWrap(false);
 
+        $params = [];
+        if ($hasDefaults) {
+            $params[] = new ParameterGenerator('includeDefaults', 'bool', false);
+        }
+
+        $body = '$output = [];' . "\n" .
+            $properties->generateTypeToArrayConversionCode('output') . "\n";
+
+        if ($hasDefaults) {
+            $body .= "\nif (\$includeDefaults) {\n" . 
+            "    foreach (self::\$_defaults as \$k => \$v) {\n" . 
+            "        if (!array_key_exists(\$k, \$output)) {\n" . 
+            "            \$output[\$k] = \$v;\n" . 
+            "        }\n" . 
+            "    }\n" . 
+            "}\n";
+        }
+
+        $body .= "\nreturn \$output;";
+
         $method = new MethodGenerator(
             'toArray',
-            [],
+            $params,
             MethodGenerator::FLAG_PUBLIC,
-            '$output = [];' . "\n" .
-            $properties->generateTypeToArrayConversionCode('output') . "\n\n" .
-            'return $output;',
+            $body,
             $docBlock
         );
 
@@ -323,6 +423,33 @@ class Generator
         );
     }
 
+    public function generateIsSetMethod(): MethodGenerator
+    {
+        $doc = new DocBlockGenerator(
+            'Checks if an optional nullable property was explicitly set to `null`',
+            null,
+            [
+                new ParamTag('propertyName', ['string'], "property name as appears in the schema"),
+                new ReturnTag('bool'),
+            ]
+        );
+        $doc->setWordWrap(false);
+
+        $method = new MethodGenerator(
+            'isExplicitNull',
+            [new ParameterGenerator('propertyName', 'string')],
+            MethodGenerator::FLAG_PUBLIC,
+            'return array_key_exists($propertyName, $this->_explicitNulls);',
+            $doc
+        );
+
+        if ($this->generatorRequest->isAtLeastPHP("7.0")) {
+            $method->setReturnType('bool');
+        }
+
+        return $method;
+    }
+
     /**
      * @param PropertyCollection $properties
      * @return MethodGenerator[]
@@ -350,9 +477,6 @@ class Generator
      */
     public function generateGetterMethod(PropertyInterface $property): MethodGenerator
     {
-        if (isset($property->schema()["default"]) && $property instanceof OptionalPropertyDecorator) {
-            $property = $property->unwrap();
-        }
 
         $name           = $property->name();
         if ($this->generatorRequest->getOptions()->getPreservePropertyNames()) {
@@ -410,6 +534,9 @@ class Generator
         foreach ($properties as $property) {
             if ($mutable !== null) {
                 $methods[] = $this->generateMutableSetterMethod($property, $mutable === 'chainable');
+                if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
+                    $methods[] = $this->generateMutableUnsetterMethod($property, $mutable === 'chainable');
+                }
             } else {
                 $methods[] = $this->generateSetterMethod($property);
 
@@ -486,13 +613,20 @@ class Generator
             $docBlock->setWordWrap(false);
         }
 
+        $body = $setterValidation . "\$clone = clone \$this;\n" .
+            "\$clone->$name = \$$name;\n";
+
+        if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
+            $body .= "\$clone->_explicitNulls['$key'] = true;\n";
+        }
+
+        $body .= "\nreturn \$clone;";
+
         $setMethod = new MethodGenerator(
             'with' . $camelCaseName,
             $parameters,
             MethodGenerator::FLAG_PUBLIC,
-            $setterValidation . "\$clone = clone \$this;\n" .
-                "\$clone->$name = \$$name;\n\n" .
-                "return \$clone;",
+            $body,
             $docBlock
         );
 
@@ -562,7 +696,10 @@ class Generator
             $docBlock->setWordWrap(false);
         }
 
-        $body = $setterValidation . "\$this->$name = \$$name;";
+        $body = $setterValidation . "\$this->{$name} = \$$name;";
+        if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
+            $body .= "\n\$this->_explicitNulls['$key'] = true;";
+        }
         if ($chainable) {
             $body .= "\n\nreturn \$this;";
         }
@@ -586,6 +723,39 @@ class Generator
         return $setMethod;
     }
 
+    private function generateMutableUnsetterMethod(PropertyInterface $property, bool $chainable): MethodGenerator
+    {
+        $key  = $property->key();
+        $name = $property->name();
+        $camelCaseName = $this->generatorRequest->getOptions()->getPreservePropertyNames()
+            ? StringUtils::pascalCasePreserveOuterUnderscores($name)
+            : StringUtils::pascalCase($name);
+
+        $body = "\$this->{$name} = null;\n";
+        if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
+            $body .= "unset(\$this->_explicitNulls['$key']);\n";
+        }
+        if ($chainable) {
+            $body .= "\nreturn \$this;";
+        }
+
+        $unsetMethod = new MethodGenerator(
+            'unset' . $camelCaseName,
+            [],
+            MethodGenerator::FLAG_PUBLIC,
+            $body,
+            new DocBlockGenerator(null, null, $chainable ? [new ReturnTag('self')] : [])
+        );
+
+        if ($chainable && $this->generatorRequest->isAtLeastPHP('7.0')) {
+            $unsetMethod->setReturnType('self');
+        } elseif (!$chainable && $this->generatorRequest->isAtLeastPHP('7.1')) {
+            $unsetMethod->setReturnType('void');
+        }
+
+        return $unsetMethod;
+    }
+
     /**
      * @param PropertyInterface $property
      * @return MethodGenerator
@@ -593,6 +763,7 @@ class Generator
     public function generateUnsetterMethod(PropertyInterface $property): MethodGenerator
     {
         $name = $property->name();
+        $key  = $property->key();
         if ($this->generatorRequest->getOptions()->getPreservePropertyNames()) {
             $camelCasedName = StringUtils::pascalCasePreserveOuterUnderscores($name);
         } else {
@@ -600,11 +771,10 @@ class Generator
         }
 
         $body = "\$clone = clone \$this;\n";
-        if (isset($property->schema()["default"])) {
-            $value = $property->formatValue($property->schema()["default"])->generate();
-            $body .= "\$clone->$name = " . $value . "\n";
-        } else {
-            $body .= "unset(\$clone->$name);\n";
+        $body .= "unset(\$clone->$name);\n";
+
+        if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
+            $body .= "unset(\$clone->_explicitNulls['$key']);\n";
         }
 
         $body .= "\nreturn \$clone;";

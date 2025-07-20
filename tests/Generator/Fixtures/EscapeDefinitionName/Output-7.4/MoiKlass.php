@@ -28,7 +28,7 @@ class MoiKlass
     /**
      * @return string|null
      */
-    public function getC() : ?string
+    public function getC(): ?string
     {
         return $this->c ?? null;
     }
@@ -73,7 +73,7 @@ class MoiKlass
      * @return MoiKlass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true) : MoiKlass
+    public static function buildFromInput($input, bool $validate = true): MoiKlass
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
@@ -98,7 +98,7 @@ class MoiKlass
      *
      * @return array Converted array
      */
-    public function toArray() : array
+    public function toArray(): array
     {
         $output = [];
         if (isset($this->c)) {
@@ -116,7 +116,7 @@ class MoiKlass
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput($input, bool $return = false) : bool
+    public static function validateInput($input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;

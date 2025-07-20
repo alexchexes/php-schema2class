@@ -33,6 +33,18 @@ class GeneratorRequest
 
     /** @var array<class-string, ReferenceLookup> */
     private array $referenceLookup = [];
+    
+    /**
+     * Name of the $validate argument in the currently generated buildFromInput method.
+     * This is set from the Generator during generation.
+     */
+    private string $currValidateArgName = 'validate';
+
+    /**
+     * Name of the $materializeDefaults argument in the currently generated buildFromInput method
+     * (null when the argument is not generated). This is set from the Generator.
+     */
+    private ?string $currMaterializeArgName = 'materializeDefaults';
 
     public static function normalizeTargetVersion(int|string $version): string
     {
@@ -311,5 +323,35 @@ class GeneratorRequest
         }
 
         throw new GeneratorException("unresolvable reference: {$ref}");
+    }
+
+    /**
+     * This method is deliberately mutating (not `with...`) so that the active
+     * argument names can be updated for all property generators during code generation
+     * to ensure consistent variable names in nested contexts
+     */
+    public function setCurrValidateArgName(string $currValidateArgName): void
+    {
+        $this->currValidateArgName = $currValidateArgName;
+    }
+
+    /**
+     * This method is deliberately mutating (not `with...`) so that the active
+     * argument names can be updated for all property generators during code generation
+     * to ensure consistent variable names in nested contexts
+     */
+    public function setCurrMaterializeArgName(?string $currMaterializeArgName): void
+    {
+        $this->currMaterializeArgName = $currMaterializeArgName;
+    }
+
+    public function getCurrValidateArgName(): string
+    {
+        return $this->currValidateArgName;
+    }
+
+    public function getCurrMaterializeArgName(): ?string
+    {
+        return $this->currMaterializeArgName;
     }
 }

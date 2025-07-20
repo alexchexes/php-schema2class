@@ -1,0 +1,25 @@
+{
+  "type": "object",
+  "properties": {
+    "foo": {
+      "type": "string",
+      "default": "some default value for foo"
+    },
+    "bar": {
+      "type": "object",
+      "properties": {
+        "nestedFoo": {
+          "type": "string"
+        }
+      },
+      "required": ["nestedFoo"],
+      "default": {
+        "nestedFoo": "some value inside default value for 'bar' object"
+      }
+    },
+    "baz": {
+      "type": "string"
+    }
+  },
+  "required": ["foo", "bar"]
+}

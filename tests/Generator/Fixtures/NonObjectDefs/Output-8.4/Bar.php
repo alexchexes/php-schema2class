@@ -35,7 +35,7 @@ class Bar
     /**
      * @return string[]|null
      */
-    public function getB() : ?array
+    public function getB(): ?array
     {
         return $this->b ?? null;
     }
@@ -80,7 +80,7 @@ class Bar
      * @return Bar Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : Bar
+    public static function buildFromInput(array|object $input, bool $validate = true): Bar
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -99,7 +99,7 @@ class Bar
      *
      * @return array Converted array
      */
-    public function toArray() : array
+    public function toArray(): array
     {
         $output = [];
         if (isset($this->b)) {
@@ -117,7 +117,7 @@ class Bar
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput(array|object $input, bool $return = false) : bool
+    public static function validateInput(array|object $input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;

@@ -1,0 +1,25 @@
+{
+  "definitions": {
+    "Cat": {
+      "type": "object",
+      "properties": {
+        "hasFur": {
+          "anyOf": [
+            { "$ref": "#/definitions/foo" },
+            { "$ref": "#/definitions/bar" },
+            { "$ref": "#/definitions/baz" }
+          ]
+        }
+      }
+    },
+    "foo": {
+      "type": ["boolean", "null"]
+    },
+    "bar": {
+      "type": ["string", "number", "null"]
+    },
+    "baz": {
+      "type": ["string", "number", "boolean"]
+    }
+  }
+}
