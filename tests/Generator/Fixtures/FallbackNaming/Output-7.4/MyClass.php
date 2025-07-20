@@ -198,11 +198,11 @@ class MyClass
     ];
 
     /**
-     * Map of optional nullable property names that were explicitly set to `null`
+     * Map of optional nullable property names that were explicitly set
      *
      * @var array<string,true>
      */
-    private array $_explicitNulls = [];
+    private array $_providedOptionals = [];
 
     /**
      * @var string
@@ -1204,7 +1204,7 @@ class MyClass
 
         $clone = clone $this;
         $clone->materializeDefaults = $materializeDefaults;
-        $clone->_explicitNulls['materializeDefaults'] = true;
+        $clone->_providedOptionals['materializeDefaults'] = true;
 
         return $clone;
     }
@@ -1216,7 +1216,7 @@ class MyClass
     {
         $clone = clone $this;
         unset($clone->materializeDefaults);
-        unset($clone->_explicitNulls['materializeDefaults']);
+        unset($clone->_providedOptionals['materializeDefaults']);
 
         return $clone;
     }
@@ -1746,7 +1746,7 @@ class MyClass
             static::validateInput($_input);
         }
 
-        $__explicitNulls = [];
+        $__providedOptionals = [];
         $_GLOBALS_1 = $_input->{'_GLOBALS'};
         $_GLOBALS_2 = $_input->{'GLOBALS'};
         $_GLOBALS1_1 = $_input->{'GLOBALS_1'};
@@ -1766,7 +1766,7 @@ class MyClass
         $validate = isset($_input->{'validate'}) ? $_input->{'validate'} : null;
         $materializeDefaults = property_exists($_input, 'materializeDefaults') ? $_input->{'materializeDefaults'} : null;
         if (property_exists($_input, 'materializeDefaults')) {
-            $__explicitNulls['materializeDefaults'] = true;
+            $__providedOptionals['materializeDefaults'] = true;
         }
         $obj = $_input->{'obj'};
         $includeDefaults = $_input->{'includeDefaults'};
@@ -1796,7 +1796,7 @@ class MyClass
         $_obj->validate = $validate;
         $_obj->materializeDefaults = $materializeDefaults;
         $_obj->testObj = $testObj;
-        $_obj->_explicitNulls = $__explicitNulls;
+        $_obj->_providedOptionals = $__providedOptionals;
         return $_obj;
     }
 
@@ -1828,7 +1828,7 @@ class MyClass
         if (isset($this->validate)) {
             $output['validate'] = $this->validate;
         }
-        if (isset($this->materializeDefaults) || array_key_exists('materializeDefaults', $this->_explicitNulls)) {
+        if (isset($this->materializeDefaults) || array_key_exists('materializeDefaults', $this->_providedOptionals)) {
             $output['materializeDefaults'] = $this->materializeDefaults;
         }
         $output['obj'] = $this->obj;
@@ -1900,13 +1900,13 @@ class MyClass
     }
 
     /**
-     * Checks if an optional nullable property was explicitly set to `null`
+     * Checks if an optional nullable property was explicitly set
      *
-     * @param string $propertyName property name as appears in the schema
+     * @param string $propertyName Property name to check (exactly as it appears in the schema)
      * @return bool
      */
-    public function isExplicitNull(string $propertyName): bool
+    public function isProvidedOptional(string $propertyName): bool
     {
-        return array_key_exists($propertyName, $this->_explicitNulls);
+        return array_key_exists($propertyName, $this->_providedOptionals);
     }
 }

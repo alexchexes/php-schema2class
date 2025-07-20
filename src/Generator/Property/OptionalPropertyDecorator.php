@@ -57,7 +57,7 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator implements Ren
         $code = "\${$name} = {$existsCheck} ? {$mapped} : null;";
 
         if ($this->optionalNullable) {
-            $code .= "\nif ({$existsCheck}) {\n    \$__explicitNulls['{$this->key}'] = true;\n}";
+            $code .= "\nif ({$existsCheck}) {\n    \$__providedOptionals['{$this->key}'] = true;\n}";
         }
 
         return $code;
@@ -73,7 +73,7 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator implements Ren
         $inner = $this->inner->convertTypeToArray($outputVarName);
 
         if ($this->optionalNullable) {
-            $check = "isset(\$this->{$name}) || array_key_exists('{$this->key}', \$this->_explicitNulls)";
+            $check = "isset(\$this->{$name}) || array_key_exists('{$this->key}', \$this->_providedOptionals)";
             return "if ({$check}) {\n{$this->indentCode($inner, 1)}\n}";
         }
 

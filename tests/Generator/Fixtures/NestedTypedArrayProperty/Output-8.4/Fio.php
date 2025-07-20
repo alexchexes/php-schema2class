@@ -24,11 +24,11 @@ class Fio
     ];
 
     /**
-     * Map of optional nullable property names that were explicitly set to `null`
+     * Map of optional nullable property names that were explicitly set
      *
      * @var array<string,true>
      */
-    private array $_explicitNulls = [];
+    private array $_providedOptionals = [];
 
     /**
      * @var string|null
@@ -60,7 +60,7 @@ class Fio
 
         $clone = clone $this;
         $clone->bar = $bar;
-        $clone->_explicitNulls['bar'] = true;
+        $clone->_providedOptionals['bar'] = true;
 
         return $clone;
     }
@@ -72,7 +72,7 @@ class Fio
     {
         $clone = clone $this;
         unset($clone->bar);
-        unset($clone->_explicitNulls['bar']);
+        unset($clone->_providedOptionals['bar']);
 
         return $clone;
     }
@@ -92,15 +92,15 @@ class Fio
             static::validateInput($input);
         }
 
-        $__explicitNulls = [];
+        $__providedOptionals = [];
         $bar = property_exists($input, 'bar') ? $input->{'bar'} : null;
         if (property_exists($input, 'bar')) {
-            $__explicitNulls['bar'] = true;
+            $__providedOptionals['bar'] = true;
         }
 
         $obj = new self();
         $obj->bar = $bar;
-        $obj->_explicitNulls = $__explicitNulls;
+        $obj->_providedOptionals = $__providedOptionals;
         return $obj;
     }
 
@@ -112,7 +112,7 @@ class Fio
     public function toArray(): array
     {
         $output = [];
-        if (isset($this->bar) || array_key_exists('bar', $this->_explicitNulls)) {
+        if (isset($this->bar) || array_key_exists('bar', $this->_providedOptionals)) {
             $output['bar'] = $this->bar;
         }
 
@@ -144,13 +144,13 @@ class Fio
     }
 
     /**
-     * Checks if an optional nullable property was explicitly set to `null`
+     * Checks if an optional nullable property was explicitly set
      *
-     * @param string $propertyName property name as appears in the schema
+     * @param string $propertyName Property name to check (exactly as it appears in the schema)
      * @return bool
      */
-    public function isExplicitNull(string $propertyName): bool
+    public function isProvidedOptional(string $propertyName): bool
     {
-        return array_key_exists($propertyName, $this->_explicitNulls);
+        return array_key_exists($propertyName, $this->_providedOptionals);
     }
 }

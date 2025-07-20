@@ -42,11 +42,11 @@ class MyClass
     ];
 
     /**
-     * Map of optional nullable property names that were explicitly set to `null`
+     * Map of optional nullable property names that were explicitly set
      *
      * @var array<string,true>
      */
-    private array $_explicitNulls = [];
+    private array $_providedOptionals = [];
 
     /**
      * @var string|null
@@ -135,7 +135,7 @@ class MyClass
         }
 
         $this->opt = $opt;
-        $this->_explicitNulls['opt'] = true;
+        $this->_providedOptionals['opt'] = true;
     }
 
     /**
@@ -144,7 +144,7 @@ class MyClass
     public function unsetOpt(): void
     {
         $this->opt = null;
-        unset($this->_explicitNulls['opt']);
+        unset($this->_providedOptionals['opt']);
     }
 
     /**
@@ -162,18 +162,18 @@ class MyClass
             static::validateInput($input);
         }
 
-        $__explicitNulls = [];
+        $__providedOptionals = [];
         $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
         $bar = Baz::buildFromInput($input->{'bar'}, $validate);
         $opt = property_exists($input, 'opt') ? $input->{'opt'} : null;
         if (property_exists($input, 'opt')) {
-            $__explicitNulls['opt'] = true;
+            $__providedOptionals['opt'] = true;
         }
 
         $obj = new self($bar);
         $obj->foo = $foo;
         $obj->opt = $opt;
-        $obj->_explicitNulls = $__explicitNulls;
+        $obj->_providedOptionals = $__providedOptionals;
         return $obj;
     }
 
@@ -189,7 +189,7 @@ class MyClass
             $output['foo'] = $this->foo;
         }
         $output['bar'] = $this->bar->toArray();
-        if (isset($this->opt) || array_key_exists('opt', $this->_explicitNulls)) {
+        if (isset($this->opt) || array_key_exists('opt', $this->_providedOptionals)) {
             $output['opt'] = $this->opt;
         }
 
@@ -221,13 +221,13 @@ class MyClass
     }
 
     /**
-     * Checks if an optional nullable property was explicitly set to `null`
+     * Checks if an optional nullable property was explicitly set
      *
-     * @param string $propertyName property name as appears in the schema
+     * @param string $propertyName Property name to check (exactly as it appears in the schema)
      * @return bool
      */
-    public function isExplicitNull(string $propertyName): bool
+    public function isProvidedOptional(string $propertyName): bool
     {
-        return array_key_exists($propertyName, $this->_explicitNulls);
+        return array_key_exists($propertyName, $this->_providedOptionals);
     }
 }

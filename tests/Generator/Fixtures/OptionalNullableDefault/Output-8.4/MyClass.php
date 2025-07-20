@@ -99,11 +99,11 @@ class MyClass
     ];
 
     /**
-     * Map of optional nullable property names that were explicitly set to `null`
+     * Map of optional nullable property names that were explicitly set
      *
      * @var array<string,true>
      */
-    private array $_explicitNulls = [];
+    private array $_providedOptionals = [];
 
     /**
      * required, not nullable, no default
@@ -323,7 +323,7 @@ class MyClass
 
         $clone = clone $this;
         $clone->baz = $baz;
-        $clone->_explicitNulls['baz'] = true;
+        $clone->_providedOptionals['baz'] = true;
 
         return $clone;
     }
@@ -335,7 +335,7 @@ class MyClass
     {
         $clone = clone $this;
         unset($clone->baz);
-        unset($clone->_explicitNulls['baz']);
+        unset($clone->_providedOptionals['baz']);
 
         return $clone;
     }
@@ -357,7 +357,7 @@ class MyClass
 
         $clone = clone $this;
         $clone->qux = $qux;
-        $clone->_explicitNulls['qux'] = true;
+        $clone->_providedOptionals['qux'] = true;
 
         return $clone;
     }
@@ -369,7 +369,7 @@ class MyClass
     {
         $clone = clone $this;
         unset($clone->qux);
-        unset($clone->_explicitNulls['qux']);
+        unset($clone->_providedOptionals['qux']);
 
         return $clone;
     }
@@ -456,7 +456,7 @@ class MyClass
     {
         $clone = clone $this;
         $clone->grox = $grox;
-        $clone->_explicitNulls['grox'] = true;
+        $clone->_providedOptionals['grox'] = true;
 
         return $clone;
     }
@@ -468,7 +468,7 @@ class MyClass
     {
         $clone = clone $this;
         unset($clone->grox);
-        unset($clone->_explicitNulls['grox']);
+        unset($clone->_providedOptionals['grox']);
 
         return $clone;
     }
@@ -500,23 +500,23 @@ class MyClass
             static::validateInput($input);
         }
 
-        $__explicitNulls = [];
+        $__providedOptionals = [];
         $foo = $input->{'foo'};
         $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
         $baz = property_exists($input, 'baz') ? $input->{'baz'} : null;
         if (property_exists($input, 'baz')) {
-            $__explicitNulls['baz'] = true;
+            $__providedOptionals['baz'] = true;
         }
         $qux = property_exists($input, 'qux') ? $input->{'qux'} : null;
         if (property_exists($input, 'qux')) {
-            $__explicitNulls['qux'] = true;
+            $__providedOptionals['qux'] = true;
         }
         $quux = $input->{'quux'};
         $xyyz = isset($input->{'xyyz'}) ? $input->{'xyyz'} : null;
         $thud = $input->{'thud'};
         $grox = property_exists($input, 'grox') ? MyClassGrox::buildFromInput($input->{'grox'}, $validate, $materializeDefaults) : null;
         if (property_exists($input, 'grox')) {
-            $__explicitNulls['grox'] = true;
+            $__providedOptionals['grox'] = true;
         }
 
         $obj = new self($foo, $quux, $thud);
@@ -525,7 +525,7 @@ class MyClass
         $obj->qux = $qux;
         $obj->xyyz = $xyyz;
         $obj->grox = $grox;
-        $obj->_explicitNulls = $__explicitNulls;
+        $obj->_providedOptionals = $__providedOptionals;
         return $obj;
     }
 
@@ -542,10 +542,10 @@ class MyClass
         if (isset($this->bar)) {
             $output['bar'] = $this->bar;
         }
-        if (isset($this->baz) || array_key_exists('baz', $this->_explicitNulls)) {
+        if (isset($this->baz) || array_key_exists('baz', $this->_providedOptionals)) {
             $output['baz'] = $this->baz;
         }
-        if (isset($this->qux) || array_key_exists('qux', $this->_explicitNulls)) {
+        if (isset($this->qux) || array_key_exists('qux', $this->_providedOptionals)) {
             $output['qux'] = $this->qux;
         }
         $output['quux'] = $this->quux;
@@ -553,7 +553,7 @@ class MyClass
             $output['xyyz'] = $this->xyyz;
         }
         $output['thud'] = $this->thud;
-        if (isset($this->grox) || array_key_exists('grox', $this->_explicitNulls)) {
+        if (isset($this->grox) || array_key_exists('grox', $this->_providedOptionals)) {
             if (isset($this->grox)) {
                 $output['grox'] = ($this->grox)->toArray();
             }
@@ -604,13 +604,13 @@ class MyClass
     }
 
     /**
-     * Checks if an optional nullable property was explicitly set to `null`
+     * Checks if an optional nullable property was explicitly set
      *
-     * @param string $propertyName property name as appears in the schema
+     * @param string $propertyName Property name to check (exactly as it appears in the schema)
      * @return bool
      */
-    public function isExplicitNull(string $propertyName): bool
+    public function isProvidedOptional(string $propertyName): bool
     {
-        return array_key_exists($propertyName, $this->_explicitNulls);
+        return array_key_exists($propertyName, $this->_providedOptionals);
     }
 }

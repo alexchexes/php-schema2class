@@ -40,11 +40,11 @@ class GenericPet
     ];
 
     /**
-     * Map of optional nullable property names that were explicitly set to `null`
+     * Map of optional nullable property names that were explicitly set
      *
      * @var array<string,true>
      */
-    private array $_explicitNulls = [];
+    private array $_providedOptionals = [];
 
     /**
      * Whether the animal has fur (true), doesn't (false), or it's unknown or varies (null)
@@ -80,7 +80,7 @@ class GenericPet
 
         $clone = clone $this;
         $clone->hasFur = $hasFur;
-        $clone->_explicitNulls['hasFur'] = true;
+        $clone->_providedOptionals['hasFur'] = true;
 
         return $clone;
     }
@@ -92,7 +92,7 @@ class GenericPet
     {
         $clone = clone $this;
         unset($clone->hasFur);
-        unset($clone->_explicitNulls['hasFur']);
+        unset($clone->_providedOptionals['hasFur']);
 
         return $clone;
     }
@@ -124,15 +124,15 @@ class GenericPet
             static::validateInput($input);
         }
 
-        $__explicitNulls = [];
+        $__providedOptionals = [];
         $hasFur = property_exists($input, 'hasFur') ? $input->{'hasFur'} : null;
         if (property_exists($input, 'hasFur')) {
-            $__explicitNulls['hasFur'] = true;
+            $__providedOptionals['hasFur'] = true;
         }
 
         $obj = new self();
         $obj->hasFur = $hasFur;
-        $obj->_explicitNulls = $__explicitNulls;
+        $obj->_providedOptionals = $__providedOptionals;
         return $obj;
     }
 
@@ -145,7 +145,7 @@ class GenericPet
     public function toArray(bool $includeDefaults = false): array
     {
         $output = [];
-        if (isset($this->hasFur) || array_key_exists('hasFur', $this->_explicitNulls)) {
+        if (isset($this->hasFur) || array_key_exists('hasFur', $this->_providedOptionals)) {
             $output['hasFur'] = $this->hasFur;
         }
 
@@ -185,13 +185,13 @@ class GenericPet
     }
 
     /**
-     * Checks if an optional nullable property was explicitly set to `null`
+     * Checks if an optional nullable property was explicitly set
      *
-     * @param string $propertyName property name as appears in the schema
+     * @param string $propertyName Property name to check (exactly as it appears in the schema)
      * @return bool
      */
-    public function isExplicitNull(string $propertyName): bool
+    public function isProvidedOptional(string $propertyName): bool
     {
-        return array_key_exists($propertyName, $this->_explicitNulls);
+        return array_key_exists($propertyName, $this->_providedOptionals);
     }
 }

@@ -60,14 +60,14 @@ class Generator
                 ? PropertyGenerator::FLAG_PUBLIC
                 : PropertyGenerator::FLAG_PRIVATE;
 
-            $setProp = new PropertyGenerator('_explicitNulls', [] , $setVisibility);
+            $setProp = new PropertyGenerator('_providedOptionals', [] , $setVisibility);
             $setProp->setDefaultValue([]);
             $setProp->setSingleLineDefaultValue(true);
             if ($this->generatorRequest->isAtLeastPHP("7.4")) {
                 $setProp->setTypeHint("array");
             }
             $setProp->setDocBlock(new DocBlockGenerator(
-                "Map of optional nullable property names that were explicitly set to `null`",
+                "Map of optional nullable property names that were explicitly set",
                 null,
                 [new GenericTag('var', 'array<string,true>')]
             ));
@@ -279,7 +279,7 @@ class Generator
             "    static::validateInput(\$$inputArgAlias);\n" .
             "}\n\n" .
 
-            ($hasOptionalNullable ? "\$__explicitNulls = [];\n" : '') .
+            ($hasOptionalNullable ? "\$__providedOptionals = [];\n" : '') .
 
             // Property‐by‐property mapping
             $properties->generateInputToTypeConversionCode($inputArgAlias, object: true) . "\n\n" .
@@ -287,7 +287,7 @@ class Generator
             // Construct & assign optional props
             "\${$objVarName} = new self(" . join(", ", $constructorParams) . ");" . "\n" .
             join("\n", $assignments) . "\n" .
-            ($hasOptionalNullable ? "\${$objVarName}->_explicitNulls = \$__explicitNulls;\n" : '') .
+            ($hasOptionalNullable ? "\${$objVarName}->_providedOptionals = \$__providedOptionals;\n" : '') .
 
             // Return
             "return \${$objVarName};"
@@ -446,20 +446,20 @@ class Generator
     public function generateIsSetMethod(): MethodGenerator
     {
         $doc = new DocBlockGenerator(
-            'Checks if an optional nullable property was explicitly set to `null`',
+            'Checks if an optional nullable property was explicitly set',
             null,
             [
-                new ParamTag('propertyName', ['string'], "property name as appears in the schema"),
+                new ParamTag('propertyName', ['string'], "Property name to check (exactly as it appears in the schema)"),
                 new ReturnTag('bool'),
             ]
         );
         $doc->setWordWrap(false);
 
         $method = new MethodGenerator(
-            'isExplicitNull',
+            'isProvidedOptional',
             [new ParameterGenerator('propertyName', 'string')],
             MethodGenerator::FLAG_PUBLIC,
-            'return array_key_exists($propertyName, $this->_explicitNulls);',
+            'return array_key_exists($propertyName, $this->_providedOptionals);',
             $doc
         );
 
@@ -637,7 +637,7 @@ class Generator
             "\$clone->$name = \$$name;\n";
 
         if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
-            $body .= "\$clone->_explicitNulls['$key'] = true;\n";
+            $body .= "\$clone->_providedOptionals['$key'] = true;\n";
         }
 
         $body .= "\nreturn \$clone;";
@@ -718,7 +718,7 @@ class Generator
 
         $body = $setterValidation . "\$this->{$name} = \$$name;";
         if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
-            $body .= "\n\$this->_explicitNulls['$key'] = true;";
+            $body .= "\n\$this->_providedOptionals['$key'] = true;";
         }
         if ($chainable) {
             $body .= "\n\nreturn \$this;";
@@ -753,7 +753,7 @@ class Generator
 
         $body = "\$this->{$name} = null;\n";
         if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
-            $body .= "unset(\$this->_explicitNulls['$key']);\n";
+            $body .= "unset(\$this->_providedOptionals['$key']);\n";
         }
         if ($chainable) {
             $body .= "\nreturn \$this;";
@@ -794,7 +794,7 @@ class Generator
         $body .= "unset(\$clone->$name);\n";
 
         if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
-            $body .= "unset(\$clone->_explicitNulls['$key']);\n";
+            $body .= "unset(\$clone->_providedOptionals['$key']);\n";
         }
 
         $body .= "\nreturn \$clone;";

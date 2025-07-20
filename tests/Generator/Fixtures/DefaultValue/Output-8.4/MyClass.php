@@ -87,11 +87,11 @@ class MyClass
     ];
 
     /**
-     * Map of optional nullable property names that were explicitly set to `null`
+     * Map of optional nullable property names that were explicitly set
      *
      * @var array<string,true>
      */
-    private array $_explicitNulls = [];
+    private array $_providedOptionals = [];
 
     /**
      * @var int|null
@@ -277,7 +277,7 @@ class MyClass
 
         $clone = clone $this;
         $clone->baz = $baz;
-        $clone->_explicitNulls['baz'] = true;
+        $clone->_providedOptionals['baz'] = true;
 
         return $clone;
     }
@@ -289,7 +289,7 @@ class MyClass
     {
         $clone = clone $this;
         unset($clone->baz);
-        unset($clone->_explicitNulls['baz']);
+        unset($clone->_providedOptionals['baz']);
 
         return $clone;
     }
@@ -440,12 +440,12 @@ class MyClass
             static::validateInput($input);
         }
 
-        $__explicitNulls = [];
+        $__providedOptionals = [];
         $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
         $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
         $baz = property_exists($input, 'baz') ? $input->{'baz'} : null;
         if (property_exists($input, 'baz')) {
-            $__explicitNulls['baz'] = true;
+            $__providedOptionals['baz'] = true;
         }
         $qux = isset($input->{'qux'}) ? $input->{'qux'} : null;
         $thud = isset($input->{'thud'}) ? $input->{'thud'} : null;
@@ -464,7 +464,7 @@ class MyClass
         $obj->thud = $thud;
         $obj->grox = $grox;
         $obj->qwert = $qwert;
-        $obj->_explicitNulls = $__explicitNulls;
+        $obj->_providedOptionals = $__providedOptionals;
         return $obj;
     }
 
@@ -483,7 +483,7 @@ class MyClass
         if (isset($this->bar)) {
             $output['bar'] = $this->bar;
         }
-        if (isset($this->baz) || array_key_exists('baz', $this->_explicitNulls)) {
+        if (isset($this->baz) || array_key_exists('baz', $this->_providedOptionals)) {
             $output['baz'] = $this->baz;
         }
         if (isset($this->qux)) {
@@ -548,13 +548,13 @@ class MyClass
     }
 
     /**
-     * Checks if an optional nullable property was explicitly set to `null`
+     * Checks if an optional nullable property was explicitly set
      *
-     * @param string $propertyName property name as appears in the schema
+     * @param string $propertyName Property name to check (exactly as it appears in the schema)
      * @return bool
      */
-    public function isExplicitNull(string $propertyName): bool
+    public function isProvidedOptional(string $propertyName): bool
     {
-        return array_key_exists($propertyName, $this->_explicitNulls);
+        return array_key_exists($propertyName, $this->_providedOptionals);
     }
 }
