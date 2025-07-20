@@ -73,6 +73,11 @@ class IntersectProperty extends AbstractProperty
         return "({$expr})->toArray()";
     }
 
+    public function generateOutputMappingExprStdClass(string $expr): string
+    {
+        return "({$expr})->toStdClass()";
+    }
+
     public function generateCloneExpr(string $expr): string
     {
         return "clone {$expr}";

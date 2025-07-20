@@ -569,6 +569,55 @@ class MyClass
     }
 
     /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @param bool $includeDefaults Add defaults for missing properties
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(bool $includeDefaults = false): \stdClass
+    {
+        $output = new \stdClass();
+        if (isset($this->foo)) {
+            $output->{'foo'} = $this->foo;
+        }
+        if (isset($this->bar)) {
+            $output->{'bar'} = $this->bar;
+        }
+        if (isset($this->baz) || array_key_exists('baz', $this->_providedOptionals)) {
+            $output->{'baz'} = $this->baz;
+        }
+        if (isset($this->qux)) {
+            $output->{'qux'} = $this->qux;
+        }
+        if (isset($this->thud)) {
+            $output->{'thud'} = $this->thud;
+        }
+        if (isset($this->grox)) {
+            $output->{'grox'} = $this->grox;
+        }
+        if (isset($this->qwert)) {
+            $output->{'qwert'} = match (true) {
+                default => null,
+                is_string($this->qwert),
+                is_int($this->qwert) || is_float($this->qwert) => $this->qwert,
+            };
+        }
+        if (isset($this->zyx)) {
+            $output->{'zyx'} = $this->zyx;
+        }
+
+        if ($includeDefaults) {
+            foreach (self::$_defaults as $k => $v) {
+                if (!property_exists($output, $k)) {
+                    $output->{$k} = is_array($v) ? \JsonSchema\Validator::arrayToObjectRecursive($v) : $v;
+                }
+            }
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data

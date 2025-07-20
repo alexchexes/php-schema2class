@@ -151,6 +151,21 @@ class Qux
     }
 
     /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass()
+    {
+        $output = new \stdClass();
+        if (isset($this->grox)) {
+            $output->{'grox'} = ((($this->grox) instanceof Foo) || (($this->grox) instanceof Bar)) ? ((($this->grox) instanceof Bar) ? ($this->grox->toArray()) : ((($this->grox) instanceof Foo) ? ($this->grox->toArray()) : (null))) : ((is_array($this->grox)) ? ($this->grox) : ((is_string($this->grox)) ? ($this->grox) : (null)));
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data

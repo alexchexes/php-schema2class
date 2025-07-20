@@ -688,6 +688,33 @@ class MyClass
     }
 
     /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        $output->{'foo'} = $this->foo;
+        $output->{'_foo'} = $this->_foo;
+        $output->{'__foo'} = $this->__foo;
+        $output->{'foo_'} = $this->foo_;
+        $output->{'foo__'} = $this->foo__;
+        $output->{'_foo_'} = $this->_foo_;
+        $output->{'__foo__'} = $this->__foo__;
+        $output->{'foo-bar'} = $this->foo_bar;
+        $output->{'foo bar'} = $this->_foo_bar;
+        $output->{'baz qux'} = $this->baz_qux;
+        $output->{'123 qwe'} = $this->_123_qwe;
+        $output->{'Город'} = $this->Gorod;
+        $output->{'название юр.лица'} = $this->nazvanie_iur_litsa;
+        $output->{'IP-адрес'} = $this->IP_adres;
+        $output->{'~~tildas~~'} = $this->_tildas;
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data

@@ -61,4 +61,8 @@ readonly class ReferencedTypeUnknown implements ReferencedType
         return $expr;
     }
 
+    public function outputMappingExprStdClass(GeneratorRequest $req, string $expr): string
+    {
+        return $expr;
+    }
 }

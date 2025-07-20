@@ -133,6 +133,25 @@ class MyObject
     }
 
     /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        $output->{'foo'} = (in_array($this->foo, array (
+          0 => 'baz',
+          1 => 'quz',
+        ), true)) ? ($this->foo) : ((in_array($this->foo, array (
+          0 => 'foo',
+          1 => 'bar',
+        ), true)) ? ($this->foo) : (null));
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data

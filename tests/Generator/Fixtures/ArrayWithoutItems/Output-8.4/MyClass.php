@@ -542,6 +542,60 @@ class MyClass
     }
 
     /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        $output->{'a'} = $this->a;
+        $output->{'b'} = match (true) {
+            default => null,
+            is_array($this->b),
+            is_string($this->b) => $this->b,
+        };
+        $output->{'c'} = $this->c;
+        $output->{'d'} = match (true) {
+            default => null,
+            is_array($this->d),
+            is_string($this->d) => $this->d,
+        };
+        if (isset($this->e)) {
+            $output->{'e'} = $this->e;
+        }
+        if (isset($this->f)) {
+            $output->{'f'} = match (true) {
+                default => null,
+                is_array($this->f),
+                is_string($this->f) => $this->f,
+            };
+        }
+        if (isset($this->g) || array_key_exists('g', $this->_providedOptionals)) {
+            if (isset($this->g)) {
+                $output->{'g'} = $this->g;
+            }
+        }
+        if (isset($this->h) || array_key_exists('h', $this->_providedOptionals)) {
+            $output->{'h'} = match (true) {
+                default => null,
+                is_array($this->h),
+                is_string($this->h) => $this->h,
+            };
+        }
+        if (isset($this->i) || array_key_exists('i', $this->_providedOptionals)) {
+            $output->{'i'} = match (true) {
+                default => null,
+                is_array($this->i),
+                is_string($this->i) => $this->i,
+                is_array($this->i) || is_object($this->i) => json_decode(json_encode($this->i), true),
+            };
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data

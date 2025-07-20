@@ -13,4 +13,5 @@ interface ReferencedType
     function inputAssertionExpr(GeneratorRequest $req, string $expr): string;
     function inputMappingExpr(GeneratorRequest $req, string $expr, ?string $validateExpr): string;
     function outputMappingExpr(GeneratorRequest $req, string $expr): string;
+    function outputMappingExprStdClass(GeneratorRequest $req, string $expr): string;
 }

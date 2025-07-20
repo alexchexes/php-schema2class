@@ -99,6 +99,11 @@ readonly class ReferencedTypeEnum implements ReferencedType
         return $expr;
     }
 
+    public function outputMappingExprStdClass(GeneratorRequest $req, string $expr): string
+    {
+        return $this->outputMappingExpr($req, $expr);
+    }
+
     public function usesNativeEnum(GeneratorRequest $req): bool
     {
         return $this->useNativeEnum($req);

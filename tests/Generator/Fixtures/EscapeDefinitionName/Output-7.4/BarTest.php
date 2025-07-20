@@ -138,6 +138,21 @@ class BarTest
     }
 
     /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        if (isset($this->exampleProp)) {
+            $output->{'exampleProp'} = (($this->exampleProp) instanceof FooTest_1) ? ($this->exampleProp->toArray()) : ((($this->exampleProp) instanceof MoiKlass) ? ($this->exampleProp->toArray()) : ((($this->exampleProp) instanceof FooTest) ? ($this->exampleProp->toArray()) : (null)));
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data

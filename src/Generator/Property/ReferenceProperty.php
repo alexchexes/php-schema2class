@@ -50,6 +50,11 @@ class ReferenceProperty extends AbstractProperty
         return $this->type->outputMappingExpr($this->generatorRequest, $expr);
     }
 
+    public function generateOutputMappingExprStdClass(string $expr): string
+    {
+        return $this->type->outputMappingExprStdClass($this->generatorRequest, $expr);
+    }
+
     public function isComplex(): bool
     {
         if ($this->type instanceof \Helmich\Schema2Class\Generator\ReferencedTypeEnum) {

@@ -44,6 +44,7 @@ Now it:
 - Validates written files with `php -l` to ensure generated code is syntactically correct.
 - Handles URL-encoded references
 - Handles definition descriptions and/or top-level schema description and adds it to a class' PHPDoc
+- Generates a `toStdClass()` method returning an object representation of the instance
 
 ### Better support for older PHP versions:
 

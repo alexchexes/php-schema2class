@@ -109,6 +109,14 @@ abstract class AbstractProperty implements PropertyInterface, RenameableProperty
         return "\${$outputVarName}[{$keyStr}] = {$map};";
     }
 
+    public function convertTypeToStdClass(string $outputVarName = 'output'): string
+    {
+        $key    = $this->key;
+        $keyStr = var_export($key, true);
+        $map    = $this->generateOutputMappingExprStdClass("\$this->{$this->name}");
+        return "\${$outputVarName}->{{$keyStr}} = {$map};";
+    }
+
     public function generateInputAssertionExpr(string $expr): string
     {
         return $this->generateTypeAssertionExpr($expr);
@@ -122,6 +130,11 @@ abstract class AbstractProperty implements PropertyInterface, RenameableProperty
     public function generateOutputMappingExpr(string $expr): string
     {
         return $expr;
+    }
+
+    public function generateOutputMappingExprStdClass(string $expr): string
+    {
+        return $this->generateOutputMappingExpr($expr);
     }
 
     public function generateCloneExpr(string $expr): string

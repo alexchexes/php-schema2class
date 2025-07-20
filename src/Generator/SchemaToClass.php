@@ -263,6 +263,7 @@ class SchemaToClass
             ...$codeGenerator->generateSetterMethods($propertiesFromSchema),
             $codeGenerator->generateBuildMethod($propertiesFromSchema, $hasDefaults),
             $codeGenerator->generateToArrayMethod($propertiesFromSchema, $hasDefaults),
+            $codeGenerator->generateToStdClassMethod($propertiesFromSchema, $hasDefaults),
             $codeGenerator->generateValidateMethod(),
             $codeGenerator->generateCloneMethod($propertiesFromSchema),
             $hasOptionalNullable ? $codeGenerator->generateIsSetMethod() : null,

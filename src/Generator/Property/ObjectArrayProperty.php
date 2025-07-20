@@ -179,6 +179,21 @@ class ObjectArrayProperty extends AbstractProperty
         return "array_map(function($st \$i) { return {$sm} }, {$expr})";
     }
 
+    public function generateOutputMappingExprStdClass(string $expr): string
+    {
+        if ($this->itemType instanceof MixedProperty) {
+            return "array_map(fn (\$i) => \$i, {$expr})";
+        }
+
+        $st = $this->subTypeName();
+        $sm = $this->itemType->generateOutputMappingExprStdClass('$i');
+
+        if ($this->generatorRequest->isAtLeastPHP('7.4')) {
+            return "array_map(fn ($st \$i) => {$sm}, {$expr})";
+        }
+        return "array_map(function($st \$i) { return {$sm}; }, {$expr})";
+    }
+
     public function generateCloneExpr(string $expr): string
     {
         if ($this->itemType instanceof MixedProperty) {
