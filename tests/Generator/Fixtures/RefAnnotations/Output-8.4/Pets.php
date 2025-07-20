@@ -81,7 +81,7 @@ class Pets
      * @param GenericPet $pet
      * @return self
      */
-    public function withPet(GenericPet $pet) : self
+    public function withPet(GenericPet $pet): self
     {
         $clone = clone $this;
         $clone->pet = $pet;
@@ -92,7 +92,7 @@ class Pets
     /**
      * @return self
      */
-    public function withoutPet() : self
+    public function withoutPet(): self
     {
         $clone = clone $this;
         unset($clone->pet);
@@ -104,7 +104,7 @@ class Pets
      * @param Cat $cat
      * @return self
      */
-    public function withCat(Cat $cat) : self
+    public function withCat(Cat $cat): self
     {
         $clone = clone $this;
         $clone->cat = $cat;
@@ -115,7 +115,7 @@ class Pets
     /**
      * @return self
      */
-    public function withoutCat() : self
+    public function withoutCat(): self
     {
         $clone = clone $this;
         unset($clone->cat);

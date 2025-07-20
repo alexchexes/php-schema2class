@@ -86,7 +86,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withGorod(string $Gorod, bool $validate = true) : self
+    public function withGorod(string $Gorod, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -107,7 +107,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withNazvanieIurLitsa(string $nazvanieIurLitsa, bool $validate = true) : self
+    public function withNazvanieIurLitsa(string $nazvanieIurLitsa, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -128,7 +128,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withIPAdres(string $IPAdres, bool $validate = true) : self
+    public function withIPAdres(string $IPAdres, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();

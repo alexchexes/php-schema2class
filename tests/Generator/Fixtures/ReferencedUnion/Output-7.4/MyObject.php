@@ -75,7 +75,7 @@ class MyObject
      * @param 'foo'|'bar'|'baz'|'quz' $foo
      * @return self
      */
-    public function withFoo($foo) : self
+    public function withFoo($foo): self
     {
         $clone = clone $this;
         $clone->foo = $foo;

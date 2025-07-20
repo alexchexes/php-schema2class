@@ -76,7 +76,7 @@ class Cat
      * @param bool|string|int|float $hasFur
      * @return self
      */
-    public function withHasFur(bool|int|float|string|null $hasFur) : self
+    public function withHasFur(bool|int|float|string|null $hasFur): self
     {
         $clone = clone $this;
         $clone->hasFur = $hasFur;
@@ -88,7 +88,7 @@ class Cat
     /**
      * @return self
      */
-    public function withoutHasFur() : self
+    public function withoutHasFur(): self
     {
         $clone = clone $this;
         unset($clone->hasFur);

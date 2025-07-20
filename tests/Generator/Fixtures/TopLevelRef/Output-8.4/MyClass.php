@@ -40,7 +40,7 @@ class MyClass
      * @param string|int|float $foo
      * @return self
      */
-    public function withFoo(int|float|string $foo) : self
+    public function withFoo(int|float|string $foo): self
     {
         $clone = clone $this;
         $clone->foo = $foo;
@@ -51,7 +51,7 @@ class MyClass
     /**
      * @return self
      */
-    public function withoutFoo() : self
+    public function withoutFoo(): self
     {
         $clone = clone $this;
         unset($clone->foo);

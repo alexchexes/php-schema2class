@@ -48,7 +48,7 @@ class Fio
      * @return self
      * @param bool $validate
      */
-    public function withBar(string $bar, bool $validate = true) : self
+    public function withBar(string $bar, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -68,7 +68,7 @@ class Fio
     /**
      * @return self
      */
-    public function withoutBar() : self
+    public function withoutBar(): self
     {
         $clone = clone $this;
         unset($clone->bar);

@@ -38,7 +38,7 @@ class Name
      * @return self
      * @param bool $validate
      */
-    public function withFirst(string $first, bool $validate = true) : self
+    public function withFirst(string $first, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -57,7 +57,7 @@ class Name
     /**
      * @return self
      */
-    public function withoutFirst() : self
+    public function withoutFirst(): self
     {
         $clone = clone $this;
         unset($clone->first);

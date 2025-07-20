@@ -47,7 +47,7 @@ class Bar
      * @param Foo $a
      * @return self
      */
-    public function withA(Foo $a) : self
+    public function withA(Foo $a): self
     {
         $clone = clone $this;
         $clone->a = $a;
@@ -58,7 +58,7 @@ class Bar
     /**
      * @return self
      */
-    public function withoutA() : self
+    public function withoutA(): self
     {
         $clone = clone $this;
         unset($clone->a);

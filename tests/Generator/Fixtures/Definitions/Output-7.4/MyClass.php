@@ -95,7 +95,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withId(int $id, bool $validate = true) : self
+    public function withId(int $id, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -115,7 +115,7 @@ class MyClass
      * @param Address $address
      * @return self
      */
-    public function withAddress(Address $address) : self
+    public function withAddress(Address $address): self
     {
         $clone = clone $this;
         $clone->address = $address;
@@ -126,7 +126,7 @@ class MyClass
     /**
      * @return self
      */
-    public function withoutAddress() : self
+    public function withoutAddress(): self
     {
         $clone = clone $this;
         unset($clone->address);

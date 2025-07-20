@@ -81,7 +81,7 @@ class MyClass
      * @param MyGenericStringNumber $value
      * @return self
      */
-    public function withValue(MyGenericStringNumber $value) : self
+    public function withValue(MyGenericStringNumber $value): self
     {
         $clone = clone $this;
         $clone->value = $value;

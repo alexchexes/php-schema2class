@@ -82,7 +82,7 @@ class Foo
      * @return self
      * @param bool $validate
      */
-    public function withColor(string $color, bool $validate = true) : self
+    public function withColor(string $color, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -103,7 +103,7 @@ class Foo
      * @return self
      * @param bool $validate
      */
-    public function withSize(string $size, bool $validate = true) : self
+    public function withSize(string $size, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -122,7 +122,7 @@ class Foo
     /**
      * @return self
      */
-    public function withoutSize() : self
+    public function withoutSize(): self
     {
         $clone = clone $this;
         unset($clone->size);

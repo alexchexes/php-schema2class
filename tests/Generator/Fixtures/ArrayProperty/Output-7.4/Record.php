@@ -53,7 +53,7 @@ class Record
      * @return self
      * @param bool $validate
      */
-    public function withDataArray(array $dataArray, bool $validate = true) : self
+    public function withDataArray(array $dataArray, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -72,7 +72,7 @@ class Record
     /**
      * @return self
      */
-    public function withoutDataArray() : self
+    public function withoutDataArray(): self
     {
         $clone = clone $this;
         unset($clone->dataArray);

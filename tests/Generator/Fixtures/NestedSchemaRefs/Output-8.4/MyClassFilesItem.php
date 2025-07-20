@@ -62,7 +62,7 @@ class MyClassFilesItem
      * @return self
      * @param bool $validate
      */
-    public function withInput(string $input, bool $validate = true) : self
+    public function withInput(string $input, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -81,7 +81,7 @@ class MyClassFilesItem
     /**
      * @return self
      */
-    public function withoutInput() : self
+    public function withoutInput(): self
     {
         $clone = clone $this;
         unset($clone->input);
@@ -93,7 +93,7 @@ class MyClassFilesItem
      * @param OptionsObject $options
      * @return self
      */
-    public function withOptions(OptionsObject $options) : self
+    public function withOptions(OptionsObject $options): self
     {
         $clone = clone $this;
         $clone->options = $options;
@@ -104,7 +104,7 @@ class MyClassFilesItem
     /**
      * @return self
      */
-    public function withoutOptions() : self
+    public function withoutOptions(): self
     {
         $clone = clone $this;
         unset($clone->options);

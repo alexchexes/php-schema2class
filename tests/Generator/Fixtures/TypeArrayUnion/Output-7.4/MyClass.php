@@ -58,7 +58,7 @@ class MyClass
      * @param string|MyClassFooAlternative2 $foo
      * @return self
      */
-    public function withFoo($foo) : self
+    public function withFoo($foo): self
     {
         $clone = clone $this;
         $clone->foo = $foo;
