@@ -224,6 +224,7 @@ class SchemaToClass
 
         if (isset($schema["properties"])) {
             foreach ($schema["properties"] as $key => $definition) {
+                $key = (string) $key;
                 $isRequired = isset($schema["required"]) && in_array($key, $schema["required"]);
 
                 $property = PropertyBuilder::buildPropertyFromSchema($req, $key, $definition, $isRequired);
