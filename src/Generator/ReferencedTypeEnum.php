@@ -3,6 +3,7 @@
 namespace Helmich\Schema2Class\Generator;
 
 use Helmich\Schema2Class\Generator\SchemaToEnum;
+use Helmich\Schema2Class\Generator\EnumUtils;
 
 readonly class ReferencedTypeEnum implements ReferencedType
 {
@@ -40,13 +41,7 @@ readonly class ReferencedTypeEnum implements ReferencedType
             return $this->relativeName($req);
         }
 
-        $literals = array_map(
-            static function ($v): string {
-                return var_export($v, true);
-            },
-            $this->schema['enum']
-        );
-        return implode('|', $literals);
+        return EnumUtils::typeAnnotation($this->schema['enum']);
     }
 
     public function typeHint(GeneratorRequest $req): ?string
@@ -55,31 +50,7 @@ readonly class ReferencedTypeEnum implements ReferencedType
             return $this->relativeName($req);
         }
 
-        $types = [];
-        foreach ($this->schema['enum'] as $v) {
-            if ($v === null) {
-                $types['null'] = 'null';
-            } elseif (is_string($v)) {
-                $types['string'] = 'string';
-            } elseif (is_int($v)) {
-                $types['int'] = 'int';
-            } elseif (is_float($v)) {
-                $types['float'] = 'float';
-            } elseif (is_bool($v)) {
-                $types['bool'] = 'bool';
-            }
-        }
-
-        if (!$req->isAtLeastPHP('8.0') && count($types) !== 1) {
-            return null;
-        }
-
-        if (isset($types['int']) && isset($types['float'])) {
-            $types['int'] = 'int';
-            $types['float'] = 'float';
-        }
-
-        return implode('|', array_values($types));
+        return EnumUtils::typeHint($this->schema['enum'], $req->getTargetPHPVersion());
     }
 
     function serializedInputTypeHint(GeneratorRequest $req): ?string
@@ -98,8 +69,7 @@ readonly class ReferencedTypeEnum implements ReferencedType
             return "({$expr}) instanceof " . $this->relativeName($req);
         }
 
-        $values = var_export($this->schema['enum'], true);
-        return "in_array({$expr}, {$values}, true)";
+        return EnumUtils::assertionExpr($this->schema['enum'], $expr);
     }
 
     public function inputAssertionExpr(GeneratorRequest $req, string $expr): string
@@ -108,8 +78,7 @@ readonly class ReferencedTypeEnum implements ReferencedType
             return "" . $this->relativeName($req) . "::tryFrom({$expr}) !== null";
         }
 
-        $values = var_export($this->schema['enum'], true);
-        return "in_array({$expr}, {$values}, true)";
+        return EnumUtils::assertionExpr($this->schema['enum'], $expr);
     }
 
     public function inputMappingExpr(GeneratorRequest $req, string $expr, ?string $validateExpr): string

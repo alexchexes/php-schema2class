@@ -62,7 +62,7 @@ class Foo
     ];
 
     /**
-     * @var int|float|null
+     * @var 0|1.5|2.5|3.5|null
      */
     private int|float|null $floatEnum = null;
 
@@ -95,7 +95,7 @@ class Foo
     }
 
     /**
-     * @return int|float|null
+     * @return 0|1.5|2.5|3.5|null
      */
     public function getFloatEnum(): int|float|null
     {
@@ -135,7 +135,7 @@ class Foo
     }
 
     /**
-     * @param int|float $floatEnum
+     * @param 0|1.5|2.5|3.5 $floatEnum
      * @return self
      * @param bool $validate
      */
