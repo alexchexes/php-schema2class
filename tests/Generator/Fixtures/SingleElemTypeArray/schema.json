@@ -1,0 +1,30 @@
+{
+  "type": "object",
+  "properties": {
+    "foo": {
+      "type": ["string"]
+    },
+    "bar": {
+      "type": ["number"]
+    },
+    "baz": {
+      "type": ["integer"]
+    },
+    "qux": {
+      "type": ["boolean"]
+    },
+    "grox": {
+      "type": ["null"]
+    },
+    "quux": {
+      "type": ["object"],
+      "properties": {
+        "a": { "type": "string" }
+      }
+    },
+    "thud": {
+      "type": ["array"],
+      "items": { "type": "string" }
+    }
+  }
+}

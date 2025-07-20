@@ -66,6 +66,12 @@ class PropertyBuilder
 
         $definition = self::sanitizeEnum($definition);
 
+        // collapse single-element type arrays (e.g. ["string"] -> "string")
+        $defType = $definition['type'] ?? null;
+        if (is_array($defType) && count($defType) === 1) {
+            $definition['type'] = $defType[0];
+        }
+
         // Dereference references to schemas that will not result in a separate class
         if (isset($definition['$ref'])) {
             $refSchema = $req->lookupSchema($definition['$ref']);
