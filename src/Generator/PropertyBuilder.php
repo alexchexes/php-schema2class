@@ -132,7 +132,7 @@ class PropertyBuilder
                 }
 
                 $decorator = new OptionalPropertyDecorator($name, $prop);  // optional
-                if (self::definitionAllowsNull($definition) || $property->allowsNull()) {
+                if (self::definitionAllowsNull($definition) || $prop->allowsNull()) {
                     $decorator->markOptionalNullable();
                 }
 
