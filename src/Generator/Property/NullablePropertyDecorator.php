@@ -186,9 +186,9 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface, Renameabl
         return "({$expr} !== null) ? ({$inner}) : null";
     }
 
-    public function generateOutputStdClassMappingExpr(string $expr): string
+    public function generateOutputMappingExprStdClass(string $expr): string
     {
-        $inner = $this->inner->generateOutputStdClassMappingExpr($expr);
+        $inner = $this->inner->generateOutputMappingExprStdClass($expr);
         return "({$expr} !== null) ? ({$inner}) : null";
     }
 

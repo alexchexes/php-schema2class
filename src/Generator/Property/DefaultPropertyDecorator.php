@@ -156,9 +156,9 @@ class DefaultPropertyDecorator implements PropertyDecoratorInterface, Renameable
         return $this->inner->generateOutputMappingExpr($expr);
     }
 
-    public function generateOutputStdClassMappingExpr(string $expr): string
+    public function generateOutputMappingExprStdClass(string $expr): string
     {
-        return $this->inner->generateOutputStdClassMappingExpr($expr);
+        return $this->inner->generateOutputMappingExprStdClass($expr);
     }
 
     public function generateCloneExpr(string $expr): string

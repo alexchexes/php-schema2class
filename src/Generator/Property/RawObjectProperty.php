@@ -44,7 +44,7 @@ class RawObjectProperty extends AbstractProperty
         return 'json_decode(json_encode(' . $expr . '), true)';
     }
 
-    public function generateOutputStdClassMappingExpr(string $expr): string
+    public function generateOutputMappingExprStdClass(string $expr): string
     {
         return 'json_decode(json_encode(' . $expr . '))';
     }

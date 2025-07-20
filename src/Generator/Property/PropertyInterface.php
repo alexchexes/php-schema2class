@@ -110,7 +110,7 @@ interface PropertyInterface
      * @param string $expr
      * @return string
      */
-    public function generateOutputStdClassMappingExpr(string $expr): string;
+    public function generateOutputMappingExprStdClass(string $expr): string;
 
     /**
      * @param string $expr

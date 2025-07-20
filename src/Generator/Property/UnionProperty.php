@@ -169,7 +169,7 @@ class UnionProperty extends AbstractProperty
         $match  = new MatchGenerator("true");
 
         foreach ($this->subProperties as $subProperty) {
-            $mapping       = $subProperty->generateOutputStdClassMappingExpr("\$this->{$name}");
+            $mapping       = $subProperty->generateOutputMappingExprStdClass("\$this->{$name}");
             $discriminator = $subProperty->generateTypeAssertionExpr("\$this->{$name}");
 
             $match->addArm($discriminator, $mapping);
@@ -224,7 +224,7 @@ class UnionProperty extends AbstractProperty
         $conversions = [];
 
         foreach ($this->subProperties as $subProperty) {
-            $mapping       = $subProperty->generateOutputStdClassMappingExpr("\$this->{$name}");
+            $mapping       = $subProperty->generateOutputMappingExprStdClass("\$this->{$name}");
             $assignment    = sprintf('$%s->{%s} = %s;', $outputVarName, $keyStr, $mapping);
             $discriminator = $subProperty->generateTypeAssertionExpr("\$this->{$name}");
 
@@ -390,7 +390,7 @@ class UnionProperty extends AbstractProperty
         return $out;
     }
 
-    public function generateOutputStdClassMappingExpr(string $expr): string
+    public function generateOutputMappingExprStdClass(string $expr): string
     {
         if ($this->generatorRequest->isAtLeastPHP("8.0")) {
             $match = new MatchGenerator("true");
@@ -398,7 +398,7 @@ class UnionProperty extends AbstractProperty
 
             foreach ($this->subProperties as $subProperty) {
                 $assert = $subProperty->generateTypeAssertionExpr($expr);
-                $map    = $subProperty->generateOutputStdClassMappingExpr($expr);
+                $map    = $subProperty->generateOutputMappingExprStdClass($expr);
                 $match->addArm($assert, $map);
             }
 
@@ -409,7 +409,7 @@ class UnionProperty extends AbstractProperty
 
         foreach ($this->subProperties as $subProperty) {
             $assert = $subProperty->generateTypeAssertionExpr($expr);
-            $map    = $subProperty->generateOutputStdClassMappingExpr($expr);
+            $map    = $subProperty->generateOutputMappingExprStdClass($expr);
             $out    = "({$assert}) ? ({$map}) : ({$out})";
         }
 

@@ -36,7 +36,7 @@ class PropertyCollection implements \Iterator
         return join("\n", $conv);
     }
 
-    public function generateTypeToObjectConversionCode(string $outputVarName = 'output'): string
+    public function generateTypeToStdClassConversionCode(string $outputVarName = 'output'): string
     {
         $conv = array_map(fn ($p) => $p->convertTypeToStdClass($outputVarName), $this->properties);
         return join("\n", $conv);

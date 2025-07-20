@@ -370,6 +370,10 @@ class Generator
         return $method;
     }
 
+    /**
+     * @param PropertyCollection $properties
+     * @return MethodGenerator
+     */
     public function generateToStdClassMethod(PropertyCollection $properties, bool $hasDefaults = false): MethodGenerator
     {
         $tags = [];
@@ -379,7 +383,7 @@ class Generator
         $tags[] = new ReturnTag(['\\stdClass'], 'Converted object');
 
         $docBlock = new DocBlockGenerator(
-            "Converts this object to a stdClass that can be JSON-serialized",
+            'Converts this object to a stdClass that can be JSON-serialized',
             null,
             $tags
         );
@@ -391,7 +395,7 @@ class Generator
         }
 
         $body = '$output = new \\stdClass();' . "\n" .
-            $properties->generateTypeToObjectConversionCode('output') . "\n";
+            $properties->generateTypeToStdClassConversionCode('output') . "\n";
 
         if ($hasDefaults) {
             $body .= "\nif (\$includeDefaults) {\n" .
@@ -414,7 +418,7 @@ class Generator
         );
 
         if ($this->generatorRequest->isAtLeastPHP("7.0")) {
-            $method->setReturnType("\\stdClass");
+            $method->setReturnType('\\stdClass');
         }
 
         return $method;
