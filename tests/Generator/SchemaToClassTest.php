@@ -502,5 +502,14 @@ class SchemaToClassTest extends TestCase
             ],
             $obj->toArray(),
         );
+
+        $this->assertEquals(
+            json_decode(json_encode([
+                'foo' => 'some default value for foo',
+                'bar' => ['nestedFoo' => "some value inside default value for 'bar' object"],
+                'baz' => 'sanity-check',
+            ])),
+            $obj->toStdClass(),
+        );
     }
 }
