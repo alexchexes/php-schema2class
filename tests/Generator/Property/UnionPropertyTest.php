@@ -14,6 +14,8 @@ use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use function PHPUnit\Framework\assertSame;
 use function PHPUnit\Framework\assertTrue;
+use Helmich\Schema2Class\Generator\Definitions\Definition;
+use Helmich\Schema2Class\Generator\DefinitionsReferenceLookup;
 
 class UnionPropertyTest extends TestCase
 {
@@ -52,8 +54,8 @@ class UnionPropertyTest extends TestCase
 
         $expected = <<<'EOCODE'
 $myPropertyName = match (true) {
-    FooMyPropertyNameAlternative1::validateInput($variable['myPropertyName'], true) => FooMyPropertyNameAlternative1::buildFromInput($variable['myPropertyName'], validate: $validate),
-    FooMyPropertyNameAlternative2::validateInput($variable['myPropertyName'], true) => FooMyPropertyNameAlternative2::buildFromInput($variable['myPropertyName'], validate: $validate),
+    FooMyPropertyNameAlternative1::validateInput($variable['myPropertyName'], true) => FooMyPropertyNameAlternative1::buildFromInput($variable['myPropertyName'], $validate, $materializeDefaults),
+    FooMyPropertyNameAlternative2::validateInput($variable['myPropertyName'], true) => FooMyPropertyNameAlternative2::buildFromInput($variable['myPropertyName'], $validate, $materializeDefaults),
     default => throw new \InvalidArgumentException("could not build property 'myPropertyName' from JSON"),
 };
 EOCODE;
@@ -86,6 +88,26 @@ $this->myPropertyName = match (true) {
 };
 EOCODE;
         assertSame($expected, $this->property->cloneProperty());
+    }
+
+    public function testAllowsNullIfSubPropertyAllowsNull(): void
+    {
+        $defs = [
+            '#/definitions/foo' => new Definition('Ns', '', 'Ns\\Foo', 'Foo', ['type' => ['boolean', 'null']]),
+            '#/definitions/bar' => new Definition('Ns', '', 'Ns\\Bar', 'Bar', ['type' => 'string']),
+        ];
+
+        $lookup = new DefinitionsReferenceLookup($defs);
+        $req    = $this->generatorRequest->withReferenceLookup($lookup);
+
+        $prop = new UnionProperty('myPropertyName', [
+            'anyOf' => [
+                ['$ref' => '#/definitions/foo'],
+                ['$ref' => '#/definitions/bar'],
+            ],
+        ], $req);
+
+        assertTrue($prop->allowsNull());
     }
 
     public static function dataForAnnotationAndHintWithSimpleArray(): array

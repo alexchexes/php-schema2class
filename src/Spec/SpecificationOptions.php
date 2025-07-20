@@ -124,7 +124,7 @@ class SpecificationOptions
     /**
      * @return string|null
      */
-    public function getTargetDirectory() : ?string
+    public function getTargetDirectory(): ?string
     {
         return $this->targetDirectory ?? null;
     }
@@ -132,7 +132,7 @@ class SpecificationOptions
     /**
      * @return string|null
      */
-    public function getTargetNamespace() : ?string
+    public function getTargetNamespace(): ?string
     {
         return $this->targetNamespace ?? null;
     }
@@ -140,7 +140,7 @@ class SpecificationOptions
     /**
      * @return int|string|null
      */
-    public function getTargetPHPVersion() : int|string|null
+    public function getTargetPHPVersion(): int|string|null
     {
         return $this->targetPHPVersion;
     }
@@ -152,7 +152,7 @@ class SpecificationOptions
      *
      * @return bool|null
      */
-    public function getCleanTargetDirectory() : ?bool
+    public function getCleanTargetDirectory(): ?bool
     {
         return $this->cleanTargetDirectory ?? null;
     }
@@ -160,7 +160,7 @@ class SpecificationOptions
     /**
      * @return bool|null
      */
-    public function getDisableStrictTypes() : ?bool
+    public function getDisableStrictTypes(): ?bool
     {
         return $this->disableStrictTypes ?? null;
     }
@@ -168,7 +168,7 @@ class SpecificationOptions
     /**
      * @return bool|null
      */
-    public function getTreatValuesWithDefaultAsOptional() : ?bool
+    public function getTreatValuesWithDefaultAsOptional(): ?bool
     {
         return $this->treatValuesWithDefaultAsOptional ?? null;
     }
@@ -176,7 +176,7 @@ class SpecificationOptions
     /**
      * @return bool|null
      */
-    public function getInlineAllofReferences() : ?bool
+    public function getInlineAllofReferences(): ?bool
     {
         return $this->inlineAllofReferences ?? null;
     }
@@ -188,7 +188,7 @@ class SpecificationOptions
      *
      * @return string|null
      */
-    public function getNewValidatorClassExpr() : ?string
+    public function getNewValidatorClassExpr(): ?string
     {
         return $this->newValidatorClassExpr ?? null;
     }
@@ -199,7 +199,7 @@ class SpecificationOptions
      *
      * @return bool|null
      */
-    public function getPreservePropertyNames() : ?bool
+    public function getPreservePropertyNames(): ?bool
     {
         return $this->preservePropertyNames ?? null;
     }
@@ -210,7 +210,7 @@ class SpecificationOptions
      *
      * @return bool|null
      */
-    public function getNoGetters() : ?bool
+    public function getNoGetters(): ?bool
     {
         return $this->noGetters ?? null;
     }
@@ -221,7 +221,7 @@ class SpecificationOptions
      *
      * @return bool|null
      */
-    public function getNoSetters() : ?bool
+    public function getNoSetters(): ?bool
     {
         return $this->noSetters ?? null;
     }
@@ -234,7 +234,7 @@ class SpecificationOptions
      *
      * @return bool|'chainable'|null
      */
-    public function getMutableSetters() : bool|string|null
+    public function getMutableSetters(): bool|string|null
     {
         return $this->mutableSetters;
     }
@@ -246,7 +246,7 @@ class SpecificationOptions
      *
      * @return bool|null
      */
-    public function getNoSchemaMetadata() : ?bool
+    public function getNoSchemaMetadata(): ?bool
     {
         return $this->noSchemaMetadata ?? null;
     }
@@ -257,7 +257,7 @@ class SpecificationOptions
      *
      * @return bool|null
      */
-    public function getSingleLineSchema() : ?bool
+    public function getSingleLineSchema(): ?bool
     {
         return $this->singleLineSchema ?? null;
     }
@@ -269,7 +269,7 @@ class SpecificationOptions
      *
      * @return bool|null
      */
-    public function getNoEnums() : ?bool
+    public function getNoEnums(): ?bool
     {
         return $this->noEnums ?? null;
     }
@@ -744,7 +744,7 @@ class SpecificationOptions
      * @return SpecificationOptions Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : SpecificationOptions
+    public static function buildFromInput(array|object $input, bool $validate = true): SpecificationOptions
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -801,7 +801,7 @@ class SpecificationOptions
      *
      * @return array Converted array
      */
-    public function toArray() : array
+    public function toArray(): array
     {
         $output = [];
         if (isset($this->targetDirectory)) {
@@ -869,7 +869,7 @@ class SpecificationOptions
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput(array|object $input, bool $return = false) : bool
+    public static function validateInput(array|object $input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;

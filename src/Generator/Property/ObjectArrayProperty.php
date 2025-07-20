@@ -12,6 +12,18 @@ class ObjectArrayProperty extends AbstractProperty
 {
     use TypeConvert;
 
+    private function buildUseClause(): string
+    {
+        $validateArg = $this->generatorRequest->getCurrValidateArgName();
+        $materializeArg = $this->generatorRequest->getCurrMaterializeArgName();
+        
+        $vars = ['$' . $validateArg];
+        if ($materializeArg !== null) {
+            $vars[] = '$' . $materializeArg;
+        }
+        return implode(', ', $vars);
+    }
+
     private PropertyInterface $itemType;
     private array $itemSchema;
 
@@ -126,7 +138,7 @@ class ObjectArrayProperty extends AbstractProperty
 
     public function generateInputMappingExpr(string $expr, bool $asserted = false): string
     {
-        $sm       = $this->itemType->generateInputMappingExpr('$i');
+        $sm = $this->itemType->generateInputMappingExpr('$i');
 
         if ($this->itemType instanceof MixedProperty) {
             return match (true) {
@@ -138,10 +150,17 @@ class ObjectArrayProperty extends AbstractProperty
         $typeHint = $this->subTypeName();
 
         return match (true) {
-            $this->generatorRequest->isAtLeastPHP('8.0') => "array_map(fn (array|object \$i): {$typeHint} => {$sm}, {$expr})",
-            $this->generatorRequest->isAtLeastPHP('7.4') => "array_map(fn (\$i): {$typeHint} => {$sm}, {$expr})",
-            $this->generatorRequest->isAtLeastPHP('7.0') => "array_map(function(\$i): {$typeHint} use (\$validate) { return {$sm}; }, {$expr})",
-            default => "array_map(function(\$i) use (\$validate) { return {$sm}; }, {$expr})",
+            $this->generatorRequest->isAtLeastPHP('8.0')
+                => "array_map(fn (array|object \$i): {$typeHint} => {$sm}, {$expr})",
+
+            $this->generatorRequest->isAtLeastPHP('7.4')
+                => "array_map(fn (\$i): {$typeHint} => {$sm}, {$expr})",
+
+            $this->generatorRequest->isAtLeastPHP('7.0')
+                => "array_map(function(\$i): {$typeHint} use ({$this->buildUseClause()}) { return {$sm}; }, {$expr})",
+
+            default
+                => "array_map(function(\$i) use ({$this->buildUseClause()}) { return {$sm}; }, {$expr})",
         };
     }
 

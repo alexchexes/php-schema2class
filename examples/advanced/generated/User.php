@@ -215,7 +215,7 @@ class User
     /**
      * @return \DateTime|null
      */
-    public function getCreatedAt() : ?\DateTime
+    public function getCreatedAt(): ?\DateTime
     {
         return $this->createdAt ?? null;
     }
@@ -223,7 +223,7 @@ class User
     /**
      * @return UserGender|null
      */
-    public function getGender() : ?UserGender
+    public function getGender(): ?UserGender
     {
         return $this->gender ?? null;
     }
@@ -231,7 +231,7 @@ class User
     /**
      * @return string
      */
-    public function getFirstName() : string
+    public function getFirstName(): string
     {
         return $this->firstName;
     }
@@ -239,7 +239,7 @@ class User
     /**
      * @return string
      */
-    public function getLastName() : string
+    public function getLastName(): string
     {
         return $this->lastName;
     }
@@ -247,7 +247,7 @@ class User
     /**
      * @return string|null
      */
-    public function getEmail() : ?string
+    public function getEmail(): ?string
     {
         return $this->email ?? null;
     }
@@ -255,7 +255,7 @@ class User
     /**
      * @return UserBilling|null
      */
-    public function getBilling() : ?UserBilling
+    public function getBilling(): ?UserBilling
     {
         return $this->billing ?? null;
     }
@@ -263,7 +263,7 @@ class User
     /**
      * @return UserPaymentAlternative1|UserPaymentAlternative2|string|null
      */
-    public function getPayment() : UserPaymentAlternative1|UserPaymentAlternative2|string|null
+    public function getPayment(): UserPaymentAlternative1|UserPaymentAlternative2|string|null
     {
         return $this->payment;
     }
@@ -271,7 +271,7 @@ class User
     /**
      * @return UserAddress|null
      */
-    public function getAddress() : ?UserAddress
+    public function getAddress(): ?UserAddress
     {
         return $this->address ?? null;
     }
@@ -279,7 +279,7 @@ class User
     /**
      * @return string[]|null
      */
-    public function getTags() : ?array
+    public function getTags(): ?array
     {
         return $this->tags ?? null;
     }
@@ -287,7 +287,7 @@ class User
     /**
      * @return UserHobbiesItem[]|null
      */
-    public function getHobbies() : ?array
+    public function getHobbies(): ?array
     {
         return $this->hobbies ?? null;
     }
@@ -553,7 +553,7 @@ class User
      * @return User Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : User
+    public static function buildFromInput(array|object $input, bool $validate = true): User
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -565,16 +565,16 @@ class User
         $firstName = $input->{'firstName'};
         $lastName = $input->{'lastName'};
         $email = isset($input->{'email'}) ? $input->{'email'} : null;
-        $billing = isset($input->{'billing'}) ? UserBilling::buildFromInput($input->{'billing'}, validate: $validate) : null;
+        $billing = isset($input->{'billing'}) ? UserBilling::buildFromInput($input->{'billing'}, $validate) : null;
         $payment = isset($input->{'payment'}) ? match (true) {
-            UserPaymentAlternative1::validateInput($input->{'payment'}, true) => UserPaymentAlternative1::buildFromInput($input->{'payment'}, validate: $validate),
-            UserPaymentAlternative2::validateInput($input->{'payment'}, true) => UserPaymentAlternative2::buildFromInput($input->{'payment'}, validate: $validate),
+            UserPaymentAlternative1::validateInput($input->{'payment'}, true) => UserPaymentAlternative1::buildFromInput($input->{'payment'}, $validate),
+            UserPaymentAlternative2::validateInput($input->{'payment'}, true) => UserPaymentAlternative2::buildFromInput($input->{'payment'}, $validate),
             is_string($input->{'payment'}) => $input->{'payment'},
             default => null,
         } : null;
-        $address = isset($input->{'address'}) ? UserAddress::buildFromInput($input->{'address'}, validate: $validate) : null;
+        $address = isset($input->{'address'}) ? UserAddress::buildFromInput($input->{'address'}, $validate) : null;
         $tags = isset($input->{'tags'}) ? $input->{'tags'} : null;
-        $hobbies = isset($input->{'hobbies'}) ? array_map(fn (array|object $i): UserHobbiesItem => UserHobbiesItem::buildFromInput($i, validate: $validate), $input->{'hobbies'}) : null;
+        $hobbies = isset($input->{'hobbies'}) ? array_map(fn (array|object $i): UserHobbiesItem => UserHobbiesItem::buildFromInput($i, $validate), $input->{'hobbies'}) : null;
 
         $obj = new self($firstName, $lastName);
         $obj->createdAt = $createdAt;
@@ -593,7 +593,7 @@ class User
      *
      * @return array Converted array
      */
-    public function toArray() : array
+    public function toArray(): array
     {
         $output = [];
         if (isset($this->createdAt)) {
@@ -638,7 +638,7 @@ class User
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput(array|object $input, bool $return = false) : bool
+    public static function validateInput(array|object $input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;

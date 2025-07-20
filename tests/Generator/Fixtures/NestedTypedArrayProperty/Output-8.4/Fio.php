@@ -24,6 +24,13 @@ class Fio
     ];
 
     /**
+     * Map of optional nullable property names that were explicitly set to `null`
+     *
+     * @var array<string,true>
+     */
+    private array $_explicitNulls = [];
+
+    /**
      * @var string|null
      */
     private ?string $bar = null;
@@ -31,7 +38,7 @@ class Fio
     /**
      * @return string|null
      */
-    public function getBar() : ?string
+    public function getBar(): ?string
     {
         return $this->bar ?? null;
     }
@@ -53,6 +60,7 @@ class Fio
 
         $clone = clone $this;
         $clone->bar = $bar;
+        $clone->_explicitNulls['bar'] = true;
 
         return $clone;
     }
@@ -64,6 +72,7 @@ class Fio
     {
         $clone = clone $this;
         unset($clone->bar);
+        unset($clone->_explicitNulls['bar']);
 
         return $clone;
     }
@@ -76,17 +85,22 @@ class Fio
      * @return Fio Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : Fio
+    public static function buildFromInput(array|object $input, bool $validate = true): Fio
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
+        $__explicitNulls = [];
+        $bar = property_exists($input, 'bar') ? $input->{'bar'} : null;
+        if (property_exists($input, 'bar')) {
+            $__explicitNulls['bar'] = true;
+        }
 
         $obj = new self();
         $obj->bar = $bar;
+        $obj->_explicitNulls = $__explicitNulls;
         return $obj;
     }
 
@@ -95,10 +109,12 @@ class Fio
      *
      * @return array Converted array
      */
-    public function toArray() : array
+    public function toArray(): array
     {
         $output = [];
-        $output['bar'] = $this->bar;
+        if (isset($this->bar) || array_key_exists('bar', $this->_explicitNulls)) {
+            $output['bar'] = $this->bar;
+        }
 
         return $output;
     }
@@ -111,7 +127,7 @@ class Fio
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput(array|object $input, bool $return = false) : bool
+    public static function validateInput(array|object $input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
@@ -125,5 +141,16 @@ class Fio
         }
 
         return $validator->isValid();
+    }
+
+    /**
+     * Checks if an optional nullable property was explicitly set to `null`
+     *
+     * @param string $propertyName property name as appears in the schema
+     * @return bool
+     */
+    public function isExplicitNull(string $propertyName): bool
+    {
+        return array_key_exists($propertyName, $this->_explicitNulls);
     }
 }

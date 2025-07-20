@@ -9,6 +9,11 @@
             "email": "martin@helmich.me"
         }
     ],
+	"config": {
+		"allow-plugins": {
+            "cweagans/composer-patches": true
+        }
+	},
     "require": {
         "php": "^8.2",
         "symfony/console": "~3.0|~4.0|~5.0|~6.0|~7.0",
@@ -38,8 +43,16 @@
         "vimeo/psalm": "^6.5",
         "phpstan/phpstan": "^2.1.2",
         "phpspec/prophecy": "^1.17",
-        "phpspec/prophecy-phpunit": "^2.0"
+        "phpspec/prophecy-phpunit": "^2.0",
+        "cweagans/composer-patches": "^1.7"
     },
+	"extra": {
+		"patches": {
+			"laminas/laminas-code": {
+				"Fix until https://github.com/laminas/laminas-code/pull/208 released": "vendor-patches/laminas-code.patch"
+			}
+		}
+	},
     "archive": {
         "exclude": [
             "/examples",

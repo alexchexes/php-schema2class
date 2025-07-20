@@ -66,7 +66,7 @@ class MyObject
     /**
      * @return A|B
      */
-    public function getFoo() : A|B
+    public function getFoo(): A|B
     {
         return $this->foo;
     }
@@ -91,7 +91,7 @@ class MyObject
      * @return MyObject Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : MyObject
+    public static function buildFromInput(array|object $input, bool $validate = true): MyObject
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -114,7 +114,7 @@ class MyObject
      *
      * @return array Converted array
      */
-    public function toArray() : array
+    public function toArray(): array
     {
         $output = [];
         $output['foo'] = match (true) {
@@ -133,7 +133,7 @@ class MyObject
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput(array|object $input, bool $return = false) : bool
+    public static function validateInput(array|object $input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ns\RefAnnotations;
+namespace Ns\RefAnnotations_8_4;
 
 class Pets
 {
@@ -64,7 +64,7 @@ class Pets
     /**
      * @return GenericPet|null
      */
-    public function getPet() : ?GenericPet
+    public function getPet(): ?GenericPet
     {
         return $this->pet ?? null;
     }
@@ -72,7 +72,7 @@ class Pets
     /**
      * @return Cat|null
      */
-    public function getCat() : ?Cat
+    public function getCat(): ?Cat
     {
         return $this->cat ?? null;
     }
@@ -131,7 +131,7 @@ class Pets
      * @return Pets Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : Pets
+    public static function buildFromInput(array|object $input, bool $validate = true): Pets
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -152,7 +152,7 @@ class Pets
      *
      * @return array Converted array
      */
-    public function toArray() : array
+    public function toArray(): array
     {
         $output = [];
         if (isset($this->pet)) {
@@ -173,7 +173,7 @@ class Pets
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput(array|object $input, bool $return = false) : bool
+    public static function validateInput(array|object $input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;

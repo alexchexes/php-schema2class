@@ -1,0 +1,50 @@
+{
+  "type": "object",
+  "properties": {
+    "foo": {
+      "type": "string",
+      "description": "required, not nullable, no default"
+    },
+    "bar": {
+      "type": "string",
+      "description": "optional, not nullable, no default"
+    },
+    "baz": {
+      "type": ["string", "null"],
+      "description": "optional, nullable, no default"
+    },
+    "qux": {
+      "type": ["string", "null"],
+      "default": "a qux string",
+      "description": "optional, nullable, with default"
+    },
+    "quux": {
+      "type": ["string", "null"],
+      "default": "a quux string",
+      "description": "required, nullable, with default"
+    },
+    "xyyz": {
+      "type": "string",
+      "default": "a xyyz string",
+      "description": "optional, not nullable, with default"
+    },
+    "thud": {
+      "type": "string",
+      "default": "a thud string",
+      "description": "required, not nullable, with default"
+    },
+    "grox": {
+      "type": ["object", "null"],
+      "description": "optional, nullable, with default, object",
+      "properties": {
+        "a": {"type": "string"},
+        "b": {"type": "number"}
+      },
+      "default": {
+        "a": "a string",
+        "b": 123
+      }
+    }
+  },
+  "required": ["foo", "quux", "thud"]
+}
