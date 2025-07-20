@@ -22,7 +22,21 @@ class SchemaToEnum
      */
     public static function canGenerateEnum(array $schema, GeneratorRequest $req): bool
     {
-        return !self::areEnumsDisabled($req) && !self::isMixedEnum($schema);
+        if (self::areEnumsDisabled($req)) {
+            return false;
+        }
+
+        if (self::isMixedEnum($schema)) {
+            return false;
+        }
+
+        foreach ($schema['enum'] as $case) {
+            if (!is_string($case) && !is_int($case)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     static public function isMixedEnum(array $schema): bool

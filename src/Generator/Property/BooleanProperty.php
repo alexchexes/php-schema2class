@@ -20,6 +20,13 @@ class BooleanProperty extends AbstractProperty
 
     public function typeAnnotation(): string
     {
+        if (isset($this->schema['enum']) && count($this->schema['enum']) === 1) {
+            $v = $this->schema['enum'][0];
+            if ($v === true || $v === false) {
+                return $v ? 'true' : 'false';
+            }
+        }
+
         return "bool";
     }
 
