@@ -160,11 +160,11 @@ class Qux
     }
 
     /**
-     * Converts this object back to a stdClass that can be JSON-serialized
+     * Converts this object to a stdClass that can be JSON-serialized
      *
-     * @return stdClass Converted object
+     * @return \stdClass Converted object
      */
-    public function toObject(): \stdClass
+    public function toStdClass(): \stdClass
     {
         $output = new \stdClass();
         if (isset($this->grox)) {
@@ -174,7 +174,7 @@ class Qux
                 (($this->grox) instanceof Foo) || (($this->grox) instanceof Bar) => match (true) {
                 default => null,
                 ($this->grox) instanceof Foo,
-                ($this->grox) instanceof Bar => $this->grox->toObject(),
+                ($this->grox) instanceof Bar => $this->grox->toStdClass(),
             },
             };
         }

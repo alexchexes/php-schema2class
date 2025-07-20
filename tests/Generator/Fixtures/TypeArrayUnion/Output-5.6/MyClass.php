@@ -114,17 +114,17 @@ class MyClass
     }
 
     /**
-     * Converts this object back to a stdClass that can be JSON-serialized
+     * Converts this object to a stdClass that can be JSON-serialized
      *
-     * @return stdClass Converted object
+     * @return \stdClass Converted object
      */
-    public function toObject()
+    public function toStdClass()
     {
         $output = new \stdClass();
         if ((is_string($this->foo))) {
         $output->{'foo'} = $this->foo;
         } else if (($this->foo instanceof MyClassFooAlternative2)) {
-        $output->{'foo'} = ($this->foo)->toObject();
+        $output->{'foo'} = ($this->foo)->toStdClass();
         }
 
         return $output;

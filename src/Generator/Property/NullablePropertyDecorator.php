@@ -99,9 +99,9 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface, Renameabl
         return $this->inner->convertTypeToArray($out);
     }
 
-    public function convertTypeToObject(string $out = 'output'): string
+    public function convertTypeToStdClass(string $out = 'output'): string
     {
-        return $this->inner->convertTypeToObject($out);
+        return $this->inner->convertTypeToStdClass($out);
     }
 
     public function typeAnnotation(): string
@@ -186,9 +186,9 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface, Renameabl
         return "({$expr} !== null) ? ({$inner}) : null";
     }
 
-    public function generateOutputObjectMappingExpr(string $expr): string
+    public function generateOutputStdClassMappingExpr(string $expr): string
     {
-        $inner = $this->inner->generateOutputObjectMappingExpr($expr);
+        $inner = $this->inner->generateOutputStdClassMappingExpr($expr);
         return "({$expr} !== null) ? ({$inner}) : null";
     }
 

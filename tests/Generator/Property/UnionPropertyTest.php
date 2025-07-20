@@ -79,16 +79,16 @@ EOCODE;
         assertSame($expected, $result);
     }
 
-    public function testConvertTypeToObject()
+    public function testConvertTypeToStdClass()
     {
         $underTest = new UnionProperty('myPropertyName', ['anyOf' => [['properties' => ['subFoo1' => ['type' => 'string']]], ['properties' => ['subFoo2' => ['type' => 'string']]]]], $this->generatorRequest);
 
-        $result = $underTest->convertTypeToObject('variable');
+        $result = $underTest->convertTypeToStdClass('variable');
 
         $expected = <<<'EOCODE'
 $variable->{'myPropertyName'} = match (true) {
     $this->myPropertyName instanceof FooMyPropertyNameAlternative1,
-    $this->myPropertyName instanceof FooMyPropertyNameAlternative2 => ($this->myPropertyName)->toObject(),
+    $this->myPropertyName instanceof FooMyPropertyNameAlternative2 => ($this->myPropertyName)->toStdClass(),
 };
 EOCODE;
 

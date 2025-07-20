@@ -38,7 +38,7 @@ class PropertyCollection implements \Iterator
 
     public function generateTypeToObjectConversionCode(string $outputVarName = 'output'): string
     {
-        $conv = array_map(fn ($p) => $p->convertTypeToObject($outputVarName), $this->properties);
+        $conv = array_map(fn ($p) => $p->convertTypeToStdClass($outputVarName), $this->properties);
         return join("\n", $conv);
     }
 

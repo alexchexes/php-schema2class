@@ -84,14 +84,14 @@ EOCODE;
         assertSame($expected, $result);
     }
 
-    public function testConvertTypeToObjectWithComplexArray()
+    public function testConvertTypeToStdClassWithComplexArray()
     {
         $underTest = new ObjectArrayProperty('myPropertyName', ['type' => 'array', 'items' => ['properties' => ['foo' => ['type' => 'string']]]], $this->generatorRequest);
 
-        $result = $underTest->convertTypeToObject('variable');
+        $result = $underTest->convertTypeToStdClass('variable');
 
         $expected = <<<'EOCODE'
-$variable->{'myPropertyName'} = array_map(fn (FooMyPropertyNameItem $i) => $i->toObject(), $this->myPropertyName);
+$variable->{'myPropertyName'} = array_map(fn (FooMyPropertyNameItem $i) => $i->toStdClass(), $this->myPropertyName);
 EOCODE;
 
         assertSame($expected, $result);

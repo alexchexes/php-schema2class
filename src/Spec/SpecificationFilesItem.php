@@ -182,6 +182,28 @@ class SpecificationFilesItem
     }
 
     /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        $output->{'input'} = match (true) {
+            is_string($this->input) => $this->input,
+            is_array($this->input) || is_object($this->input) => json_decode(json_encode($this->input)),
+        };
+        if (isset($this->className)) {
+            $output->{'className'} = $this->className;
+        }
+        if (isset($this->options)) {
+            $output->{'options'} = $this->options->toStdClass();
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data

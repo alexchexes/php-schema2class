@@ -1830,12 +1830,12 @@ class MyClass
     }
 
     /**
-     * Converts this object back to a stdClass that can be JSON-serialized
+     * Converts this object to a stdClass that can be JSON-serialized
      *
      * @param bool $includeDefaults Add defaults for missing properties
-     * @return stdClass Converted object
+     * @return \stdClass Converted object
      */
-    public function toObject(bool $includeDefaults = false): \stdClass
+    public function toStdClass(bool $includeDefaults = false): \stdClass
     {
         $output = new \stdClass();
         $output->{'_GLOBALS'} = $this->_GLOBALS_1;
@@ -1859,7 +1859,7 @@ class MyClass
         $output->{'materializeDefaults'} = $this->materializeDefaults;
         $output->{'includeDefaults'} = $this->includeDefaults;
         if (isset($this->testObj)) {
-            $output->{'testObj'} = ($this->testObj)->toObject();
+            $output->{'testObj'} = ($this->testObj)->toStdClass();
         }
         $output->{'buildFromInput'} = $this->_buildFromInput;
         $output->{'toArray'} = $this->_toArray;

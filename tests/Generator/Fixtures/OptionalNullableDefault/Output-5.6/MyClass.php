@@ -575,12 +575,12 @@ class MyClass
     }
 
     /**
-     * Converts this object back to a stdClass that can be JSON-serialized
+     * Converts this object to a stdClass that can be JSON-serialized
      *
      * @param bool $includeDefaults Add defaults for missing properties
-     * @return stdClass Converted object
+     * @return \stdClass Converted object
      */
-    public function toObject(bool $includeDefaults = false)
+    public function toStdClass(bool $includeDefaults = false)
     {
         $output = new \stdClass();
         $output->{'foo'} = $this->foo;
@@ -600,7 +600,7 @@ class MyClass
         $output->{'thud'} = $this->thud;
         if (isset($this->grox) || array_key_exists('grox', $this->_providedOptionals)) {
             if (isset($this->grox)) {
-                $output->{'grox'} = ($this->grox)->toObject();
+                $output->{'grox'} = ($this->grox)->toStdClass();
             }
         }
 

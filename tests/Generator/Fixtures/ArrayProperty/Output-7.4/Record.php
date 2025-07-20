@@ -127,15 +127,15 @@ class Record
     }
 
     /**
-     * Converts this object back to a stdClass that can be JSON-serialized
+     * Converts this object to a stdClass that can be JSON-serialized
      *
-     * @return stdClass Converted object
+     * @return \stdClass Converted object
      */
-    public function toObject(): \stdClass
+    public function toStdClass(): \stdClass
     {
         $output = new \stdClass();
         if (isset($this->dataArray)) {
-            $output->{'dataArray'} = array_map(fn(Phone $i): array => $i->toObject(), $this->dataArray);
+            $output->{'dataArray'} = array_map(fn(Phone $i): array => $i->toStdClass(), $this->dataArray);
         }
 
         return $output;

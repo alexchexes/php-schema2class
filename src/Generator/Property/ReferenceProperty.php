@@ -50,9 +50,9 @@ class ReferenceProperty extends AbstractProperty
         return $this->type->outputMappingExpr($this->generatorRequest, $expr);
     }
 
-    public function generateOutputObjectMappingExpr(string $expr): string
+    public function generateOutputStdClassMappingExpr(string $expr): string
     {
-        return $this->type->outputObjectMappingExpr($this->generatorRequest, $expr);
+        return $this->type->outputStdClassMappingExpr($this->generatorRequest, $expr);
     }
 
     public function isComplex(): bool

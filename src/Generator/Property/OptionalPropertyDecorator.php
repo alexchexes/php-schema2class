@@ -84,10 +84,10 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator implements Ren
         return "if (isset(\$this->{$name})) {\n{$this->indentCode($inner, 1)}\n}";
     }
 
-    public function convertTypeToObject(string $outputVarName = 'output'): string
+    public function convertTypeToStdClass(string $outputVarName = 'output'): string
     {
         $name  = $this->inner->name();
-        $inner = $this->inner->convertTypeToObject($outputVarName);
+        $inner = $this->inner->convertTypeToStdClass($outputVarName);
 
         if ($this->optionalNullable) {
             $check = "isset(\$this->{$name}) || array_key_exists('{$this->key}', \$this->_providedOptionals)";

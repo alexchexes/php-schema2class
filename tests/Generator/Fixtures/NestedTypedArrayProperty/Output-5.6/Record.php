@@ -333,24 +333,24 @@ class Record
     }
 
     /**
-     * Converts this object back to a stdClass that can be JSON-serialized
+     * Converts this object to a stdClass that can be JSON-serialized
      *
-     * @return stdClass Converted object
+     * @return \stdClass Converted object
      */
-    public function toObject()
+    public function toStdClass()
     {
         $output = new \stdClass();
         if (isset($this->dataArray)) {
-            $output->{'dataArray'} = array_map(fn(Phone $i): array => $i->toObject(), $this->dataArray);
+            $output->{'dataArray'} = array_map(fn(Phone $i): array => $i->toStdClass(), $this->dataArray);
         }
         if (isset($this->dataArrayNested)) {
-            $output->{'dataArrayNested'} = array_map(function($i) { return array_map(fn(Phone $i): array => $i->toObject(), $i); }, $this->dataArrayNested);
+            $output->{'dataArrayNested'} = array_map(function($i) { return array_map(fn(Phone $i): array => $i->toStdClass(), $i); }, $this->dataArrayNested);
         }
         if (isset($this->dataArrayAnyOf)) {
-            $output->{'dataArrayAnyOf'} = array_map(function($i) { return (($i) instanceof Fio) ? ($i->toObject()) : ((($i) instanceof Phone) ? ($i->toObject()) : (null)); }, $this->dataArrayAnyOf);
+            $output->{'dataArrayAnyOf'} = array_map(function($i) { return (($i) instanceof Fio) ? ($i->toStdClass()) : ((($i) instanceof Phone) ? ($i->toStdClass()) : (null)); }, $this->dataArrayAnyOf);
         }
         if (isset($this->dataArrayNestedAnyOf)) {
-            $output->{'dataArrayNestedAnyOf'} = array_map(function($i) { return array_map(function($i) { return (($i) instanceof Fio) ? ($i->toObject()) : ((($i) instanceof Phone) ? ($i->toObject()) : (null)); }, $i); }, $this->dataArrayNestedAnyOf);
+            $output->{'dataArrayNestedAnyOf'} = array_map(function($i) { return array_map(function($i) { return (($i) instanceof Fio) ? ($i->toStdClass()) : ((($i) instanceof Phone) ? ($i->toStdClass()) : (null)); }, $i); }, $this->dataArrayNestedAnyOf);
         }
 
         return $output;

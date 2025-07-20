@@ -370,16 +370,16 @@ class Generator
         return $method;
     }
 
-    public function generateToObjectMethod(PropertyCollection $properties, bool $hasDefaults = false): MethodGenerator
+    public function generateToStdClassMethod(PropertyCollection $properties, bool $hasDefaults = false): MethodGenerator
     {
         $tags = [];
         if ($hasDefaults) {
             $tags[] = new ParamTag('includeDefaults', ['bool'], 'Add defaults for missing properties');
         }
-        $tags[] = new ReturnTag(["stdClass"], "Converted object");
+        $tags[] = new ReturnTag(['\\stdClass'], 'Converted object');
 
         $docBlock = new DocBlockGenerator(
-            "Converts this object back to a stdClass that can be JSON-serialized",
+            "Converts this object to a stdClass that can be JSON-serialized",
             null,
             $tags
         );
@@ -406,7 +406,7 @@ class Generator
         $body .= "\nreturn \$output;";
 
         $method = new MethodGenerator(
-            'toObject',
+            'toStdClass',
             $params,
             MethodGenerator::FLAG_PUBLIC,
             $body,

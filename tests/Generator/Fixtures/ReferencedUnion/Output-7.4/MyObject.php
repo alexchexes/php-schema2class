@@ -133,11 +133,11 @@ class MyObject
     }
 
     /**
-     * Converts this object back to a stdClass that can be JSON-serialized
+     * Converts this object to a stdClass that can be JSON-serialized
      *
-     * @return stdClass Converted object
+     * @return \stdClass Converted object
      */
-    public function toObject(): \stdClass
+    public function toStdClass(): \stdClass
     {
         $output = new \stdClass();
         if ((in_array($this->foo, array (

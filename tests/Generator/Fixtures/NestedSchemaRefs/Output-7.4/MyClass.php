@@ -171,18 +171,18 @@ class MyClass
     }
 
     /**
-     * Converts this object back to a stdClass that can be JSON-serialized
+     * Converts this object to a stdClass that can be JSON-serialized
      *
-     * @return stdClass Converted object
+     * @return \stdClass Converted object
      */
-    public function toObject(): \stdClass
+    public function toStdClass(): \stdClass
     {
         $output = new \stdClass();
         if (isset($this->files)) {
-            $output->{'files'} = array_map(fn (MyClassFilesItem $i) => $i->toObject(), $this->files);
+            $output->{'files'} = array_map(fn (MyClassFilesItem $i) => $i->toStdClass(), $this->files);
         }
         if (isset($this->options)) {
-            $output->{'options'} = $this->options->toObject();
+            $output->{'options'} = $this->options->toStdClass();
         }
 
         return $output;

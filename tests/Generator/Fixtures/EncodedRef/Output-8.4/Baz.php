@@ -200,21 +200,21 @@ class Baz
     }
 
     /**
-     * Converts this object back to a stdClass that can be JSON-serialized
+     * Converts this object to a stdClass that can be JSON-serialized
      *
-     * @return stdClass Converted object
+     * @return \stdClass Converted object
      */
-    public function toObject(): \stdClass
+    public function toStdClass(): \stdClass
     {
         $output = new \stdClass();
         if (isset($this->a)) {
-            $output->{'a'} = $this->a->toObject();
+            $output->{'a'} = $this->a->toStdClass();
         }
         if (isset($this->b)) {
-            $output->{'b'} = $this->b->toObject();
+            $output->{'b'} = $this->b->toStdClass();
         }
         if (isset($this->c)) {
-            $output->{'c'} = $this->c->toObject();
+            $output->{'c'} = $this->c->toStdClass();
         }
 
         return $output;

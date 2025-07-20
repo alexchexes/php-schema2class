@@ -109,9 +109,9 @@ class TypedArrayProperty extends AbstractProperty
         return "array_map(function(\$i) { return {$map}; }, {$expr})";
     }
 
-    public function generateOutputObjectMappingExpr(string $expr): string
+    public function generateOutputStdClassMappingExpr(string $expr): string
     {
-        $map = $this->itemType->generateOutputObjectMappingExpr('$i');
+        $map = $this->itemType->generateOutputStdClassMappingExpr('$i');
         if ($this->generatorRequest->isAtLeastPHP('7.4')) {
             return "array_map(fn(\$i) => {$map}, {$expr})";
         }

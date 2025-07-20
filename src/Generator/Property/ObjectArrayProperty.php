@@ -89,7 +89,7 @@ class ObjectArrayProperty extends AbstractProperty
         return "\${$outputVarName}['$key'] = array_map(function($st \$i) { return \$i->toArray(); }, \$this->{$name});";
     }
 
-    public function convertTypeToObject(string $outputVarName = 'output'): string
+    public function convertTypeToStdClass(string $outputVarName = 'output'): string
     {
         $name = $this->name;
         $key  = $this->key;
@@ -100,9 +100,9 @@ class ObjectArrayProperty extends AbstractProperty
         }
 
         if ($this->generatorRequest->isAtLeastPHP('7.4')) {
-            return "\${$outputVarName}->{'$key'} = array_map(fn ($st \$i) => \$i->toObject(), \$this->{$name});";
+            return "\${$outputVarName}->{'$key'} = array_map(fn ($st \$i) => \$i->toStdClass(), \$this->{$name});";
         }
-        return "\${$outputVarName}->{'$key'} = array_map(function($st \$i) { return \$i->toObject(); }, \$this->{$name});";
+        return "\${$outputVarName}->{'$key'} = array_map(function($st \$i) { return \$i->toStdClass(); }, \$this->{$name});";
     }
 
     /**
@@ -195,14 +195,14 @@ class ObjectArrayProperty extends AbstractProperty
         return "array_map(function($st \$i) { return {$sm} }, {$expr})";
     }
 
-    public function generateOutputObjectMappingExpr(string $expr): string
+    public function generateOutputStdClassMappingExpr(string $expr): string
     {
         if ($this->itemType instanceof MixedProperty) {
             return "array_map(fn (\$i) => \$i, {$expr})";
         }
 
         $st = $this->subTypeName();
-        $sm = $this->itemType->generateOutputObjectMappingExpr('$i');
+        $sm = $this->itemType->generateOutputStdClassMappingExpr('$i');
 
         if ($this->generatorRequest->isAtLeastPHP('7.4')) {
             return "array_map(fn ($st \$i) => {$sm}, {$expr})";

@@ -119,15 +119,15 @@ class MyGenericStringNumberField
     }
 
     /**
-     * Converts this object back to a stdClass that can be JSON-serialized
+     * Converts this object to a stdClass that can be JSON-serialized
      *
-     * @return stdClass Converted object
+     * @return \stdClass Converted object
      */
-    public function toObject()
+    public function toStdClass()
     {
         $output = new \stdClass();
         if (isset($this->field)) {
-            $output->{'field'} = $this->field->toObject();
+            $output->{'field'} = $this->field->toStdClass();
         }
 
         return $output;

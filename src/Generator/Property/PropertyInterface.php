@@ -62,7 +62,7 @@ interface PropertyInterface
      * @param string $outputVarName
      * @return string
      */
-    public function convertTypeToObject(string $outputVarName = 'output'): string;
+    public function convertTypeToStdClass(string $outputVarName = 'output'): string;
 
     /**
      * @param SchemaToClass $generator
@@ -110,7 +110,7 @@ interface PropertyInterface
      * @param string $expr
      * @return string
      */
-    public function generateOutputObjectMappingExpr(string $expr): string;
+    public function generateOutputStdClassMappingExpr(string $expr): string;
 
     /**
      * @param string $expr

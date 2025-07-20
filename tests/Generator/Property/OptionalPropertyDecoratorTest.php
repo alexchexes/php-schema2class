@@ -91,13 +91,13 @@ EOCODE;
         assertSame($expected, $result);
     }
 
-    public function testConvertTypeToObject()
+    public function testConvertTypeToStdClass()
     {
         $this->innerProperty->name()->shouldBeCalled()->willReturn('myPropertyName');
         $this->innerProperty->allowsNull()->shouldBeCalled()->willReturn(false);
-        $this->innerProperty->convertTypeToObject('variable')->shouldBeCalled()->willReturn('echo "InnerCode";');
+        $this->innerProperty->convertTypeToStdClass('variable')->shouldBeCalled()->willReturn('echo "InnerCode";');
 
-        $result = $this->decorator->convertTypeToObject('variable');
+        $result = $this->decorator->convertTypeToStdClass('variable');
 
         $expected = <<<'EOCODE'
 if (isset($this->myPropertyName)) {

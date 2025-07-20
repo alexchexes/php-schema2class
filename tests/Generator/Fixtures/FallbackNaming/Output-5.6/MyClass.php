@@ -2063,12 +2063,12 @@ class MyClass
     }
 
     /**
-     * Converts this object back to a stdClass that can be JSON-serialized
+     * Converts this object to a stdClass that can be JSON-serialized
      *
      * @param bool $includeDefaults Add defaults for missing properties
-     * @return stdClass Converted object
+     * @return \stdClass Converted object
      */
-    public function toObject(bool $includeDefaults = false)
+    public function toStdClass(bool $includeDefaults = false)
     {
         $output = new \stdClass();
         $output->{'_GLOBALS'} = $this->_GLOBALS_1;
@@ -2096,7 +2096,7 @@ class MyClass
         $output->{'obj'} = $this->obj;
         $output->{'includeDefaults'} = $this->includeDefaults;
         if (isset($this->testObj)) {
-            $output->{'testObj'} = ($this->testObj)->toObject();
+            $output->{'testObj'} = ($this->testObj)->toStdClass();
         }
         $output->{'buildFromInput'} = $this->_buildFromInput_1;
         $output->{'toArray'} = $this->_toArray_1;
@@ -2120,16 +2120,16 @@ class MyClass
         $output->{'files'} = $this->files;
         if (isset($this->ensureArgs1)) {
             if (($this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative1) || ($this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative2)) {
-            $output->{'ensureArgs1'} = ($this->ensureArgs1)->toObject();
+            $output->{'ensureArgs1'} = ($this->ensureArgs1)->toStdClass();
             } else if ((is_string($this->ensureArgs1))) {
             $output->{'ensureArgs1'} = $this->ensureArgs1;
             }
         }
         if (isset($this->ensureArgs2)) {
-            $output->{'ensureArgs2'} = ($this->ensureArgs2)->toObject();
+            $output->{'ensureArgs2'} = ($this->ensureArgs2)->toStdClass();
         }
         if (isset($this->ensureArgs3)) {
-            $output->{'ensureArgs3'} = array_map(function(MyClassEnsureArgs3Item $i) { return $i->toObject(); }, $this->ensureArgs3);
+            $output->{'ensureArgs3'} = array_map(function(MyClassEnsureArgs3Item $i) { return $i->toStdClass(); }, $this->ensureArgs3);
         }
 
         if ($includeDefaults) {

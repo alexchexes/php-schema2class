@@ -111,15 +111,15 @@ class MyClass
     }
 
     /**
-     * Converts this object back to a stdClass that can be JSON-serialized
+     * Converts this object to a stdClass that can be JSON-serialized
      *
-     * @return stdClass Converted object
+     * @return \stdClass Converted object
      */
-    public function toObject(): \stdClass
+    public function toStdClass(): \stdClass
     {
         $output = new \stdClass();
         if (isset($this->foo)) {
-            $output->{'foo'} = array_map(fn(\Helmich\Schema2Class\Example\CustomerAddress $i): array => $i->toObject(), $this->foo);
+            $output->{'foo'} = array_map(fn(\Helmich\Schema2Class\Example\CustomerAddress $i): array => $i->toStdClass(), $this->foo);
         }
 
         return $output;

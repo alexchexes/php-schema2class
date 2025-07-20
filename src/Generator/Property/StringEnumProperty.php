@@ -110,7 +110,7 @@ class StringEnumProperty extends AbstractProperty
         return $expr;
     }
 
-    public function generateOutputObjectMappingExpr(string $expr): string
+    public function generateOutputStdClassMappingExpr(string $expr): string
     {
         return $this->generateOutputMappingExpr($expr);
     }

@@ -153,18 +153,18 @@ class Qux
     }
 
     /**
-     * Converts this object back to a stdClass that can be JSON-serialized
+     * Converts this object to a stdClass that can be JSON-serialized
      *
-     * @return stdClass Converted object
+     * @return \stdClass Converted object
      */
-    public function toObject(): \stdClass
+    public function toStdClass(): \stdClass
     {
         $output = new \stdClass();
         if (isset($this->grox)) {
             if ((is_string($this->grox)) || (is_array($this->grox))) {
             $output->{'grox'} = $this->grox;
             } else if (((($this->grox) instanceof Foo) || (($this->grox) instanceof Bar))) {
-            $output->{'grox'} = (($this->grox) instanceof Bar) ? ($this->grox->toObject()) : ((($this->grox) instanceof Foo) ? ($this->grox->toObject()) : (null));
+            $output->{'grox'} = (($this->grox) instanceof Bar) ? ($this->grox->toStdClass()) : ((($this->grox) instanceof Foo) ? ($this->grox->toStdClass()) : (null));
             }
         }
 

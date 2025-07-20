@@ -67,12 +67,12 @@ EOCODE;
         assertSame($expected, $result);
     }
 
-    public function testConvertTypeToObject()
+    public function testConvertTypeToStdClass()
     {
-        $result = $this->property->convertTypeToObject('variable');
+        $result = $this->property->convertTypeToStdClass('variable');
 
         $expected = <<<'EOCODE'
-$variable->{'myPropertyName'} = ($this->myPropertyName)->toObject();
+$variable->{'myPropertyName'} = ($this->myPropertyName)->toStdClass();
 EOCODE;
 
         assertSame($expected, $result);

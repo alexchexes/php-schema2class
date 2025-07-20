@@ -161,7 +161,7 @@ class UnionProperty extends AbstractProperty
         return "\${$outputVarName}[{$keyStr}] = " . $match->generate() . ";";
     }
 
-    private function convertTypeToObjectMatch(string $outputVarName = 'output'): string
+    private function convertTypeToStdClassMatch(string $outputVarName = 'output'): string
     {
         $name   = $this->name;
         $key    = $this->key;
@@ -169,7 +169,7 @@ class UnionProperty extends AbstractProperty
         $match  = new MatchGenerator("true");
 
         foreach ($this->subProperties as $subProperty) {
-            $mapping       = $subProperty->generateOutputObjectMappingExpr("\$this->{$name}");
+            $mapping       = $subProperty->generateOutputStdClassMappingExpr("\$this->{$name}");
             $discriminator = $subProperty->generateTypeAssertionExpr("\$this->{$name}");
 
             $match->addArm($discriminator, $mapping);
@@ -212,10 +212,10 @@ class UnionProperty extends AbstractProperty
         return str_replace("}\nelse", "} else", join("\n", $branches));
     }
 
-    public function convertTypeToObject(string $outputVarName = 'output'): string
+    public function convertTypeToStdClass(string $outputVarName = 'output'): string
     {
         if ($this->generatorRequest->isAtLeastPHP("8.0")) {
-            return $this->convertTypeToObjectMatch($outputVarName);
+            return $this->convertTypeToStdClassMatch($outputVarName);
         }
 
         $name        = $this->name;
@@ -224,7 +224,7 @@ class UnionProperty extends AbstractProperty
         $conversions = [];
 
         foreach ($this->subProperties as $subProperty) {
-            $mapping       = $subProperty->generateOutputObjectMappingExpr("\$this->{$name}");
+            $mapping       = $subProperty->generateOutputStdClassMappingExpr("\$this->{$name}");
             $assignment    = sprintf('$%s->{%s} = %s;', $outputVarName, $keyStr, $mapping);
             $discriminator = $subProperty->generateTypeAssertionExpr("\$this->{$name}");
 
@@ -390,7 +390,7 @@ class UnionProperty extends AbstractProperty
         return $out;
     }
 
-    public function generateOutputObjectMappingExpr(string $expr): string
+    public function generateOutputStdClassMappingExpr(string $expr): string
     {
         if ($this->generatorRequest->isAtLeastPHP("8.0")) {
             $match = new MatchGenerator("true");
@@ -398,7 +398,7 @@ class UnionProperty extends AbstractProperty
 
             foreach ($this->subProperties as $subProperty) {
                 $assert = $subProperty->generateTypeAssertionExpr($expr);
-                $map    = $subProperty->generateOutputObjectMappingExpr($expr);
+                $map    = $subProperty->generateOutputStdClassMappingExpr($expr);
                 $match->addArm($assert, $map);
             }
 
@@ -409,7 +409,7 @@ class UnionProperty extends AbstractProperty
 
         foreach ($this->subProperties as $subProperty) {
             $assert = $subProperty->generateTypeAssertionExpr($expr);
-            $map    = $subProperty->generateOutputObjectMappingExpr($expr);
+            $map    = $subProperty->generateOutputStdClassMappingExpr($expr);
             $out    = "({$assert}) ? ({$map}) : ({$out})";
         }
 

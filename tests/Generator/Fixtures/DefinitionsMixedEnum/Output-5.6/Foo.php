@@ -120,11 +120,11 @@ class Foo
     }
 
     /**
-     * Converts this object back to a stdClass that can be JSON-serialized
+     * Converts this object to a stdClass that can be JSON-serialized
      *
-     * @return stdClass Converted object
+     * @return \stdClass Converted object
      */
-    public function toObject()
+    public function toStdClass()
     {
         $output = new \stdClass();
         $output->{'val'} = $this->val;

@@ -174,12 +174,12 @@ class MyClassEnsureArgs2
     }
 
     /**
-     * Converts this object back to a stdClass that can be JSON-serialized
+     * Converts this object to a stdClass that can be JSON-serialized
      *
      * @param bool $includeDefaults Add defaults for missing properties
-     * @return stdClass Converted object
+     * @return \stdClass Converted object
      */
-    public function toObject(bool $includeDefaults = false): \stdClass
+    public function toStdClass(bool $includeDefaults = false): \stdClass
     {
         $output = new \stdClass();
         $output->{'city'} = $this->city;
