@@ -305,7 +305,7 @@ class SchemaToClass
         $content = $file->generate();
 
         // Do some corrections because the Zend code generation library is stupid.
-        $content = preg_replace('/ : \\\\self/', ' : self', $content);
+        $content = preg_replace('/ ?: \\\\self/', ' : self', $content);
 
         // Remove current namespace from all class names
         $content = preg_replace('/\\\\' . preg_quote($req->getTargetNamespace(), '/') . '\\\\/', '', $content);

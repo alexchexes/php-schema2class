@@ -67,7 +67,7 @@ class Cat
     /**
      * @return bool|null|string|int|float
      */
-    public function getHasFur() : bool|int|float|string|null
+    public function getHasFur(): bool|int|float|string|null
     {
         return $this->hasFur;
     }
@@ -105,7 +105,7 @@ class Cat
      * @return Cat Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : Cat
+    public static function buildFromInput(array|object $input, bool $validate = true): Cat
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -143,7 +143,7 @@ class Cat
      *
      * @return array Converted array
      */
-    public function toArray() : array
+    public function toArray(): array
     {
         $output = [];
         if (isset($this->hasFur) || array_key_exists('hasFur', $this->_explicitNulls)) {
@@ -174,7 +174,7 @@ class Cat
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput(array|object $input, bool $return = false) : bool
+    public static function validateInput(array|object $input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
@@ -211,7 +211,7 @@ class Cat
      * @param string $propertyName property name as appears in the schema
      * @return bool
      */
-    public function isExplicitNull(string $propertyName) : bool
+    public function isExplicitNull(string $propertyName): bool
     {
         return array_key_exists($propertyName, $this->_explicitNulls);
     }

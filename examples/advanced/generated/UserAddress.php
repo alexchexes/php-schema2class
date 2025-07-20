@@ -50,7 +50,7 @@ class UserAddress
     /**
      * @return string
      */
-    public function getCity() : string
+    public function getCity(): string
     {
         return $this->city;
     }
@@ -58,7 +58,7 @@ class UserAddress
     /**
      * @return string
      */
-    public function getStreet() : string
+    public function getStreet(): string
     {
         return $this->street;
     }
@@ -113,7 +113,7 @@ class UserAddress
      * @return UserAddress Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : UserAddress
+    public static function buildFromInput(array|object $input, bool $validate = true): UserAddress
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -133,7 +133,7 @@ class UserAddress
      *
      * @return array Converted array
      */
-    public function toArray() : array
+    public function toArray(): array
     {
         $output = [];
         $output['city'] = $this->city;
@@ -150,7 +150,7 @@ class UserAddress
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput(array|object $input, bool $return = false) : bool
+    public static function validateInput(array|object $input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;

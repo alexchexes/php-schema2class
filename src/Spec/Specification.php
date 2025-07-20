@@ -34,7 +34,7 @@ class Specification
     /**
      * @return SpecificationOptions|null
      */
-    public function getOptions() : ?SpecificationOptions
+    public function getOptions(): ?SpecificationOptions
     {
         return $this->options ?? null;
     }
@@ -42,7 +42,7 @@ class Specification
     /**
      * @return SpecificationFilesItem[]
      */
-    public function getFiles() : array
+    public function getFiles(): array
     {
         return $this->files;
     }
@@ -99,7 +99,7 @@ class Specification
      * @return Specification Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : Specification
+    public static function buildFromInput(array|object $input, bool $validate = true): Specification
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -107,7 +107,7 @@ class Specification
         }
 
         $options = isset($input->{'options'}) ? SpecificationOptions::buildFromInput($input->{'options'}, $validate) : null;
-        $files = array_map(fn (array|object $i): SpecificationFilesItem => SpecificationFilesItem::buildFromInput($i, validate: $validate), $input->{'files'});
+        $files = array_map(fn (array|object $i): SpecificationFilesItem => SpecificationFilesItem::buildFromInput($i, $validate), $input->{'files'});
 
         $obj = new self($files);
         $obj->options = $options;
@@ -119,7 +119,7 @@ class Specification
      *
      * @return array Converted array
      */
-    public function toArray() : array
+    public function toArray(): array
     {
         $output = [];
         if (isset($this->options)) {
@@ -138,7 +138,7 @@ class Specification
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput(array|object $input, bool $return = false) : bool
+    public static function validateInput(array|object $input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;

@@ -28,7 +28,7 @@ class Baz
     /**
      * @return string|null
      */
-    public function getName() : ?string
+    public function getName(): ?string
     {
         return $this->name ?? null;
     }
@@ -37,7 +37,7 @@ class Baz
      * @param string $name
      * @param bool $validate
      */
-    public function setName(string $name, bool $validate = true) : void
+    public function setName(string $name, bool $validate = true): void
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -58,7 +58,7 @@ class Baz
      * @return Baz Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : Baz
+    public static function buildFromInput(array|object $input, bool $validate = true): Baz
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -77,7 +77,7 @@ class Baz
      *
      * @return array Converted array
      */
-    public function toArray() : array
+    public function toArray(): array
     {
         $output = [];
         if (isset($this->name)) {
@@ -95,7 +95,7 @@ class Baz
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput(array|object $input, bool $return = false) : bool
+    public static function validateInput(array|object $input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;

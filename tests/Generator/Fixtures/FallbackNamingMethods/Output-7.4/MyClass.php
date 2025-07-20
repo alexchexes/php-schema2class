@@ -43,7 +43,7 @@ class MyClass
     /**
      * @return string|null
      */
-    public function getBound() : ?string
+    public function getBound(): ?string
     {
         return $this->bound ?? null;
     }
@@ -51,7 +51,7 @@ class MyClass
     /**
      * @return string|null
      */
-    public function getOutbound() : ?string
+    public function getOutbound(): ?string
     {
         return $this->outbound ?? null;
     }
@@ -59,7 +59,7 @@ class MyClass
     /**
      * @return string|null
      */
-    public function get_Outbound() : ?string
+    public function get_Outbound(): ?string
     {
         return $this->_outbound ?? null;
     }
@@ -168,7 +168,7 @@ class MyClass
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true) : MyClass
+    public static function buildFromInput($input, bool $validate = true): MyClass
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
@@ -197,7 +197,7 @@ class MyClass
      *
      * @return array Converted array
      */
-    public function toArray() : array
+    public function toArray(): array
     {
         $output = [];
         if (isset($this->bound)) {
@@ -221,7 +221,7 @@ class MyClass
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput($input, bool $return = false) : bool
+    public static function validateInput($input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;

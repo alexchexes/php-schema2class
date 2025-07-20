@@ -74,7 +74,7 @@ class MyClass
     /**
      * @return string|null
      */
-    public function getFoo() : ?string
+    public function getFoo(): ?string
     {
         return $this->foo ?? null;
     }
@@ -82,7 +82,7 @@ class MyClass
     /**
      * @return Baz
      */
-    public function getBar() : Baz
+    public function getBar(): Baz
     {
         return $this->bar;
     }
@@ -90,7 +90,7 @@ class MyClass
     /**
      * @return string|null
      */
-    public function getOpt() : ?string
+    public function getOpt(): ?string
     {
         return $this->opt ?? null;
     }
@@ -99,7 +99,7 @@ class MyClass
      * @param string $foo
      * @param bool $validate
      */
-    public function setFoo(string $foo, bool $validate = true) : void
+    public function setFoo(string $foo, bool $validate = true): void
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -115,7 +115,7 @@ class MyClass
     /**
      * @param Baz $bar
      */
-    public function setBar(Baz $bar) : void
+    public function setBar(Baz $bar): void
     {
         $this->bar = $bar;
     }
@@ -124,7 +124,7 @@ class MyClass
      * @param string $opt
      * @param bool $validate
      */
-    public function setOpt(string $opt, bool $validate = true) : void
+    public function setOpt(string $opt, bool $validate = true): void
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -141,7 +141,7 @@ class MyClass
     /**
      *
      */
-    public function unsetOpt() : void
+    public function unsetOpt(): void
     {
         $this->opt = null;
         unset($this->_explicitNulls['opt']);
@@ -155,7 +155,7 @@ class MyClass
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true) : MyClass
+    public static function buildFromInput($input, bool $validate = true): MyClass
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
@@ -188,7 +188,7 @@ class MyClass
      *
      * @return array Converted array
      */
-    public function toArray() : array
+    public function toArray(): array
     {
         $output = [];
         if (isset($this->foo)) {
@@ -210,7 +210,7 @@ class MyClass
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput($input, bool $return = false) : bool
+    public static function validateInput($input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
@@ -232,7 +232,7 @@ class MyClass
      * @param string $propertyName property name as appears in the schema
      * @return bool
      */
-    public function isExplicitNull(string $propertyName) : bool
+    public function isExplicitNull(string $propertyName): bool
     {
         return array_key_exists($propertyName, $this->_explicitNulls);
     }

@@ -178,7 +178,7 @@ class MyClass
      *
      * @return string
      */
-    public function getFoo() : string
+    public function getFoo(): string
     {
         return $this->foo;
     }
@@ -188,7 +188,7 @@ class MyClass
      *
      * @return string|null
      */
-    public function getBar() : ?string
+    public function getBar(): ?string
     {
         return $this->bar ?? null;
     }
@@ -198,7 +198,7 @@ class MyClass
      *
      * @return string|null
      */
-    public function getBaz() : ?string
+    public function getBaz(): ?string
     {
         return $this->baz ?? null;
     }
@@ -208,7 +208,7 @@ class MyClass
      *
      * @return string|null
      */
-    public function getQux() : ?string
+    public function getQux(): ?string
     {
         return $this->qux ?? null;
     }
@@ -218,7 +218,7 @@ class MyClass
      *
      * @return string|null
      */
-    public function getQuux() : ?string
+    public function getQuux(): ?string
     {
         return $this->quux ?? null;
     }
@@ -228,7 +228,7 @@ class MyClass
      *
      * @return string|null
      */
-    public function getXyyz() : ?string
+    public function getXyyz(): ?string
     {
         return $this->xyyz ?? null;
     }
@@ -238,7 +238,7 @@ class MyClass
      *
      * @return string
      */
-    public function getThud() : string
+    public function getThud(): string
     {
         return $this->thud;
     }
@@ -248,7 +248,7 @@ class MyClass
      *
      * @return MyClassGrox|null
      */
-    public function getGrox() : ?MyClassGrox
+    public function getGrox(): ?MyClassGrox
     {
         return $this->grox ?? null;
     }
@@ -482,7 +482,7 @@ class MyClass
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true, bool $materializeDefaults = false) : MyClass
+    public static function buildFromInput(array|object $input, bool $validate = true, bool $materializeDefaults = false): MyClass
     {
         $input = is_array($input)
             ? \JsonSchema\Validator::arrayToObjectRecursive($input)
@@ -535,7 +535,7 @@ class MyClass
      * @param bool $includeDefaults Add defaults for missing properties
      * @return array Converted array
      */
-    public function toArray(bool $includeDefaults = false) : array
+    public function toArray(bool $includeDefaults = false): array
     {
         $output = [];
         $output['foo'] = $this->foo;
@@ -578,7 +578,7 @@ class MyClass
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput(array|object $input, bool $return = false) : bool
+    public static function validateInput(array|object $input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
@@ -609,7 +609,7 @@ class MyClass
      * @param string $propertyName property name as appears in the schema
      * @return bool
      */
-    public function isExplicitNull(string $propertyName) : bool
+    public function isExplicitNull(string $propertyName): bool
     {
         return array_key_exists($propertyName, $this->_explicitNulls);
     }

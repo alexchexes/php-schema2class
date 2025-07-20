@@ -49,7 +49,7 @@ class GenericPet
      *
      * @return bool|null
      */
-    public function getHasFur() : ?bool
+    public function getHasFur(): ?bool
     {
         return $this->hasFur ?? null;
     }
@@ -96,7 +96,7 @@ class GenericPet
      * @return GenericPet Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : GenericPet
+    public static function buildFromInput(array|object $input, bool $validate = true): GenericPet
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -120,7 +120,7 @@ class GenericPet
      *
      * @return array Converted array
      */
-    public function toArray() : array
+    public function toArray(): array
     {
         $output = [];
         if (isset($this->hasFur) || array_key_exists('hasFur', $this->_explicitNulls)) {
@@ -138,7 +138,7 @@ class GenericPet
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput(array|object $input, bool $return = false) : bool
+    public static function validateInput(array|object $input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
@@ -160,7 +160,7 @@ class GenericPet
      * @param string $propertyName property name as appears in the schema
      * @return bool
      */
-    public function isExplicitNull(string $propertyName) : bool
+    public function isExplicitNull(string $propertyName): bool
     {
         return array_key_exists($propertyName, $this->_explicitNulls);
     }

@@ -51,7 +51,7 @@ class MyClass
     /**
      * @return int|null
      */
-    public function getLimit() : ?int
+    public function getLimit(): ?int
     {
         return $this->limit ?? null;
     }
@@ -59,7 +59,7 @@ class MyClass
     /**
      * @return int|null
      */
-    public function getSkip() : ?int
+    public function getSkip(): ?int
     {
         return $this->skip ?? null;
     }
@@ -137,7 +137,7 @@ class MyClass
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true, bool $materializeDefaults = false) : MyClass
+    public static function buildFromInput($input, bool $validate = true, bool $materializeDefaults = false): MyClass
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
@@ -176,7 +176,7 @@ class MyClass
      * @param bool $includeDefaults Add defaults for missing properties
      * @return array Converted array
      */
-    public function toArray(bool $includeDefaults = false) : array
+    public function toArray(bool $includeDefaults = false): array
     {
         $output = [];
         if (isset($this->limit)) {
@@ -205,7 +205,7 @@ class MyClass
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput($input, bool $return = false) : bool
+    public static function validateInput($input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;

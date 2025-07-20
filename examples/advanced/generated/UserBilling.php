@@ -62,7 +62,7 @@ class UserBilling
     /**
      * @return string
      */
-    public function getVatID() : string
+    public function getVatID(): string
     {
         return $this->vatID;
     }
@@ -70,7 +70,7 @@ class UserBilling
     /**
      * @return int|null
      */
-    public function getCreditLevel() : ?int
+    public function getCreditLevel(): ?int
     {
         return $this->creditLevel ?? null;
     }
@@ -78,7 +78,7 @@ class UserBilling
     /**
      * @return int|null
      */
-    public function getFoo() : ?int
+    public function getFoo(): ?int
     {
         return $this->foo ?? null;
     }
@@ -86,7 +86,7 @@ class UserBilling
     /**
      * @return string|null
      */
-    public function getBar() : ?string
+    public function getBar(): ?string
     {
         return $this->bar ?? null;
     }
@@ -216,7 +216,7 @@ class UserBilling
      * @return UserBilling Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : UserBilling
+    public static function buildFromInput(array|object $input, bool $validate = true): UserBilling
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -240,7 +240,7 @@ class UserBilling
      *
      * @return array Converted array
      */
-    public function toArray() : array
+    public function toArray(): array
     {
         $output = [];
         $output['vatID'] = $this->vatID;
@@ -265,7 +265,7 @@ class UserBilling
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput(array|object $input, bool $return = false) : bool
+    public static function validateInput(array|object $input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;

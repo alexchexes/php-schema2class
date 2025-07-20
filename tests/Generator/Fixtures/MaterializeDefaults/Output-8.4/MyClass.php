@@ -82,7 +82,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getFoo() : string
+    public function getFoo(): string
     {
         return $this->foo;
     }
@@ -90,7 +90,7 @@ class MyClass
     /**
      * @return MyClassBar
      */
-    public function getBar() : MyClassBar
+    public function getBar(): MyClassBar
     {
         return $this->bar;
     }
@@ -98,7 +98,7 @@ class MyClass
     /**
      * @return string|null
      */
-    public function getBaz() : ?string
+    public function getBaz(): ?string
     {
         return $this->baz ?? null;
     }
@@ -177,7 +177,7 @@ class MyClass
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true, bool $materializeDefaults = false) : MyClass
+    public static function buildFromInput(array|object $input, bool $validate = true, bool $materializeDefaults = false): MyClass
     {
         $input = is_array($input)
             ? \JsonSchema\Validator::arrayToObjectRecursive($input)
@@ -210,7 +210,7 @@ class MyClass
      * @param bool $includeDefaults Add defaults for missing properties
      * @return array Converted array
      */
-    public function toArray(bool $includeDefaults = false) : array
+    public function toArray(bool $includeDefaults = false): array
     {
         $output = [];
         $output['foo'] = $this->foo;
@@ -238,7 +238,7 @@ class MyClass
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput(array|object $input, bool $return = false) : bool
+    public static function validateInput(array|object $input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;

@@ -39,7 +39,7 @@ class SpecificationFilesItem
     /**
      * @return string|array|object
      */
-    public function getInput() : string|array|object
+    public function getInput(): string|array|object
     {
         return $this->input;
     }
@@ -47,7 +47,7 @@ class SpecificationFilesItem
     /**
      * @return string|null
      */
-    public function getClassName() : ?string
+    public function getClassName(): ?string
     {
         return $this->className ?? null;
     }
@@ -55,7 +55,7 @@ class SpecificationFilesItem
     /**
      * @return SpecificationOptions|null
      */
-    public function getOptions() : ?SpecificationOptions
+    public function getOptions(): ?SpecificationOptions
     {
         return $this->options ?? null;
     }
@@ -135,7 +135,7 @@ class SpecificationFilesItem
      * @return SpecificationFilesItem Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $_input, bool $validate = true) : SpecificationFilesItem
+    public static function buildFromInput(array|object $_input, bool $validate = true): SpecificationFilesItem
     {
         $_input = is_array($_input) ? \JsonSchema\Validator::arrayToObjectRecursive($_input) : $_input;
         if ($validate) {
@@ -161,7 +161,7 @@ class SpecificationFilesItem
      *
      * @return array Converted array
      */
-    public function toArray() : array
+    public function toArray(): array
     {
         $output = [];
         $output['input'] = match (true) {
@@ -186,7 +186,7 @@ class SpecificationFilesItem
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput(array|object $input, bool $return = false) : bool
+    public static function validateInput(array|object $input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;

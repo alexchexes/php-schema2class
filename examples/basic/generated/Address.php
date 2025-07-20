@@ -26,7 +26,7 @@ class Address
     /**
      * @return string|null
      */
-    public function getStreet() : ?string
+    public function getStreet(): ?string
     {
         return $this->street ?? null;
     }
@@ -34,7 +34,7 @@ class Address
     /**
      * @return int|null
      */
-    public function getHouse() : ?int
+    public function getHouse(): ?int
     {
         return $this->house ?? null;
     }
@@ -111,7 +111,7 @@ class Address
      * @return Address Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true) : Address
+    public static function buildFromInput($input, bool $validate = true): Address
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
@@ -138,7 +138,7 @@ class Address
      *
      * @return array Converted array
      */
-    public function toArray() : array
+    public function toArray(): array
     {
         $output = [];
         if (isset($this->street)) {
@@ -159,7 +159,7 @@ class Address
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput($input, bool $return = false) : bool
+    public static function validateInput($input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;

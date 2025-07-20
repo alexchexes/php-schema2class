@@ -490,7 +490,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getGLOBALS1() : string
+    public function getGLOBALS1(): string
     {
         return $this->_GLOBALS_1;
     }
@@ -498,7 +498,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getGLOBALS2() : string
+    public function getGLOBALS2(): string
     {
         return $this->_GLOBALS_2;
     }
@@ -506,7 +506,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getGLOBALS11() : string
+    public function getGLOBALS11(): string
     {
         return $this->_GLOBALS1_1;
     }
@@ -514,7 +514,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getSERVER1() : string
+    public function getSERVER1(): string
     {
         return $this->_SERVER_1;
     }
@@ -522,7 +522,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getGET1() : string
+    public function getGET1(): string
     {
         return $this->_GET_1;
     }
@@ -530,7 +530,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getPOST1() : string
+    public function getPOST1(): string
     {
         return $this->_POST_1;
     }
@@ -538,7 +538,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getFILES1() : string
+    public function getFILES1(): string
     {
         return $this->_FILES_1;
     }
@@ -546,7 +546,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getREQUEST1() : string
+    public function getREQUEST1(): string
     {
         return $this->_REQUEST_1;
     }
@@ -554,7 +554,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getSESSION1() : string
+    public function getSESSION1(): string
     {
         return $this->_SESSION_1;
     }
@@ -562,7 +562,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getENV1() : string
+    public function getENV1(): string
     {
         return $this->_ENV_1;
     }
@@ -570,7 +570,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getCOOKIE1() : string
+    public function getCOOKIE1(): string
     {
         return $this->_COOKIE_1;
     }
@@ -578,7 +578,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getPhpErrormsg() : string
+    public function getPhpErrormsg(): string
     {
         return $this->_phpErrormsg;
     }
@@ -586,7 +586,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getHttpResponseHeader() : string
+    public function getHttpResponseHeader(): string
     {
         return $this->_httpResponseHeader;
     }
@@ -594,7 +594,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getArgc() : string
+    public function getArgc(): string
     {
         return $this->_argc;
     }
@@ -602,7 +602,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getArgv() : string
+    public function getArgv(): string
     {
         return $this->_argv;
     }
@@ -610,7 +610,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getInput() : string
+    public function getInput(): string
     {
         return $this->input;
     }
@@ -618,7 +618,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getValidate() : string
+    public function getValidate(): string
     {
         return $this->validate;
     }
@@ -626,7 +626,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getObj() : string
+    public function getObj(): string
     {
         return $this->obj;
     }
@@ -634,7 +634,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getMaterializeDefaults() : string
+    public function getMaterializeDefaults(): string
     {
         return $this->materializeDefaults;
     }
@@ -642,7 +642,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getIncludeDefaults() : string
+    public function getIncludeDefaults(): string
     {
         return $this->includeDefaults;
     }
@@ -650,7 +650,7 @@ class MyClass
     /**
      * @return MyClassTestObj|null
      */
-    public function getTestObj() : ?MyClassTestObj
+    public function getTestObj(): ?MyClassTestObj
     {
         return $this->testObj ?? null;
     }
@@ -658,7 +658,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getBuildFromInput1() : string
+    public function getBuildFromInput1(): string
     {
         return $this->_buildFromInput_1;
     }
@@ -666,7 +666,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getToArray1() : string
+    public function getToArray1(): string
     {
         return $this->_toArray_1;
     }
@@ -674,7 +674,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getValidateInput1() : string
+    public function getValidateInput1(): string
     {
         return $this->_validateInput_1;
     }
@@ -682,7 +682,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getSchema() : string
+    public function getSchema(): string
     {
         return $this->_schema;
     }
@@ -690,7 +690,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getDefaults1() : string
+    public function getDefaults1(): string
     {
         return $this->_defaults_1;
     }
@@ -698,7 +698,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getClone1() : string
+    public function getClone1(): string
     {
         return $this->_clone_1;
     }
@@ -706,7 +706,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getConstruct1() : string
+    public function getConstruct1(): string
     {
         return $this->_construct_1;
     }
@@ -714,7 +714,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getDestruct1() : string
+    public function getDestruct1(): string
     {
         return $this->_destruct_1;
     }
@@ -722,7 +722,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getGet2() : string
+    public function getGet2(): string
     {
         return $this->_get_2;
     }
@@ -730,7 +730,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getSet1() : string
+    public function getSet1(): string
     {
         return $this->_set_1;
     }
@@ -738,7 +738,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getCall1() : string
+    public function getCall1(): string
     {
         return $this->_call_1;
     }
@@ -746,7 +746,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getIsset1() : string
+    public function getIsset1(): string
     {
         return $this->_isset_1;
     }
@@ -754,7 +754,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getUnset1() : string
+    public function getUnset1(): string
     {
         return $this->_unset_1;
     }
@@ -762,7 +762,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getSleep1() : string
+    public function getSleep1(): string
     {
         return $this->_sleep_1;
     }
@@ -770,7 +770,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getWakeup1() : string
+    public function getWakeup1(): string
     {
         return $this->_wakeup_1;
     }
@@ -778,7 +778,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getToString1() : string
+    public function getToString1(): string
     {
         return $this->_toString_1;
     }
@@ -786,7 +786,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getInvoke1() : string
+    public function getInvoke1(): string
     {
         return $this->_invoke_1;
     }
@@ -794,7 +794,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getDebugInfo1() : string
+    public function getDebugInfo1(): string
     {
         return $this->_debugInfo_1;
     }
@@ -802,7 +802,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getClone2() : string
+    public function getClone2(): string
     {
         return $this->_clone_2;
     }
@@ -810,7 +810,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getFiles() : string
+    public function getFiles(): string
     {
         return $this->files;
     }
@@ -1687,7 +1687,7 @@ class MyClass
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $_input, bool $_validate = true, bool $_materializeDefaults = false) : MyClass
+    public static function buildFromInput(array|object $_input, bool $_validate = true, bool $_materializeDefaults = false): MyClass
     {
         $_input = is_array($_input)
             ? \JsonSchema\Validator::arrayToObjectRecursive($_input)
@@ -1758,7 +1758,7 @@ class MyClass
      * @param bool $includeDefaults Add defaults for missing properties
      * @return array Converted array
      */
-    public function toArray(bool $includeDefaults = false) : array
+    public function toArray(bool $includeDefaults = false): array
     {
         $output = [];
         $output['_GLOBALS'] = $this->_GLOBALS_1;
@@ -1824,7 +1824,7 @@ class MyClass
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput(array|object $input, bool $return = false) : bool
+    public static function validateInput(array|object $input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;

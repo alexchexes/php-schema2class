@@ -54,7 +54,7 @@ class MyClass
     /**
      * @return MyClassFilesItem[]|null
      */
-    public function getFiles() : ?array
+    public function getFiles(): ?array
     {
         return $this->files ?? null;
     }
@@ -62,7 +62,7 @@ class MyClass
     /**
      * @return OptionsObject|null
      */
-    public function getOptions() : ?OptionsObject
+    public function getOptions(): ?OptionsObject
     {
         return $this->options ?? null;
     }
@@ -130,7 +130,7 @@ class MyClass
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : MyClass
+    public static function buildFromInput(array|object $input, bool $validate = true): MyClass
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -151,7 +151,7 @@ class MyClass
      *
      * @return array Converted array
      */
-    public function toArray() : array
+    public function toArray(): array
     {
         $output = [];
         if (isset($this->files)) {
@@ -172,7 +172,7 @@ class MyClass
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput(array|object $input, bool $return = false) : bool
+    public static function validateInput(array|object $input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;

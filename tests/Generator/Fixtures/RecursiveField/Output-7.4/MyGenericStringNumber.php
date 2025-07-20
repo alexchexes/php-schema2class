@@ -66,7 +66,7 @@ class MyGenericStringNumber
     /**
      * @return MyGenericStringNumberField
      */
-    public function getField() : MyGenericStringNumberField
+    public function getField(): MyGenericStringNumberField
     {
         return $this->field;
     }
@@ -91,7 +91,7 @@ class MyGenericStringNumber
      * @return MyGenericStringNumber Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true) : MyGenericStringNumber
+    public static function buildFromInput($input, bool $validate = true): MyGenericStringNumber
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
@@ -116,7 +116,7 @@ class MyGenericStringNumber
      *
      * @return array Converted array
      */
-    public function toArray() : array
+    public function toArray(): array
     {
         $output = [];
         $output['field'] = ($this->field)->toArray();
@@ -132,7 +132,7 @@ class MyGenericStringNumber
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput($input, bool $return = false) : bool
+    public static function validateInput($input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;

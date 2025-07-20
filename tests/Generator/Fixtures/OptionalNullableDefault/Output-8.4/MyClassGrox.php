@@ -44,7 +44,7 @@ class MyClassGrox
     /**
      * @return string|null
      */
-    public function getA() : ?string
+    public function getA(): ?string
     {
         return $this->a ?? null;
     }
@@ -52,7 +52,7 @@ class MyClassGrox
     /**
      * @return int|float|null
      */
-    public function getB() : int|float|null
+    public function getB(): int|float|null
     {
         return $this->b;
     }
@@ -129,7 +129,7 @@ class MyClassGrox
      * @return MyClassGrox Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : MyClassGrox
+    public static function buildFromInput(array|object $input, bool $validate = true): MyClassGrox
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -150,7 +150,7 @@ class MyClassGrox
      *
      * @return array Converted array
      */
-    public function toArray() : array
+    public function toArray(): array
     {
         $output = [];
         if (isset($this->a)) {
@@ -171,7 +171,7 @@ class MyClassGrox
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput(array|object $input, bool $return = false) : bool
+    public static function validateInput(array|object $input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
