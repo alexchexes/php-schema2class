@@ -543,8 +543,9 @@ class SchemaToClass
         }
 
         foreach ($schema['properties'] as $key => $def) {
-            $d = $this->extractDefault($def, $req);
-            if ($d !== null) {
+            $found = false;
+            $d = $this->extractDefault($def, $req, $found);
+            if ($found) {
                 $defaults[$key] = $d;
             }
         }
@@ -552,10 +553,21 @@ class SchemaToClass
         return $defaults;
     }
 
-    private function extractDefault(array $def, GeneratorRequest $req): mixed
+    private function extractDefault(array $def, GeneratorRequest $req, bool &$found = false): mixed
     {
         if (array_key_exists('default', $def)) {
+            $found = true;
             return $def['default'];
+        }
+
+        if (isset($def['$ref'])) {
+            $schema = $req->lookupSchema($def['$ref']);
+            if (is_array($schema)) {
+                $d = $this->extractDefault($schema, $req, $found);
+                if ($found) {
+                    return $d;
+                }
+            }
         }
 
         foreach (['anyOf', 'oneOf', 'allOf'] as $k) {
@@ -565,8 +577,8 @@ class SchemaToClass
                         $sub = $req->lookupSchema($sub['$ref']);
                     }
                     if (is_array($sub)) {
-                        $d = $this->extractDefault($sub, $req);
-                        if ($d !== null) {
+                        $d = $this->extractDefault($sub, $req, $found);
+                        if ($found) {
                             return $d;
                         }
                     }
@@ -574,6 +586,7 @@ class SchemaToClass
             }
         }
 
+        $found = false;
         return null;
     }
 }

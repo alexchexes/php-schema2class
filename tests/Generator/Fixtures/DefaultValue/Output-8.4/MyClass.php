@@ -16,14 +16,57 @@ class MyClass
             
         ],
         'properties' => [
-            'limit' => [
-                'type' => 'integer',
-                'default' => 10000,
-                'minimum' => 1,
-            ],
-            'skip' => [
+            'foo' => [
                 'type' => 'integer',
                 'default' => 0,
+                'minimum' => 1,
+            ],
+            'bar' => [
+                'type' => 'string',
+                'default' => 'xyz',
+            ],
+            'baz' => [
+                'type' => [
+                    'integer',
+                    'null',
+                ],
+                'default' => null,
+            ],
+            'qux' => [
+                '$ref' => '#/definitions/Def1',
+            ],
+            'thud' => [
+                '$ref' => '#/definitions/Def1',
+                'default' => 'more specific default near the "$ref"',
+            ],
+            'grox' => [
+                '$ref' => '#/definitions/Def2',
+                'default' => 'default near the "$ref"',
+            ],
+            'qwert' => [
+                'anyOf' => [
+                    [
+                        '$ref' => '#/definitions/Def2',
+                    ],
+                    [
+                        '$ref' => '#/definitions/Def1',
+                    ],
+                    [
+                        'type' => 'number',
+                        'default' => 42,
+                    ],
+                ],
+            ],
+        ],
+        'definitions' => [
+            'Def1' => [
+                'type' => 'string',
+                'description' => 'Description of Def1 (string) which has default value',
+                'default' => 'default from the referenced definition',
+            ],
+            'Def2' => [
+                'type' => 'string',
+                'description' => 'Description of Def2 (string) which doesn\'t have default value',
             ],
         ],
     ];
@@ -34,53 +77,142 @@ class MyClass
      * @var array
      */
     private static array $_defaults = [
-        'limit' => 10000,
-        'skip' => 0,
+        'foo' => 0,
+        'bar' => 'xyz',
+        'baz' => null,
+        'qux' => 'default from the referenced definition',
+        'thud' => 'more specific default near the "$ref"',
+        'grox' => 'default near the "$ref"',
+        'qwert' => 'default from the referenced definition',
     ];
 
     /**
-     * @var int|null
+     * Map of optional nullable property names that were explicitly set to `null`
+     *
+     * @var array<string,true>
      */
-    private ?int $limit = null;
+    private array $_explicitNulls = [];
 
     /**
      * @var int|null
      */
-    private ?int $skip = null;
+    private ?int $foo = null;
+
+    /**
+     * @var string|null
+     */
+    private ?string $bar = null;
+
+    /**
+     * @var int|null
+     */
+    private ?int $baz = null;
+
+    /**
+     * Description of Def1 (string) which has default value
+     *
+     * @var string|null
+     */
+    private ?string $qux = null;
+
+    /**
+     * Description of Def1 (string) which has default value
+     *
+     * @var string|null
+     */
+    private ?string $thud = null;
+
+    /**
+     * Description of Def2 (string) which doesn't have default value
+     *
+     * @var string|null
+     */
+    private ?string $grox = null;
+
+    /**
+     * @var string|int|float|null
+     */
+    private string|int|float|null $qwert = null;
 
     /**
      * @return int|null
      */
-    public function getLimit(): ?int
+    public function getFoo(): ?int
     {
-        return $this->limit ?? null;
+        return $this->foo ?? null;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getBar(): ?string
+    {
+        return $this->bar ?? null;
     }
 
     /**
      * @return int|null
      */
-    public function getSkip(): ?int
+    public function getBaz(): ?int
     {
-        return $this->skip ?? null;
+        return $this->baz ?? null;
     }
 
     /**
-     * @param int $limit
+     * Description of Def1 (string) which has default value
+     *
+     * @return string|null
+     */
+    public function getQux(): ?string
+    {
+        return $this->qux ?? null;
+    }
+
+    /**
+     * Description of Def1 (string) which has default value
+     *
+     * @return string|null
+     */
+    public function getThud(): ?string
+    {
+        return $this->thud ?? null;
+    }
+
+    /**
+     * Description of Def2 (string) which doesn't have default value
+     *
+     * @return string|null
+     */
+    public function getGrox(): ?string
+    {
+        return $this->grox ?? null;
+    }
+
+    /**
+     * @return string|int|float|null
+     */
+    public function getQwert(): int|float|string|null
+    {
+        return $this->qwert;
+    }
+
+    /**
+     * @param int $foo
      * @return self
      * @param bool $validate
      */
-    public function withLimit(int $limit, bool $validate = true): self
+    public function withFoo(int $foo, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($limit, self::$schema['properties']['limit']);
+            $validator->validate($foo, self::$schema['properties']['foo']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
         }
 
         $clone = clone $this;
-        $clone->limit = $limit;
+        $clone->foo = $foo;
 
         return $clone;
     }
@@ -88,31 +220,31 @@ class MyClass
     /**
      * @return self
      */
-    public function withoutLimit(): self
+    public function withoutFoo(): self
     {
         $clone = clone $this;
-        unset($clone->limit);
+        unset($clone->foo);
 
         return $clone;
     }
 
     /**
-     * @param int $skip
+     * @param string $bar
      * @return self
      * @param bool $validate
      */
-    public function withSkip(int $skip, bool $validate = true): self
+    public function withBar(string $bar, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($skip, self::$schema['properties']['skip']);
+            $validator->validate($bar, self::$schema['properties']['bar']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
         }
 
         $clone = clone $this;
-        $clone->skip = $skip;
+        $clone->bar = $bar;
 
         return $clone;
     }
@@ -120,10 +252,163 @@ class MyClass
     /**
      * @return self
      */
-    public function withoutSkip(): self
+    public function withoutBar(): self
     {
         $clone = clone $this;
-        unset($clone->skip);
+        unset($clone->bar);
+
+        return $clone;
+    }
+
+    /**
+     * @param int $baz
+     * @return self
+     * @param bool $validate
+     */
+    public function withBaz(int $baz, bool $validate = true): self
+    {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($baz, self::$schema['properties']['baz']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
+        $clone = clone $this;
+        $clone->baz = $baz;
+        $clone->_explicitNulls['baz'] = true;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutBaz(): self
+    {
+        $clone = clone $this;
+        unset($clone->baz);
+        unset($clone->_explicitNulls['baz']);
+
+        return $clone;
+    }
+
+    /**
+     * @param string $qux
+     * @return self
+     * @param bool $validate
+     */
+    public function withQux(string $qux, bool $validate = true): self
+    {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($qux, self::$schema['properties']['qux']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
+        $clone = clone $this;
+        $clone->qux = $qux;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutQux(): self
+    {
+        $clone = clone $this;
+        unset($clone->qux);
+
+        return $clone;
+    }
+
+    /**
+     * @param string $thud
+     * @return self
+     * @param bool $validate
+     */
+    public function withThud(string $thud, bool $validate = true): self
+    {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($thud, self::$schema['properties']['thud']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
+        $clone = clone $this;
+        $clone->thud = $thud;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutThud(): self
+    {
+        $clone = clone $this;
+        unset($clone->thud);
+
+        return $clone;
+    }
+
+    /**
+     * @param string $grox
+     * @return self
+     * @param bool $validate
+     */
+    public function withGrox(string $grox, bool $validate = true): self
+    {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($grox, self::$schema['properties']['grox']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
+        $clone = clone $this;
+        $clone->grox = $grox;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutGrox(): self
+    {
+        $clone = clone $this;
+        unset($clone->grox);
+
+        return $clone;
+    }
+
+    /**
+     * @param string|int|float $qwert
+     * @return self
+     */
+    public function withQwert(int|float|string $qwert): self
+    {
+        $clone = clone $this;
+        $clone->qwert = $qwert;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutQwert(): self
+    {
+        $clone = clone $this;
+        unset($clone->qwert);
 
         return $clone;
     }
@@ -155,12 +440,31 @@ class MyClass
             static::validateInput($input);
         }
 
-        $limit = isset($input->{'limit'}) ? $input->{'limit'} : null;
-        $skip = isset($input->{'skip'}) ? $input->{'skip'} : null;
+        $__explicitNulls = [];
+        $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
+        $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
+        $baz = property_exists($input, 'baz') ? $input->{'baz'} : null;
+        if (property_exists($input, 'baz')) {
+            $__explicitNulls['baz'] = true;
+        }
+        $qux = isset($input->{'qux'}) ? $input->{'qux'} : null;
+        $thud = isset($input->{'thud'}) ? $input->{'thud'} : null;
+        $grox = isset($input->{'grox'}) ? $input->{'grox'} : null;
+        $qwert = isset($input->{'qwert'}) ? match (true) {
+            is_string($input->{'qwert'}) => $input->{'qwert'},
+            is_int($input->{'qwert'}) || is_float($input->{'qwert'}) => str_contains((string)($input->{'qwert'}), '.') ? (float)($input->{'qwert'}) : (int)($input->{'qwert'}),
+            default => null,
+        } : null;
 
         $obj = new self();
-        $obj->limit = $limit;
-        $obj->skip = $skip;
+        $obj->foo = $foo;
+        $obj->bar = $bar;
+        $obj->baz = $baz;
+        $obj->qux = $qux;
+        $obj->thud = $thud;
+        $obj->grox = $grox;
+        $obj->qwert = $qwert;
+        $obj->_explicitNulls = $__explicitNulls;
         return $obj;
     }
 
@@ -173,11 +477,29 @@ class MyClass
     public function toArray(bool $includeDefaults = false): array
     {
         $output = [];
-        if (isset($this->limit)) {
-            $output['limit'] = $this->limit;
+        if (isset($this->foo)) {
+            $output['foo'] = $this->foo;
         }
-        if (isset($this->skip)) {
-            $output['skip'] = $this->skip;
+        if (isset($this->bar)) {
+            $output['bar'] = $this->bar;
+        }
+        if (isset($this->baz) || array_key_exists('baz', $this->_explicitNulls)) {
+            $output['baz'] = $this->baz;
+        }
+        if (isset($this->qux)) {
+            $output['qux'] = $this->qux;
+        }
+        if (isset($this->thud)) {
+            $output['thud'] = $this->thud;
+        }
+        if (isset($this->grox)) {
+            $output['grox'] = $this->grox;
+        }
+        if (isset($this->qwert)) {
+            $output['qwert'] = match (true) {
+                is_string($this->qwert),
+                is_int($this->qwert) || is_float($this->qwert) => $this->qwert,
+            };
         }
 
         if ($includeDefaults) {
@@ -213,5 +535,26 @@ class MyClass
         }
 
         return $validator->isValid();
+    }
+
+    public function __clone()
+    {
+        if (isset($this->qwert)) {
+            $this->qwert = match (true) {
+                is_string($this->qwert),
+                is_int($this->qwert) || is_float($this->qwert) => $this->qwert,
+            };
+        }
+    }
+
+    /**
+     * Checks if an optional nullable property was explicitly set to `null`
+     *
+     * @param string $propertyName property name as appears in the schema
+     * @return bool
+     */
+    public function isExplicitNull(string $propertyName): bool
+    {
+        return array_key_exists($propertyName, $this->_explicitNulls);
     }
 }

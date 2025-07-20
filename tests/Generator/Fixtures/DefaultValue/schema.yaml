@@ -1,9 +1,35 @@
 required: []
 properties:
-  limit:
-    type: integer
-    default: 10000
-    minimum: 1
-  skip:
+  foo:
     type: integer
     default: 0
+    minimum: 1
+  bar:
+    type: string
+    default: 'xyz'
+  baz:
+    type: [integer, 'null']
+    default: null
+  qux:
+    $ref: '#/definitions/Def1'
+  thud:
+    $ref: '#/definitions/Def1'
+    default: 'more specific default near the "$ref"'
+  grox:
+    $ref: '#/definitions/Def2'
+    default: 'default near the "$ref"'
+  qwert:
+    anyOf:
+      - $ref: '#/definitions/Def2'
+      - $ref: '#/definitions/Def1'
+      -
+        type: number
+        default: 42
+definitions:
+  Def1:
+    type: string
+    description: Description of Def1 (string) which has default value
+    default: 'default from the referenced definition'
+  Def2:
+    type: string
+    description: Description of Def2 (string) which doesn't have default value

@@ -31,6 +31,15 @@ class GenericPet
     ];
 
     /**
+     * Default values from the schema
+     *
+     * @var array
+     */
+    private static array $_defaults = [
+        'hasFur' => false,
+    ];
+
+    /**
      * Map of optional nullable property names that were explicitly set to `null`
      *
      * @var array<string,true>
@@ -93,12 +102,24 @@ class GenericPet
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param bool $materializeDefaults Apply defaults defined in schema when missing
      * @return GenericPet Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): GenericPet
+    public static function buildFromInput(array|object $input, bool $validate = true, bool $materializeDefaults = false): GenericPet
     {
-        $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
+        $input = is_array($input)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($input)
+            : ($materializeDefaults ? clone $input : $input);
+
+        if ($materializeDefaults) {
+            foreach (self::$_defaults as $__k => $__v) {
+                if (!property_exists($input, $__k)) {
+                    $input->{$__k} = is_array($__v) ? \JsonSchema\Validator::arrayToObjectRecursive($__v) : $__v;
+                }
+            }
+        }
+
         if ($validate) {
             static::validateInput($input);
         }
@@ -118,13 +139,22 @@ class GenericPet
     /**
      * Converts this object back to a simple array that can be JSON-serialized
      *
+     * @param bool $includeDefaults Add defaults for missing properties
      * @return array Converted array
      */
-    public function toArray(): array
+    public function toArray(bool $includeDefaults = false): array
     {
         $output = [];
         if (isset($this->hasFur) || array_key_exists('hasFur', $this->_explicitNulls)) {
             $output['hasFur'] = $this->hasFur;
+        }
+
+        if ($includeDefaults) {
+            foreach (self::$_defaults as $k => $v) {
+                if (!array_key_exists($k, $output)) {
+                    $output[$k] = $v;
+                }
+            }
         }
 
         return $output;
