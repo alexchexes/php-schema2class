@@ -152,6 +152,22 @@ class MyClass
     }
 
     /**
+     * Converts this object back to a stdClass that can be JSON-serialized
+     *
+     * @return stdClass Converted object
+     */
+    public function toObject(): \stdClass
+    {
+        $output = new \stdClass();
+        $output->{'foo-bar'} = $this->foo_bar;
+        if (isset($this->_foo_bar)) {
+            $output->{'foo bar'} = $this->_foo_bar;
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data

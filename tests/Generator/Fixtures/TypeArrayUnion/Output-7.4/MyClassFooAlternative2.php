@@ -107,6 +107,19 @@ class MyClassFooAlternative2
     }
 
     /**
+     * Converts this object back to a stdClass that can be JSON-serialized
+     *
+     * @return stdClass Converted object
+     */
+    public function toObject(): \stdClass
+    {
+        $output = new \stdClass();
+        $output->{'bar'} = $this->bar;
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data

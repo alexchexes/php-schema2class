@@ -129,6 +129,19 @@ class MyClass
     }
 
     /**
+     * Converts this object back to a stdClass that can be JSON-serialized
+     *
+     * @return stdClass Converted object
+     */
+    public function toObject()
+    {
+        $output = new \stdClass();
+        $output->{'value'} = $this->value->toObject();
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data

@@ -160,6 +160,22 @@ class Address
     }
 
     /**
+     * Converts this object back to a stdClass that can be JSON-serialized
+     *
+     * @return stdClass Converted object
+     */
+    public function toObject(): \stdClass
+    {
+        $output = new \stdClass();
+        if (isset($this->name)) {
+            $output->{'name'} = $this->name->toObject();
+        }
+        $output->{'city'} = $this->city;
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data

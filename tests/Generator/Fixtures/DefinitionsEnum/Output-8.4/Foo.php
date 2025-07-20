@@ -152,6 +152,22 @@ class Foo
     }
 
     /**
+     * Converts this object back to a stdClass that can be JSON-serialized
+     *
+     * @return stdClass Converted object
+     */
+    public function toObject(): \stdClass
+    {
+        $output = new \stdClass();
+        $output->{'color'} = $this->color->value;
+        if (isset($this->size)) {
+            $output->{'size'} = $this->size->value;
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data

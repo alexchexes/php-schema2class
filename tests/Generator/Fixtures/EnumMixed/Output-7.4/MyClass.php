@@ -363,6 +363,24 @@ class MyClass
     }
 
     /**
+     * Converts this object back to a stdClass that can be JSON-serialized
+     *
+     * @return stdClass Converted object
+     */
+    public function toObject(): \stdClass
+    {
+        $output = new \stdClass();
+        $output->{'foo'} = $this->foo;
+        $output->{'bar'} = $this->bar;
+        $output->{'baz'} = $this->baz;
+        $output->{'contradiction'} = $this->contradiction;
+        $output->{'contradiction2'} = $this->contradiction2;
+        $output->{'nullable'} = $this->nullable;
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data

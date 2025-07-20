@@ -167,6 +167,34 @@ class Cat
     }
 
     /**
+     * Converts this object back to a stdClass that can be JSON-serialized
+     *
+     * @return stdClass Converted object
+     */
+    public function toObject(): \stdClass
+    {
+        $output = new \stdClass();
+        if (isset($this->hasFur) || array_key_exists('hasFur', $this->_providedOptionals)) {
+            $output->{'hasFur'} = match (true) {
+                (($this->hasFur) === null) || (is_bool($this->hasFur)) => ($this->hasFur !== null) ? ($this->hasFur) : null,
+                (($this->hasFur) === null) || ((is_string($this->hasFur)) || (is_int($this->hasFur) || is_float($this->hasFur))) => ($this->hasFur !== null) ? (match (true) {
+                default => null,
+                is_string($this->hasFur),
+                is_int($this->hasFur) || is_float($this->hasFur) => $this->hasFur,
+            }) : null,
+                (is_string($this->hasFur)) || (is_int($this->hasFur) || is_float($this->hasFur)) || (is_bool($this->hasFur)) => match (true) {
+                default => null,
+                is_string($this->hasFur),
+                is_int($this->hasFur) || is_float($this->hasFur),
+                is_bool($this->hasFur) => $this->hasFur,
+            },
+            };
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data

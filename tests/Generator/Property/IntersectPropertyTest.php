@@ -70,6 +70,17 @@ EOCODE;
         assertSame($expected, $result);
     }
 
+    public function testConvertTypeToObject()
+    {
+        $result = $this->property->convertTypeToObject('variable');
+
+        $expected = <<<'EOCODE'
+$variable->{'myPropertyName'} = ($this->myPropertyName)->toObject();
+EOCODE;
+
+        assertSame($expected, $result);
+    }
+
     public function testCloneProperty()
     {
         $expected = <<<'EOCODE'

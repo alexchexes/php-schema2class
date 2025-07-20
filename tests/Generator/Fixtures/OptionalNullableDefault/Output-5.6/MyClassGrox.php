@@ -168,6 +168,24 @@ class MyClassGrox
     }
 
     /**
+     * Converts this object back to a stdClass that can be JSON-serialized
+     *
+     * @return stdClass Converted object
+     */
+    public function toObject()
+    {
+        $output = new \stdClass();
+        if (isset($this->a)) {
+            $output->{'a'} = $this->a;
+        }
+        if (isset($this->b)) {
+            $output->{'b'} = $this->b;
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data

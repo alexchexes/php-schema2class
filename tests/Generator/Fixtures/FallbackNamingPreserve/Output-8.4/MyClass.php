@@ -1824,6 +1824,70 @@ class MyClass
     }
 
     /**
+     * Converts this object back to a stdClass that can be JSON-serialized
+     *
+     * @param bool $includeDefaults Add defaults for missing properties
+     * @return stdClass Converted object
+     */
+    public function toObject(bool $includeDefaults = false): \stdClass
+    {
+        $output = new \stdClass();
+        $output->{'_GLOBALS'} = $this->_GLOBALS_1;
+        $output->{'GLOBALS'} = $this->_GLOBALS_2;
+        $output->{'GLOBALS_1'} = $this->_GLOBALS_1_1;
+        $output->{'_SERVER'} = $this->_SERVER_1;
+        $output->{'_GET'} = $this->_GET_1;
+        $output->{'_POST'} = $this->_POST_1;
+        $output->{'_FILES'} = $this->_FILES_1;
+        $output->{'_REQUEST'} = $this->_REQUEST_1;
+        $output->{'_SESSION'} = $this->_SESSION_1;
+        $output->{'_ENV'} = $this->_ENV_1;
+        $output->{'_COOKIE'} = $this->_COOKIE_1;
+        $output->{'php_errormsg'} = $this->_php_errormsg;
+        $output->{'http_response_header'} = $this->_http_response_header;
+        $output->{'argc'} = $this->_argc;
+        $output->{'argv'} = $this->_argv;
+        $output->{'input'} = $this->input;
+        $output->{'validate'} = $this->validate;
+        $output->{'obj'} = $this->obj;
+        $output->{'materializeDefaults'} = $this->materializeDefaults;
+        $output->{'includeDefaults'} = $this->includeDefaults;
+        if (isset($this->testObj)) {
+            $output->{'testObj'} = ($this->testObj)->toObject();
+        }
+        $output->{'buildFromInput'} = $this->_buildFromInput;
+        $output->{'toArray'} = $this->_toArray;
+        $output->{'validateInput'} = $this->_validateInput;
+        $output->{'schema'} = $this->_schema;
+        $output->{'_defaults'} = $this->_defaults_1;
+        $output->{'clone'} = $this->_clone;
+        $output->{'__construct'} = $this->__construct_1;
+        $output->{'__destruct'} = $this->__destruct_1;
+        $output->{'__get'} = $this->__get_1;
+        $output->{'__set'} = $this->__set_1;
+        $output->{'__call'} = $this->__call_1;
+        $output->{'__isset'} = $this->__isset_1;
+        $output->{'__unset'} = $this->__unset_1;
+        $output->{'__sleep'} = $this->__sleep_1;
+        $output->{'__wakeup'} = $this->__wakeup_1;
+        $output->{'__toString'} = $this->__toString_1;
+        $output->{'__invoke'} = $this->__invoke_1;
+        $output->{'__debugInfo'} = $this->__debugInfo_1;
+        $output->{'__clone'} = $this->__clone_1;
+        $output->{'files'} = $this->files;
+
+        if ($includeDefaults) {
+            foreach (self::$_defaults as $k => $v) {
+                if (!property_exists($output, $k)) {
+                    $output->{$k} = $v;
+                }
+            }
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data

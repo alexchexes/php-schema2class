@@ -166,6 +166,24 @@ class Pets
     }
 
     /**
+     * Converts this object back to a stdClass that can be JSON-serialized
+     *
+     * @return stdClass Converted object
+     */
+    public function toObject(): \stdClass
+    {
+        $output = new \stdClass();
+        if (isset($this->pet)) {
+            $output->{'pet'} = $this->pet->toObject();
+        }
+        if (isset($this->cat)) {
+            $output->{'cat'} = $this->cat->toObject();
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data

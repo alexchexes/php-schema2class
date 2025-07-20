@@ -139,6 +139,32 @@ class MyClass
     }
 
     /**
+     * Converts this object back to a stdClass that can be JSON-serialized
+     *
+     * @param bool $includeDefaults Add defaults for missing properties
+     * @return stdClass Converted object
+     */
+    public function toObject(bool $includeDefaults = false)
+    {
+        $output = new \stdClass();
+        if (isset($this->foo)) {
+            if ((is_string($this->foo)) || (is_int($this->foo))) {
+            $output->{'foo'} = $this->foo;
+            }
+        }
+
+        if ($includeDefaults) {
+            foreach (self::$_defaults as $k => $v) {
+                if (!property_exists($output, $k)) {
+                    $output->{$k} = $v;
+                }
+            }
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data

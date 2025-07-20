@@ -161,6 +161,23 @@ class UnionProperty extends AbstractProperty
         return "\${$outputVarName}[{$keyStr}] = " . $match->generate() . ";";
     }
 
+    private function convertTypeToObjectMatch(string $outputVarName = 'output'): string
+    {
+        $name   = $this->name;
+        $key    = $this->key;
+        $keyStr = var_export($key, true);
+        $match  = new MatchGenerator("true");
+
+        foreach ($this->subProperties as $subProperty) {
+            $mapping       = $subProperty->generateOutputObjectMappingExpr("\$this->{$name}");
+            $discriminator = $subProperty->generateTypeAssertionExpr("\$this->{$name}");
+
+            $match->addArm($discriminator, $mapping);
+        }
+
+        return sprintf('$%s->{%s} = %s;', $outputVarName, $keyStr, $match->generate());
+    }
+
     public function convertTypeToArray(string $outputVarName = 'output'): string
     {
         if ($this->generatorRequest->isAtLeastPHP("8.0")) {
@@ -190,6 +207,40 @@ class UnionProperty extends AbstractProperty
         foreach ($conversions as $assignment => $conversion) {
             $condition  = "(" . join(") || (", $conversion["discriminators"]) . ")";
             $branches[] = ($ifs++ > 0 ? "else " : "") . "if ($condition) {\n    $assignment\n}";
+        }
+
+        return str_replace("}\nelse", "} else", join("\n", $branches));
+    }
+
+    public function convertTypeToObject(string $outputVarName = 'output'): string
+    {
+        if ($this->generatorRequest->isAtLeastPHP("8.0")) {
+            return $this->convertTypeToObjectMatch($outputVarName);
+        }
+
+        $name        = $this->name;
+        $key         = $this->key;
+        $keyStr      = var_export($key, true);
+        $conversions = [];
+
+        foreach ($this->subProperties as $subProperty) {
+            $mapping       = $subProperty->generateOutputObjectMappingExpr("\$this->{$name}");
+            $assignment    = sprintf('$%s->{%s} = %s;', $outputVarName, $keyStr, $mapping);
+            $discriminator = $subProperty->generateTypeAssertionExpr("\$this->{$name}");
+
+            if (!isset($conversions[$assignment])) {
+                $conversions[$assignment] = ["discriminators" => []];
+            }
+
+            $conversions[$assignment]["discriminators"][] = $discriminator;
+        }
+
+        $ifs      = 0;
+        $branches = [];
+        $fallback = null;
+        foreach ($conversions as $assignment => $conversion) {
+            $condition  = "(" . join(") || (", $conversion["discriminators"]) . ")";
+            $branches[] = ($ifs++ > 0 ? "else " : "") . "if ($condition) {\n$assignment\n}";
         }
 
         return str_replace("}\nelse", "} else", join("\n", $branches));
@@ -333,6 +384,32 @@ class UnionProperty extends AbstractProperty
         foreach ($this->subProperties as $subProperty) {
             $assert = $subProperty->generateTypeAssertionExpr($expr);
             $map    = $subProperty->generateOutputMappingExpr($expr);
+            $out    = "({$assert}) ? ({$map}) : ({$out})";
+        }
+
+        return $out;
+    }
+
+    public function generateOutputObjectMappingExpr(string $expr): string
+    {
+        if ($this->generatorRequest->isAtLeastPHP("8.0")) {
+            $match = new MatchGenerator("true");
+            $match->addArm("default", "null");
+
+            foreach ($this->subProperties as $subProperty) {
+                $assert = $subProperty->generateTypeAssertionExpr($expr);
+                $map    = $subProperty->generateOutputObjectMappingExpr($expr);
+                $match->addArm($assert, $map);
+            }
+
+            return $match->generate();
+        }
+
+        $out = "null";
+
+        foreach ($this->subProperties as $subProperty) {
+            $assert = $subProperty->generateTypeAssertionExpr($expr);
+            $map    = $subProperty->generateOutputObjectMappingExpr($expr);
             $out    = "({$assert}) ? ({$map}) : ({$out})";
         }
 

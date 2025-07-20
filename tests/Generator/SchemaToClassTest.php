@@ -367,12 +367,19 @@ class SchemaToClassTest extends TestCase
                     $this->assertInstanceOf($fqcn, $obj);
                     $expectedArray = json_decode(json_encode($input), true);
                     $actualArray = $obj->toArray();
+                    $expectedObject = json_decode(json_encode($input));
+                    $actualObject = $obj->toObject();
                     ksort($expectedArray);
                     ksort($actualArray);
                     $this->assertSame(
                         $expectedArray,
                         $actualArray,
                         "Array returned from {$fqcn}->toArray() doesn't match input array from file '{$inputName}'."
+                    );
+                    $this->assertEquals(
+                        $expectedObject,
+                        $actualObject,
+                        "Object returned from {$fqcn}->toObject() doesn't match input object from file '{$inputName}'."
                     );
                 }
             }

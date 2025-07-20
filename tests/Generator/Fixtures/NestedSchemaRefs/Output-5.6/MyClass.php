@@ -169,6 +169,24 @@ class MyClass
     }
 
     /**
+     * Converts this object back to a stdClass that can be JSON-serialized
+     *
+     * @return stdClass Converted object
+     */
+    public function toObject()
+    {
+        $output = new \stdClass();
+        if (isset($this->files)) {
+            $output->{'files'} = array_map(function(MyClassFilesItem $i) { return $i->toObject(); }, $this->files);
+        }
+        if (isset($this->options)) {
+            $output->{'options'} = $this->options->toObject();
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data

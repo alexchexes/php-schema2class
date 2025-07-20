@@ -69,6 +69,11 @@ class DefaultPropertyDecorator implements PropertyDecoratorInterface, Renameable
         return $this->inner->convertTypeToArray($outputVarName);
     }
 
+    public function convertTypeToObject(string $outputVarName = 'output'): string
+    {
+        return $this->inner->convertTypeToObject($outputVarName);
+    }
+
     /**
      * @param SchemaToClass $generator
      * @return void
@@ -149,6 +154,11 @@ class DefaultPropertyDecorator implements PropertyDecoratorInterface, Renameable
     public function generateOutputMappingExpr(string $expr): string
     {
         return $this->inner->generateOutputMappingExpr($expr);
+    }
+
+    public function generateOutputObjectMappingExpr(string $expr): string
+    {
+        return $this->inner->generateOutputObjectMappingExpr($expr);
     }
 
     public function generateCloneExpr(string $expr): string

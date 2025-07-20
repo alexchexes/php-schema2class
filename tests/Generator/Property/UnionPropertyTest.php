@@ -79,6 +79,22 @@ EOCODE;
         assertSame($expected, $result);
     }
 
+    public function testConvertTypeToObject()
+    {
+        $underTest = new UnionProperty('myPropertyName', ['anyOf' => [['properties' => ['subFoo1' => ['type' => 'string']]], ['properties' => ['subFoo2' => ['type' => 'string']]]]], $this->generatorRequest);
+
+        $result = $underTest->convertTypeToObject('variable');
+
+        $expected = <<<'EOCODE'
+$variable->{'myPropertyName'} = match (true) {
+    $this->myPropertyName instanceof FooMyPropertyNameAlternative1,
+    $this->myPropertyName instanceof FooMyPropertyNameAlternative2 => ($this->myPropertyName)->toObject(),
+};
+EOCODE;
+
+        assertSame($expected, $result);
+    }
+
     public function testCloneProperty()
     {
         $expected = <<<'EOCODE'

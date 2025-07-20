@@ -114,6 +114,23 @@ class MyClass
     }
 
     /**
+     * Converts this object back to a stdClass that can be JSON-serialized
+     *
+     * @return stdClass Converted object
+     */
+    public function toObject()
+    {
+        $output = new \stdClass();
+        if ((is_string($this->foo))) {
+        $output->{'foo'} = $this->foo;
+        } else if (($this->foo instanceof MyClassFooAlternative2)) {
+        $output->{'foo'} = ($this->foo)->toObject();
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data

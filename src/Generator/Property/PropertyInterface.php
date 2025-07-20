@@ -59,6 +59,12 @@ interface PropertyInterface
     public function convertTypeToArray(string $outputVarName = 'output'): string;
 
     /**
+     * @param string $outputVarName
+     * @return string
+     */
+    public function convertTypeToObject(string $outputVarName = 'output'): string;
+
+    /**
      * @param SchemaToClass $generator
      * @return void
      */
@@ -99,6 +105,12 @@ interface PropertyInterface
      * @return string
      */
     public function generateOutputMappingExpr(string $expr): string;
+
+    /**
+     * @param string $expr
+     * @return string
+     */
+    public function generateOutputObjectMappingExpr(string $expr): string;
 
     /**
      * @param string $expr

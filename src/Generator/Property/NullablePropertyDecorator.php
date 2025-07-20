@@ -99,6 +99,11 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface, Renameabl
         return $this->inner->convertTypeToArray($out);
     }
 
+    public function convertTypeToObject(string $out = 'output'): string
+    {
+        return $this->inner->convertTypeToObject($out);
+    }
+
     public function typeAnnotation(): string
     {
         $ann = $this->inner->typeAnnotation();
@@ -178,6 +183,12 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface, Renameabl
     public function generateOutputMappingExpr(string $expr): string
     {
         $inner = $this->inner->generateOutputMappingExpr($expr);
+        return "({$expr} !== null) ? ({$inner}) : null";
+    }
+
+    public function generateOutputObjectMappingExpr(string $expr): string
+    {
+        $inner = $this->inner->generateOutputObjectMappingExpr($expr);
         return "({$expr} !== null) ? ({$inner}) : null";
     }
 

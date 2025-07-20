@@ -370,6 +370,56 @@ class Generator
         return $method;
     }
 
+    public function generateToObjectMethod(PropertyCollection $properties, bool $hasDefaults = false): MethodGenerator
+    {
+        $tags = [];
+        if ($hasDefaults) {
+            $tags[] = new ParamTag('includeDefaults', ['bool'], 'Add defaults for missing properties');
+        }
+        $tags[] = new ReturnTag(["stdClass"], "Converted object");
+
+        $docBlock = new DocBlockGenerator(
+            "Converts this object back to a stdClass that can be JSON-serialized",
+            null,
+            $tags
+        );
+        $docBlock->setWordWrap(false);
+
+        $params = [];
+        if ($hasDefaults) {
+            $params[] = new ParameterGenerator('includeDefaults', 'bool', false);
+        }
+
+        $body = '$output = new \\stdClass();' . "\n" .
+            $properties->generateTypeToObjectConversionCode('output') . "\n";
+
+        if ($hasDefaults) {
+            $body .= "\nif (\$includeDefaults) {\n" .
+            "    foreach (self::\$_defaults as \$k => \$v) {\n" .
+            "        if (!property_exists(\$output, \$k)) {\n" .
+            "            \$output->{\$k} = \$v;\n" .
+            "        }\n" .
+            "    }\n" .
+            "}\n";
+        }
+
+        $body .= "\nreturn \$output;";
+
+        $method = new MethodGenerator(
+            'toObject',
+            $params,
+            MethodGenerator::FLAG_PUBLIC,
+            $body,
+            $docBlock
+        );
+
+        if ($this->generatorRequest->isAtLeastPHP("7.0")) {
+            $method->setReturnType("\\stdClass");
+        }
+
+        return $method;
+    }
+
     /**
      * @return MethodGenerator
      */

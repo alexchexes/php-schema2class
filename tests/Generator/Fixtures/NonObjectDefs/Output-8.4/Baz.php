@@ -137,6 +137,24 @@ class Baz
     }
 
     /**
+     * Converts this object back to a stdClass that can be JSON-serialized
+     *
+     * @return stdClass Converted object
+     */
+    public function toObject(): \stdClass
+    {
+        $output = new \stdClass();
+        if (isset($this->grox)) {
+            $output->{'grox'} = match (true) {
+                ($this->grox) instanceof Foo,
+                ($this->grox) instanceof Bar => $this->grox->toObject(),
+            };
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data

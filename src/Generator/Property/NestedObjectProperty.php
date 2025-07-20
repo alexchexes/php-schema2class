@@ -81,6 +81,11 @@ class NestedObjectProperty extends AbstractProperty
         return "({$expr})->toArray()";
     }
 
+    public function generateOutputObjectMappingExpr(string $expr): string
+    {
+        return "({$expr})->toObject()";
+    }
+
     public function generateCloneExpr(string $expr): string
     {
         return "clone {$expr}";

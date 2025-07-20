@@ -335,6 +335,30 @@ class Record
     }
 
     /**
+     * Converts this object back to a stdClass that can be JSON-serialized
+     *
+     * @return stdClass Converted object
+     */
+    public function toObject(): \stdClass
+    {
+        $output = new \stdClass();
+        if (isset($this->dataArray)) {
+            $output->{'dataArray'} = array_map(fn(Phone $i): array => $i->toObject(), $this->dataArray);
+        }
+        if (isset($this->dataArrayNested)) {
+            $output->{'dataArrayNested'} = array_map(fn($i) => array_map(fn(Phone $i): array => $i->toObject(), $i), $this->dataArrayNested);
+        }
+        if (isset($this->dataArrayAnyOf)) {
+            $output->{'dataArrayAnyOf'} = array_map(fn($i) => (($i) instanceof Fio) ? ($i->toObject()) : ((($i) instanceof Phone) ? ($i->toObject()) : (null)), $this->dataArrayAnyOf);
+        }
+        if (isset($this->dataArrayNestedAnyOf)) {
+            $output->{'dataArrayNestedAnyOf'} = array_map(fn($i) => array_map(fn($i) => (($i) instanceof Fio) ? ($i->toObject()) : ((($i) instanceof Phone) ? ($i->toObject()) : (null)), $i), $this->dataArrayNestedAnyOf);
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data

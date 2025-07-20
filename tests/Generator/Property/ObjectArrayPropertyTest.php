@@ -84,6 +84,19 @@ EOCODE;
         assertSame($expected, $result);
     }
 
+    public function testConvertTypeToObjectWithComplexArray()
+    {
+        $underTest = new ObjectArrayProperty('myPropertyName', ['type' => 'array', 'items' => ['properties' => ['foo' => ['type' => 'string']]]], $this->generatorRequest);
+
+        $result = $underTest->convertTypeToObject('variable');
+
+        $expected = <<<'EOCODE'
+$variable->{'myPropertyName'} = array_map(fn (FooMyPropertyNameItem $i) => $i->toObject(), $this->myPropertyName);
+EOCODE;
+
+        assertSame($expected, $result);
+    }
+
     public function testClonePropertyWithComplexArray()
     {
         $underTest = new ObjectArrayProperty('myPropertyName', ['type' => 'array', 'items' => ['properties' => ['foo' => ['type' => 'string']]]], $this->generatorRequest);
