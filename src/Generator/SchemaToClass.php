@@ -353,6 +353,7 @@ class SchemaToClass
         $reservedMethodNames = [
             'buildFromInput',
             'toArray',
+            'toStdClass',
             'validateInput',
             'clone',
             '__construct',
@@ -428,6 +429,7 @@ class SchemaToClass
         $reservedMethodNames = [
             'buildFromInput',
             'toArray',
+            'toStdClass',
             'validateInput',
             'clone',
             '__construct',
