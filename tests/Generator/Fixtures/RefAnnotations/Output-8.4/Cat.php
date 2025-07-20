@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ns\RefAnnotations;
+namespace Ns\RefAnnotations_8_4;
 
 class Cat
 {
@@ -33,20 +33,36 @@ class Cat
     ];
 
     /**
-     * Whether the cat has fur. True by default for most cats
+     * Default values from the schema
      *
-     * @var bool|null
+     * @var array
      */
-    private ?bool $hasFur = true;
+    private static array $_defaults = [
+        'hasFur' => true,
+    ];
+
+    /**
+     * Map of optional nullable property names that were explicitly set to `null`
+     *
+     * @var array<string,true>
+     */
+    private array $_explicitNulls = [];
 
     /**
      * Whether the cat has fur. True by default for most cats
      *
-     * @return bool
+     * @var bool|null
      */
-    public function getHasFur() : bool
+    private ?bool $hasFur = null;
+
+    /**
+     * Whether the cat has fur. True by default for most cats
+     *
+     * @return bool|null
+     */
+    public function getHasFur(): ?bool
     {
-        return $this->hasFur;
+        return $this->hasFur ?? null;
     }
 
     /**
@@ -66,6 +82,7 @@ class Cat
 
         $clone = clone $this;
         $clone->hasFur = $hasFur;
+        $clone->_explicitNulls['hasFur'] = true;
 
         return $clone;
     }
@@ -76,7 +93,8 @@ class Cat
     public function withoutHasFur() : self
     {
         $clone = clone $this;
-        $clone->hasFur = true;
+        unset($clone->hasFur);
+        unset($clone->_explicitNulls['hasFur']);
 
         return $clone;
     }
@@ -86,32 +104,60 @@ class Cat
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param bool $materializeDefaults Apply defaults defined in schema when missing
      * @return Cat Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : Cat
+    public static function buildFromInput(array|object $input, bool $validate = true, bool $materializeDefaults = false): Cat
     {
-        $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
+        $input = is_array($input)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($input)
+            : ($materializeDefaults ? clone $input : $input);
+
+        if ($materializeDefaults) {
+            foreach (self::$_defaults as $__k => $__v) {
+                if (!property_exists($input, $__k)) {
+                    $input->{$__k} = is_array($__v) ? \JsonSchema\Validator::arrayToObjectRecursive($__v) : $__v;
+                }
+            }
+        }
+
         if ($validate) {
             static::validateInput($input);
         }
 
-        $hasFur = property_exists($input, 'hasFur') ? $input->{'hasFur'} : true;
+        $__explicitNulls = [];
+        $hasFur = property_exists($input, 'hasFur') ? $input->{'hasFur'} : null;
+        if (property_exists($input, 'hasFur')) {
+            $__explicitNulls['hasFur'] = true;
+        }
 
         $obj = new self();
         $obj->hasFur = $hasFur;
+        $obj->_explicitNulls = $__explicitNulls;
         return $obj;
     }
 
     /**
      * Converts this object back to a simple array that can be JSON-serialized
      *
+     * @param bool $includeDefaults Add defaults for missing properties
      * @return array Converted array
      */
-    public function toArray() : array
+    public function toArray(bool $includeDefaults = false): array
     {
         $output = [];
-        $output['hasFur'] = $this->hasFur;
+        if (isset($this->hasFur) || array_key_exists('hasFur', $this->_explicitNulls)) {
+            $output['hasFur'] = $this->hasFur;
+        }
+
+        if ($includeDefaults) {
+            foreach (self::$_defaults as $k => $v) {
+                if (!array_key_exists($k, $output)) {
+                    $output[$k] = $v;
+                }
+            }
+        }
 
         return $output;
     }
@@ -124,7 +170,7 @@ class Cat
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput(array|object $input, bool $return = false) : bool
+    public static function validateInput(array|object $input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
@@ -138,5 +184,16 @@ class Cat
         }
 
         return $validator->isValid();
+    }
+
+    /**
+     * Checks if an optional nullable property was explicitly set to `null`
+     *
+     * @param string $propertyName property name as appears in the schema
+     * @return bool
+     */
+    public function isExplicitNull(string $propertyName): bool
+    {
+        return array_key_exists($propertyName, $this->_explicitNulls);
     }
 }

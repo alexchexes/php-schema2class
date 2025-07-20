@@ -27,7 +27,7 @@ class UserHobbiesItem
     /**
      * @return string|null
      */
-    public function getName() : ?string
+    public function getName(): ?string
     {
         return $this->name ?? null;
     }
@@ -72,7 +72,7 @@ class UserHobbiesItem
      * @return UserHobbiesItem Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : UserHobbiesItem
+    public static function buildFromInput(array|object $input, bool $validate = true): UserHobbiesItem
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -91,7 +91,7 @@ class UserHobbiesItem
      *
      * @return array Converted array
      */
-    public function toArray() : array
+    public function toArray(): array
     {
         $output = [];
         if (isset($this->name)) {
@@ -109,7 +109,7 @@ class UserHobbiesItem
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput(array|object $input, bool $return = false) : bool
+    public static function validateInput(array|object $input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;

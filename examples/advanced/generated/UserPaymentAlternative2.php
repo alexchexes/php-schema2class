@@ -52,7 +52,7 @@ class UserPaymentAlternative2
     /**
      * @return UserPaymentAlternative2Type
      */
-    public function getType() : UserPaymentAlternative2Type
+    public function getType(): UserPaymentAlternative2Type
     {
         return $this->type;
     }
@@ -60,7 +60,7 @@ class UserPaymentAlternative2
     /**
      * @return string
      */
-    public function getAccountNumber() : string
+    public function getAccountNumber(): string
     {
         return $this->accountNumber;
     }
@@ -106,7 +106,7 @@ class UserPaymentAlternative2
      * @return UserPaymentAlternative2 Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : UserPaymentAlternative2
+    public static function buildFromInput(array|object $input, bool $validate = true): UserPaymentAlternative2
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -126,7 +126,7 @@ class UserPaymentAlternative2
      *
      * @return array Converted array
      */
-    public function toArray() : array
+    public function toArray(): array
     {
         $output = [];
         $output['type'] = ($this->type)->value;
@@ -143,7 +143,7 @@ class UserPaymentAlternative2
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput(array|object $input, bool $return = false) : bool
+    public static function validateInput(array|object $input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;

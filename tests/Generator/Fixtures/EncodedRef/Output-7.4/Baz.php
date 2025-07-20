@@ -62,7 +62,7 @@ class Baz
     /**
      * @return FooTest|null
      */
-    public function getA() : ?FooTest
+    public function getA(): ?FooTest
     {
         return $this->a ?? null;
     }
@@ -70,7 +70,7 @@ class Baz
     /**
      * @return FooTest|null
      */
-    public function getB() : ?FooTest
+    public function getB(): ?FooTest
     {
         return $this->b ?? null;
     }
@@ -78,7 +78,7 @@ class Baz
     /**
      * @return BarTest|null
      */
-    public function getC() : ?BarTest
+    public function getC(): ?BarTest
     {
         return $this->c ?? null;
     }
@@ -160,7 +160,7 @@ class Baz
      * @return Baz Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true) : Baz
+    public static function buildFromInput($input, bool $validate = true): Baz
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
@@ -189,7 +189,7 @@ class Baz
      *
      * @return array Converted array
      */
-    public function toArray() : array
+    public function toArray(): array
     {
         $output = [];
         if (isset($this->a)) {
@@ -213,7 +213,7 @@ class Baz
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput($input, bool $return = false) : bool
+    public static function validateInput($input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;

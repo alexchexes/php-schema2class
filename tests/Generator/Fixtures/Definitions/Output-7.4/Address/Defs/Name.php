@@ -28,7 +28,7 @@ class Name
     /**
      * @return string|null
      */
-    public function getFirst() : ?string
+    public function getFirst(): ?string
     {
         return $this->first ?? null;
     }
@@ -73,7 +73,7 @@ class Name
      * @return Name Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true) : Name
+    public static function buildFromInput($input, bool $validate = true): Name
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
@@ -98,7 +98,7 @@ class Name
      *
      * @return array Converted array
      */
-    public function toArray() : array
+    public function toArray(): array
     {
         $output = [];
         if (isset($this->first)) {
@@ -116,7 +116,7 @@ class Name
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput($input, bool $return = false) : bool
+    public static function validateInput($input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;

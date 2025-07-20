@@ -64,7 +64,7 @@ class BarTest
     /**
      * @return FooTest|MoiKlass|FooTest_1|null
      */
-    public function getExampleProp() : FooTest|FooTest_1|MoiKlass|null
+    public function getExampleProp(): FooTest|FooTest_1|MoiKlass|null
     {
         return $this->exampleProp;
     }
@@ -100,7 +100,7 @@ class BarTest
      * @return BarTest Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : BarTest
+    public static function buildFromInput(array|object $input, bool $validate = true): BarTest
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -124,7 +124,7 @@ class BarTest
      *
      * @return array Converted array
      */
-    public function toArray() : array
+    public function toArray(): array
     {
         $output = [];
         if (isset($this->exampleProp)) {
@@ -146,7 +146,7 @@ class BarTest
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput(array|object $input, bool $return = false) : bool
+    public static function validateInput(array|object $input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;

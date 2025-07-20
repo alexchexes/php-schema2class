@@ -22,6 +22,13 @@ class Fio
     ];
 
     /**
+     * Map of optional nullable property names that were explicitly set to `null`
+     *
+     * @var array<string,true>
+     */
+    private $_explicitNulls = [];
+
+    /**
      * @var string|null
      */
     private $bar = null;
@@ -51,6 +58,7 @@ class Fio
 
         $clone = clone $this;
         $clone->bar = $bar;
+        $clone->_explicitNulls['bar'] = true;
 
         return $clone;
     }
@@ -62,6 +70,7 @@ class Fio
     {
         $clone = clone $this;
         unset($clone->bar);
+        unset($clone->_explicitNulls['bar']);
 
         return $clone;
     }
@@ -87,10 +96,15 @@ class Fio
             static::validateInput($input);
         }
 
-        $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
+        $__explicitNulls = [];
+        $bar = property_exists($input, 'bar') ? $input->{'bar'} : null;
+        if (property_exists($input, 'bar')) {
+            $__explicitNulls['bar'] = true;
+        }
 
         $obj = new self();
         $obj->bar = $bar;
+        $obj->_explicitNulls = $__explicitNulls;
         return $obj;
     }
 
@@ -102,7 +116,9 @@ class Fio
     public function toArray()
     {
         $output = [];
-        $output['bar'] = $this->bar;
+        if (isset($this->bar) || array_key_exists('bar', $this->_explicitNulls)) {
+            $output['bar'] = $this->bar;
+        }
 
         return $output;
     }
@@ -129,5 +145,16 @@ class Fio
         }
 
         return $validator->isValid();
+    }
+
+    /**
+     * Checks if an optional nullable property was explicitly set to `null`
+     *
+     * @param string $propertyName property name as appears in the schema
+     * @return bool
+     */
+    public function isExplicitNull(string $propertyName)
+    {
+        return array_key_exists($propertyName, $this->_explicitNulls);
     }
 }

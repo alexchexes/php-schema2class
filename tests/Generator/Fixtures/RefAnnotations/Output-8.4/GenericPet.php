@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ns\RefAnnotations;
+namespace Ns\RefAnnotations_8_4;
 
 class GenericPet
 {
@@ -31,20 +31,27 @@ class GenericPet
     ];
 
     /**
-     * Whether the animal has fur (true), doesn't (false), or it's unknown or varies (null)
+     * Map of optional nullable property names that were explicitly set to `null`
      *
-     * @var bool|null
+     * @var array<string,true>
      */
-    private ?bool $hasFur = false;
+    private array $_explicitNulls = [];
 
     /**
      * Whether the animal has fur (true), doesn't (false), or it's unknown or varies (null)
      *
-     * @return bool
+     * @var bool|null
      */
-    public function getHasFur() : bool
+    private ?bool $hasFur = null;
+
+    /**
+     * Whether the animal has fur (true), doesn't (false), or it's unknown or varies (null)
+     *
+     * @return bool|null
+     */
+    public function getHasFur(): ?bool
     {
-        return $this->hasFur;
+        return $this->hasFur ?? null;
     }
 
     /**
@@ -64,6 +71,7 @@ class GenericPet
 
         $clone = clone $this;
         $clone->hasFur = $hasFur;
+        $clone->_explicitNulls['hasFur'] = true;
 
         return $clone;
     }
@@ -74,7 +82,8 @@ class GenericPet
     public function withoutHasFur() : self
     {
         $clone = clone $this;
-        $clone->hasFur = false;
+        unset($clone->hasFur);
+        unset($clone->_explicitNulls['hasFur']);
 
         return $clone;
     }
@@ -87,17 +96,22 @@ class GenericPet
      * @return GenericPet Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : GenericPet
+    public static function buildFromInput(array|object $input, bool $validate = true): GenericPet
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $hasFur = property_exists($input, 'hasFur') ? $input->{'hasFur'} : false;
+        $__explicitNulls = [];
+        $hasFur = property_exists($input, 'hasFur') ? $input->{'hasFur'} : null;
+        if (property_exists($input, 'hasFur')) {
+            $__explicitNulls['hasFur'] = true;
+        }
 
         $obj = new self();
         $obj->hasFur = $hasFur;
+        $obj->_explicitNulls = $__explicitNulls;
         return $obj;
     }
 
@@ -106,10 +120,12 @@ class GenericPet
      *
      * @return array Converted array
      */
-    public function toArray() : array
+    public function toArray(): array
     {
         $output = [];
-        $output['hasFur'] = $this->hasFur;
+        if (isset($this->hasFur) || array_key_exists('hasFur', $this->_explicitNulls)) {
+            $output['hasFur'] = $this->hasFur;
+        }
 
         return $output;
     }
@@ -122,7 +138,7 @@ class GenericPet
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput(array|object $input, bool $return = false) : bool
+    public static function validateInput(array|object $input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
@@ -136,5 +152,16 @@ class GenericPet
         }
 
         return $validator->isValid();
+    }
+
+    /**
+     * Checks if an optional nullable property was explicitly set to `null`
+     *
+     * @param string $propertyName property name as appears in the schema
+     * @return bool
+     */
+    public function isExplicitNull(string $propertyName): bool
+    {
+        return array_key_exists($propertyName, $this->_explicitNulls);
     }
 }

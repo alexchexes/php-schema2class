@@ -27,17 +27,27 @@ class MyClass
     ];
 
     /**
-     * @var int|null
+     * Default values from the schema
+     *
+     * @var array
      */
-    private $limit = 10000;
+    private static $_defaults = [
+        'limit' => 10000,
+        'skip' => 0,
+    ];
 
     /**
      * @var int|null
      */
-    private $skip = 0;
+    private $limit = null;
 
     /**
-     * @return int
+     * @var int|null
+     */
+    private $skip = null;
+
+    /**
+     * @return int|null
      */
     public function getLimit()
     {
@@ -45,7 +55,7 @@ class MyClass
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getSkip()
     {
@@ -79,7 +89,7 @@ class MyClass
     public function withoutLimit()
     {
         $clone = clone $this;
-        $clone->limit = 10000;
+        unset($clone->limit);
 
         return $clone;
     }
@@ -111,7 +121,7 @@ class MyClass
     public function withoutSkip()
     {
         $clone = clone $this;
-        $clone->skip = 0;
+        unset($clone->skip);
 
         return $clone;
     }
@@ -121,10 +131,11 @@ class MyClass
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param bool $materializeDefaults Apply defaults defined in schema when missing
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true)
+    public static function buildFromInput($input, bool $validate = true, bool $materializeDefaults = false)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
@@ -132,13 +143,24 @@ class MyClass
             );
         }
 
-        $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
+        $input = is_array($input)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($input)
+            : ($materializeDefaults ? clone $input : $input);
+
+        if ($materializeDefaults) {
+            foreach (self::$_defaults as $__k => $__v) {
+                if (!property_exists($input, $__k)) {
+                    $input->{$__k} = is_array($__v) ? \JsonSchema\Validator::arrayToObjectRecursive($__v) : $__v;
+                }
+            }
+        }
+
         if ($validate) {
             static::validateInput($input);
         }
 
-        $limit = isset($input->{'limit'}) ? $input->{'limit'} : 10000;
-        $skip = isset($input->{'skip'}) ? $input->{'skip'} : 0;
+        $limit = isset($input->{'limit'}) ? $input->{'limit'} : null;
+        $skip = isset($input->{'skip'}) ? $input->{'skip'} : null;
 
         $obj = new self();
         $obj->limit = $limit;
@@ -149,9 +171,10 @@ class MyClass
     /**
      * Converts this object back to a simple array that can be JSON-serialized
      *
+     * @param bool $includeDefaults Add defaults for missing properties
      * @return array Converted array
      */
-    public function toArray()
+    public function toArray(bool $includeDefaults = false)
     {
         $output = [];
         if (isset($this->limit)) {
@@ -159,6 +182,14 @@ class MyClass
         }
         if (isset($this->skip)) {
             $output['skip'] = $this->skip;
+        }
+
+        if ($includeDefaults) {
+            foreach (self::$_defaults as $k => $v) {
+                if (!array_key_exists($k, $output)) {
+                    $output[$k] = $v;
+                }
+            }
         }
 
         return $output;

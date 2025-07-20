@@ -24,6 +24,7 @@ class OptionalPropertyDecoratorTest extends TestCase
     {
         $this->innerProperty = $this->prophesize(PropertyInterface::class);
         $this->innerProperty->schema()->willReturn([]);
+        $this->innerProperty->allowsNull()->willReturn(false);
         $this->innerProperty->formatValue(Argument::any())->willReturn(new PropertyValueGenerator(null));
         $this->decorator     = new OptionalPropertyDecorator('myPropertyName', $this->innerProperty->reveal());
     }
@@ -69,7 +70,7 @@ class OptionalPropertyDecoratorTest extends TestCase
 
         $result = $decorator->convertInputToType('variable');
 
-        $expected = '$myPropertyName = array_key_exists(\'myPropertyName\', $variable) ? INNER_EXPR : false;';
+        $expected = '$myPropertyName = array_key_exists(\'myPropertyName\', $variable) ? INNER_EXPR : null;';
         assertSame($expected, $result);
     }
 

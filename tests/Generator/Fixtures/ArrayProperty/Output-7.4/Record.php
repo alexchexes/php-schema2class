@@ -43,7 +43,7 @@ class Record
     /**
      * @return Phone[]|null
      */
-    public function getDataArray() : ?array
+    public function getDataArray(): ?array
     {
         return $this->dataArray ?? null;
     }
@@ -88,7 +88,7 @@ class Record
      * @return Record Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true) : Record
+    public static function buildFromInput($input, bool $validate = true): Record
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
@@ -116,7 +116,7 @@ class Record
      *
      * @return array Converted array
      */
-    public function toArray() : array
+    public function toArray(): array
     {
         $output = [];
         if (isset($this->dataArray)) {
@@ -134,7 +134,7 @@ class Record
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput($input, bool $return = false) : bool
+    public static function validateInput($input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;

@@ -40,6 +40,13 @@ class MyClass
     ];
 
     /**
+     * Map of optional nullable property names that were explicitly set to `null`
+     *
+     * @var array<string,true>
+     */
+    private $_explicitNulls = [];
+
+    /**
      * @var string|null
      */
     private $foo = null;
@@ -126,6 +133,16 @@ class MyClass
         }
 
         $this->opt = $opt;
+        $this->_explicitNulls['opt'] = true;
+    }
+
+    /**
+     *
+     */
+    public function unsetOpt()
+    {
+        $this->opt = null;
+        unset($this->_explicitNulls['opt']);
     }
 
     /**
@@ -149,13 +166,18 @@ class MyClass
             static::validateInput($input);
         }
 
+        $__explicitNulls = [];
         $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
         $bar = Baz::buildFromInput($input->{'bar'}, $validate);
-        $opt = isset($input->{'opt'}) ? $input->{'opt'} : null;
+        $opt = property_exists($input, 'opt') ? $input->{'opt'} : null;
+        if (property_exists($input, 'opt')) {
+            $__explicitNulls['opt'] = true;
+        }
 
         $obj = new self($bar);
         $obj->foo = $foo;
         $obj->opt = $opt;
+        $obj->_explicitNulls = $__explicitNulls;
         return $obj;
     }
 
@@ -171,7 +193,9 @@ class MyClass
             $output['foo'] = $this->foo;
         }
         $output['bar'] = $this->bar->toArray();
-        $output['opt'] = $this->opt;
+        if (isset($this->opt) || array_key_exists('opt', $this->_explicitNulls)) {
+            $output['opt'] = $this->opt;
+        }
 
         return $output;
     }
@@ -198,5 +222,16 @@ class MyClass
         }
 
         return $validator->isValid();
+    }
+
+    /**
+     * Checks if an optional nullable property was explicitly set to `null`
+     *
+     * @param string $propertyName property name as appears in the schema
+     * @return bool
+     */
+    public function isExplicitNull(string $propertyName)
+    {
+        return array_key_exists($propertyName, $this->_explicitNulls);
     }
 }

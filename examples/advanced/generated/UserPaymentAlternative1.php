@@ -41,7 +41,7 @@ class UserPaymentAlternative1
     /**
      * @return UserPaymentAlternative1Type
      */
-    public function getType() : UserPaymentAlternative1Type
+    public function getType(): UserPaymentAlternative1Type
     {
         return $this->type;
     }
@@ -66,7 +66,7 @@ class UserPaymentAlternative1
      * @return UserPaymentAlternative1 Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : UserPaymentAlternative1
+    public static function buildFromInput(array|object $input, bool $validate = true): UserPaymentAlternative1
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -85,7 +85,7 @@ class UserPaymentAlternative1
      *
      * @return array Converted array
      */
-    public function toArray() : array
+    public function toArray(): array
     {
         $output = [];
         $output['type'] = ($this->type)->value;
@@ -101,7 +101,7 @@ class UserPaymentAlternative1
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput(array|object $input, bool $return = false) : bool
+    public static function validateInput(array|object $input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;

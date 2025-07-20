@@ -192,7 +192,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getFoo() : string
+    public function getFoo(): string
     {
         return $this->foo;
     }
@@ -200,7 +200,7 @@ class MyClass
     /**
      * @return string
      */
-    public function get_Foo() : string
+    public function get_Foo(): string
     {
         return $this->_foo;
     }
@@ -208,7 +208,7 @@ class MyClass
     /**
      * @return string
      */
-    public function get__Foo() : string
+    public function get__Foo(): string
     {
         return $this->__foo;
     }
@@ -216,7 +216,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getFoo_() : string
+    public function getFoo_(): string
     {
         return $this->foo_;
     }
@@ -224,7 +224,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getFoo__() : string
+    public function getFoo__(): string
     {
         return $this->foo__;
     }
@@ -232,7 +232,7 @@ class MyClass
     /**
      * @return string
      */
-    public function get_Foo_() : string
+    public function get_Foo_(): string
     {
         return $this->_foo_;
     }
@@ -240,7 +240,7 @@ class MyClass
     /**
      * @return string
      */
-    public function get__Foo__() : string
+    public function get__Foo__(): string
     {
         return $this->__foo__;
     }
@@ -248,7 +248,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getFooBar() : string
+    public function getFooBar(): string
     {
         return $this->foo_bar;
     }
@@ -256,7 +256,7 @@ class MyClass
     /**
      * @return string
      */
-    public function get_FooBar() : string
+    public function get_FooBar(): string
     {
         return $this->_foo_bar;
     }
@@ -264,7 +264,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getBazQux() : string
+    public function getBazQux(): string
     {
         return $this->baz_qux;
     }
@@ -272,7 +272,7 @@ class MyClass
     /**
      * @return string
      */
-    public function get__123Qwe() : string
+    public function get__123Qwe(): string
     {
         return $this->_123_qwe;
     }
@@ -280,7 +280,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getGorod() : string
+    public function getGorod(): string
     {
         return $this->Gorod;
     }
@@ -288,7 +288,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getNazvanieIurLitsa() : string
+    public function getNazvanieIurLitsa(): string
     {
         return $this->nazvanie_iur_litsa;
     }
@@ -296,7 +296,7 @@ class MyClass
     /**
      * @return string
      */
-    public function getIPAdres() : string
+    public function getIPAdres(): string
     {
         return $this->IP_adres;
     }
@@ -304,7 +304,7 @@ class MyClass
     /**
      * @return string
      */
-    public function get_Tildas() : string
+    public function get_Tildas(): string
     {
         return $this->_tildas;
     }
@@ -632,7 +632,7 @@ class MyClass
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : MyClass
+    public static function buildFromInput(array|object $input, bool $validate = true): MyClass
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -665,7 +665,7 @@ class MyClass
      *
      * @return array Converted array
      */
-    public function toArray() : array
+    public function toArray(): array
     {
         $output = [];
         $output['foo'] = $this->foo;
@@ -695,7 +695,7 @@ class MyClass
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput(array|object $input, bool $return = false) : bool
+    public static function validateInput(array|object $input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
