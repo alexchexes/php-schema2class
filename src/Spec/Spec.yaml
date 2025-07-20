@@ -39,8 +39,6 @@ definitions:
           before writing new ones.
       disableStrictTypes:
         type: boolean
-      treatValuesWithDefaultAsOptional:
-        type: boolean
       inlineAllofReferences:
         type: boolean
       newValidatorClassExpr:

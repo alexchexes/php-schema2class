@@ -11,7 +11,7 @@ class SpecificationOptions
      *
      * @var array
      */
-    private static array $schema = ['additionalProperties' => false, 'properties' => ['targetDirectory' => ['type' => 'string'], 'targetNamespace' => ['type' => 'string'], 'targetPHPVersion' => ['oneOf' => [['type' => 'integer', 'enum' => [5, 7, 8]], ['type' => 'string']]], 'cleanTargetDirectory' => ['type' => 'boolean'], 'disableStrictTypes' => ['type' => 'boolean'], 'treatValuesWithDefaultAsOptional' => ['type' => 'boolean'], 'inlineAllofReferences' => ['type' => 'boolean'], 'newValidatorClassExpr' => ['type' => 'string'], 'preservePropertyNames' => ['type' => 'boolean'], 'noGetters' => ['type' => 'boolean'], 'noSetters' => ['type' => 'boolean'], 'mutableSetters' => ['oneOf' => [['type' => 'boolean', 'enum' => [true]], ['type' => 'string', 'enum' => ['chainable']]]], 'noSchemaMetadata' => ['type' => 'boolean'], 'singleLineSchema' => ['type' => 'boolean'], 'noEnums' => ['type' => 'boolean']]];
+    private static array $schema = ['additionalProperties' => false, 'properties' => ['targetDirectory' => ['type' => 'string'], 'targetNamespace' => ['type' => 'string'], 'targetPHPVersion' => ['oneOf' => [['type' => 'integer', 'enum' => [5, 7, 8]], ['type' => 'string']]], 'cleanTargetDirectory' => ['type' => 'boolean'], 'disableStrictTypes' => ['type' => 'boolean'], 'inlineAllofReferences' => ['type' => 'boolean'], 'newValidatorClassExpr' => ['type' => 'string'], 'preservePropertyNames' => ['type' => 'boolean'], 'noGetters' => ['type' => 'boolean'], 'noSetters' => ['type' => 'boolean'], 'mutableSetters' => ['oneOf' => [['type' => 'boolean', 'enum' => [true]], ['type' => 'string', 'enum' => ['chainable']]]], 'noSchemaMetadata' => ['type' => 'boolean'], 'singleLineSchema' => ['type' => 'boolean'], 'noEnums' => ['type' => 'boolean']]];
 
     /**
      * @var string|null
@@ -41,11 +41,6 @@ class SpecificationOptions
      * @var bool|null
      */
     private ?bool $disableStrictTypes = null;
-
-    /**
-     * @var bool|null
-     */
-    private ?bool $treatValuesWithDefaultAsOptional = null;
 
     /**
      * @var bool|null
@@ -91,7 +86,7 @@ class SpecificationOptions
      * returns $this.
      *
      *
-     * @var bool|'chainable'|null
+     * @var true|'chainable'|null
      */
     private bool|string|null $mutableSetters = null;
 
@@ -168,14 +163,6 @@ class SpecificationOptions
     /**
      * @return bool|null
      */
-    public function getTreatValuesWithDefaultAsOptional(): ?bool
-    {
-        return $this->treatValuesWithDefaultAsOptional ?? null;
-    }
-
-    /**
-     * @return bool|null
-     */
     public function getInlineAllofReferences(): ?bool
     {
         return $this->inlineAllofReferences ?? null;
@@ -232,7 +219,7 @@ class SpecificationOptions
      * returns $this.
      *
      *
-     * @return bool|'chainable'|null
+     * @return true|'chainable'|null
      */
     public function getMutableSetters(): bool|string|null
     {
@@ -426,38 +413,6 @@ class SpecificationOptions
     }
 
     /**
-     * @param bool $treatValuesWithDefaultAsOptional
-     * @return self
-     * @param bool $validate
-     */
-    public function withTreatValuesWithDefaultAsOptional(bool $treatValuesWithDefaultAsOptional, bool $validate = true): self
-    {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($treatValuesWithDefaultAsOptional, self::$schema['properties']['treatValuesWithDefaultAsOptional']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
-        $clone = clone $this;
-        $clone->treatValuesWithDefaultAsOptional = $treatValuesWithDefaultAsOptional;
-
-        return $clone;
-    }
-
-    /**
-     * @return self
-     */
-    public function withoutTreatValuesWithDefaultAsOptional(): self
-    {
-        $clone = clone $this;
-        unset($clone->treatValuesWithDefaultAsOptional);
-
-        return $clone;
-    }
-
-    /**
      * @param bool $inlineAllofReferences
      * @return self
      * @param bool $validate
@@ -618,7 +573,7 @@ class SpecificationOptions
     }
 
     /**
-     * @param bool|'chainable' $mutableSetters
+     * @param true|'chainable' $mutableSetters
      * @return self
      */
     public function withMutableSetters(bool|string $mutableSetters): self
@@ -760,7 +715,6 @@ class SpecificationOptions
         } : null;
         $cleanTargetDirectory = isset($input->{'cleanTargetDirectory'}) ? $input->{'cleanTargetDirectory'} : null;
         $disableStrictTypes = isset($input->{'disableStrictTypes'}) ? $input->{'disableStrictTypes'} : null;
-        $treatValuesWithDefaultAsOptional = isset($input->{'treatValuesWithDefaultAsOptional'}) ? $input->{'treatValuesWithDefaultAsOptional'} : null;
         $inlineAllofReferences = isset($input->{'inlineAllofReferences'}) ? $input->{'inlineAllofReferences'} : null;
         $newValidatorClassExpr = isset($input->{'newValidatorClassExpr'}) ? $input->{'newValidatorClassExpr'} : null;
         $preservePropertyNames = isset($input->{'preservePropertyNames'}) ? $input->{'preservePropertyNames'} : null;
@@ -783,7 +737,6 @@ class SpecificationOptions
         $obj->targetPHPVersion = $targetPHPVersion;
         $obj->cleanTargetDirectory = $cleanTargetDirectory;
         $obj->disableStrictTypes = $disableStrictTypes;
-        $obj->treatValuesWithDefaultAsOptional = $treatValuesWithDefaultAsOptional;
         $obj->inlineAllofReferences = $inlineAllofReferences;
         $obj->newValidatorClassExpr = $newValidatorClassExpr;
         $obj->preservePropertyNames = $preservePropertyNames;
@@ -821,9 +774,6 @@ class SpecificationOptions
         }
         if (isset($this->disableStrictTypes)) {
             $output['disableStrictTypes'] = $this->disableStrictTypes;
-        }
-        if (isset($this->treatValuesWithDefaultAsOptional)) {
-            $output['treatValuesWithDefaultAsOptional'] = $this->treatValuesWithDefaultAsOptional;
         }
         if (isset($this->inlineAllofReferences)) {
             $output['inlineAllofReferences'] = $this->inlineAllofReferences;

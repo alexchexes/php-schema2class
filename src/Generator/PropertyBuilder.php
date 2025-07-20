@@ -148,13 +148,7 @@ class PropertyBuilder
 
         if (PrimitiveUnionEnumProperty::canHandleSchema($definition)) {
             $property = new PrimitiveUnionEnumProperty($name, $definition, $req);
-            if (isset($definition['default']) && $req->getOptions()->getTreatValuesWithDefaultAsOptional()) {
-                $decorator = new OptionalPropertyDecorator($name, $property);
-                if (self::definitionAllowsNull($definition) || $property->allowsNull()) {
-                    $decorator->markOptionalNullable();
-                }
-                $property = $decorator;
-            } elseif (!$isRequired) {
+            if (!$isRequired) {
                 $decorator = new OptionalPropertyDecorator($name, $property);
                 if (self::definitionAllowsNull($definition) || $property->allowsNull()) {
                     $decorator->markOptionalNullable();
@@ -169,13 +163,7 @@ class PropertyBuilder
 
         if (InferredEnumProperty::canHandleSchema($definition)) {
             $property = new InferredEnumProperty($name, $definition, $req);
-            if (isset($definition['default']) && $req->getOptions()->getTreatValuesWithDefaultAsOptional()) {
-                $decorator = new OptionalPropertyDecorator($name, $property);
-                if (self::definitionAllowsNull($definition) || $property->allowsNull()) {
-                    $decorator->markOptionalNullable();
-                }
-                $property = $decorator;
-            } elseif (!$isRequired) {
+            if (!$isRequired) {
                 $decorator = new OptionalPropertyDecorator($name, $property);
                 if (self::definitionAllowsNull($definition) || $property->allowsNull()) {
                     $decorator->markOptionalNullable();
@@ -291,13 +279,7 @@ class PropertyBuilder
                 /** @var PropertyInterface $property */
                 $property = new $propertyType($name, $definition, $req);
 
-                if (isset($definition["default"]) && $req->getOptions()->getTreatValuesWithDefaultAsOptional()) {
-                    $decorator = new OptionalPropertyDecorator($name, $property); // treat default as optional
-                    if (self::definitionAllowsNull($definition) || $property->allowsNull()) {
-                        $decorator->markOptionalNullable();
-                    }
-                    $property = $decorator;
-                } elseif (!$isRequired) {
+                if (!$isRequired) {
                     $decorator = new OptionalPropertyDecorator($name, $property); // optional
                     if (self::definitionAllowsNull($definition) || $property->allowsNull()) {
                         $decorator->markOptionalNullable();

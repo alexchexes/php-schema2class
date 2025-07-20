@@ -18,7 +18,6 @@ final class OptionsDefaults
         $defaults = [
             'cleanTargetDirectory'              => false,
             'disableStrictTypes'                => false,
-            'treatValuesWithDefaultAsOptional'  => false,
             'inlineAllofReferences'             => false,
             'targetPHPVersion'                  => GeneratorRequest::DEFAULT_PHP8_VERSION,
             'newValidatorClassExpr'             => 'new \JsonSchema\Validator()',

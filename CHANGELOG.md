@@ -24,7 +24,7 @@ New options provide more control over how classes are generated:
 
 ### Additional CLI options
 
-- CLI now supports all the options previously available only via spec files, e.g., `--disable-strict-types`, `--inline-allof`, `--treat-default-as-optional`, etc., and all the new options like `--no-getters`, `--no-setters`, `--preserve-property-names`, etc.
+- CLI now supports all the options previously available only via spec files, e.g., `--disable-strict-types`, `--inline-allof`, etc., and all the new options like `--no-getters`, `--no-setters`, `--preserve-property-names`, etc.
 
 ### Generator enhancements
 
@@ -80,6 +80,8 @@ Now it:
 ### Breaking changes
 
 - The `toJson` method of the generated class was renamed to `toArray` to reflect its purpose.
+
+- The `treatValuesWithDefaultAsOptional` option was removed in favor of the runtime options `$materializeDefaults` in `buildFromInput()` and `$includeDefaults` in `toArray()`.
 
 - Configuration layout has been simplified: there are now only two top-level keys, `options` and `files`. Each `files` item has three keys: `input`, an optional `className`, and `options`, where the `options` object can override any setting from the top-level `options`.
 

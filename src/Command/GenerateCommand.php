@@ -32,7 +32,6 @@ class GenerateCommand extends Command
         $this->addOption("dry-run", null, InputOption::VALUE_NONE, "Print output to console instead of writing to files");
         $this->addOption("class", "c", InputOption::VALUE_REQUIRED, "Target class name");
         $this->addOption("disable-strict-types", null, InputOption::VALUE_NONE, "Do not emit strict_types declaration");
-        $this->addOption("treat-default-as-optional", null, InputOption::VALUE_NONE, "Treat properties with defaults as optional");
         $this->addOption("inline-allof", null, InputOption::VALUE_NONE, "Inline allOf references");
         $this->addOption("validator-expr", null, InputOption::VALUE_REQUIRED, "Expression used to create validator instance");
         $this->addOption("preserve-property-names", null, InputOption::VALUE_NONE, "Do not convert property names to camelCase");
@@ -53,7 +52,6 @@ class GenerateCommand extends Command
             'targetPHPVersion'                  => $input->getOption('target-php'),
             'cleanTargetDirectory'              => $input->getOption('clean-dir'),
             'disableStrictTypes'                => $input->getOption('disable-strict-types'),
-            'treatValuesWithDefaultAsOptional'  => $input->getOption('treat-default-as-optional'),
             'inlineAllofReferences'             => $input->getOption('inline-allof'),
             'newValidatorClassExpr'             => $input->getOption('validator-expr'),
             'preservePropertyNames'             => $input->getOption('preserve-property-names'),
