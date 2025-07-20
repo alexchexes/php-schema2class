@@ -53,7 +53,7 @@ class ObjectArrayProperty extends AbstractProperty
         }
 
         if ($isArray) {
-            $itemSchema = $schema["items"];
+            $itemSchema = $schema["items"] ?? null;
         }
 
         if (!$isArray && !$isAssociativeArray) {
