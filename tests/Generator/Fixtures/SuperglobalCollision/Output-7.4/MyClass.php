@@ -48,7 +48,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withFiles(string $files, bool $validate = true) : self
+    public function withFiles(string $files, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();

@@ -69,7 +69,7 @@ class UserPaymentAlternative2
      * @param UserPaymentAlternative2Type $type
      * @return self
      */
-    public function withType(UserPaymentAlternative2Type $type) : self
+    public function withType(UserPaymentAlternative2Type $type): self
     {
         $clone = clone $this;
         $clone->type = $type;
@@ -82,7 +82,7 @@ class UserPaymentAlternative2
      * @return self
      * @param bool $validate
      */
-    public function withAccountNumber(string $accountNumber, bool $validate = true) : self
+    public function withAccountNumber(string $accountNumber, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();

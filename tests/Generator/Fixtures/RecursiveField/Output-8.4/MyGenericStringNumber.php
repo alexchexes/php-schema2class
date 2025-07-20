@@ -75,7 +75,7 @@ class MyGenericStringNumber
      * @param MyGenericStringNumberField $field
      * @return self
      */
-    public function withField(MyGenericStringNumberField $field) : self
+    public function withField(MyGenericStringNumberField $field): self
     {
         $clone = clone $this;
         $clone->field = $field;

@@ -37,7 +37,7 @@ class OptionsObject
      * @return self
      * @param bool $validate
      */
-    public function withOutput(string $output, bool $validate = true) : self
+    public function withOutput(string $output, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -56,7 +56,7 @@ class OptionsObject
     /**
      * @return self
      */
-    public function withoutOutput() : self
+    public function withoutOutput(): self
     {
         $clone = clone $this;
         unset($clone->output);

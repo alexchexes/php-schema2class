@@ -44,7 +44,7 @@ class Address
      * @return self
      * @param bool $validate
      */
-    public function withStreet(string $street, bool $validate = true) : self
+    public function withStreet(string $street, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -63,7 +63,7 @@ class Address
     /**
      * @return self
      */
-    public function withoutStreet() : self
+    public function withoutStreet(): self
     {
         $clone = clone $this;
         unset($clone->street);
@@ -76,7 +76,7 @@ class Address
      * @return self
      * @param bool $validate
      */
-    public function withHouse(int $house, bool $validate = true) : self
+    public function withHouse(int $house, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -95,7 +95,7 @@ class Address
     /**
      * @return self
      */
-    public function withoutHouse() : self
+    public function withoutHouse(): self
     {
         $clone = clone $this;
         unset($clone->house);

@@ -100,7 +100,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function setFoo(string $foo, bool $validate = true) : self
+    public function setFoo(string $foo, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -119,7 +119,7 @@ class MyClass
      * @param Baz $bar
      * @return self
      */
-    public function setBar(Baz $bar) : self
+    public function setBar(Baz $bar): self
     {
         $this->bar = $bar;
 
@@ -131,7 +131,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function setOpt(string $opt, bool $validate = true) : self
+    public function setOpt(string $opt, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -150,7 +150,7 @@ class MyClass
     /**
      * @return self
      */
-    public function unsetOpt() : self
+    public function unsetOpt(): self
     {
         $this->opt = null;
         unset($this->_explicitNulls['opt']);

@@ -59,7 +59,7 @@ class GenericPet
      * @return self
      * @param bool $validate
      */
-    public function withHasFur(bool $hasFur, bool $validate = true) : self
+    public function withHasFur(bool $hasFur, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -79,7 +79,7 @@ class GenericPet
     /**
      * @return self
      */
-    public function withoutHasFur() : self
+    public function withoutHasFur(): self
     {
         $clone = clone $this;
         unset($clone->hasFur);

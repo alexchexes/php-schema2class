@@ -83,7 +83,7 @@ class User
      * @return self
      * @param bool $validate
      */
-    public function withName(string $name, bool $validate = true) : self
+    public function withName(string $name, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -103,7 +103,7 @@ class User
      * @param Address $address
      * @return self
      */
-    public function withAddress(Address $address) : self
+    public function withAddress(Address $address): self
     {
         $clone = clone $this;
         $clone->address = $address;
@@ -114,7 +114,7 @@ class User
     /**
      * @return self
      */
-    public function withoutAddress() : self
+    public function withoutAddress(): self
     {
         $clone = clone $this;
         unset($clone->address);
@@ -127,7 +127,7 @@ class User
      * @return self
      * @param bool $validate
      */
-    public function withStatus(?string $status, bool $validate = true) : self
+    public function withStatus(?string $status, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();

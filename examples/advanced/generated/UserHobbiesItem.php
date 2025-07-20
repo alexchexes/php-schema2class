@@ -37,7 +37,7 @@ class UserHobbiesItem
      * @return self
      * @param bool $validate
      */
-    public function withName(string $name, bool $validate = true) : self
+    public function withName(string $name, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -56,7 +56,7 @@ class UserHobbiesItem
     /**
      * @return self
      */
-    public function withoutName() : self
+    public function withoutName(): self
     {
         $clone = clone $this;
         unset($clone->name);

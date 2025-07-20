@@ -64,7 +64,7 @@ class SpecificationFilesItem
      * @param string|array|object $input
      * @return self
      */
-    public function withInput(string|array|object $input) : self
+    public function withInput(string|array|object $input): self
     {
         $clone = clone $this;
         $clone->input = $input;
@@ -77,7 +77,7 @@ class SpecificationFilesItem
      * @return self
      * @param bool $validate
      */
-    public function withClassName(string $className, bool $validate = true) : self
+    public function withClassName(string $className, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -96,7 +96,7 @@ class SpecificationFilesItem
     /**
      * @return self
      */
-    public function withoutClassName() : self
+    public function withoutClassName(): self
     {
         $clone = clone $this;
         unset($clone->className);
@@ -108,7 +108,7 @@ class SpecificationFilesItem
      * @param SpecificationOptions $options
      * @return self
      */
-    public function withOptions(SpecificationOptions $options) : self
+    public function withOptions(SpecificationOptions $options): self
     {
         $clone = clone $this;
         $clone->options = $options;
@@ -119,7 +119,7 @@ class SpecificationFilesItem
     /**
      * @return self
      */
-    public function withoutOptions() : self
+    public function withoutOptions(): self
     {
         $clone = clone $this;
         unset($clone->options);
