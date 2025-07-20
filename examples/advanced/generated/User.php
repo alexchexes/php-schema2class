@@ -296,7 +296,7 @@ class User
      * @param \DateTime $createdAt
      * @return self
      */
-    public function withCreatedAt(\DateTime $createdAt) : self
+    public function withCreatedAt(\DateTime $createdAt): self
     {
         $clone = clone $this;
         $clone->createdAt = $createdAt;
@@ -307,7 +307,7 @@ class User
     /**
      * @return self
      */
-    public function withoutCreatedAt() : self
+    public function withoutCreatedAt(): self
     {
         $clone = clone $this;
         unset($clone->createdAt);
@@ -319,7 +319,7 @@ class User
      * @param UserGender $gender
      * @return self
      */
-    public function withGender(UserGender $gender) : self
+    public function withGender(UserGender $gender): self
     {
         $clone = clone $this;
         $clone->gender = $gender;
@@ -330,7 +330,7 @@ class User
     /**
      * @return self
      */
-    public function withoutGender() : self
+    public function withoutGender(): self
     {
         $clone = clone $this;
         unset($clone->gender);
@@ -343,7 +343,7 @@ class User
      * @return self
      * @param bool $validate
      */
-    public function withFirstName(string $firstName, bool $validate = true) : self
+    public function withFirstName(string $firstName, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -364,7 +364,7 @@ class User
      * @return self
      * @param bool $validate
      */
-    public function withLastName(string $lastName, bool $validate = true) : self
+    public function withLastName(string $lastName, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -385,7 +385,7 @@ class User
      * @return self
      * @param bool $validate
      */
-    public function withEmail(string $email, bool $validate = true) : self
+    public function withEmail(string $email, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -404,7 +404,7 @@ class User
     /**
      * @return self
      */
-    public function withoutEmail() : self
+    public function withoutEmail(): self
     {
         $clone = clone $this;
         unset($clone->email);
@@ -416,7 +416,7 @@ class User
      * @param UserBilling $billing
      * @return self
      */
-    public function withBilling(UserBilling $billing) : self
+    public function withBilling(UserBilling $billing): self
     {
         $clone = clone $this;
         $clone->billing = $billing;
@@ -427,7 +427,7 @@ class User
     /**
      * @return self
      */
-    public function withoutBilling() : self
+    public function withoutBilling(): self
     {
         $clone = clone $this;
         unset($clone->billing);
@@ -439,7 +439,7 @@ class User
      * @param UserPaymentAlternative1|UserPaymentAlternative2|string $payment
      * @return self
      */
-    public function withPayment(UserPaymentAlternative1|UserPaymentAlternative2|string $payment) : self
+    public function withPayment(UserPaymentAlternative1|UserPaymentAlternative2|string $payment): self
     {
         $clone = clone $this;
         $clone->payment = $payment;
@@ -450,7 +450,7 @@ class User
     /**
      * @return self
      */
-    public function withoutPayment() : self
+    public function withoutPayment(): self
     {
         $clone = clone $this;
         unset($clone->payment);
@@ -462,7 +462,7 @@ class User
      * @param UserAddress $address
      * @return self
      */
-    public function withAddress(UserAddress $address) : self
+    public function withAddress(UserAddress $address): self
     {
         $clone = clone $this;
         $clone->address = $address;
@@ -473,7 +473,7 @@ class User
     /**
      * @return self
      */
-    public function withoutAddress() : self
+    public function withoutAddress(): self
     {
         $clone = clone $this;
         unset($clone->address);
@@ -486,7 +486,7 @@ class User
      * @return self
      * @param bool $validate
      */
-    public function withTags(array $tags, bool $validate = true) : self
+    public function withTags(array $tags, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -505,7 +505,7 @@ class User
     /**
      * @return self
      */
-    public function withoutTags() : self
+    public function withoutTags(): self
     {
         $clone = clone $this;
         unset($clone->tags);
@@ -518,7 +518,7 @@ class User
      * @return self
      * @param bool $validate
      */
-    public function withHobbies(array $hobbies, bool $validate = true) : self
+    public function withHobbies(array $hobbies, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -537,7 +537,7 @@ class User
     /**
      * @return self
      */
-    public function withoutHobbies() : self
+    public function withoutHobbies(): self
     {
         $clone = clone $this;
         unset($clone->hobbies);

@@ -68,7 +68,7 @@ class UserAddress
      * @return self
      * @param bool $validate
      */
-    public function withCity(string $city, bool $validate = true) : self
+    public function withCity(string $city, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -89,7 +89,7 @@ class UserAddress
      * @return self
      * @param bool $validate
      */
-    public function withStreet(string $street, bool $validate = true) : self
+    public function withStreet(string $street, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();

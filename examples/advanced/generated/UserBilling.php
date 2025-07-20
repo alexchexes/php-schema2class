@@ -96,7 +96,7 @@ class UserBilling
      * @return self
      * @param bool $validate
      */
-    public function withVatID(string $vatID, bool $validate = true) : self
+    public function withVatID(string $vatID, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -117,7 +117,7 @@ class UserBilling
      * @return self
      * @param bool $validate
      */
-    public function withCreditLevel(int $creditLevel, bool $validate = true) : self
+    public function withCreditLevel(int $creditLevel, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -136,7 +136,7 @@ class UserBilling
     /**
      * @return self
      */
-    public function withoutCreditLevel() : self
+    public function withoutCreditLevel(): self
     {
         $clone = clone $this;
         unset($clone->creditLevel);
@@ -149,7 +149,7 @@ class UserBilling
      * @return self
      * @param bool $validate
      */
-    public function withFoo(int $foo, bool $validate = true) : self
+    public function withFoo(int $foo, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -168,7 +168,7 @@ class UserBilling
     /**
      * @return self
      */
-    public function withoutFoo() : self
+    public function withoutFoo(): self
     {
         $clone = clone $this;
         unset($clone->foo);
@@ -181,7 +181,7 @@ class UserBilling
      * @return self
      * @param bool $validate
      */
-    public function withBar(string $bar, bool $validate = true) : self
+    public function withBar(string $bar, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -200,7 +200,7 @@ class UserBilling
     /**
      * @return self
      */
-    public function withoutBar() : self
+    public function withoutBar(): self
     {
         $clone = clone $this;
         unset($clone->bar);

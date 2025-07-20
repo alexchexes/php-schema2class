@@ -62,7 +62,7 @@ class MyClassGrox
      * @return self
      * @param bool $validate
      */
-    public function withA(string $a, bool $validate = true) : self
+    public function withA(string $a, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -81,7 +81,7 @@ class MyClassGrox
     /**
      * @return self
      */
-    public function withoutA() : self
+    public function withoutA(): self
     {
         $clone = clone $this;
         unset($clone->a);
@@ -94,7 +94,7 @@ class MyClassGrox
      * @return self
      * @param bool $validate
      */
-    public function withB(int|float $b, bool $validate = true) : self
+    public function withB(int|float $b, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -113,7 +113,7 @@ class MyClassGrox
     /**
      * @return self
      */
-    public function withoutB() : self
+    public function withoutB(): self
     {
         $clone = clone $this;
         unset($clone->b);

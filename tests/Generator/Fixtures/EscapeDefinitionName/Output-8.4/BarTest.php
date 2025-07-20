@@ -73,7 +73,7 @@ class BarTest
      * @param FooTest|MoiKlass|FooTest_1 $exampleProp
      * @return self
      */
-    public function withExampleProp(FooTest|FooTest_1|MoiKlass $exampleProp) : self
+    public function withExampleProp(FooTest|FooTest_1|MoiKlass $exampleProp): self
     {
         $clone = clone $this;
         $clone->exampleProp = $exampleProp;
@@ -84,7 +84,7 @@ class BarTest
     /**
      * @return self
      */
-    public function withoutExampleProp() : self
+    public function withoutExampleProp(): self
     {
         $clone = clone $this;
         unset($clone->exampleProp);

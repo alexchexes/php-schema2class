@@ -67,7 +67,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withFooBar(string $foo_bar, bool $validate = true) : self
+    public function withFooBar(string $foo_bar, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -88,7 +88,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function with_FooBar(string $_foo_bar, bool $validate = true) : self
+    public function with_FooBar(string $_foo_bar, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();

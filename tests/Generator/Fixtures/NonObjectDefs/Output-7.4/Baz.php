@@ -73,7 +73,7 @@ class Baz
      * @param Foo|Bar $grox
      * @return self
      */
-    public function withGrox($grox) : self
+    public function withGrox($grox): self
     {
         $clone = clone $this;
         $clone->grox = $grox;
@@ -84,7 +84,7 @@ class Baz
     /**
      * @return self
      */
-    public function withoutGrox() : self
+    public function withoutGrox(): self
     {
         $clone = clone $this;
         unset($clone->grox);

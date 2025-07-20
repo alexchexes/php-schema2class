@@ -72,7 +72,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withFiles(array $files, bool $validate = true) : self
+    public function withFiles(array $files, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -91,7 +91,7 @@ class MyClass
     /**
      * @return self
      */
-    public function withoutFiles() : self
+    public function withoutFiles(): self
     {
         $clone = clone $this;
         unset($clone->files);
@@ -103,7 +103,7 @@ class MyClass
      * @param OptionsObject $options
      * @return self
      */
-    public function withOptions(OptionsObject $options) : self
+    public function withOptions(OptionsObject $options): self
     {
         $clone = clone $this;
         $clone->options = $options;
@@ -114,7 +114,7 @@ class MyClass
     /**
      * @return self
      */
-    public function withoutOptions() : self
+    public function withoutOptions(): self
     {
         $clone = clone $this;
         unset($clone->options);

@@ -50,7 +50,7 @@ class UserPaymentAlternative1
      * @param UserPaymentAlternative1Type $type
      * @return self
      */
-    public function withType(UserPaymentAlternative1Type $type) : self
+    public function withType(UserPaymentAlternative1Type $type): self
     {
         $clone = clone $this;
         $clone->type = $type;

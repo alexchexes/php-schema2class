@@ -190,7 +190,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withFoo($foo, bool $validate = true) : self
+    public function withFoo($foo, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -211,7 +211,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withBar($bar, bool $validate = true) : self
+    public function withBar($bar, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -232,7 +232,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withBaz($baz, bool $validate = true) : self
+    public function withBaz($baz, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -253,7 +253,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withContradiction(int $contradiction, bool $validate = true) : self
+    public function withContradiction(int $contradiction, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -274,7 +274,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withContradiction2($contradiction2, bool $validate = true) : self
+    public function withContradiction2($contradiction2, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -295,7 +295,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function withNullable(?string $nullable, bool $validate = true) : self
+    public function withNullable(?string $nullable, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();

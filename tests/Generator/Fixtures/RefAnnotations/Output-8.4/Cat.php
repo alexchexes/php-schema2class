@@ -70,7 +70,7 @@ class Cat
      * @return self
      * @param bool $validate
      */
-    public function withHasFur(bool $hasFur, bool $validate = true) : self
+    public function withHasFur(bool $hasFur, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -90,7 +90,7 @@ class Cat
     /**
      * @return self
      */
-    public function withoutHasFur() : self
+    public function withoutHasFur(): self
     {
         $clone = clone $this;
         unset($clone->hasFur);

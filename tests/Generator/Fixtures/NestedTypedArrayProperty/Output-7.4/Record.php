@@ -147,7 +147,7 @@ class Record
      * @return self
      * @param bool $validate
      */
-    public function withDataArray(array $dataArray, bool $validate = true) : self
+    public function withDataArray(array $dataArray, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -166,7 +166,7 @@ class Record
     /**
      * @return self
      */
-    public function withoutDataArray() : self
+    public function withoutDataArray(): self
     {
         $clone = clone $this;
         unset($clone->dataArray);
@@ -179,7 +179,7 @@ class Record
      * @return self
      * @param bool $validate
      */
-    public function withDataArrayNested(array $dataArrayNested, bool $validate = true) : self
+    public function withDataArrayNested(array $dataArrayNested, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -198,7 +198,7 @@ class Record
     /**
      * @return self
      */
-    public function withoutDataArrayNested() : self
+    public function withoutDataArrayNested(): self
     {
         $clone = clone $this;
         unset($clone->dataArrayNested);
@@ -211,7 +211,7 @@ class Record
      * @return self
      * @param bool $validate
      */
-    public function withDataArrayAnyOf(array $dataArrayAnyOf, bool $validate = true) : self
+    public function withDataArrayAnyOf(array $dataArrayAnyOf, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -230,7 +230,7 @@ class Record
     /**
      * @return self
      */
-    public function withoutDataArrayAnyOf() : self
+    public function withoutDataArrayAnyOf(): self
     {
         $clone = clone $this;
         unset($clone->dataArrayAnyOf);
@@ -243,7 +243,7 @@ class Record
      * @return self
      * @param bool $validate
      */
-    public function withDataArrayNestedAnyOf(array $dataArrayNestedAnyOf, bool $validate = true) : self
+    public function withDataArrayNestedAnyOf(array $dataArrayNestedAnyOf, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -262,7 +262,7 @@ class Record
     /**
      * @return self
      */
-    public function withoutDataArrayNestedAnyOf() : self
+    public function withoutDataArrayNestedAnyOf(): self
     {
         $clone = clone $this;
         unset($clone->dataArrayNestedAnyOf);
