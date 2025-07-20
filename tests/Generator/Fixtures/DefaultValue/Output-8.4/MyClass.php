@@ -16,14 +16,30 @@ class MyClass
             
         ],
         'properties' => [
-            'limit' => [
-                'type' => 'integer',
-                'default' => 10000,
-                'minimum' => 1,
-            ],
-            'skip' => [
+            'foo' => [
                 'type' => 'integer',
                 'default' => 0,
+                'minimum' => 1,
+            ],
+            'bar' => [
+                'type' => 'string',
+                'default' => 'xyz',
+            ],
+            'baz' => [
+                'type' => [
+                    'integer',
+                    'null',
+                ],
+                'default' => null,
+            ],
+            'qux' => [
+                '$ref' => '#/definitions/QuxDef',
+            ],
+        ],
+        'definitions' => [
+            'QuxDef' => [
+                'type' => 'string',
+                'default' => 'xyz',
             ],
         ],
     ];
@@ -34,53 +50,86 @@ class MyClass
      * @var array
      */
     private static array $_defaults = [
-        'limit' => 10000,
-        'skip' => 0,
+        'foo' => 0,
+        'bar' => 'xyz',
     ];
 
     /**
-     * @var int|null
+     * Map of optional nullable property names that were explicitly set to `null`
+     *
+     * @var array<string,true>
      */
-    private ?int $limit = null;
+    private array $_explicitNulls = [];
 
     /**
      * @var int|null
      */
-    private ?int $skip = null;
+    private ?int $foo = null;
+
+    /**
+     * @var string|null
+     */
+    private ?string $bar = null;
+
+    /**
+     * @var int|null
+     */
+    private ?int $baz = null;
+
+    /**
+     * @var string|null
+     */
+    private ?string $qux = null;
 
     /**
      * @return int|null
      */
-    public function getLimit(): ?int
+    public function getFoo(): ?int
     {
-        return $this->limit ?? null;
+        return $this->foo ?? null;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getBar(): ?string
+    {
+        return $this->bar ?? null;
     }
 
     /**
      * @return int|null
      */
-    public function getSkip(): ?int
+    public function getBaz(): ?int
     {
-        return $this->skip ?? null;
+        return $this->baz ?? null;
     }
 
     /**
-     * @param int $limit
+     * @return string|null
+     */
+    public function getQux(): ?string
+    {
+        return $this->qux ?? null;
+    }
+
+    /**
+     * @param int $foo
      * @return self
      * @param bool $validate
      */
-    public function withLimit(int $limit, bool $validate = true): self
+    public function withFoo(int $foo, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($limit, self::$schema['properties']['limit']);
+            $validator->validate($foo, self::$schema['properties']['foo']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
         }
 
         $clone = clone $this;
-        $clone->limit = $limit;
+        $clone->foo = $foo;
 
         return $clone;
     }
@@ -88,31 +137,31 @@ class MyClass
     /**
      * @return self
      */
-    public function withoutLimit(): self
+    public function withoutFoo(): self
     {
         $clone = clone $this;
-        unset($clone->limit);
+        unset($clone->foo);
 
         return $clone;
     }
 
     /**
-     * @param int $skip
+     * @param string $bar
      * @return self
      * @param bool $validate
      */
-    public function withSkip(int $skip, bool $validate = true): self
+    public function withBar(string $bar, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($skip, self::$schema['properties']['skip']);
+            $validator->validate($bar, self::$schema['properties']['bar']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
         }
 
         $clone = clone $this;
-        $clone->skip = $skip;
+        $clone->bar = $bar;
 
         return $clone;
     }
@@ -120,10 +169,76 @@ class MyClass
     /**
      * @return self
      */
-    public function withoutSkip(): self
+    public function withoutBar(): self
     {
         $clone = clone $this;
-        unset($clone->skip);
+        unset($clone->bar);
+
+        return $clone;
+    }
+
+    /**
+     * @param int $baz
+     * @return self
+     * @param bool $validate
+     */
+    public function withBaz(int $baz, bool $validate = true): self
+    {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($baz, self::$schema['properties']['baz']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
+        $clone = clone $this;
+        $clone->baz = $baz;
+        $clone->_explicitNulls['baz'] = true;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutBaz(): self
+    {
+        $clone = clone $this;
+        unset($clone->baz);
+        unset($clone->_explicitNulls['baz']);
+
+        return $clone;
+    }
+
+    /**
+     * @param string $qux
+     * @return self
+     * @param bool $validate
+     */
+    public function withQux(string $qux, bool $validate = true): self
+    {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($qux, self::$schema['properties']['qux']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
+        $clone = clone $this;
+        $clone->qux = $qux;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutQux(): self
+    {
+        $clone = clone $this;
+        unset($clone->qux);
 
         return $clone;
     }
@@ -155,12 +270,21 @@ class MyClass
             static::validateInput($input);
         }
 
-        $limit = isset($input->{'limit'}) ? $input->{'limit'} : null;
-        $skip = isset($input->{'skip'}) ? $input->{'skip'} : null;
+        $__explicitNulls = [];
+        $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
+        $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
+        $baz = property_exists($input, 'baz') ? $input->{'baz'} : null;
+        if (property_exists($input, 'baz')) {
+            $__explicitNulls['baz'] = true;
+        }
+        $qux = isset($input->{'qux'}) ? $input->{'qux'} : null;
 
         $obj = new self();
-        $obj->limit = $limit;
-        $obj->skip = $skip;
+        $obj->foo = $foo;
+        $obj->bar = $bar;
+        $obj->baz = $baz;
+        $obj->qux = $qux;
+        $obj->_explicitNulls = $__explicitNulls;
         return $obj;
     }
 
@@ -173,11 +297,17 @@ class MyClass
     public function toArray(bool $includeDefaults = false): array
     {
         $output = [];
-        if (isset($this->limit)) {
-            $output['limit'] = $this->limit;
+        if (isset($this->foo)) {
+            $output['foo'] = $this->foo;
         }
-        if (isset($this->skip)) {
-            $output['skip'] = $this->skip;
+        if (isset($this->bar)) {
+            $output['bar'] = $this->bar;
+        }
+        if (isset($this->baz) || array_key_exists('baz', $this->_explicitNulls)) {
+            $output['baz'] = $this->baz;
+        }
+        if (isset($this->qux)) {
+            $output['qux'] = $this->qux;
         }
 
         if ($includeDefaults) {
@@ -213,5 +343,16 @@ class MyClass
         }
 
         return $validator->isValid();
+    }
+
+    /**
+     * Checks if an optional nullable property was explicitly set to `null`
+     *
+     * @param string $propertyName property name as appears in the schema
+     * @return bool
+     */
+    public function isExplicitNull(string $propertyName): bool
+    {
+        return array_key_exists($propertyName, $this->_explicitNulls);
     }
 }
