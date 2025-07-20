@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ns\AnyOfSetterValidation;
+namespace Ns\AnyOfSetterValidation_8_4;
 
 class Cat
 {
@@ -43,7 +43,7 @@ class Cat
     /**
      * @return 'a'|'b'|string[]|null
      */
-    public function getHasFur() : string|array|null
+    public function getHasFur(): string|array|null
     {
         return $this->hasFur;
     }
@@ -52,7 +52,7 @@ class Cat
      * @param 'a'|'b'|string[] $hasFur
      * @return self
      */
-    public function withHasFur(string|array $hasFur) : self
+    public function withHasFur(string|array $hasFur): self
     {
         $clone = clone $this;
         $clone->hasFur = $hasFur;
@@ -63,7 +63,7 @@ class Cat
     /**
      * @return self
      */
-    public function withoutHasFur() : self
+    public function withoutHasFur(): self
     {
         $clone = clone $this;
         unset($clone->hasFur);
@@ -79,7 +79,7 @@ class Cat
      * @return Cat Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : Cat
+    public static function buildFromInput(array|object $input, bool $validate = true): Cat
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -105,7 +105,7 @@ class Cat
      *
      * @return array Converted array
      */
-    public function toArray() : array
+    public function toArray(): array
     {
         $output = [];
         if (isset($this->hasFur)) {
@@ -129,7 +129,7 @@ class Cat
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput(array|object $input, bool $return = false) : bool
+    public static function validateInput(array|object $input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
