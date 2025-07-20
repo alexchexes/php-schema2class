@@ -63,6 +63,8 @@ class MyClass
     private static array $_defaults = [
         'foo' => 0,
         'bar' => 'xyz',
+        'baz' => null,
+        'qux' => 'default from the referenced definition',
         'thud' => 'more specific default near the $ref',
         'grox' => 'default near the $ref',
     ];
