@@ -1,0 +1,9 @@
+{
+  "foo": "sanity-check",
+  "bar": "some default value for foo",
+  "baz": {
+    "nestedFoo": "some value inside default value for 'bar' object"
+  },
+  "quxObj": {},
+  "thudArray": []
+}

@@ -16,9 +16,12 @@ class MyClass
         'properties' => [
             'foo' => [
                 'type' => 'string',
-                'default' => 'some default value for foo',
             ],
             'bar' => [
+                'type' => 'string',
+                'default' => 'some default value for foo',
+            ],
+            'baz' => [
                 'type' => 'object',
                 'properties' => [
                     'nestedFoo' => [
@@ -32,8 +35,33 @@ class MyClass
                     'nestedFoo' => 'some value inside default value for \'bar\' object',
                 ],
             ],
-            'baz' => [
-                'type' => 'string',
+            'quxObj' => [
+                'type' => [
+                    'object',
+                    'null',
+                ],
+                'description' => 'optional nullable object with default value that is empty object',
+                'properties' => [
+                    'a' => [
+                        'type' => 'string',
+                    ],
+                ],
+                'default' => [
+                    
+                ],
+            ],
+            'thudArray' => [
+                'type' => [
+                    'array',
+                    'null',
+                ],
+                'description' => 'optional nullable array with default value that is empty array',
+                'items' => [
+                    'type' => 'string',
+                ],
+                'default' => [
+                    
+                ],
             ],
         ],
         'required' => [
@@ -48,11 +76,24 @@ class MyClass
      * @var array
      */
     private static array $_defaults = [
-        'foo' => 'some default value for foo',
-        'bar' => [
+        'bar' => 'some default value for foo',
+        'baz' => [
             'nestedFoo' => 'some value inside default value for \'bar\' object',
         ],
+        'quxObj' => [
+            
+        ],
+        'thudArray' => [
+            
+        ],
     ];
+
+    /**
+     * Map of optional nullable property names that were explicitly set
+     *
+     * @var array<string,true>
+     */
+    private array $_providedOptionals = [];
 
     /**
      * @var string
@@ -60,20 +101,34 @@ class MyClass
     private string $foo;
 
     /**
-     * @var MyClassBar
+     * @var string
      */
-    private MyClassBar $bar;
+    private string $bar;
 
     /**
-     * @var string|null
+     * @var MyClassBaz|null
      */
-    private ?string $baz = null;
+    private ?MyClassBaz $baz = null;
+
+    /**
+     * optional nullable object with default value that is empty object
+     *
+     * @var MyClassQuxObj|null
+     */
+    private ?MyClassQuxObj $quxObj = null;
+
+    /**
+     * optional nullable array with default value that is empty array
+     *
+     * @var string[]|null
+     */
+    private ?array $thudArray = null;
 
     /**
      * @param string $foo
-     * @param MyClassBar $bar
+     * @param string $bar
      */
-    public function __construct(string $foo, MyClassBar $bar)
+    public function __construct(string $foo, string $bar)
     {
         $this->foo = $foo;
         $this->bar = $bar;
@@ -88,19 +143,39 @@ class MyClass
     }
 
     /**
-     * @return MyClassBar
+     * @return string
      */
-    public function getBar(): MyClassBar
+    public function getBar(): string
     {
         return $this->bar;
     }
 
     /**
-     * @return string|null
+     * @return MyClassBaz|null
      */
-    public function getBaz(): ?string
+    public function getBaz(): ?MyClassBaz
     {
         return $this->baz ?? null;
+    }
+
+    /**
+     * optional nullable object with default value that is empty object
+     *
+     * @return MyClassQuxObj|null
+     */
+    public function getQuxObj(): ?MyClassQuxObj
+    {
+        return $this->quxObj ?? null;
+    }
+
+    /**
+     * optional nullable array with default value that is empty array
+     *
+     * @return string[]|null
+     */
+    public function getThudArray(): ?array
+    {
+        return $this->thudArray ?? null;
     }
 
     /**
@@ -125,11 +200,20 @@ class MyClass
     }
 
     /**
-     * @param MyClassBar $bar
+     * @param string $bar
      * @return self
+     * @param bool $validate
      */
-    public function withBar(MyClassBar $bar): self
+    public function withBar(string $bar, bool $validate = true): self
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($bar, self::$schema['properties']['bar']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
         $clone->bar = $bar;
 
@@ -137,20 +221,11 @@ class MyClass
     }
 
     /**
-     * @param string $baz
+     * @param MyClassBaz $baz
      * @return self
-     * @param bool $validate
      */
-    public function withBaz(string $baz, bool $validate = true): self
+    public function withBaz(MyClassBaz $baz): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($baz, self::$schema['properties']['baz']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->baz = $baz;
 
@@ -164,6 +239,65 @@ class MyClass
     {
         $clone = clone $this;
         unset($clone->baz);
+
+        return $clone;
+    }
+
+    /**
+     * @param MyClassQuxObj $quxObj
+     * @return self
+     */
+    public function withQuxObj(?MyClassQuxObj $quxObj): self
+    {
+        $clone = clone $this;
+        $clone->quxObj = $quxObj;
+        $clone->_providedOptionals['quxObj'] = true;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutQuxObj(): self
+    {
+        $clone = clone $this;
+        unset($clone->quxObj);
+        unset($clone->_providedOptionals['quxObj']);
+
+        return $clone;
+    }
+
+    /**
+     * @param string[] $thudArray
+     * @return self
+     * @param bool $validate
+     */
+    public function withThudArray(?array $thudArray, bool $validate = true): self
+    {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($thudArray, self::$schema['properties']['thudArray']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
+        $clone = clone $this;
+        $clone->thudArray = $thudArray;
+        $clone->_providedOptionals['thudArray'] = true;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutThudArray(): self
+    {
+        $clone = clone $this;
+        unset($clone->thudArray);
+        unset($clone->_providedOptionals['thudArray']);
 
         return $clone;
     }
@@ -195,12 +329,24 @@ class MyClass
             static::validateInput($input);
         }
 
+        $__providedOptionals = [];
         $foo = $input->{'foo'};
-        $bar = MyClassBar::buildFromInput($input->{'bar'}, $validate, $materializeDefaults);
-        $baz = isset($input->{'baz'}) ? $input->{'baz'} : null;
+        $bar = $input->{'bar'};
+        $baz = isset($input->{'baz'}) ? MyClassBaz::buildFromInput($input->{'baz'}, $validate, $materializeDefaults) : null;
+        $quxObj = property_exists($input, 'quxObj') ? MyClassQuxObj::buildFromInput($input->{'quxObj'}, $validate, $materializeDefaults) : null;
+        if (property_exists($input, 'quxObj')) {
+            $__providedOptionals['quxObj'] = true;
+        }
+        $thudArray = property_exists($input, 'thudArray') ? $input->{'thudArray'} : null;
+        if (property_exists($input, 'thudArray')) {
+            $__providedOptionals['thudArray'] = true;
+        }
 
         $obj = new self($foo, $bar);
         $obj->baz = $baz;
+        $obj->quxObj = $quxObj;
+        $obj->thudArray = $thudArray;
+        $obj->_providedOptionals = $__providedOptionals;
         return $obj;
     }
 
@@ -214,9 +360,19 @@ class MyClass
     {
         $output = [];
         $output['foo'] = $this->foo;
-        $output['bar'] = ($this->bar)->toArray();
+        $output['bar'] = $this->bar;
         if (isset($this->baz)) {
-            $output['baz'] = $this->baz;
+            $output['baz'] = ($this->baz)->toArray();
+        }
+        if (isset($this->quxObj) || array_key_exists('quxObj', $this->_providedOptionals)) {
+            if (isset($this->quxObj)) {
+                $output['quxObj'] = ($this->quxObj)->toArray();
+            }
+        }
+        if (isset($this->thudArray) || array_key_exists('thudArray', $this->_providedOptionals)) {
+            if (isset($this->thudArray)) {
+                $output['thudArray'] = $this->thudArray;
+            }
         }
 
         if ($includeDefaults) {
@@ -240,9 +396,19 @@ class MyClass
     {
         $output = new \stdClass();
         $output->{'foo'} = $this->foo;
-        $output->{'bar'} = ($this->bar)->toStdClass();
+        $output->{'bar'} = $this->bar;
         if (isset($this->baz)) {
-            $output->{'baz'} = $this->baz;
+            $output->{'baz'} = ($this->baz)->toStdClass();
+        }
+        if (isset($this->quxObj) || array_key_exists('quxObj', $this->_providedOptionals)) {
+            if (isset($this->quxObj)) {
+                $output->{'quxObj'} = ($this->quxObj)->toStdClass();
+            }
+        }
+        if (isset($this->thudArray) || array_key_exists('thudArray', $this->_providedOptionals)) {
+            if (isset($this->thudArray)) {
+                $output->{'thudArray'} = $this->thudArray;
+            }
         }
 
         if ($includeDefaults) {
@@ -282,6 +448,24 @@ class MyClass
 
     public function __clone()
     {
-        $this->bar = clone $this->bar;
+        if (isset($this->baz)) {
+            $this->baz = clone $this->baz;
+        }
+        if (isset($this->quxObj)) {
+            if (isset($this->quxObj)) {
+                $this->quxObj = clone $this->quxObj;
+            }
+        }
+    }
+
+    /**
+     * Checks if an optional nullable property was explicitly set
+     *
+     * @param string $propertyName Property name to check (exactly as it appears in the schema)
+     * @return bool
+     */
+    public function isProvidedOptional(string $propertyName): bool
+    {
+        return array_key_exists($propertyName, $this->_providedOptionals);
     }
 }

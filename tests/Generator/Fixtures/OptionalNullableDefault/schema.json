@@ -44,6 +44,15 @@
         "a": "a string",
         "b": 123
       }
+    },
+    "gooks": {
+      "type": ["object", "null"],
+      "description": "optional, nullable, with default, object, and default is empty object",
+      "properties": {
+        "a": {"type": "string"},
+        "b": {"type": "number"}
+      },
+      "default": {}
     }
   },
   "required": ["foo", "quux", "thud"]

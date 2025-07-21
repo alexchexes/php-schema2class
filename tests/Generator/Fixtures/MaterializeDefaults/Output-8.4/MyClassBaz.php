@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Ns\MaterializeDefaults_8_4;
 
-class MyClassBar
+class MyClassBaz
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -73,10 +73,10 @@ class MyClassBar
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
-     * @return MyClassBar Created instance
+     * @return MyClassBaz Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): MyClassBar
+    public static function buildFromInput(array|object $input, bool $validate = true): MyClassBaz
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {

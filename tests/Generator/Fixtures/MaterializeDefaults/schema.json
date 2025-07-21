@@ -2,10 +2,13 @@
   "type": "object",
   "properties": {
     "foo": {
+      "type": "string"
+    },
+    "bar": {
       "type": "string",
       "default": "some default value for foo"
     },
-    "bar": {
+    "baz": {
       "type": "object",
       "properties": {
         "nestedFoo": {
@@ -17,8 +20,19 @@
         "nestedFoo": "some value inside default value for 'bar' object"
       }
     },
-    "baz": {
-      "type": "string"
+    "quxObj": {
+      "type": ["object", "null"],
+      "description": "optional nullable object with default value that is empty object",
+      "properties": {
+        "a": {"type": "string"}
+      },
+      "default": {}
+    },
+    "thudArray": {
+      "type": ["array", "null"],
+      "description": "optional nullable array with default value that is empty array",
+      "items": {"type": "string"},
+      "default": []
     }
   },
   "required": ["foo", "bar"]

@@ -74,6 +74,24 @@ class MyClass
                     'b' => 123,
                 ],
             ],
+            'gooks' => [
+                'type' => [
+                    'object',
+                    'null',
+                ],
+                'description' => 'optional, nullable, with default, object, and default is empty object',
+                'properties' => [
+                    'a' => [
+                        'type' => 'string',
+                    ],
+                    'b' => [
+                        'type' => 'number',
+                    ],
+                ],
+                'default' => [
+                    
+                ],
+            ],
         ],
         'required' => [
             'foo',
@@ -95,6 +113,9 @@ class MyClass
         'grox' => [
             'a' => 'a string',
             'b' => 123,
+        ],
+        'gooks' => [
+            
         ],
     ];
 
@@ -160,6 +181,13 @@ class MyClass
      * @var MyClassGrox|null
      */
     private ?MyClassGrox $grox = null;
+
+    /**
+     * optional, nullable, with default, object, and default is empty object
+     *
+     * @var MyClassGooks|null
+     */
+    private ?MyClassGooks $gooks = null;
 
     /**
      * @param string $foo
@@ -251,6 +279,16 @@ class MyClass
     public function getGrox(): ?MyClassGrox
     {
         return $this->grox ?? null;
+    }
+
+    /**
+     * optional, nullable, with default, object, and default is empty object
+     *
+     * @return MyClassGooks|null
+     */
+    public function getGooks(): ?MyClassGooks
+    {
+        return $this->gooks ?? null;
     }
 
     /**
@@ -474,6 +512,31 @@ class MyClass
     }
 
     /**
+     * @param MyClassGooks $gooks
+     * @return self
+     */
+    public function withGooks(?MyClassGooks $gooks): self
+    {
+        $clone = clone $this;
+        $clone->gooks = $gooks;
+        $clone->_providedOptionals['gooks'] = true;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutGooks(): self
+    {
+        $clone = clone $this;
+        unset($clone->gooks);
+        unset($clone->_providedOptionals['gooks']);
+
+        return $clone;
+    }
+
+    /**
      * Builds a new instance from an input array
      *
      * @param array|object $input Input data
@@ -518,6 +581,10 @@ class MyClass
         if (property_exists($input, 'grox')) {
             $__providedOptionals['grox'] = true;
         }
+        $gooks = property_exists($input, 'gooks') ? MyClassGooks::buildFromInput($input->{'gooks'}, $validate, $materializeDefaults) : null;
+        if (property_exists($input, 'gooks')) {
+            $__providedOptionals['gooks'] = true;
+        }
 
         $obj = new self($foo, $quux, $thud);
         $obj->bar = $bar;
@@ -525,6 +592,7 @@ class MyClass
         $obj->qux = $qux;
         $obj->xyyz = $xyyz;
         $obj->grox = $grox;
+        $obj->gooks = $gooks;
         $obj->_providedOptionals = $__providedOptionals;
         return $obj;
     }
@@ -556,6 +624,11 @@ class MyClass
         if (isset($this->grox) || array_key_exists('grox', $this->_providedOptionals)) {
             if (isset($this->grox)) {
                 $output['grox'] = ($this->grox)->toArray();
+            }
+        }
+        if (isset($this->gooks) || array_key_exists('gooks', $this->_providedOptionals)) {
+            if (isset($this->gooks)) {
+                $output['gooks'] = ($this->gooks)->toArray();
             }
         }
 
@@ -599,6 +672,11 @@ class MyClass
                 $output->{'grox'} = ($this->grox)->toStdClass();
             }
         }
+        if (isset($this->gooks) || array_key_exists('gooks', $this->_providedOptionals)) {
+            if (isset($this->gooks)) {
+                $output->{'gooks'} = ($this->gooks)->toStdClass();
+            }
+        }
 
         if ($includeDefaults) {
             foreach (self::$_defaults as $k => $v) {
@@ -640,6 +718,11 @@ class MyClass
         if (isset($this->grox)) {
             if (isset($this->grox)) {
                 $this->grox = clone $this->grox;
+            }
+        }
+        if (isset($this->gooks)) {
+            if (isset($this->gooks)) {
+                $this->gooks = clone $this->gooks;
             }
         }
     }
