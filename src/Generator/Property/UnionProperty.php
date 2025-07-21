@@ -203,7 +203,6 @@ class UnionProperty extends AbstractProperty
 
         $ifs      = 0;
         $branches = [];
-        $fallback = null;
         foreach ($conversions as $assignment => $conversion) {
             $condition  = "(" . join(") || (", $conversion["discriminators"]) . ")";
             $branches[] = ($ifs++ > 0 ? "else " : "") . "if ($condition) {\n    $assignment\n}";
@@ -237,7 +236,6 @@ class UnionProperty extends AbstractProperty
 
         $ifs      = 0;
         $branches = [];
-        $fallback = null;
         foreach ($conversions as $assignment => $conversion) {
             $condition  = "(" . join(") || (", $conversion["discriminators"]) . ")";
             $branches[] = ($ifs++ > 0 ? "else " : "") . "if ($condition) {\n$assignment\n}";
