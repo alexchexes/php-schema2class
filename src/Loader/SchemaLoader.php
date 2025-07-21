@@ -25,29 +25,18 @@ class SchemaLoader
         return $result;
     }
     /**
-     * @param array|string $input
+     * @param array|string|\stdClass $input
      * @return array
      * @throws LoadingException
      */
-    public function loadSchema(array|string|object $input): array
+    public function loadSchema(array|string|\stdClass $input): array
     {
         if (is_array($input)) {
             return $input;
         }
 
-        if (is_object($input)) {
-            if (method_exists($input, 'toArray')) {
-                $arr = $input->toArray();
-                $arr[self::RAW_KEY] = json_decode(json_encode($input));
-                return $arr;
-            } elseif ($input instanceof \stdClass) {
-                return array_merge(self::objectToArrayRecursive($input), [self::RAW_KEY => $input]);
-            }
-
-            throw new LoadingException(
-                get_class($input),
-                "couldn't transform object to schema array: object is not an instance of 'stdClass' and has no 'toArray()' method"
-            );
+        if ($input instanceof \stdClass) {
+            return array_merge(self::objectToArrayRecursive($input), [self::RAW_KEY => $input]);
         }
 
         $filename = $input;
