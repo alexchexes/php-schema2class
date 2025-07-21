@@ -152,6 +152,24 @@ class Address
     }
 
     /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        if (isset($this->street)) {
+            $output->{'street'} = $this->street;
+        }
+        if (isset($this->house)) {
+            $output->{'house'} = $this->house;
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data

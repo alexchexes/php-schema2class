@@ -631,6 +631,48 @@ class User
     }
 
     /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        if (isset($this->createdAt)) {
+            $output->{'createdAt'} = ($this->createdAt)->format(\DateTime::ATOM);
+        }
+        if (isset($this->gender)) {
+            $output->{'gender'} = ($this->gender)->value;
+        }
+        $output->{'firstName'} = $this->firstName;
+        $output->{'lastName'} = $this->lastName;
+        if (isset($this->email)) {
+            $output->{'email'} = $this->email;
+        }
+        if (isset($this->billing)) {
+            $output->{'billing'} = ($this->billing)->toStdClass();
+        }
+        if (isset($this->payment)) {
+            $output->{'payment'} = match (true) {
+                $this->payment instanceof UserPaymentAlternative1,
+                $this->payment instanceof UserPaymentAlternative2 => ($this->payment)->toStdClass(),
+                is_string($this->payment) => $this->payment,
+            };
+        }
+        if (isset($this->address)) {
+            $output->{'address'} = ($this->address)->toStdClass();
+        }
+        if (isset($this->tags)) {
+            $output->{'tags'} = $this->tags;
+        }
+        if (isset($this->hobbies)) {
+            $output->{'hobbies'} = array_map(fn (UserHobbiesItem $i) => $i->toStdClass(), $this->hobbies);
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data
