@@ -11,6 +11,7 @@ use Helmich\Schema2Class\Generator\Hook\AddPropertyHook;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
 use Helmich\Schema2Class\Spec\OptionsDefaults;
 use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
+use Helmich\Schema2Class\Loader\SchemaLoader;
 use Laminas\Code\Generator\MethodGenerator;
 use Laminas\Code\Generator\PropertyGenerator;
 
@@ -23,6 +24,7 @@ class GeneratorRequest
     const DEFAULT_PHP8_VERSION = '8.4';
 
     private array $schema;
+    private object|null $rawSchema = null;
     
     /** @var array<string,mixed>|null Root schema's definitions, if any */
     private ?array $rootDefinitions = null;
@@ -65,6 +67,11 @@ class GeneratorRequest
             self::normalizeTargetVersion($opts->getTargetPHPVersion())
         );
 
+        $this->rawSchema = $schema[\Helmich\Schema2Class\Loader\SchemaLoader::RAW_KEY] ?? null;
+        if ($this->rawSchema !== null) {
+            unset($schema[\Helmich\Schema2Class\Loader\SchemaLoader::RAW_KEY]);
+        }
+
         $this->schema = $schema;
         $this->spec   = $spec;
         $this->opts   = $opts;
@@ -89,6 +96,11 @@ class GeneratorRequest
     public function getRootDefinitions(): ?array
     {
         return $this->rootDefinitions;
+    }
+
+    public function getRawSchema(): ?object
+    {
+        return $this->rawSchema;
     }
 
     private static function semversifyVersionNumber(string|int $versionNumber): string

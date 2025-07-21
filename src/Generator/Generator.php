@@ -272,7 +272,11 @@ class Generator
             ($hasDefaults ? ("if (\$$materializeArgAlias) {\n" .
             "    foreach (self::\$_defaults as \$__k => \$__v) {\n" .
             "        if (!property_exists(\$$inputArgAlias, \$__k)) {\n" .
-            "            \${$inputArgAlias}->{\$__k} = is_array(\$__v) ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$__v) : \$__v;\n" .
+            "            if (is_array(\$__v) && array_key_exists('default', \$__v)) {\n" .
+            "                \${$inputArgAlias}->{\$__k} = (isset(\$__v['type']) && \$__v['type'] === 'object') ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$__v['default']) : \$__v['default'];\n" .
+            "            } else {\n" .
+            "                \${$inputArgAlias}->{\$__k} = is_array(\$__v) ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$__v) : \$__v;\n" .
+            "            }\n" .
             "        }\n" .
             "    }\n" .
             "}\n\n") : '') .
@@ -344,12 +348,16 @@ class Generator
             $properties->generateTypeToArrayConversionCode('output') . "\n";
 
         if ($hasDefaults) {
-            $body .= "\nif (\$includeDefaults) {\n" . 
-            "    foreach (self::\$_defaults as \$k => \$v) {\n" . 
-            "        if (!array_key_exists(\$k, \$output)) {\n" . 
-            "            \$output[\$k] = \$v;\n" . 
-            "        }\n" . 
-            "    }\n" . 
+            $body .= "\nif (\$includeDefaults) {\n" .
+            "    foreach (self::\$_defaults as \$k => \$v) {\n" .
+            "        if (!array_key_exists(\$k, \$output)) {\n" .
+            "            if (is_array(\$v) && array_key_exists('default', \$v)) {\n" .
+            "                \$output[\$k] = \$v['default'];\n" .
+            "            } else {\n" .
+            "                \$output[\$k] = \$v;\n" .
+            "            }\n" .
+            "        }\n" .
+            "    }\n" .
             "}\n";
         }
 
@@ -401,7 +409,11 @@ class Generator
             $body .= "\nif (\$includeDefaults) {\n" .
             "    foreach (self::\$_defaults as \$k => \$v) {\n" .
             "        if (!property_exists(\$output, \$k)) {\n" .
-            "            \$output->{\$k} = \$v;\n" .
+            "            if (is_array(\$v) && array_key_exists('default', \$v)) {\n" .
+            "                \$output->{\$k} = (isset(\$v['type']) && \$v['type'] === 'object') ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$v['default']) : \$v['default'];\n" .
+            "            } else {\n" .
+            "                \$output->{\$k} = is_array(\$v) ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$v) : \$v;\n" .
+            "            }\n" .
             "        }\n" .
             "    }\n" .
             "}\n";

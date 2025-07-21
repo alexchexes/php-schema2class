@@ -6,6 +6,7 @@ use Symfony\Component\Yaml\Yaml;
 
 class SchemaLoader
 {
+    public const RAW_KEY = '__schema2class_raw';
     private static function objectToArrayRecursive(object $obj): array
     {
         $result = [];
@@ -36,9 +37,11 @@ class SchemaLoader
 
         if (is_object($input)) {
             if (method_exists($input, 'toArray')) {
-                return $input->toArray();
+                $arr = $input->toArray();
+                $arr[self::RAW_KEY] = json_decode(json_encode($input));
+                return $arr;
             } elseif ($input instanceof \stdClass) {
-                return self::objectToArrayRecursive($input);
+                return array_merge(self::objectToArrayRecursive($input), [self::RAW_KEY => $input]);
             }
 
             throw new LoadingException(
@@ -69,7 +72,8 @@ class SchemaLoader
             case 'yaml':
                 return Yaml::parse($contents);
             case 'json':
-                return json_decode($contents, true);
+                $raw = json_decode($contents); // stdClass or array
+                return array_merge(self::objectToArrayRecursive($raw), [self::RAW_KEY => $raw]);
         }
 
         throw new LoadingException($filename, "unsupported file type: {$pathParts["extension"]}");
