@@ -13,5 +13,7 @@
     "0": "a default string for '0'",
     "1": "a default string for '1'",
     "2": "a default string for '2'"
-  }
+  },
+  "arrObjUnion": [],
+  "objArrUnion": {}
 }

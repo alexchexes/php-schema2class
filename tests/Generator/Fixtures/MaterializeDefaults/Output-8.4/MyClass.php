@@ -117,6 +117,24 @@ class MyClass
                     ],
                 ],
             ],
+            'arrObjUnion' => [
+                'type' => [
+                    'array',
+                    'object',
+                ],
+                'default' => [
+                    
+                ],
+            ],
+            'objArrUnion' => [
+                'type' => [
+                    'array',
+                    'object',
+                ],
+                'default' => [
+                    
+                ],
+            ],
         ],
         'definitions' => [
             'ObjDef' => [
@@ -191,6 +209,14 @@ class MyClass
             'a default string for \'1\'',
             'a default string for \'2\'',
         ],
+        'arrObjUnion' => [
+            'default' => [],
+            'type' => 'array'
+        ],
+        'objArrUnion' => [
+            'default' => [],
+            'type' => 'object'
+        ],
     ];
 
     /**
@@ -248,6 +274,16 @@ class MyClass
      * @var string|NumericKeysObj|null
      */
     private string|NumericKeysObj|null $poox = null;
+
+    /**
+     * @var array|object|null
+     */
+    private array|object|null $arrObjUnion = null;
+
+    /**
+     * @var array|object|null
+     */
+    private array|object|null $objArrUnion = null;
 
     /**
      * @param string $foo
@@ -333,6 +369,22 @@ class MyClass
     public function getPoox(): NumericKeysObj|string|null
     {
         return $this->poox;
+    }
+
+    /**
+     * @return array|object|null
+     */
+    public function getArrObjUnion(): array|object|null
+    {
+        return $this->arrObjUnion;
+    }
+
+    /**
+     * @return array|object|null
+     */
+    public function getObjArrUnion(): array|object|null
+    {
+        return $this->objArrUnion;
     }
 
     /**
@@ -552,6 +604,52 @@ class MyClass
     }
 
     /**
+     * @param array|object $arrObjUnion
+     * @return self
+     */
+    public function withArrObjUnion(array|object $arrObjUnion): self
+    {
+        $clone = clone $this;
+        $clone->arrObjUnion = $arrObjUnion;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutArrObjUnion(): self
+    {
+        $clone = clone $this;
+        unset($clone->arrObjUnion);
+
+        return $clone;
+    }
+
+    /**
+     * @param array|object $objArrUnion
+     * @return self
+     */
+    public function withObjArrUnion(array|object $objArrUnion): self
+    {
+        $clone = clone $this;
+        $clone->objArrUnion = $objArrUnion;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutObjArrUnion(): self
+    {
+        $clone = clone $this;
+        unset($clone->objArrUnion);
+
+        return $clone;
+    }
+
+    /**
      * Builds a new instance from an input array
      *
      * @param array|object $input Input data
@@ -613,6 +711,16 @@ class MyClass
             NumericKeysObj::validateInput($input->{'poox'}, true) => NumericKeysObj::buildFromInput($input->{'poox'}, $validate),
             default => null,
         } : null;
+        $arrObjUnion = isset($input->{'arrObjUnion'}) ? match (true) {
+            is_array($input->{'arrObjUnion'}),
+            is_array($input->{'arrObjUnion'}) || is_object($input->{'arrObjUnion'}) => $input->{'arrObjUnion'},
+            default => null,
+        } : null;
+        $objArrUnion = isset($input->{'objArrUnion'}) ? match (true) {
+            is_array($input->{'objArrUnion'}),
+            is_array($input->{'objArrUnion'}) || is_object($input->{'objArrUnion'}) => $input->{'objArrUnion'},
+            default => null,
+        } : null;
 
         $obj = new self($foo, $bar);
         $obj->baz = $baz;
@@ -622,6 +730,8 @@ class MyClass
         $obj->buux = $buux;
         $obj->boic = $boic;
         $obj->poox = $poox;
+        $obj->arrObjUnion = $arrObjUnion;
+        $obj->objArrUnion = $objArrUnion;
         $obj->_providedOptionals = $__providedOptionals;
         return $obj;
     }
@@ -675,6 +785,18 @@ class MyClass
             $output['poox'] = match (true) {
                 is_string($this->poox) => $this->poox,
                 ($this->poox) instanceof NumericKeysObj => $this->poox->toArray(),
+            };
+        }
+        if (isset($this->arrObjUnion)) {
+            $output['arrObjUnion'] = match (true) {
+                is_array($this->arrObjUnion) => $this->arrObjUnion,
+                is_array($this->arrObjUnion) || is_object($this->arrObjUnion) => json_decode(json_encode($this->arrObjUnion), true),
+            };
+        }
+        if (isset($this->objArrUnion)) {
+            $output['objArrUnion'] = match (true) {
+                is_array($this->objArrUnion) => $this->objArrUnion,
+                is_array($this->objArrUnion) || is_object($this->objArrUnion) => json_decode(json_encode($this->objArrUnion), true),
             };
         }
 
@@ -738,6 +860,18 @@ class MyClass
             $output->{'poox'} = match (true) {
                 is_string($this->poox) => $this->poox,
                 ($this->poox) instanceof NumericKeysObj => $this->poox->toStdClass(),
+            };
+        }
+        if (isset($this->arrObjUnion)) {
+            $output->{'arrObjUnion'} = match (true) {
+                is_array($this->arrObjUnion) => $this->arrObjUnion,
+                is_array($this->arrObjUnion) || is_object($this->arrObjUnion) => json_decode(json_encode($this->arrObjUnion)),
+            };
+        }
+        if (isset($this->objArrUnion)) {
+            $output->{'objArrUnion'} = match (true) {
+                is_array($this->objArrUnion) => $this->objArrUnion,
+                is_array($this->objArrUnion) || is_object($this->objArrUnion) => json_decode(json_encode($this->objArrUnion)),
             };
         }
 
@@ -811,6 +945,18 @@ class MyClass
             $this->poox = match (true) {
                 is_string($this->poox),
                 ($this->poox) instanceof NumericKeysObj => $this->poox,
+            };
+        }
+        if (isset($this->arrObjUnion)) {
+            $this->arrObjUnion = match (true) {
+                is_array($this->arrObjUnion),
+                is_array($this->arrObjUnion) || is_object($this->arrObjUnion) => $this->arrObjUnion,
+            };
+        }
+        if (isset($this->objArrUnion)) {
+            $this->objArrUnion = match (true) {
+                is_array($this->objArrUnion),
+                is_array($this->objArrUnion) || is_object($this->objArrUnion) => $this->objArrUnion,
             };
         }
     }

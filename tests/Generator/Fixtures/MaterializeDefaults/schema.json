@@ -57,6 +57,14 @@
         { "type": "string" },
         { "$ref": "#/definitions/NumericKeysObj" }
       ]
+    },
+    "arrObjUnion": {
+      "type": ["array", "object"],
+      "default": []
+    },
+    "objArrUnion": {
+      "type": ["array", "object"],
+      "default": {}
     }
   },
   "definitions": {
