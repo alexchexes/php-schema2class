@@ -24,6 +24,49 @@ class MyClassBaz
         'default' => [
             'nestedFoo' => 'some value inside default value for \'bar\' object',
         ],
+        'definitions' => [
+            'ObjDef' => [
+                'type' => 'object',
+                'description' => 'Definition of an object with default value that is empty object',
+                'properties' => [
+                    'a' => [
+                        'type' => 'string',
+                    ],
+                ],
+                'default' => [
+                    
+                ],
+            ],
+            'ArrayDef' => [
+                'type' => 'array',
+                'description' => 'Definition of an array with default value that is empty array',
+                'items' => [
+                    'type' => 'string',
+                ],
+                'default' => [
+                    
+                ],
+            ],
+            'NumericKeysObj' => [
+                'type' => 'object',
+                'properties' => [
+                    [
+                        'type' => 'string',
+                    ],
+                    [
+                        'type' => 'string',
+                    ],
+                    [
+                        'type' => 'string',
+                    ],
+                ],
+                'default' => [
+                    'a default string for \'0\'',
+                    'a default string for \'1\'',
+                    'a default string for \'2\'',
+                ],
+            ],
+        ],
     ];
 
     /**

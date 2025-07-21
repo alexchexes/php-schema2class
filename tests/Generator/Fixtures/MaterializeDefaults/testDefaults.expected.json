@@ -5,5 +5,13 @@
     "nestedFoo": "some value inside default value for 'bar' object"
   },
   "quxObj": {},
-  "thudArray": []
+  "thudArray": [],
+  "xyyz": {},
+  "buux": [],
+  "boic": "a string",
+  "poox": {
+    "0": "a default string for '0'",
+    "1": "a default string for '1'",
+    "2": "a default string for '2'"
+  }
 }

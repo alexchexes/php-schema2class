@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Ns\MaterializeDefaults_8_4;
 
 /**
- * optional nullable object with default value that is empty object
+ * Definition of an object with default value that is empty object
  */
-class MyClassQuxObj
+class ObjDef
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -16,7 +16,7 @@ class MyClassQuxObj
      */
     private static array $schema = [
         'type' => 'object',
-        'description' => 'optional nullable object with default value that is empty object',
+        'description' => 'Definition of an object with default value that is empty object',
         'properties' => [
             'a' => [
                 'type' => 'string',
@@ -24,49 +24,6 @@ class MyClassQuxObj
         ],
         'default' => [
             
-        ],
-        'definitions' => [
-            'ObjDef' => [
-                'type' => 'object',
-                'description' => 'Definition of an object with default value that is empty object',
-                'properties' => [
-                    'a' => [
-                        'type' => 'string',
-                    ],
-                ],
-                'default' => [
-                    
-                ],
-            ],
-            'ArrayDef' => [
-                'type' => 'array',
-                'description' => 'Definition of an array with default value that is empty array',
-                'items' => [
-                    'type' => 'string',
-                ],
-                'default' => [
-                    
-                ],
-            ],
-            'NumericKeysObj' => [
-                'type' => 'object',
-                'properties' => [
-                    [
-                        'type' => 'string',
-                    ],
-                    [
-                        'type' => 'string',
-                    ],
-                    [
-                        'type' => 'string',
-                    ],
-                ],
-                'default' => [
-                    'a default string for \'0\'',
-                    'a default string for \'1\'',
-                    'a default string for \'2\'',
-                ],
-            ],
         ],
     ];
 
@@ -120,10 +77,10 @@ class MyClassQuxObj
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
-     * @return MyClassQuxObj Created instance
+     * @return ObjDef Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): MyClassQuxObj
+    public static function buildFromInput(array|object $input, bool $validate = true): ObjDef
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {

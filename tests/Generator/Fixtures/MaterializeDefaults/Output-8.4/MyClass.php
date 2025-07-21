@@ -13,6 +13,10 @@ class MyClass
      */
     private static array $schema = [
         'type' => 'object',
+        'required' => [
+            'foo',
+            'bar',
+        ],
         'properties' => [
             'foo' => [
                 'type' => 'string',
@@ -63,10 +67,99 @@ class MyClass
                     
                 ],
             ],
+            'xyyz' => [
+                'anyOf' => [
+                    [
+                        'type' => 'string',
+                    ],
+                    [
+                        '$ref' => '#/definitions/ObjDef',
+                    ],
+                    [
+                        '$ref' => '#/definitions/ArrayDef',
+                    ],
+                ],
+            ],
+            'buux' => [
+                'anyOf' => [
+                    [
+                        'type' => 'string',
+                    ],
+                    [
+                        '$ref' => '#/definitions/ArrayDef',
+                    ],
+                    [
+                        '$ref' => '#/definitions/ObjDef',
+                    ],
+                ],
+            ],
+            'boic' => [
+                'anyOf' => [
+                    [
+                        'type' => 'string',
+                        'default' => 'a string',
+                    ],
+                    [
+                        '$ref' => '#/definitions/ArrayDef',
+                    ],
+                    [
+                        '$ref' => '#/definitions/ObjDef',
+                    ],
+                ],
+            ],
+            'poox' => [
+                'anyOf' => [
+                    [
+                        'type' => 'string',
+                    ],
+                    [
+                        '$ref' => '#/definitions/NumericKeysObj',
+                    ],
+                ],
+            ],
         ],
-        'required' => [
-            'foo',
-            'bar',
+        'definitions' => [
+            'ObjDef' => [
+                'type' => 'object',
+                'description' => 'Definition of an object with default value that is empty object',
+                'properties' => [
+                    'a' => [
+                        'type' => 'string',
+                    ],
+                ],
+                'default' => [
+                    
+                ],
+            ],
+            'ArrayDef' => [
+                'type' => 'array',
+                'description' => 'Definition of an array with default value that is empty array',
+                'items' => [
+                    'type' => 'string',
+                ],
+                'default' => [
+                    
+                ],
+            ],
+            'NumericKeysObj' => [
+                'type' => 'object',
+                'properties' => [
+                    [
+                        'type' => 'string',
+                    ],
+                    [
+                        'type' => 'string',
+                    ],
+                    [
+                        'type' => 'string',
+                    ],
+                ],
+                'default' => [
+                    'a default string for \'0\'',
+                    'a default string for \'1\'',
+                    'a default string for \'2\'',
+                ],
+            ],
         ],
     ];
 
@@ -85,6 +178,18 @@ class MyClass
         ],
         'thudArray' => [
             
+        ],
+        'xyyz' => [
+            
+        ],
+        'buux' => [
+            
+        ],
+        'boic' => 'a string',
+        'poox' => [
+            'a default string for \'0\'',
+            'a default string for \'1\'',
+            'a default string for \'2\'',
         ],
     ];
 
@@ -123,6 +228,26 @@ class MyClass
      * @var string[]|null
      */
     private ?array $thudArray = null;
+
+    /**
+     * @var string|ObjDef|string[]|null
+     */
+    private string|ObjDef|array|null $xyyz = null;
+
+    /**
+     * @var string|string[]|ObjDef|null
+     */
+    private string|array|ObjDef|null $buux = null;
+
+    /**
+     * @var string|string[]|ObjDef|null
+     */
+    private string|array|ObjDef|null $boic = null;
+
+    /**
+     * @var string|NumericKeysObj|null
+     */
+    private string|NumericKeysObj|null $poox = null;
 
     /**
      * @param string $foo
@@ -176,6 +301,38 @@ class MyClass
     public function getThudArray(): ?array
     {
         return $this->thudArray ?? null;
+    }
+
+    /**
+     * @return string|ObjDef|string[]|null
+     */
+    public function getXyyz(): ObjDef|string|array|null
+    {
+        return $this->xyyz;
+    }
+
+    /**
+     * @return string|string[]|ObjDef|null
+     */
+    public function getBuux(): ObjDef|string|array|null
+    {
+        return $this->buux;
+    }
+
+    /**
+     * @return string|string[]|ObjDef|null
+     */
+    public function getBoic(): ObjDef|string|array|null
+    {
+        return $this->boic;
+    }
+
+    /**
+     * @return string|NumericKeysObj|null
+     */
+    public function getPoox(): NumericKeysObj|string|null
+    {
+        return $this->poox;
     }
 
     /**
@@ -303,6 +460,98 @@ class MyClass
     }
 
     /**
+     * @param string|ObjDef|string[] $xyyz
+     * @return self
+     */
+    public function withXyyz(ObjDef|string|array $xyyz): self
+    {
+        $clone = clone $this;
+        $clone->xyyz = $xyyz;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutXyyz(): self
+    {
+        $clone = clone $this;
+        unset($clone->xyyz);
+
+        return $clone;
+    }
+
+    /**
+     * @param string|string[]|ObjDef $buux
+     * @return self
+     */
+    public function withBuux(ObjDef|string|array $buux): self
+    {
+        $clone = clone $this;
+        $clone->buux = $buux;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutBuux(): self
+    {
+        $clone = clone $this;
+        unset($clone->buux);
+
+        return $clone;
+    }
+
+    /**
+     * @param string|string[]|ObjDef $boic
+     * @return self
+     */
+    public function withBoic(ObjDef|string|array $boic): self
+    {
+        $clone = clone $this;
+        $clone->boic = $boic;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutBoic(): self
+    {
+        $clone = clone $this;
+        unset($clone->boic);
+
+        return $clone;
+    }
+
+    /**
+     * @param string|NumericKeysObj $poox
+     * @return self
+     */
+    public function withPoox(NumericKeysObj|string $poox): self
+    {
+        $clone = clone $this;
+        $clone->poox = $poox;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutPoox(): self
+    {
+        $clone = clone $this;
+        unset($clone->poox);
+
+        return $clone;
+    }
+
+    /**
      * Builds a new instance from an input array
      *
      * @param array|object $input Input data
@@ -341,11 +590,38 @@ class MyClass
         if (property_exists($input, 'thudArray')) {
             $__providedOptionals['thudArray'] = true;
         }
+        $xyyz = isset($input->{'xyyz'}) ? match (true) {
+            is_string($input->{'xyyz'}),
+            is_array($input->{'xyyz'}) => $input->{'xyyz'},
+            ObjDef::validateInput($input->{'xyyz'}, true) => ObjDef::buildFromInput($input->{'xyyz'}, $validate),
+            default => null,
+        } : null;
+        $buux = isset($input->{'buux'}) ? match (true) {
+            is_string($input->{'buux'}),
+            is_array($input->{'buux'}) => $input->{'buux'},
+            ObjDef::validateInput($input->{'buux'}, true) => ObjDef::buildFromInput($input->{'buux'}, $validate),
+            default => null,
+        } : null;
+        $boic = isset($input->{'boic'}) ? match (true) {
+            is_string($input->{'boic'}),
+            is_array($input->{'boic'}) => $input->{'boic'},
+            ObjDef::validateInput($input->{'boic'}, true) => ObjDef::buildFromInput($input->{'boic'}, $validate),
+            default => null,
+        } : null;
+        $poox = isset($input->{'poox'}) ? match (true) {
+            is_string($input->{'poox'}) => $input->{'poox'},
+            NumericKeysObj::validateInput($input->{'poox'}, true) => NumericKeysObj::buildFromInput($input->{'poox'}, $validate),
+            default => null,
+        } : null;
 
         $obj = new self($foo, $bar);
         $obj->baz = $baz;
         $obj->quxObj = $quxObj;
         $obj->thudArray = $thudArray;
+        $obj->xyyz = $xyyz;
+        $obj->buux = $buux;
+        $obj->boic = $boic;
+        $obj->poox = $poox;
         $obj->_providedOptionals = $__providedOptionals;
         return $obj;
     }
@@ -373,6 +649,33 @@ class MyClass
             if (isset($this->thudArray)) {
                 $output['thudArray'] = $this->thudArray;
             }
+        }
+        if (isset($this->xyyz)) {
+            $output['xyyz'] = match (true) {
+                is_string($this->xyyz),
+                is_array($this->xyyz) => $this->xyyz,
+                ($this->xyyz) instanceof ObjDef => $this->xyyz->toArray(),
+            };
+        }
+        if (isset($this->buux)) {
+            $output['buux'] = match (true) {
+                is_string($this->buux),
+                is_array($this->buux) => $this->buux,
+                ($this->buux) instanceof ObjDef => $this->buux->toArray(),
+            };
+        }
+        if (isset($this->boic)) {
+            $output['boic'] = match (true) {
+                is_string($this->boic),
+                is_array($this->boic) => $this->boic,
+                ($this->boic) instanceof ObjDef => $this->boic->toArray(),
+            };
+        }
+        if (isset($this->poox)) {
+            $output['poox'] = match (true) {
+                is_string($this->poox) => $this->poox,
+                ($this->poox) instanceof NumericKeysObj => $this->poox->toArray(),
+            };
         }
 
         if ($includeDefaults) {
@@ -409,6 +712,33 @@ class MyClass
             if (isset($this->thudArray)) {
                 $output->{'thudArray'} = $this->thudArray;
             }
+        }
+        if (isset($this->xyyz)) {
+            $output->{'xyyz'} = match (true) {
+                is_string($this->xyyz),
+                is_array($this->xyyz) => $this->xyyz,
+                ($this->xyyz) instanceof ObjDef => $this->xyyz->toStdClass(),
+            };
+        }
+        if (isset($this->buux)) {
+            $output->{'buux'} = match (true) {
+                is_string($this->buux),
+                is_array($this->buux) => $this->buux,
+                ($this->buux) instanceof ObjDef => $this->buux->toStdClass(),
+            };
+        }
+        if (isset($this->boic)) {
+            $output->{'boic'} = match (true) {
+                is_string($this->boic),
+                is_array($this->boic) => $this->boic,
+                ($this->boic) instanceof ObjDef => $this->boic->toStdClass(),
+            };
+        }
+        if (isset($this->poox)) {
+            $output->{'poox'} = match (true) {
+                is_string($this->poox) => $this->poox,
+                ($this->poox) instanceof NumericKeysObj => $this->poox->toStdClass(),
+            };
         }
 
         if ($includeDefaults) {
@@ -455,6 +785,33 @@ class MyClass
             if (isset($this->quxObj)) {
                 $this->quxObj = clone $this->quxObj;
             }
+        }
+        if (isset($this->xyyz)) {
+            $this->xyyz = match (true) {
+                is_string($this->xyyz),
+                ($this->xyyz) instanceof ObjDef,
+                is_array($this->xyyz) => $this->xyyz,
+            };
+        }
+        if (isset($this->buux)) {
+            $this->buux = match (true) {
+                is_string($this->buux),
+                is_array($this->buux),
+                ($this->buux) instanceof ObjDef => $this->buux,
+            };
+        }
+        if (isset($this->boic)) {
+            $this->boic = match (true) {
+                is_string($this->boic),
+                is_array($this->boic),
+                ($this->boic) instanceof ObjDef => $this->boic,
+            };
+        }
+        if (isset($this->poox)) {
+            $this->poox = match (true) {
+                is_string($this->poox),
+                ($this->poox) instanceof NumericKeysObj => $this->poox,
+            };
         }
     }
 
