@@ -45,6 +45,23 @@ class SchemaToClassTest extends TestCase
         @rmdir($dir);
     }
 
+    private function checkCompatibility(string $dir, string $version): void
+    {
+        $phpcs = dirname(__DIR__, 2) . '/vendor/bin/phpcs';
+        $cmd = escapeshellcmd($phpcs)
+            . ' --standard=PHPCompatibility'
+            . ' --runtime-set testVersion ' . escapeshellarg($version)
+            . ' --extensions=php '
+            . escapeshellarg($dir);
+
+        exec($cmd, $output, $exitCode);
+        $this->assertSame(
+            0,
+            $exitCode,
+            "PHPCompatibility check failed for PHP {$version} in {$dir}:\n" . implode(PHP_EOL, $output),
+        );
+    }
+
     protected function setUp(): void
     {
     }
@@ -300,6 +317,9 @@ class SchemaToClassTest extends TestCase
 
         $writtenFiles = $writer->getWrittenFiles();
 
+        $dirName  = 'Output-' . $version;
+        $outputDir = join(DIRECTORY_SEPARATOR, [__DIR__, 'Fixtures', $fixture, $dirName]);
+
         if (getenv('UPDATE_SNAPSHOTS') !== '1') {
             $this->assertCount(
                 expectedCount: count($expectedOutput),
@@ -317,8 +337,6 @@ class SchemaToClassTest extends TestCase
                 assertThat($actualContent, equalTo($content));
             }
         } else {
-            $dirName = 'Output-' . $version;
-            $outputDir = join(DIRECTORY_SEPARATOR, [__DIR__, 'Fixtures', $fixture, $dirName]);
             if (is_dir($outputDir)) {
                 $iterator = new \RecursiveIteratorIterator(
                     new \RecursiveDirectoryIterator($outputDir, \FilesystemIterator::SKIP_DOTS),
@@ -346,6 +364,8 @@ class SchemaToClassTest extends TestCase
 
             $this->addToAssertionCount(1);
         }
+
+        $this->checkCompatibility($outputDir, $version);
 
         if (getenv('SKIP_EVAL') !== '1') {
             // load classes in memory by evaluating the generated code
