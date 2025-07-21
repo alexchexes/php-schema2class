@@ -16,4 +16,9 @@ final class CustomerAddress {
   {
     return [];
   }
+
+  public function toStdClass()
+  {
+    return new \stdClass;
+  }
 }

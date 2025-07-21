@@ -79,7 +79,7 @@ class ReferenceArrayProperty extends AbstractProperty
 
     public function generateOutputMappingExprStdClass(string $expr): string
     {
-        return "array_map(fn({$this->type->typeHint($this->generatorRequest)} \$i): {$this->type->serializedTypeHint($this->generatorRequest)} => {$this->type->outputMappingExprStdClass($this->generatorRequest, '$i')}, {$expr})";
+        return "array_map(fn({$this->type->typeHint($this->generatorRequest)} \$i): {$this->type->serializedTypeHintStdClass($this->generatorRequest)} => {$this->type->outputMappingExprStdClass($this->generatorRequest, '$i')}, {$expr})";
     }
 
     public function isComplex(): bool

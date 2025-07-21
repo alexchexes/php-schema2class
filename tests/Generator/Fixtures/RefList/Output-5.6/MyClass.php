@@ -123,7 +123,7 @@ class MyClass
     {
         $output = new \stdClass();
         if (isset($this->foo)) {
-            $output->{'foo'} = array_map(fn(\Helmich\Schema2Class\Example\CustomerAddress $i): array => $i->toStdClass(), $this->foo);
+            $output->{'foo'} = array_map(fn(\Helmich\Schema2Class\Example\CustomerAddress $i): object => $i->toStdClass(), $this->foo);
         }
 
         return $output;

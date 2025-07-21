@@ -343,10 +343,10 @@ class Record
     {
         $output = new \stdClass();
         if (isset($this->dataArray)) {
-            $output->{'dataArray'} = array_map(fn(Phone $i): array => $i->toStdClass(), $this->dataArray);
+            $output->{'dataArray'} = array_map(fn(Phone $i): object => $i->toStdClass(), $this->dataArray);
         }
         if (isset($this->dataArrayNested)) {
-            $output->{'dataArrayNested'} = array_map(fn($i) => array_map(fn(Phone $i): array => $i->toStdClass(), $i), $this->dataArrayNested);
+            $output->{'dataArrayNested'} = array_map(fn($i) => array_map(fn(Phone $i): object => $i->toStdClass(), $i), $this->dataArrayNested);
         }
         if (isset($this->dataArrayAnyOf)) {
             $output->{'dataArrayAnyOf'} = array_map(fn($i) => (($i) instanceof Fio) ? ($i->toStdClass()) : ((($i) instanceof Phone) ? ($i->toStdClass()) : (null)), $this->dataArrayAnyOf);

@@ -41,6 +41,11 @@ readonly class ReferencedTypeUnknown implements ReferencedType
         return null;
     }
 
+    public function serializedTypeHintStdClass(GeneratorRequest $req): ?string
+    {
+        return $this->serializedTypeHint($req);
+    }
+
     public function typeAssertionExpr(GeneratorRequest $req, string $expr): string
     {
         return "true";

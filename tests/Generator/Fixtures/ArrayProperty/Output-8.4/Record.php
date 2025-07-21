@@ -129,7 +129,7 @@ class Record
     {
         $output = new \stdClass();
         if (isset($this->dataArray)) {
-            $output->{'dataArray'} = array_map(fn(Phone $i): array => $i->toStdClass(), $this->dataArray);
+            $output->{'dataArray'} = array_map(fn(Phone $i): object => $i->toStdClass(), $this->dataArray);
         }
 
         return $output;

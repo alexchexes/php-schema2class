@@ -63,6 +63,11 @@ readonly class ReferencedTypeEnum implements ReferencedType
         return $this->typeHint($req);
     }
 
+    public function serializedTypeHintStdClass(GeneratorRequest $req): ?string
+    {
+        return $this->serializedTypeHint($req);
+    }
+
     public function typeAssertionExpr(GeneratorRequest $req, string $expr): string
     {
         if ($this->useNativeEnum($req)) {
