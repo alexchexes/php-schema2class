@@ -110,6 +110,11 @@ class StringEnumProperty extends AbstractProperty
         return $expr;
     }
 
+    public function generateOutputMappingExprStdClass(string $expr): string
+    {
+        return $this->generateOutputMappingExpr($expr);
+    }
+
     public function generateCloneExpr(string $expr): string
     {
         // enum or string, same copy semantics

@@ -91,6 +91,23 @@ EOCODE;
         assertSame($expected, $result);
     }
 
+    public function testConvertTypeToStdClass()
+    {
+        $this->innerProperty->name()->shouldBeCalled()->willReturn('myPropertyName');
+        $this->innerProperty->allowsNull()->shouldBeCalled()->willReturn(false);
+        $this->innerProperty->convertTypeToStdClass('variable')->shouldBeCalled()->willReturn('echo "InnerCode";');
+
+        $result = $this->decorator->convertTypeToStdClass('variable');
+
+        $expected = <<<'EOCODE'
+if (isset($this->myPropertyName)) {
+    echo "InnerCode";
+}
+EOCODE;
+
+        assertSame($expected, $result);
+    }
+
     public function testClonePropertyWithoutInnerCode()
     {
         $this->innerProperty->name()->shouldBeCalled()->willReturn('innerPropertyName');

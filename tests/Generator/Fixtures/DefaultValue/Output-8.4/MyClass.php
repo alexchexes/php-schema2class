@@ -81,14 +81,30 @@ class MyClass
      * @var array
      */
     private static array $_defaults = [
-        'foo' => 0,
-        'bar' => 'xyz',
-        'baz' => null,
-        'qux' => 'default from the referenced definition',
-        'thud' => 'more specific default near the "$ref"',
-        'grox' => 'default near the "$ref"',
-        'qwert' => 'default from the referenced definition',
-        'zyx' => '',
+        'foo' => [
+            'default' => 0,
+        ],
+        'bar' => [
+            'default' => 'xyz',
+        ],
+        'baz' => [
+            'default' => null,
+        ],
+        'qux' => [
+            'default' => 'default from the referenced definition',
+        ],
+        'thud' => [
+            'default' => 'more specific default near the "$ref"',
+        ],
+        'grox' => [
+            'default' => 'default near the "$ref"',
+        ],
+        'qwert' => [
+            'default' => 'default from the referenced definition',
+        ],
+        'zyx' => [
+            'default' => '',
+        ],
     ];
 
     /**
@@ -481,7 +497,9 @@ class MyClass
         if ($materializeDefaults) {
             foreach (self::$_defaults as $__k => $__v) {
                 if (!property_exists($input, $__k)) {
-                    $input->{$__k} = is_array($__v) ? \JsonSchema\Validator::arrayToObjectRecursive($__v) : $__v;
+                   $input->{$__k} = ($__v['type'] ?? null) === 'object'
+                       ? \JsonSchema\Validator::arrayToObjectRecursive($__v['default'])
+                       : $__v['default'];
                 }
             }
         }
@@ -560,7 +578,57 @@ class MyClass
         if ($includeDefaults) {
             foreach (self::$_defaults as $k => $v) {
                 if (!array_key_exists($k, $output)) {
-                    $output[$k] = $v;
+                    $output[$k] = $v['default'];
+                }
+            }
+        }
+
+        return $output;
+    }
+
+    /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @param bool $includeDefaults Add defaults for missing properties
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(bool $includeDefaults = false): \stdClass
+    {
+        $output = new \stdClass();
+        if (isset($this->foo)) {
+            $output->{'foo'} = $this->foo;
+        }
+        if (isset($this->bar)) {
+            $output->{'bar'} = $this->bar;
+        }
+        if (isset($this->baz) || array_key_exists('baz', $this->_providedOptionals)) {
+            $output->{'baz'} = $this->baz;
+        }
+        if (isset($this->qux)) {
+            $output->{'qux'} = $this->qux;
+        }
+        if (isset($this->thud)) {
+            $output->{'thud'} = $this->thud;
+        }
+        if (isset($this->grox)) {
+            $output->{'grox'} = $this->grox;
+        }
+        if (isset($this->qwert)) {
+            $output->{'qwert'} = match (true) {
+                is_string($this->qwert),
+                is_int($this->qwert) || is_float($this->qwert) => $this->qwert,
+            };
+        }
+        if (isset($this->zyx)) {
+            $output->{'zyx'} = $this->zyx;
+        }
+
+        if ($includeDefaults) {
+            foreach (self::$_defaults as $k => $v) {
+                if (!property_exists($output, $k)) {
+                    $output->{$k} = (isset($v['type']) && $v['type'] === 'object')
+                       ? \JsonSchema\Validator::arrayToObjectRecursive($v['default'])
+                       : $v['default'];
                 }
             }
         }

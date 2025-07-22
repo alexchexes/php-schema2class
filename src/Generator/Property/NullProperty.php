@@ -41,6 +41,7 @@ class NullProperty extends AbstractProperty
     public function generateInputAssertionExpr(string $expr): string { return "{$expr} === null"; }
     public function generateInputMappingExpr(string $expr, bool $asserted = false): string { return $expr; }
     public function generateOutputMappingExpr(string $expr): string { return $expr; }
+    public function generateOutputMappingExprStdClass(string $expr): string { return $expr; }
     public function generateCloneExpr(string $expr): string { return $expr; }
 
     /* ---------------------------------------------------------------------

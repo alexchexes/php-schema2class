@@ -65,7 +65,7 @@ class ObjectArrayPropertyTest extends TestCase
         $result = $underTest->convertInputToType('variable');
 
         $expected = <<<'EOCODE'
-$myPropertyName = array_map(fn (array|object $i): FooMyPropertyNameItem => FooMyPropertyNameItem::buildFromInput($i, $validate, $materializeDefaults), $variable['myPropertyName']);
+$myPropertyName = array_map(fn (array|object $i): FooMyPropertyNameItem => FooMyPropertyNameItem::buildFromInput($i, $validate), $variable['myPropertyName']);
 EOCODE;
 
         assertSame($expected, $result);
@@ -79,6 +79,19 @@ EOCODE;
 
         $expected = <<<'EOCODE'
 $variable['myPropertyName'] = array_map(fn (FooMyPropertyNameItem $i) => $i->toArray(), $this->myPropertyName);
+EOCODE;
+
+        assertSame($expected, $result);
+    }
+
+    public function testConvertTypeToStdClassWithComplexArray()
+    {
+        $underTest = new ObjectArrayProperty('myPropertyName', ['type' => 'array', 'items' => ['properties' => ['foo' => ['type' => 'string']]]], $this->generatorRequest);
+
+        $result = $underTest->convertTypeToStdClass('variable');
+
+        $expected = <<<'EOCODE'
+$variable->{'myPropertyName'} = array_map(fn (FooMyPropertyNameItem $i) => $i->toStdClass(), $this->myPropertyName);
 EOCODE;
 
         assertSame($expected, $result);

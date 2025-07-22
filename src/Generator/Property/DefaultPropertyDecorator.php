@@ -51,11 +51,12 @@ class DefaultPropertyDecorator implements PropertyDecoratorInterface, Renameable
     public function convertInputToType(string $inputVarName = 'input', bool $object = false): string
     {
         $key   = $this->key;
+        $keyStr = var_export($key, true);
         $name  = $this->name();
         $inner = $this->inner->convertInputToType($inputVarName, $object);
 
         $defaultExp = $this->defaultExpr();
-        $accessor   = $object ? "\${$inputVarName}->{'$key'}" : "\${$inputVarName}['$key']";
+        $accessor   = $object ? "\${$inputVarName}->{{$keyStr}}" : "\${$inputVarName}[{$keyStr}]";
 
         return "\${$name} = {$defaultExp};\nif (isset($accessor)) {\n" . $this->indentCode($inner, 1) . "\n}";
     }
@@ -67,6 +68,11 @@ class DefaultPropertyDecorator implements PropertyDecoratorInterface, Renameable
     public function convertTypeToArray(string $outputVarName = 'output'): string
     {
         return $this->inner->convertTypeToArray($outputVarName);
+    }
+
+    public function convertTypeToStdClass(string $outputVarName = 'output'): string
+    {
+        return $this->inner->convertTypeToStdClass($outputVarName);
     }
 
     /**
@@ -149,6 +155,11 @@ class DefaultPropertyDecorator implements PropertyDecoratorInterface, Renameable
     public function generateOutputMappingExpr(string $expr): string
     {
         return $this->inner->generateOutputMappingExpr($expr);
+    }
+
+    public function generateOutputMappingExprStdClass(string $expr): string
+    {
+        return $this->inner->generateOutputMappingExprStdClass($expr);
     }
 
     public function generateCloneExpr(string $expr): string

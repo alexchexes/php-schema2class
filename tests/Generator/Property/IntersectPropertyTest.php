@@ -53,7 +53,7 @@ class IntersectPropertyTest extends TestCase
         $result = $underTest->convertInputToType('variable');
 
         $expected = <<<'EOCODE'
-$myPropertyName = FooMyPropertyName::buildFromInput($variable['myPropertyName'], $validate, $materializeDefaults);
+$myPropertyName = FooMyPropertyName::buildFromInput($variable['myPropertyName'], $validate);
 EOCODE;
 
         assertSame($expected, $result);
@@ -65,6 +65,17 @@ EOCODE;
 
         $expected = <<<'EOCODE'
 $variable['myPropertyName'] = ($this->myPropertyName)->toArray();
+EOCODE;
+
+        assertSame($expected, $result);
+    }
+
+    public function testConvertTypeToStdClass()
+    {
+        $result = $this->property->convertTypeToStdClass('variable');
+
+        $expected = <<<'EOCODE'
+$variable->{'myPropertyName'} = ($this->myPropertyName)->toStdClass();
 EOCODE;
 
         assertSame($expected, $result);

@@ -191,6 +191,23 @@ class User
     }
 
     /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        $output->{'name'} = $this->name;
+        if (isset($this->address)) {
+            $output->{'address'} = $this->address->toStdClass();
+        }
+        $output->{'status'} = $this->status;
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data

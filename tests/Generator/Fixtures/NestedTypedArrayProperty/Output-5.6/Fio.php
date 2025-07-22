@@ -124,6 +124,21 @@ class Fio
     }
 
     /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass()
+    {
+        $output = new \stdClass();
+        if (isset($this->bar) || array_key_exists('bar', $this->_providedOptionals)) {
+            $output->{'bar'} = $this->bar;
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data

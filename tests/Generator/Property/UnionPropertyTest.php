@@ -54,8 +54,8 @@ class UnionPropertyTest extends TestCase
 
         $expected = <<<'EOCODE'
 $myPropertyName = match (true) {
-    FooMyPropertyNameAlternative1::validateInput($variable['myPropertyName'], true) => FooMyPropertyNameAlternative1::buildFromInput($variable['myPropertyName'], $validate, $materializeDefaults),
-    FooMyPropertyNameAlternative2::validateInput($variable['myPropertyName'], true) => FooMyPropertyNameAlternative2::buildFromInput($variable['myPropertyName'], $validate, $materializeDefaults),
+    FooMyPropertyNameAlternative1::validateInput($variable['myPropertyName'], true) => FooMyPropertyNameAlternative1::buildFromInput($variable['myPropertyName'], $validate),
+    FooMyPropertyNameAlternative2::validateInput($variable['myPropertyName'], true) => FooMyPropertyNameAlternative2::buildFromInput($variable['myPropertyName'], $validate),
     default => throw new \InvalidArgumentException("could not build property 'myPropertyName' from JSON"),
 };
 EOCODE;
@@ -73,6 +73,22 @@ EOCODE;
 $variable['myPropertyName'] = match (true) {
     $this->myPropertyName instanceof FooMyPropertyNameAlternative1,
     $this->myPropertyName instanceof FooMyPropertyNameAlternative2 => ($this->myPropertyName)->toArray(),
+};
+EOCODE;
+
+        assertSame($expected, $result);
+    }
+
+    public function testConvertTypeToStdClass()
+    {
+        $underTest = new UnionProperty('myPropertyName', ['anyOf' => [['properties' => ['subFoo1' => ['type' => 'string']]], ['properties' => ['subFoo2' => ['type' => 'string']]]]], $this->generatorRequest);
+
+        $result = $underTest->convertTypeToStdClass('variable');
+
+        $expected = <<<'EOCODE'
+$variable->{'myPropertyName'} = match (true) {
+    $this->myPropertyName instanceof FooMyPropertyNameAlternative1,
+    $this->myPropertyName instanceof FooMyPropertyNameAlternative2 => ($this->myPropertyName)->toStdClass(),
 };
 EOCODE;
 

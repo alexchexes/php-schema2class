@@ -11,6 +11,7 @@ use Helmich\Schema2Class\Generator\Hook\AddPropertyHook;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
 use Helmich\Schema2Class\Spec\OptionsDefaults;
 use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
+use Helmich\Schema2Class\Loader\SchemaLoader;
 use Laminas\Code\Generator\MethodGenerator;
 use Laminas\Code\Generator\PropertyGenerator;
 
@@ -23,6 +24,7 @@ class GeneratorRequest
     const DEFAULT_PHP8_VERSION = '8.4';
 
     private array $schema;
+    private object|null $rawSchema = null;
     
     /** @var array<string,mixed>|null Root schema's definitions, if any */
     private ?array $rootDefinitions = null;
@@ -44,7 +46,12 @@ class GeneratorRequest
      * Name of the $materializeDefaults argument in the currently generated buildFromInput method
      * (null when the argument is not generated). This is set from the Generator.
      */
-    private ?string $currMaterializeArgAlias = 'materializeDefaults';
+    private ?string $currMaterializeArgAlias = null;
+
+    /**
+     * 
+     */
+    private bool $currReqHasDefaults = false;
 
     public static function normalizeTargetVersion(int|string $version): string
     {
@@ -64,6 +71,11 @@ class GeneratorRequest
         $opts = $opts->withTargetPHPVersion(
             self::normalizeTargetVersion($opts->getTargetPHPVersion())
         );
+
+        $this->rawSchema = $schema[\Helmich\Schema2Class\Loader\SchemaLoader::RAW_KEY] ?? null;
+        if ($this->rawSchema !== null) {
+            unset($schema[\Helmich\Schema2Class\Loader\SchemaLoader::RAW_KEY]);
+        }
 
         $this->schema = $schema;
         $this->spec   = $spec;
@@ -89,6 +101,11 @@ class GeneratorRequest
     public function getRootDefinitions(): ?array
     {
         return $this->rootDefinitions;
+    }
+
+    public function getRawSchema(): ?object
+    {
+        return $this->rawSchema;
     }
 
     private static function semversifyVersionNumber(string|int $versionNumber): string
@@ -345,6 +362,14 @@ class GeneratorRequest
         $this->currMaterializeArgAlias = $currMaterializeArgAlias;
     }
 
+    /**
+     * 
+     */
+    public function setCurrReqHasDefaults(bool $currReqHasDefaults): void
+    {
+        $this->currReqHasDefaults = $currReqHasDefaults;
+    }
+
     public function getCurrValidateArgAlias(): string
     {
         return $this->currValidateArgAlias;
@@ -353,5 +378,10 @@ class GeneratorRequest
     public function getCurrMaterializeArgAlias(): ?string
     {
         return $this->currMaterializeArgAlias;
+    }
+
+    public function getCurrReqHasDefaults(): bool
+    {
+        return $this->currReqHasDefaults;
     }
 }

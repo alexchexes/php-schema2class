@@ -1,8 +1,11 @@
 <?php
 
-namespace Ns\ArrayProperty_5_6;
+namespace Ns\OptionalNullableDefault_5_6;
 
-class Record
+/**
+ * optional, nullable, with default, object, and default is empty object
+ */
+class MyClassGooks
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -11,58 +14,63 @@ class Record
      */
     private static $schema = [
         'type' => 'object',
+        'description' => 'optional, nullable, with default, object, and default is empty object',
         'properties' => [
-            'dataArray' => [
-                'type' => 'array',
-                'items' => [
-                    '$ref' => '#/definitions/Phone',
-                ],
-                'minItems' => 1,
-                'maxItems' => 1,
+            'a' => [
+                'type' => 'string',
+            ],
+            'b' => [
+                'type' => 'number',
             ],
         ],
-        'definitions' => [
-            'Phone' => [
-                'type' => 'object',
-                'properties' => [
-                    'foo' => [
-                        'type' => 'string',
-                    ],
-                ],
-            ],
+        'default' => [
+            
         ],
     ];
 
     /**
-     * @var Phone[]|null
+     * @var string|null
      */
-    private $dataArray = null;
+    private $a = null;
 
     /**
-     * @return Phone[]|null
+     * @var int|float|null
      */
-    public function getDataArray()
+    private $b = null;
+
+    /**
+     * @return string|null
+     */
+    public function getA()
     {
-        return $this->dataArray;
+        return $this->a;
     }
 
     /**
-     * @param Phone[] $dataArray
+     * @return int|float|null
+     */
+    public function getB()
+    {
+        return $this->b;
+    }
+
+    /**
+     * @param string $a
      * @return self
      * @param bool $validate
      */
-    public function withDataArray(array $dataArray, bool $validate = true)
+    public function withA($a, bool $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($dataArray, self::$schema['properties']['dataArray']);
+            $validator->validate($a, self::$schema['properties']['a']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
         }
 
         $clone = clone $this;
-        $clone->dataArray = $dataArray;
+        $clone->a = $a;
 
         return $clone;
     }
@@ -70,10 +78,42 @@ class Record
     /**
      * @return self
      */
-    public function withoutDataArray()
+    public function withoutA()
     {
         $clone = clone $this;
-        unset($clone->dataArray);
+        unset($clone->a);
+
+        return $clone;
+    }
+
+    /**
+     * @param int|float $b
+     * @return self
+     * @param bool $validate
+     */
+    public function withB($b, bool $validate = true)
+    {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($b, self::$schema['properties']['b']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
+        $clone = clone $this;
+        $clone->b = $b;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutB()
+    {
+        $clone = clone $this;
+        unset($clone->b);
 
         return $clone;
     }
@@ -83,7 +123,7 @@ class Record
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
-     * @return Record Created instance
+     * @return MyClassGooks Created instance
      * @throws \InvalidArgumentException
      */
     public static function buildFromInput($input, bool $validate = true)
@@ -99,13 +139,12 @@ class Record
             static::validateInput($input);
         }
 
-        $dataArray = isset($input->{'dataArray'}) ? array_map(
-            fn($i) => Phone::buildFromInput($i, $validate),
-            $input->{'dataArray'}
-        ) : null;
+        $a = isset($input->{'a'}) ? $input->{'a'} : null;
+        $b = isset($input->{'b'}) ? $input->{'b'} : null;
 
         $obj = new self();
-        $obj->dataArray = $dataArray;
+        $obj->a = $a;
+        $obj->b = $b;
         return $obj;
     }
 
@@ -117,8 +156,29 @@ class Record
     public function toArray()
     {
         $output = [];
-        if (isset($this->dataArray)) {
-            $output['dataArray'] = array_map(fn(Phone $i): array => $i->toArray(), $this->dataArray);
+        if (isset($this->a)) {
+            $output['a'] = $this->a;
+        }
+        if (isset($this->b)) {
+            $output['b'] = $this->b;
+        }
+
+        return $output;
+    }
+
+    /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass()
+    {
+        $output = new \stdClass();
+        if (isset($this->a)) {
+            $output->{'a'} = $this->a;
+        }
+        if (isset($this->b)) {
+            $output->{'b'} = $this->b;
         }
 
         return $output;

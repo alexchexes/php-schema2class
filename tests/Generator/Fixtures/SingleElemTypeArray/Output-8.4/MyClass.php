@@ -448,6 +448,39 @@ class MyClass
     }
 
     /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        if (isset($this->foo)) {
+            $output->{'foo'} = $this->foo;
+        }
+        if (isset($this->bar)) {
+            $output->{'bar'} = $this->bar;
+        }
+        if (isset($this->baz)) {
+            $output->{'baz'} = $this->baz;
+        }
+        if (isset($this->qux)) {
+            $output->{'qux'} = $this->qux;
+        }
+        if (isset($this->grox) || array_key_exists('grox', $this->_providedOptionals)) {
+            $output->{'grox'} = $this->grox;
+        }
+        if (isset($this->quux)) {
+            $output->{'quux'} = ($this->quux)->toStdClass();
+        }
+        if (isset($this->thud)) {
+            $output->{'thud'} = $this->thud;
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data

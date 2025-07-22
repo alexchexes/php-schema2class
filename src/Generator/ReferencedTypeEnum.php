@@ -63,6 +63,11 @@ readonly class ReferencedTypeEnum implements ReferencedType
         return $this->typeHint($req);
     }
 
+    public function serializedTypeHintStdClass(GeneratorRequest $req): ?string
+    {
+        return $this->serializedTypeHint($req);
+    }
+
     public function typeAssertionExpr(GeneratorRequest $req, string $expr): string
     {
         if ($this->useNativeEnum($req)) {
@@ -81,7 +86,7 @@ readonly class ReferencedTypeEnum implements ReferencedType
         return EnumUtils::assertionExpr($this->schema['enum'], $expr);
     }
 
-    public function inputMappingExpr(GeneratorRequest $req, string $expr, ?string $validateExpr): string
+    public function inputMappingExpr(GeneratorRequest $req, string $expr): string
     {
         if ($this->useNativeEnum($req)) {
             return $this->relativeName($req) . "::from({$expr})";
@@ -97,6 +102,11 @@ readonly class ReferencedTypeEnum implements ReferencedType
         }
 
         return $expr;
+    }
+
+    public function outputMappingExprStdClass(GeneratorRequest $req, string $expr): string
+    {
+        return $this->outputMappingExpr($req, $expr);
     }
 
     public function usesNativeEnum(GeneratorRequest $req): bool

@@ -88,12 +88,12 @@ abstract class AbstractProperty implements PropertyInterface, RenameableProperty
     {
         $name = $this->name;
         $key  = $this->key;
-        $keyS = var_export($key, true);
+        $keyStr = var_export($key, true);
         // build the raw lookup expression (using the JSON key only inside the braces)
         if ($object) {
-            $lookup = "\${$inputVarName}->{{$keyS}}";
+            $lookup = "\${$inputVarName}->{{$keyStr}}";
         } else {
-            $lookup = "\${$inputVarName}[{$keyS}]";
+            $lookup = "\${$inputVarName}[{$keyStr}]";
         }
         // now map from JSON→Type (this will call buildFromInput, etc.)
         $map = $this->generateInputMappingExpr($lookup);
@@ -109,6 +109,14 @@ abstract class AbstractProperty implements PropertyInterface, RenameableProperty
         return "\${$outputVarName}[{$keyStr}] = {$map};";
     }
 
+    public function convertTypeToStdClass(string $outputVarName = 'output'): string
+    {
+        $key    = $this->key;
+        $keyStr = var_export($key, true);
+        $map    = $this->generateOutputMappingExprStdClass("\$this->{$this->name}");
+        return "\${$outputVarName}->{{$keyStr}} = {$map};";
+    }
+
     public function generateInputAssertionExpr(string $expr): string
     {
         return $this->generateTypeAssertionExpr($expr);
@@ -122,6 +130,12 @@ abstract class AbstractProperty implements PropertyInterface, RenameableProperty
     public function generateOutputMappingExpr(string $expr): string
     {
         return $expr;
+    }
+
+    public function generateOutputMappingExprStdClass(string $expr): string
+    {
+        $map = $this->generateOutputMappingExpr($expr);
+        return str_replace('toArray(', 'toStdClass(', $map); // TODO: DON'T USE str_replace FOR THIS (!!)
     }
 
     public function generateCloneExpr(string $expr): string

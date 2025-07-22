@@ -45,7 +45,7 @@ class Generator
 
         $hasOptionalNullable = false;
         foreach ($properties as $p) {
-            if ($p instanceof OptionalPropertyDecorator && method_exists($p, 'isOptionalNullable') && $p->isOptionalNullable()) {
+            if ($p instanceof OptionalPropertyDecorator && $p->isOptionalNullable()) {
                 $hasOptionalNullable = true;
                 break;
             }
@@ -119,14 +119,14 @@ class Generator
      * @param PropertyCollection $properties
      * @return MethodGenerator
      */
-    public function generateBuildMethod(PropertyCollection $properties, bool $hasDefaults = false): MethodGenerator
+    public function generateBuildMethod(PropertyCollection $properties, array $defaults = []): MethodGenerator
     {
         $requiredProperties = $properties->filter(PropertyCollectionFilterFactory::required());
         $optionalProperties = $properties->filter(PropertyCollectionFilterFactory::optional());
 
         $hasOptionalNullable = false;
         foreach ($properties as $p) {
-            if ($p instanceof OptionalPropertyDecorator && method_exists($p, 'isOptionalNullable') && $p->isOptionalNullable()) {
+            if ($p instanceof OptionalPropertyDecorator && $p->isOptionalNullable()) {
                 $hasOptionalNullable = true;
                 break;
             }
@@ -167,7 +167,7 @@ class Generator
 
         $materializeArgName = 'materializeDefaults';
         $materializeArgAlias = $materializeArgName;
-        if ($hasDefaults && $properties->hasPropertyWithName($materializeArgAlias)) {
+        if ($defaults && $properties->hasPropertyWithName($materializeArgAlias)) {
             $materializeArgAlias = '_materializeDefaults';
             $i = 2;
             while ($properties->hasPropertyWithName($materializeArgAlias)) {
@@ -190,12 +190,12 @@ class Generator
         // property generators, unlike the `input` alias, which is passed directly to every nested
         // mapping call since it may change at certain levels
         $this->generatorRequest->setCurrValidateArgAlias($validateArgAlias);
-        $this->generatorRequest->setCurrMaterializeArgAlias($hasDefaults ? $materializeArgAlias : null);
+        $this->generatorRequest->setCurrMaterializeArgAlias($defaults ? $materializeArgAlias : null);
 
         $assignments = [];
         foreach ($optionalProperties as $optionalProperty) {
             $name = $optionalProperty->name();
-            $assignments[] = sprintf('$%s->%s = $%s;', $objVarName, $name, $name);
+            $assignments[] = "\${$objVarName}->{$name} = \${$name};";
         }
 
         $validationParam = new ParameterGenerator(
@@ -203,7 +203,7 @@ class Generator
             type: "bool",
             defaultValue: true,
         );
-        $materializeParam = $hasDefaults ? new ParameterGenerator(
+        $materializeParam = $defaults ? new ParameterGenerator(
             name: $materializeArgName,
             type: "bool",
             defaultValue: false,
@@ -213,7 +213,7 @@ class Generator
             new ParamTag($inputArgName, ["array|object"], "Input data"),
             new ParamTag($validateArgName, ["bool"], "Set this to false to skip validation; use at own risk"),
         ];
-        if ($hasDefaults) {
+        if ($defaults) {
             $docBlockParams[] = new ParamTag($materializeArgName, ["bool"], "Apply defaults defined in schema when missing");
         }
         $docBlockParams[] = new ReturnTag([$this->generatorRequest->getTargetClass()], "Created instance");
@@ -250,13 +250,27 @@ class Generator
                 "}\n\n";
         }
 
-        if ($hasDefaults) {
-            // If generating the "$materializeDefaults" param, we must ensure that
-            // if the input is an object, it is cloned when the param is true, as it might be modified
+        $materializeLine = '';
+
+        if ($defaults) {
+            // Conversion into object if input is array
             $convertInputLine =
                 "\$$inputArgAlias = is_array(\$$inputArgAlias)\n" .
                 "    ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$$inputArgAlias)\n" .
+                // If generating the "$materializeDefaults" param, we must ensure that
+                // if the input is an object, it is cloned when the param is true, as it might be modified
                 "    : (\$$materializeArgAlias ? clone \$$inputArgAlias : \$$inputArgAlias);\n\n";
+
+            $materializeLine =
+                "if (\$$materializeArgAlias) {\n" .
+                "    foreach (self::\$_defaults as \$__k => \$__v) {\n" .
+                "        if (!property_exists(\$$inputArgAlias, \$__k)) {\n" .
+                "           \${$inputArgAlias}->{\$__k} = (\$__v['type'] ?? null) === 'object'\n" .
+                "               ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$__v['default'])\n" .
+                "               : \$__v['default'];\n" .
+                "        }\n" .
+                "    }\n" .
+                "}\n\n";
         } else {
             $convertInputLine =
                 "\$$inputArgAlias = is_array(\$$inputArgAlias) ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$$inputArgAlias) : \$$inputArgAlias;\n";
@@ -265,17 +279,8 @@ class Generator
         $body =
             $aliasesLines .
             $inputGuard .
-            
-            // Conversion into object if input is array
             $convertInputLine .
-
-            ($hasDefaults ? ("if (\$$materializeArgAlias) {\n" .
-            "    foreach (self::\$_defaults as \$__k => \$__v) {\n" .
-            "        if (!property_exists(\$$inputArgAlias, \$__k)) {\n" .
-            "            \${$inputArgAlias}->{\$__k} = is_array(\$__v) ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$__v) : \$__v;\n" .
-            "        }\n" .
-            "    }\n" .
-            "}\n\n") : '') .
+            $materializeLine .
 
             // Conditional schema validation
             "if (\${$validateArgAlias}) {\n" .
@@ -297,7 +302,7 @@ class Generator
         ;
 
         $params = [new ParameterGenerator($inputArgName, $paramType), $validationParam];
-        if ($hasDefaults) {
+        if ($defaults) {
             $params[] = $materializeParam;
         }
 
@@ -320,10 +325,10 @@ class Generator
      * @param PropertyCollection $properties
      * @return MethodGenerator
      */
-    public function generateToArrayMethod(PropertyCollection $properties, bool $hasDefaults = false): MethodGenerator
+    public function generateToArrayMethod(PropertyCollection $properties, array $defaults = []): MethodGenerator
     {
         $tags = [];
-        if ($hasDefaults) {
+        if ($defaults) {
             $tags[] = new ParamTag('includeDefaults', ['bool'], 'Add defaults for missing properties');
         }
         $tags[] = new ReturnTag(["array"], "Converted array");
@@ -336,20 +341,20 @@ class Generator
         $docBlock->setWordWrap(false);
 
         $params = [];
-        if ($hasDefaults) {
+        if ($defaults) {
             $params[] = new ParameterGenerator('includeDefaults', 'bool', false);
         }
 
         $body = '$output = [];' . "\n" .
             $properties->generateTypeToArrayConversionCode('output') . "\n";
 
-        if ($hasDefaults) {
-            $body .= "\nif (\$includeDefaults) {\n" . 
-            "    foreach (self::\$_defaults as \$k => \$v) {\n" . 
-            "        if (!array_key_exists(\$k, \$output)) {\n" . 
-            "            \$output[\$k] = \$v;\n" . 
-            "        }\n" . 
-            "    }\n" . 
+        if ($defaults) {
+            $body .= "\nif (\$includeDefaults) {\n" .
+            "    foreach (self::\$_defaults as \$k => \$v) {\n" .
+            "        if (!array_key_exists(\$k, \$output)) {\n" .
+            "            \$output[\$k] = \$v['default'];\n" .
+            "        }\n" .
+            "    }\n" .
             "}\n";
         }
 
@@ -365,6 +370,62 @@ class Generator
 
         if ($this->generatorRequest->isAtLeastPHP("7.0")) {
             $method->setReturnType("array");
+        }
+
+        return $method;
+    }
+
+    /**
+     * @param PropertyCollection $properties
+     * @return MethodGenerator
+     */
+    public function generateToStdClassMethod(PropertyCollection $properties, array $defaults = []): MethodGenerator
+    {
+        $tags = [];
+        if ($defaults) {
+            $tags[] = new ParamTag('includeDefaults', ['bool'], 'Add defaults for missing properties');
+        }
+        $tags[] = new ReturnTag(['\\stdClass'], 'Converted object');
+
+        $docBlock = new DocBlockGenerator(
+            'Converts this object to a stdClass that can be JSON-serialized',
+            null,
+            $tags
+        );
+        $docBlock->setWordWrap(false);
+
+        $params = [];
+        if ($defaults) {
+            $params[] = new ParameterGenerator('includeDefaults', 'bool', false);
+        }
+
+        $body = '$output = new \\stdClass();' . "\n" .
+            $properties->generateTypeToStdClassConversionCode('output') . "\n";
+
+        if ($defaults) {
+            $body .= "\nif (\$includeDefaults) {\n" .
+            "    foreach (self::\$_defaults as \$k => \$v) {\n" .
+            "        if (!property_exists(\$output, \$k)) {\n" .
+            "            \$output->{\$k} = (isset(\$v['type']) && \$v['type'] === 'object')\n" .
+            "               ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$v['default'])\n" .
+            "               : \$v['default'];\n" .
+            "        }\n" .
+            "    }\n" .
+            "}\n";
+        }
+
+        $body .= "\nreturn \$output;";
+
+        $method = new MethodGenerator(
+            'toStdClass',
+            $params,
+            MethodGenerator::FLAG_PUBLIC,
+            $body,
+            $docBlock
+        );
+
+        if ($this->generatorRequest->isAtLeastPHP("7.0")) {
+            $method->setReturnType('\\stdClass');
         }
 
         return $method;
@@ -575,6 +636,7 @@ class Generator
     public function generateSetterMethod(PropertyInterface $property): MethodGenerator
     {
         $key  = $property->key();
+        $keyStr = var_export($key, true);
         $name = $property->name();
         if ($this->generatorRequest->getOptions()->getPreservePropertyNames()) {
             $camelCaseName = StringUtils::pascalCasePreserveOuterUnderscores($name);
@@ -606,7 +668,7 @@ class Generator
             $setterValidation = 
                 "if (\$validate) {\n"
                 . "    \$validator = {$newValidatorClassExpr};\n"
-                . "    \$validator->validate(\$$name, self::\$schema['properties']['$key']);\n"
+                . "    \$validator->validate(\$$name, self::\$schema['properties'][{$keyStr}]);\n"
                 . "    if (!\$validator->isValid()) {\n"
                 . "        throw new \\InvalidArgumentException(\$validator->getErrors()[0]['message']);\n"
                 . "    }\n"
@@ -640,7 +702,7 @@ class Generator
             "\$clone->$name = \$$name;\n";
 
         if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
-            $body .= "\$clone->_providedOptionals['$key'] = true;\n";
+            $body .= "\$clone->_providedOptionals[{$keyStr}] = true;\n";
         }
 
         $body .= "\nreturn \$clone;";
@@ -663,6 +725,7 @@ class Generator
     private function generateMutableSetterMethod(PropertyInterface $property, bool $chainable): MethodGenerator
     {
         $key  = $property->key();
+        $keyStr = var_export($key, true);
         $name = $property->name();
         $camelCaseName = $this->generatorRequest->getOptions()->getPreservePropertyNames()
             ? StringUtils::pascalCasePreserveOuterUnderscores($name)
@@ -691,7 +754,7 @@ class Generator
             $setterValidation =
                 "if (\$validate) {\n" .
                 "    \$validator = {$newValidatorClassExpr};\n" .
-                "    \$validator->validate(\$$name, self::\$schema['properties']['$key']);\n" .
+                "    \$validator->validate(\$$name, self::\$schema['properties'][{$keyStr}]);\n" .
                 "    if (!\$validator->isValid()) {\n" .
                 "        throw new \\InvalidArgumentException(\$validator->getErrors()[0]['message']);\n" .
                 "    }\n" .
@@ -721,7 +784,7 @@ class Generator
 
         $body = $setterValidation . "\$this->{$name} = \$$name;";
         if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
-            $body .= "\n\$this->_providedOptionals['$key'] = true;";
+            $body .= "\n\$this->_providedOptionals[{$keyStr}] = true;";
         }
         if ($chainable) {
             $body .= "\n\nreturn \$this;";
@@ -749,6 +812,7 @@ class Generator
     private function generateMutableUnsetterMethod(PropertyInterface $property, bool $chainable): MethodGenerator
     {
         $key  = $property->key();
+        $keyStr = var_export($key, true);
         $name = $property->name();
         $camelCaseName = $this->generatorRequest->getOptions()->getPreservePropertyNames()
             ? StringUtils::pascalCasePreserveOuterUnderscores($name)
@@ -756,7 +820,7 @@ class Generator
 
         $body = "\$this->{$name} = null;\n";
         if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
-            $body .= "unset(\$this->_providedOptionals['$key']);\n";
+            $body .= "unset(\$this->_providedOptionals[{$keyStr}]);\n";
         }
         if ($chainable) {
             $body .= "\nreturn \$this;";
@@ -787,6 +851,7 @@ class Generator
     {
         $name = $property->name();
         $key  = $property->key();
+        $keyStr = var_export($key, true);
         if ($this->generatorRequest->getOptions()->getPreservePropertyNames()) {
             $camelCasedName = StringUtils::pascalCasePreserveOuterUnderscores($name);
         } else {
@@ -797,7 +862,7 @@ class Generator
         $body .= "unset(\$clone->$name);\n";
 
         if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
-            $body .= "unset(\$clone->_providedOptionals['$key']);\n";
+            $body .= "unset(\$clone->_providedOptionals[{$keyStr}]);\n";
         }
 
         $body .= "\nreturn \$clone;";

@@ -75,12 +75,12 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface, Renameabl
     {
         // Key name in the JSON object
         $key   = $this->key;
-        $keyS  = var_export($key, true);
+        $keyStr  = var_export($key, true);
         $name  = $this->inner->name(); // local variable to assign to
 
         $accessor = $object
-            ? "\${$inputVarName}->{{$keyS}}"
-            : "\${$inputVarName}[{$keyS}]";
+            ? "\${$inputVarName}->{{$keyStr}}"
+            : "\${$inputVarName}[{$keyStr}]";
 
         $mapped = $this->inner->generateInputMappingExpr($accessor);
 
@@ -97,6 +97,11 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface, Renameabl
     public function convertTypeToArray(string $out = 'output'): string
     {
         return $this->inner->convertTypeToArray($out);
+    }
+
+    public function convertTypeToStdClass(string $out = 'output'): string
+    {
+        return $this->inner->convertTypeToStdClass($out);
     }
 
     public function typeAnnotation(): string
@@ -178,6 +183,12 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface, Renameabl
     public function generateOutputMappingExpr(string $expr): string
     {
         $inner = $this->inner->generateOutputMappingExpr($expr);
+        return "({$expr} !== null) ? ({$inner}) : null";
+    }
+
+    public function generateOutputMappingExprStdClass(string $expr): string
+    {
+        $inner = $this->inner->generateOutputMappingExprStdClass($expr);
         return "({$expr} !== null) ? ({$inner}) : null";
     }
 

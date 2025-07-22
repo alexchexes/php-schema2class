@@ -812,6 +812,68 @@ class SpecificationOptions
     }
 
     /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        if (isset($this->targetDirectory)) {
+            $output->{'targetDirectory'} = $this->targetDirectory;
+        }
+        if (isset($this->targetNamespace)) {
+            $output->{'targetNamespace'} = $this->targetNamespace;
+        }
+        if (isset($this->targetPHPVersion)) {
+            $output->{'targetPHPVersion'} = match (true) {
+                is_int($this->targetPHPVersion),
+                is_string($this->targetPHPVersion) => $this->targetPHPVersion,
+            };
+        }
+        if (isset($this->cleanTargetDirectory)) {
+            $output->{'cleanTargetDirectory'} = $this->cleanTargetDirectory;
+        }
+        if (isset($this->disableStrictTypes)) {
+            $output->{'disableStrictTypes'} = $this->disableStrictTypes;
+        }
+        if (isset($this->inlineAllofReferences)) {
+            $output->{'inlineAllofReferences'} = $this->inlineAllofReferences;
+        }
+        if (isset($this->newValidatorClassExpr)) {
+            $output->{'newValidatorClassExpr'} = $this->newValidatorClassExpr;
+        }
+        if (isset($this->preservePropertyNames)) {
+            $output->{'preservePropertyNames'} = $this->preservePropertyNames;
+        }
+        if (isset($this->noGetters)) {
+            $output->{'noGetters'} = $this->noGetters;
+        }
+        if (isset($this->noSetters)) {
+            $output->{'noSetters'} = $this->noSetters;
+        }
+        if (isset($this->mutableSetters)) {
+            $output->{'mutableSetters'} = match (true) {
+                is_bool($this->mutableSetters),
+                is_string($this->mutableSetters) && in_array($this->mutableSetters, array (
+              0 => 'chainable',
+            ), true) => $this->mutableSetters,
+            };
+        }
+        if (isset($this->noSchemaMetadata)) {
+            $output->{'noSchemaMetadata'} = $this->noSchemaMetadata;
+        }
+        if (isset($this->singleLineSchema)) {
+            $output->{'singleLineSchema'} = $this->singleLineSchema;
+        }
+        if (isset($this->noEnums)) {
+            $output->{'noEnums'} = $this->noEnums;
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data

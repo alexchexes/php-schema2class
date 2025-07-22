@@ -36,7 +36,9 @@ class GenericPet
      * @var array
      */
     private static array $_defaults = [
-        'hasFur' => false,
+        'hasFur' => [
+            'default' => false,
+        ],
     ];
 
     /**
@@ -115,7 +117,9 @@ class GenericPet
         if ($materializeDefaults) {
             foreach (self::$_defaults as $__k => $__v) {
                 if (!property_exists($input, $__k)) {
-                    $input->{$__k} = is_array($__v) ? \JsonSchema\Validator::arrayToObjectRecursive($__v) : $__v;
+                   $input->{$__k} = ($__v['type'] ?? null) === 'object'
+                       ? \JsonSchema\Validator::arrayToObjectRecursive($__v['default'])
+                       : $__v['default'];
                 }
             }
         }
@@ -152,7 +156,33 @@ class GenericPet
         if ($includeDefaults) {
             foreach (self::$_defaults as $k => $v) {
                 if (!array_key_exists($k, $output)) {
-                    $output[$k] = $v;
+                    $output[$k] = $v['default'];
+                }
+            }
+        }
+
+        return $output;
+    }
+
+    /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @param bool $includeDefaults Add defaults for missing properties
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(bool $includeDefaults = false): \stdClass
+    {
+        $output = new \stdClass();
+        if (isset($this->hasFur) || array_key_exists('hasFur', $this->_providedOptionals)) {
+            $output->{'hasFur'} = $this->hasFur;
+        }
+
+        if ($includeDefaults) {
+            foreach (self::$_defaults as $k => $v) {
+                if (!property_exists($output, $k)) {
+                    $output->{$k} = (isset($v['type']) && $v['type'] === 'object')
+                       ? \JsonSchema\Validator::arrayToObjectRecursive($v['default'])
+                       : $v['default'];
                 }
             }
         }

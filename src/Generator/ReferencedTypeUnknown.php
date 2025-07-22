@@ -41,6 +41,11 @@ readonly class ReferencedTypeUnknown implements ReferencedType
         return null;
     }
 
+    public function serializedTypeHintStdClass(GeneratorRequest $req): ?string
+    {
+        return $this->serializedTypeHint($req);
+    }
+
     public function typeAssertionExpr(GeneratorRequest $req, string $expr): string
     {
         return "true";
@@ -51,7 +56,7 @@ readonly class ReferencedTypeUnknown implements ReferencedType
         return "true";
     }
 
-    public function inputMappingExpr(GeneratorRequest $req, string $expr, ?string $validateExpr): string
+    public function inputMappingExpr(GeneratorRequest $req, string $expr): string
     {
         return $expr;
     }
@@ -61,4 +66,8 @@ readonly class ReferencedTypeUnknown implements ReferencedType
         return $expr;
     }
 
+    public function outputMappingExprStdClass(GeneratorRequest $req, string $expr): string
+    {
+        return $expr;
+    }
 }

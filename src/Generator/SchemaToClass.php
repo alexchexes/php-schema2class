@@ -203,6 +203,8 @@ class SchemaToClass
         }
 
         $defaults = $this->collectDefaults($schema, $req);
+        $hasDefaults = !empty($defaults);
+        $req->setCurrReqHasDefaults($hasDefaults);
         $properties = [$schemaProperty];
         if ($defaults !== []) {
             $defaultsProp = new PropertyGenerator('_defaults', $defaults, PropertyGenerator::FLAG_PRIVATE | PropertyGenerator::FLAG_STATIC);
@@ -242,11 +244,11 @@ class SchemaToClass
         }
 
         $codeGenerator = new Generator($req);
-        $hasDefaults = $defaults !== [];
+        // $hasDefaults = $defaults !== [];
 
         $hasOptionalNullable = false;
         foreach ($propertiesFromSchema as $p) {
-            if ($p instanceof OptionalPropertyDecorator && method_exists($p, 'isOptionalNullable') && $p->isOptionalNullable()) {
+            if ($p instanceof OptionalPropertyDecorator && $p->isOptionalNullable()) {
                 $hasOptionalNullable = true;
                 break;
             }
@@ -261,8 +263,9 @@ class SchemaToClass
             $codeGenerator->generateConstructor($propertiesFromSchema),
             ...$codeGenerator->generateGetterMethods($propertiesFromSchema),
             ...$codeGenerator->generateSetterMethods($propertiesFromSchema),
-            $codeGenerator->generateBuildMethod($propertiesFromSchema, $hasDefaults),
-            $codeGenerator->generateToArrayMethod($propertiesFromSchema, $hasDefaults),
+            $codeGenerator->generateBuildMethod($propertiesFromSchema, $defaults),
+            $codeGenerator->generateToArrayMethod($propertiesFromSchema, $defaults),
+            $codeGenerator->generateToStdClassMethod($propertiesFromSchema, $defaults),
             $codeGenerator->generateValidateMethod(),
             $codeGenerator->generateCloneMethod($propertiesFromSchema),
             $hasOptionalNullable ? $codeGenerator->generateIsSetMethod() : null,
@@ -352,6 +355,7 @@ class SchemaToClass
         $reservedMethodNames = [
             'buildFromInput',
             'toArray',
+            'toStdClass',
             'validateInput',
             'clone',
             '__construct',
@@ -427,6 +431,7 @@ class SchemaToClass
         $reservedMethodNames = [
             'buildFromInput',
             'toArray',
+            'toStdClass',
             'validateInput',
             'clone',
             '__construct',
@@ -543,9 +548,17 @@ class SchemaToClass
             return $defaults;
         }
 
+        $raw = $req->getRawSchema();
+        $rawProps = null;
+        if ($raw instanceof \stdClass && isset($raw->properties) && $raw->properties instanceof \stdClass) {
+            $rawProps = $raw->properties;
+        }
+
         foreach ($schema['properties'] as $key => $def) {
             $found = false;
-            $d = $this->extractDefault($def, $req, $found);
+            $rawKey = (string)$key;
+            $rawDef = $rawProps && property_exists($rawProps, $rawKey) ? $rawProps->{$rawKey} : null;
+            $d = $this->extractDefault($def, $req, $found, $rawDef);
             if ($found) {
                 $defaults[$key] = $d;
             }
@@ -554,31 +567,51 @@ class SchemaToClass
         return $defaults;
     }
 
-    private function extractDefault(array $def, GeneratorRequest $req, bool &$found = false): mixed
+    private function extractDefault(array $def, GeneratorRequest $req, bool &$found = false, object|null $rawDef = null): array
     {
         if (array_key_exists('default', $def)) {
             $found = true;
-            return $def['default'];
+            $val = $def['default'];
+            $type = null;
+            if (is_array($val)) {
+                if ($rawDef !== null && property_exists($rawDef, 'default')) {
+                    $rawDefault = $rawDef->default;
+                    if ($rawDefault instanceof \stdClass) {
+                        $type = 'object';
+                    } elseif (is_array($rawDefault)) {
+                        $type = 'array';
+                    }
+                } else {
+                    $type = $this->inferSchemaType($def);
+                }
+            }
+            $default = ['default' => $val];
+            if ($type) {
+                $default['type'] = $type;
+            }
+            return $default;
         }
 
         if (isset($def['$ref'])) {
             $schema = $req->lookupSchema($def['$ref']);
-            if (is_array($schema)) {
-                $d = $this->extractDefault($schema, $req, $found);
-                if ($found) {
-                    return $d;
-                }
+            $d = $this->extractDefault($schema, $req, $found);
+            if ($found) {
+                return $d;
             }
         }
 
         foreach (['anyOf', 'oneOf', 'allOf'] as $k) {
             if (isset($def[$k]) && is_array($def[$k])) {
-                foreach ($def[$k] as $sub) {
+                foreach ($def[$k] as $i => $sub) {
+                    $rawSub = null;
+                    if ($rawDef !== null && isset($rawDef->{$k}) && is_array($rawDef->{$k})) {
+                        $rawSub = $rawDef->{$k}[$i] ?? null;
+                    }
                     if (isset($sub['$ref'])) {
                         $sub = $req->lookupSchema($sub['$ref']);
                     }
                     if (is_array($sub)) {
-                        $d = $this->extractDefault($sub, $req, $found);
+                        $d = $this->extractDefault($sub, $req, $found, $rawSub);
                         if ($found) {
                             return $d;
                         }
@@ -588,6 +621,33 @@ class SchemaToClass
         }
 
         $found = false;
+        return ['default' => null, 'type' => null];
+    }
+
+    private function inferSchemaType(array $schema): ?string
+    {
+        if (isset($schema['type'])) {
+            if (is_string($schema['type'])) {
+                return $schema['type'];
+            }
+            if (is_array($schema['type'])) {
+                if (in_array('object', $schema['type'], true) && !in_array('array', $schema['type'], true)) {
+                    return 'object';
+                }
+                if (in_array('array', $schema['type'], true) && !in_array('object', $schema['type'], true)) {
+                    return 'array';
+                }
+            }
+        }
+
+        if (isset($schema['properties']) || isset($schema['additionalProperties']) || isset($schema['required'])) {
+            return 'object';
+        }
+
+        if (isset($schema['items'])) {
+            return 'array';
+        }
+
         return null;
     }
 }

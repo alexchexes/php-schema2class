@@ -53,7 +53,7 @@ class ObjectArrayProperty extends AbstractProperty
         }
 
         if ($isArray) {
-            $itemSchema = $schema["items"];
+            $itemSchema = $schema["items"] ?? null;
         }
 
         if (!$isArray && !$isAssociativeArray) {
@@ -77,16 +77,36 @@ class ObjectArrayProperty extends AbstractProperty
     {
         $name = $this->name;
         $key  = $this->key;
+        $keyStr = var_export($key, true);
         $st   = $this->subTypeName();
 
         if ($this->itemType instanceof MixedProperty) {
-            return "\${$outputVarName}['$key'] = array_map(fn (\$i) => \$i, \$this->{$name});";
+            return "\${$outputVarName}[{$keyStr}] = array_map(fn (\$i) => \$i, \$this->{$name});";
         }
 
         if ($this->generatorRequest->isAtLeastPHP('7.4')) {
-            return "\${$outputVarName}['$key'] = array_map(fn ($st \$i) => \$i->toArray(), \$this->{$name});";
+            return "\${$outputVarName}[{$keyStr}] = array_map(fn ($st \$i) => \$i->toArray(), \$this->{$name});";
         }
-        return "\${$outputVarName}['$key'] = array_map(function($st \$i) { return \$i->toArray(); }, \$this->{$name});";
+        return "\${$outputVarName}[{$keyStr}] = array_map(function($st \$i) { return \$i->toArray(); }, \$this->{$name});";
+    }
+
+    public function convertTypeToStdClass(string $outputVarName = 'output'): string
+    {
+        $name = $this->name;
+        $key  = $this->key;
+        $keyStr = var_export($key, true);
+        $st   = $this->subTypeName();
+
+        if ($this->itemType instanceof MixedProperty) {
+            return "\${$outputVarName}->{{$keyStr}} = array_map(fn (\$i) => \$i, \$this->{$name});";
+        }
+
+        $inclDefaultsArg = $this->generatorRequest->getCurrReqHasDefaults() ? '$includeDefaults' : '';
+
+        if ($this->generatorRequest->isAtLeastPHP('7.4')) {
+            return "\${$outputVarName}->{{$keyStr}} = array_map(fn ($st \$i) => \$i->toStdClass({$inclDefaultsArg}), \$this->{$name});";
+        }
+        return "\${$outputVarName}->{{$keyStr}} = array_map(function($st \$i) { return \$i->toStdClass({$inclDefaultsArg}); }, \$this->{$name});";
     }
 
     /**
@@ -172,6 +192,21 @@ class ObjectArrayProperty extends AbstractProperty
 
         $st = $this->subTypeName();
         $sm = $this->itemType->generateOutputMappingExpr('$i');
+
+        if ($this->generatorRequest->isAtLeastPHP('7.4')) {
+            return "array_map(fn ($st \$i) => {$sm}, {$expr})";
+        }
+        return "array_map(function($st \$i) { return {$sm} }, {$expr})";
+    }
+
+    public function generateOutputMappingExprStdClass(string $expr): string
+    {
+        if ($this->itemType instanceof MixedProperty) {
+            return "array_map(fn (\$i) => \$i, {$expr})";
+        }
+
+        $st = $this->subTypeName();
+        $sm = $this->itemType->generateOutputMappingExprStdClass('$i');
 
         if ($this->generatorRequest->isAtLeastPHP('7.4')) {
             return "array_map(fn ($st \$i) => {$sm}, {$expr})";

@@ -209,8 +209,9 @@ $updatedUser = $user->withStatus("customer");
 echo "Old status: " . $user->getStatus();      // not mutated
 echo "New status: " . $updatedUser->getStatus(); // 'customer'
 
-// Finally, convert the updated user back to a simple PHP array:
-$userAsArray = $updatedUser->toArray();
+// Finally, convert the updated user back to simple data structures:
+$userAsArray  = $updatedUser->toArray();
+$userAsObject = $updatedUser->toStdClass(); // if you need to distinguish arrays from object
 ```
 
 ## Compatibility
@@ -245,7 +246,8 @@ The generated classes offer:
   **Note:** Do not instantiate the class directly; always use `buildFromInput(...)`.
 - To disable validation, pass `false` as the second argument of `buildFromInput($data, false)`. Use at your own risk.
 - If your schema has default values and you want to use them to populate the object properties that are not set in the input, pass the parameter `materializeDefaults = true` to `buildFromInput`. The parameter is generated only when the schema has default values.
-- The method `toArray()` returns a plain array ready for `json_encode()`.
+- The `toArray()` method returns a plain PHP array representation of the object
+- The `toStdClass()` method returns a plain PHP `stdClass` representation of the object (useful if you need to distinguish objects from arrays — for example, when the object is empty or has numeric keys)
 - Properties are immutable by default; use `withX()` (or `withoutX()` for optional values) to create modified copies. Pass `--mutable-setters` to generate classic `setX()` methods instead.
 
 ## Advanced programmatic usage

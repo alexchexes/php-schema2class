@@ -103,6 +103,23 @@ class MyClass
     }
 
     /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass()
+    {
+        $output = new \stdClass();
+        if (isset($this->foo)) {
+            if ((is_string($this->foo)) || (is_int($this->foo) || is_float($this->foo))) {
+            $output->{'foo'} = $this->foo;
+            }
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data

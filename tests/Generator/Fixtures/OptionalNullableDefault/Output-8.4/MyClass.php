@@ -74,6 +74,24 @@ class MyClass
                     'b' => 123,
                 ],
             ],
+            'gooks' => [
+                'type' => [
+                    'object',
+                    'null',
+                ],
+                'description' => 'optional, nullable, with default, object, and default is empty object',
+                'properties' => [
+                    'a' => [
+                        'type' => 'string',
+                    ],
+                    'b' => [
+                        'type' => 'number',
+                    ],
+                ],
+                'default' => [
+                    
+                ],
+            ],
         ],
         'required' => [
             'foo',
@@ -88,13 +106,30 @@ class MyClass
      * @var array
      */
     private static array $_defaults = [
-        'qux' => 'a qux string',
-        'quux' => 'a quux string',
-        'xyyz' => 'a xyyz string',
-        'thud' => 'a thud string',
+        'qux' => [
+            'default' => 'a qux string',
+        ],
+        'quux' => [
+            'default' => 'a quux string',
+        ],
+        'xyyz' => [
+            'default' => 'a xyyz string',
+        ],
+        'thud' => [
+            'default' => 'a thud string',
+        ],
         'grox' => [
-            'a' => 'a string',
-            'b' => 123,
+            'default' => [
+                'a' => 'a string',
+                'b' => 123,
+            ],
+            'type' => 'object',
+        ],
+        'gooks' => [
+            'default' => [
+                
+            ],
+            'type' => 'object',
         ],
     ];
 
@@ -160,6 +195,13 @@ class MyClass
      * @var MyClassGrox|null
      */
     private ?MyClassGrox $grox = null;
+
+    /**
+     * optional, nullable, with default, object, and default is empty object
+     *
+     * @var MyClassGooks|null
+     */
+    private ?MyClassGooks $gooks = null;
 
     /**
      * @param string $foo
@@ -251,6 +293,16 @@ class MyClass
     public function getGrox(): ?MyClassGrox
     {
         return $this->grox ?? null;
+    }
+
+    /**
+     * optional, nullable, with default, object, and default is empty object
+     *
+     * @return MyClassGooks|null
+     */
+    public function getGooks(): ?MyClassGooks
+    {
+        return $this->gooks ?? null;
     }
 
     /**
@@ -474,6 +526,31 @@ class MyClass
     }
 
     /**
+     * @param MyClassGooks $gooks
+     * @return self
+     */
+    public function withGooks(?MyClassGooks $gooks): self
+    {
+        $clone = clone $this;
+        $clone->gooks = $gooks;
+        $clone->_providedOptionals['gooks'] = true;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutGooks(): self
+    {
+        $clone = clone $this;
+        unset($clone->gooks);
+        unset($clone->_providedOptionals['gooks']);
+
+        return $clone;
+    }
+
+    /**
      * Builds a new instance from an input array
      *
      * @param array|object $input Input data
@@ -491,7 +568,9 @@ class MyClass
         if ($materializeDefaults) {
             foreach (self::$_defaults as $__k => $__v) {
                 if (!property_exists($input, $__k)) {
-                    $input->{$__k} = is_array($__v) ? \JsonSchema\Validator::arrayToObjectRecursive($__v) : $__v;
+                   $input->{$__k} = ($__v['type'] ?? null) === 'object'
+                       ? \JsonSchema\Validator::arrayToObjectRecursive($__v['default'])
+                       : $__v['default'];
                 }
             }
         }
@@ -518,6 +597,10 @@ class MyClass
         if (property_exists($input, 'grox')) {
             $__providedOptionals['grox'] = true;
         }
+        $gooks = property_exists($input, 'gooks') ? MyClassGooks::buildFromInput($input->{'gooks'}, $validate, $materializeDefaults) : null;
+        if (property_exists($input, 'gooks')) {
+            $__providedOptionals['gooks'] = true;
+        }
 
         $obj = new self($foo, $quux, $thud);
         $obj->bar = $bar;
@@ -525,6 +608,7 @@ class MyClass
         $obj->qux = $qux;
         $obj->xyyz = $xyyz;
         $obj->grox = $grox;
+        $obj->gooks = $gooks;
         $obj->_providedOptionals = $__providedOptionals;
         return $obj;
     }
@@ -555,14 +639,67 @@ class MyClass
         $output['thud'] = $this->thud;
         if (isset($this->grox) || array_key_exists('grox', $this->_providedOptionals)) {
             if (isset($this->grox)) {
-                $output['grox'] = ($this->grox)->toArray();
+                $output['grox'] = ($this->grox)->toArray($includeDefaults);
+            }
+        }
+        if (isset($this->gooks) || array_key_exists('gooks', $this->_providedOptionals)) {
+            if (isset($this->gooks)) {
+                $output['gooks'] = ($this->gooks)->toArray($includeDefaults);
             }
         }
 
         if ($includeDefaults) {
             foreach (self::$_defaults as $k => $v) {
                 if (!array_key_exists($k, $output)) {
-                    $output[$k] = $v;
+                    $output[$k] = $v['default'];
+                }
+            }
+        }
+
+        return $output;
+    }
+
+    /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @param bool $includeDefaults Add defaults for missing properties
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(bool $includeDefaults = false): \stdClass
+    {
+        $output = new \stdClass();
+        $output->{'foo'} = $this->foo;
+        if (isset($this->bar)) {
+            $output->{'bar'} = $this->bar;
+        }
+        if (isset($this->baz) || array_key_exists('baz', $this->_providedOptionals)) {
+            $output->{'baz'} = $this->baz;
+        }
+        if (isset($this->qux) || array_key_exists('qux', $this->_providedOptionals)) {
+            $output->{'qux'} = $this->qux;
+        }
+        $output->{'quux'} = $this->quux;
+        if (isset($this->xyyz)) {
+            $output->{'xyyz'} = $this->xyyz;
+        }
+        $output->{'thud'} = $this->thud;
+        if (isset($this->grox) || array_key_exists('grox', $this->_providedOptionals)) {
+            if (isset($this->grox)) {
+                $output->{'grox'} = ($this->grox)->toStdClass($includeDefaults);
+            }
+        }
+        if (isset($this->gooks) || array_key_exists('gooks', $this->_providedOptionals)) {
+            if (isset($this->gooks)) {
+                $output->{'gooks'} = ($this->gooks)->toStdClass($includeDefaults);
+            }
+        }
+
+        if ($includeDefaults) {
+            foreach (self::$_defaults as $k => $v) {
+                if (!property_exists($output, $k)) {
+                    $output->{$k} = (isset($v['type']) && $v['type'] === 'object')
+                       ? \JsonSchema\Validator::arrayToObjectRecursive($v['default'])
+                       : $v['default'];
                 }
             }
         }
@@ -599,6 +736,11 @@ class MyClass
         if (isset($this->grox)) {
             if (isset($this->grox)) {
                 $this->grox = clone $this->grox;
+            }
+        }
+        if (isset($this->gooks)) {
+            if (isset($this->gooks)) {
+                $this->gooks = clone $this->gooks;
             }
         }
     }

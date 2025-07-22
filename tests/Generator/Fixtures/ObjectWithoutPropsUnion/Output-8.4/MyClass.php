@@ -154,6 +154,28 @@ class MyClass
     }
 
     /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        $output->{'foo'} = match (true) {
+            is_string($this->foo) => $this->foo,
+            is_array($this->foo) || is_object($this->foo) => json_decode(json_encode($this->foo)),
+        };
+        if (isset($this->bar)) {
+            $output->{'bar'} = match (true) {
+                is_string($this->bar) => $this->bar,
+                is_array($this->bar) || is_object($this->bar) => json_decode(json_encode($this->bar)),
+            };
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data

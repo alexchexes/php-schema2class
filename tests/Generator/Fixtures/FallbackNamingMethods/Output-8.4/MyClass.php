@@ -208,6 +208,27 @@ class MyClass
     }
 
     /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        if (isset($this->bound)) {
+            $output->{'bound'} = $this->bound;
+        }
+        if (isset($this->outbound)) {
+            $output->{'outbound'} = $this->outbound;
+        }
+        if (isset($this->_outbound)) {
+            $output->{'_outbound'} = $this->_outbound;
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data

@@ -158,7 +158,24 @@ class UnionProperty extends AbstractProperty
             $match->addArm($discriminator, $mapping);
         }
 
-        return "\${$outputVarName}[{$keyStr}] = " . $match->generate() . ";";
+        return "\${$outputVarName}[{$keyStr}] = {$match->generate()};";
+    }
+
+    private function convertTypeToStdClassMatch(string $outputVarName = 'output'): string
+    {
+        $name   = $this->name;
+        $key    = $this->key;
+        $keyStr = var_export($key, true);
+        $match  = new MatchGenerator("true");
+
+        foreach ($this->subProperties as $subProperty) {
+            $mapping       = $subProperty->generateOutputMappingExprStdClass("\$this->{$name}");
+            $discriminator = $subProperty->generateTypeAssertionExpr("\$this->{$name}");
+
+            $match->addArm($discriminator, $mapping);
+        }
+
+        return "\${$outputVarName}->{{$keyStr}} = {$match->generate()};";
     }
 
     public function convertTypeToArray(string $outputVarName = 'output'): string
@@ -186,10 +203,42 @@ class UnionProperty extends AbstractProperty
 
         $ifs      = 0;
         $branches = [];
-        $fallback = null;
         foreach ($conversions as $assignment => $conversion) {
             $condition  = "(" . join(") || (", $conversion["discriminators"]) . ")";
             $branches[] = ($ifs++ > 0 ? "else " : "") . "if ($condition) {\n    $assignment\n}";
+        }
+
+        return str_replace("}\nelse", "} else", join("\n", $branches));
+    }
+
+    public function convertTypeToStdClass(string $outputVarName = 'output'): string
+    {
+        if ($this->generatorRequest->isAtLeastPHP("8.0")) {
+            return $this->convertTypeToStdClassMatch($outputVarName);
+        }
+
+        $name        = $this->name;
+        $key         = $this->key;
+        $keyStr      = var_export($key, true);
+        $conversions = [];
+
+        foreach ($this->subProperties as $subProperty) {
+            $mapping       = $subProperty->generateOutputMappingExprStdClass("\$this->{$name}");
+            $assignment    = "\${$outputVarName}->{{$keyStr}} = {$mapping};";
+            $discriminator = $subProperty->generateTypeAssertionExpr("\$this->{$name}");
+
+            if (!isset($conversions[$assignment])) {
+                $conversions[$assignment] = ["discriminators" => []];
+            }
+
+            $conversions[$assignment]["discriminators"][] = $discriminator;
+        }
+
+        $ifs      = 0;
+        $branches = [];
+        foreach ($conversions as $assignment => $conversion) {
+            $condition  = "(" . join(") || (", $conversion["discriminators"]) . ")";
+            $branches[] = ($ifs++ > 0 ? "else " : "") . "if ($condition) {\n$assignment\n}";
         }
 
         return str_replace("}\nelse", "} else", join("\n", $branches));
@@ -333,6 +382,32 @@ class UnionProperty extends AbstractProperty
         foreach ($this->subProperties as $subProperty) {
             $assert = $subProperty->generateTypeAssertionExpr($expr);
             $map    = $subProperty->generateOutputMappingExpr($expr);
+            $out    = "({$assert}) ? ({$map}) : ({$out})";
+        }
+
+        return $out;
+    }
+
+    public function generateOutputMappingExprStdClass(string $expr): string
+    {
+        if ($this->generatorRequest->isAtLeastPHP("8.0")) {
+            $match = new MatchGenerator("true");
+            $match->addArm("default", "null");
+
+            foreach ($this->subProperties as $subProperty) {
+                $assert = $subProperty->generateTypeAssertionExpr($expr);
+                $map    = $subProperty->generateOutputMappingExprStdClass($expr);
+                $match->addArm($assert, $map);
+            }
+
+            return $match->generate();
+        }
+
+        $out = "null";
+
+        foreach ($this->subProperties as $subProperty) {
+            $assert = $subProperty->generateTypeAssertionExpr($expr);
+            $map    = $subProperty->generateOutputMappingExprStdClass($expr);
             $out    = "({$assert}) ? ({$map}) : ({$out})";
         }
 

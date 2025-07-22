@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Ns\MaterializeDefaults_8_4;
 
-class MyClassBar
+/**
+ * Definition of an object with default value that is empty object
+ */
+class ObjDef
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -13,57 +16,58 @@ class MyClassBar
      */
     private static array $schema = [
         'type' => 'object',
+        'description' => 'Definition of an object with default value that is empty object',
         'properties' => [
-            'nestedFoo' => [
+            'a' => [
                 'type' => 'string',
             ],
         ],
-        'required' => [
-            'nestedFoo',
-        ],
         'default' => [
-            'nestedFoo' => 'some value inside default value for \'bar\' object',
+            
         ],
     ];
 
     /**
-     * @var string
+     * @var string|null
      */
-    private string $nestedFoo;
+    private ?string $a = null;
 
     /**
-     * @param string $nestedFoo
+     * @return string|null
      */
-    public function __construct(string $nestedFoo)
+    public function getA(): ?string
     {
-        $this->nestedFoo = $nestedFoo;
+        return $this->a ?? null;
     }
 
     /**
-     * @return string
-     */
-    public function getNestedFoo(): string
-    {
-        return $this->nestedFoo;
-    }
-
-    /**
-     * @param string $nestedFoo
+     * @param string $a
      * @return self
      * @param bool $validate
      */
-    public function withNestedFoo(string $nestedFoo, bool $validate = true): self
+    public function withA(string $a, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($nestedFoo, self::$schema['properties']['nestedFoo']);
+            $validator->validate($a, self::$schema['properties']['a']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
         }
 
         $clone = clone $this;
-        $clone->nestedFoo = $nestedFoo;
+        $clone->a = $a;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutA(): self
+    {
+        $clone = clone $this;
+        unset($clone->a);
 
         return $clone;
     }
@@ -73,20 +77,20 @@ class MyClassBar
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
-     * @return MyClassBar Created instance
+     * @return ObjDef Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): MyClassBar
+    public static function buildFromInput(array|object $input, bool $validate = true): ObjDef
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $nestedFoo = $input->{'nestedFoo'};
+        $a = isset($input->{'a'}) ? $input->{'a'} : null;
 
-        $obj = new self($nestedFoo);
-
+        $obj = new self();
+        $obj->a = $a;
         return $obj;
     }
 
@@ -98,7 +102,24 @@ class MyClassBar
     public function toArray(): array
     {
         $output = [];
-        $output['nestedFoo'] = $this->nestedFoo;
+        if (isset($this->a)) {
+            $output['a'] = $this->a;
+        }
+
+        return $output;
+    }
+
+    /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        if (isset($this->a)) {
+            $output->{'a'} = $this->a;
+        }
 
         return $output;
     }

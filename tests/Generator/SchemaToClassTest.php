@@ -56,12 +56,12 @@ class SchemaToClassTest extends TestCase
 
         $dir = opendir($testCaseDir);
 
-        while ($entry = readdir($dir)) {
-            if ($entry[0] === '.') {
+        while ($fixtureName = readdir($dir)) {
+            if ($fixtureName[0] === '.') {
                 continue;
             }
 
-            $fixtureDir = join(DIRECTORY_SEPARATOR, [$testCaseDir, $entry]);
+            $fixtureDir = join(DIRECTORY_SEPARATOR, [$testCaseDir, $fixtureName]);
 
             $schemaFile = join(DIRECTORY_SEPARATOR, [$fixtureDir, 'schema.yaml']);
             if (!file_exists($schemaFile)) {
@@ -186,11 +186,11 @@ class SchemaToClassTest extends TestCase
                     $missing    = array_diff($expectedVersions, $versions);
                     Assert::assertEmpty(
                         $unexpected,
-                        sprintf('Unexpected output for PHP versions [%s] in fixture %s', implode(', ', $unexpected), $entry)
+                        sprintf('Unexpected output for PHP versions [%s] in fixture %s', implode(', ', $unexpected), $fixtureName)
                     );
                     Assert::assertEmpty(
                         $missing,
-                        sprintf('Missing output for PHP versions [%s] in fixture %s', implode(', ', $missing), $entry)
+                        sprintf('Missing output for PHP versions [%s] in fixture %s', implode(', ', $missing), $fixtureName)
                     );
                 }
 
@@ -200,7 +200,6 @@ class SchemaToClassTest extends TestCase
                 }
             }
 
-            $multipleVersions = count($versions) > 1;
             foreach ($versions as $version) {
                 $dirName = 'Output-' . $version;
                 $outputDir = join(DIRECTORY_SEPARATOR, [$fixtureDir, $dirName]);
@@ -230,10 +229,18 @@ class SchemaToClassTest extends TestCase
                     $optsData['inlineAllofReferences'] = true;
                 }
                 $optsData['targetPHPVersion'] = $version;
-                $optsVersion = SpecificationOptions::buildFromInput($optsData);
+                $specOpts = SpecificationOptions::buildFromInput($optsData);
 
-                $ns = $entry . '_' . str_replace('.', '_', $version);
-                $testCases[$entry . '-' . $version] = [$entry, $ns, $schema, $expectedFiles, $optsVersion, $inputFiles, $version];
+                $nsName = $fixtureName . '_' . str_replace('.', '_', $version);
+                $testCases[$fixtureName . '-' . $version] = [
+                    $fixtureName,
+                    $nsName,
+                    $schema,
+                    $expectedFiles,
+                    $specOpts,
+                    $inputFiles,
+                    $version,
+                ];
             }
         }
 
@@ -241,12 +248,20 @@ class SchemaToClassTest extends TestCase
     }
 
     #[DataProvider("loadCodeGenerationTestCases")]
-    public function testCodeGeneration(string $fixture, string $nsName, array $schema, array $expectedOutput, SpecificationOptions $opts, array $inputs, string $version): void
+    public function testCodeGeneration(
+        string $fixtureName,
+        string $nsName,
+        array $schema,
+        array $expectedFiles,
+        SpecificationOptions $specOpts,
+        array $inputFiles,
+        string $version,
+    ): void
     {
         $req = new GeneratorRequest(
             $schema,
             new ValidatedSpecificationFilesItem("Ns\\{$nsName}", "MyClass", __DIR__),
-            $opts,
+            $specOpts,
         );
 
         $definitions = $schema['definitions'] ?? [];
@@ -302,23 +317,23 @@ class SchemaToClassTest extends TestCase
 
         if (getenv('UPDATE_SNAPSHOTS') !== '1') {
             $this->assertCount(
-                expectedCount: count($expectedOutput),
+                expectedCount: count($expectedFiles),
                 haystack: $writtenFiles,
                 message: sprintf(
                     'Expected file count [%s] does not match the written file count [%s]',
-                    implode(', ', array_keys($expectedOutput)),
+                    implode(', ', array_keys($expectedFiles)),
                     implode(', ', array_keys($writtenFiles)),
                 ),
             );
 
-            foreach ($expectedOutput as $file => $content) {
+            foreach ($expectedFiles as $file => $content) {
                 $filename = __DIR__ . '/' . str_replace('\\', '/', $file);
                 $actualContent = $writtenFiles[$filename];
                 assertThat($actualContent, equalTo($content));
             }
         } else {
             $dirName = 'Output-' . $version;
-            $outputDir = join(DIRECTORY_SEPARATOR, [__DIR__, 'Fixtures', $fixture, $dirName]);
+            $outputDir = join(DIRECTORY_SEPARATOR, [__DIR__, 'Fixtures', $fixtureName, $dirName]);
             if (is_dir($outputDir)) {
                 $iterator = new \RecursiveIteratorIterator(
                     new \RecursiveDirectoryIterator($outputDir, \FilesystemIterator::SKIP_DOTS),
@@ -337,7 +352,7 @@ class SchemaToClassTest extends TestCase
                 $relative = substr($filename, strlen(__DIR__) + 1);
                 $relative = str_replace('\\', '/', $relative);
                 $dirName = 'Output-' . $version;
-                $outputFilename = join(DIRECTORY_SEPARATOR, [__DIR__, 'Fixtures', $fixture, $dirName, $relative]);
+                $outputFilename = join(DIRECTORY_SEPARATOR, [__DIR__, 'Fixtures', $fixtureName, $dirName, $relative]);
                 if (!is_dir(dirname($outputFilename))) {
                     mkdir(dirname($outputFilename), 0777, true);
                 }
@@ -354,7 +369,7 @@ class SchemaToClassTest extends TestCase
                 eval($evalCode);
             }
 
-            foreach ($inputs as $class => $classInputs) {
+            foreach ($inputFiles as $class => $classInputs) {
                 $fqcn = "Ns\\{$nsName}\\{$class}";
 
                 foreach ($classInputs as $inputName => $input) {
@@ -366,7 +381,7 @@ class SchemaToClassTest extends TestCase
 
                     $this->assertInstanceOf($fqcn, $obj);
                     $expectedArray = json_decode(json_encode($input), true);
-                    $actualArray = $obj->toArray();
+                    $actualArray   = $obj->toArray();
                     ksort($expectedArray);
                     ksort($actualArray);
                     $this->assertSame(
@@ -374,6 +389,19 @@ class SchemaToClassTest extends TestCase
                         $actualArray,
                         "Array returned from {$fqcn}->toArray() doesn't match input array from file '{$inputName}'."
                     );
+
+                    $expectedObject = json_decode(json_encode($input));
+                    $actualObject   = $obj->toStdClass();
+                    $this->assertEquals(
+                        $expectedObject,
+                        $actualObject,
+                        "Object returned from {$fqcn}->toStdClass() doesn't match input from file '{$inputName}'."
+                    );
+                    try {
+                        $fqcn::buildFromInput($actualObject);
+                    } catch (\Throwable $th) {
+                        throw new \Exception("Failed to build {$fqcn} from input {$inputName} after the round trip", 0, $th);
+                    }
                 }
             }
         }
@@ -453,16 +481,24 @@ class SchemaToClassTest extends TestCase
         $this->assertStringContainsString('skipping generation of SkippedDef5', $output->fetch());
     }
 
-    public function testMaterializeDefaults(): void
+    private static function loadTestDefaultsData(): array
     {
+        static $testData = null;
+
+        if ($testData) {
+            return $testData;
+        }
+
         $schemaFile = __DIR__ . '/Fixtures/MaterializeDefaults/schema.json';
-        $inputFile  = __DIR__ . '/Fixtures/MaterializeDefaults/input.testMaterializeDefaults.json';
+        $expectedFile  = __DIR__ . '/Fixtures/MaterializeDefaults/testDefaults.expected.json';
+        $ns = 'Ns\\MaterializeDefaults';
+        $className = '_MyClass';
 
         $schema = (new SchemaLoader())->loadSchema($schemaFile);
 
         $req = new GeneratorRequest(
             $schema,
-            new ValidatedSpecificationFilesItem('Ns\\MaterializeDefaults', '_MyClass', __DIR__),
+            new ValidatedSpecificationFilesItem($ns, $className, __DIR__),
             (new SpecificationOptions())->withTargetPHPVersion(GeneratorRequest::DEFAULT_PHP8_VERSION),
         );
 
@@ -472,23 +508,71 @@ class SchemaToClassTest extends TestCase
 
         $factory->build($writer, $output)->schemaToClass($req);
 
+        // eval code we just generated to load class into memory
         foreach ($writer->getWrittenFiles() as $code) {
             $evalCode = preg_replace('/^<\?php/', '', $code);
             eval($evalCode);
         }
 
-        $fqcn = 'Ns\\MaterializeDefaults\\_MyClass';
-        $input = json_decode(file_get_contents($inputFile));
+        return $testData = [
+            'fqcn' => "{$ns}\\{$className}",
+            'expected' => file_get_contents($expectedFile),
+        ];
+    }
 
-        $obj = $fqcn::buildFromInput($input, true, true);
+    public function testMaterializeDefaults(): void
+    {
+        $testData = self::loadTestDefaultsData();
+        $fqcn = $testData['fqcn'];
+        $expected = $testData['expected'];
+
+        $inputFileMaterialize  = __DIR__ . '/Fixtures/MaterializeDefaults/testDefaultsMaterialize.input.json';
+        $inputMaterialize = json_decode(file_get_contents($inputFileMaterialize));
+
+        try {
+            $obj1 = $fqcn::buildFromInput($inputMaterialize, true, true);
+        } catch (\Throwable $th) {
+            throw new \Exception("Failed to build {$fqcn} from file '$inputFileMaterialize'", 0, $th);
+        }
 
         $this->assertSame(
-            [
-                'foo' => 'some default value for foo',
-                'bar' => ['nestedFoo' => "some value inside default value for 'bar' object"],
-                'baz' => 'sanity-check',
-            ],
-            $obj->toArray(),
+            json_decode($expected, true),
+            $obj1->toArray(),
+            "Array returned from {$fqcn}->toArray() built from '$inputFileMaterialize' doesn't match expected JSON"
+        );
+
+        $this->assertEquals(
+            json_decode($expected),
+            $obj1->toStdClass(),
+            "Object returned from {$fqcn}->toStdClass() built from '$inputFileMaterialize' doesn't match expected JSON"
+        );
+    }
+
+    public function testIncludeDefaults(): void
+    {
+        $testData = self::loadTestDefaultsData();
+        $fqcn = $testData['fqcn'];
+        $expected = $testData['expected'];
+        
+        $inputFileInclude  = __DIR__ . '/Fixtures/MaterializeDefaults/testDefaultsInclude.input.json';
+        $inputInclude = json_decode(file_get_contents($inputFileInclude));
+
+        try {
+            $obj2 = $fqcn::buildFromInput($inputInclude);
+        } catch (\Throwable $th) {
+            throw new \Exception("Failed to build {$fqcn} from file '$inputFileInclude'", 0, $th);
+        }
+
+        $this->assertEquals(
+            json_decode($expected, true),
+            $obj2->toArray(true),
+            "Array returned from {$fqcn}->toArray() built from '$inputFileInclude' doesn't match expected JSON"
+        );
+
+        $this->assertEquals(
+            json_decode($expected),
+            $obj2->toStdClass(true),
+            "Object returned from {$fqcn}->toStdClass() built from '$inputFileInclude' doesn't match expected JSON"
         );
     }
 }

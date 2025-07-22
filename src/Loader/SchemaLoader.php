@@ -6,6 +6,7 @@ use Symfony\Component\Yaml\Yaml;
 
 class SchemaLoader
 {
+    public const RAW_KEY = '__schema2class_raw';
     private static function objectToArrayRecursive(object $obj): array
     {
         $result = [];
@@ -24,27 +25,18 @@ class SchemaLoader
         return $result;
     }
     /**
-     * @param array|string $input
+     * @param array|string|\stdClass $input
      * @return array
      * @throws LoadingException
      */
-    public function loadSchema(array|string|object $input): array
+    public function loadSchema(array|string|\stdClass $input): array
     {
         if (is_array($input)) {
             return $input;
         }
 
-        if (is_object($input)) {
-            if (method_exists($input, 'toArray')) {
-                return $input->toArray();
-            } elseif ($input instanceof \stdClass) {
-                return self::objectToArrayRecursive($input);
-            }
-
-            throw new LoadingException(
-                get_class($input),
-                "couldn't transform object to schema array: object is not an instance of 'stdClass' and has no 'toArray()' method"
-            );
+        if ($input instanceof \stdClass) {
+            return array_merge(self::objectToArrayRecursive($input), [self::RAW_KEY => $input]);
         }
 
         $filename = $input;
@@ -69,7 +61,8 @@ class SchemaLoader
             case 'yaml':
                 return Yaml::parse($contents);
             case 'json':
-                return json_decode($contents, true);
+                $raw = json_decode($contents); // stdClass or array
+                return array_merge(self::objectToArrayRecursive($raw), [self::RAW_KEY => $raw]);
         }
 
         throw new LoadingException($filename, "unsupported file type: {$pathParts["extension"]}");
