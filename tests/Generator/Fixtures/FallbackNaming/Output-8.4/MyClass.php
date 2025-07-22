@@ -1910,7 +1910,9 @@ class MyClass
         if ($_materializeDefaults) {
             foreach (self::$_defaults as $__k => $__v) {
                 if (!property_exists($_input, $__k)) {
-                   $_input->{$__k} = $__v['default'];
+                   $_input->{$__k} = ($__v['type'] ?? null) === 'object'
+                       ? \JsonSchema\Validator::arrayToObjectRecursive($__v['default'])
+                       : $__v['default'];
                 }
             }
         }

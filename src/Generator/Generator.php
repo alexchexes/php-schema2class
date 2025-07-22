@@ -23,7 +23,6 @@ use Laminas\Code\Generator\DocBlock\Tag\ThrowsTag;
 use Laminas\Code\Generator\DocBlockGenerator;
 use Laminas\Code\Generator\MethodGenerator;
 use Laminas\Code\Generator\ParameterGenerator;
-use Symfony\Component\VarExporter\VarExporter;
 
 class Generator
 {
@@ -262,48 +261,13 @@ class Generator
                 // if the input is an object, it is cloned when the param is true, as it might be modified
                 "    : (\$$materializeArgAlias ? clone \$$inputArgAlias : \$$inputArgAlias);\n\n";
 
-            $objDefaultKeys = array_keys(array_filter($defaults, fn($d) => ($d['type'] ?? null) === 'object'));
-            $objDefaultKeysStr = VarExporter::export($objDefaultKeys);
-
-            $totalObjDefaults = count($objDefaultKeys);
-            $totalDefaults = count($defaults);
-
-            $inputKeyAccessExpr = "\${$inputArgAlias}->{\$__k}";
-            $defValueExprDirect = "\$__v['default']";
-            $defValueExprConvert = "\\JsonSchema\\Validator::arrayToObjectRecursive(\$__v['default'])";
-
-            $defAssignLine = '';
-            if ($totalObjDefaults) {
-                if ($totalObjDefaults === $totalDefaults) {
-                    // all defaults are objects, no check needed
-                    $defAssignLine =
-                    "           {$inputKeyAccessExpr} = {$defValueExprConvert};\n";
-                } else {
-                    if ($totalObjDefaults === 1) {
-                        // single elem - direct check
-                        $keyStr = var_export($objDefaultKeys[0], true);
-                        $defaultTypeCheckExpr = "\$__k === {$keyStr}";
-                    } else {
-                        // in array
-                        $defaultTypeCheckExpr = "in_array(\$__k, {$objDefaultKeysStr}, true)";
-                    }
-                    // check if this key is in array of object-type keys
-                    $defAssignLine =
-                    "           {$inputKeyAccessExpr} = {$defaultTypeCheckExpr}\n" .
-                    "               ? {$defValueExprConvert}\n" .
-                    "               : {$defValueExprDirect};\n";
-                }
-            } else {
-                // all defaults are non-objects, no check needed
-                $defAssignLine =
-                "           {$inputKeyAccessExpr} = {$defValueExprDirect};\n";
-            }
-            
             $materializeLine =
                 "if (\$$materializeArgAlias) {\n" .
                 "    foreach (self::\$_defaults as \$__k => \$__v) {\n" .
                 "        if (!property_exists(\$$inputArgAlias, \$__k)) {\n" .
-                $defAssignLine .
+                "           \${$inputArgAlias}->{\$__k} = (\$__v['type'] ?? null) === 'object'\n" .
+                "               ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$__v['default'])\n" .
+                "               : \$__v['default'];\n" .
                 "        }\n" .
                 "    }\n" .
                 "}\n\n";
