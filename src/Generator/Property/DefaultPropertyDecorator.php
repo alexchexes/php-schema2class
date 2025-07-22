@@ -51,11 +51,12 @@ class DefaultPropertyDecorator implements PropertyDecoratorInterface, Renameable
     public function convertInputToType(string $inputVarName = 'input', bool $object = false): string
     {
         $key   = $this->key;
+        $keyStr = var_export($key, true);
         $name  = $this->name();
         $inner = $this->inner->convertInputToType($inputVarName, $object);
 
         $defaultExp = $this->defaultExpr();
-        $accessor   = $object ? "\${$inputVarName}->{'$key'}" : "\${$inputVarName}['$key']";
+        $accessor   = $object ? "\${$inputVarName}->{{$keyStr}}" : "\${$inputVarName}[{$keyStr}]";
 
         return "\${$name} = {$defaultExp};\nif (isset($accessor)) {\n" . $this->indentCode($inner, 1) . "\n}";
     }

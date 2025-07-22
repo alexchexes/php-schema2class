@@ -158,7 +158,7 @@ class UnionProperty extends AbstractProperty
             $match->addArm($discriminator, $mapping);
         }
 
-        return "\${$outputVarName}[{$keyStr}] = " . $match->generate() . ";";
+        return "\${$outputVarName}[{$keyStr}] = {$match->generate()};";
     }
 
     private function convertTypeToStdClassMatch(string $outputVarName = 'output'): string
@@ -175,7 +175,7 @@ class UnionProperty extends AbstractProperty
             $match->addArm($discriminator, $mapping);
         }
 
-        return sprintf('$%s->{%s} = %s;', $outputVarName, $keyStr, $match->generate());
+        return "\${$outputVarName}->{{$keyStr}} = {$match->generate()};";
     }
 
     public function convertTypeToArray(string $outputVarName = 'output'): string
@@ -224,7 +224,7 @@ class UnionProperty extends AbstractProperty
 
         foreach ($this->subProperties as $subProperty) {
             $mapping       = $subProperty->generateOutputMappingExprStdClass("\$this->{$name}");
-            $assignment    = sprintf('$%s->{%s} = %s;', $outputVarName, $keyStr, $mapping);
+            $assignment    = "\${$outputVarName}->{{$keyStr}} = {$mapping};";
             $discriminator = $subProperty->generateTypeAssertionExpr("\$this->{$name}");
 
             if (!isset($conversions[$assignment])) {

@@ -633,6 +633,7 @@ class Generator
     public function generateSetterMethod(PropertyInterface $property): MethodGenerator
     {
         $key  = $property->key();
+        $keyStr = var_export($key, true);
         $name = $property->name();
         if ($this->generatorRequest->getOptions()->getPreservePropertyNames()) {
             $camelCaseName = StringUtils::pascalCasePreserveOuterUnderscores($name);
@@ -664,7 +665,7 @@ class Generator
             $setterValidation = 
                 "if (\$validate) {\n"
                 . "    \$validator = {$newValidatorClassExpr};\n"
-                . "    \$validator->validate(\$$name, self::\$schema['properties']['$key']);\n"
+                . "    \$validator->validate(\$$name, self::\$schema['properties'][{$keyStr}]);\n"
                 . "    if (!\$validator->isValid()) {\n"
                 . "        throw new \\InvalidArgumentException(\$validator->getErrors()[0]['message']);\n"
                 . "    }\n"
@@ -698,7 +699,7 @@ class Generator
             "\$clone->$name = \$$name;\n";
 
         if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
-            $body .= "\$clone->_providedOptionals['$key'] = true;\n";
+            $body .= "\$clone->_providedOptionals[{$keyStr}] = true;\n";
         }
 
         $body .= "\nreturn \$clone;";
@@ -721,6 +722,7 @@ class Generator
     private function generateMutableSetterMethod(PropertyInterface $property, bool $chainable): MethodGenerator
     {
         $key  = $property->key();
+        $keyStr = var_export($key, true);
         $name = $property->name();
         $camelCaseName = $this->generatorRequest->getOptions()->getPreservePropertyNames()
             ? StringUtils::pascalCasePreserveOuterUnderscores($name)
@@ -749,7 +751,7 @@ class Generator
             $setterValidation =
                 "if (\$validate) {\n" .
                 "    \$validator = {$newValidatorClassExpr};\n" .
-                "    \$validator->validate(\$$name, self::\$schema['properties']['$key']);\n" .
+                "    \$validator->validate(\$$name, self::\$schema['properties'][{$keyStr}]);\n" .
                 "    if (!\$validator->isValid()) {\n" .
                 "        throw new \\InvalidArgumentException(\$validator->getErrors()[0]['message']);\n" .
                 "    }\n" .
@@ -779,7 +781,7 @@ class Generator
 
         $body = $setterValidation . "\$this->{$name} = \$$name;";
         if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
-            $body .= "\n\$this->_providedOptionals['$key'] = true;";
+            $body .= "\n\$this->_providedOptionals[{$keyStr}] = true;";
         }
         if ($chainable) {
             $body .= "\n\nreturn \$this;";
@@ -807,6 +809,7 @@ class Generator
     private function generateMutableUnsetterMethod(PropertyInterface $property, bool $chainable): MethodGenerator
     {
         $key  = $property->key();
+        $keyStr = var_export($key, true);
         $name = $property->name();
         $camelCaseName = $this->generatorRequest->getOptions()->getPreservePropertyNames()
             ? StringUtils::pascalCasePreserveOuterUnderscores($name)
@@ -814,7 +817,7 @@ class Generator
 
         $body = "\$this->{$name} = null;\n";
         if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
-            $body .= "unset(\$this->_providedOptionals['$key']);\n";
+            $body .= "unset(\$this->_providedOptionals[{$keyStr}]);\n";
         }
         if ($chainable) {
             $body .= "\nreturn \$this;";
@@ -845,6 +848,7 @@ class Generator
     {
         $name = $property->name();
         $key  = $property->key();
+        $keyStr = var_export($key, true);
         if ($this->generatorRequest->getOptions()->getPreservePropertyNames()) {
             $camelCasedName = StringUtils::pascalCasePreserveOuterUnderscores($name);
         } else {
@@ -855,7 +859,7 @@ class Generator
         $body .= "unset(\$clone->$name);\n";
 
         if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
-            $body .= "unset(\$clone->_providedOptionals['$key']);\n";
+            $body .= "unset(\$clone->_providedOptionals[{$keyStr}]);\n";
         }
 
         $body .= "\nreturn \$clone;";

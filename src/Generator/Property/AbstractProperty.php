@@ -88,12 +88,12 @@ abstract class AbstractProperty implements PropertyInterface, RenameableProperty
     {
         $name = $this->name;
         $key  = $this->key;
-        $keyS = var_export($key, true);
+        $keyStr = var_export($key, true);
         // build the raw lookup expression (using the JSON key only inside the braces)
         if ($object) {
-            $lookup = "\${$inputVarName}->{{$keyS}}";
+            $lookup = "\${$inputVarName}->{{$keyStr}}";
         } else {
-            $lookup = "\${$inputVarName}[{$keyS}]";
+            $lookup = "\${$inputVarName}[{$keyStr}]";
         }
         // now map from JSON→Type (this will call buildFromInput, etc.)
         $map = $this->generateInputMappingExpr($lookup);

@@ -75,12 +75,12 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface, Renameabl
     {
         // Key name in the JSON object
         $key   = $this->key;
-        $keyS  = var_export($key, true);
+        $keyStr  = var_export($key, true);
         $name  = $this->inner->name(); // local variable to assign to
 
         $accessor = $object
-            ? "\${$inputVarName}->{{$keyS}}"
-            : "\${$inputVarName}[{$keyS}]";
+            ? "\${$inputVarName}->{{$keyStr}}"
+            : "\${$inputVarName}[{$keyStr}]";
 
         $mapped = $this->inner->generateInputMappingExpr($accessor);
 

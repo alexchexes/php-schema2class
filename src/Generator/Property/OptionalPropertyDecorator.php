@@ -22,13 +22,14 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator implements Ren
     public function generateIssetCheckExpr(string $inputVarName = 'input', bool $object = false): string
     {
         $key = $this->key;
-        $accessor = $object ? "\${$inputVarName}->{'$key'}" : "\${$inputVarName}['$key']";
+        $keyStr = var_export($key, true);
+        $accessor = $object ? "\${$inputVarName}->{{$keyStr}}" : "\${$inputVarName}[{$keyStr}]";
 
         $existsCheck = "isset($accessor)";
         if ($this->inner->allowsNull() || $this->optionalNullable) {
             $existsCheck = $object
-                ? "property_exists(\${$inputVarName}, '$key')"
-                : "array_key_exists('$key', \${$inputVarName})";
+                ? "property_exists(\${$inputVarName}, {$keyStr})"
+                : "array_key_exists({$keyStr}, \${$inputVarName})";
         }
 
         return $existsCheck;
@@ -42,12 +43,13 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator implements Ren
     public function convertInputToType(string $inputVarName = 'input', bool $object = false): string
     {
         $key   = $this->key;
+        $keyStr = var_export($key, true);
         $name  = $this->inner->name();
 
         // JSON accessor:  $input->{'key'}   or   $input['key']
         $accessor = $object
-            ? "\${$inputVarName}->{'$key'}"
-            : "\${$inputVarName}['$key']";
+            ? "\${$inputVarName}->{{$keyStr}}"
+            : "\${$inputVarName}[{$keyStr}]";
 
         // Single mapping expression (with null-guard if the property is nullable)
         $mapped   = $this->generateInputMappingExpr($accessor, true);

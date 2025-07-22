@@ -73,6 +73,9 @@ class MyClass
             '~~tildas~~' => [
                 'type' => 'string',
             ],
+            'it\'s "A"' => [
+                'type' => 'string',
+            ],
         ],
     ];
 
@@ -150,6 +153,11 @@ class MyClass
      * @var string
      */
     private $_tildas;
+
+    /**
+     * @var string|null
+     */
+    private $it_s_A = null;
 
     /**
      * @param string $foo
@@ -305,6 +313,14 @@ class MyClass
     public function get_Tildas()
     {
         return $this->_tildas;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getItSA()
+    {
+        return $this->it_s_A;
     }
 
     /**
@@ -623,6 +639,38 @@ class MyClass
     }
 
     /**
+     * @param string $it_s_A
+     * @return self
+     * @param bool $validate
+     */
+    public function withItSA($it_s_A, bool $validate = true)
+    {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($it_s_A, self::$schema['properties']['it\'s "A"']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
+        $clone = clone $this;
+        $clone->it_s_A = $it_s_A;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutItSA()
+    {
+        $clone = clone $this;
+        unset($clone->it_s_A);
+
+        return $clone;
+    }
+
+    /**
      * Builds a new instance from an input array
      *
      * @param array|object $input Input data
@@ -658,9 +706,10 @@ class MyClass
         $nazvanie_iur_litsa = $input->{'название юр.лица'};
         $IP_adres = $input->{'IP-адрес'};
         $_tildas = $input->{'~~tildas~~'};
+        $it_s_A = isset($input->{'it\'s "A"'}) ? $input->{'it\'s "A"'} : null;
 
         $obj = new self($foo, $_foo, $__foo, $foo_, $foo__, $_foo_, $__foo__, $foo_bar, $_foo_bar, $baz_qux, $_123_qwe, $Gorod, $nazvanie_iur_litsa, $IP_adres, $_tildas);
-
+        $obj->it_s_A = $it_s_A;
         return $obj;
     }
 
@@ -687,6 +736,9 @@ class MyClass
         $output['название юр.лица'] = $this->nazvanie_iur_litsa;
         $output['IP-адрес'] = $this->IP_adres;
         $output['~~tildas~~'] = $this->_tildas;
+        if (isset($this->it_s_A)) {
+            $output['it\'s "A"'] = $this->it_s_A;
+        }
 
         return $output;
     }
@@ -714,6 +766,9 @@ class MyClass
         $output->{'название юр.лица'} = $this->nazvanie_iur_litsa;
         $output->{'IP-адрес'} = $this->IP_adres;
         $output->{'~~tildas~~'} = $this->_tildas;
+        if (isset($this->it_s_A)) {
+            $output->{'it\'s "A"'} = $this->it_s_A;
+        }
 
         return $output;
     }

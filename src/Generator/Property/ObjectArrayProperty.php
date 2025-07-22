@@ -77,32 +77,34 @@ class ObjectArrayProperty extends AbstractProperty
     {
         $name = $this->name;
         $key  = $this->key;
+        $keyStr = var_export($key, true);
         $st   = $this->subTypeName();
 
         if ($this->itemType instanceof MixedProperty) {
-            return "\${$outputVarName}['$key'] = array_map(fn (\$i) => \$i, \$this->{$name});";
+            return "\${$outputVarName}[{$keyStr}] = array_map(fn (\$i) => \$i, \$this->{$name});";
         }
 
         if ($this->generatorRequest->isAtLeastPHP('7.4')) {
-            return "\${$outputVarName}['$key'] = array_map(fn ($st \$i) => \$i->toArray(), \$this->{$name});";
+            return "\${$outputVarName}[{$keyStr}] = array_map(fn ($st \$i) => \$i->toArray(), \$this->{$name});";
         }
-        return "\${$outputVarName}['$key'] = array_map(function($st \$i) { return \$i->toArray(); }, \$this->{$name});";
+        return "\${$outputVarName}[{$keyStr}] = array_map(function($st \$i) { return \$i->toArray(); }, \$this->{$name});";
     }
 
     public function convertTypeToStdClass(string $outputVarName = 'output'): string
     {
         $name = $this->name;
         $key  = $this->key;
+        $keyStr = var_export($key, true);
         $st   = $this->subTypeName();
 
         if ($this->itemType instanceof MixedProperty) {
-            return "\${$outputVarName}->{'$key'} = array_map(fn (\$i) => \$i, \$this->{$name});";
+            return "\${$outputVarName}->{{$keyStr}} = array_map(fn (\$i) => \$i, \$this->{$name});";
         }
 
         if ($this->generatorRequest->isAtLeastPHP('7.4')) {
-            return "\${$outputVarName}->{'$key'} = array_map(fn ($st \$i) => \$i->toStdClass(), \$this->{$name});";
+            return "\${$outputVarName}->{{$keyStr}} = array_map(fn ($st \$i) => \$i->toStdClass(), \$this->{$name});";
         }
-        return "\${$outputVarName}->{'$key'} = array_map(function($st \$i) { return \$i->toStdClass(); }, \$this->{$name});";
+        return "\${$outputVarName}->{{$keyStr}} = array_map(function($st \$i) { return \$i->toStdClass(); }, \$this->{$name});";
     }
 
     /**
