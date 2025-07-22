@@ -60,7 +60,6 @@ class ReferenceArrayProperty extends AbstractProperty
         $innerMap = $this->type->inputMappingExpr(
             $this->generatorRequest,
             expr: '$i',
-            validateExpr: null
         );
         if ($this->generatorRequest->isAtLeastPHP("8.0")) {
             $hint = $this->type->serializedInputTypeHint($this->generatorRequest);
@@ -74,12 +73,20 @@ class ReferenceArrayProperty extends AbstractProperty
 
     public function generateOutputMappingExpr(string $expr): string
     {
-        return "array_map(fn({$this->type->typeHint($this->generatorRequest)} \$i): {$this->type->serializedTypeHint($this->generatorRequest)} => {$this->type->outputMappingExpr($this->generatorRequest, '$i')}, {$expr})";
+        $typeHint = $this->type->typeHint($this->generatorRequest);
+        $serializedTypeHint = $this->type->serializedTypeHint($this->generatorRequest);
+        $outputMappingExpr = $this->type->outputMappingExpr($this->generatorRequest, '$i');
+
+        return "array_map(fn({$typeHint} \$i): {$serializedTypeHint} => {$outputMappingExpr}, {$expr})";
     }
 
     public function generateOutputMappingExprStdClass(string $expr): string
     {
-        return "array_map(fn({$this->type->typeHint($this->generatorRequest)} \$i): {$this->type->serializedTypeHintStdClass($this->generatorRequest)} => {$this->type->outputMappingExprStdClass($this->generatorRequest, '$i')}, {$expr})";
+        $typeHint = $this->type->typeHint($this->generatorRequest);
+        $serializedTypeHint = $this->type->serializedTypeHintStdClass($this->generatorRequest);
+        $outputMappingExpr = $this->type->outputMappingExprStdClass($this->generatorRequest, '$i');
+
+        return "array_map(fn({$typeHint} \$i): {$serializedTypeHint} => {$outputMappingExpr}, {$expr})";
     }
 
     public function isComplex(): bool

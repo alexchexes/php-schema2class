@@ -50,7 +50,7 @@ class NestedObjectPropertyTest extends TestCase
         $result = $underTest->convertInputToType('variable');
 
         $expected = <<<'EOCODE'
-$myPropertyName = FooMyPropertyName::buildFromInput($variable['myPropertyName'], $validate, $materializeDefaults);
+$myPropertyName = FooMyPropertyName::buildFromInput($variable['myPropertyName'], $validate);
 EOCODE;
 
         assertSame($expected, $result);

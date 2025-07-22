@@ -23,6 +23,7 @@ use Laminas\Code\Generator\DocBlock\Tag\ThrowsTag;
 use Laminas\Code\Generator\DocBlockGenerator;
 use Laminas\Code\Generator\MethodGenerator;
 use Laminas\Code\Generator\ParameterGenerator;
+use Symfony\Component\VarExporter\VarExporter;
 
 class Generator
 {
@@ -119,7 +120,7 @@ class Generator
      * @param PropertyCollection $properties
      * @return MethodGenerator
      */
-    public function generateBuildMethod(PropertyCollection $properties, bool $hasDefaults = false): MethodGenerator
+    public function generateBuildMethod(PropertyCollection $properties, array $defaults = []): MethodGenerator
     {
         $requiredProperties = $properties->filter(PropertyCollectionFilterFactory::required());
         $optionalProperties = $properties->filter(PropertyCollectionFilterFactory::optional());
@@ -167,7 +168,7 @@ class Generator
 
         $materializeArgName = 'materializeDefaults';
         $materializeArgAlias = $materializeArgName;
-        if ($hasDefaults && $properties->hasPropertyWithName($materializeArgAlias)) {
+        if ($defaults && $properties->hasPropertyWithName($materializeArgAlias)) {
             $materializeArgAlias = '_materializeDefaults';
             $i = 2;
             while ($properties->hasPropertyWithName($materializeArgAlias)) {
@@ -190,12 +191,12 @@ class Generator
         // property generators, unlike the `input` alias, which is passed directly to every nested
         // mapping call since it may change at certain levels
         $this->generatorRequest->setCurrValidateArgAlias($validateArgAlias);
-        $this->generatorRequest->setCurrMaterializeArgAlias($hasDefaults ? $materializeArgAlias : null);
+        $this->generatorRequest->setCurrMaterializeArgAlias($defaults ? $materializeArgAlias : null);
 
         $assignments = [];
         foreach ($optionalProperties as $optionalProperty) {
             $name = $optionalProperty->name();
-            $assignments[] = sprintf('$%s->%s = $%s;', $objVarName, $name, $name);
+            $assignments[] = "\${$objVarName}->{$name} = \${$name};";
         }
 
         $validationParam = new ParameterGenerator(
@@ -203,7 +204,7 @@ class Generator
             type: "bool",
             defaultValue: true,
         );
-        $materializeParam = $hasDefaults ? new ParameterGenerator(
+        $materializeParam = $defaults ? new ParameterGenerator(
             name: $materializeArgName,
             type: "bool",
             defaultValue: false,
@@ -213,7 +214,7 @@ class Generator
             new ParamTag($inputArgName, ["array|object"], "Input data"),
             new ParamTag($validateArgName, ["bool"], "Set this to false to skip validation; use at own risk"),
         ];
-        if ($hasDefaults) {
+        if ($defaults) {
             $docBlockParams[] = new ParamTag($materializeArgName, ["bool"], "Apply defaults defined in schema when missing");
         }
         $docBlockParams[] = new ReturnTag([$this->generatorRequest->getTargetClass()], "Created instance");
@@ -250,13 +251,62 @@ class Generator
                 "}\n\n";
         }
 
-        if ($hasDefaults) {
-            // If generating the "$materializeDefaults" param, we must ensure that
-            // if the input is an object, it is cloned when the param is true, as it might be modified
+        $materializeLine = '';
+
+        if ($defaults) {
+            // Conversion into object if input is array
             $convertInputLine =
                 "\$$inputArgAlias = is_array(\$$inputArgAlias)\n" .
                 "    ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$$inputArgAlias)\n" .
+                // If generating the "$materializeDefaults" param, we must ensure that
+                // if the input is an object, it is cloned when the param is true, as it might be modified
                 "    : (\$$materializeArgAlias ? clone \$$inputArgAlias : \$$inputArgAlias);\n\n";
+
+            $objDefaultKeys = array_keys(array_filter($defaults, fn($d) => ($d['type'] ?? null) === 'object'));
+            $objDefaultKeysStr = VarExporter::export($objDefaultKeys);
+
+            $totalObjDefaults = count($objDefaultKeys);
+            $totalDefaults = count($defaults);
+
+            $inputKeyAccessExpr = "\${$inputArgAlias}->{\$__k}";
+            $defValueExprDirect = "\$__v['default']";
+            $defValueExprConvert = "\\JsonSchema\\Validator::arrayToObjectRecursive(\$__v['default'])";
+
+            $defAssignLine = '';
+            if ($totalObjDefaults) {
+                if ($totalObjDefaults === $totalDefaults) {
+                    // all defaults are objects, no check needed
+                    $defAssignLine =
+                    "           {$inputKeyAccessExpr} = {$defValueExprConvert};\n";
+                } else {
+                    if ($totalObjDefaults === 1) {
+                        // single elem - direct check
+                        $keyStr = var_export($objDefaultKeys[0], true);
+                        $defaultTypeCheckExpr = "\$__k === {$keyStr}";
+                    } else {
+                        // in array
+                        $defaultTypeCheckExpr = "in_array(\$__k, {$objDefaultKeysStr}, true)";
+                    }
+                    // check if this key is in array of object-type keys
+                    $defAssignLine =
+                    "           {$inputKeyAccessExpr} = {$defaultTypeCheckExpr}\n" .
+                    "               ? {$defValueExprConvert}\n" .
+                    "               : {$defValueExprDirect};\n";
+                }
+            } else {
+                // all defaults are non-objects, no check needed
+                $defAssignLine =
+                "           {$inputKeyAccessExpr} = {$defValueExprDirect};\n";
+            }
+            
+            $materializeLine =
+                "if (\$$materializeArgAlias) {\n" .
+                "    foreach (self::\$_defaults as \$__k => \$__v) {\n" .
+                "        if (!property_exists(\$$inputArgAlias, \$__k)) {\n" .
+                $defAssignLine .
+                "        }\n" .
+                "    }\n" .
+                "}\n\n";
         } else {
             $convertInputLine =
                 "\$$inputArgAlias = is_array(\$$inputArgAlias) ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$$inputArgAlias) : \$$inputArgAlias;\n";
@@ -265,19 +315,8 @@ class Generator
         $body =
             $aliasesLines .
             $inputGuard .
-            
-            // Conversion into object if input is array
             $convertInputLine .
-
-            ($hasDefaults ? ("if (\$$materializeArgAlias) {\n" .
-            "    foreach (self::\$_defaults as \$__k => \$__v) {\n" .
-            "        if (!property_exists(\$$inputArgAlias, \$__k)) {\n" .
-            "            \${$inputArgAlias}->{\$__k} = (isset(\$__v['type']) && \$__v['type'] === 'object')\n" .
-            "               ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$__v['default'])\n" .
-            "               : \$__v['default'];\n" .
-            "        }\n" .
-            "    }\n" .
-            "}\n\n") : '') .
+            $materializeLine .
 
             // Conditional schema validation
             "if (\${$validateArgAlias}) {\n" .
@@ -299,7 +338,7 @@ class Generator
         ;
 
         $params = [new ParameterGenerator($inputArgName, $paramType), $validationParam];
-        if ($hasDefaults) {
+        if ($defaults) {
             $params[] = $materializeParam;
         }
 
@@ -322,10 +361,10 @@ class Generator
      * @param PropertyCollection $properties
      * @return MethodGenerator
      */
-    public function generateToArrayMethod(PropertyCollection $properties, bool $hasDefaults = false): MethodGenerator
+    public function generateToArrayMethod(PropertyCollection $properties, array $defaults = []): MethodGenerator
     {
         $tags = [];
-        if ($hasDefaults) {
+        if ($defaults) {
             $tags[] = new ParamTag('includeDefaults', ['bool'], 'Add defaults for missing properties');
         }
         $tags[] = new ReturnTag(["array"], "Converted array");
@@ -338,14 +377,14 @@ class Generator
         $docBlock->setWordWrap(false);
 
         $params = [];
-        if ($hasDefaults) {
+        if ($defaults) {
             $params[] = new ParameterGenerator('includeDefaults', 'bool', false);
         }
 
         $body = '$output = [];' . "\n" .
             $properties->generateTypeToArrayConversionCode('output') . "\n";
 
-        if ($hasDefaults) {
+        if ($defaults) {
             $body .= "\nif (\$includeDefaults) {\n" .
             "    foreach (self::\$_defaults as \$k => \$v) {\n" .
             "        if (!array_key_exists(\$k, \$output)) {\n" .
@@ -376,10 +415,10 @@ class Generator
      * @param PropertyCollection $properties
      * @return MethodGenerator
      */
-    public function generateToStdClassMethod(PropertyCollection $properties, bool $hasDefaults = false): MethodGenerator
+    public function generateToStdClassMethod(PropertyCollection $properties, array $defaults = []): MethodGenerator
     {
         $tags = [];
-        if ($hasDefaults) {
+        if ($defaults) {
             $tags[] = new ParamTag('includeDefaults', ['bool'], 'Add defaults for missing properties');
         }
         $tags[] = new ReturnTag(['\\stdClass'], 'Converted object');
@@ -392,14 +431,14 @@ class Generator
         $docBlock->setWordWrap(false);
 
         $params = [];
-        if ($hasDefaults) {
+        if ($defaults) {
             $params[] = new ParameterGenerator('includeDefaults', 'bool', false);
         }
 
         $body = '$output = new \\stdClass();' . "\n" .
             $properties->generateTypeToStdClassConversionCode('output') . "\n";
 
-        if ($hasDefaults) {
+        if ($defaults) {
             $body .= "\nif (\$includeDefaults) {\n" .
             "    foreach (self::\$_defaults as \$k => \$v) {\n" .
             "        if (!property_exists(\$output, \$k)) {\n" .

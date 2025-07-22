@@ -62,23 +62,35 @@ readonly class ReferencedTypeClass implements ReferencedType
         return "{$cls}::validateInput({$expr}, true)";
     }
 
-    public function inputMappingExpr(GeneratorRequest $req, string $expr, ?string $validateExpr): string
+    public function inputMappingExpr(GeneratorRequest $req, string $expr): string
     {
-        $validateExpr = $validateExpr ?? '$validate';
-        $cls = $this->relativeName($req);
-        if ($req->isAtLeastPHP('8.0')) {
-            return "{$cls}::buildFromInput({$expr}, {$validateExpr})";
+        $validateArg = $req->getCurrValidateArgAlias();
+        $materializeArg = $req->getCurrMaterializeArgAlias();
+
+        $args = [$expr, '$' . $validateArg];
+        if ($materializeArg !== null) {
+            $args[] = '$' . $materializeArg;
         }
-        return "{$cls}::buildFromInput({$expr}, {$validateExpr})";
+        $argsStr = implode(', ', $args);
+        
+        $cls = $this->relativeName($req);
+        return "{$cls}::buildFromInput({$argsStr})";
+
+        // ///////////////////////////////
+        // $validateExpr = $validateExpr ?? '$validate';
+        // $cls = $this->relativeName($req);
+        // return "{$cls}::buildFromInput({$expr}, {$validateExpr})";
     }
 
     public function outputMappingExpr(GeneratorRequest $req, string $expr): string
     {
-        return "{$expr}->toArray()";
+        $inclDefaultsArg = $req->getCurrReqHasDefaults() ? '$includeDefaults' : '';
+        return "{$expr}->toArray({$inclDefaultsArg})";
     }
 
     public function outputMappingExprStdClass(GeneratorRequest $req, string $expr): string
     {
-        return "{$expr}->toStdClass()";
+        $inclDefaultsArg = $req->getCurrReqHasDefaults() ? '$includeDefaults' : '';
+        return "{$expr}->toStdClass({$inclDefaultsArg})";
     }
 }

@@ -46,7 +46,12 @@ class GeneratorRequest
      * Name of the $materializeDefaults argument in the currently generated buildFromInput method
      * (null when the argument is not generated). This is set from the Generator.
      */
-    private ?string $currMaterializeArgAlias = 'materializeDefaults';
+    private ?string $currMaterializeArgAlias = null;
+
+    /**
+     * 
+     */
+    private bool $currReqHasDefaults = false;
 
     public static function normalizeTargetVersion(int|string $version): string
     {
@@ -357,6 +362,14 @@ class GeneratorRequest
         $this->currMaterializeArgAlias = $currMaterializeArgAlias;
     }
 
+    /**
+     * 
+     */
+    public function setCurrReqHasDefaults(bool $currReqHasDefaults): void
+    {
+        $this->currReqHasDefaults = $currReqHasDefaults;
+    }
+
     public function getCurrValidateArgAlias(): string
     {
         return $this->currValidateArgAlias;
@@ -365,5 +378,10 @@ class GeneratorRequest
     public function getCurrMaterializeArgAlias(): ?string
     {
         return $this->currMaterializeArgAlias;
+    }
+
+    public function getCurrReqHasDefaults(): bool
+    {
+        return $this->currReqHasDefaults;
     }
 }

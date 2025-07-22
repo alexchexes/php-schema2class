@@ -1910,9 +1910,7 @@ class MyClass
         if ($_materializeDefaults) {
             foreach (self::$_defaults as $__k => $__v) {
                 if (!property_exists($_input, $__k)) {
-                    $_input->{$__k} = (isset($__v['type']) && $__v['type'] === 'object')
-                       ? \JsonSchema\Validator::arrayToObjectRecursive($__v['default'])
-                       : $__v['default'];
+                   $_input->{$__k} = $__v['default'];
                 }
             }
         }
@@ -2020,7 +2018,7 @@ class MyClass
         $output['obj'] = $this->obj;
         $output['includeDefaults'] = $this->includeDefaults;
         if (isset($this->testObj)) {
-            $output['testObj'] = ($this->testObj)->toArray();
+            $output['testObj'] = ($this->testObj)->toArray($includeDefaults);
         }
         $output['buildFromInput'] = $this->_buildFromInput_1;
         $output['toArray'] = $this->_toArray_1;
@@ -2045,12 +2043,12 @@ class MyClass
         if (isset($this->ensureArgs1)) {
             $output['ensureArgs1'] = match (true) {
                 $this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative1,
-                $this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative2 => ($this->ensureArgs1)->toArray(),
+                $this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative2 => ($this->ensureArgs1)->toArray($includeDefaults),
                 is_string($this->ensureArgs1) => $this->ensureArgs1,
             };
         }
         if (isset($this->ensureArgs2)) {
-            $output['ensureArgs2'] = ($this->ensureArgs2)->toArray();
+            $output['ensureArgs2'] = ($this->ensureArgs2)->toArray($includeDefaults);
         }
         if (isset($this->ensureArgs3)) {
             $output['ensureArgs3'] = array_map(fn (MyClassEnsureArgs3Item $i) => $i->toArray(), $this->ensureArgs3);
@@ -2101,7 +2099,7 @@ class MyClass
         $output->{'obj'} = $this->obj;
         $output->{'includeDefaults'} = $this->includeDefaults;
         if (isset($this->testObj)) {
-            $output->{'testObj'} = ($this->testObj)->toStdClass();
+            $output->{'testObj'} = ($this->testObj)->toStdClass($includeDefaults);
         }
         $output->{'buildFromInput'} = $this->_buildFromInput_1;
         $output->{'toArray'} = $this->_toArray_1;
@@ -2126,15 +2124,15 @@ class MyClass
         if (isset($this->ensureArgs1)) {
             $output->{'ensureArgs1'} = match (true) {
                 $this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative1,
-                $this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative2 => ($this->ensureArgs1)->toStdClass(),
+                $this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative2 => ($this->ensureArgs1)->toStdClass($includeDefaults),
                 is_string($this->ensureArgs1) => $this->ensureArgs1,
             };
         }
         if (isset($this->ensureArgs2)) {
-            $output->{'ensureArgs2'} = ($this->ensureArgs2)->toStdClass();
+            $output->{'ensureArgs2'} = ($this->ensureArgs2)->toStdClass($includeDefaults);
         }
         if (isset($this->ensureArgs3)) {
-            $output->{'ensureArgs3'} = array_map(fn (MyClassEnsureArgs3Item $i) => $i->toStdClass(), $this->ensureArgs3);
+            $output->{'ensureArgs3'} = array_map(fn (MyClassEnsureArgs3Item $i) => $i->toStdClass($includeDefaults), $this->ensureArgs3);
         }
 
         if ($includeDefaults) {

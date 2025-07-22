@@ -12,7 +12,7 @@ interface ReferencedType
     function serializedTypeHintStdClass(GeneratorRequest $req): ?string;
     function typeAssertionExpr(GeneratorRequest $req, string $expr): string;
     function inputAssertionExpr(GeneratorRequest $req, string $expr): string;
-    function inputMappingExpr(GeneratorRequest $req, string $expr, ?string $validateExpr): string;
+    function inputMappingExpr(GeneratorRequest $req, string $expr): string;
     function outputMappingExpr(GeneratorRequest $req, string $expr): string;
     function outputMappingExprStdClass(GeneratorRequest $req, string $expr): string;
 }

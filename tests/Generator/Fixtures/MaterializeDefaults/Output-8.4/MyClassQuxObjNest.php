@@ -2,9 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Ns\FallbackNaming_7_4;
+namespace Ns\MaterializeDefaults_8_4;
 
-class MyClassEnsureArgs2
+/**
+ * optional nullable object with default empty object value, and with nested default for its property
+ */
+class MyClassQuxObjNest
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -12,18 +15,60 @@ class MyClassEnsureArgs2
      * @var array
      */
     private static array $schema = [
-        'required' => [
-            'city',
-            'street',
-        ],
+        'type' => 'object',
+        'description' => 'optional nullable object with default empty object value, and with nested default for its property',
         'properties' => [
-            'city' => [
-                'type' => 'string',
-                'maxLength' => 32,
+            'a' => [
+                'type' => 'object',
+                'default' => [
+                    
+                ],
             ],
-            'street' => [
-                'type' => 'string',
-                'default' => '-',
+        ],
+        'default' => [
+            
+        ],
+        'definitions' => [
+            'ObjDef' => [
+                'type' => 'object',
+                'description' => 'Definition of an object with default value that is empty object',
+                'properties' => [
+                    'a' => [
+                        'type' => 'string',
+                    ],
+                ],
+                'default' => [
+                    
+                ],
+            ],
+            'ArrayDef' => [
+                'type' => 'array',
+                'description' => 'Definition of an array with default value that is empty array',
+                'items' => [
+                    'type' => 'string',
+                ],
+                'default' => [
+                    
+                ],
+            ],
+            'NumericKeysObj' => [
+                'type' => 'object',
+                'properties' => [
+                    [
+                        'type' => 'string',
+                    ],
+                    [
+                        'type' => 'string',
+                    ],
+                    [
+                        'type' => 'string',
+                    ],
+                ],
+                'default' => [
+                    'a default string for \'0\'',
+                    'a default string for \'1\'',
+                    'a default string for \'2\'',
+                ],
             ],
         ],
     ];
@@ -34,85 +79,55 @@ class MyClassEnsureArgs2
      * @var array
      */
     private static array $_defaults = [
-        'street' => [
-            'default' => '-',
+        'a' => [
+            'default' => [
+                
+            ],
+            'type' => 'object',
         ],
     ];
 
     /**
-     * @var string
+     * @var array|object|null
      */
-    private string $city;
+    private array|object|null $a = null;
 
     /**
-     * @var string
+     * @return array|object|null
      */
-    private string $street;
-
-    /**
-     * @param string $city
-     * @param string $street
-     */
-    public function __construct(string $city, string $street)
+    public function getA(): array|object|null
     {
-        $this->city = $city;
-        $this->street = $street;
+        return $this->a;
     }
 
     /**
-     * @return string
-     */
-    public function getCity(): string
-    {
-        return $this->city;
-    }
-
-    /**
-     * @return string
-     */
-    public function getStreet(): string
-    {
-        return $this->street;
-    }
-
-    /**
-     * @param string $city
+     * @param array|object $a
      * @return self
      * @param bool $validate
      */
-    public function withCity(string $city, bool $validate = true): self
+    public function withA(array|object $a, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($city, self::$schema['properties']['city']);
+            $validator->validate($a, self::$schema['properties']['a']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
         }
 
         $clone = clone $this;
-        $clone->city = $city;
+        $clone->a = $a;
 
         return $clone;
     }
 
     /**
-     * @param string $street
      * @return self
-     * @param bool $validate
      */
-    public function withStreet(string $street, bool $validate = true): self
+    public function withoutA(): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($street, self::$schema['properties']['street']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
-        $clone->street = $street;
+        unset($clone->a);
 
         return $clone;
     }
@@ -123,17 +138,11 @@ class MyClassEnsureArgs2
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
      * @param bool $materializeDefaults Apply defaults defined in schema when missing
-     * @return MyClassEnsureArgs2 Created instance
+     * @return MyClassQuxObjNest Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true, bool $materializeDefaults = false): MyClassEnsureArgs2
+    public static function buildFromInput(array|object $input, bool $validate = true, bool $materializeDefaults = false): MyClassQuxObjNest
     {
-        if (!is_array($input) && !is_object($input)) {
-            throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($input)
-            );
-        }
-
         $input = is_array($input)
             ? \JsonSchema\Validator::arrayToObjectRecursive($input)
             : ($materializeDefaults ? clone $input : $input);
@@ -141,7 +150,7 @@ class MyClassEnsureArgs2
         if ($materializeDefaults) {
             foreach (self::$_defaults as $__k => $__v) {
                 if (!property_exists($input, $__k)) {
-                   $input->{$__k} = $__v['default'];
+                   $input->{$__k} = \JsonSchema\Validator::arrayToObjectRecursive($__v['default']);
                 }
             }
         }
@@ -150,11 +159,10 @@ class MyClassEnsureArgs2
             static::validateInput($input);
         }
 
-        $city = $input->{'city'};
-        $street = $input->{'street'};
+        $a = isset($input->{'a'}) ? $input->{'a'} : null;
 
-        $obj = new self($city, $street);
-
+        $obj = new self();
+        $obj->a = $a;
         return $obj;
     }
 
@@ -167,8 +175,9 @@ class MyClassEnsureArgs2
     public function toArray(bool $includeDefaults = false): array
     {
         $output = [];
-        $output['city'] = $this->city;
-        $output['street'] = $this->street;
+        if (isset($this->a)) {
+            $output['a'] = json_decode(json_encode($this->a), true);
+        }
 
         if ($includeDefaults) {
             foreach (self::$_defaults as $k => $v) {
@@ -190,8 +199,9 @@ class MyClassEnsureArgs2
     public function toStdClass(bool $includeDefaults = false): \stdClass
     {
         $output = new \stdClass();
-        $output->{'city'} = $this->city;
-        $output->{'street'} = $this->street;
+        if (isset($this->a)) {
+            $output->{'a'} = json_decode(json_encode($this->a));
+        }
 
         if ($includeDefaults) {
             foreach (self::$_defaults as $k => $v) {
@@ -214,7 +224,7 @@ class MyClassEnsureArgs2
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput($input, bool $return = false): bool
+    public static function validateInput(array|object $input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;

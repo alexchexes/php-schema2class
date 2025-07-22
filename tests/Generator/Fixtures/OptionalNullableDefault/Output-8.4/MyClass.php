@@ -568,7 +568,10 @@ class MyClass
         if ($materializeDefaults) {
             foreach (self::$_defaults as $__k => $__v) {
                 if (!property_exists($input, $__k)) {
-                    $input->{$__k} = (isset($__v['type']) && $__v['type'] === 'object')
+                   $input->{$__k} = in_array($__k, [
+            'grox',
+            'gooks',
+        ], true)
                        ? \JsonSchema\Validator::arrayToObjectRecursive($__v['default'])
                        : $__v['default'];
                 }
@@ -639,12 +642,12 @@ class MyClass
         $output['thud'] = $this->thud;
         if (isset($this->grox) || array_key_exists('grox', $this->_providedOptionals)) {
             if (isset($this->grox)) {
-                $output['grox'] = ($this->grox)->toArray();
+                $output['grox'] = ($this->grox)->toArray($includeDefaults);
             }
         }
         if (isset($this->gooks) || array_key_exists('gooks', $this->_providedOptionals)) {
             if (isset($this->gooks)) {
-                $output['gooks'] = ($this->gooks)->toArray();
+                $output['gooks'] = ($this->gooks)->toArray($includeDefaults);
             }
         }
 
@@ -685,12 +688,12 @@ class MyClass
         $output->{'thud'} = $this->thud;
         if (isset($this->grox) || array_key_exists('grox', $this->_providedOptionals)) {
             if (isset($this->grox)) {
-                $output->{'grox'} = ($this->grox)->toStdClass();
+                $output->{'grox'} = ($this->grox)->toStdClass($includeDefaults);
             }
         }
         if (isset($this->gooks) || array_key_exists('gooks', $this->_providedOptionals)) {
             if (isset($this->gooks)) {
-                $output->{'gooks'} = ($this->gooks)->toStdClass();
+                $output->{'gooks'} = ($this->gooks)->toStdClass($includeDefaults);
             }
         }
 

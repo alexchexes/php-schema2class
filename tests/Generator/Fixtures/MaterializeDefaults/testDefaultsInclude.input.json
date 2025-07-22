@@ -3,5 +3,6 @@
   "bar": "some default value for foo",
   "baz": {
     "nestedFoo": "some value inside default value for 'bar' object"
-  }
+  },
+  "quxObjNest": {}
 }

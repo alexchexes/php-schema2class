@@ -101,10 +101,12 @@ class ObjectArrayProperty extends AbstractProperty
             return "\${$outputVarName}->{{$keyStr}} = array_map(fn (\$i) => \$i, \$this->{$name});";
         }
 
+        $inclDefaultsArg = $this->generatorRequest->getCurrReqHasDefaults() ? '$includeDefaults' : '';
+
         if ($this->generatorRequest->isAtLeastPHP('7.4')) {
-            return "\${$outputVarName}->{{$keyStr}} = array_map(fn ($st \$i) => \$i->toStdClass(), \$this->{$name});";
+            return "\${$outputVarName}->{{$keyStr}} = array_map(fn ($st \$i) => \$i->toStdClass({$inclDefaultsArg}), \$this->{$name});";
         }
-        return "\${$outputVarName}->{{$keyStr}} = array_map(function($st \$i) { return \$i->toStdClass(); }, \$this->{$name});";
+        return "\${$outputVarName}->{{$keyStr}} = array_map(function($st \$i) { return \$i->toStdClass({$inclDefaultsArg}); }, \$this->{$name});";
     }
 
     /**

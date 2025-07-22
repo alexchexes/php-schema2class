@@ -25,6 +25,14 @@
       },
       "default": {}
     },
+    "quxObjNest": {
+      "type": ["object", "null"],
+      "description": "optional nullable object with default empty object value, and with nested default for its property",
+      "properties": {
+        "a": { "type": "object", "default": {} }
+      },
+      "default": {}
+    },
     "thudArray": {
       "type": ["array", "null"],
       "description": "optional nullable array with default value that is empty array",

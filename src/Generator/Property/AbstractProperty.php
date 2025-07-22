@@ -135,7 +135,7 @@ abstract class AbstractProperty implements PropertyInterface, RenameableProperty
     public function generateOutputMappingExprStdClass(string $expr): string
     {
         $map = $this->generateOutputMappingExpr($expr);
-        return str_replace('toArray()', 'toStdClass()', $map);
+        return str_replace('toArray(', 'toStdClass(', $map); // TODO: DON'T USE str_replace FOR THIS (!!)
     }
 
     public function generateCloneExpr(string $expr): string

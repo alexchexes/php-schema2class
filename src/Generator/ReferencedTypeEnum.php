@@ -86,7 +86,7 @@ readonly class ReferencedTypeEnum implements ReferencedType
         return EnumUtils::assertionExpr($this->schema['enum'], $expr);
     }
 
-    public function inputMappingExpr(GeneratorRequest $req, string $expr, ?string $validateExpr): string
+    public function inputMappingExpr(GeneratorRequest $req, string $expr): string
     {
         if ($this->useNativeEnum($req)) {
             return $this->relativeName($req) . "::from({$expr})";

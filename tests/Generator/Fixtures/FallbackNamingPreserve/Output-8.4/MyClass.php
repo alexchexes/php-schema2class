@@ -1705,9 +1705,7 @@ class MyClass
         if ($_materializeDefaults) {
             foreach (self::$_defaults as $__k => $__v) {
                 if (!property_exists($_input, $__k)) {
-                    $_input->{$__k} = (isset($__v['type']) && $__v['type'] === 'object')
-                       ? \JsonSchema\Validator::arrayToObjectRecursive($__v['default'])
-                       : $__v['default'];
+                   $_input->{$__k} = $__v['default'];
                 }
             }
         }
@@ -1793,7 +1791,7 @@ class MyClass
         $output['materializeDefaults'] = $this->materializeDefaults;
         $output['includeDefaults'] = $this->includeDefaults;
         if (isset($this->testObj)) {
-            $output['testObj'] = ($this->testObj)->toArray();
+            $output['testObj'] = ($this->testObj)->toArray($includeDefaults);
         }
         $output['buildFromInput'] = $this->_buildFromInput;
         $output['toArray'] = $this->_toArray;
@@ -1857,7 +1855,7 @@ class MyClass
         $output->{'materializeDefaults'} = $this->materializeDefaults;
         $output->{'includeDefaults'} = $this->includeDefaults;
         if (isset($this->testObj)) {
-            $output->{'testObj'} = ($this->testObj)->toStdClass();
+            $output->{'testObj'} = ($this->testObj)->toStdClass($includeDefaults);
         }
         $output->{'buildFromInput'} = $this->_buildFromInput;
         $output->{'toArray'} = $this->_toArray;

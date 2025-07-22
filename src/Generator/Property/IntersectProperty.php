@@ -64,18 +64,21 @@ class IntersectProperty extends AbstractProperty
         if ($materializeArg !== null) {
             $args[] = '$' . $materializeArg;
         }
+        $argsStr = implode(', ', $args);
 
-        return sprintf('%s::buildFromInput(%s)', $this->subTypeName(), implode(', ', $args));
+        return "{$this->subTypeName()}::buildFromInput({$argsStr})";
     }
 
     public function generateOutputMappingExpr(string $expr): string
     {
-        return "({$expr})->toArray()";
+        $inclDefaultsArg = $this->generatorRequest->getCurrReqHasDefaults() ? '$includeDefaults' : '';
+        return "({$expr})->toArray({$inclDefaultsArg})";
     }
 
     public function generateOutputMappingExprStdClass(string $expr): string
     {
-        return "({$expr})->toStdClass()";
+        $inclDefaultsArg = $this->generatorRequest->getCurrReqHasDefaults() ? '$includeDefaults' : '';
+        return "({$expr})->toStdClass({$inclDefaultsArg})";
     }
 
     public function generateCloneExpr(string $expr): string

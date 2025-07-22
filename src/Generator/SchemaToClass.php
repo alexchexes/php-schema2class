@@ -203,6 +203,8 @@ class SchemaToClass
         }
 
         $defaults = $this->collectDefaults($schema, $req);
+        $hasDefaults = !empty($defaults);
+        $req->setCurrReqHasDefaults($hasDefaults);
         $properties = [$schemaProperty];
         if ($defaults !== []) {
             $defaultsProp = new PropertyGenerator('_defaults', $defaults, PropertyGenerator::FLAG_PRIVATE | PropertyGenerator::FLAG_STATIC);
@@ -242,7 +244,7 @@ class SchemaToClass
         }
 
         $codeGenerator = new Generator($req);
-        $hasDefaults = $defaults !== [];
+        // $hasDefaults = $defaults !== [];
 
         $hasOptionalNullable = false;
         foreach ($propertiesFromSchema as $p) {
@@ -261,9 +263,9 @@ class SchemaToClass
             $codeGenerator->generateConstructor($propertiesFromSchema),
             ...$codeGenerator->generateGetterMethods($propertiesFromSchema),
             ...$codeGenerator->generateSetterMethods($propertiesFromSchema),
-            $codeGenerator->generateBuildMethod($propertiesFromSchema, $hasDefaults),
-            $codeGenerator->generateToArrayMethod($propertiesFromSchema, $hasDefaults),
-            $codeGenerator->generateToStdClassMethod($propertiesFromSchema, $hasDefaults),
+            $codeGenerator->generateBuildMethod($propertiesFromSchema, $defaults),
+            $codeGenerator->generateToArrayMethod($propertiesFromSchema, $defaults),
+            $codeGenerator->generateToStdClassMethod($propertiesFromSchema, $defaults),
             $codeGenerator->generateValidateMethod(),
             $codeGenerator->generateCloneMethod($propertiesFromSchema),
             $hasOptionalNullable ? $codeGenerator->generateIsSetMethod() : null,

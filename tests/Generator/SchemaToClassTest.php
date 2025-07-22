@@ -563,7 +563,15 @@ class SchemaToClassTest extends TestCase
             throw new \Exception("Failed to build {$fqcn} from file '$inputFileInclude'", 0, $th);
         }
 
-        $this->assertSame(
+        echo "\n --- json_decode(\$expected...): \n";
+        print_r(json_decode($expected, true));
+        echo "\n";
+
+        echo "\n --- obj2->toArray: \n";
+        print_r($obj2->toArray(true));
+        echo "\n";
+
+        $this->assertEquals(
             json_decode($expected, true),
             $obj2->toArray(true),
             "Array returned from {$fqcn}->toArray() built from '$inputFileInclude' doesn't match expected JSON"

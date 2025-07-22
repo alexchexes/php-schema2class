@@ -5,6 +5,9 @@
     "nestedFoo": "some value inside default value for 'bar' object"
   },
   "quxObj": {},
+  "quxObjNest": {
+    "a": {}
+  },
   "thudArray": [],
   "xyyz": {},
   "buux": [],
