@@ -12,6 +12,7 @@ use Helmich\Schema2Class\Generator\ReferenceLookup\DefinitionsReferenceLookup;
 use Helmich\Schema2Class\Generator\SchemaToEnum;
 use Helmich\Schema2Class\Generator\Property\IntersectProperty;
 use Helmich\Schema2Class\Generator\Property\NestedObjectProperty;
+use Helmich\Schema2Class\Generator\PropertyBuilder;
 use Helmich\Schema2Class\Generator\PropertyCollection\PropertyCollection;
 use Helmich\Schema2Class\Generator\Property\RenameablePropertyInterface;
 use Helmich\Schema2Class\Generator\PropertyDecorator\OptionalPropertyDecorator;
@@ -49,105 +50,30 @@ class SchemaToClass
      */
     public function schemaToClass(GeneratorRequest $req): void
     {
-        // 1) start with whatever schema the request already has
-        $schema = $req->getSchema();
-
-        $decodeRefs = function (&$node) use (&$decodeRefs): void {
-            if (!is_array($node)) {
-                return;
-            }
-            foreach ($node as $k => &$v) {
-                if ($k === '$ref' && is_string($v)) {
-                    $v = rawurldecode($v);
-                } elseif (is_array($v)) {
-                    $decodeRefs($v);
-                }
-            }
-        };
-        $decodeRefs($schema);
+        // start with whatever schema the request already has
+        $schema   = $req->getSchema();
+        $this->decodeReferences($schema);
         $rootDefs = array_merge($schema['definitions'] ?? [], $schema['$defs'] ?? []);
 
-        $usesRootDefs = function ($node) use (&$usesRootDefs): bool {
-            if (!is_array($node)) {
-                return false;
-            }
-            if (isset($node['$ref']) && is_string($node['$ref'])) {
-                $r = rawurldecode($node['$ref']);
-                if (str_starts_with($r, '#/definitions/') || str_starts_with($r, '#/$defs/')) {
-                    return true;
-                }
-            }
-            foreach ($node as $v) {
-                if (is_array($v) && $usesRootDefs($v)) {
-                    return true;
-                }
-            }
-
-            return false;
-        };
-
-        // 2) collect definitions and prepare lookups before dereferencing
+        // collect definitions and prepare lookups before dereferencing
         $this->definitionsToSchemas($req);
 
-        // 3) if the caller supplied root definitions, *always* splice them in here
-        if (($defs = $req->getRootDefinitions()) !== null && count($defs) > 0) {
-            // don't overwrite if the schema already carried its own definitions
-            if (!isset($schema['definitions'])) {
-                $schema['definitions'] = $defs;
-            } else {
-                // merge – let local keys override, just in case
-                $schema['definitions'] = array_replace($defs, $schema['definitions']);
-            }
-            $rootDefs = array_replace($rootDefs, $defs);
-        }
+        // if the caller supplied root definitions, *always* splice them in here
+        // (but don't overwrite if the schema already carried its own definitions)
+        $this->mergeRootDefinitions($schema, $rootDefs, $req->getRootDefinitions());
 
-        // 4) dereference schemas that consist only of a reference
-        if (isset($schema['$ref'])) {
-            $schema = $req->lookupSchema($schema['$ref']);
-            $decodeRefs($schema); // decode refs inside the dereferenced schema
+        // dereference schemas that consist only of a reference
+        $schema = $this->dereferenceSchema($schema, $req, $rootDefs);
 
-            $needsDefs = $usesRootDefs($schema);
-
-            if ($needsDefs && ($defs = $req->getRootDefinitions()) !== null && count($defs) > 0) {
-                if (!isset($schema['definitions'])) {
-                    $schema['definitions'] = $defs;
-                } else {
-                    $schema['definitions'] = array_replace($defs, $schema['definitions']);
-                }
-            }
-
-            if ($needsDefs && count($rootDefs) > 0) {
-                if (!isset($schema['definitions'])) {
-                    $schema['definitions'] = $rootDefs;
-                } else {
-                    $schema['definitions'] = array_replace($rootDefs, $schema['definitions']);
-                }
-            }
-        }
-
-        $req = $req->withSchema($schema);
+        $req    = $req->withSchema($schema);
         $schema = $req->getSchema();
 
-        if (isset($schema["enum"])) {
-            if (SchemaToEnum::canGenerateEnum($schema, $req)) {
-                $this->schemaToEnum->schemaToEnum($req);
-                return;
-            }
-
-            $class = $req->getTargetClass();
-            if ($class !== null) {
-                $this->output->writeln("skipping generation of enum <comment>{$class}</comment>");
-            }
+        if ($this->handleEnum($schema, $req)) {
+            return;
         }
 
-        if (IntersectProperty::canHandleSchema($schema)) {
-            $schema = (new IntersectProperty($req->getTargetClass(), $schema, $req))->buildSchemaIntersect();
-        } elseif (!NestedObjectProperty::canHandleSchema($schema)) {
-            // If the schema does not describe an object we only generate definitions
-            $class = $req->getTargetClass();
-            if ($class !== null) {
-                $this->output->writeln("skipping generation of <comment>{$class}</comment>");
-            }
+        $schema = $this->normalizeObjectSchema($schema, $req);
+        if ($schema === null) {
             return;
         }
 
@@ -155,86 +81,22 @@ class SchemaToClass
         // for building property documentation
         $validationSchema = $schema;
         if ($req->getOptions()->getNoSchemaMetadata()) {
-            $metaFields = [
-                'description',
-                'title',
-                'examples',
-                'deprecated',
-                'default',
-                'readOnly',
-                'writeOnly',
-                '$id',
-                '$schema',
-                '$comment',
-            ];
-
-            $stripMetadata = function (&$node) use (&$stripMetadata, $metaFields) {
-                if (!is_array($node)) {
-                    return;
-                }
-                foreach ($node as $key => &$value) {
-                    if (in_array($key, $metaFields, true)) {
-                        unset($node[$key]);
-                    } elseif (is_array($value)) {
-                        // recurse into nested arrays
-                        $stripMetadata($value);
-                    }
-                }
-            };
-            $stripMetadata($validationSchema);
+            $this->stripSchemaMetadata($validationSchema);
         }
 
-        $schemaProperty = new PropertyGenerator(
-            "schema",
-            $validationSchema,
-            PropertyGenerator::FLAG_PRIVATE | PropertyGenerator::FLAG_STATIC
-        );
+        $schemaProperty = $this->createSchemaProperty($validationSchema, $req);
 
-        $schemaProperty->setDocBlock(new DocBlockGenerator(
-            "Schema used to validate input for creating instances of this class",
-            null,
-            [new GenericTag("var", "array")]
-        ));
-
-        if ($req->isAtLeastPHP("7.4")) {
-            $schemaProperty->setTypeHint("array");
-        }
-
-        if ($req->getOptions()->getSingleLineSchema()) {
-            $schemaProperty->setSingleLineDefaultValue(true);
-        }
-
-        $defaults = DefaultsGenUtils::collectDefaults($schema, $req);
-        $hasDefaults = !empty($defaults);
+        $defaults      = DefaultsGenUtils::collectDefaults($schema, $req);
+        $hasDefaults   = !empty($defaults);
         $req->setCurrReqHasDefaults($hasDefaults);
+
         $properties = [$schemaProperty];
-        if ($defaults !== []) {
-            $defaultsProp = new PropertyGenerator('_defaults', $defaults, PropertyGenerator::FLAG_PRIVATE | PropertyGenerator::FLAG_STATIC);
-            $defaultsProp->setDocBlock(new DocBlockGenerator(
-                'Default values from the schema',
-                null,
-                [new GenericTag('var', 'array')]
-            ));
-            if ($req->isAtLeastPHP('7.4')) {
-                $defaultsProp->setTypeHint('array');
-            }
-            if ($req->getOptions()->getSingleLineSchema()) {
-                $defaultsProp->setSingleLineDefaultValue(true);
-            }
+        $defaultsProp = $this->createDefaultsProperty($defaults, $req);
+        if ($defaultsProp !== null) {
             $properties[] = $defaultsProp;
         }
 
-        $propertiesFromSchema = new PropertyCollection();
-
-        if (isset($schema["properties"])) {
-            foreach ($schema["properties"] as $key => $definition) {
-                $key = (string) $key;
-                $isRequired = isset($schema["required"]) && in_array($key, $schema["required"]);
-
-                $property = PropertyBuilder::buildPropertyFromSchema($req, $key, $definition, $isRequired);
-                $propertiesFromSchema->add($property);
-            }
-        }
+        $propertiesFromSchema = $this->collectPropertiesFromSchema($schema, $req);
 
         $this->ensureUniquePropertyNames(
             $propertiesFromSchema,
@@ -245,16 +107,8 @@ class SchemaToClass
             $property->generateSubTypes($this);
         }
 
-        $codeGenerator = new Generator($req);
-        // $hasDefaults = $defaults !== [];
-
-        $hasOptionalNullable = false;
-        foreach ($propertiesFromSchema as $p) {
-            if ($p instanceof OptionalPropertyDecorator && $p->isOptionalNullable()) {
-                $hasOptionalNullable = true;
-                break;
-            }
-        }
+        $codeGenerator      = new Generator($req);
+        $hasOptionalNullable = $this->hasOptionalNullable($propertiesFromSchema);
 
         $properties = [
             ...$properties,
@@ -275,6 +129,219 @@ class SchemaToClass
         $methods = array_values(array_filter($methods));
         $this->ensureUniqueMethodNames($methods);
 
+        $this->generateClassFile($req, $schema, $properties, $methods);
+    }
+
+    private function decodeReferences(array &$node): void
+    {
+        foreach ($node as $k => &$v) {
+            if ($k === '$ref' && is_string($v)) {
+                $v = rawurldecode($v);
+            } elseif (is_array($v)) {
+                $this->decodeReferences($v);
+            }
+        }
+    }
+
+    private function usesRootDefinitions(mixed $node): bool
+    {
+        if (!is_array($node)) {
+            return false;
+        }
+        if (isset($node['$ref']) && is_string($node['$ref'])) {
+            $r = rawurldecode($node['$ref']);
+            if (str_starts_with($r, '#/definitions/') || str_starts_with($r, '#/$defs/')) {
+                return true;
+            }
+        }
+        foreach ($node as $v) {
+            if (is_array($v) && $this->usesRootDefinitions($v)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function mergeRootDefinitions(array &$schema, array &$rootDefs, ?array $defs): void
+    {
+        if ($defs === null || count($defs) === 0) {
+            return;
+        }
+
+        if (!isset($schema['definitions'])) {
+            $schema['definitions'] = $defs;
+        } else {
+            $schema['definitions'] = array_replace($defs, $schema['definitions']);
+        }
+        $rootDefs = array_replace($rootDefs, $defs);
+    }
+
+    private function dereferenceSchema(array $schema, GeneratorRequest $req, array $rootDefs): array
+    {
+        if (!isset($schema['$ref'])) {
+            return $schema;
+        }
+
+        $schema = $req->lookupSchema($schema['$ref']);
+        $this->decodeReferences($schema);
+
+        $needsDefs = $this->usesRootDefinitions($schema);
+
+        if ($needsDefs) {
+            $this->mergeRootDefinitions($schema, $rootDefs, $req->getRootDefinitions());
+            if (count($rootDefs) > 0) {
+                if (!isset($schema['definitions'])) {
+                    $schema['definitions'] = $rootDefs;
+                } else {
+                    $schema['definitions'] = array_replace($rootDefs, $schema['definitions']);
+                }
+            }
+        }
+
+        return $schema;
+    }
+
+    private function handleEnum(array $schema, GeneratorRequest $req): bool
+    {
+        if (!isset($schema['enum'])) {
+            return false;
+        }
+
+        if (SchemaToEnum::canGenerateEnum($schema, $req)) {
+            $this->schemaToEnum->schemaToEnum($req);
+            return true;
+        }
+
+        $class = $req->getTargetClass();
+        if ($class !== null) {
+            $this->output->writeln("skipping generation of enum <comment>{$class}</comment>");
+        }
+
+        return false;
+    }
+
+    private function normalizeObjectSchema(array $schema, GeneratorRequest $req): ?array
+    {
+        if (IntersectProperty::canHandleSchema($schema)) {
+            return (new IntersectProperty($req->getTargetClass(), $schema, $req))->buildSchemaIntersect();
+        }
+
+        if (!NestedObjectProperty::canHandleSchema($schema)) {
+            // If the schema does not describe an object we only generate definitions
+            $class = $req->getTargetClass();
+            if ($class !== null) {
+                $this->output->writeln("skipping generation of <comment>{$class}</comment>");
+            }
+
+            return null;
+        }
+
+        return $schema;
+    }
+
+    private function stripSchemaMetadata(array &$node): void
+    {
+        $metaFields = [
+            'description',
+            'title',
+            'examples',
+            'deprecated',
+            'default',
+            'readOnly',
+            'writeOnly',
+            '$id',
+            '$schema',
+            '$comment',
+        ];
+
+        foreach ($node as $key => &$value) {
+            if (in_array($key, $metaFields, true)) {
+                unset($node[$key]);
+                continue;
+            }
+            if (is_array($value)) {
+                $this->stripSchemaMetadata($value);
+            }
+        }
+    }
+
+    private function createSchemaProperty(array $validationSchema, GeneratorRequest $req): PropertyGenerator
+    {
+        $schemaProperty = new PropertyGenerator(
+            'schema',
+            $validationSchema,
+            PropertyGenerator::FLAG_PRIVATE | PropertyGenerator::FLAG_STATIC,
+        );
+
+        $schemaProperty->setDocBlock(new DocBlockGenerator(
+            'Schema used to validate input for creating instances of this class',
+            null,
+            [new GenericTag('var', 'array')],
+        ));
+
+        if ($req->isAtLeastPHP('7.4')) {
+            $schemaProperty->setTypeHint('array');
+        }
+        if ($req->getOptions()->getSingleLineSchema()) {
+            $schemaProperty->setSingleLineDefaultValue(true);
+        }
+
+        return $schemaProperty;
+    }
+
+    private function createDefaultsProperty(array $defaults, GeneratorRequest $req): ?PropertyGenerator
+    {
+        if ($defaults === []) {
+            return null;
+        }
+
+        $prop = new PropertyGenerator('_defaults', $defaults, PropertyGenerator::FLAG_PRIVATE | PropertyGenerator::FLAG_STATIC);
+        $prop->setDocBlock(new DocBlockGenerator(
+            'Default values from the schema',
+            null,
+            [new GenericTag('var', 'array')],
+        ));
+        if ($req->isAtLeastPHP('7.4')) {
+            $prop->setTypeHint('array');
+        }
+        if ($req->getOptions()->getSingleLineSchema()) {
+            $prop->setSingleLineDefaultValue(true);
+        }
+
+        return $prop;
+    }
+
+    private function collectPropertiesFromSchema(array $schema, GeneratorRequest $req): PropertyCollection
+    {
+        $properties = new PropertyCollection();
+
+        if (isset($schema['properties'])) {
+            foreach ($schema['properties'] as $key => $definition) {
+                $key = (string) $key;
+                $isRequired = isset($schema['required']) && in_array($key, $schema['required']);
+
+                $property = PropertyBuilder::buildPropertyFromSchema($req, $key, $definition, $isRequired);
+                $properties->add($property);
+            }
+        }
+
+        return $properties;
+    }
+
+    private function hasOptionalNullable(PropertyCollection $properties): bool
+    {
+        foreach ($properties as $p) {
+            if ($p instanceof OptionalPropertyDecorator && $p->isOptionalNullable()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function generateClassFile(GeneratorRequest $req, array $schema, array $properties, array $methods): void
+    {
         $cls = new ClassGenerator(
             $req->getTargetClass(),
             $req->getTargetNamespace(),
@@ -283,7 +350,7 @@ class SchemaToClass
             [],
             $properties,
             $methods,
-            null
+            null,
         );
 
         if (isset($schema['description']) && is_string($schema['description']) && $schema['description'] !== '') {
@@ -291,7 +358,6 @@ class SchemaToClass
             $doc->setWordWrap(false);
             $cls->setDocBlock($doc);
         }
-
 
         $req->onClassCreated($cls);
 
@@ -302,14 +368,14 @@ class SchemaToClass
 
         $req->onFileCreated($filename, $file);
 
-        if ($req->isAtLeastPHP("7.0") && !$req->getOptions()->getDisableStrictTypes()) {
+        if ($req->isAtLeastPHP('7.0') && !$req->getOptions()->getDisableStrictTypes()) {
             $file->setDeclares([DeclareStatement::strictTypes(1)]);
         }
 
         $content = $file->generate();
 
-        // Do some corrections because the Zend code generation library is stupid.
-        $content = preg_replace('/ ?: \\\\self/', ': self', $content);
+        // Do some corrections because the Zend code generation library is not smart enough.
+        $content = preg_replace('/: \\\\self/', ': self', $content);
 
         // Remove current namespace from all class names
         $content = preg_replace('/\\\\' . preg_quote($req->getTargetNamespace(), '/') . '\\\\/', '', $content);
@@ -333,7 +399,7 @@ class SchemaToClass
     private function ensureUniquePropertyNames(PropertyCollection $properties, bool $preservePropertyNames): void
     {
         // Reserved identifiers that should not be used for property names or
-        // would collide with generated method names
+        // would collide with generated code identifiers
         $reservedPropertyNames = [
             '_GLOBALS',
             'GLOBALS',
