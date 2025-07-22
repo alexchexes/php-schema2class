@@ -61,7 +61,7 @@ Now it:
 
 ### Defaults handling
 
-- Now, if the schema has a default for some property, the generated class includes the parameter `$materializeDefaults` in `buildFromInput` and `$includeDefaults` in `toArray()`.
+- Now, if the schema has a default for some property, the generated class includes the parameter `$materializeDefaults` in `buildFromInput` and `$includeDefaults` in `toArray()`/`toStdClass()`.
 
 ### Documentation
 
