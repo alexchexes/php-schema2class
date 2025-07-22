@@ -2,6 +2,9 @@
 declare(strict_types = 1);
 namespace Helmich\Schema2Class\Generator\Property;
 
+/**
+ * Fallback property used when no other property class claims it can handle the given schema.
+ */
 class MixedProperty extends AbstractProperty
 {
     public static function canHandleSchema(array $schema): bool

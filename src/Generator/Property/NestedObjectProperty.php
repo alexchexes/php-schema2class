@@ -5,6 +5,13 @@ namespace Helmich\Schema2Class\Generator\Property;
 use Helmich\Schema2Class\Generator\GeneratorException;
 use Helmich\Schema2Class\Generator\SchemaToClass;
 
+/**
+ * Represents an object defined inline within a schema property.
+ * 
+ * `GenerationRunner` checks if this property `canHandleSchema`
+ * to decide whether the class needs to be generated, and if so,
+ * a nested class is generated to model this embedded object.
+ */
 class NestedObjectProperty extends AbstractProperty
 {
     public static function canHandleSchema(array $schema): bool

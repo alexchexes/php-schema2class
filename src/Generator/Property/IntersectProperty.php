@@ -5,6 +5,10 @@ namespace Helmich\Schema2Class\Generator\Property;
 use Helmich\Schema2Class\Generator\GeneratorException;
 use Helmich\Schema2Class\Generator\SchemaToClass;
 
+/**
+ * Represents a property whose type is an intersection of multiple schemas via
+ * "allOf". Generates a helper class combining all sub schemas.
+ */
 class IntersectProperty extends AbstractProperty
 {
     public static function canHandleSchema(array $schema): bool

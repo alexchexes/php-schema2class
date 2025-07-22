@@ -4,6 +4,9 @@ namespace Helmich\Schema2Class\Generator\Property;
 
 use Composer\Semver\Semver;
 
+/**
+ * Primitive "integer" type
+ */
 class IntegerProperty extends AbstractProperty
 {
     public static function canHandleSchema(array $schema): bool

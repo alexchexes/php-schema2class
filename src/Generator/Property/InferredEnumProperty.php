@@ -6,6 +6,10 @@ namespace Helmich\Schema2Class\Generator\Property;
 use Composer\Semver\Semver;
 use Laminas\Code\Generator\PropertyValueGenerator;
 
+/** 
+ * Enum schema definitions without a declared type.
+ * Type is inferred from a list of literal values found in "enum".
+ */
 class InferredEnumProperty extends AbstractProperty
 {
     private array $valueTypes = [];
