@@ -4,15 +4,11 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class;
 
 use Helmich\Schema2Class\Generator\GenerationRunner;
-use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\NamespaceInferrer;
 use Helmich\Schema2Class\Loader\SchemaLoader;
 use Helmich\Schema2Class\Generator\SchemaToClassFactory;
 use Helmich\Schema2Class\Loader\LoadingException;
 use Helmich\Schema2Class\Spec\Specification;
-use Helmich\Schema2Class\Spec\SpecificationOptions;
-use Helmich\Schema2Class\Spec\OptionsDefaults;
-use Helmich\Schema2Class\Spec\SpecificationFilesItem;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Yaml\Yaml;
