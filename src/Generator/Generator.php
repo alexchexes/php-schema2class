@@ -264,7 +264,7 @@ class Generator
             $materializeLine =
                 "if (\$$materializeArgAlias) {\n" .
                 "    foreach (self::\$_defaults as \$__k => \$__v) {\n" .
-                "        if (!property_exists(\$$inputArgAlias, \$__k)) {\n" .
+                "        if (!property_exists(\$$inputArgAlias, (string) \$__k)) {\n" .
                 "           \${$inputArgAlias}->{\$__k} = (\$__v['type'] ?? null) === 'object'\n" .
                 "               ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$__v['default'])\n" .
                 "               : \$__v['default'];\n" .
@@ -405,7 +405,7 @@ class Generator
         if ($defaults) {
             $body .= "\nif (\$includeDefaults) {\n" .
             "    foreach (self::\$_defaults as \$k => \$v) {\n" .
-            "        if (!property_exists(\$output, \$k)) {\n" .
+            "        if (!property_exists(\$output, (string) \$k)) {\n" .
             "            \$output->{\$k} = (isset(\$v['type']) && \$v['type'] === 'object')\n" .
             "               ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$v['default'])\n" .
             "               : \$v['default'];\n" .

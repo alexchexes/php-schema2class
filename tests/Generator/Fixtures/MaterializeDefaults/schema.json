@@ -73,6 +73,15 @@
     "objArrUnion": {
       "type": ["array", "object"],
       "default": {}
+    },
+    "numKeysDefaults": {
+      "type": "object",
+      "properties": {
+        "0": { "type": "string", "default": "default for '0'"  },
+        "1": { "type": "string", "default": "default for '1'"  },
+        "2": { "type": "string", "default": "default for '2'"  }
+      },
+      "default": {}
     }
   },
   "definitions": {

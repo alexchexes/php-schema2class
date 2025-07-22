@@ -4,10 +4,7 @@ declare(strict_types=1);
 
 namespace Ns\MaterializeDefaults_8_4;
 
-/**
- * optional nullable object with default empty object value, and with nested default for its property
- */
-class MyClassQuxObjNest
+class MyClassNumKeysDefaults
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -16,13 +13,18 @@ class MyClassQuxObjNest
      */
     private static array $schema = [
         'type' => 'object',
-        'description' => 'optional nullable object with default empty object value, and with nested default for its property',
         'properties' => [
-            'a' => [
-                'type' => 'object',
-                'default' => [
-                    
-                ],
+            [
+                'type' => 'string',
+                'default' => 'default for \'0\'',
+            ],
+            [
+                'type' => 'string',
+                'default' => 'default for \'1\'',
+            ],
+            [
+                'type' => 'string',
+                'default' => 'default for \'2\'',
             ],
         ],
         'default' => [
@@ -79,44 +81,73 @@ class MyClassQuxObjNest
      * @var array
      */
     private static array $_defaults = [
-        'a' => [
-            'default' => [
-                
-            ],
-            'type' => 'object',
+        [
+            'default' => 'default for \'0\'',
+        ],
+        [
+            'default' => 'default for \'1\'',
+        ],
+        [
+            'default' => 'default for \'2\'',
         ],
     ];
 
     /**
-     * @var array|object|null
+     * @var string|null
      */
-    private array|object|null $a = null;
+    private ?string $_0 = null;
 
     /**
-     * @return array|object|null
+     * @var string|null
      */
-    public function getA(): array|object|null
+    private ?string $_1 = null;
+
+    /**
+     * @var string|null
+     */
+    private ?string $_2 = null;
+
+    /**
+     * @return string|null
+     */
+    public function get_0(): ?string
     {
-        return $this->a;
+        return $this->_0 ?? null;
     }
 
     /**
-     * @param array|object $a
+     * @return string|null
+     */
+    public function get_1(): ?string
+    {
+        return $this->_1 ?? null;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function get_2(): ?string
+    {
+        return $this->_2 ?? null;
+    }
+
+    /**
+     * @param string $_0
      * @return self
      * @param bool $validate
      */
-    public function withA(array|object $a, bool $validate = true): self
+    public function with_0(string $_0, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($a, self::$schema['properties']['a']);
+            $validator->validate($_0, self::$schema['properties']['0']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
         }
 
         $clone = clone $this;
-        $clone->a = $a;
+        $clone->_0 = $_0;
 
         return $clone;
     }
@@ -124,10 +155,74 @@ class MyClassQuxObjNest
     /**
      * @return self
      */
-    public function withoutA(): self
+    public function without_0(): self
     {
         $clone = clone $this;
-        unset($clone->a);
+        unset($clone->_0);
+
+        return $clone;
+    }
+
+    /**
+     * @param string $_1
+     * @return self
+     * @param bool $validate
+     */
+    public function with_1(string $_1, bool $validate = true): self
+    {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($_1, self::$schema['properties']['1']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
+        $clone = clone $this;
+        $clone->_1 = $_1;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function without_1(): self
+    {
+        $clone = clone $this;
+        unset($clone->_1);
+
+        return $clone;
+    }
+
+    /**
+     * @param string $_2
+     * @return self
+     * @param bool $validate
+     */
+    public function with_2(string $_2, bool $validate = true): self
+    {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($_2, self::$schema['properties']['2']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
+        $clone = clone $this;
+        $clone->_2 = $_2;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function without_2(): self
+    {
+        $clone = clone $this;
+        unset($clone->_2);
 
         return $clone;
     }
@@ -138,10 +233,10 @@ class MyClassQuxObjNest
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
      * @param bool $materializeDefaults Apply defaults defined in schema when missing
-     * @return MyClassQuxObjNest Created instance
+     * @return MyClassNumKeysDefaults Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true, bool $materializeDefaults = false): MyClassQuxObjNest
+    public static function buildFromInput(array|object $input, bool $validate = true, bool $materializeDefaults = false): MyClassNumKeysDefaults
     {
         $input = is_array($input)
             ? \JsonSchema\Validator::arrayToObjectRecursive($input)
@@ -161,10 +256,14 @@ class MyClassQuxObjNest
             static::validateInput($input);
         }
 
-        $a = isset($input->{'a'}) ? $input->{'a'} : null;
+        $_0 = isset($input->{'0'}) ? $input->{'0'} : null;
+        $_1 = isset($input->{'1'}) ? $input->{'1'} : null;
+        $_2 = isset($input->{'2'}) ? $input->{'2'} : null;
 
         $obj = new self();
-        $obj->a = $a;
+        $obj->_0 = $_0;
+        $obj->_1 = $_1;
+        $obj->_2 = $_2;
         return $obj;
     }
 
@@ -177,8 +276,14 @@ class MyClassQuxObjNest
     public function toArray(bool $includeDefaults = false): array
     {
         $output = [];
-        if (isset($this->a)) {
-            $output['a'] = json_decode(json_encode($this->a), true);
+        if (isset($this->_0)) {
+            $output['0'] = $this->_0;
+        }
+        if (isset($this->_1)) {
+            $output['1'] = $this->_1;
+        }
+        if (isset($this->_2)) {
+            $output['2'] = $this->_2;
         }
 
         if ($includeDefaults) {
@@ -201,8 +306,14 @@ class MyClassQuxObjNest
     public function toStdClass(bool $includeDefaults = false): \stdClass
     {
         $output = new \stdClass();
-        if (isset($this->a)) {
-            $output->{'a'} = json_decode(json_encode($this->a));
+        if (isset($this->_0)) {
+            $output->{'0'} = $this->_0;
+        }
+        if (isset($this->_1)) {
+            $output->{'1'} = $this->_1;
+        }
+        if (isset($this->_2)) {
+            $output->{'2'} = $this->_2;
         }
 
         if ($includeDefaults) {

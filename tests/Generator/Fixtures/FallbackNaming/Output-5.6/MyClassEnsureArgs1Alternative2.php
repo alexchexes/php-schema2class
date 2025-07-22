@@ -137,7 +137,7 @@ class MyClassEnsureArgs1Alternative2
 
         if ($materializeDefaults) {
             foreach (self::$_defaults as $__k => $__v) {
-                if (!property_exists($input, $__k)) {
+                if (!property_exists($input, (string) $__k)) {
                    $input->{$__k} = ($__v['type'] ?? null) === 'object'
                        ? \JsonSchema\Validator::arrayToObjectRecursive($__v['default'])
                        : $__v['default'];
@@ -194,7 +194,7 @@ class MyClassEnsureArgs1Alternative2
 
         if ($includeDefaults) {
             foreach (self::$_defaults as $k => $v) {
-                if (!property_exists($output, $k)) {
+                if (!property_exists($output, (string) $k)) {
                     $output->{$k} = (isset($v['type']) && $v['type'] === 'object')
                        ? \JsonSchema\Validator::arrayToObjectRecursive($v['default'])
                        : $v['default'];

@@ -153,6 +153,26 @@ class MyClass
                     
                 ],
             ],
+            'numKeysDefaults' => [
+                'type' => 'object',
+                'properties' => [
+                    [
+                        'type' => 'string',
+                        'default' => 'default for \'0\'',
+                    ],
+                    [
+                        'type' => 'string',
+                        'default' => 'default for \'1\'',
+                    ],
+                    [
+                        'type' => 'string',
+                        'default' => 'default for \'2\'',
+                    ],
+                ],
+                'default' => [
+                    
+                ],
+            ],
         ],
         'definitions' => [
             'ObjDef' => [
@@ -267,6 +287,12 @@ class MyClass
             ],
             'type' => 'object',
         ],
+        'numKeysDefaults' => [
+            'default' => [
+                
+            ],
+            'type' => 'object',
+        ],
     ];
 
     /**
@@ -341,6 +367,11 @@ class MyClass
      * @var array|object|null
      */
     private array|object|null $objArrUnion = null;
+
+    /**
+     * @var MyClassNumKeysDefaults|null
+     */
+    private ?MyClassNumKeysDefaults $numKeysDefaults = null;
 
     /**
      * @param string $foo
@@ -452,6 +483,14 @@ class MyClass
     public function getObjArrUnion(): array|object|null
     {
         return $this->objArrUnion;
+    }
+
+    /**
+     * @return MyClassNumKeysDefaults|null
+     */
+    public function getNumKeysDefaults(): ?MyClassNumKeysDefaults
+    {
+        return $this->numKeysDefaults ?? null;
     }
 
     /**
@@ -742,6 +781,29 @@ class MyClass
     }
 
     /**
+     * @param MyClassNumKeysDefaults $numKeysDefaults
+     * @return self
+     */
+    public function withNumKeysDefaults(MyClassNumKeysDefaults $numKeysDefaults): self
+    {
+        $clone = clone $this;
+        $clone->numKeysDefaults = $numKeysDefaults;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutNumKeysDefaults(): self
+    {
+        $clone = clone $this;
+        unset($clone->numKeysDefaults);
+
+        return $clone;
+    }
+
+    /**
      * Builds a new instance from an input array
      *
      * @param array|object $input Input data
@@ -758,7 +820,7 @@ class MyClass
 
         if ($materializeDefaults) {
             foreach (self::$_defaults as $__k => $__v) {
-                if (!property_exists($input, $__k)) {
+                if (!property_exists($input, (string) $__k)) {
                    $input->{$__k} = ($__v['type'] ?? null) === 'object'
                        ? \JsonSchema\Validator::arrayToObjectRecursive($__v['default'])
                        : $__v['default'];
@@ -819,6 +881,7 @@ class MyClass
             is_array($input->{'objArrUnion'}) || is_object($input->{'objArrUnion'}) => $input->{'objArrUnion'},
             default => null,
         } : null;
+        $numKeysDefaults = isset($input->{'numKeysDefaults'}) ? MyClassNumKeysDefaults::buildFromInput($input->{'numKeysDefaults'}, $validate, $materializeDefaults) : null;
 
         $obj = new self($foo, $bar);
         $obj->baz = $baz;
@@ -831,6 +894,7 @@ class MyClass
         $obj->poox = $poox;
         $obj->arrObjUnion = $arrObjUnion;
         $obj->objArrUnion = $objArrUnion;
+        $obj->numKeysDefaults = $numKeysDefaults;
         $obj->_providedOptionals = $__providedOptionals;
         return $obj;
     }
@@ -902,6 +966,9 @@ class MyClass
                 is_array($this->objArrUnion) => $this->objArrUnion,
                 is_array($this->objArrUnion) || is_object($this->objArrUnion) => json_decode(json_encode($this->objArrUnion), true),
             };
+        }
+        if (isset($this->numKeysDefaults)) {
+            $output['numKeysDefaults'] = ($this->numKeysDefaults)->toArray($includeDefaults);
         }
 
         if ($includeDefaults) {
@@ -983,10 +1050,13 @@ class MyClass
                 is_array($this->objArrUnion) || is_object($this->objArrUnion) => json_decode(json_encode($this->objArrUnion)),
             };
         }
+        if (isset($this->numKeysDefaults)) {
+            $output->{'numKeysDefaults'} = ($this->numKeysDefaults)->toStdClass($includeDefaults);
+        }
 
         if ($includeDefaults) {
             foreach (self::$_defaults as $k => $v) {
-                if (!property_exists($output, $k)) {
+                if (!property_exists($output, (string) $k)) {
                     $output->{$k} = (isset($v['type']) && $v['type'] === 'object')
                        ? \JsonSchema\Validator::arrayToObjectRecursive($v['default'])
                        : $v['default'];
@@ -1074,6 +1144,9 @@ class MyClass
                 is_array($this->objArrUnion),
                 is_array($this->objArrUnion) || is_object($this->objArrUnion) => $this->objArrUnion,
             };
+        }
+        if (isset($this->numKeysDefaults)) {
+            $this->numKeysDefaults = clone $this->numKeysDefaults;
         }
     }
 

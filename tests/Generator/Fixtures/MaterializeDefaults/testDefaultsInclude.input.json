@@ -4,5 +4,6 @@
   "baz": {
     "nestedFoo": "some value inside default value for 'bar' object"
   },
-  "quxObjNest": {}
+  "quxObjNest": {},
+  "numKeysDefaults": {}
 }
