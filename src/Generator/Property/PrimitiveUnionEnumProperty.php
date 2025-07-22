@@ -9,8 +9,6 @@ use Laminas\Code\Generator\ValueGenerator;
 
 class PrimitiveUnionEnumProperty extends AbstractProperty
 {
-    use TypeConvert;
-
     public static function canHandleSchema(array $schema): bool
     {
         // must have an enum and a _list_ of primitive types

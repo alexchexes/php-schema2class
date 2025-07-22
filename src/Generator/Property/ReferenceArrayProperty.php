@@ -3,7 +3,7 @@
 namespace Helmich\Schema2Class\Generator\Property;
 
 use Helmich\Schema2Class\Generator\GeneratorRequest;
-use Helmich\Schema2Class\Generator\ReferencedType;
+use Helmich\Schema2Class\Generator\ReferencedType\ReferencedType;
 
 class ReferenceArrayProperty extends AbstractProperty
 {

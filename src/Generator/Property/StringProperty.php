@@ -6,8 +6,6 @@ use Composer\Semver\Semver;
 
 class StringProperty extends AbstractProperty
 {
-    use TypeConvert;
-
     public static function canHandleSchema(array $schema): bool
     {
         return isset($schema["type"]) && $schema["type"] === "string";

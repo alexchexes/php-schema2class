@@ -7,6 +7,15 @@ namespace Helmich\Schema2Class\Generator\Definitions;
 use Generator as PhpGenerator;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 
+/**
+ * Class is used to traverse a schema and collect {@see Definition} objects
+ * for every nested entry in `#/definitions` or `#/$defs`.
+ *
+ * The collector also keeps track of already allocated class names to avoid
+ * collisions when multiple definitions resolve to the same PHP identifier.
+ * Consumers typically iterate over the generator returned by
+ * {@see collect()} to pass each definition to the {@see DefinitionsGenerator}.
+ */
 class DefinitionsCollector
 {
     /** @var array<int,string> */

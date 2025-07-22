@@ -3,7 +3,8 @@
 namespace Helmich\Schema2Class\Generator\Property;
 
 use Helmich\Schema2Class\Generator\GeneratorRequest;
-use Helmich\Schema2Class\Generator\ReferencedType;
+use Helmich\Schema2Class\Generator\ReferencedType\ReferencedType;
+use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeEnum;
 
 class ReferenceProperty extends AbstractProperty
 {
@@ -57,7 +58,7 @@ class ReferenceProperty extends AbstractProperty
 
     public function isComplex(): bool
     {
-        if ($this->type instanceof \Helmich\Schema2Class\Generator\ReferencedTypeEnum) {
+        if ($this->type instanceof ReferencedTypeEnum) {
             return $this->type->usesNativeEnum($this->generatorRequest);
         }
 

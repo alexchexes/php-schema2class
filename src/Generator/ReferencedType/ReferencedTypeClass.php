@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Helmich\Schema2Class\Generator;
+namespace Helmich\Schema2Class\Generator\ReferencedType;
+
+use Helmich\Schema2Class\Generator\GeneratorRequest;
 
 readonly class ReferencedTypeClass implements ReferencedType
 {

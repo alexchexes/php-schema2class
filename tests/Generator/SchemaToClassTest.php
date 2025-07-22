@@ -8,6 +8,11 @@ use function PHPUnit\Framework\equalTo;
 
 use Helmich\Schema2Class\Command\GenerateCommand;
 use Helmich\Schema2Class\Example\CustomerAddress;
+use Helmich\Schema2Class\Generator\ReferencedType\ReferencedType;
+use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeClass;
+use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeUnknown;
+use Helmich\Schema2Class\Generator\ReferenceLookup\DefinitionsReferenceLookup;
+use Helmich\Schema2Class\Generator\ReferenceLookup\ReferenceLookup;
 use Helmich\Schema2Class\Generator\SchemaToClassFactory;
 use Helmich\Schema2Class\Loader\SchemaLoader;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
@@ -270,40 +275,32 @@ class SchemaToClassTest extends TestCase
         $req = $req->withReferenceLookup(new class ($definitionsLookup) implements ReferenceLookup {
             public function __construct(private DefinitionsReferenceLookup $lookup) {}
 
-            public function lookupReference(string $reference): ReferencedType
+            public function lookupReference(string $ref): ReferencedType
             {
-                if ($reference === "#/properties/address") {
-                    return new ReferencedTypeClass(CustomerAddress::class); // ← necessary for 'RefList' test though not really exist
+                if ($ref === "#/properties/address") {
+                    return new ReferencedTypeClass(CustomerAddress::class);
                 }
 
-                $result = $this->lookup->lookupReference($reference);
+                $result = $this->lookup->lookupReference($ref);
                 if ($result instanceof ReferencedTypeUnknown) {
                     return new ReferencedTypeUnknown();
                 }
                 return $result;
             }
 
-            public function lookupSchema(string $reference): array
+            public function lookupSchema(string $ref): array
             {
-                if ($reference === "#/properties/address") {
+                if ($ref === "#/properties/address") {
                     return [
-                        'required' => [
-                            'city',
-                            'street',
-                        ],
+                        'required' => ['city', 'street'],
                         'properties' => [
-                            'city' => [
-                                'type' => 'string',
-                                'maxLength' => 32,
-                            ],
-                            'street' => [
-                                'type' => 'string',
-                            ],
+                            'city' => ['type' => 'string', 'maxLength' => 32],
+                            'street' => ['type' => 'string'],
                         ],
                     ];
                 }
 
-                return $this->lookup->lookupSchema($reference);
+                return $this->lookup->lookupSchema($ref);
             }
         });
 

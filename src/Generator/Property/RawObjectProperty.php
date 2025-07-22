@@ -10,8 +10,6 @@ use Composer\Semver\Semver;
  */
 class RawObjectProperty extends AbstractProperty
 {
-    use TypeConvert;
-
     public static function canHandleSchema(array $schema): bool
     {
         $isObject = (isset($schema['type']) && $schema['type'] === 'object');

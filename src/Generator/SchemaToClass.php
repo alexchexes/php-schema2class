@@ -7,13 +7,13 @@ namespace Helmich\Schema2Class\Generator;
 use Helmich\Schema2Class\Codegen\PropertyGenerator;
 use Helmich\Schema2Class\Generator\Definitions\DefinitionsCollector;
 use Helmich\Schema2Class\Generator\Definitions\DefinitionsGenerator;
-use Helmich\Schema2Class\Generator\DefinitionsReferenceLookup;
+use Helmich\Schema2Class\Generator\ReferenceLookup\DefinitionsReferenceLookup;
 use Helmich\Schema2Class\Generator\SchemaToEnum;
 use Helmich\Schema2Class\Generator\Property\IntersectProperty;
 use Helmich\Schema2Class\Generator\Property\NestedObjectProperty;
-use Helmich\Schema2Class\Generator\Property\PropertyCollection;
+use Helmich\Schema2Class\Generator\PropertyCollection\PropertyCollection;
 use Helmich\Schema2Class\Generator\Property\RenameablePropertyInterface;
-use Helmich\Schema2Class\Generator\Property\OptionalPropertyDecorator;
+use Helmich\Schema2Class\Generator\PropertyDecorator\OptionalPropertyDecorator;
 use Helmich\Schema2Class\Util\StringUtils;
 use Helmich\Schema2Class\Writer\WriterInterface;
 use Laminas\Code\DeclareStatement;
@@ -31,13 +31,13 @@ use Symfony\Component\Console\Output\OutputInterface;
 class SchemaToClass
 {
     private WriterInterface $writer;
-    private SchemaToEnum $enumGenerator;
+    private SchemaToEnum $schemaToEnum;
     private OutputInterface $output;
 
     public function __construct(WriterInterface $writer, OutputInterface $output)
     {
         $this->writer = $writer;
-        $this->enumGenerator = new SchemaToEnum($writer);
+        $this->schemaToEnum = new SchemaToEnum($writer);
         $this->output = $output;
     }
 
@@ -128,7 +128,7 @@ class SchemaToClass
 
         if (isset($schema["enum"])) {
             if (SchemaToEnum::canGenerateEnum($schema, $req)) {
-                $this->enumGenerator->schemaToEnum($req);
+                $this->schemaToEnum->schemaToEnum($req);
                 return;
             }
 

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Helmich\Schema2Class\Generator;
+namespace Helmich\Schema2Class\Generator\Util;
 
 use Composer\Semver\Semver;
 

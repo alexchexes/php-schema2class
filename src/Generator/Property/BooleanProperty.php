@@ -6,8 +6,6 @@ use Composer\Semver\Semver;
 
 class BooleanProperty extends AbstractProperty
 {
-    use TypeConvert;
-
     public static function canHandleSchema(array $schema): bool
     {
         if (!isset($schema["type"])) {

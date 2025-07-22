@@ -1,6 +1,9 @@
 <?php
 declare(strict_types = 1);
-namespace Helmich\Schema2Class\Generator\Property;
+namespace Helmich\Schema2Class\Generator\PropertyCollection;
+
+use Helmich\Schema2Class\Generator\Property\PropertyInterface;
+use Helmich\Schema2Class\Generator\PropertyDecorator\OptionalPropertyDecorator;
 
 /**
  * @template-implements \Iterator<PropertyInterface>

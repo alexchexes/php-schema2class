@@ -293,4 +293,72 @@ The generator exposes several hook interfaces that let you customize the generat
 
 Implement any of these interfaces and register the instance on a `GeneratorRequest` to adjust the generated output.
 
+### Custom `$ref` links lookup
+
+If your schema contains `$ref` pointers to definitions that live outside the schema file being
+processed, or if you want to map some references to classes that already exist in your codebase,
+you can resolve such references as desired by implementing the `ReferenceLookup` interface
+and registering your lookup on a `GeneratorRequest`.
+
+```php
+use Helmich\Schema2Class\Generator\DefinitionsReferenceLookup;
+use Helmich\Schema2Class\Generator\ReferencedType\ReferencedType;
+use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeClass;
+use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeUnknown;
+use Helmich\Schema2Class\Generator\ReferenceLookup\ReferenceLookup;
+
+class MyReferenceLookup implements ReferenceLookup
+{
+    public function __construct(private DefinitionsReferenceLookup $defaultLookup) {}
+
+    // Must return instance of a class implementing `ReferencedType` interface,
+    // including the `ReferencedTypeUnknown` when reference cannot be resolved
+    public function lookupReference(string $ref): ReferencedType
+    {
+        if ($ref === "#/properties/address") {
+            return new ReferencedTypeClass(CustomerAddress::class); // Point '#/properties/address' ref to existing class
+        }
+
+        // resolve other refs by built-in Schema2Class lookup mechanism
+        $result = $this->defaultLookup->lookupReference($ref);
+        if ($result instanceof ReferencedTypeUnknown) {
+            return new ReferencedTypeUnknown();
+        }
+        return $result;
+    }
+
+    // Must returns the schema array referenced by the given `$ref` pointer,
+    // or empty array if no schema available
+    public function lookupSchema(string $ref): array
+    {
+        if ($ref === "#/properties/address") {
+            return [
+                'required' => ['city', 'street'],
+                'properties' => [
+                    'city' => ['type' => 'string', 'maxLength' => 32],
+                    'street' => ['type' => 'string'],
+                ],
+            ];
+        }
+
+        return $this->defaultLookup->lookupSchema($ref);
+    }
+}
+```
+
+Then use it:
+
+```php
+// use MyReferenceLookup\MyReferenceLookup;
+use Helmich\Schema2Class\Generator\GeneratorRequest;
+use Helmich\Schema2Class\Generator\SchemaToClassFactory;
+use Helmich\Schema2Class\Generator\DefinitionsReferenceLookup;
+
+$req = new GeneratorRequest(/* ... */);
+$req = $req->withReferenceLookup(
+  new MyReferenceLookup(new DefinitionsReferenceLookup($schema['definitions'] ?? []))
+);
+(new SchemaToClassFactory())->build($writer, $output)->schemaToClass($req);
+```
+
 [jsonschema]: http://json-schema.org/

@@ -4,11 +4,10 @@ namespace Helmich\Schema2Class\Generator\Property;
 
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\SchemaToClass;
+use Helmich\Schema2Class\Generator\Util\SchemaUtils;
 
 class PrimitiveArrayProperty extends AbstractProperty
 {
-    use TypeConvert;
-
     private bool $isAssociativeArray;
 
     public static function canHandleSchema(array $schema): bool
@@ -45,12 +44,12 @@ class PrimitiveArrayProperty extends AbstractProperty
     public function typeAnnotation(): string
     {
         if (isset($this->schema["items"])) {
-            [$annot,] = $this->phpPrimitiveForSchemaType($this->schema["items"]);
+            $annot = SchemaUtils::extractPhpTypeFromSchema($this->schema["items"]);
             return $annot . "[]";
         }
 
         if (isset($this->schema["additionalProperties"]) && is_array($this->schema["additionalProperties"])) {
-            [$annot,] = $this->phpPrimitiveForSchemaType($this->schema["additionalProperties"]);
+            $annot = SchemaUtils::extractPhpTypeFromSchema($this->schema["additionalProperties"]);
             return $annot . "[]";
         }
 

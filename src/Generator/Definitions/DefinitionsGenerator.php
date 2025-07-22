@@ -7,6 +7,13 @@ namespace Helmich\Schema2Class\Generator\Definitions;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\SchemaToClass;
 
+/**
+ * Generates PHP classes for each {@see Definition} produced by a {@see DefinitionsCollector}.
+ *
+ * The generator is invoked from {@see SchemaToClass} when a schema contains nested definitions.
+ * It clones the original request for every discovered definition and
+ * invokes {@see SchemaToClass} again to turn the sub-schema into a dedicated class.
+ */
 class DefinitionsGenerator
 {
     public function __construct(private SchemaToClass $schemaToClass)

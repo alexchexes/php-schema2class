@@ -1,7 +1,14 @@
 <?php
 
-namespace Helmich\Schema2Class\Generator;
+namespace Helmich\Schema2Class\Generator\ReferencedType;
 
+use Helmich\Schema2Class\Generator\GeneratorRequest;
+
+/**
+ * Abstraction for a schema entity referenced via `$ref` for which a dedicated PHP class or Enum exists.
+ * 
+ * Implementations are produced by {@see ReferenceLookup} implementations.
+ */
 interface ReferencedType
 {
     function name(): string;

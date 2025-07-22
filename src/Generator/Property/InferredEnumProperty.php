@@ -8,8 +8,6 @@ use Laminas\Code\Generator\PropertyValueGenerator;
 
 class InferredEnumProperty extends AbstractProperty
 {
-    use TypeConvert;
-
     private array $valueTypes = [];
 
     public function __construct(string $key, array $schema, \Helmich\Schema2Class\Generator\GeneratorRequest $generatorRequest)

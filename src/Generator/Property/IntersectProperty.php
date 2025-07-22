@@ -7,8 +7,6 @@ use Helmich\Schema2Class\Generator\SchemaToClass;
 
 class IntersectProperty extends AbstractProperty
 {
-    use TypeConvert;
-
     public static function canHandleSchema(array $schema): bool
     {
         return isset($schema["allOf"]);

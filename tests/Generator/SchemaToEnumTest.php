@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator;
 
+use Helmich\Schema2Class\Generator\EnumGenerator;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
 use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
 use Helmich\Schema2Class\Writer\DebugWriter;
@@ -48,7 +49,7 @@ class SchemaToEnumTest extends TestCase
         $writer = new DebugWriter(new NullOutput());
 
         $hook = new class implements Hook\EnumCreatedHook {
-            public function onEnumCreated(string $enumName, PhpParserEnumGenerator $enum): void
+            public function onEnumCreated(string $enumName, EnumGenerator $enum): void
             {
                 $enum->getBuilder()->addStmt((new \PhpParser\BuilderFactory())->enumCase('BAR')->setValue('bar'));
             }

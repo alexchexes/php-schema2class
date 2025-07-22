@@ -4,7 +4,6 @@ namespace Helmich\Schema2Class\Generator;
 
 use Laminas\Code\Generator\ClassGenerator;
 use Laminas\Code\Generator\FileGenerator;
-use Helmich\Schema2Class\Generator\PhpParserEnumGenerator;
 
 trait GeneratorHookRunner
 {
@@ -38,7 +37,7 @@ trait GeneratorHookRunner
         }
     }
 
-    public function onEnumCreated(string $enumName, PhpParserEnumGenerator $enum): void
+    public function onEnumCreated(string $enumName, EnumGenerator $enum): void
     {
         foreach ($this->hooks as ['hook' => $hook]) {
             if ($hook instanceof Hook\EnumCreatedHook) {

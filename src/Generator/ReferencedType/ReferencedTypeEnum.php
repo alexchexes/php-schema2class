@@ -1,9 +1,10 @@
 <?php
 
-namespace Helmich\Schema2Class\Generator;
+namespace Helmich\Schema2Class\Generator\ReferencedType;
 
 use Helmich\Schema2Class\Generator\SchemaToEnum;
-use Helmich\Schema2Class\Generator\EnumUtils;
+use Helmich\Schema2Class\Generator\Util\EnumUtils;
+use Helmich\Schema2Class\Generator\GeneratorRequest;
 
 readonly class ReferencedTypeEnum implements ReferencedType
 {

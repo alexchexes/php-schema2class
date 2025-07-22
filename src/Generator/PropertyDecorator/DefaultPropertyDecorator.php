@@ -1,15 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace Helmich\Schema2Class\Generator\Property;
+namespace Helmich\Schema2Class\Generator\PropertyDecorator;
 
+use Helmich\Schema2Class\Generator\Property\PropertyInterface;
+use Helmich\Schema2Class\Generator\Property\RenameablePropertyInterface;
 use Helmich\Schema2Class\Generator\SchemaToClass;
+use Helmich\Schema2Class\Generator\Util\CodeFormatUtils;
 use Laminas\Code\Generator\PropertyValueGenerator;
 
 class DefaultPropertyDecorator implements PropertyDecoratorInterface, RenameablePropertyInterface
 {
-    use CodeFormatting;
-
     private string $key;
 
     private PropertyInterface $inner;
@@ -58,7 +59,7 @@ class DefaultPropertyDecorator implements PropertyDecoratorInterface, Renameable
         $defaultExp = $this->defaultExpr();
         $accessor   = $object ? "\${$inputVarName}->{{$keyStr}}" : "\${$inputVarName}[{$keyStr}]";
 
-        return "\${$name} = {$defaultExp};\nif (isset($accessor)) {\n" . $this->indentCode($inner, 1) . "\n}";
+        return "\${$name} = {$defaultExp};\nif (isset($accessor)) {\n" . CodeFormatUtils::indentCode($inner, 1) . "\n}";
     }
 
     /**

@@ -6,14 +6,14 @@ namespace Helmich\Schema2Class\Generator;
 
 use Helmich\Schema2Class\Codegen\PropertyGenerator;
 use Helmich\Schema2Class\Generator\Property\CodeFormatting;
-use Helmich\Schema2Class\Generator\Property\OptionalPropertyDecorator;
-use Helmich\Schema2Class\Generator\Property\PropertyCollection;
-use Helmich\Schema2Class\Generator\Property\PropertyCollectionFilterFactory;
+use Helmich\Schema2Class\Generator\PropertyDecorator\OptionalPropertyDecorator;
+use Helmich\Schema2Class\Generator\PropertyCollection\PropertyCollection;
+use Helmich\Schema2Class\Generator\PropertyCollection\PropertyCollectionFilterFactory;
 use Helmich\Schema2Class\Generator\Property\PropertyInterface;
 use Helmich\Schema2Class\Generator\Property\PrimitiveArrayProperty;
 use Helmich\Schema2Class\Generator\Property\ObjectArrayProperty;
 use Helmich\Schema2Class\Generator\Property\ReferenceArrayProperty;
-use Helmich\Schema2Class\Generator\Property\PropertyDecoratorInterface;
+use Helmich\Schema2Class\Generator\PropertyDecorator\PropertyDecoratorInterface;
 use Helmich\Schema2Class\Generator\Property\TypedArrayProperty;
 use Helmich\Schema2Class\Util\StringUtils;
 use Laminas\Code\Generator\DocBlock\Tag\GenericTag;
@@ -26,8 +26,6 @@ use Laminas\Code\Generator\ParameterGenerator;
 
 class Generator
 {
-    use CodeFormatting;
-
     private GeneratorRequest $generatorRequest;
 
     public function __construct(GeneratorRequest $generatorRequest)

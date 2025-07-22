@@ -9,8 +9,6 @@ use Helmich\Schema2Class\Generator\SchemaToClass;
 
 class TypedArrayProperty extends AbstractProperty
 {
-    use TypeConvert;
-
     private PropertyInterface $itemType;
     private array $itemSchema;
 

@@ -2,12 +2,12 @@
 
 namespace Helmich\Schema2Class\Generator\Hook;
 
-use Helmich\Schema2Class\Generator\PhpParserEnumGenerator;
+use Helmich\Schema2Class\Generator\EnumGenerator;
 
 /**
  * Interface definition for hooks that are called when an enumeration is created.
  */
 interface EnumCreatedHook
 {
-    function onEnumCreated(string $enumName, PhpParserEnumGenerator $enum): void;
+    function onEnumCreated(string $enumName, EnumGenerator $enum): void;
 }

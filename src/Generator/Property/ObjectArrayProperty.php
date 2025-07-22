@@ -10,8 +10,6 @@ use Helmich\Schema2Class\Generator\SchemaToClass;
 
 class ObjectArrayProperty extends AbstractProperty
 {
-    use TypeConvert;
-
     private function buildUseClause(): string
     {
         $validateArg = $this->generatorRequest->getCurrValidateArgAlias();

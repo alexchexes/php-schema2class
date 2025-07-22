@@ -15,9 +15,9 @@ use Helmich\Schema2Class\Generator\Property\IntegerProperty;
 use Helmich\Schema2Class\Generator\Property\IntersectProperty;
 use Helmich\Schema2Class\Generator\Property\MixedProperty;
 use Helmich\Schema2Class\Generator\Property\NestedObjectProperty;
-use Helmich\Schema2Class\Generator\Property\NullablePropertyDecorator;
+use Helmich\Schema2Class\Generator\PropertyDecorator\NullablePropertyDecorator;
 use Helmich\Schema2Class\Generator\Property\NullProperty;
-use Helmich\Schema2Class\Generator\Property\OptionalPropertyDecorator;
+use Helmich\Schema2Class\Generator\PropertyDecorator\OptionalPropertyDecorator;
 use Helmich\Schema2Class\Generator\Property\PrimitiveUnionEnumProperty;
 use Helmich\Schema2Class\Generator\Property\PropertyInterface;
 use Helmich\Schema2Class\Generator\Property\ReferenceArrayProperty;
@@ -60,7 +60,12 @@ class PropertyBuilder
      * @return PropertyInterface
      * @throws GeneratorException
      */
-    public static function buildPropertyFromSchema(GeneratorRequest $req, string $name, array $definition, bool $isRequired): PropertyInterface
+    public static function buildPropertyFromSchema(
+        GeneratorRequest $req,
+        string $name,
+        array $definition,
+        bool $isRequired
+    ): PropertyInterface
     {
         self::testInvariants($definition);
 

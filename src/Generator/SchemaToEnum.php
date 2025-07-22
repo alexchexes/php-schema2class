@@ -4,7 +4,7 @@ namespace Helmich\Schema2Class\Generator;
 
 use Helmich\Schema2Class\Writer\WriterInterface;
 use Laminas\Code\Generator\FileGenerator;
-use Helmich\Schema2Class\Generator\PhpParserEnumGenerator;
+use Helmich\Schema2Class\Generator\EnumGenerator;
 
 class SchemaToEnum
 {
@@ -104,7 +104,7 @@ class SchemaToEnum
             $type = $typeField === 'string' ? 'string' : 'int';
         }
         $enumName = $req->getTargetNamespace() . "\\" . $req->getTargetClass();
-        $enum     = new PhpParserEnumGenerator($enumName, $type, $cases);
+        $enum     = new EnumGenerator($enumName, $type, $cases);
 
         $req->onEnumCreated($enumName, $enum);
 

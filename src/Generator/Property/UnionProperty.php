@@ -13,8 +13,6 @@ use Helmich\Schema2Class\Generator\Property\NullProperty;
 
 class UnionProperty extends AbstractProperty
 {
-    use TypeConvert;
-
     /** @var PropertyInterface[] */
     private array $subProperties;
 

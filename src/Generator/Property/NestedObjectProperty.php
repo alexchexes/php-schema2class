@@ -7,8 +7,6 @@ use Helmich\Schema2Class\Generator\SchemaToClass;
 
 class NestedObjectProperty extends AbstractProperty
 {
-    use TypeConvert;
-
     public static function canHandleSchema(array $schema): bool
     {
         $isObject = (isset($schema["type"]) && $schema["type"] === "object")

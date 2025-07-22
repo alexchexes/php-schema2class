@@ -1,6 +1,8 @@
 <?php
 
-namespace Helmich\Schema2Class\Generator;
+namespace Helmich\Schema2Class\Generator\ReferencedType;
+
+use Helmich\Schema2Class\Generator\GeneratorRequest;
 
 readonly class ReferencedTypeUnknown implements ReferencedType
 {

@@ -1,7 +1,9 @@
 <?php
 
-namespace Helmich\Schema2Class\Generator\Property;
+namespace Helmich\Schema2Class\Generator\PropertyCollection;
 
+use Helmich\Schema2Class\Generator\Property\PropertyInterface;
+use Helmich\Schema2Class\Generator\PropertyDecorator\OptionalPropertyDecorator;
 use Helmich\Schema2Class\Generator\PropertyQuery;
 
 readonly class PropertyCollectionFilterFactory

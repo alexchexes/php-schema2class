@@ -2,16 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Helmich\Schema2Class\Generator\Property;
+namespace Helmich\Schema2Class\Generator\PropertyDecorator;
 
 use Composer\Semver\Semver;
+use Helmich\Schema2Class\Generator\Property\NullProperty;
+use Helmich\Schema2Class\Generator\Property\PropertyInterface;
+use Helmich\Schema2Class\Generator\Property\RenameablePropertyInterface;
+use Helmich\Schema2Class\Generator\Property\StringProperty;
 use Helmich\Schema2Class\Generator\SchemaToClass;
 use Laminas\Code\Generator\PropertyValueGenerator;
 
 class NullablePropertyDecorator implements PropertyDecoratorInterface, RenameablePropertyInterface
 {
-    use CodeFormatting;
-
     protected string $key;
     protected PropertyInterface $inner;
 

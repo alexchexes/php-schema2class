@@ -4,17 +4,14 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class\Generator;
 
 use PhpParser\Builder\Enum_ as EnumBuilder;
-use PhpParser\Builder\EnumCase;
 use PhpParser\BuilderFactory;
 use PhpParser\Node\Stmt;
 use PhpParser\PrettyPrinter\Standard;
 
 /**
  * Simple wrapper around nikic/php-parser to build an enum and generate code.
- *
- * @internal This class is not considered part of the public API.
  */
-class PhpParserEnumGenerator
+class EnumGenerator
 {
     private EnumBuilder $builder;
     private BuilderFactory $factory;

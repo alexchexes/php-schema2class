@@ -3,6 +3,7 @@ declare(strict_types = 1);
 
 namespace Helmich\Schema2Class\Generator\Property;
 
+use Helmich\Schema2Class\Generator\PropertyDecorator\OptionalPropertyDecorator;
 use Laminas\Code\Generator\PropertyValueGenerator;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;

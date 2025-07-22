@@ -11,8 +11,6 @@ use Laminas\Code\Generator\ValueGenerator;
 
 class StringEnumProperty extends AbstractProperty
 {
-    use TypeConvert;
-
     public static function canHandleSchema(array $schema): bool
     {
         return isset($schema["type"], $schema["enum"])

@@ -8,6 +8,9 @@ use Composer\Semver\Comparator;
 use Helmich\Schema2Class\Generator\Hook\AddInterfaceHook;
 use Helmich\Schema2Class\Generator\Hook\AddMethodHook;
 use Helmich\Schema2Class\Generator\Hook\AddPropertyHook;
+use Helmich\Schema2Class\Generator\ReferencedType\ReferencedType;
+use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeUnknown;
+use Helmich\Schema2Class\Generator\ReferenceLookup\ReferenceLookup;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
 use Helmich\Schema2Class\Spec\OptionsDefaults;
 use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
@@ -72,9 +75,9 @@ class GeneratorRequest
             self::normalizeTargetVersion($opts->getTargetPHPVersion())
         );
 
-        $this->rawSchema = $schema[\Helmich\Schema2Class\Loader\SchemaLoader::RAW_KEY] ?? null;
+        $this->rawSchema = $schema[SchemaLoader::RAW_KEY] ?? null;
         if ($this->rawSchema !== null) {
-            unset($schema[\Helmich\Schema2Class\Loader\SchemaLoader::RAW_KEY]);
+            unset($schema[SchemaLoader::RAW_KEY]);
         }
 
         $this->schema = $schema;
