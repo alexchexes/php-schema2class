@@ -5,6 +5,11 @@ namespace Helmich\Schema2Class\Generator;
 use Laminas\Code\Generator\ClassGenerator;
 use Laminas\Code\Generator\FileGenerator;
 
+/**
+ * Mixin for generator components that support hooks.
+ *
+ * Stores hook objects and calls them whenever a new class, enum or file is created.
+ */
 trait GeneratorHookRunner
 {
     /**

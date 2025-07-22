@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class\Generator\PropertyDecorator;
 
 use Helmich\Schema2Class\Generator\Property\RenameablePropertyInterface;
-use Helmich\Schema2Class\Generator\Util\CodeFormatUtils;
+use Helmich\Schema2Class\Util\StringUtils;
 
 class OptionalPropertyDecorator extends NullablePropertyDecorator implements RenameablePropertyInterface
 {
@@ -77,14 +77,14 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator implements Ren
 
         if ($this->optionalNullable) {
             $check = "isset(\$this->{$name}) || array_key_exists('{$this->key}', \$this->_providedOptionals)";
-            return "if ({$check}) {\n" . CodeFormatUtils::indentCode($inner, 1) . "\n}";
+            return "if ({$check}) {\n" . StringUtils::indentCode($inner, 1) . "\n}";
         }
 
         if ($this->inner->allowsNull()) {
             return $inner;
         }
 
-        return "if (isset(\$this->{$name})) {\n" . CodeFormatUtils::indentCode($inner, 1) . "\n}";
+        return "if (isset(\$this->{$name})) {\n" . StringUtils::indentCode($inner, 1) . "\n}";
     }
 
     public function convertTypeToStdClass(string $outputVarName = 'output'): string
@@ -94,14 +94,14 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator implements Ren
 
         if ($this->optionalNullable) {
             $check = "isset(\$this->{$name}) || array_key_exists('{$this->key}', \$this->_providedOptionals)";
-            return "if ({$check}) {\n" . CodeFormatUtils::indentCode($inner, 1) . "\n}";
+            return "if ({$check}) {\n" . StringUtils::indentCode($inner, 1) . "\n}";
         }
 
         if ($this->inner->allowsNull()) {
             return $inner;
         }
 
-        return "if (isset(\$this->{$name})) {\n" . CodeFormatUtils::indentCode($inner, 1) . "\n}";
+        return "if (isset(\$this->{$name})) {\n" . StringUtils::indentCode($inner, 1) . "\n}";
     }
 
     /**
@@ -113,7 +113,7 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator implements Ren
         $inner = $this->inner->cloneProperty();
 
         if ($inner !== null) {
-            return "if (isset(\$this->{$name})) {\n" . CodeFormatUtils::indentCode($inner, 1) . "\n}";
+            return "if (isset(\$this->{$name})) {\n" . StringUtils::indentCode($inner, 1) . "\n}";
         }
 
         return null;

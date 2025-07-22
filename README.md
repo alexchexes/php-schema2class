@@ -260,6 +260,7 @@ use Helmich\Schema2Class\Generator\SchemaLoader;
 use Helmich\Schema2Class\Generator\SchemaToClassFactory;
 use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
+use Laminas\Code\Generator\ClassGenerator;
 use Symfony\Component\Console\Output\NullOutput;
 
 $schema  = (new SchemaLoader())->loadSchema('example.json');

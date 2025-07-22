@@ -2,6 +2,9 @@
 declare(strict_types = 1);
 namespace Helmich\Schema2Class\Generator\Property;
 
+/**
+ * Represents schema property of type `"string"` with `"date-time"` format as `\DateTime` objects in PHP.
+ */
 class DateProperty extends AbstractProperty
 {
     public static function canHandleSchema(array $schema): bool

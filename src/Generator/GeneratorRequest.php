@@ -18,6 +18,19 @@ use Helmich\Schema2Class\Loader\SchemaLoader;
 use Laminas\Code\Generator\MethodGenerator;
 use Laminas\Code\Generator\PropertyGenerator;
 
+/** 
+ * (Mostly) immutable data object describing what and how to generate.
+ * 
+ * Every class or enum is generated from a `GeneratorRequest`. It bundles the JSON schema
+ * to operate on, generation options and information about the surrounding specification file.
+ * 
+ * The request also stores runtime information such as registered {@see ReferenceLookup}
+ * implementations and is cloned when modifications are needed for nested classes
+ * 
+ * Mutation is deliberately allowed for `currValidateArgAlias`, `currMaterializeArgAlias`,
+ * and `currReqHasDefaults` to simplify passing information to nested contexts.
+ * TODO: Rethink this.
+ */
 class GeneratorRequest
 {
     use GeneratorHookRunner;
@@ -52,7 +65,7 @@ class GeneratorRequest
     private ?string $currMaterializeArgAlias = null;
 
     /**
-     * 
+     * Whether the object schema from which the class is currently generated has defaults.
      */
     private bool $currReqHasDefaults = false;
 
@@ -366,7 +379,8 @@ class GeneratorRequest
     }
 
     /**
-     * 
+     * This method is deliberately mutating (not `with...`) so that the information about
+     * the presence of defaults is available to all property generators in nested contexts.
      */
     public function setCurrReqHasDefaults(bool $currReqHasDefaults): void
     {

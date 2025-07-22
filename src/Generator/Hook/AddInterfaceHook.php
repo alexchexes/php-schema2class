@@ -3,8 +3,12 @@
 namespace Helmich\Schema2Class\Generator\Hook;
 
 use Laminas\Code\Generator\ClassGenerator;
-use Laminas\Code\Generator\MethodGenerator;
 
+/**
+ * Hook that appends an interface to a generated class.
+ * 
+ * Registered via {@see GeneratorRequest::withInterface}.
+ */
 readonly class AddInterfaceHook implements ClassCreatedHook
 {
     /**

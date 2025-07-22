@@ -14,7 +14,7 @@ use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use function PHPUnit\Framework\assertSame;
 use function PHPUnit\Framework\assertTrue;
-use Helmich\Schema2Class\Generator\Definitions\Definition;
+use Helmich\Schema2Class\Generator\Definition\Definition;
 use Helmich\Schema2Class\Generator\ReferenceLookup\DefinitionsReferenceLookup;
 
 class UnionPropertyTest extends TestCase

@@ -2,6 +2,12 @@
 declare(strict_types = 1);
 namespace Helmich\Schema2Class\Generator;
 
+/**
+ * Infers PSR-4 namespaces for generated classes from an existing composer.json.
+ *
+ * Walks up the directory tree until a composer.json file is found and then
+ * matches the directory against the configured PSR-4 mappings.
+ */
 class NamespaceInferrer
 {
     /**

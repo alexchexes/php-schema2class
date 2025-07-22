@@ -14,18 +14,14 @@ interface ReferenceLookup
     /**
      * Returns information about the PHP type referenced by the given `$ref` pointer.
      *
-     * When the reference cannot be resolved a {@link ReferencedTypeUnknown}
-     * instance should be returned.
+     * When the reference cannot be resolved a {@link ReferencedTypeUnknown} instance should be returned.
      */
     public function lookupReference(string $ref): ReferencedType;
     
     /**
      * Returns the schema array referenced by the given `$ref` pointer.
      *
-     * Implementations are free to return an empty array when no schema is
-     * available for the given reference.
-     *
-     * @return array<mixed>
+     * Implementations can return an empty array when no schema is available for the given reference.
      */
     public function lookupSchema(string $ref): array;
 }

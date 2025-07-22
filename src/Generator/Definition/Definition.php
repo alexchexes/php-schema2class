@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Helmich\Schema2Class\Generator\Definitions;
+namespace Helmich\Schema2Class\Generator\Definition;
 
 /**
  * Metadata about a definition collected from `#/definitions` or `#/$defs`.

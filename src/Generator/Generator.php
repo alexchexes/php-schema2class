@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class\Generator;
 
 use Helmich\Schema2Class\Codegen\PropertyGenerator;
-use Helmich\Schema2Class\Generator\Property\CodeFormatting;
 use Helmich\Schema2Class\Generator\PropertyDecorator\OptionalPropertyDecorator;
 use Helmich\Schema2Class\Generator\PropertyCollection\PropertyCollection;
 use Helmich\Schema2Class\Generator\PropertyCollection\PropertyCollectionFilterFactory;
@@ -24,6 +23,15 @@ use Laminas\Code\Generator\DocBlockGenerator;
 use Laminas\Code\Generator\MethodGenerator;
 use Laminas\Code\Generator\ParameterGenerator;
 
+/**
+ * Generates the `Laminas\Code` representation of a PHP class for a single schema.
+ *
+ * Called by {@see SchemaToClass} (which also prepares and hands the {@see GeneratorRequest} here)
+ * after all {@see PropertyInterface} objects are collected.
+ * 
+ * This class is responsible only for building the Laminas `ClassGenerator` representation;
+ * the actual writing of files happens outside of it.
+ */
 class Generator
 {
     private GeneratorRequest $generatorRequest;
@@ -564,7 +572,7 @@ class Generator
         if ($this->generatorRequest->getOptions()->getPreservePropertyNames()) {
             $camelCasedName = StringUtils::pascalCasePreserveOuterUnderscores($property->name());
         } else {
-            $camelCasedName = StringUtils::pascalCase($property->name());
+            $camelCasedName = StringUtils::safePascalCase($property->name());
         }
         $annotatedType  = $property->typeAnnotation();
 
@@ -639,7 +647,7 @@ class Generator
         if ($this->generatorRequest->getOptions()->getPreservePropertyNames()) {
             $camelCaseName = StringUtils::pascalCasePreserveOuterUnderscores($name);
         } else {
-            $camelCaseName = StringUtils::pascalCase($name);
+            $camelCaseName = StringUtils::safePascalCase($name);
         }
 
         $requiredProperty = ($property instanceof OptionalPropertyDecorator) ? $property->unwrap() : $property;
@@ -727,7 +735,7 @@ class Generator
         $name = $property->name();
         $camelCaseName = $this->generatorRequest->getOptions()->getPreservePropertyNames()
             ? StringUtils::pascalCasePreserveOuterUnderscores($name)
-            : StringUtils::pascalCase($name);
+            : StringUtils::safePascalCase($name);
 
         $requiredProperty = ($property instanceof OptionalPropertyDecorator) ? $property->unwrap() : $property;
         $annotatedType = $requiredProperty->typeAnnotation();
@@ -814,7 +822,7 @@ class Generator
         $name = $property->name();
         $camelCaseName = $this->generatorRequest->getOptions()->getPreservePropertyNames()
             ? StringUtils::pascalCasePreserveOuterUnderscores($name)
-            : StringUtils::pascalCase($name);
+            : StringUtils::safePascalCase($name);
 
         $body = "\$this->{$name} = null;\n";
         if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
@@ -853,7 +861,7 @@ class Generator
         if ($this->generatorRequest->getOptions()->getPreservePropertyNames()) {
             $camelCasedName = StringUtils::pascalCasePreserveOuterUnderscores($name);
         } else {
-            $camelCasedName = StringUtils::pascalCase($name);
+            $camelCasedName = StringUtils::safePascalCase($name);
         }
 
         $body = "\$clone = clone \$this;\n";

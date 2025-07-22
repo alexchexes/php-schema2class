@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class\Generator\Property;
 
 use Composer\Semver\Semver;
-use Helmich\Schema2Class\Generator\Util\EnumUtils;
+use Helmich\Schema2Class\Util\EnumUtils;
 
 class NumberProperty extends AbstractProperty
 {

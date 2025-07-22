@@ -2,6 +2,12 @@
 
 namespace Helmich\Schema2Class\Generator;
 
+/**
+ * Helper to build a `match` expression programmatically.
+ * 
+ * Arms are grouped by return expression so that multiple conditions can map to
+ * the same result
+ */
 class MatchGenerator
 {
     private array $arms = [];

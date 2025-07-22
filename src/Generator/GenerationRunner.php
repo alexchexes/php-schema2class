@@ -22,6 +22,13 @@ use Helmich\Schema2Class\Writer\WriterInterface;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/** 
+ * High level orchestration for turning a specification into PHP classes.
+ * 
+ * It reads a {@see Specification}, resolves option defaults and invokes
+ * {@see SchemaToClass} for each source schema.
+ * Used by top-level {@see Schema2Class} API class, which in turn used by the CLI commands.
+ */
 class GenerationRunner
 {
     private SchemaLoader $loader;
@@ -123,7 +130,7 @@ class GenerationRunner
         try {
             return $this->namespaceInferrer->inferNamespaceFromComposerFile($targetDir);
         } catch (GeneratorException $e) {
-            $fallback = StringUtils::pascalCase(basename(str_replace('\\', '/', rtrim($targetDir, '/'))));
+            $fallback = StringUtils::safePascalCase(basename(str_replace('\\', '/', rtrim($targetDir, '/'))));
             $output->writeln(
                 "  ↳ PSR-4 lookup failed, defaulting to directory name as namespace: <comment>{$fallback}</comment>"
             );
@@ -174,7 +181,7 @@ class GenerationRunner
             $className = $file->getClassName();
             if ($className === null && self::schemaNeedsClass($schema) && is_string($schemaInput)) {
                 $basename = pathinfo($schemaInput, PATHINFO_FILENAME);
-                $className = StringUtils::pascalCase($basename);
+                $className = StringUtils::safePascalCase($basename);
                 $file = $file->withClassName($className);
             }
 

@@ -4,6 +4,9 @@ namespace Helmich\Schema2Class\Generator\Property;
 
 use Composer\Semver\Semver;
 
+/**
+ * Represents a boolean value.
+ */
 class BooleanProperty extends AbstractProperty
 {
     public static function canHandleSchema(array $schema): bool

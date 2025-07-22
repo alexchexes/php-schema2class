@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Helmich\Schema2Class\Generator\Definitions;
+namespace Helmich\Schema2Class\Generator\Definition;
 
 use Generator as PhpGenerator;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
@@ -67,7 +67,7 @@ class DefinitionsCollector
         $parts = array_map(
             static function (string $part): string {
                 $sanitized = \Helmich\Schema2Class\Util\StringUtils::sanitizeIdentifier($part);
-                return \Helmich\Schema2Class\Util\StringUtils::pascalCase($sanitized);
+                return \Helmich\Schema2Class\Util\StringUtils::safePascalCase($sanitized);
             },
             $segments
         );

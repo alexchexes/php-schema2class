@@ -6,9 +6,12 @@ namespace Helmich\Schema2Class\Generator\PropertyDecorator;
 use Helmich\Schema2Class\Generator\Property\PropertyInterface;
 use Helmich\Schema2Class\Generator\Property\RenameablePropertyInterface;
 use Helmich\Schema2Class\Generator\SchemaToClass;
-use Helmich\Schema2Class\Generator\Util\CodeFormatUtils;
+use Helmich\Schema2Class\Util\StringUtils;
 use Laminas\Code\Generator\PropertyValueGenerator;
 
+/**
+ * Decorator that injects default value support to another property.
+ */
 class DefaultPropertyDecorator implements PropertyDecoratorInterface, RenameablePropertyInterface
 {
     private string $key;
@@ -59,7 +62,7 @@ class DefaultPropertyDecorator implements PropertyDecoratorInterface, Renameable
         $defaultExp = $this->defaultExpr();
         $accessor   = $object ? "\${$inputVarName}->{{$keyStr}}" : "\${$inputVarName}[{$keyStr}]";
 
-        return "\${$name} = {$defaultExp};\nif (isset($accessor)) {\n" . CodeFormatUtils::indentCode($inner, 1) . "\n}";
+        return "\${$name} = {$defaultExp};\nif (isset($accessor)) {\n" . StringUtils::indentCode($inner, 1) . "\n}";
     }
 
     /**

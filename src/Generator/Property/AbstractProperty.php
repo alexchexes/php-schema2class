@@ -9,6 +9,12 @@ use Helmich\Schema2Class\Generator\SchemaToClass;
 use Helmich\Schema2Class\Util\StringUtils;
 use Laminas\Code\Generator\PropertyValueGenerator;
 
+/**
+ * Base implementation of {@see PropertyInterface} containing common logic for
+ * property mapping and name handling.
+ * Subclasses implement the actual mapping, type hints and validation logic for
+ * a specific JSON Schema type.
+ */
 abstract class AbstractProperty implements PropertyInterface, RenameablePropertyInterface
 {
     protected string $key;
@@ -27,14 +33,14 @@ abstract class AbstractProperty implements PropertyInterface, RenameableProperty
     {
         $this->key              = $key;
         $this->schema           = $schema;
-        $this->capitalizedName  = StringUtils::pascalCase($this->key);
+        $this->capitalizedName  = StringUtils::safePascalCase($this->key);
         $this->generatorRequest = $generatorRequest;
         $this->description      = $schema['description'] ?? null;
 
         if ($generatorRequest->getOptions()->getPreservePropertyNames()) {
             $this->name = StringUtils::sanitizeIdentifier($key);
         } else {
-            $this->name = StringUtils::camelCase($key);
+            $this->name = StringUtils::safeCamelCase($key);
         }
     }
 
@@ -134,8 +140,7 @@ abstract class AbstractProperty implements PropertyInterface, RenameableProperty
 
     public function generateOutputMappingExprStdClass(string $expr): string
     {
-        $map = $this->generateOutputMappingExpr($expr);
-        return str_replace('toArray(', 'toStdClass(', $map); // TODO: DON'T USE str_replace FOR THIS (!!)
+        return $expr;
     }
 
     public function generateCloneExpr(string $expr): string

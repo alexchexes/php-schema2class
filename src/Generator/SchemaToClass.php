@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class\Generator;
 
 use Helmich\Schema2Class\Codegen\PropertyGenerator;
-use Helmich\Schema2Class\Generator\Definitions\DefinitionsCollector;
-use Helmich\Schema2Class\Generator\Definitions\DefinitionsGenerator;
+use Helmich\Schema2Class\Generator\Definition\Definition;
+use Helmich\Schema2Class\Generator\Definition\DefinitionsCollector;
+use Helmich\Schema2Class\Generator\Definition\DefinitionsGenerator;
 use Helmich\Schema2Class\Generator\ReferenceLookup\DefinitionsReferenceLookup;
 use Helmich\Schema2Class\Generator\SchemaToEnum;
 use Helmich\Schema2Class\Generator\Property\IntersectProperty;
@@ -14,6 +15,7 @@ use Helmich\Schema2Class\Generator\Property\NestedObjectProperty;
 use Helmich\Schema2Class\Generator\PropertyCollection\PropertyCollection;
 use Helmich\Schema2Class\Generator\Property\RenameablePropertyInterface;
 use Helmich\Schema2Class\Generator\PropertyDecorator\OptionalPropertyDecorator;
+use Helmich\Schema2Class\Util\DefaultsGenUtils;
 use Helmich\Schema2Class\Util\StringUtils;
 use Helmich\Schema2Class\Writer\WriterInterface;
 use Laminas\Code\DeclareStatement;
@@ -202,7 +204,7 @@ class SchemaToClass
             $schemaProperty->setSingleLineDefaultValue(true);
         }
 
-        $defaults = $this->collectDefaults($schema, $req);
+        $defaults = DefaultsGenUtils::collectDefaults($schema, $req);
         $hasDefaults = !empty($defaults);
         $req->setCurrReqHasDefaults($hasDefaults);
         $properties = [$schemaProperty];
@@ -375,22 +377,22 @@ class SchemaToClass
 
         $used = [];
         foreach (array_merge($reservedPropertyNames, $reservedMethodNames) as $n) {
-            $used[] = StringUtils::camelCase($n);
+            $used[] = StringUtils::safeCamelCase($n);
             $used[] = StringUtils::sanitizeIdentifier($n);
         }
         $used = array_values(array_unique($used));
 
         $usedMethods = [];
         foreach ($reservedMethodNames as $n) {
-            $usedMethods[] = strtolower(StringUtils::pascalCase(StringUtils::camelCase($n)));
-            $usedMethods[] = strtolower(StringUtils::pascalCase(StringUtils::sanitizeIdentifier($n)));
+            $usedMethods[] = strtolower(StringUtils::safePascalCase(StringUtils::safeCamelCase($n)));
+            $usedMethods[] = strtolower(StringUtils::safePascalCase(StringUtils::sanitizeIdentifier($n)));
         }
         $usedMethods = array_values(array_unique($usedMethods));
 
         foreach ($properties as $property) {
             $base    = $property->name();
             $unique  = $base;
-            $pascal  = strtolower(StringUtils::pascalCase($unique));
+            $pascal  = strtolower(StringUtils::safePascalCase($unique));
 
             $needsChange = in_array($unique, $used, true)
                 || (!$preservePropertyNames && in_array($pascal, $usedMethods, true));
@@ -398,7 +400,7 @@ class SchemaToClass
             if ($needsChange) {
                 if ($base[0] !== '_') {
                     $unique = '_' . $base;
-                    $pascal = strtolower(StringUtils::pascalCase($unique));
+                    $pascal = strtolower(StringUtils::safePascalCase($unique));
                 }
 
                 $i = 1;
@@ -406,7 +408,7 @@ class SchemaToClass
                 while (in_array($unique, $used, true)
                     || (!$preservePropertyNames && in_array($pascal, $usedMethods, true))) {
                     $unique = $baseUnique . '_' . $i;
-                    $pascal = strtolower(StringUtils::pascalCase($unique));
+                    $pascal = strtolower(StringUtils::safePascalCase($unique));
                     $i++;
                 }
             }
@@ -465,7 +467,7 @@ class SchemaToClass
             $prefix    = '';
             $base      = $name;
 
-            if (preg_match('/^(get|without|with)(.+)$/', $name, $m)) {
+            if (preg_match('/^(set|get|without|with)(.+)$/', $name, $m)) {
                 $prefix = $m[1];
                 $base   = $m[2];
             }
@@ -502,7 +504,7 @@ class SchemaToClass
 
         $ns = $req->getTargetNamespace();
         
-        $generatedClasses = array_map(static function(Definitions\Definition $d) use ($ns): string {
+        $generatedClasses = array_map(static function(Definition $d) use ($ns): string {
             $cls = $d->classFQN;
             if ($ns !== '' && str_starts_with($cls, $ns . '\\')) {
                 return substr($cls, strlen($ns) + 1);
@@ -539,115 +541,5 @@ class SchemaToClass
 
         $generator = new DefinitionsGenerator($this);
         $generator->generate($definitionsToGenerate, $req);
-    }
-
-    private function collectDefaults(array $schema, GeneratorRequest $req): array
-    {
-        $defaults = [];
-        if (!isset($schema['properties']) || !is_array($schema['properties'])) {
-            return $defaults;
-        }
-
-        $raw = $req->getRawSchema();
-        $rawProps = null;
-        if ($raw instanceof \stdClass && isset($raw->properties) && $raw->properties instanceof \stdClass) {
-            $rawProps = $raw->properties;
-        }
-
-        foreach ($schema['properties'] as $key => $def) {
-            $found = false;
-            $rawKey = (string)$key;
-            $rawDef = $rawProps && property_exists($rawProps, $rawKey) ? $rawProps->{$rawKey} : null;
-            $d = $this->extractDefault($def, $req, $found, $rawDef);
-            if ($found) {
-                $defaults[$key] = $d;
-            }
-        }
-
-        return $defaults;
-    }
-
-    private function extractDefault(array $def, GeneratorRequest $req, bool &$found = false, object|null $rawDef = null): array
-    {
-        if (array_key_exists('default', $def)) {
-            $found = true;
-            $val = $def['default'];
-            $type = null;
-            if (is_array($val)) {
-                if ($rawDef !== null && property_exists($rawDef, 'default')) {
-                    $rawDefault = $rawDef->default;
-                    if ($rawDefault instanceof \stdClass) {
-                        $type = 'object';
-                    } elseif (is_array($rawDefault)) {
-                        $type = 'array';
-                    }
-                } else {
-                    $type = $this->inferSchemaType($def);
-                }
-            }
-            $default = ['default' => $val];
-            if ($type) {
-                $default['type'] = $type;
-            }
-            return $default;
-        }
-
-        if (isset($def['$ref'])) {
-            $schema = $req->lookupSchema($def['$ref']);
-            $d = $this->extractDefault($schema, $req, $found);
-            if ($found) {
-                return $d;
-            }
-        }
-
-        foreach (['anyOf', 'oneOf', 'allOf'] as $k) {
-            if (isset($def[$k]) && is_array($def[$k])) {
-                foreach ($def[$k] as $i => $sub) {
-                    $rawSub = null;
-                    if ($rawDef !== null && isset($rawDef->{$k}) && is_array($rawDef->{$k})) {
-                        $rawSub = $rawDef->{$k}[$i] ?? null;
-                    }
-                    if (isset($sub['$ref'])) {
-                        $sub = $req->lookupSchema($sub['$ref']);
-                    }
-                    if (is_array($sub)) {
-                        $d = $this->extractDefault($sub, $req, $found, $rawSub);
-                        if ($found) {
-                            return $d;
-                        }
-                    }
-                }
-            }
-        }
-
-        $found = false;
-        return ['default' => null, 'type' => null];
-    }
-
-    private function inferSchemaType(array $schema): ?string
-    {
-        if (isset($schema['type'])) {
-            if (is_string($schema['type'])) {
-                return $schema['type'];
-            }
-            if (is_array($schema['type'])) {
-                if (in_array('object', $schema['type'], true) && !in_array('array', $schema['type'], true)) {
-                    return 'object';
-                }
-                if (in_array('array', $schema['type'], true) && !in_array('object', $schema['type'], true)) {
-                    return 'array';
-                }
-            }
-        }
-
-        if (isset($schema['properties']) || isset($schema['additionalProperties']) || isset($schema['required'])) {
-            return 'object';
-        }
-
-        if (isset($schema['items'])) {
-            return 'array';
-        }
-
-        return null;
     }
 }

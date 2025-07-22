@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Helmich\Schema2Class\Generator\Definitions;
+namespace Helmich\Schema2Class\Generator\Definition;
 
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\SchemaToClass;

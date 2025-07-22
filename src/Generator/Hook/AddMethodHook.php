@@ -5,6 +5,11 @@ namespace Helmich\Schema2Class\Generator\Hook;
 use Laminas\Code\Generator\ClassGenerator;
 use Laminas\Code\Generator\MethodGenerator;
 
+/**
+ * Hook that injects a preconstructed method into generated class.
+ *
+ * Registered via {@see GeneratorRequest::withHook}.
+ */
 readonly class AddMethodHook implements ClassCreatedHook
 {
     public function __construct(private MethodGenerator $method)
