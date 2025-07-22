@@ -248,7 +248,7 @@ class SchemaToClass
 
         $hasOptionalNullable = false;
         foreach ($propertiesFromSchema as $p) {
-            if ($p instanceof OptionalPropertyDecorator && method_exists($p, 'isOptionalNullable') && $p->isOptionalNullable()) {
+            if ($p instanceof OptionalPropertyDecorator && $p->isOptionalNullable()) {
                 $hasOptionalNullable = true;
                 break;
             }
@@ -594,11 +594,9 @@ class SchemaToClass
 
         if (isset($def['$ref'])) {
             $schema = $req->lookupSchema($def['$ref']);
-            if (is_array($schema)) {
-                $d = $this->extractDefault($schema, $req, $found);
-                if ($found) {
-                    return $d;
-                }
+            $d = $this->extractDefault($schema, $req, $found);
+            if ($found) {
+                return $d;
             }
         }
 

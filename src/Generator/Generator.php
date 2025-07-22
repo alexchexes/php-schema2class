@@ -45,7 +45,7 @@ class Generator
 
         $hasOptionalNullable = false;
         foreach ($properties as $p) {
-            if ($p instanceof OptionalPropertyDecorator && method_exists($p, 'isOptionalNullable') && $p->isOptionalNullable()) {
+            if ($p instanceof OptionalPropertyDecorator && $p->isOptionalNullable()) {
                 $hasOptionalNullable = true;
                 break;
             }
@@ -126,7 +126,7 @@ class Generator
 
         $hasOptionalNullable = false;
         foreach ($properties as $p) {
-            if ($p instanceof OptionalPropertyDecorator && method_exists($p, 'isOptionalNullable') && $p->isOptionalNullable()) {
+            if ($p instanceof OptionalPropertyDecorator && $p->isOptionalNullable()) {
                 $hasOptionalNullable = true;
                 break;
             }
