@@ -558,7 +558,7 @@ class SchemaToClass
             $rawDef = $rawProps && property_exists($rawProps, $rawKey) ? $rawProps->{$rawKey} : null;
             $d = $this->extractDefault($def, $req, $found, $rawDef);
             if ($found) {
-                $defaults[$key] = $d['type'] !== null ? ['default' => $d['default'], 'type' => $d['type']] : $d['default'];
+                $defaults[$key] = $d;
             }
         }
 
@@ -583,7 +583,11 @@ class SchemaToClass
                     $type = $this->inferSchemaType($def);
                 }
             }
-            return ['default' => $val, 'type' => $type];
+            $default = ['default' => $val];
+            if ($type) {
+                $default['type'] = $type;
+            }
+            return $default;
         }
 
         if (isset($def['$ref'])) {

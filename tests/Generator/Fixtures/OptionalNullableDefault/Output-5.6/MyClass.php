@@ -104,10 +104,18 @@ class MyClass
      * @var array
      */
     private static $_defaults = [
-        'qux' => 'a qux string',
-        'quux' => 'a quux string',
-        'xyyz' => 'a xyyz string',
-        'thud' => 'a thud string',
+        'qux' => [
+            'default' => 'a qux string',
+        ],
+        'quux' => [
+            'default' => 'a quux string',
+        ],
+        'xyyz' => [
+            'default' => 'a xyyz string',
+        ],
+        'thud' => [
+            'default' => 'a thud string',
+        ],
         'grox' => [
             'default' => [
                 'a' => 'a string',
@@ -564,11 +572,9 @@ class MyClass
         if ($materializeDefaults) {
             foreach (self::$_defaults as $__k => $__v) {
                 if (!property_exists($input, $__k)) {
-                    if (is_array($__v) && array_key_exists('default', $__v)) {
-                        $input->{$__k} = (isset($__v['type']) && $__v['type'] === 'object') ? \JsonSchema\Validator::arrayToObjectRecursive($__v['default']) : $__v['default'];
-                    } else {
-                        $input->{$__k} = is_array($__v) ? \JsonSchema\Validator::arrayToObjectRecursive($__v) : $__v;
-                    }
+                    $input->{$__k} = (isset($__v['type']) && $__v['type'] === 'object')
+                       ? \JsonSchema\Validator::arrayToObjectRecursive($__v['default'])
+                       : $__v['default'];
                 }
             }
         }
@@ -649,11 +655,7 @@ class MyClass
         if ($includeDefaults) {
             foreach (self::$_defaults as $k => $v) {
                 if (!array_key_exists($k, $output)) {
-                    if (is_array($v) && array_key_exists('default', $v)) {
-                        $output[$k] = $v['default'];
-                    } else {
-                        $output[$k] = $v;
-                    }
+                    $output[$k] = $v['default'];
                 }
             }
         }
@@ -699,11 +701,9 @@ class MyClass
         if ($includeDefaults) {
             foreach (self::$_defaults as $k => $v) {
                 if (!property_exists($output, $k)) {
-                    if (is_array($v) && array_key_exists('default', $v)) {
-                        $output->{$k} = (isset($v['type']) && $v['type'] === 'object') ? \JsonSchema\Validator::arrayToObjectRecursive($v['default']) : $v['default'];
-                    } else {
-                        $output->{$k} = is_array($v) ? \JsonSchema\Validator::arrayToObjectRecursive($v) : $v;
-                    }
+                    $output->{$k} = (isset($v['type']) && $v['type'] === 'object')
+                       ? \JsonSchema\Validator::arrayToObjectRecursive($v['default'])
+                       : $v['default'];
                 }
             }
         }
