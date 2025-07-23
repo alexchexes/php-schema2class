@@ -70,213 +70,32 @@ class PropertyBuilder
         self::testInvariants($definition);
 
         $definition = self::sanitizeEnum($definition);
+        $definition = self::collapseSingleTypeArray($definition);
 
-        // collapse single-element type arrays (e.g. ["string"] -> "string")
-        $defType = $definition['type'] ?? null;
-        if (is_array($defType) && count($defType) === 1) {
-            $definition['type'] = $defType[0];
+        if ($property = self::tryInlineReference($req, $name, $definition, $isRequired)) {
+            return $property;
         }
 
-        // Dereference references to schemas that will not result in a separate class
-        if (isset($definition['$ref'])) {
-            $refSchema = $req->lookupSchema($definition['$ref']);
-            if (!empty($refSchema)) {
-                $shouldInline =
-                    (isset($refSchema['oneOf']) || isset($refSchema['anyOf'])) ||
-                    (!NestedObjectProperty::canHandleSchema($refSchema)
-                        && !IntersectProperty::canHandleSchema($refSchema)
-                        && !array_key_exists('enum', $refSchema));
-
-                if ($shouldInline) {
-                    foreach ([
-                        'title',
-                        'description',
-                        'summary',
-                        'default',
-                        'deprecated',
-                        'readOnly',
-                        'writeOnly',
-                        'examples',
-                        'example',
-                    ] as $k) {
-                        if (array_key_exists($k, $definition)) {
-                            $refSchema[$k] = $definition[$k];
-                        }
-                    }
-
-                    return self::buildPropertyFromSchema($req, $name, $refSchema, $isRequired);
-                }
-            }
-        }
-
-        // Handle ["null","primitive"] style optional primitives
-        if (isset($definition['type'])
-            && is_array($definition['type'])
-            && count($definition['type']) === 2
-            && (in_array('null', $definition['type'], true) || in_array(null, $definition['type'], true))
-        ) {
-            [$a, $b] = $definition['type'];
-            $prim = $a === 'null' ? $b : $a;
-            switch ($prim) {
-                case 'string':
-                    if (isset($definition['enum'])) {
-                        $prop = new StringEnumProperty($name, $definition, $req);
-                    } else {
-                        $prop = new StringProperty($name, $definition, $req);
-                    }
-                    break;
-                case 'integer':
-                    $prop = new IntegerProperty($name, $definition, $req);
-                    break;
-                case 'number':
-                    $prop = new NumberProperty($name, $definition, $req);
-                    break;
-                case 'boolean':
-                    $prop = new BooleanProperty($name, $definition, $req);
-                    break;
-                default:
-                    $prop = null;
-            }
-            if ($prop !== null) {
-                if ($isRequired) {
-                    return new NullablePropertyDecorator($name, $prop);   // required + nullable
-                }
-
-                $decorator = new OptionalPropertyDecorator($name, $prop);  // optional
-                if (self::definitionAllowsNull($definition) || $prop->allowsNull()) {
-                    $decorator->markOptionalNullable();
-                }
-
-                return $decorator;
-            }
+        if ($property = self::tryPrimitiveWithNull($req, $name, $definition, $isRequired)) {
+            return $property;
         }
 
         if (PrimitiveUnionEnumProperty::canHandleSchema($definition)) {
             $property = new PrimitiveUnionEnumProperty($name, $definition, $req);
-            if (!$isRequired) {
-                $decorator = new OptionalPropertyDecorator($name, $property);
-                if (self::definitionAllowsNull($definition) || $property->allowsNull()) {
-                    $decorator->markOptionalNullable();
-                }
-                $property = $decorator;
-            } elseif ($property->allowsNull()) {
-                $property = new NullablePropertyDecorator($name, $property);
-            }
-
-            return $property;
+            return self::wrapProperty($property, $definition, $name, $isRequired);
         }
 
         if (InferredEnumProperty::canHandleSchema($definition)) {
             $property = new InferredEnumProperty($name, $definition, $req);
-            if (!$isRequired) {
-                $decorator = new OptionalPropertyDecorator($name, $property);
-                if (self::definitionAllowsNull($definition) || $property->allowsNull()) {
-                    $decorator->markOptionalNullable();
-                }
-                $property = $decorator;
-            } elseif ($property->allowsNull()) {
-                $property = new NullablePropertyDecorator($name, $property);
-            }
+            return self::wrapProperty($property, $definition, $name, $isRequired);
+        }
 
+        if ($property = self::tryExpandMultiType($req, $name, $definition, $isRequired)) {
             return $property;
         }
 
-        // Expand multi-type definitions like ["string", "object"] into an anyOf union
-        if (isset($definition['type']) && is_array($definition['type']) && count($definition['type']) > 1) {
-            $types      = $definition['type'];
-            $subSchemas = [];
-            foreach ($types as $t) {
-                $sub       = $definition;
-                $sub['type'] = $t;
-                // prune object specific fields for non-object arms
-                if ($t !== 'object') {
-                    unset($sub['properties'], $sub['required'], $sub['additionalProperties']);
-                }
-                $subSchemas[] = $sub;
-            }
-
-            $unionDef = $definition;
-            unset($unionDef['type']);
-            $unionDef['anyOf'] = $subSchemas;
-
-            return self::buildPropertyFromSchema($req, $name, $unionDef, $isRequired);
-        }
-
-        // Strip out null arms from anyOf/oneOf and wrap the rest as an Optional<…>
-        $unionKey = isset($definition['anyOf']) ? 'anyOf'
-                : (isset($definition['oneOf']) ? 'oneOf' : null);
-
-        if ($unionKey) {
-            $subs   = $definition[$unionKey];
-            $nullIx = null;
-            foreach ($subs as $i => $sub) {
-                if (isset($sub['type']) && $sub['type'] === 'null') {
-                    $nullIx = $i;
-                    break;
-                }
-            }
-
-            // found a null–arm and at least one non-null arm
-            if ($nullIx !== null && count($subs) > 1) {
-                // everything except the null
-                $otherArms = $subs;
-                array_splice($otherArms, $nullIx, 1);
-
-                //--------------------------------------------------------
-                // CASE A – exactly one remaining arm
-                //         → build that schema directly
-                //--------------------------------------------------------
-
-                if (count($otherArms) === 1) {
-                    $singleSchema = $otherArms[0];
-                    
-                    /** copy meta fields that live on the top-level property */
-                    foreach (['description', 'title', 'default', 'deprecated'] as $k) {
-                        if (isset($definition[$k]) && !isset($singleSchema[$k])) {
-                            $singleSchema[$k] = $definition[$k];
-                        }
-                    }
-
-                    // build the inner property in the usual way
-                    $inner = self::buildPropertyFromSchema(
-                        $req,
-                        $name,
-                        $singleSchema,
-                        $isRequired     // pass-through
-                    );
-
-                    if ($isRequired) {
-                        return new NullablePropertyDecorator($name, $inner);
-                    }
-
-                    $decorator = new OptionalPropertyDecorator($name, $inner);
-                    if (self::definitionAllowsNull($definition) || $inner->allowsNull()) {
-                        $decorator->markOptionalNullable();
-                    }
-
-                    return $decorator;
-                }
-
-                //--------------------------------------------------------
-                // CASE B – still multiple arms
-                //          → keep a real UnionProperty
-                //--------------------------------------------------------
-                
-                $cleanDef             = $definition;
-                $cleanDef[$unionKey]  = $otherArms;            // without the null arm
-                $unionProp            = new UnionProperty($name, $cleanDef, $req);
-
-                if ($isRequired) {
-                    return new NullablePropertyDecorator($name, $unionProp);
-                }
-
-                $decorator = new OptionalPropertyDecorator($name, $unionProp);
-                if (self::definitionAllowsNull($definition) || $unionProp->allowsNull()) {
-                    $decorator->markOptionalNullable();
-                }
-
-                return $decorator;
-            }
+        if ($property = self::tryNullableUnion($req, $name, $definition, $isRequired)) {
+            return $property;
         }
 
         foreach (self::$propertyTypes as $propertyType) {
@@ -284,22 +103,210 @@ class PropertyBuilder
                 /** @var PropertyInterface $property */
                 $property = new $propertyType($name, $definition, $req);
 
-                if (!$isRequired) {
-                    $decorator = new OptionalPropertyDecorator($name, $property); // optional
-                    if (self::definitionAllowsNull($definition) || $property->allowsNull()) {
-                        $decorator->markOptionalNullable();
-                    }
-                    $property = $decorator;
-                } elseif ($property->allowsNull()) {
-                    $property = new NullablePropertyDecorator($name, $property); // required + nullable
-                }
-
-                return $property;
+                return self::wrapProperty($property, $definition, $name, $isRequired);
             }
         }
 
         throw new GeneratorException("cannot map type " . json_encode($definition));
     }
+
+    /** Collapse single-element type arrays (e.g. ["string"] -> "string") */
+    private static function collapseSingleTypeArray(array $definition): array
+    {
+        $defType = $definition['type'] ?? null;
+        if (is_array($defType) && count($defType) === 1) {
+            $definition['type'] = $defType[0];
+        }
+
+        return $definition;
+    }
+
+    /**
+     * Inline referenced schema definitions when they would not create a new class
+     */
+    private static function tryInlineReference(
+        GeneratorRequest $req,
+        string $name,
+        array $definition,
+        bool $isRequired
+    ): ?PropertyInterface {
+        if (!isset($definition['$ref'])) {
+            return null;
+        }
+
+        $refSchema = $req->lookupSchema($definition['$ref']);
+        if (empty($refSchema)) {
+            return null;
+        }
+
+        $shouldInline =
+            (isset($refSchema['oneOf']) || isset($refSchema['anyOf'])) ||
+            (!NestedObjectProperty::canHandleSchema($refSchema)
+                && !IntersectProperty::canHandleSchema($refSchema)
+                && !array_key_exists('enum', $refSchema));
+
+        if (!$shouldInline) {
+            return null;
+        }
+
+        foreach ([
+            'title',
+            'description',
+            'summary',
+            'default',
+            'deprecated',
+            'readOnly',
+            'writeOnly',
+            'examples',
+            'example',
+        ] as $k) {
+            if (array_key_exists($k, $definition)) {
+                $refSchema[$k] = $definition[$k];
+            }
+        }
+
+        return self::buildPropertyFromSchema($req, $name, $refSchema, $isRequired);
+    }
+
+    /** Handle ["null", "<primitive>"] optional primitives */
+    private static function tryPrimitiveWithNull(
+        GeneratorRequest $req,
+        string $name,
+        array $definition,
+        bool $isRequired
+    ): ?PropertyInterface {
+        if (!isset($definition['type']) || !is_array($definition['type']) || count($definition['type']) !== 2) {
+            return null;
+        }
+        if (!(in_array('null', $definition['type'], true) || in_array(null, $definition['type'], true))) {
+            return null;
+        }
+
+        [$a, $b] = $definition['type'];
+        $prim = $a === 'null' ? $b : $a;
+        $prop = match ($prim) {
+            'string'  => isset($definition['enum'])
+                ? new StringEnumProperty($name, $definition, $req)
+                : new StringProperty($name, $definition, $req),
+            'integer' => new IntegerProperty($name, $definition, $req),
+            'number'  => new NumberProperty($name, $definition, $req),
+            'boolean' => new BooleanProperty($name, $definition, $req),
+            default   => null,
+        };
+
+        if ($prop === null) {
+            return null;
+        }
+
+        if ($isRequired) {
+            return new NullablePropertyDecorator($name, $prop);
+        }
+
+        $decorator = new OptionalPropertyDecorator($name, $prop);
+        if (self::definitionAllowsNull($definition) || $prop->allowsNull()) {
+            $decorator->markOptionalNullable();
+        }
+
+        return $decorator;
+    }
+
+    /** Expand multi-type definitions like ["string", "object"] into an anyOf union */
+    private static function tryExpandMultiType(
+        GeneratorRequest $req,
+        string $name,
+        array $definition,
+        bool $isRequired
+    ): ?PropertyInterface {
+        if (!isset($definition['type']) || !is_array($definition['type']) || count($definition['type']) <= 1) {
+            return null;
+        }
+
+        $types      = $definition['type'];
+        $subSchemas = [];
+        foreach ($types as $t) {
+            $sub       = $definition;
+            $sub['type'] = $t;
+            if ($t !== 'object') {
+                unset($sub['properties'], $sub['required'], $sub['additionalProperties']);
+            }
+            $subSchemas[] = $sub;
+        }
+
+        $unionDef = $definition;
+        unset($unionDef['type']);
+        $unionDef['anyOf'] = $subSchemas;
+
+        return self::buildPropertyFromSchema($req, $name, $unionDef, $isRequired);
+    }
+
+    /** Strip out null arms from anyOf/oneOf definitions */
+    private static function tryNullableUnion(
+        GeneratorRequest $req,
+        string $name,
+        array $definition,
+        bool $isRequired
+    ): ?PropertyInterface {
+        $unionKey = isset($definition['anyOf']) ? 'anyOf' : (isset($definition['oneOf']) ? 'oneOf' : null);
+        if (!$unionKey) {
+            return null;
+        }
+
+        $subs   = $definition[$unionKey];
+        $nullIx = null;
+        foreach ($subs as $i => $sub) {
+            if (isset($sub['type']) && $sub['type'] === 'null') {
+                $nullIx = $i;
+                break;
+            }
+        }
+
+        if ($nullIx === null || count($subs) <= 1) {
+            return null;
+        }
+
+        $otherArms = $subs;
+        array_splice($otherArms, $nullIx, 1);
+
+        if (count($otherArms) === 1) {
+            $singleSchema = $otherArms[0];
+            foreach (['description', 'title', 'default', 'deprecated'] as $k) {
+                if (isset($definition[$k]) && !isset($singleSchema[$k])) {
+                    $singleSchema[$k] = $definition[$k];
+                }
+            }
+            $inner = self::buildPropertyFromSchema($req, $name, $singleSchema, $isRequired);
+            return $isRequired
+                ? new NullablePropertyDecorator($name, $inner)
+                : self::wrapProperty($inner, $definition, $name, false);
+        }
+
+        $cleanDef            = $definition;
+        $cleanDef[$unionKey] = $otherArms;
+        $unionProp           = new UnionProperty($name, $cleanDef, $req);
+
+        return $isRequired
+            ? new NullablePropertyDecorator($name, $unionProp)
+            : self::wrapProperty($unionProp, $definition, $name, false);
+    }
+
+    /** Apply optional/nullable decorators around a property */
+    private static function wrapProperty(
+        PropertyInterface $property,
+        array $definition,
+        string $name,
+        bool $isRequired
+    ): PropertyInterface {
+        if (!$isRequired) {
+            $decorator = new OptionalPropertyDecorator($name, $property);
+            if (self::definitionAllowsNull($definition) || $property->allowsNull()) {
+                $decorator->markOptionalNullable();
+            }
+            return $decorator;
+        }
+
+        return $property->allowsNull() ? new NullablePropertyDecorator($name, $property) : $property;
+    }
+
 
     private static function testInvariants(array $definition): void
     {
