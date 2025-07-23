@@ -4,23 +4,23 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator;
 
-use Helmich\Schema2Class\Codegen\PropertyGenerator;
 use Helmich\Schema2Class\Generator\Definition\Definition;
 use Helmich\Schema2Class\Generator\Definition\DefinitionsCollector;
 use Helmich\Schema2Class\Generator\Definition\DefinitionsGenerator;
-use Helmich\Schema2Class\Generator\Property\IntersectProperty;
-use Helmich\Schema2Class\Generator\Property\NestedObjectProperty;
+use Helmich\Schema2Class\Generator\Enum\SchemaToEnum;
+use Helmich\Schema2Class\Generator\Property\Collection\PropertyCollection;
+use Helmich\Schema2Class\Generator\Property\Interface\IntersectProperty;
+use Helmich\Schema2Class\Generator\Property\Interface\NestedObjectProperty;
+use Helmich\Schema2Class\Generator\Property\PropertyBuilder;
 use Helmich\Schema2Class\Generator\Property\RenameablePropertyInterface;
-use Helmich\Schema2Class\Generator\PropertyBuilder;
-use Helmich\Schema2Class\Generator\PropertyCollection\PropertyCollection;
-use Helmich\Schema2Class\Generator\PropertyDecorator\OptionalPropertyDecorator;
+use Helmich\Schema2Class\Generator\Property\Decorator\OptionalPropertyDecorator;
+use Helmich\Schema2Class\Generator\PropertyGenerator;
 use Helmich\Schema2Class\Generator\ReferenceLookup\DefinitionsReferenceLookup;
-use Helmich\Schema2Class\Generator\SchemaToEnum;
 use Helmich\Schema2Class\Util\SchemaUtils;
 use Helmich\Schema2Class\Util\StringUtils;
 use Helmich\Schema2Class\Writer\WriterInterface;
 use Laminas\Code\DeclareStatement;
-use Laminas\Code\Generator\ClassGenerator;
+use Laminas\Code\Generator\ClassGenerator as LaminasClassGenerator;
 use Laminas\Code\Generator\DocBlock\Tag\GenericTag;
 use Laminas\Code\Generator\DocBlockGenerator;
 use Laminas\Code\Generator\FileGenerator;
@@ -107,7 +107,7 @@ class SchemaToClass
             $property->generateSubTypes($this);
         }
 
-        $codeGenerator      = new Generator($req);
+        $codeGenerator      = new ClassGenerator($req);
         $hasOptionalNullable = $this->hasOptionalNullable($propertiesFromSchema);
 
         $properties = [
@@ -342,7 +342,7 @@ class SchemaToClass
 
     private function generateClassFile(GeneratorRequest $req, array $schema, array $properties, array $methods): void
     {
-        $cls = new ClassGenerator(
+        $cls = new LaminasClassGenerator(
             $req->getTargetClass(),
             $req->getTargetNamespace(),
             null,

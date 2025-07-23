@@ -260,7 +260,7 @@ use Helmich\Schema2Class\Generator\SchemaLoader;
 use Helmich\Schema2Class\Generator\SchemaToClassFactory;
 use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
-use Laminas\Code\Generator\ClassGenerator;
+use Laminas\Code\Generator\ClassGenerator as LaminasClassGenerator;
 use Symfony\Component\Console\Output\NullOutput;
 
 $schema  = (new SchemaLoader())->loadSchema('example.json');
@@ -272,7 +272,7 @@ $request = new GeneratorRequest(
 
 // Adding a hook
 $hook = new class implements ClassCreatedHook {
-    public function onClassCreated(string $name, ClassGenerator $class): void
+    public function onClassCreated(string $name, LaminasClassGenerator $class): void
     {
         $class->addProperty('extra');
     }
@@ -302,10 +302,10 @@ you can resolve such references as desired by implementing the `ReferenceLookup`
 and registering your lookup on a `GeneratorRequest`.
 
 ```php
-use Helmich\Schema2Class\Generator\DefinitionsReferenceLookup;
 use Helmich\Schema2Class\Generator\ReferencedType\ReferencedType;
 use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeClass;
 use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeUnknown;
+use Helmich\Schema2Class\Generator\ReferenceLookup\DefinitionsReferenceLookup;
 use Helmich\Schema2Class\Generator\ReferenceLookup\ReferenceLookup;
 
 class MyReferenceLookup implements ReferenceLookup
@@ -353,7 +353,7 @@ Then use it:
 // use MyReferenceLookup\MyReferenceLookup;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\SchemaToClassFactory;
-use Helmich\Schema2Class\Generator\DefinitionsReferenceLookup;
+use Helmich\Schema2Class\Generator\ReferenceLookup\DefinitionsReferenceLookup;
 
 $req = new GeneratorRequest(/* ... */);
 $req = $req->withReferenceLookup(

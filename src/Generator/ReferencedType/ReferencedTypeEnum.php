@@ -3,7 +3,7 @@
 namespace Helmich\Schema2Class\Generator\ReferencedType;
 
 use Helmich\Schema2Class\Generator\GeneratorRequest;
-use Helmich\Schema2Class\Generator\SchemaToEnum;
+use Helmich\Schema2Class\Generator\Enum\SchemaToEnum;
 use Helmich\Schema2Class\Util\EnumUtils;
 
 /**

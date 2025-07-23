@@ -2,7 +2,7 @@
 
 namespace Helmich\Schema2Class\Generator\Hook;
 
-use Laminas\Code\Generator\ClassGenerator;
+use Laminas\Code\Generator\ClassGenerator as LaminasClassGenerator;
 use Laminas\Code\Generator\MethodGenerator;
 
 /**
@@ -16,7 +16,7 @@ readonly class AddMethodHook implements ClassCreatedHook
     {
     }
 
-    function onClassCreated(string $className, ClassGenerator $class): void
+    function onClassCreated(string $className, LaminasClassGenerator $class): void
     {
         $class->addMethodFromGenerator($this->method);
     }

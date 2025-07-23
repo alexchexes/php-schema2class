@@ -2,7 +2,7 @@
 
 namespace Helmich\Schema2Class\Generator\Hook;
 
-use Helmich\Schema2Class\Generator\EnumGenerator;
+use Helmich\Schema2Class\Generator\Enum\EnumGenerator;
 
 /**
  * Interface definition for hooks that are called when an enumeration is created.

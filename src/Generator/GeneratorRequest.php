@@ -8,6 +8,7 @@ use Composer\Semver\Comparator;
 use Helmich\Schema2Class\Generator\Hook\AddInterfaceHook;
 use Helmich\Schema2Class\Generator\Hook\AddMethodHook;
 use Helmich\Schema2Class\Generator\Hook\AddPropertyHook;
+use Helmich\Schema2Class\Generator\Hook\GeneratorHookRunner;
 use Helmich\Schema2Class\Generator\ReferencedType\ReferencedType;
 use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeUnknown;
 use Helmich\Schema2Class\Generator\ReferenceLookup\ReferenceLookup;

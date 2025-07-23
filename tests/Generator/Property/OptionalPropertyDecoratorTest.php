@@ -1,9 +1,9 @@
 <?php
 declare(strict_types = 1);
 
-namespace Helmich\Schema2Class\Generator\Property;
+namespace Helmich\Schema2Class\Generator\Property\Interface;
 
-use Helmich\Schema2Class\Generator\PropertyDecorator\OptionalPropertyDecorator;
+use Helmich\Schema2Class\Generator\Property\Decorator\OptionalPropertyDecorator;
 use Laminas\Code\Generator\PropertyValueGenerator;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Helmich\Schema2Class\Generator\Property;
+namespace Helmich\Schema2Class\Generator\Property\Interface;
 
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
