@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Helmich\Schema2Class\Generator\ReferenceLookup;
 
 use Helmich\Schema2Class\Generator\ReferencedType\ReferencedType;
