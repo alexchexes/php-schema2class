@@ -16,7 +16,7 @@ use Symfony\Component\Yaml\Yaml;
 /**
  * Convenience API for generating classes without using the CLI commands.
  *
- * This class can load a StructBuilder specification from a YAML file or from
+ * This class can load a Schema2Class specification from a YAML or JSON file or from
  * an associative array and generate all classes described therein.
  */
 class Schema2Class

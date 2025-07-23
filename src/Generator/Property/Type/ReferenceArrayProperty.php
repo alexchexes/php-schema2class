@@ -1,6 +1,6 @@
 <?php
 
-namespace Helmich\Schema2Class\Generator\Property\Interface;
+namespace Helmich\Schema2Class\Generator\Property\Type;
 
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\ReferencedType\ReferencedType;

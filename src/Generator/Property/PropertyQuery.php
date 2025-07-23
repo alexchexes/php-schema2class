@@ -1,7 +1,7 @@
 <?php
 namespace Helmich\Schema2Class\Generator\Property;
 
-use Helmich\Schema2Class\Generator\Property\Interface\PropertyInterface;
+use Helmich\Schema2Class\Generator\Property\Type\PropertyInterface;
 
 /**
  * Helpers for quickly obtaining information about property metadata.

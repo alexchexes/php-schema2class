@@ -11,7 +11,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class GenerateSpecCommand extends Command
+final class GenerateSpecCommand extends Command
 {
     public function __construct()
     {
@@ -21,9 +21,9 @@ class GenerateSpecCommand extends Command
     protected function configure(): void
     {
         $this->setName("generate:fromspec");
-        $this->setDescription("Generate PHP classes from a StructBuilder specification file");
+        $this->setDescription("Generate PHP classes from a Schema2Class specification file");
 
-        $this->addArgument("specfile", InputArgument::OPTIONAL, "Specification file to read");
+        $this->addArgument("specfile", InputArgument::OPTIONAL, "Specification file to read (.yml/.yaml or .json)");
         $this->addOption("dry-run", null, InputOption::VALUE_NONE, "Print output to console instead of writing to files");
     }
 

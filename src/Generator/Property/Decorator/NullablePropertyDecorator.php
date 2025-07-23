@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class\Generator\Property\Decorator;
 
 use Composer\Semver\Semver;
-use Helmich\Schema2Class\Generator\Property\Interface\NullProperty;
-use Helmich\Schema2Class\Generator\Property\Interface\PropertyInterface;
-use Helmich\Schema2Class\Generator\Property\Interface\StringProperty;
+use Helmich\Schema2Class\Generator\Property\Type\NullProperty;
+use Helmich\Schema2Class\Generator\Property\Type\PropertyInterface;
+use Helmich\Schema2Class\Generator\Property\Type\StringProperty;
 use Helmich\Schema2Class\Generator\Property\RenameablePropertyInterface;
 use Helmich\Schema2Class\Generator\SchemaToClass;
 use Laminas\Code\Generator\PropertyValueGenerator;

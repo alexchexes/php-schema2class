@@ -2,7 +2,7 @@
 declare(strict_types = 1);
 namespace Helmich\Schema2Class\Generator\Property\Collection;
 
-use Helmich\Schema2Class\Generator\Property\Interface\PropertyInterface;
+use Helmich\Schema2Class\Generator\Property\Type\PropertyInterface;
 use Helmich\Schema2Class\Generator\Property\Decorator\OptionalPropertyDecorator;
 
 /**

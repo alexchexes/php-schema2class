@@ -1,7 +1,7 @@
 <?php
 declare(strict_types = 1);
 
-namespace Helmich\Schema2Class\Generator\Property\Interface;
+namespace Helmich\Schema2Class\Generator\Property\Type;
 
 /**
  * Fallback property used when no other property class claims it can handle the given schema.
