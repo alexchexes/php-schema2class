@@ -6,6 +6,9 @@ use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\SchemaToClass;
 use Helmich\Schema2Class\Util\SchemaUtils;
 
+/**
+ * Represents an array of primitive values or an associative array described via "additionalProperties".
+ */
 class PrimitiveArrayProperty extends AbstractProperty
 {
     private bool $isAssociativeArray;

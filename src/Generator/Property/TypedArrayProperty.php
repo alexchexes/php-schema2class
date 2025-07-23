@@ -7,6 +7,10 @@ use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\PropertyBuilder;
 use Helmich\Schema2Class\Generator\SchemaToClass;
 
+/**
+ * Represents array of complex objects defined "items" schema.
+ * Each element is mapped using the same nested property instance.
+ */
 class TypedArrayProperty extends AbstractProperty
 {
     private PropertyInterface $itemType;

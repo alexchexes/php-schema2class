@@ -6,6 +6,10 @@ namespace Helmich\Schema2Class\Generator\PropertyDecorator;
 use Helmich\Schema2Class\Generator\Property\RenameablePropertyInterface;
 use Helmich\Schema2Class\Util\StringUtils;
 
+/**
+ * Decorator that marks a property as optional. Can also track if null was
+ * explicitly provided to distinguish between missing and null values.
+ */
 class OptionalPropertyDecorator extends NullablePropertyDecorator implements RenameablePropertyInterface
 {
     private bool $optionalNullable = false;

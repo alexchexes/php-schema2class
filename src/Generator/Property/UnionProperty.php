@@ -11,6 +11,10 @@ use Helmich\Schema2Class\Generator\PropertyBuilder;
 use Helmich\Schema2Class\Generator\SchemaToClass;
 use Helmich\Schema2Class\Generator\Property\NullProperty;
 
+/**
+ * Represents a JSON Schema `oneOf`/`anyOf` union property - i.e. property
+ * that can hold several alternative property types.
+ */
 class UnionProperty extends AbstractProperty
 {
     /** @var PropertyInterface[] */

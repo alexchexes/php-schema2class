@@ -4,7 +4,7 @@ namespace Helmich\Schema2Class\Generator;
 
 use Exception;
 
-class GeneratorException extends Exception
-{
-
-}
+/** 
+ * Base exception for all generator errors.
+ */
+class GeneratorException extends Exception {}

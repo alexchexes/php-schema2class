@@ -6,6 +6,9 @@ use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\ReferencedType\ReferencedType;
 use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeEnum;
 
+/**
+ * Property that refers to another generated PHP artifact (class, Enum) via `$ref`.
+ */
 class ReferenceProperty extends AbstractProperty
 {
     private ReferencedType $type;

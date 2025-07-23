@@ -5,6 +5,9 @@ namespace Helmich\Schema2Class\Generator\PropertyDecorator;
 
 use Helmich\Schema2Class\Generator\Property\PropertyInterface;
 
+/** 
+ * Base interface for wrappers that add behaviour around another property.
+ */
 interface PropertyDecoratorInterface extends PropertyInterface
 {
     public function unwrap(): PropertyInterface;

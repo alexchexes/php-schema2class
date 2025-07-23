@@ -8,6 +8,10 @@ use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\PropertyBuilder;
 use Helmich\Schema2Class\Generator\SchemaToClass;
 
+/**
+ * Represents an array of objects. Each entry is generated using {@see PropertyBuilder}
+ * and sub classes may be generated for the item schema.
+ */
 class ObjectArrayProperty extends AbstractProperty
 {
     private function buildUseClause(): string

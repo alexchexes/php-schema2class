@@ -6,6 +6,9 @@ use Helmich\Schema2Class\Generator\Property\PropertyInterface;
 use Helmich\Schema2Class\Generator\PropertyDecorator\OptionalPropertyDecorator;
 use Helmich\Schema2Class\Generator\PropertyQuery;
 
+/** 
+ * Convenience factory for commonly used {@see PropertyCollectionFilter} implementations.
+ */
 readonly class PropertyCollectionFilterFactory
 {
     public static function withoutDeprecatedAndSameName(PropertyCollection $properties): PropertyCollectionFilter

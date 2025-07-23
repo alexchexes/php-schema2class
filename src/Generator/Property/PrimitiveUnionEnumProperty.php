@@ -7,6 +7,9 @@ use Composer\Semver\Semver;
 use Laminas\Code\Generator\PropertyValueGenerator;
 use Laminas\Code\Generator\ValueGenerator;
 
+/**
+ * Represents a union of primitive literal values expressed using `enum`.
+ */
 class PrimitiveUnionEnumProperty extends AbstractProperty
 {
     public static function canHandleSchema(array $schema): bool

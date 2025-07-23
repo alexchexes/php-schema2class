@@ -5,28 +5,39 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class\Generator;
 
 use Helmich\Schema2Class\Generator\Property\BooleanProperty;
-use Helmich\Schema2Class\Generator\Property\NumberProperty;
-use Helmich\Schema2Class\Generator\Property\ObjectArrayProperty;
-use Helmich\Schema2Class\Generator\Property\TypedArrayProperty;
-use Helmich\Schema2Class\Generator\Property\PrimitiveArrayProperty;
-use Helmich\Schema2Class\Generator\Property\InferredEnumProperty;
 use Helmich\Schema2Class\Generator\Property\DateProperty;
+use Helmich\Schema2Class\Generator\Property\InferredEnumProperty;
 use Helmich\Schema2Class\Generator\Property\IntegerProperty;
 use Helmich\Schema2Class\Generator\Property\IntersectProperty;
 use Helmich\Schema2Class\Generator\Property\MixedProperty;
 use Helmich\Schema2Class\Generator\Property\NestedObjectProperty;
-use Helmich\Schema2Class\Generator\PropertyDecorator\NullablePropertyDecorator;
 use Helmich\Schema2Class\Generator\Property\NullProperty;
-use Helmich\Schema2Class\Generator\PropertyDecorator\OptionalPropertyDecorator;
+use Helmich\Schema2Class\Generator\Property\NumberProperty;
+use Helmich\Schema2Class\Generator\Property\ObjectArrayProperty;
+use Helmich\Schema2Class\Generator\Property\PrimitiveArrayProperty;
 use Helmich\Schema2Class\Generator\Property\PrimitiveUnionEnumProperty;
 use Helmich\Schema2Class\Generator\Property\PropertyInterface;
+use Helmich\Schema2Class\Generator\Property\RawObjectProperty;
 use Helmich\Schema2Class\Generator\Property\ReferenceArrayProperty;
 use Helmich\Schema2Class\Generator\Property\ReferenceProperty;
-use Helmich\Schema2Class\Generator\Property\RawObjectProperty;
 use Helmich\Schema2Class\Generator\Property\StringEnumProperty;
 use Helmich\Schema2Class\Generator\Property\StringProperty;
+use Helmich\Schema2Class\Generator\Property\TypedArrayProperty;
 use Helmich\Schema2Class\Generator\Property\UnionProperty;
+use Helmich\Schema2Class\Generator\PropertyDecorator\NullablePropertyDecorator;
+use Helmich\Schema2Class\Generator\PropertyDecorator\OptionalPropertyDecorator;
 
+/**
+ * Factory that creates the correct {@see PropertyInterface} implementation
+ * for a given schema fragment.
+ * 
+ * It inspects the schema fragment and chooses the most specific property class able to handle it.
+ * 
+ * Optional and nullable semantics are handled here as well.
+ * 
+ * Used by {@see SchemaToClass} when turning a schema object `"properties"` section
+ * into a {@see Property\PropertyCollection}.
+ */
 class PropertyBuilder
 {
     /** @var class-string[] */

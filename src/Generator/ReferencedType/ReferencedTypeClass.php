@@ -6,6 +6,12 @@ namespace Helmich\Schema2Class\Generator\ReferencedType;
 
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 
+/**
+ * Reference to another generated PHP class.
+ *
+ * It resolves type hints and annotations relative to the current namespace
+ * so that the generated code can refer to generated classes correctly.
+ */
 readonly class ReferencedTypeClass implements ReferencedType
 {
     public function __construct(private string $className)
@@ -77,11 +83,6 @@ readonly class ReferencedTypeClass implements ReferencedType
         
         $cls = $this->relativeName($req);
         return "{$cls}::buildFromInput({$argsStr})";
-
-        // ///////////////////////////////
-        // $validateExpr = $validateExpr ?? '$validate';
-        // $cls = $this->relativeName($req);
-        // return "{$cls}::buildFromInput({$expr}, {$validateExpr})";
     }
 
     public function outputMappingExpr(GeneratorRequest $req, string $expr): string

@@ -6,6 +6,12 @@ namespace Helmich\Schema2Class\Generator\Property;
 use Helmich\Schema2Class\Generator\SchemaToClass;
 use Laminas\Code\Generator\PropertyValueGenerator;
 
+/**
+ * Contract implemented by all property types that can generate code for a schema field.
+ *
+ * Implementations know how to convert between PHP values and serialized JSON data.
+ * They are produced via {@see \Helmich\Schema2Class\Generator\PropertyBuilder}.
+ */
 interface PropertyInterface
 {
     /**

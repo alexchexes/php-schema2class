@@ -6,6 +6,14 @@ use Helmich\Schema2Class\Writer\WriterInterface;
 use Laminas\Code\Generator\FileGenerator;
 use Helmich\Schema2Class\Generator\EnumGenerator;
 
+/**
+ * Generates PHP enums or backed enum from JSON Schema `enum` definitions,
+ * when possible, or lists of constant values.
+ *
+ * When the target PHP version allows it and the enum is homogeneous the class
+ * will emit a native `enum`; otherwise the generator falls back to traditional
+ * type constants within the referencing class.
+ */
 class SchemaToEnum
 {
     private WriterInterface $writer;

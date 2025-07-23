@@ -5,6 +5,9 @@ namespace Helmich\Schema2Class\Generator\Property;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\ReferencedType\ReferencedType;
 
+/** 
+ * Array of references to other generated classes.
+ */
 class ReferenceArrayProperty extends AbstractProperty
 {
     private ReferencedType $type;

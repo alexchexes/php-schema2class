@@ -4,10 +4,13 @@ namespace Helmich\Schema2Class\Generator\ReferenceLookup;
 use Helmich\Schema2Class\Generator\ReferencedType\ReferencedType;
 
 /**
- * Resolves JSON Schema `$ref` links during generation.
+ * Resolves `$ref` pointers encountered during generation.
+ * 
+ * Implementations are used by {@see GeneratorRequest} to map a reference string
+ * to either a concrete class or enum (or an unknown type as a fallback).
  *
- * Implement this interface and register the instance on a {@link GeneratorRequest}
- * when your schema references definitions outside of the current document.
+ * To customize resolution behavior, user can implement this interface
+ * and register the instance on a {@link GeneratorRequest}.
  */
 interface ReferenceLookup
 {

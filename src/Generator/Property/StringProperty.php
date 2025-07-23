@@ -4,6 +4,9 @@ namespace Helmich\Schema2Class\Generator\Property;
 
 use Composer\Semver\Semver;
 
+/**
+ * Represents plain string values.
+ */
 class StringProperty extends AbstractProperty
 {
     public static function canHandleSchema(array $schema): bool

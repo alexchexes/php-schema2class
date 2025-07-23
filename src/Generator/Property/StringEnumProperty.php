@@ -9,6 +9,9 @@ use Helmich\Schema2Class\Generator\SchemaToEnum;
 use Laminas\Code\Generator\PropertyValueGenerator;
 use Laminas\Code\Generator\ValueGenerator;
 
+/** 
+ * Represents string property that may be emitted as PHP enums when supported.
+ */
 class StringEnumProperty extends AbstractProperty
 {
     public static function canHandleSchema(array $schema): bool

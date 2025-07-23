@@ -8,8 +8,7 @@ use Helmich\Schema2Class\Util\EnumUtils;
 
 /** 
  * Represents schema property of type "number".
- * Allows `int|float` in PHP, and uses {@see EnumUtils} when "enum" restriction exists in schema
- * to create annotations, type-hints and expressions in consistent manner with "ReferencedTypeEnum".
+ * Allows `int|float` in PHP, and uses {@see EnumUtils} when "enum" restriction exists in the schema.
  */
 class NumberProperty extends AbstractProperty
 {

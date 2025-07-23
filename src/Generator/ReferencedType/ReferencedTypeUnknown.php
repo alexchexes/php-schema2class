@@ -4,6 +4,13 @@ namespace Helmich\Schema2Class\Generator\ReferencedType;
 
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 
+/**
+ * Placeholder type used when a `$ref` cannot be resolved.
+ *
+ * All generated expressions degrade to `mixed` and simple pass-through
+ * conversions. Currently no code outside of type resolution is using this class
+ * directly.
+ */
 readonly class ReferencedTypeUnknown implements ReferencedType
 {
     public function name(): string
