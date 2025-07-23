@@ -27,15 +27,14 @@ class MyClass
             'argc',
             'argv',
             'input',
-            'validate',
             'obj',
-            'materializeDefaults',
             'includeDefaults',
             'buildFromInput',
             'toArray',
             'validateInput',
             'schema',
             '_defaults',
+            '_providedOptionals',
             'clone',
             '__construct',
             '__destruct',
@@ -104,10 +103,13 @@ class MyClass
             'validate' => [
                 'type' => 'string',
             ],
-            'obj' => [
-                'type' => 'string',
-            ],
             'materializeDefaults' => [
+                'type' => [
+                    'string',
+                    'null',
+                ],
+            ],
+            'obj' => [
                 'type' => 'string',
             ],
             'includeDefaults' => [
@@ -136,6 +138,9 @@ class MyClass
             '_defaults' => [
                 'type' => 'string',
                 'default' => 'foo',
+            ],
+            '_providedOptionals' => [
+                'type' => 'string',
             ],
             'clone' => [
                 'type' => 'string',
@@ -182,6 +187,66 @@ class MyClass
             'files' => [
                 'type' => 'string',
             ],
+            'ensureArgs1' => [
+                'oneOf' => [
+                    [
+                        'properties' => [
+                            'type' => [
+                                'type' => 'string',
+                                'enum' => [
+                                    'invoice',
+                                ],
+                                'default' => 'invoice',
+                            ],
+                        ],
+                    ],
+                    [
+                        'required' => [
+                            'type',
+                            'accountNumber',
+                        ],
+                        'properties' => [
+                            'type' => [
+                                'type' => 'string',
+                                'default' => 'debit',
+                            ],
+                            'accountNumber' => [
+                                'type' => 'string',
+                            ],
+                        ],
+                    ],
+                    [
+                        'type' => 'string',
+                    ],
+                ],
+            ],
+            'ensureArgs2' => [
+                'required' => [
+                    'city',
+                    'street',
+                ],
+                'properties' => [
+                    'city' => [
+                        'type' => 'string',
+                        'maxLength' => 32,
+                    ],
+                    'street' => [
+                        'type' => 'string',
+                        'default' => '-',
+                    ],
+                ],
+            ],
+            'ensureArgs3' => [
+                'type' => 'array',
+                'items' => [
+                    'properties' => [
+                        'name' => [
+                            'type' => 'string',
+                            'default' => '-',
+                        ],
+                    ],
+                ],
+            ],
         ],
     ];
 
@@ -195,6 +260,13 @@ class MyClass
             'default' => 'foo',
         ],
     ];
+
+    /**
+     * Map of optional nullable property names that were explicitly set
+     *
+     * @var array<string,true>
+     */
+    private $_providedOptionals = [];
 
     /**
      * @var string
@@ -277,19 +349,19 @@ class MyClass
     private $input;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $validate;
+    private $validate = null;
+
+    /**
+     * @var string|null
+     */
+    private $materializeDefaults = null;
 
     /**
      * @var string
      */
     private $obj;
-
-    /**
-     * @var string
-     */
-    private $materializeDefaults;
 
     /**
      * @var string
@@ -325,6 +397,11 @@ class MyClass
      * @var string
      */
     private $_defaults_1;
+
+    /**
+     * @var string
+     */
+    private $_providedOptionals_1;
 
     /**
      * @var string
@@ -402,6 +479,21 @@ class MyClass
     private $files;
 
     /**
+     * @var MyClassEnsureArgs1Alternative1|MyClassEnsureArgs1Alternative2|string|null
+     */
+    private $ensureArgs1 = null;
+
+    /**
+     * @var MyClassEnsureArgs2|null
+     */
+    private $ensureArgs2 = null;
+
+    /**
+     * @var MyClassEnsureArgs3Item[]|null
+     */
+    private $ensureArgs3 = null;
+
+    /**
      * @param string $_GLOBALS_1
      * @param string $_GLOBALS_2
      * @param string $_GLOBALS_1_1
@@ -418,15 +510,14 @@ class MyClass
      * @param string $_argc
      * @param string $_argv
      * @param string $input
-     * @param string $validate
      * @param string $obj
-     * @param string $materializeDefaults
      * @param string $includeDefaults
      * @param string $_buildFromInput
      * @param string $_toArray
      * @param string $_validateInput
      * @param string $_schema
      * @param string $_defaults_1
+     * @param string $_providedOptionals_1
      * @param string $_clone
      * @param string $__construct_1
      * @param string $__destruct_1
@@ -443,7 +534,7 @@ class MyClass
      * @param string $__clone_1
      * @param string $files
      */
-    public function __construct($_GLOBALS_1, $_GLOBALS_2, $_GLOBALS_1_1, $_SERVER_1, $_GET_1, $_POST_1, $_FILES_1, $_REQUEST_1, $_SESSION_1, $_ENV_1, $_COOKIE_1, $_php_errormsg, $_http_response_header, $_argc, $_argv, $input, $validate, $obj, $materializeDefaults, $includeDefaults, $_buildFromInput, $_toArray, $_validateInput, $_schema, $_defaults_1, $_clone, $__construct_1, $__destruct_1, $__get_1, $__set_1, $__call_1, $__isset_1, $__unset_1, $__sleep_1, $__wakeup_1, $__toString_1, $__invoke_1, $__debugInfo_1, $__clone_1, $files)
+    public function __construct($_GLOBALS_1, $_GLOBALS_2, $_GLOBALS_1_1, $_SERVER_1, $_GET_1, $_POST_1, $_FILES_1, $_REQUEST_1, $_SESSION_1, $_ENV_1, $_COOKIE_1, $_php_errormsg, $_http_response_header, $_argc, $_argv, $input, $obj, $includeDefaults, $_buildFromInput, $_toArray, $_validateInput, $_schema, $_defaults_1, $_providedOptionals_1, $_clone, $__construct_1, $__destruct_1, $__get_1, $__set_1, $__call_1, $__isset_1, $__unset_1, $__sleep_1, $__wakeup_1, $__toString_1, $__invoke_1, $__debugInfo_1, $__clone_1, $files)
     {
         $this->_GLOBALS_1 = $_GLOBALS_1;
         $this->_GLOBALS_2 = $_GLOBALS_2;
@@ -461,15 +552,14 @@ class MyClass
         $this->_argc = $_argc;
         $this->_argv = $_argv;
         $this->input = $input;
-        $this->validate = $validate;
         $this->obj = $obj;
-        $this->materializeDefaults = $materializeDefaults;
         $this->includeDefaults = $includeDefaults;
         $this->_buildFromInput = $_buildFromInput;
         $this->_toArray = $_toArray;
         $this->_validateInput = $_validateInput;
         $this->_schema = $_schema;
         $this->_defaults_1 = $_defaults_1;
+        $this->_providedOptionals_1 = $_providedOptionals_1;
         $this->_clone = $_clone;
         $this->__construct_1 = $__construct_1;
         $this->__destruct_1 = $__destruct_1;
@@ -616,11 +706,19 @@ class MyClass
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getValidate()
     {
         return $this->validate;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getMaterializeDefaults()
+    {
+        return $this->materializeDefaults;
     }
 
     /**
@@ -629,14 +727,6 @@ class MyClass
     public function getObj()
     {
         return $this->obj;
-    }
-
-    /**
-     * @return string
-     */
-    public function getMaterializeDefaults()
-    {
-        return $this->materializeDefaults;
     }
 
     /**
@@ -693,6 +783,14 @@ class MyClass
     public function get_Defaults1()
     {
         return $this->_defaults_1;
+    }
+
+    /**
+     * @return string
+     */
+    public function get_ProvidedOptionals1()
+    {
+        return $this->_providedOptionals_1;
     }
 
     /**
@@ -813,6 +911,30 @@ class MyClass
     public function getFiles()
     {
         return $this->files;
+    }
+
+    /**
+     * @return MyClassEnsureArgs1Alternative1|MyClassEnsureArgs1Alternative2|string|null
+     */
+    public function getEnsureArgs1()
+    {
+        return $this->ensureArgs1;
+    }
+
+    /**
+     * @return MyClassEnsureArgs2|null
+     */
+    public function getEnsureArgs2()
+    {
+        return $this->ensureArgs2;
+    }
+
+    /**
+     * @return MyClassEnsureArgs3Item[]|null
+     */
+    public function getEnsureArgs3()
+    {
+        return $this->ensureArgs3;
     }
 
     /**
@@ -1173,22 +1295,12 @@ class MyClass
     }
 
     /**
-     * @param string $obj
      * @return self
-     * @param bool $validate
      */
-    public function withObj($obj, bool $validate = true)
+    public function withoutValidate()
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($obj, self::$schema['properties']['obj']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
-        $clone->obj = $obj;
+        unset($clone->validate);
 
         return $clone;
     }
@@ -1210,6 +1322,40 @@ class MyClass
 
         $clone = clone $this;
         $clone->materializeDefaults = $materializeDefaults;
+        $clone->_providedOptionals['materializeDefaults'] = true;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutMaterializeDefaults()
+    {
+        $clone = clone $this;
+        unset($clone->materializeDefaults);
+        unset($clone->_providedOptionals['materializeDefaults']);
+
+        return $clone;
+    }
+
+    /**
+     * @param string $obj
+     * @return self
+     * @param bool $validate
+     */
+    public function withObj($obj, bool $validate = true)
+    {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($obj, self::$schema['properties']['obj']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
+        $clone = clone $this;
+        $clone->obj = $obj;
 
         return $clone;
     }
@@ -1359,6 +1505,27 @@ class MyClass
 
         $clone = clone $this;
         $clone->_defaults_1 = $_defaults_1;
+
+        return $clone;
+    }
+
+    /**
+     * @param string $_providedOptionals_1
+     * @return self
+     * @param bool $validate
+     */
+    public function with_ProvidedOptionals1($_providedOptionals_1, bool $validate = true)
+    {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($_providedOptionals_1, self::$schema['properties']['_providedOptionals']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
+        $clone = clone $this;
+        $clone->_providedOptionals_1 = $_providedOptionals_1;
 
         return $clone;
     }
@@ -1679,6 +1846,84 @@ class MyClass
     }
 
     /**
+     * @param MyClassEnsureArgs1Alternative1|MyClassEnsureArgs1Alternative2|string $ensureArgs1
+     * @return self
+     */
+    public function withEnsureArgs1($ensureArgs1)
+    {
+        $clone = clone $this;
+        $clone->ensureArgs1 = $ensureArgs1;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutEnsureArgs1()
+    {
+        $clone = clone $this;
+        unset($clone->ensureArgs1);
+
+        return $clone;
+    }
+
+    /**
+     * @param MyClassEnsureArgs2 $ensureArgs2
+     * @return self
+     */
+    public function withEnsureArgs2(MyClassEnsureArgs2 $ensureArgs2)
+    {
+        $clone = clone $this;
+        $clone->ensureArgs2 = $ensureArgs2;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutEnsureArgs2()
+    {
+        $clone = clone $this;
+        unset($clone->ensureArgs2);
+
+        return $clone;
+    }
+
+    /**
+     * @param MyClassEnsureArgs3Item[] $ensureArgs3
+     * @return self
+     * @param bool $validate
+     */
+    public function withEnsureArgs3(array $ensureArgs3, bool $validate = true)
+    {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($ensureArgs3, self::$schema['properties']['ensureArgs3']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
+        $clone = clone $this;
+        $clone->ensureArgs3 = $ensureArgs3;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutEnsureArgs3()
+    {
+        $clone = clone $this;
+        unset($clone->ensureArgs3);
+
+        return $clone;
+    }
+
+    /**
      * Builds a new instance from an input array
      *
      * @param array|object $input Input data
@@ -1720,6 +1965,7 @@ class MyClass
             static::validateInput($_input);
         }
 
+        $__providedOptionals = [];
         $_GLOBALS_1 = $_input->{'_GLOBALS'};
         $_GLOBALS_2 = $_input->{'GLOBALS'};
         $_GLOBALS_1_1 = $_input->{'GLOBALS_1'};
@@ -1736,9 +1982,12 @@ class MyClass
         $_argc = $_input->{'argc'};
         $_argv = $_input->{'argv'};
         $input = $_input->{'input'};
-        $validate = $_input->{'validate'};
+        $validate = isset($_input->{'validate'}) ? $_input->{'validate'} : null;
+        $materializeDefaults = property_exists($_input, 'materializeDefaults') ? $_input->{'materializeDefaults'} : null;
+        if (property_exists($_input, 'materializeDefaults')) {
+            $__providedOptionals['materializeDefaults'] = true;
+        }
         $obj = $_input->{'obj'};
-        $materializeDefaults = $_input->{'materializeDefaults'};
         $includeDefaults = $_input->{'includeDefaults'};
         $testObj = isset($_input->{'testObj'}) ? MyClassTestObj::buildFromInput($_input->{'testObj'}, $_validate, $_materializeDefaults) : null;
         $_buildFromInput = $_input->{'buildFromInput'};
@@ -1746,6 +1995,7 @@ class MyClass
         $_validateInput = $_input->{'validateInput'};
         $_schema = $_input->{'schema'};
         $_defaults_1 = $_input->{'_defaults'};
+        $_providedOptionals_1 = $_input->{'_providedOptionals'};
         $_clone = $_input->{'clone'};
         $__construct_1 = $_input->{'__construct'};
         $__destruct_1 = $_input->{'__destruct'};
@@ -1761,9 +2011,18 @@ class MyClass
         $__debugInfo_1 = $_input->{'__debugInfo'};
         $__clone_1 = $_input->{'__clone'};
         $files = $_input->{'files'};
+        $ensureArgs1 = isset($_input->{'ensureArgs1'}) ? (is_string($_input->{'ensureArgs1'})) ? ($_input->{'ensureArgs1'}) : ((MyClassEnsureArgs1Alternative2::validateInput($_input->{'ensureArgs1'}, true)) ? (MyClassEnsureArgs1Alternative2::buildFromInput($_input->{'ensureArgs1'}, $_validate, $_materializeDefaults)) : ((MyClassEnsureArgs1Alternative1::validateInput($_input->{'ensureArgs1'}, true)) ? (MyClassEnsureArgs1Alternative1::buildFromInput($_input->{'ensureArgs1'}, $_validate, $_materializeDefaults)) : (null))) : null;
+        $ensureArgs2 = isset($_input->{'ensureArgs2'}) ? MyClassEnsureArgs2::buildFromInput($_input->{'ensureArgs2'}, $_validate, $_materializeDefaults) : null;
+        $ensureArgs3 = isset($_input->{'ensureArgs3'}) ? array_map(function($i) use ($_validate, $_materializeDefaults) { return MyClassEnsureArgs3Item::buildFromInput($i, $_validate, $_materializeDefaults); }, $_input->{'ensureArgs3'}) : null;
 
-        $_obj = new self($_GLOBALS_1, $_GLOBALS_2, $_GLOBALS_1_1, $_SERVER_1, $_GET_1, $_POST_1, $_FILES_1, $_REQUEST_1, $_SESSION_1, $_ENV_1, $_COOKIE_1, $_php_errormsg, $_http_response_header, $_argc, $_argv, $input, $validate, $obj, $materializeDefaults, $includeDefaults, $_buildFromInput, $_toArray, $_validateInput, $_schema, $_defaults_1, $_clone, $__construct_1, $__destruct_1, $__get_1, $__set_1, $__call_1, $__isset_1, $__unset_1, $__sleep_1, $__wakeup_1, $__toString_1, $__invoke_1, $__debugInfo_1, $__clone_1, $files);
+        $_obj = new self($_GLOBALS_1, $_GLOBALS_2, $_GLOBALS_1_1, $_SERVER_1, $_GET_1, $_POST_1, $_FILES_1, $_REQUEST_1, $_SESSION_1, $_ENV_1, $_COOKIE_1, $_php_errormsg, $_http_response_header, $_argc, $_argv, $input, $obj, $includeDefaults, $_buildFromInput, $_toArray, $_validateInput, $_schema, $_defaults_1, $_providedOptionals_1, $_clone, $__construct_1, $__destruct_1, $__get_1, $__set_1, $__call_1, $__isset_1, $__unset_1, $__sleep_1, $__wakeup_1, $__toString_1, $__invoke_1, $__debugInfo_1, $__clone_1, $files);
+        $_obj->validate = $validate;
+        $_obj->materializeDefaults = $materializeDefaults;
         $_obj->testObj = $testObj;
+        $_obj->ensureArgs1 = $ensureArgs1;
+        $_obj->ensureArgs2 = $ensureArgs2;
+        $_obj->ensureArgs3 = $ensureArgs3;
+        $_obj->_providedOptionals = $__providedOptionals;
         return $_obj;
     }
 
@@ -1792,9 +2051,13 @@ class MyClass
         $output['argc'] = $this->_argc;
         $output['argv'] = $this->_argv;
         $output['input'] = $this->input;
-        $output['validate'] = $this->validate;
+        if (isset($this->validate)) {
+            $output['validate'] = $this->validate;
+        }
+        if (isset($this->materializeDefaults) || array_key_exists('materializeDefaults', $this->_providedOptionals)) {
+            $output['materializeDefaults'] = $this->materializeDefaults;
+        }
         $output['obj'] = $this->obj;
-        $output['materializeDefaults'] = $this->materializeDefaults;
         $output['includeDefaults'] = $this->includeDefaults;
         if (isset($this->testObj)) {
             $output['testObj'] = ($this->testObj)->toArray($includeDefaults);
@@ -1804,6 +2067,7 @@ class MyClass
         $output['validateInput'] = $this->_validateInput;
         $output['schema'] = $this->_schema;
         $output['_defaults'] = $this->_defaults_1;
+        $output['_providedOptionals'] = $this->_providedOptionals_1;
         $output['clone'] = $this->_clone;
         $output['__construct'] = $this->__construct_1;
         $output['__destruct'] = $this->__destruct_1;
@@ -1819,6 +2083,19 @@ class MyClass
         $output['__debugInfo'] = $this->__debugInfo_1;
         $output['__clone'] = $this->__clone_1;
         $output['files'] = $this->files;
+        if (isset($this->ensureArgs1)) {
+            if (($this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative1) || ($this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative2)) {
+                $output['ensureArgs1'] = ($this->ensureArgs1)->toArray($includeDefaults);
+            } else if ((is_string($this->ensureArgs1))) {
+                $output['ensureArgs1'] = $this->ensureArgs1;
+            }
+        }
+        if (isset($this->ensureArgs2)) {
+            $output['ensureArgs2'] = ($this->ensureArgs2)->toArray($includeDefaults);
+        }
+        if (isset($this->ensureArgs3)) {
+            $output['ensureArgs3'] = array_map(function(MyClassEnsureArgs3Item $i) { return $i->toArray(); }, $this->ensureArgs3);
+        }
 
         if ($includeDefaults) {
             foreach (self::$_defaults as $k => $v) {
@@ -1856,9 +2133,13 @@ class MyClass
         $output->{'argc'} = $this->_argc;
         $output->{'argv'} = $this->_argv;
         $output->{'input'} = $this->input;
-        $output->{'validate'} = $this->validate;
+        if (isset($this->validate)) {
+            $output->{'validate'} = $this->validate;
+        }
+        if (isset($this->materializeDefaults) || array_key_exists('materializeDefaults', $this->_providedOptionals)) {
+            $output->{'materializeDefaults'} = $this->materializeDefaults;
+        }
         $output->{'obj'} = $this->obj;
-        $output->{'materializeDefaults'} = $this->materializeDefaults;
         $output->{'includeDefaults'} = $this->includeDefaults;
         if (isset($this->testObj)) {
             $output->{'testObj'} = ($this->testObj)->toStdClass($includeDefaults);
@@ -1868,6 +2149,7 @@ class MyClass
         $output->{'validateInput'} = $this->_validateInput;
         $output->{'schema'} = $this->_schema;
         $output->{'_defaults'} = $this->_defaults_1;
+        $output->{'_providedOptionals'} = $this->_providedOptionals_1;
         $output->{'clone'} = $this->_clone;
         $output->{'__construct'} = $this->__construct_1;
         $output->{'__destruct'} = $this->__destruct_1;
@@ -1883,6 +2165,19 @@ class MyClass
         $output->{'__debugInfo'} = $this->__debugInfo_1;
         $output->{'__clone'} = $this->__clone_1;
         $output->{'files'} = $this->files;
+        if (isset($this->ensureArgs1)) {
+            if (($this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative1) || ($this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative2)) {
+            $output->{'ensureArgs1'} = ($this->ensureArgs1)->toStdClass($includeDefaults);
+            } else if ((is_string($this->ensureArgs1))) {
+            $output->{'ensureArgs1'} = $this->ensureArgs1;
+            }
+        }
+        if (isset($this->ensureArgs2)) {
+            $output->{'ensureArgs2'} = ($this->ensureArgs2)->toStdClass($includeDefaults);
+        }
+        if (isset($this->ensureArgs3)) {
+            $output->{'ensureArgs3'} = array_map(function(MyClassEnsureArgs3Item $i) { return $i->toStdClass($includeDefaults); }, $this->ensureArgs3);
+        }
 
         if ($includeDefaults) {
             foreach (self::$_defaults as $k => $v) {
@@ -1926,5 +2221,25 @@ class MyClass
         if (isset($this->testObj)) {
             $this->testObj = clone $this->testObj;
         }
+        if (isset($this->ensureArgs1)) {
+            $this->ensureArgs1 = (is_string($this->ensureArgs1)) ? ($this->ensureArgs1) : (($this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative2) ? (clone $this->ensureArgs1) : (($this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative1) ? (clone $this->ensureArgs1) : ($this->ensureArgs1)));
+        }
+        if (isset($this->ensureArgs2)) {
+            $this->ensureArgs2 = clone $this->ensureArgs2;
+        }
+        if (isset($this->ensureArgs3)) {
+            $this->ensureArgs3 = array_map(function(MyClassEnsureArgs3Item $i) { return clone $i; }, $this->ensureArgs3);
+        }
+    }
+
+    /**
+     * Checks if an optional nullable property was explicitly set
+     *
+     * @param string $propertyName Property name to check (exactly as it appears in the schema)
+     * @return bool
+     */
+    public function isOptionalProvided(string $propertyName)
+    {
+        return array_key_exists($propertyName, $this->_providedOptionals);
     }
 }

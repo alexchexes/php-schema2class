@@ -544,7 +544,7 @@ class Generator
         );
     }
 
-    public function generateIsSetMethod(): MethodGenerator
+    public function generateIsProvidedMethod(): MethodGenerator
     {
         $doc = new DocBlockGenerator(
             'Checks if an optional nullable property was explicitly set',

@@ -124,7 +124,7 @@ class SchemaToClass
             $codeGenerator->generateToStdClassMethod($propertiesFromSchema, $defaults),
             $codeGenerator->generateValidateMethod(),
             $codeGenerator->generateCloneMethod($propertiesFromSchema),
-            $hasOptionalNullable ? $codeGenerator->generateIsSetMethod() : null,
+            $hasOptionalNullable ? $codeGenerator->generateIsProvidedMethod() : null,
         ];
         $methods = array_values(array_filter($methods));
         $this->ensureUniqueMethodNames($methods);
@@ -418,6 +418,7 @@ class SchemaToClass
             'argv',
             'schema',
             '_defaults',
+            '_providedOptionals',
         ];
 
         $reservedMethodNames = [
