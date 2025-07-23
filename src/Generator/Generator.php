@@ -176,7 +176,7 @@ class Generator
             properties: $properties,
         );
 
-        // --- Combine everything into the Laminas method
+        // --- Combine everything into the Laminas `MethodGenerator`
 
         $method = new MethodGenerator(
             'buildFromInput',
@@ -557,7 +557,7 @@ class Generator
         $doc->setWordWrap(false);
 
         $method = new MethodGenerator(
-            'isProvidedOptional',
+            'isOptionalProvided',
             [new ParameterGenerator('propertyName', 'string')],
             MethodGenerator::FLAG_PUBLIC,
             'return array_key_exists($propertyName, $this->_providedOptionals);',

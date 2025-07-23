@@ -260,7 +260,7 @@ class MyClass
      * @param string $propertyName Property name to check (exactly as it appears in the schema)
      * @return bool
      */
-    public function isProvidedOptional(string $propertyName)
+    public function isOptionalProvided(string $propertyName)
     {
         return array_key_exists($propertyName, $this->_providedOptionals);
     }
