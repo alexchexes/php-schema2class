@@ -6,6 +6,9 @@ namespace Helmich\Schema2Class\Generator\Property;
 use Laminas\Code\Generator\PropertyValueGenerator;
 use Laminas\Code\Generator\ValueGenerator;
 
+/**
+ * Represents a property whose only type is "null".
+ */
 class NullProperty extends AbstractProperty
 {
     /* ---------------------------------------------------------------------

@@ -12,6 +12,10 @@ use Helmich\Schema2Class\Generator\Property\StringProperty;
 use Helmich\Schema2Class\Generator\SchemaToClass;
 use Laminas\Code\Generator\PropertyValueGenerator;
 
+/**
+ * Decorator that wraps another property to allow `null` values in addition to
+ * its normal type.
+ */
 class NullablePropertyDecorator implements PropertyDecoratorInterface, RenameablePropertyInterface
 {
     protected string $key;

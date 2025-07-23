@@ -6,11 +6,9 @@ use Helmich\Schema2Class\Generator\GeneratorException;
 use Helmich\Schema2Class\Generator\SchemaToClass;
 
 /**
- * Represents an object defined inline within a schema property.
+ * Represents a property of type "object" (with nested properties).
  * 
- * `GenerationRunner` checks if this property `canHandleSchema`
- * to decide whether the class needs to be generated, and if so,
- * a nested class is generated to model this embedded object.
+ * When this class claims the schema, another class is generated to represent the property.
  */
 class NestedObjectProperty extends AbstractProperty
 {
