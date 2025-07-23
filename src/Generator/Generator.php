@@ -127,93 +127,27 @@ class Generator
      */
     public function generateBuildMethod(PropertyCollection $properties, array $defaults = []): MethodGenerator
     {
-        $requiredProperties = $properties->filter(PropertyCollectionFilterFactory::required());
-        $optionalProperties = $properties->filter(PropertyCollectionFilterFactory::optional());
-
-        $hasOptionalNullable = false;
-        foreach ($properties as $p) {
-            if ($p instanceof OptionalPropertyDecorator && $p->isOptionalNullable()) {
-                $hasOptionalNullable = true;
-                break;
-            }
-        }
-
-        $constructorParams = [];
-        
-        foreach ($requiredProperties as $requiredProperty) {
-            $constructorParams[] = '$' . $requiredProperty->name();
-        }
+        // --- Params
 
         $inputArgName = 'input';
-        $inputArgAlias = $inputArgName;
-        if ($properties->hasPropertyWithKey($inputArgAlias)) {
-            $inputArgAlias = '_input';
-            $i = 2;
-            while ($properties->hasPropertyWithKey($inputArgAlias)) {
-                $inputArgAlias = '_input' . $i;
-                $i++;
-            }
-        }
+        $validateArgName = 'validate';
+        $materializeArgName = 'materializeDefaults';
 
         $paramType = null;
         if ($this->generatorRequest->isAtLeastPHP("8.0")) {
             $paramType = "array|object";
         }
 
-        $validateArgName = 'validate';
-        $validateArgAlias = $validateArgName;
-        if ($properties->hasPropertyWithName($validateArgAlias)) {
-            $validateArgAlias = '_validate';
-            $i = 2;
-            while ($properties->hasPropertyWithName($validateArgAlias)) {
-                $validateArgAlias = '_validate' . $i;
-                $i++;
-            }
+        $inputParam = new ParameterGenerator($inputArgName, $paramType);
+        $validationParam = new ParameterGenerator($validateArgName, "bool", true);
+        $materializeParam = $defaults ? new ParameterGenerator($materializeArgName, "bool", false) : null;
+
+        $params = [$inputParam, $validationParam];
+        if ($defaults) {
+            $params[] = $materializeParam;
         }
 
-        $materializeArgName = 'materializeDefaults';
-        $materializeArgAlias = $materializeArgName;
-        if ($defaults && $properties->hasPropertyWithName($materializeArgAlias)) {
-            $materializeArgAlias = '_materializeDefaults';
-            $i = 2;
-            while ($properties->hasPropertyWithName($materializeArgAlias)) {
-                $materializeArgAlias = '_materializeDefaults' . $i;
-                $i++;
-            }
-        }
-
-        $objVarName = 'obj';
-        if ($properties->hasPropertyWithName($objVarName)) {
-            $objVarName = '_obj';
-            $i = 2;
-            while ($properties->hasPropertyWithName($objVarName)) {
-                $objVarName = '_obj' . $i;
-                $i++;
-            }
-        }
-
-        // Store validate/materialize aliases globally on the request, from where they are read by
-        // property generators, unlike the `input` alias, which is passed directly to every nested
-        // mapping call since it may change at certain levels
-        $this->generatorRequest->setCurrValidateArgAlias($validateArgAlias);
-        $this->generatorRequest->setCurrMaterializeArgAlias($defaults ? $materializeArgAlias : null);
-
-        $assignments = [];
-        foreach ($optionalProperties as $optionalProperty) {
-            $name = $optionalProperty->name();
-            $assignments[] = "\${$objVarName}->{$name} = \${$name};";
-        }
-
-        $validationParam = new ParameterGenerator(
-            name: $validateArgName,
-            type: "bool",
-            defaultValue: true,
-        );
-        $materializeParam = $defaults ? new ParameterGenerator(
-            name: $materializeArgName,
-            type: "bool",
-            defaultValue: false,
-        ) : null;
+        // --- PHPDoc
 
         $docBlockParams = [
             new ParamTag($inputArgName, ["array|object"], "Input data"),
@@ -231,6 +165,120 @@ class Generator
             $docBlockParams
         );
         $docBlock->setWordWrap(false);
+
+        // --- BODY
+
+        $body = $this->generateBuildMethodBody(
+            inputArgName: $inputArgName,
+            validateArgName: $validateArgName,
+            materializeArgName: $materializeArgName,
+            defaults: $defaults,
+            properties: $properties,
+        );
+
+        // --- Combine everything into the Laminas method
+
+        $method = new MethodGenerator(
+            'buildFromInput',
+            $params,
+            MethodGenerator::FLAG_PUBLIC | MethodGenerator::FLAG_STATIC,
+            $body,
+            $docBlock
+        );
+
+        if ($this->generatorRequest->isAtLeastPHP("7.0")) {
+            $method->setReturnType(
+                $this->generatorRequest->getTargetNamespace() . "\\" . $this->generatorRequest->getTargetClass()
+            );
+        }
+
+        return $method;
+    }
+
+    /** 
+     * Generates the whole body for the `buildFromInput` method based on conditions
+     * determined from the provided arguments and the current `generatorRequest` options.
+     * 
+     * Calls `PropertyCollection::generateInputToTypeConversionCode` to generate a full list 
+     * of mappings from the schema object to class properties, including all necessary checks and conversions.
+     * 
+     * It also mutatingly sets some `generatorRequest` properties to propagate information required
+     * by nested contexts so that property conversion code is generated properly.
+     */
+    private function generateBuildMethodBody(
+        string $inputArgName,
+        string $validateArgName,
+        string $materializeArgName,
+        array $defaults,
+        PropertyCollection $properties,
+    ): string
+    {
+        $hasOptionalNullable = false;
+        foreach ($properties as $p) {
+            if ($p instanceof OptionalPropertyDecorator && $p->isOptionalNullable()) {
+                $hasOptionalNullable = true;
+                break;
+            }
+        }
+
+        $objVarName = 'obj';
+        if ($properties->hasPropertyWithName($objVarName)) {
+            $objVarName = '_obj';
+            $i = 2;
+            while ($properties->hasPropertyWithName($objVarName)) {
+                $objVarName = '_obj' . $i;
+                $i++;
+            }
+        }
+
+        $optionalProperties = $properties->filter(PropertyCollectionFilterFactory::optional());
+        $assignments = [];
+        foreach ($optionalProperties as $optionalProperty) {
+            $name = $optionalProperty->name();
+            $assignments[] = "\${$objVarName}->{$name} = \${$name};";
+        }
+        
+        $inputArgAlias = $inputArgName;
+        if ($properties->hasPropertyWithKey($inputArgAlias)) {
+            $inputArgAlias = '_input';
+            $i = 2;
+            while ($properties->hasPropertyWithKey($inputArgAlias)) {
+                $inputArgAlias = '_input' . $i;
+                $i++;
+            }
+        }
+        
+        $validateArgAlias = $validateArgName;
+        if ($properties->hasPropertyWithName($validateArgAlias)) {
+            $validateArgAlias = '_validate';
+            $i = 2;
+            while ($properties->hasPropertyWithName($validateArgAlias)) {
+                $validateArgAlias = '_validate' . $i;
+                $i++;
+            }
+        }
+
+        $materializeArgAlias = $materializeArgName;
+        if ($defaults && $properties->hasPropertyWithName($materializeArgAlias)) {
+            $materializeArgAlias = '_materializeDefaults';
+            $i = 2;
+            while ($properties->hasPropertyWithName($materializeArgAlias)) {
+                $materializeArgAlias = '_materializeDefaults' . $i;
+                $i++;
+            }
+        }
+
+        // Store validate/materialize aliases globally on the request, from where they are read by
+        // property generators, unlike the `input` alias, which is passed directly to every nested
+        // mapping call since it may change at certain levels
+        $this->generatorRequest->setCurrValidateArgAlias($validateArgAlias);
+        $this->generatorRequest->setCurrMaterializeArgAlias($defaults ? $materializeArgAlias : null);
+
+        $requiredProperties = $properties->filter(PropertyCollectionFilterFactory::required());
+        $constructorParams = [];
+        foreach ($requiredProperties as $requiredProperty) {
+            $constructorParams[] = '$' . $requiredProperty->name();
+        }
 
         $aliasesLines = '';
         if ($inputArgName !== $inputArgAlias) {
@@ -307,24 +355,7 @@ class Generator
             "return \${$objVarName};"
         ;
 
-        $params = [new ParameterGenerator($inputArgName, $paramType), $validationParam];
-        if ($defaults) {
-            $params[] = $materializeParam;
-        }
-
-        $method = new MethodGenerator(
-            'buildFromInput',
-            $params,
-            MethodGenerator::FLAG_PUBLIC | MethodGenerator::FLAG_STATIC,
-            $body,
-            $docBlock
-        );
-
-        if ($this->generatorRequest->isAtLeastPHP("7.0")) {
-            $method->setReturnType($this->generatorRequest->getTargetNamespace() . "\\" . $this->generatorRequest->getTargetClass());
-        }
-
-        return $method;
+        return $body;
     }
 
     /**
