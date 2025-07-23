@@ -1,8 +1,0 @@
-language: php
-php:
-  - "8.4"
-install:
-  - composer install --prefer-dist
-script:
-  - vendor/bin/psalm --memory-limit 800000000
-  - vendor/bin/phpunit --testdox

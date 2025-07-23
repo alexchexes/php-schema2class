@@ -55,8 +55,7 @@
 	},
     "archive": {
         "exclude": [
-            "/examples",
-            "/.travis.yml"
+            "/examples"
         ]
     }
 }
