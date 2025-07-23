@@ -97,7 +97,8 @@ class SchemaToEnum
             // --- guarantee uniqueness ---
             if (isset($cases[$name])) {
                 $i = 2;
-                while (isset($cases[$alt = "{$name}__{$i}"])) {
+                $alt = "{$name}__{$i}";
+                while (isset($cases[$alt])) {
                     ++$i;
                 }
                 $name = $alt;              // use the first free "…__n"
@@ -176,6 +177,7 @@ class SchemaToEnum
         }
 
         // keep "-" by mapping every non-alnum char to "_"
+        /** @var string */
         $clean = preg_replace('/[^a-zA-Z0-9]/', '_', $value);
 
         // empty after cleaning  →  use literal "EMPTY"

@@ -62,13 +62,17 @@ class EnumGenerator
         }
 
         $code = "<?php\n\n" . $this->printer->prettyPrint($stmts) . "\n";
+        /** @var string */
         $code = preg_replace(
             '/declare \(strict_types=1\);\nnamespace/',
             "declare(strict_types=1);\n\nnamespace",
             $code,
         );
+        /** @var string */
         $code = preg_replace('/enum ([^:]+) : /', 'enum $1: ', $code);
+        /** @var string */
         $code = preg_replace('/(enum[^\n]+)\n\{/', '$1 {', $code);
+
         return $code;
     }
 }

@@ -3,6 +3,7 @@
     resolveFromConfigFile="true"
     allowStringToStandInForClass="true"
     findUnusedBaselineEntry="true"
+    ensureOverrideAttribute="false"
     findUnusedCode="false"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns="https://getpsalm.org/schema/config"
@@ -58,6 +59,11 @@
                 <directory name="src/Spec"/>
             </errorLevel>
         </RedundantConditionGivenDocblockType>
+        <ClassMustBeFinal errorLevel="info">
+            <errorLevel type="suppress">
+                <directory name="src/Spec"/>
+            </errorLevel>
+        </ClassMustBeFinal>
 
         <UnresolvableInclude errorLevel="info" />
 

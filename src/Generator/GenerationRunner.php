@@ -119,7 +119,7 @@ class GenerationRunner
         ?string $givenNamespace = null,
         ?OutputInterface $output = null,
     ): string {
-        if ($givenNamespace) {
+        if ($givenNamespace !== null && $givenNamespace !== '') {
             return $givenNamespace;
         }
 

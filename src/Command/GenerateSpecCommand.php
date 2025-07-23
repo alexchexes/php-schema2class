@@ -28,8 +28,10 @@ final class GenerateSpecCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $currDir = getcwd() ?: '.';
+        
         /** @var string */
-        $specFile = $input->getArgument("specfile") ?: getcwd() . "/.s2c.yaml";
+        $specFile = $input->getArgument("specfile") ?: $currDir . "/.s2c.yaml";
         $dryRun = (bool) $input->getOption('dry-run');
         (new Schema2Class())->generateFromSpec($specFile, $output, $dryRun);
         return 0;
