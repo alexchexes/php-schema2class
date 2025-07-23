@@ -41,7 +41,6 @@
         <MissingConstructor errorLevel="info" />
         <MissingClosureParamType errorLevel="info">
             <errorLevel type="suppress">
-                <directory name="src/Example"/>
                 <directory name="src/Spec"/>
             </errorLevel>
         </MissingClosureParamType>
@@ -51,13 +50,11 @@
 
         <DocblockTypeContradiction errorLevel="info">
             <errorLevel type="suppress">
-                <directory name="src/Example"/>
                 <directory name="src/Spec"/>
             </errorLevel>
         </DocblockTypeContradiction>
         <RedundantConditionGivenDocblockType errorLevel="info">
             <errorLevel type="suppress">
-                <directory name="src/Example"/>
                 <directory name="src/Spec"/>
             </errorLevel>
         </RedundantConditionGivenDocblockType>

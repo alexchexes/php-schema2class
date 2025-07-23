@@ -1,5 +1,4 @@
 /vendor/
 /.idea/
-/src/Example
 /composer.lock
 /.phpunit.cache
