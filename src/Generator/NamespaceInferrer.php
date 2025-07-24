@@ -25,8 +25,10 @@ class NamespaceInferrer
             return substr($string, strlen($prefix) + $additional);
         };
 
+        $currDir = getcwd() ?: '.';
+
         if ($directory[0] !== "/") {
-            $directory = getcwd() . "/" . $directory;
+            $directory = $currDir . "/" . $directory;
         }
 
         list($root, $composer) = $this->getComposerJSONForDirectory($directory);
@@ -62,8 +64,12 @@ class NamespaceInferrer
         $initialDirectory = $directory;
 
         while ($directory !== "/" && $directory !== "") {
-            if (file_exists($directory . "/composer.json")) {
-                $contents = file_get_contents($directory . "/composer.json");
+            $filePath = $directory . "/composer.json";
+            if (file_exists($filePath)) {
+                $contents = file_get_contents($filePath);
+                if ($contents === false) {
+                    throw new GeneratorException("failed to read contents {$filePath}");
+                }
                 return [$directory, json_decode($contents, true)];
             }
 

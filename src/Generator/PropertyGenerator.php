@@ -52,7 +52,8 @@ class PropertyGenerator extends LaminasPropertyGenerator
         $property = LaminasPropertyGenerator::fromReflection($reflectionProperty);
 
         if ($reflectionProperty->hasType()) {
-            $property->setTypeHint($reflectionProperty->getType() . "");
+            $type = (string) $reflectionProperty->getType();
+            $property->setTypeHint($type);
         }
 
         return $property;
@@ -218,7 +219,7 @@ class PropertyGenerator extends LaminasPropertyGenerator
         $defaultValue = $this->getDefaultValue();
 
         if ($this->singleLineDefaultValue) {
-            $defaultValue->setOutputMode('singleLine');
+            $defaultValue?->setOutputMode('singleLine');
         }
 
         $output = '';

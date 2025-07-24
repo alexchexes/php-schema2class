@@ -249,7 +249,6 @@ class GeneratorRequest
     /**
      * Adds an "implements" clause to generated classes.
      *
-     * @psalm-param class-string $interface
      * @param string $interface The interface to add to generated classes.
      * @param bool $propagateToSubObjects Controls if the interface should be added to sub-objects.
      * @return self
@@ -266,12 +265,12 @@ class GeneratorRequest
 
     public function getNoGetters(): bool
     {
-        return $this->opts->getNoGetters();
+        return $this->opts->getNoGetters() === true;
     }
     
     public function getNoSetters(): bool
     {
-        return $this->opts->getNoSetters();
+        return $this->opts->getNoSetters() === true;
     }
 
     public function getMutableSetters(): bool|string|null
@@ -281,7 +280,7 @@ class GeneratorRequest
 
     public function getNoEnums(): bool
     {
-        return $this->opts->getNoEnums();
+        return $this->opts->getNoEnums() === true;
     }
 
     public function isAtLeastPHP(string $version): bool
@@ -306,7 +305,7 @@ class GeneratorRequest
     }
 
     /**
-     * @return string
+     * @return non-empty-string|null
      */
     public function getTargetClass(): ?string
     {

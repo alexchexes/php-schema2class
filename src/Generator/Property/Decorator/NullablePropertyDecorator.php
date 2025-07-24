@@ -99,14 +99,14 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface, Renameabl
         return "\${$name} = {$expr};";
     }
 
-    public function convertTypeToArray(string $out = 'output'): string
+    public function convertTypeToArray(string $outputVarName = 'output'): string
     {
-        return $this->inner->convertTypeToArray($out);
+        return $this->inner->convertTypeToArray($outputVarName);
     }
 
-    public function convertTypeToStdClass(string $out = 'output'): string
+    public function convertTypeToStdClass(string $outputVarName = 'output'): string
     {
-        return $this->inner->convertTypeToStdClass($out);
+        return $this->inner->convertTypeToStdClass($outputVarName);
     }
 
     public function typeAnnotation(): string

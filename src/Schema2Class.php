@@ -48,7 +48,11 @@ class Schema2Class
                 if (!file_exists($config)) {
                     throw new LoadingException($config, "specification file not found");
                 }
-                $config = Yaml::parse(file_get_contents($config));
+                $contents = file_get_contents($config);
+                if ($contents === false) {
+                    throw new LoadingException($config, "failed to read file contents");
+                }
+                $config = Yaml::parse($contents);
             }
             $config = Specification::buildFromInput($config);
         }

@@ -119,7 +119,7 @@ class PropertyBuilder
             }
         }
 
-        throw new GeneratorException("cannot map type " . json_encode($definition));
+        throw new GeneratorException("cannot map type " . (string) json_encode($definition));
     }
 
     /** Collapse single-element type arrays (e.g. ["string"] -> "string") */
@@ -355,6 +355,7 @@ class PropertyBuilder
 
         $allowed = [];
         foreach ($definition['enum'] as $v) {
+            /** @var  'null'|'string'|'integer'|'number'|'boolean'|null */
             $t = match (true) {
                 $v === null      => 'null',
                 is_string($v)    => 'string',

@@ -40,11 +40,6 @@
 
         <PropertyNotSetInConstructor errorLevel="info" />
         <MissingConstructor errorLevel="info" />
-        <MissingClosureParamType errorLevel="info">
-            <errorLevel type="suppress">
-                <directory name="src/Spec"/>
-            </errorLevel>
-        </MissingClosureParamType>
         <MissingParamType errorLevel="info" />
 
         <RedundantCondition errorLevel="info" />
