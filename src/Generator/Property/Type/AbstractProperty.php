@@ -7,7 +7,9 @@ use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\RenameablePropertyInterface;
 use Helmich\Schema2Class\Generator\SchemaToClass;
 use Helmich\Schema2Class\Util\StringUtils;
+use Helmich\Schema2Class\Writer\WriterInterface;
 use Laminas\Code\Generator\PropertyValueGenerator;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Base implementation of {@see PropertyInterface} containing common logic for
@@ -166,7 +168,7 @@ abstract class AbstractProperty implements PropertyInterface, RenameableProperty
         return $req;
     }
 
-    public function generateSubTypes(SchemaToClass $generator): void
+    public function generateSubTypes(WriterInterface $writer, OutputInterface $output): void
     {
     }
 

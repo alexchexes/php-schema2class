@@ -9,6 +9,8 @@ use Helmich\Schema2Class\Generator\MatchGenerator;
 use Helmich\Schema2Class\Generator\Property\Type\NullProperty;
 use Helmich\Schema2Class\Generator\Property\PropertyBuilder;
 use Helmich\Schema2Class\Generator\SchemaToClass;
+use Helmich\Schema2Class\Writer\WriterInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Represents a JSON Schema `oneOf`/`anyOf` union property - i.e. property
@@ -246,10 +248,9 @@ class UnionProperty extends AbstractProperty
     }
 
     /**
-     * @param SchemaToClass $generator
      * @throws GeneratorException
      */
-    public function generateSubTypes(SchemaToClass $generator): void
+    public function generateSubTypes(WriterInterface $writer, OutputInterface $output): void
     {
         $def = $this->schema;
 
@@ -264,6 +265,7 @@ class UnionProperty extends AbstractProperty
                     ->withSchema($subDef)
                     ->withClass($propertyTypeName);
 
+                $generator = new SchemaToClass($writer, $output);
                 $generator->schemaToClass($this->propagateRootDefinitions($req));
             }
         }

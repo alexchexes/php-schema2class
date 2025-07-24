@@ -7,7 +7,9 @@ use Helmich\Schema2Class\Generator\Property\Type\PropertyInterface;
 use Helmich\Schema2Class\Generator\Property\RenameablePropertyInterface;
 use Helmich\Schema2Class\Generator\SchemaToClass;
 use Helmich\Schema2Class\Util\StringUtils;
+use Helmich\Schema2Class\Writer\WriterInterface;
 use Laminas\Code\Generator\PropertyValueGenerator;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Decorator that injects default value support to another property.
@@ -80,12 +82,11 @@ class DefaultPropertyDecorator implements PropertyDecoratorInterface, Renameable
     }
 
     /**
-     * @param SchemaToClass $generator
      * @return void
      */
-    public function generateSubTypes(SchemaToClass $generator): void
+    public function generateSubTypes(WriterInterface $writer, OutputInterface $output): void
     {
-        $this->inner->generateSubTypes($generator);
+        $this->inner->generateSubTypes($writer, $output);
     }
 
     /**

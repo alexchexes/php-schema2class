@@ -6,8 +6,10 @@ namespace Helmich\Schema2Class\Generator\Property\Type;
 use Helmich\Schema2Class\Generator\GeneratorException;
 use Helmich\Schema2Class\Generator\SchemaToClass;
 use Helmich\Schema2Class\Generator\Enum\SchemaToEnum;
+use Helmich\Schema2Class\Writer\WriterInterface;
 use Laminas\Code\Generator\PropertyValueGenerator;
 use Laminas\Code\Generator\ValueGenerator;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /** 
  * Represents string property that may be emitted as PHP enums when supported.
@@ -31,16 +33,16 @@ class StringEnumProperty extends AbstractProperty
     /**
      * Generate a real enum class only on PHP 8.1+.
      *
-     * @param SchemaToClass    $generator
      * @throws GeneratorException
      */
-    public function generateSubTypes(SchemaToClass $generator): void
+    public function generateSubTypes(WriterInterface $writer, OutputInterface $output): void
     {
         if ($this->generatorRequest->isAtLeastPHP("8.1") && !$this->generatorRequest->getNoEnums()) {
             $req = $this->generatorRequest
                 ->withSchema($this->schema)
                 ->withClass($this->subTypeName());
-
+                
+            $generator = new SchemaToClass($writer, $output);
             $generator->schemaToClass($this->propagateRootDefinitions($req));
         }
     }

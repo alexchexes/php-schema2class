@@ -7,6 +7,8 @@ use Helmich\Schema2Class\Generator\GeneratorException;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\PropertyBuilder;
 use Helmich\Schema2Class\Generator\SchemaToClass;
+use Helmich\Schema2Class\Writer\WriterInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Represents an array of objects. Each entry is generated using {@see PropertyBuilder}
@@ -112,10 +114,9 @@ class ObjectArrayProperty extends AbstractProperty
     }
 
     /**
-     * @param SchemaToClass $generator
      * @throws GeneratorException
      */
-    public function generateSubTypes(SchemaToClass $generator): void
+    public function generateSubTypes(WriterInterface $writer, OutputInterface $output): void
     {
         if ($this->itemType instanceof MixedProperty) {
             return;
@@ -125,6 +126,7 @@ class ObjectArrayProperty extends AbstractProperty
             ->withSchema($this->itemSchema)
             ->withClass($this->subTypeName());
 
+        $generator = new SchemaToClass($writer, $output);
         $generator->schemaToClass($this->propagateRootDefinitions($req));
     }
 

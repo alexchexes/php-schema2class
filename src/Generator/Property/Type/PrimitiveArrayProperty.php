@@ -6,6 +6,8 @@ namespace Helmich\Schema2Class\Generator\Property\Type;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\SchemaToClass;
 use Helmich\Schema2Class\Util\SchemaUtils;
+use Helmich\Schema2Class\Writer\WriterInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Represents an array of primitive values or an associative array described via "additionalProperties".
@@ -38,10 +40,7 @@ class PrimitiveArrayProperty extends AbstractProperty
         return false;
     }
 
-    /**
-     * @param SchemaToClass    $generator
-     */
-    public function generateSubTypes(SchemaToClass $generator): void
+    public function generateSubTypes(WriterInterface $writer, OutputInterface $output): void
     {
     }
 

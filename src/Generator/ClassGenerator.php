@@ -7,21 +7,29 @@ use Helmich\Schema2Class\Generator\Property\Collection\PropertyCollection;
 use Helmich\Schema2Class\Generator\Property\Collection\PropertyCollectionFilterFactory;
 use Helmich\Schema2Class\Generator\Property\Decorator\OptionalPropertyDecorator;
 use Helmich\Schema2Class\Generator\Property\Decorator\PropertyDecoratorInterface;
+use Helmich\Schema2Class\Generator\Property\PropertyBuilder;
+use Helmich\Schema2Class\Generator\Property\PropertyQuery;
+use Helmich\Schema2Class\Generator\Property\RenameablePropertyInterface;
 use Helmich\Schema2Class\Generator\Property\Type\ObjectArrayProperty;
 use Helmich\Schema2Class\Generator\Property\Type\PrimitiveArrayProperty;
 use Helmich\Schema2Class\Generator\Property\Type\PropertyInterface;
 use Helmich\Schema2Class\Generator\Property\Type\ReferenceArrayProperty;
 use Helmich\Schema2Class\Generator\Property\Type\TypedArrayProperty;
-use Helmich\Schema2Class\Generator\Property\PropertyQuery;
 use Helmich\Schema2Class\Generator\PropertyGenerator;
+use Helmich\Schema2Class\Util\SchemaUtils;
 use Helmich\Schema2Class\Util\StringUtils;
+use Helmich\Schema2Class\Writer\WriterInterface;
+use Laminas\Code\DeclareStatement;
+use Laminas\Code\Generator\ClassGenerator as LaminasClassGenerator;
 use Laminas\Code\Generator\DocBlock\Tag\GenericTag;
 use Laminas\Code\Generator\DocBlock\Tag\ParamTag;
 use Laminas\Code\Generator\DocBlock\Tag\ReturnTag;
 use Laminas\Code\Generator\DocBlock\Tag\ThrowsTag;
 use Laminas\Code\Generator\DocBlockGenerator;
+use Laminas\Code\Generator\FileGenerator;
 use Laminas\Code\Generator\MethodGenerator;
 use Laminas\Code\Generator\ParameterGenerator;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Generates the `Laminas\Code` representation of a PHP class for a single schema.
@@ -34,51 +42,274 @@ use Laminas\Code\Generator\ParameterGenerator;
  */
 class ClassGenerator
 {
-    private GeneratorRequest $generatorRequest;
-
-    public function __construct(GeneratorRequest $generatorRequest)
+    public function __construct(
+        private GeneratorRequest $generatorRequest,
+        private WriterInterface $writer,
+        private OutputInterface $output
+    ) {}
+    
+    public function generateClass(array $schema)
     {
-        $this->generatorRequest = $generatorRequest;
+        // remove metadata like descriptions from schema if such option is set, but keep them
+        // for building property documentation
+        $validationSchema = $schema;
+        if ($this->generatorRequest->getOptions()->getNoSchemaMetadata()) {
+            $this->stripSchemaMetadata($validationSchema);
+        }
+
+        $classProperties = [];
+
+        $schemaProperty = $this->createSchemaProperty($validationSchema);
+        $classProperties[] = $schemaProperty;
+
+        $defaults      = self::collectDefaults($schema, $this->generatorRequest);
+        $hasDefaults   = !empty($defaults);
+        $this->generatorRequest->setCurrReqHasDefaults($hasDefaults);
+
+        if ($defaults) {
+            $classProperties[] = $this->createDefaultsProperty($defaults);
+        }
+
+        $schemaProperties = $this->collectPropertiesFromSchema($schema, $this->generatorRequest);
+
+        $this->ensureUniquePropertyNames(
+            $schemaProperties,
+            $this->generatorRequest->getOptions()->getPreservePropertyNames(),
+        );
+
+        foreach ($schemaProperties as $property) {
+            $property->generateSubTypes($this->writer, $this->output);
+        }
+
+        $hasOptionalNullable = $this->hasOptionalNullable($schemaProperties);
+
+        if ($hasOptionalNullable) {
+            $classProperties[] = $this->createProvidedOptionalsProperty();
+        }
+
+        $classProperties = [
+            ...$classProperties,
+            ...$this->generateProperties($schemaProperties, $hasOptionalNullable),
+        ];
+
+        $methods = [
+            $this->generateConstructor($schemaProperties),
+            ...$this->generateGetterMethods($schemaProperties),
+            ...$this->generateSetterMethods($schemaProperties),
+            $this->generateBuildMethod($schemaProperties, $defaults, $hasOptionalNullable),
+            $this->generateToArrayMethod($schemaProperties, $defaults),
+            $this->generateToStdClassMethod($schemaProperties, $defaults),
+            $this->generateValidateMethod(),
+            $this->generateCloneMethod($schemaProperties),
+            $hasOptionalNullable ? $this->generateIsProvidedMethod() : null,
+        ];
+        $methods = array_values(array_filter($methods));
+        $this->ensureUniqueMethodNames($methods);
+
+        $this->generateClassFile($this->generatorRequest, $schema, $classProperties, $methods, $this->writer);
+    }
+    
+    private function stripSchemaMetadata(array &$node): void
+    {
+        $metaFields = [
+            'description',
+            'title',
+            'examples',
+            'deprecated',
+            'default',
+            'readOnly',
+            'writeOnly',
+            '$id',
+            '$schema',
+            '$comment',
+        ];
+
+        foreach ($node as $key => &$value) {
+            if (in_array($key, $metaFields, true)) {
+                unset($node[$key]);
+                continue;
+            }
+            if (is_array($value)) {
+                $this->stripSchemaMetadata($value);
+            }
+        }
+    }
+
+    private function collectPropertiesFromSchema(array $schema, GeneratorRequest $req): PropertyCollection
+    {
+        $properties = new PropertyCollection();
+
+        if (isset($schema['properties'])) {
+            foreach ($schema['properties'] as $key => $definition) {
+                $key = (string) $key;
+                $isRequired = isset($schema['required']) && in_array($key, $schema['required']);
+
+                $property = PropertyBuilder::buildPropertyFromSchema($req, $key, $definition, $isRequired);
+                $properties->add($property);
+            }
+        }
+
+        return $properties;
+    }
+
+    private static function collectDefaults(array $schema, GeneratorRequest $req): array
+    {
+        $defaults = [];
+        if (!isset($schema['properties']) || !is_array($schema['properties'])) {
+            return $defaults;
+        }
+
+        $raw = $req->getRawSchema();
+        $rawProps = null;
+        if ($raw instanceof \stdClass && isset($raw->properties) && $raw->properties instanceof \stdClass) {
+            $rawProps = $raw->properties;
+        }
+
+        foreach ($schema['properties'] as $key => $def) {
+            $found = false;
+            $rawKey = (string)$key;
+            $rawDef = $rawProps && property_exists($rawProps, $rawKey) ? $rawProps->{$rawKey} : null;
+            $d = self::extractDefault($def, $req, $found, $rawDef);
+            if ($found) {
+                $defaults[$key] = $d;
+            }
+        }
+
+        return $defaults;
+    }
+
+    private static function extractDefault(array $def, GeneratorRequest $req, bool &$found = false, object|null $rawDef = null): array
+    {
+        if (array_key_exists('default', $def)) {
+            $found = true;
+            $val = $def['default'];
+            $type = null;
+            if (is_array($val)) {
+                if ($rawDef !== null && property_exists($rawDef, 'default')) {
+                    $rawDefault = $rawDef->default;
+                    if ($rawDefault instanceof \stdClass) {
+                        $type = 'object';
+                    } elseif (is_array($rawDefault)) {
+                        $type = 'array';
+                    }
+                } else {
+                    $type = SchemaUtils::extractTypeForDefault($def);
+                }
+            }
+            $default = ['default' => $val];
+            if ($type !== null && $type !== '') {
+                $default['type'] = $type;
+            }
+            return $default;
+        }
+
+        if (isset($def['$ref'])) {
+            $schema = $req->lookupSchema($def['$ref']);
+            $d = self::extractDefault($schema, $req, $found);
+            if ($found) {
+                return $d;
+            }
+        }
+
+        foreach (['anyOf', 'oneOf', 'allOf'] as $k) {
+            if (isset($def[$k]) && is_array($def[$k])) {
+                foreach ($def[$k] as $i => $sub) {
+                    $rawSub = null;
+                    if ($rawDef !== null && isset($rawDef->{$k}) && is_array($rawDef->{$k})) {
+                        $rawSub = $rawDef->{$k}[$i] ?? null;
+                    }
+                    if (isset($sub['$ref'])) {
+                        $sub = $req->lookupSchema($sub['$ref']);
+                    }
+                    if (is_array($sub)) {
+                        $d = self::extractDefault($sub, $req, $found, $rawSub);
+                        if ($found) {
+                            return $d;
+                        }
+                    }
+                }
+            }
+        }
+
+        $found = false;
+        return ['default' => null, 'type' => null];
+    }
+
+    public function createSchemaProperty(array $validationSchema): PropertyGenerator
+    {
+        $prop = new PropertyGenerator(
+            'schema',
+            $validationSchema,
+            PropertyGenerator::FLAG_PRIVATE | PropertyGenerator::FLAG_STATIC,
+        );
+
+        $prop->setDocBlock(new DocBlockGenerator(
+            'Schema used to validate input for creating instances of this class',
+            null,
+            [new GenericTag('var', 'array')],
+        ));
+
+        if ($this->generatorRequest->isAtLeastPHP('7.4')) {
+            $prop->setTypeHint('array');
+        }
+        if ($this->generatorRequest->getOptions()->getSingleLineSchema()) {
+            $prop->setSingleLineDefaultValue(true);
+        }
+
+        return $prop;
+    }
+
+    public function createDefaultsProperty(array $defaults): ?PropertyGenerator
+    {
+        $prop = new PropertyGenerator('_defaults', $defaults, PropertyGenerator::FLAG_PRIVATE | PropertyGenerator::FLAG_STATIC);
+        $prop->setDocBlock(new DocBlockGenerator(
+            'Default values from the schema',
+            null,
+            [new GenericTag('var', 'array')],
+        ));
+        if ($this->generatorRequest->isAtLeastPHP('7.4')) {
+            $prop->setTypeHint('array');
+        }
+        if ($this->generatorRequest->getOptions()->getSingleLineSchema()) {
+            $prop->setSingleLineDefaultValue(true);
+        }
+
+        return $prop;
+    }
+
+    public function createProvidedOptionalsProperty(): ?PropertyGenerator
+    {
+        $setVisibility = ($this->generatorRequest->getNoGetters() && $this->generatorRequest->getNoSetters())
+            ? PropertyGenerator::FLAG_PUBLIC
+            : PropertyGenerator::FLAG_PRIVATE;
+
+        $prop = new PropertyGenerator('_providedOptionals', [] , $setVisibility);
+        $prop->setDefaultValue([]);
+        $prop->setSingleLineDefaultValue(true);
+
+        if ($this->generatorRequest->isAtLeastPHP("7.4")) {
+            $prop->setTypeHint("array");
+        }
+
+        $prop->setDocBlock(new DocBlockGenerator(
+            "Map of optional nullable property names that were explicitly set",
+            null,
+            [new GenericTag('var', 'array<string,true>')]
+        ));
+
+        return $prop;
     }
 
     /**
-     * @param PropertyCollection $properties
      * @return PropertyGenerator[]
      */
     public function generateProperties(PropertyCollection $properties): array
     {
         $propertyGenerators = [];
 
-        $hasOptionalNullable = false;
-        foreach ($properties as $p) {
-            if ($p instanceof OptionalPropertyDecorator && $p->isOptionalNullable()) {
-                $hasOptionalNullable = true;
-                break;
-            }
-        }
-
         $visibility = $this->generatorRequest->getNoGetters()
             ? PropertyGenerator::FLAG_PUBLIC
             : PropertyGenerator::FLAG_PRIVATE;
-
-        if ($hasOptionalNullable) {
-            $setVisibility = ($this->generatorRequest->getNoGetters() && $this->generatorRequest->getNoSetters())
-                ? PropertyGenerator::FLAG_PUBLIC
-                : PropertyGenerator::FLAG_PRIVATE;
-
-            $setProp = new PropertyGenerator('_providedOptionals', [] , $setVisibility);
-            $setProp->setDefaultValue([]);
-            $setProp->setSingleLineDefaultValue(true);
-            if ($this->generatorRequest->isAtLeastPHP("7.4")) {
-                $setProp->setTypeHint("array");
-            }
-            $setProp->setDocBlock(new DocBlockGenerator(
-                "Map of optional nullable property names that were explicitly set",
-                null,
-                [new GenericTag('var', 'array<string,true>')]
-            ));
-            $propertyGenerators[] = $setProp;
-        }
 
         foreach ($properties as $property) {
             $schema     = $property->schema();
@@ -121,11 +352,50 @@ class ClassGenerator
         return $propertyGenerators;
     }
 
+    public function generateConstructor(PropertyCollection $properties): ?MethodGenerator
+    {
+        $params      = [];
+        $tags        = [];
+        $assignments = [];
+
+        $requiredProperties = $properties->filter(PropertyCollectionFilterFactory::required());
+
+        foreach ($requiredProperties as $requiredProperty) {
+            $paramName = $requiredProperty->name();
+            $params[]  = new ParameterGenerator(
+                $paramName,
+                $requiredProperty->typeHint($this->generatorRequest->getTargetPHPVersion())
+            );
+
+            $tags[] = new ParamTag(
+                $paramName,
+                [$requiredProperty->typeAnnotation()]
+            );
+
+            $assignments[] = "\$this->{$requiredProperty->name()} = \${$paramName};";
+        }
+
+        if ($assignments === []) {
+            return null;
+        }
+
+        $docBlock = new DocBlockGenerator("", "", $tags);
+        $docBlock->setWordWrap(false);
+
+        return new MethodGenerator(
+            "__construct",
+            $params,
+            MethodGenerator::FLAG_PUBLIC,
+            join("\n", $assignments),
+            $docBlock
+        );
+    }
+
     /**
      * @param PropertyCollection $properties
      * @return MethodGenerator
      */
-    public function generateBuildMethod(PropertyCollection $properties, array $defaults = []): MethodGenerator
+    public function generateBuildMethod(PropertyCollection $properties, array $defaults = [], bool $hasOptionalNullable = false): MethodGenerator
     {
         // --- Params
 
@@ -174,6 +444,7 @@ class ClassGenerator
             materializeArgName: $materializeArgName,
             defaults: $defaults,
             properties: $properties,
+            hasOptionalNullable: $hasOptionalNullable,
         );
 
         // --- Combine everything into the Laminas `MethodGenerator`
@@ -211,16 +482,9 @@ class ClassGenerator
         string $materializeArgName,
         array $defaults,
         PropertyCollection $properties,
+        bool $hasOptionalNullable,
     ): string
     {
-        $hasOptionalNullable = false;
-        foreach ($properties as $p) {
-            if ($p instanceof OptionalPropertyDecorator && $p->isOptionalNullable()) {
-                $hasOptionalNullable = true;
-                break;
-            }
-        }
-
         $objVarName = 'obj';
         if ($properties->hasPropertyWithName($objVarName)) {
             $objVarName = '_obj';
@@ -921,42 +1185,231 @@ class ClassGenerator
         return $unsetMethod;
     }
 
-    public function generateConstructor(PropertyCollection $properties): ?MethodGenerator
+    /**
+     * Ensures that property names are unique after sanitization. When a
+     * collision is detected, an underscore is prepended until the name is
+     * unique within the given property collection.
+     */
+    public function ensureUniquePropertyNames(PropertyCollection $properties, bool $preservePropertyNames): void
     {
-        $params      = [];
-        $tags        = [];
-        $assignments = [];
+        // Reserved identifiers that should not be used for property names or
+        // would collide with generated code identifiers
+        $reservedPropertyNames = [
+            '_GLOBALS',
+            'GLOBALS',
+            'GLOBALS_1',
+            '_SERVER',
+            '_GET',
+            '_POST',
+            '_FILES',
+            '_REQUEST',
+            '_SESSION',
+            '_ENV',
+            '_COOKIE',
+            'php_errormsg',
+            'http_response_header',
+            'argc',
+            'argv',
+            'schema',
+            '_defaults',
+            '_providedOptionals',
+        ];
 
-        $requiredProperties = $properties->filter(PropertyCollectionFilterFactory::required());
+        $reservedMethodNames = [
+            'buildFromInput',
+            'toArray',
+            'toStdClass',
+            'validateInput',
+            'clone',
+            '__construct',
+            '__destruct',
+            '__get',
+            '__set',
+            '__call',
+            '__isset',
+            '__unset',
+            '__sleep',
+            '__wakeup',
+            '__toString',
+            '__invoke',
+            '__debugInfo',
+            '__clone',
+        ];
 
-        foreach ($requiredProperties as $requiredProperty) {
-            $paramName = $requiredProperty->name();
-            $params[]  = new ParameterGenerator(
-                $paramName,
-                $requiredProperty->typeHint($this->generatorRequest->getTargetPHPVersion())
-            );
-
-            $tags[] = new ParamTag(
-                $paramName,
-                [$requiredProperty->typeAnnotation()]
-            );
-
-            $assignments[] = "\$this->{$requiredProperty->name()} = \${$paramName};";
+        $used = [];
+        foreach (array_merge($reservedPropertyNames, $reservedMethodNames) as $n) {
+            $used[] = StringUtils::safeCamelCase($n);
+            $used[] = StringUtils::sanitizeIdentifier($n);
         }
+        $used = array_values(array_unique($used));
 
-        if ($assignments === []) {
-            return null;
+        $usedMethods = [];
+        foreach ($reservedMethodNames as $n) {
+            $usedMethods[] = strtolower(StringUtils::safePascalCase(StringUtils::safeCamelCase($n)));
+            $usedMethods[] = strtolower(StringUtils::safePascalCase(StringUtils::sanitizeIdentifier($n)));
         }
+        $usedMethods = array_values(array_unique($usedMethods));
 
-        $docBlock = new DocBlockGenerator("", "", $tags);
-        $docBlock->setWordWrap(false);
+        foreach ($properties as $property) {
+            $base    = $property->name();
+            $unique  = $base;
+            $pascal  = strtolower(StringUtils::safePascalCase($unique));
 
-        return new MethodGenerator(
-            "__construct",
-            $params,
-            MethodGenerator::FLAG_PUBLIC,
-            join("\n", $assignments),
-            $docBlock
+            $needsChange = in_array($unique, $used, true)
+                || (!$preservePropertyNames && in_array($pascal, $usedMethods, true));
+
+            if ($needsChange) {
+                if ($base[0] !== '_') {
+                    $unique = '_' . $base;
+                    $pascal = strtolower(StringUtils::safePascalCase($unique));
+                }
+
+                $i = 1;
+                $baseUnique = $unique;
+                while (in_array($unique, $used, true)
+                    || (!$preservePropertyNames && in_array($pascal, $usedMethods, true))) {
+                    $unique = $baseUnique . '_' . $i;
+                    $pascal = strtolower(StringUtils::safePascalCase($unique));
+                    $i++;
+                }
+            }
+
+            if ($unique !== $base && $property instanceof RenameablePropertyInterface) {
+                $property->setName($unique);
+            }
+
+            $used[]       = $unique;
+            $usedMethods[] = $pascal;
+        }
+    }
+
+    /**
+     * Ensures that generated method names are unique. If a collision occurs,
+     * an underscore is inserted after the common prefix (get/set/with/without).
+     *
+     * @param MethodGenerator[] $methods
+     */
+    public function ensureUniqueMethodNames(array $methods): void
+    {
+        $reservedMethodNames = [
+            'buildFromInput',
+            'toArray',
+            'toStdClass',
+            'validateInput',
+            'clone',
+            '__construct',
+            '__destruct',
+            '__get',
+            '__set',
+            '__call',
+            '__isset',
+            '__unset',
+            '__sleep',
+            '__wakeup',
+            '__toString',
+            '__invoke',
+            '__debugInfo',
+            '__clone',
+        ];
+
+        $reserved = array_map('strtolower', $reservedMethodNames);
+        $used = [];
+
+        foreach ($methods as $method) {
+            $name   = $method->getName();
+            $lcName = strtolower($name);
+
+            if (!in_array($lcName, $used, true) && in_array($lcName, $reserved, true)) {
+                $used[] = $lcName;
+                continue;
+            }
+
+            $candidate = $name;
+            $prefix    = '';
+            $base      = $name;
+
+            if (preg_match('/^(set|get|without|with)(.+)$/', $name, $m)) {
+                $prefix = $m[1];
+                $base   = $m[2];
+            }
+
+            $i = 1;
+            while (in_array(strtolower($candidate), $used, true) || in_array(strtolower($candidate), $reserved, true)) {
+                if ($prefix !== '') {
+                    $suffix   = $i > 1 ? $base . '_' . ($i - 1) : $base;
+                    $candidate = $prefix . '_' . $suffix;
+                } else {
+                    $candidate = $name . '_' . $i;
+                }
+                $i++;
+            }
+
+            if ($candidate !== $name) {
+                $method->setName($candidate);
+            }
+
+            $used[] = strtolower($candidate);
+        }
+    }
+
+    public function hasOptionalNullable(PropertyCollection $properties): bool
+    {
+        foreach ($properties as $p) {
+            if ($p instanceof OptionalPropertyDecorator && $p->isOptionalNullable()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public function generateClassFile(GeneratorRequest $req, array $schema, array $properties, array $methods, WriterInterface $writer): void
+    {
+        $cls = new LaminasClassGenerator(
+            $req->getTargetClass(),
+            $req->getTargetNamespace(),
+            null,
+            null,
+            [],
+            $properties,
+            $methods,
+            null,
         );
+
+        if (isset($schema['description']) && is_string($schema['description']) && $schema['description'] !== '') {
+            $doc = new DocBlockGenerator($schema['description']);
+            $doc->setWordWrap(false);
+            $cls->setDocBlock($doc);
+        }
+
+        $req->onClassCreated($cls);
+
+        $filename = $req->getTargetDirectory() . '/' . $req->getTargetClass() . '.php';
+
+        $file = new FileGenerator();
+        $file->setClasses([$cls]);
+
+        $req->onFileCreated($filename, $file);
+
+        if ($req->isAtLeastPHP('7.0') && !$req->getOptions()->getDisableStrictTypes()) {
+            $file->setDeclares([DeclareStatement::strictTypes(1)]);
+        }
+
+        $content = $file->generate();
+
+        // Do some corrections because the Zend code generation library is not smart enough.
+        $content = preg_replace('/: \\\\self/', ': self', $content);
+
+        // Remove current namespace from all class names
+        $content = preg_replace('/\\\\' . preg_quote($req->getTargetNamespace(), '/') . '\\\\/', '', $content);
+
+        // Remove "\" before class names that we just generated (as they're all in the current namespace)
+        $ownClasses = $req->getGeneratedClassNames();
+        if ($ownClasses) {
+            $escapedOwnClasses = array_map(fn ($n) => preg_quote($n, '/'), $ownClasses);
+            $pattern = '/\\\\(' . join('|', $escapedOwnClasses) . ')(?=\s|[,;)|]|$)/';
+            $content = preg_replace($pattern, '$1', $content);
+        }
+
+        $writer->writeFile($filename, $content);
     }
 }

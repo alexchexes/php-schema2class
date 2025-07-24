@@ -6,6 +6,8 @@ namespace Helmich\Schema2Class\Generator\Property\Type;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\PropertyBuilder;
 use Helmich\Schema2Class\Generator\SchemaToClass;
+use Helmich\Schema2Class\Writer\WriterInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Represents array of complex objects defined "items" schema.
@@ -54,9 +56,9 @@ class TypedArrayProperty extends AbstractProperty
         return true;
     }
 
-    public function generateSubTypes(SchemaToClass $generator): void
+    public function generateSubTypes(WriterInterface $writer, OutputInterface $output): void
     {
-        $this->itemType->generateSubTypes($generator);
+        $this->itemType->generateSubTypes($writer, $output);
     }
 
     public function typeAnnotation(): string

@@ -4,7 +4,9 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class\Generator\Property\Type;
 
 use Helmich\Schema2Class\Generator\SchemaToClass;
+use Helmich\Schema2Class\Writer\WriterInterface;
 use Laminas\Code\Generator\PropertyValueGenerator;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Contract implemented by all property types that can generate code for a schema field.
@@ -71,10 +73,9 @@ interface PropertyInterface
     public function convertTypeToStdClass(string $outputVarName = 'output'): string;
 
     /**
-     * @param SchemaToClass $generator
      * @return void
      */
-    public function generateSubTypes(SchemaToClass $generator): void;
+    public function generateSubTypes(WriterInterface $writer, OutputInterface $output): void;
 
     /**
      * @return string

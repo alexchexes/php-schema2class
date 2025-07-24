@@ -9,7 +9,9 @@ use Helmich\Schema2Class\Generator\Property\Type\PropertyInterface;
 use Helmich\Schema2Class\Generator\Property\Type\StringProperty;
 use Helmich\Schema2Class\Generator\Property\RenameablePropertyInterface;
 use Helmich\Schema2Class\Generator\SchemaToClass;
+use Helmich\Schema2Class\Writer\WriterInterface;
 use Laminas\Code\Generator\PropertyValueGenerator;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Decorator that wraps another property to allow `null` values in addition to
@@ -32,12 +34,11 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface, Renameabl
     }
 
     /**
-     * @param SchemaToClass $generator
      * @return void
      */
-    public function generateSubTypes(SchemaToClass $generator): void
+    public function generateSubTypes(WriterInterface $writer, OutputInterface $output): void
     {
-        $this->inner->generateSubTypes($generator);
+        $this->inner->generateSubTypes($writer, $output);
     }
 
     public function name(): string
