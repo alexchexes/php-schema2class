@@ -4,20 +4,18 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class\Generator\Property\Type;
 
 use Helmich\Schema2Class\Generator\GeneratorRequest;
-use Helmich\Schema2Class\Generator\SchemaToClass;
+use Helmich\Schema2Class\Writer\DebugWriter;
+use Symfony\Component\Console\Output\NullOutput;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
 use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
-use Prophecy\PhpUnit\ProphecyTrait;
 use function PHPUnit\Framework\assertFalse;
 use function PHPUnit\Framework\assertSame;
 use function PHPUnit\Framework\assertTrue;
 
 class NestedObjectPropertyTest extends TestCase
 {
-    use ProphecyTrait;
 
     private NestedObjectProperty $property;
 
@@ -97,13 +95,11 @@ EOCODE;
 
     public function testGenerateSubTypesWithSimpleArray()
     {
-        $schemaToClass = $this->prophesize(SchemaToClass::class);
+        $writer = new DebugWriter(new NullOutput());
 
-        $this->property->generateSubTypes($schemaToClass->reveal());
+        $this->property->generateSubTypes($writer, new NullOutput());
 
-        $schemaToClass->schemaToClass(Argument::that(function(GeneratorRequest $subReq) {
-            return Assert::equalTo(['allOf' => []])->evaluate($subReq->getSchema());
-        }))->shouldHaveBeenCalled();
+        $this->assertCount(1, $writer->getWrittenFiles());
     }
 
 }

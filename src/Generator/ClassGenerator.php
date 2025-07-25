@@ -89,7 +89,7 @@ class ClassGenerator
 
         $classProperties = [
             ...$classProperties,
-            ...$this->generateProperties($schemaProperties, $hasOptionalNullable),
+            ...$this->generateProperties($schemaProperties),
         ];
 
         $methods = [

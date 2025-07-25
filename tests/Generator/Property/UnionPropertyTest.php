@@ -4,14 +4,13 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class\Generator\Property\Type;
 
 use Helmich\Schema2Class\Generator\GeneratorRequest;
-use Helmich\Schema2Class\Generator\SchemaToClass;
+use Helmich\Schema2Class\Writer\DebugWriter;
+use Symfony\Component\Console\Output\NullOutput;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
 use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
-use Prophecy\PhpUnit\ProphecyTrait;
 use function PHPUnit\Framework\assertSame;
 use function PHPUnit\Framework\assertTrue;
 use Helmich\Schema2Class\Generator\Definition\Definition;
@@ -19,7 +18,6 @@ use Helmich\Schema2Class\Generator\ReferenceLookup\DefinitionsReferenceLookup;
 
 class UnionPropertyTest extends TestCase
 {
-    use ProphecyTrait;
 
     private UnionProperty $property;
 
@@ -175,14 +173,11 @@ EOCODE;
 
         $underTest = new UnionProperty('myPropertyName', $schema, $this->generatorRequest);
 
-        $schemaToClass = $this->prophesize(SchemaToClass::class);
+        $writer = new DebugWriter(new NullOutput());
 
-        $underTest->generateSubTypes($schemaToClass->reveal());
+        $underTest->generateSubTypes($writer, new NullOutput());
 
-        $idx = 0;
-        $schemaToClass->schemaToClass(Argument::that(function (GeneratorRequest $subReq) use ($subschemas, &$idx) {
-            return Assert::equalTo($subschemas[$idx++])->evaluate($subReq->getSchema());
-        }))->shouldHaveBeenCalled();
+        $this->assertCount(count($subschemas), $writer->getWrittenFiles());
     }
 
 }

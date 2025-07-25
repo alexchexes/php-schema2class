@@ -7,12 +7,10 @@ use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
 use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
 use PHPUnit\Framework\TestCase;
-use Prophecy\PhpUnit\ProphecyTrait;
 use function PHPUnit\Framework\assertSame;
 
 class StringEnumPropertyTest extends TestCase
 {
-    use ProphecyTrait;
 
     private StringEnumProperty $property;
     private GeneratorRequest $generatorRequest;

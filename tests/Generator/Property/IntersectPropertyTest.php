@@ -4,21 +4,19 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class\Generator\Property\Type;
 
 use Helmich\Schema2Class\Generator\GeneratorRequest;
-use Helmich\Schema2Class\Generator\SchemaToClass;
+use Helmich\Schema2Class\Writer\DebugWriter;
+use Symfony\Component\Console\Output\NullOutput;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
 use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
-use Prophecy\PhpUnit\ProphecyTrait;
 use function PHPUnit\Framework\assertFalse;
 use function PHPUnit\Framework\assertSame;
 use function PHPUnit\Framework\assertTrue;
 
 class IntersectPropertyTest extends TestCase
 {
-    use ProphecyTrait;
 
     private IntersectProperty $property;
 
@@ -143,12 +141,11 @@ EOCODE;
     {
         $underTest = new IntersectProperty('myPropertyName', $schema, $this->generatorRequest);
 
-        $schemaToClass = $this->prophesize(SchemaToClass::class);
+        $writer = new DebugWriter(new NullOutput());
 
-        $underTest->generateSubTypes($schemaToClass->reveal());
+        $underTest->generateSubTypes($writer, new NullOutput());
 
-        $schemaToClass->schemaToClass(Argument::that(function(GeneratorRequest $subReq) use ($subschema) {
-            return Assert::equalTo($subschema)->evaluate($subReq->getSchema());
-        }))->shouldHaveBeenCalled();
+        $expectedFiles = count($subschema['properties']) > 0 ? 1 : 0;
+        $this->assertCount($expectedFiles, $writer->getWrittenFiles());
     }
 }

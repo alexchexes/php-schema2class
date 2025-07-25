@@ -4,20 +4,18 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class\Generator\Property\Type;
 
 use Helmich\Schema2Class\Generator\GeneratorRequest;
-use Helmich\Schema2Class\Generator\SchemaToClass;
+use Helmich\Schema2Class\Writer\DebugWriter;
+use Symfony\Component\Console\Output\NullOutput;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
 use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
-use Prophecy\PhpUnit\ProphecyTrait;
 use function PHPUnit\Framework\assertFalse;
 use function PHPUnit\Framework\assertSame;
 use function PHPUnit\Framework\assertTrue;
 
 class ObjectArrayPropertyTest extends TestCase
 {
-    use ProphecyTrait;
 
     private ObjectArrayProperty $property;
 
@@ -122,11 +120,11 @@ EOCODE;
         $arrayProperties = ['properties' => []];
         $underTest = new ObjectArrayProperty('myPropertyName', ['type' => 'array', 'items' => $arrayProperties], $this->generatorRequest);
 
-        $schemaToClass = $this->prophesize(SchemaToClass::class);
+        $writer = new DebugWriter(new NullOutput());
 
-        $underTest->generateSubTypes($schemaToClass->reveal());
+        $underTest->generateSubTypes($writer, new NullOutput());
 
-        $schemaToClass->schemaToClass(Argument::any())->shouldNotHaveBeenCalled();
+        $this->assertCount(0, $writer->getWrittenFiles());
     }
 
 }
