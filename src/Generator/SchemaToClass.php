@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator;
 
+use Helmich\Schema2Class\Generator\Class\ClassGenerator;
 use Helmich\Schema2Class\Generator\Definition\Definition;
 use Helmich\Schema2Class\Generator\Definition\DefinitionsCollector;
 use Helmich\Schema2Class\Generator\Definition\DefinitionsGenerator;
@@ -58,8 +59,8 @@ class SchemaToClass
             return;
         }
 
-        $classGenerator = new ClassGenerator($req, $this->writer, $this->output);
-        $classGenerator->generateClass($schema);
+        $classGenerator = new ClassGenerator($req, $schema, $this->writer, $this->output);
+        $classGenerator->generateClass();
     }
 
     private function decodeReferences(array &$node): void

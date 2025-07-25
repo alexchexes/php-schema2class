@@ -1,23 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace Helmich\Schema2Class\Generator;
+namespace Helmich\Schema2Class\Generator\Class;
 
 use Helmich\Schema2Class\Generator\Property\Collection\PropertyCollection;
-use Helmich\Schema2Class\Generator\Property\Collection\PropertyCollectionFilterFactory;
 use Helmich\Schema2Class\Generator\Property\Decorator\OptionalPropertyDecorator;
-use Helmich\Schema2Class\Generator\Property\Decorator\PropertyDecoratorInterface;
-use Helmich\Schema2Class\Generator\Property\PropertyBuilder;
 use Helmich\Schema2Class\Generator\Property\PropertyQuery;
-use Helmich\Schema2Class\Generator\Property\RenameablePropertyInterface;
-use Helmich\Schema2Class\Generator\Property\Type\ObjectArrayProperty;
-use Helmich\Schema2Class\Generator\Property\Type\PrimitiveArrayProperty;
-use Helmich\Schema2Class\Generator\Property\Type\PropertyInterface;
-use Helmich\Schema2Class\Generator\Property\Type\ReferenceArrayProperty;
-use Helmich\Schema2Class\Generator\Property\Type\TypedArrayProperty;
 use Helmich\Schema2Class\Generator\PropertyGenerator;
-use Helmich\Schema2Class\Util\SchemaUtils;
-use Helmich\Schema2Class\Util\StringUtils;
 use Helmich\Schema2Class\Writer\WriterInterface;
 use Laminas\Code\Generator\DocBlock\Tag\GenericTag;
 use Laminas\Code\Generator\DocBlockGenerator;
@@ -25,6 +14,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Helmich\Schema2Class\Generator\Class\PropertyCollector;
 use Helmich\Schema2Class\Generator\Class\MethodFactory;
 use Helmich\Schema2Class\Generator\Class\ClassFileWriter;
+use Helmich\Schema2Class\Generator\GeneratorRequest;
 
 /**
  * Generates the `Laminas\Code` representation of a PHP class for a single schema.
@@ -36,35 +26,30 @@ use Helmich\Schema2Class\Generator\Class\ClassFileWriter;
  * the actual writing of files happens outside of this class.
  */
 class ClassGenerator
-{
+{ 
+    private PropertyCollector $propertyCollector;
+    private MethodFactory $methodFactory;
+    private ClassFileWriter $fileWriter;
+
     public function __construct(
         private GeneratorRequest $generatorRequest,
+        private array $schema,
         private WriterInterface $writer,
         private OutputInterface $output,
-        private ?PropertyCollector $propertyCollector = null,
-        private ?MethodFactory $methodFactory = null,
-        private ?ClassFileWriter $fileWriter = null,
     ) {
-        $this->propertyCollector ??= new PropertyCollector();
-        $this->methodFactory ??= new MethodFactory($this->generatorRequest);
-        $this->fileWriter ??= new ClassFileWriter($this->writer);
+        $this->propertyCollector = new PropertyCollector();
+        $this->methodFactory = new MethodFactory($this->generatorRequest);
+        $this->fileWriter = new ClassFileWriter($this->writer);
     }
     
-    public function generateClass(array $schema)
+    public function generateClass()
     {
-        // remove metadata like descriptions from schema if such option is set, but keep them
-        // for building property documentation
-        $validationSchema = $schema;
-        if ($this->generatorRequest->getOptions()->getNoSchemaMetadata()) {
-            $this->stripSchemaMetadata($validationSchema);
-        }
-
         $classProperties = [];
 
-        $schemaProperty = $this->createSchemaProperty($validationSchema);
+        $schemaProperty = $this->createSchemaProperty();
         $classProperties[] = $schemaProperty;
 
-        $defaults      = $this->propertyCollector->collectDefaults($schema, $this->generatorRequest);
+        $defaults      = $this->propertyCollector->collectDefaults($this->schema, $this->generatorRequest);
         $hasDefaults   = !empty($defaults);
         $this->generatorRequest->setCurrReqHasDefaults($hasDefaults);
 
@@ -72,7 +57,7 @@ class ClassGenerator
             $classProperties[] = $this->createDefaultsProperty($defaults);
         }
 
-        $schemaProperties = $this->propertyCollector->collectPropertiesFromSchema($schema, $this->generatorRequest);
+        $schemaProperties = $this->propertyCollector->collectPropertiesFromSchema($this->schema, $this->generatorRequest);
 
         $this->propertyCollector->ensureUniquePropertyNames(
             $schemaProperties,
@@ -108,7 +93,7 @@ class ClassGenerator
         $methods = array_values(array_filter($methods));
         $this->methodFactory->ensureUniqueMethodNames($methods);
 
-        $this->fileWriter->write($this->generatorRequest, $schema, $classProperties, $methods);
+        $this->fileWriter->write($this->generatorRequest, $this->schema, $classProperties, $methods);
     }
     
     private function stripSchemaMetadata(array &$node): void
@@ -138,8 +123,15 @@ class ClassGenerator
     }
 
 
-    public function createSchemaProperty(array $validationSchema): PropertyGenerator
+    private function createSchemaProperty(): PropertyGenerator
     {
+        // remove metadata like descriptions from schema if such option is set, but keep them
+        // for building property documentation
+        $validationSchema = $this->schema;
+        if ($this->generatorRequest->getOptions()->getNoSchemaMetadata()) {
+            $this->stripSchemaMetadata($validationSchema);
+        }
+
         $prop = new PropertyGenerator(
             'schema',
             $validationSchema,
@@ -162,7 +154,7 @@ class ClassGenerator
         return $prop;
     }
 
-    public function createDefaultsProperty(array $defaults): ?PropertyGenerator
+    private function createDefaultsProperty(array $defaults): PropertyGenerator
     {
         $prop = new PropertyGenerator('_defaults', $defaults, PropertyGenerator::FLAG_PRIVATE | PropertyGenerator::FLAG_STATIC);
         $prop->setDocBlock(new DocBlockGenerator(
@@ -180,7 +172,7 @@ class ClassGenerator
         return $prop;
     }
 
-    public function createProvidedOptionalsProperty(): ?PropertyGenerator
+    private function createProvidedOptionalsProperty(): PropertyGenerator
     {
         $setVisibility = ($this->generatorRequest->getNoGetters() && $this->generatorRequest->getNoSetters())
             ? PropertyGenerator::FLAG_PUBLIC
@@ -206,7 +198,7 @@ class ClassGenerator
     /**
      * @return PropertyGenerator[]
      */
-    public function generateProperties(PropertyCollection $properties): array
+    private function generateProperties(PropertyCollection $properties): array
     {
         $propertyGenerators = [];
 
@@ -254,5 +246,4 @@ class ClassGenerator
 
         return $propertyGenerators;
     }
-
-    }
+}

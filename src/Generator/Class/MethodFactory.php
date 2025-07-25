@@ -562,6 +562,7 @@ class MethodFactory
 
         $base = $property;
         while ($base instanceof PropertyDecoratorInterface) {
+            /** @var PropertyDecoratorInterface $base */
             $base = $base->unwrap();
         }
 
@@ -647,6 +648,7 @@ class MethodFactory
 
         $base = $property;
         while ($base instanceof PropertyDecoratorInterface) {
+            /** @var PropertyDecoratorInterface $base */
             $base = $base->unwrap();
         }
 
