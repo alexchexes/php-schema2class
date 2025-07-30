@@ -55,9 +55,13 @@ class StringEnumProperty extends AbstractProperty
         }
 
         // fallback: a literal‑union of all enum values
+        $values = array_filter(
+            $this->schema['enum'],
+            static fn($v) => $v !== null
+        );
         $literals = array_map(
-            fn(string|int $v) => var_export($v, true),
-            $this->schema['enum']
+            static fn(string|int $v) => var_export($v, true),
+            $values
         );
 
         return implode('|', $literals);
