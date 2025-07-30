@@ -12,17 +12,46 @@ Generate PHP classes from [JSON Schema][jsonschema] automatically. Use it from P
 
 ## Installation
 
-Install with [Composer](https://getcomposer.org/):
+~~Install with [Composer](https://getcomposer.org/):~~
 
-```sh
-composer require --dev helmich/schema2class
+> ```sh
+> composer require --dev helmich/schema2class
+> ```
+
+**This fork is not released on Packagist yet**. To install the current version from this repository, you can do the following:
+
+1. Add this to your `composer.json` and run `composer install`:
+```json
+{
+	"require-dev": {
+		"helmich/schema2class": "dev-enhanced",
+	},
+	"repositories": [
+		{
+			"type": "vcs",
+			"url": "https://github.com/alexchexes/php-schema2class"
+		}
+	]
+}
 ```
+
+2. Or simply clone this repo and use it right away:
+```sh
+git clone https://github.com/alexchexes/php-schema2class
+cd php-schema2class
+# using spec file:
+bin/s2c generate:fromspec PATH/TO/YOUR/SPEC-CONFIG.yaml
+# using CLI options:
+bin/s2c generate:fromschema path/to/schema.json path/to/output-dir
+```
+
+A release on Packagist is planned in the near future.
 
 ## Usage
 
 You can use this tool in three different ways:
 
-### A. Via the CLI, passing options and the schema path directly
+### A. Via the CLI – passing options and the schema path directly
 
 ```sh
 vendor/bin/s2c generate:fromschema --class User my-schema.json src/TargetDir   # or ./my-schema.yaml
@@ -33,7 +62,7 @@ php vendor\bin\s2c generate:fromschema --class User my-schema.json src\TargetDir
 
 See [all available options](#options).
 
-### B. Via the CLI, using a configuration file
+### B. Via the CLI – using a configuration file
 
 1. Create a configuration file, for example `my-config.yaml` (or the equivalent `.json` file):
 
@@ -63,9 +92,9 @@ vendor/bin/s2c generate:fromspec
 
 `.s2c.yaml` will be used automatically.
 
-### C. From PHP code
+### C. Programmatically – from your PHP code
 
-The simplest way to use the generator programmatically is to call `Schema2Class` class methods.
+To use the generator programmatically, create an instance of `Schema2Class` class and call its methods.
 
 Generate from a configuration file:
 
