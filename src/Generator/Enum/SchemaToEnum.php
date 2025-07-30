@@ -41,13 +41,18 @@ class SchemaToEnum
             return false;
         }
 
+        $hasCase = false;
         foreach ($schema['enum'] as $case) {
+            if ($case === null) {
+                continue;
+            }
             if (!is_string($case) && !is_int($case)) {
                 return false;
             }
+            $hasCase = true;
         }
 
-        return true;
+        return $hasCase;
     }
 
     static public function isMixedEnum(array $schema): bool
@@ -56,6 +61,9 @@ class SchemaToEnum
         $hasString = false;
 
         foreach ($schema['enum'] as $case) {
+            if ($case === null) {
+                continue;
+            }
             if (!is_int($case) && !is_string($case)) {
                 return false;
             }
@@ -86,6 +94,9 @@ class SchemaToEnum
         $hasInt = false;
         $hasString = false;
         foreach ($req->getSchema()["enum"] as $case) {
+            if ($case === null) {
+                continue;
+            }
             if (!is_string($case) && !is_int($case)) {
                 throw new GeneratorException("cannot generate enum classes for non-string/non-int enum values");
             }
