@@ -25,7 +25,7 @@ class ClassGeneratorTest extends TestCase
 
         $req = new GeneratorRequest(
             $schema,
-            new ValidatedSpecificationFilesItem('Ns', 'MyClass', sys_get_temp_dir()),
+            new ValidatedSpecificationFilesItem('Ns', 'MyClass', __DIR__),
             (new SpecificationOptions())->withTargetPHPVersion(GeneratorRequest::DEFAULT_PHP8_VERSION),
         );
         $writer = new DebugWriter(new NullOutput());
