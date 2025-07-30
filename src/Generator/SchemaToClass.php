@@ -13,6 +13,8 @@ use Helmich\Schema2Class\Generator\Property\Type\NestedObjectProperty;
 use Helmich\Schema2Class\Generator\ReferenceLookup\DefinitionsReferenceLookup;
 use Helmich\Schema2Class\Writer\WriterInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Helmich\Schema2Class\Generator\GeneratorException;
+use Throwable;
 
 /**
  * Low-level generator that converts a prepared GeneratorRequest into PHP classes.
@@ -60,7 +62,13 @@ class SchemaToClass
         }
 
         $classGenerator = new ClassGenerator($req, $schema, $this->writer, $this->output);
-        $classGenerator->generateClass();
+        try {
+            $classGenerator->generateClass();
+        } catch (Throwable $e) {
+            $cls = $req->getTargetClass() ?? '<anonymous>';
+            $msg = "error generating class '{$cls}': " . $e->getMessage();
+            throw new GeneratorException($msg, 0, $e);
+        }
     }
 
     private function decodeReferences(array &$node): void
