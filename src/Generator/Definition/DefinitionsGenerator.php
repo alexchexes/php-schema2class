@@ -3,8 +3,10 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Definition;
 
+use Helmich\Schema2Class\Generator\GeneratorException;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\SchemaToClass;
+use Throwable;
 
 /**
  * Generates PHP classes for each {@see Definition} produced by a {@see DefinitionsCollector}.
@@ -92,7 +94,12 @@ class DefinitionsGenerator
                 ->withGeneratedClassNames($generatedClasses)
                 ->withRootDefinitions($trimmedDefs);
 
-            $this->schemaToClass->schemaToClass($newRequest);
+            try {
+                $this->schemaToClass->schemaToClass($newRequest);
+            } catch (Throwable $e) {
+                $msg = "error generating definition '{$definition->classFQN}': " . $e->getMessage();
+                throw new GeneratorException($msg, 0, $e);
+            }
         }
     }
 }

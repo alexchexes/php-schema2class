@@ -14,7 +14,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Helmich\Schema2Class\Generator\Class\PropertyCollector;
 use Helmich\Schema2Class\Generator\Class\MethodFactory;
 use Helmich\Schema2Class\Generator\Class\ClassFileWriter;
+use Helmich\Schema2Class\Generator\GeneratorException;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
+use Throwable;
 
 /**
  * Generates the `Laminas\Code` representation of a PHP class for a single schema.
@@ -207,41 +209,47 @@ class ClassGenerator
             : PropertyGenerator::FLAG_PRIVATE;
 
         foreach ($properties as $property) {
-            $schema     = $property->schema();
-            $isOptional = false;
-            $prop       = new PropertyGenerator(
-                $property->name(),
-                $property->formatValue(null),
-                $visibility
-            );
+            try {
+                $schema     = $property->schema();
+                $isOptional = false;
+                $prop       = new PropertyGenerator(
+                    $property->name(),
+                    $property->formatValue(null),
+                    $visibility
+                );
 
-            if ($property instanceof OptionalPropertyDecorator) {
-                $isOptional = true;
+                if ($property instanceof OptionalPropertyDecorator) {
+                    $isOptional = true;
+                }
+
+                $tags = [new GenericTag("var", trim($property->typeAnnotation()))];
+                if (PropertyQuery::isDeprecated($property)) {
+                    $tags[] = new GenericTag("deprecated");
+                }
+
+                $docBlock = new DocBlockGenerator(
+                    $schema["description"] ?? null,
+                    null,
+                    $tags
+                );
+                $docBlock->setWordWrap(false);
+
+                $prop->setDocBlock($docBlock);
+
+                $typeHint = $property->typeHint($this->generatorRequest->getTargetPHPVersion());
+                if ($this->generatorRequest->isAtLeastPHP("7.4") && $typeHint !== null) {
+                    $prop->setTypeHint($typeHint);
+                }
+
+                // omit default `null` for every required field, unsless default is specified in the schema
+                $prop->omitDefaultValue(!$isOptional);
+
+                $propertyGenerators[] = $prop;
+            } catch (Throwable $e) {
+                $cls = $this->generatorRequest->getTargetClass() ?? '<anonymous>';
+                $msg = "error generating property '{$property->name()}' in class '{$cls}': " . $e->getMessage();
+                throw new GeneratorException($msg, 0, $e);
             }
-
-            $tags = [new GenericTag("var", trim($property->typeAnnotation()))];
-            if (PropertyQuery::isDeprecated($property)) {
-                $tags[] = new GenericTag("deprecated");
-            }
-
-            $docBlock = new DocBlockGenerator(
-                $schema["description"] ?? null,
-                null,
-                $tags
-            );
-            $docBlock->setWordWrap(false);
-
-            $prop->setDocBlock($docBlock);
-
-            $typeHint = $property->typeHint($this->generatorRequest->getTargetPHPVersion());
-            if ($this->generatorRequest->isAtLeastPHP("7.4") && $typeHint !== null) {
-                $prop->setTypeHint($typeHint);
-            }
-
-            // omit default `null` for every required field, unsless default is specified in the schema
-            $prop->omitDefaultValue(!$isOptional);
-
-            $propertyGenerators[] = $prop;
         }
 
         return $propertyGenerators;
