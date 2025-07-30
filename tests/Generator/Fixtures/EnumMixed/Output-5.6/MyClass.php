@@ -76,6 +76,16 @@ class MyClass
                     'green',
                 ],
             ],
+            'optionalNullable' => [
+                'type' => [
+                    'string',
+                    null,
+                ],
+                'enum' => [
+                    'red',
+                    'green',
+                ],
+            ],
         ],
         'required' => [
             'foo',
@@ -86,6 +96,13 @@ class MyClass
             'nullable',
         ],
     ];
+
+    /**
+     * Map of optional nullable property names that were explicitly set
+     *
+     * @var array<string,true>
+     */
+    private $_providedOptionals = [];
 
     /**
      * @var 1|2|'1'|'2'
@@ -116,6 +133,11 @@ class MyClass
      * @var 'red'|'green'|null
      */
     private $nullable;
+
+    /**
+     * @var 'red'|'green'|null
+     */
+    private $optionalNullable = null;
 
     /**
      * @param 1|2|'1'|'2' $foo
@@ -181,6 +203,14 @@ class MyClass
     public function getNullable()
     {
         return $this->nullable;
+    }
+
+    /**
+     * @return 'red'|'green'|null
+     */
+    public function getOptionalNullable()
+    {
+        return $this->optionalNullable;
     }
 
     /**
@@ -310,6 +340,40 @@ class MyClass
     }
 
     /**
+     * @param 'red'|'green' $optionalNullable
+     * @return self
+     * @param bool $validate
+     */
+    public function withOptionalNullable(string $optionalNullable, bool $validate = true)
+    {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($optionalNullable, self::$schema['properties']['optionalNullable']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
+        $clone = clone $this;
+        $clone->optionalNullable = $optionalNullable;
+        $clone->_providedOptionals['optionalNullable'] = true;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutOptionalNullable()
+    {
+        $clone = clone $this;
+        unset($clone->optionalNullable);
+        unset($clone->_providedOptionals['optionalNullable']);
+
+        return $clone;
+    }
+
+    /**
      * Builds a new instance from an input array
      *
      * @param array|object $input Input data
@@ -330,15 +394,21 @@ class MyClass
             static::validateInput($input);
         }
 
+        $__providedOptionals = [];
         $foo = $input->{'foo'};
         $bar = $input->{'bar'};
         $baz = ($input->{'baz'} !== null) ? ($input->{'baz'}) : null;
         $contradiction = (int)($input->{'contradiction'});
         $contradiction2 = $input->{'contradiction2'};
         $nullable = ($input->{'nullable'} !== null) ? ($input->{'nullable'}) : null;
+        $optionalNullable = property_exists($input, 'optionalNullable') ? $input->{'optionalNullable'} : null;
+        if (property_exists($input, 'optionalNullable')) {
+            $__providedOptionals['optionalNullable'] = true;
+        }
 
         $obj = new self($foo, $bar, $baz, $contradiction, $contradiction2, $nullable);
-
+        $obj->optionalNullable = $optionalNullable;
+        $obj->_providedOptionals = $__providedOptionals;
         return $obj;
     }
 
@@ -356,6 +426,9 @@ class MyClass
         $output['contradiction'] = $this->contradiction;
         $output['contradiction2'] = $this->contradiction2;
         $output['nullable'] = $this->nullable;
+        if (isset($this->optionalNullable) || array_key_exists('optionalNullable', $this->_providedOptionals)) {
+            $output['optionalNullable'] = $this->optionalNullable;
+        }
 
         return $output;
     }
@@ -374,6 +447,9 @@ class MyClass
         $output->{'contradiction'} = $this->contradiction;
         $output->{'contradiction2'} = $this->contradiction2;
         $output->{'nullable'} = $this->nullable;
+        if (isset($this->optionalNullable) || array_key_exists('optionalNullable', $this->_providedOptionals)) {
+            $output->{'optionalNullable'} = $this->optionalNullable;
+        }
 
         return $output;
     }
@@ -400,5 +476,16 @@ class MyClass
         }
 
         return $validator->isValid();
+    }
+
+    /**
+     * Checks if an optional nullable property was explicitly set
+     *
+     * @param string $propertyName Property name to check (exactly as it appears in the schema)
+     * @return bool
+     */
+    public function isOptionalProvided(string $propertyName)
+    {
+        return array_key_exists($propertyName, $this->_providedOptionals);
     }
 }
