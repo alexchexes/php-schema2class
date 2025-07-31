@@ -104,7 +104,7 @@ class MyClass
         }
 
         $__providedOptionals = [];
-        $foo = property_exists($input, 'foo') ? $input->{'foo'} : null;
+        $foo = property_exists($input, 'foo') ? ($input->{'foo'} !== null) ? ($input->{'foo'}) : null : null;
         if (property_exists($input, 'foo')) {
             $__providedOptionals['foo'] = true;
         }
@@ -124,7 +124,7 @@ class MyClass
     {
         $output = [];
         if (isset($this->foo) || array_key_exists('foo', $this->_providedOptionals)) {
-            $output['foo'] = $this->foo;
+            $output['foo'] = ($this->foo !== null) ? ($this->foo) : null;
         }
 
         return $output;
@@ -139,7 +139,7 @@ class MyClass
     {
         $output = new \stdClass();
         if (isset($this->foo) || array_key_exists('foo', $this->_providedOptionals)) {
-            $output->{'foo'} = $this->foo;
+            $output->{'foo'} = ($this->foo !== null) ? ($this->foo) : null;
         }
 
         return $output;

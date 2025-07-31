@@ -395,7 +395,7 @@ class MyClass
         $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
         $baz = isset($input->{'baz'}) ? $input->{'baz'} : null;
         $qux = isset($input->{'qux'}) ? $input->{'qux'} : null;
-        $grox = property_exists($input, 'grox') ? $input->{'grox'} : null;
+        $grox = property_exists($input, 'grox') ? ($input->{'grox'} !== null) ? ($input->{'grox'}) : null : null;
         if (property_exists($input, 'grox')) {
             $__providedOptionals['grox'] = true;
         }
@@ -435,7 +435,7 @@ class MyClass
             $output['qux'] = $this->qux;
         }
         if (isset($this->grox) || array_key_exists('grox', $this->_providedOptionals)) {
-            $output['grox'] = $this->grox;
+            $output['grox'] = ($this->grox !== null) ? ($this->grox) : null;
         }
         if (isset($this->quux)) {
             $output['quux'] = ($this->quux)->toArray();
@@ -468,7 +468,7 @@ class MyClass
             $output->{'qux'} = $this->qux;
         }
         if (isset($this->grox) || array_key_exists('grox', $this->_providedOptionals)) {
-            $output->{'grox'} = $this->grox;
+            $output->{'grox'} = ($this->grox !== null) ? ($this->grox) : null;
         }
         if (isset($this->quux)) {
             $output->{'quux'} = ($this->quux)->toStdClass();

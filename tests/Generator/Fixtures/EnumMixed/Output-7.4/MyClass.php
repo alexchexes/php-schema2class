@@ -403,7 +403,7 @@ class MyClass
         $contradiction = (int)($input->{'contradiction'});
         $contradiction2 = $input->{'contradiction2'};
         $nullable = ($input->{'nullable'} !== null) ? ($input->{'nullable'}) : null;
-        $optionalNullable = property_exists($input, 'optionalNullable') ? $input->{'optionalNullable'} : null;
+        $optionalNullable = property_exists($input, 'optionalNullable') ? ($input->{'optionalNullable'} !== null) ? ($input->{'optionalNullable'}) : null : null;
         if (property_exists($input, 'optionalNullable')) {
             $__providedOptionals['optionalNullable'] = true;
         }
@@ -429,7 +429,7 @@ class MyClass
         $output['contradiction2'] = $this->contradiction2;
         $output['nullable'] = $this->nullable;
         if (isset($this->optionalNullable) || array_key_exists('optionalNullable', $this->_providedOptionals)) {
-            $output['optionalNullable'] = $this->optionalNullable;
+            $output['optionalNullable'] = ($this->optionalNullable !== null) ? ($this->optionalNullable) : null;
         }
 
         return $output;
@@ -450,7 +450,7 @@ class MyClass
         $output->{'contradiction2'} = $this->contradiction2;
         $output->{'nullable'} = $this->nullable;
         if (isset($this->optionalNullable) || array_key_exists('optionalNullable', $this->_providedOptionals)) {
-            $output->{'optionalNullable'} = $this->optionalNullable;
+            $output->{'optionalNullable'} = ($this->optionalNullable !== null) ? ($this->optionalNullable) : null;
         }
 
         return $output;

@@ -129,7 +129,7 @@ class GenericPet
         }
 
         $__providedOptionals = [];
-        $hasFur = property_exists($input, 'hasFur') ? $input->{'hasFur'} : null;
+        $hasFur = property_exists($input, 'hasFur') ? ($input->{'hasFur'} !== null) ? ($input->{'hasFur'}) : null : null;
         if (property_exists($input, 'hasFur')) {
             $__providedOptionals['hasFur'] = true;
         }
@@ -150,7 +150,7 @@ class GenericPet
     {
         $output = [];
         if (isset($this->hasFur) || array_key_exists('hasFur', $this->_providedOptionals)) {
-            $output['hasFur'] = $this->hasFur;
+            $output['hasFur'] = ($this->hasFur !== null) ? ($this->hasFur) : null;
         }
 
         if ($includeDefaults) {
@@ -174,7 +174,7 @@ class GenericPet
     {
         $output = new \stdClass();
         if (isset($this->hasFur) || array_key_exists('hasFur', $this->_providedOptionals)) {
-            $output->{'hasFur'} = $this->hasFur;
+            $output->{'hasFur'} = ($this->hasFur !== null) ? ($this->hasFur) : null;
         }
 
         if ($includeDefaults) {

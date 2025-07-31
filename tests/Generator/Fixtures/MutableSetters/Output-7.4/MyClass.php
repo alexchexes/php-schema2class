@@ -171,7 +171,7 @@ class MyClass
         $__providedOptionals = [];
         $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
         $bar = Baz::buildFromInput($input->{'bar'}, $validate);
-        $opt = property_exists($input, 'opt') ? $input->{'opt'} : null;
+        $opt = property_exists($input, 'opt') ? ($input->{'opt'} !== null) ? ($input->{'opt'}) : null : null;
         if (property_exists($input, 'opt')) {
             $__providedOptionals['opt'] = true;
         }
@@ -196,7 +196,7 @@ class MyClass
         }
         $output['bar'] = $this->bar->toArray();
         if (isset($this->opt) || array_key_exists('opt', $this->_providedOptionals)) {
-            $output['opt'] = $this->opt;
+            $output['opt'] = ($this->opt !== null) ? ($this->opt) : null;
         }
 
         return $output;
@@ -215,7 +215,7 @@ class MyClass
         }
         $output->{'bar'} = $this->bar->toStdClass();
         if (isset($this->opt) || array_key_exists('opt', $this->_providedOptionals)) {
-            $output->{'opt'} = $this->opt;
+            $output->{'opt'} = ($this->opt !== null) ? ($this->opt) : null;
         }
 
         return $output;

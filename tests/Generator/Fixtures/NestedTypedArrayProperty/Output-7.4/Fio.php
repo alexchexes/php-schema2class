@@ -99,7 +99,7 @@ class Fio
         }
 
         $__providedOptionals = [];
-        $bar = property_exists($input, 'bar') ? $input->{'bar'} : null;
+        $bar = property_exists($input, 'bar') ? ($input->{'bar'} !== null) ? ($input->{'bar'}) : null : null;
         if (property_exists($input, 'bar')) {
             $__providedOptionals['bar'] = true;
         }
@@ -119,7 +119,7 @@ class Fio
     {
         $output = [];
         if (isset($this->bar) || array_key_exists('bar', $this->_providedOptionals)) {
-            $output['bar'] = $this->bar;
+            $output['bar'] = ($this->bar !== null) ? ($this->bar) : null;
         }
 
         return $output;
@@ -134,7 +134,7 @@ class Fio
     {
         $output = new \stdClass();
         if (isset($this->bar) || array_key_exists('bar', $this->_providedOptionals)) {
-            $output->{'bar'} = $this->bar;
+            $output->{'bar'} = ($this->bar !== null) ? ($this->bar) : null;
         }
 
         return $output;
