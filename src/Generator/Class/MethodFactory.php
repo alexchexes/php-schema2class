@@ -460,6 +460,31 @@ class MethodFactory
         return $method;
     }
 
+    /**
+     * Generate all methods for a class and ensure unique names.
+     *
+     * @return MethodGenerator[]
+     */
+    public function generateAllMethods(PropertyCollection $properties, array $defaults, bool $hasOptionalNullable): array
+    {
+        $methods = [
+            $this->generateConstructor($properties),
+            ...$this->generateGetterMethods($properties),
+            ...$this->generateSetterMethods($properties),
+            $this->generateBuildMethod($properties, $defaults, $hasOptionalNullable),
+            $this->generateToArrayMethod($properties, $defaults),
+            $this->generateToStdClassMethod($properties, $defaults),
+            $this->generateValidateMethod(),
+            $this->generateCloneMethod($properties),
+            $hasOptionalNullable ? $this->generateIsProvidedMethod() : null,
+        ];
+
+        $methods = array_values(array_filter($methods));
+        $this->ensureUniqueMethodNames($methods);
+
+        return $methods;
+    }
+
     public function generateGetterMethods(PropertyCollection $properties): array
     {
         if ($this->generatorRequest->getNoGetters()) {
