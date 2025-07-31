@@ -52,8 +52,8 @@ class UnionPropertyTest extends TestCase
 
         $expected = <<<'EOCODE'
 $myPropertyName = match (true) {
-    FooMyPropertyNameAlternative1::validateInput($variable['myPropertyName'], true) => FooMyPropertyNameAlternative1::buildFromInput($variable['myPropertyName'], $validate),
-    FooMyPropertyNameAlternative2::validateInput($variable['myPropertyName'], true) => FooMyPropertyNameAlternative2::buildFromInput($variable['myPropertyName'], $validate),
+    FooMyPropertyNameAlternative1::validateInput($variable->{'myPropertyName'}, true) => FooMyPropertyNameAlternative1::buildFromInput($variable->{'myPropertyName'}, $validate),
+    FooMyPropertyNameAlternative2::validateInput($variable->{'myPropertyName'}, true) => FooMyPropertyNameAlternative2::buildFromInput($variable->{'myPropertyName'}, $validate),
     default => throw new \InvalidArgumentException("could not build property 'myPropertyName' from JSON"),
 };
 EOCODE;

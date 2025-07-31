@@ -45,13 +45,13 @@ class OptionalPropertyDecoratorTest extends TestCase
     {
         $this->innerProperty->name()->shouldBeCalled()->willReturn('myPropertyName');
         $this->innerProperty
-            ->generateInputMappingExpr('$variable[\'myPropertyName\']', true)
+            ->generateInputMappingExpr('$variable->{\'myPropertyName\'}', true)
             ->shouldBeCalled()
             ->willReturn('INNER_EXPR');
 
         $result = $this->decorator->convertInputToType('variable');
 
-        $expected = '$myPropertyName = isset($variable[\'myPropertyName\']) ? INNER_EXPR : null;';
+        $expected = '$myPropertyName = isset($variable->{\'myPropertyName\'}) ? INNER_EXPR : null;';
 
         assertSame($expected, $result);
     }
@@ -63,7 +63,7 @@ class OptionalPropertyDecoratorTest extends TestCase
         $prophecy->allowsNull()->willReturn(true);
         $prophecy->name()->willReturn('myPropertyName');
         $prophecy
-            ->generateInputMappingExpr('$variable[\'myPropertyName\']', true)
+            ->generateInputMappingExpr('$variable->{\'myPropertyName\'}', true)
             ->willReturn('INNER_EXPR');
         $prophecy->formatValue(false)->willReturn(new PropertyValueGenerator(false));
 
@@ -71,7 +71,7 @@ class OptionalPropertyDecoratorTest extends TestCase
 
         $result = $decorator->convertInputToType('variable');
 
-        $expected = '$myPropertyName = array_key_exists(\'myPropertyName\', $variable) ? INNER_EXPR : null;';
+        $expected = '$myPropertyName = property_exists($variable, \'myPropertyName\') ? INNER_EXPR : null;';
         assertSame($expected, $result);
     }
 

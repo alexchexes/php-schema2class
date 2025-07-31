@@ -46,7 +46,7 @@ class MixedPropertyTest extends TestCase
         $result = $this->underTest->convertInputToType('variable');
 
         $expected = <<<'EOCODE'
-$myPropertyName = $variable['myPropertyName'];
+$myPropertyName = $variable->{'myPropertyName'};
 EOCODE;
 
         assertSame($expected, $result);

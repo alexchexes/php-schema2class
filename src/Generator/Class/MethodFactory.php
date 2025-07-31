@@ -254,7 +254,7 @@ class MethodFactory
             "    static::validateInput(\$$inputArgAlias);\n" .
             "}\n\n" .
             ($hasOptionalNullable ? "\$__providedOptionals = [];\n" : '') .
-            $properties->generateInputToTypeConversionCode($inputArgAlias, object: true) . "\n\n" .
+            $properties->generateInputToTypeConversionCode($inputArgAlias) . "\n\n" .
             "\${$objVarName} = new self(" . join(", ", $constructorParams) . ");" . "\n" .
             join("\n", $assignments) . "\n" .
             ($hasOptionalNullable ? "\${$objVarName}->_providedOptionals = \$__providedOptionals;\n" : '') .

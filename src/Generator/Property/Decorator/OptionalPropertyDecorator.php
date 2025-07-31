@@ -12,29 +12,27 @@ use Helmich\Schema2Class\Util\StringUtils;
  */
 class OptionalPropertyDecorator extends NullablePropertyDecorator implements RenameablePropertyInterface
 {
-    private bool $optionalNullable = false;
+    private bool $isOptionalNullable = false;
 
     public function markOptionalNullable(): void
     {
-        $this->optionalNullable = true;
+        $this->isOptionalNullable = true;
     }
 
     public function isOptionalNullable(): bool
     {
-        return $this->optionalNullable;
+        return $this->isOptionalNullable;
     }
 
-    public function generateIssetCheckExpr(string $inputVarName = 'input', bool $object = false): string
+    public function generateIssetCheckExpr(string $inputVarName = 'input'): string
     {
         $key = $this->key;
         $keyStr = var_export($key, true);
-        $accessor = $object ? "\${$inputVarName}->{{$keyStr}}" : "\${$inputVarName}[{$keyStr}]";
+        $accessor = "\${$inputVarName}->{{$keyStr}}";
 
         $existsCheck = "isset($accessor)";
-        if ($this->inner->allowsNull() || $this->optionalNullable) {
-            $existsCheck = $object
-                ? "property_exists(\${$inputVarName}, {$keyStr})"
-                : "array_key_exists({$keyStr}, \${$inputVarName})";
+        if ($this->inner->allowsNull() || $this->isOptionalNullable) {
+            $existsCheck = "property_exists(\${$inputVarName}, {$keyStr})";
         }
 
         return $existsCheck;
@@ -42,35 +40,32 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator implements Ren
 
     /**
      * @param string $inputVarName
-     * @param bool $object
      * @return string
      */
-    public function convertInputToType(string $inputVarName = 'input', bool $object = false): string
+    public function convertInputToType(string $inputVarName = 'input'): string
     {
         $key   = $this->key;
         $keyStr = var_export($key, true);
         $name  = $this->inner->name();
 
         // JSON accessor:  $input->{'key'}   or   $input['key']
-        $accessor = $object
-            ? "\${$inputVarName}->{{$keyStr}}"
-            : "\${$inputVarName}[{$keyStr}]";
+        $accessor = "\${$inputVarName}->{{$keyStr}}";
 
         // Build mapping expression. Nullable optionals must keep null values
         // intact; if the wrapped property already allows null it will handle the
         // guard itself.
-        if ($this->optionalNullable) {
+        if ($this->isOptionalNullable) {
             $innerMap = $this->inner->generateInputMappingExpr($accessor, true);
             $mapped   = "({$accessor} !== null ? {$innerMap} : null)";
         } else {
             $mapped = $this->generateInputMappingExpr($accessor, true);
         }
 
-        $existsCheck = $this->generateIssetCheckExpr($inputVarName, $object);
+        $existsCheck = $this->generateIssetCheckExpr($inputVarName);
 
         $code = "\${$name} = {$existsCheck} ? {$mapped} : null;";
 
-        if ($this->optionalNullable) {
+        if ($this->isOptionalNullable) {
             $code .= "\nif ({$existsCheck}) {\n    \$__providedOptionals['{$this->key}'] = true;\n}";
         }
 
@@ -85,7 +80,7 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator implements Ren
     {
         $name  = $this->inner->name();
 
-        if ($this->optionalNullable) {
+        if ($this->isOptionalNullable) {
             $check = "isset(\$this->{$name}) || array_key_exists('{$this->key}', \$this->_providedOptionals)";
             $keyStr = var_export($this->key, true);
             $map = $this->generateOutputMappingExpr("\$this->{$name}");
@@ -106,7 +101,7 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator implements Ren
     {
         $name  = $this->inner->name();
 
-        if ($this->optionalNullable) {
+        if ($this->isOptionalNullable) {
             $check = "isset(\$this->{$name}) || array_key_exists('{$this->key}', \$this->_providedOptionals)";
             $keyStr = var_export($this->key, true);
             $map = $this->generateOutputMappingExprStdClass("\$this->{$name}");

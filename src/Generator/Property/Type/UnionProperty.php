@@ -48,15 +48,13 @@ class UnionProperty extends AbstractProperty
         return true;
     }
 
-    public function convertInputToTypeMatch(string $inputVarName = 'input', bool $object = false): string
+    public function convertInputToTypeMatch(string $inputVarName = 'input'): string
     {
         $name  = $this->name;
         $key   = $this->key;
         $keyStr = var_export($key, true);
 
-        $accessor = $object
-            ? "\${$inputVarName}->{{$keyStr}}"
-            : "\${$inputVarName}[{$keyStr}]";
+        $accessor = "\${$inputVarName}->{{$keyStr}}";
 
         $match = new MatchGenerator("true");
 
@@ -75,20 +73,18 @@ class UnionProperty extends AbstractProperty
         return "\${$name} = {$match->generate()};";
     }
 
-    public function convertInputToType(string $inputVarName = 'input', bool $object = false): string
+    public function convertInputToType(string $inputVarName = 'input'): string
     {
         // PHP 8+ uses match() which already guards correctly
         if ($this->generatorRequest->isAtLeastPHP("8.0")) {
-            return $this->convertInputToTypeMatch($inputVarName, $object);
+            return $this->convertInputToTypeMatch($inputVarName);
         }
     
         $name   = $this->name;
         $key    = $this->key;
         $keyStr = var_export($key, true);
     
-        $accessor = $object
-            ? "\${$inputVarName}->{{$keyStr}}"
-            : "\${$inputVarName}[{$keyStr}]";
+        $accessor = "\${$inputVarName}->{{$keyStr}}";
     
         // Start with a "fallback" that just reassigns the raw value
         $conversions = [

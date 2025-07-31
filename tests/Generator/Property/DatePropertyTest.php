@@ -45,7 +45,7 @@ class DatePropertyTest extends TestCase
         $result = $this->property->convertInputToType('variable');
 
         $expected = <<<'EOCODE'
-$myPropertyName = new \DateTime($variable['myPropertyName']);
+$myPropertyName = new \DateTime($variable->{'myPropertyName'});
 EOCODE;
 
         assertSame($expected, $result);

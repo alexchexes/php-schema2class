@@ -77,16 +77,14 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface, Renameabl
         return true;
     }
 
-    public function convertInputToType(string $inputVarName = 'input', bool $object = false): string
+    public function convertInputToType(string $inputVarName = 'input'): string
     {
         // Key name in the JSON object
         $key   = $this->key;
         $keyStr  = var_export($key, true);
         $name  = $this->inner->name(); // local variable to assign to
 
-        $accessor = $object
-            ? "\${$inputVarName}->{{$keyStr}}"
-            : "\${$inputVarName}[{$keyStr}]";
+        $accessor = "\${$inputVarName}->{{$keyStr}}";
 
         $mapped = $this->inner->generateInputMappingExpr($accessor);
 

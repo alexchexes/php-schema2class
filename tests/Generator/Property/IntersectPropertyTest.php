@@ -51,7 +51,7 @@ class IntersectPropertyTest extends TestCase
         $result = $underTest->convertInputToType('variable');
 
         $expected = <<<'EOCODE'
-$myPropertyName = FooMyPropertyName::buildFromInput($variable['myPropertyName'], $validate);
+$myPropertyName = FooMyPropertyName::buildFromInput($variable->{'myPropertyName'}, $validate);
 EOCODE;
 
         assertSame($expected, $result);

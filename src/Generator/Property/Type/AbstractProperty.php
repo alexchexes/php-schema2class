@@ -92,17 +92,13 @@ abstract class AbstractProperty implements PropertyInterface, RenameableProperty
         return null;
     }
 
-    public function convertInputToType(string $inputVarName = 'input', bool $object = false): string
+    public function convertInputToType(string $inputVarName = 'input'): string
     {
         $name = $this->name;
         $key  = $this->key;
         $keyStr = var_export($key, true);
         // build the raw lookup expression (using the JSON key only inside the braces)
-        if ($object) {
-            $accessor = "\${$inputVarName}->{{$keyStr}}";
-        } else {
-            $accessor = "\${$inputVarName}[{$keyStr}]";
-        }
+        $accessor = "\${$inputVarName}->{{$keyStr}}";
         // now map from JSON→Type (this will call buildFromInput, etc.)
         $map = $this->generateInputMappingExpr($accessor);
         // assign to the *camelCased* local variable name

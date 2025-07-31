@@ -44,7 +44,7 @@ class StringPropertyTest extends TestCase
         $result = $this->property->convertInputToType('variable');
 
         $expected = <<<'EOCODE'
-$myString = $variable['myString'];
+$myString = $variable->{'myString'};
 EOCODE;
 
         assertSame($expected, $result);
