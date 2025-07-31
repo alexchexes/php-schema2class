@@ -42,7 +42,7 @@ class DatePropertyTest extends TestCase
 
     public function testConvertInputToType()
     {
-        $result = $this->property->convertInputToType('variable');
+        $result = $this->property->convertInputToType('variable', 'providedOptionals');
 
         $expected = <<<'EOCODE'
 $myPropertyName = new \DateTime($variable->{'myPropertyName'});

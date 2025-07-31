@@ -60,7 +60,7 @@ class ObjectArrayPropertyTest extends TestCase
 
         assertTrue($underTest->isComplex());
 
-        $result = $underTest->convertInputToType('variable');
+        $result = $underTest->convertInputToType('variable', 'providedOptionals');
 
         $expected = <<<'EOCODE'
 $myPropertyName = array_map(fn (array|object $i): FooMyPropertyNameItem => FooMyPropertyNameItem::buildFromInput($i, $validate), $variable->{'myPropertyName'});

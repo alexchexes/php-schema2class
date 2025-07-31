@@ -92,7 +92,7 @@ abstract class AbstractProperty implements PropertyInterface, RenameableProperty
         return null;
     }
 
-    public function convertInputToType(string $inputVarName = 'input'): string
+    public function convertInputToType(string $inputVarName, string $optionalsVarName): string
     {
         $name = $this->name;
         $key  = $this->key;
@@ -105,7 +105,7 @@ abstract class AbstractProperty implements PropertyInterface, RenameableProperty
         return "\${$name} = {$map};";
     }
 
-    public function convertTypeToArray(string $outputVarName = 'output'): string
+    public function convertTypeToArray(string $outputVarName): string
     {
         $key    = $this->key;
         $keyStr = var_export($key, true);
@@ -113,7 +113,7 @@ abstract class AbstractProperty implements PropertyInterface, RenameableProperty
         return "\${$outputVarName}[{$keyStr}] = {$map};";
     }
 
-    public function convertTypeToStdClass(string $outputVarName = 'output'): string
+    public function convertTypeToStdClass(string $outputVarName): string
     {
         $key    = $this->key;
         $keyStr = var_export($key, true);

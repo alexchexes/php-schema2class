@@ -73,7 +73,7 @@ class UnionProperty extends AbstractProperty
         return "\${$name} = {$match->generate()};";
     }
 
-    public function convertInputToType(string $inputVarName = 'input'): string
+    public function convertInputToType(string $inputVarName, string $optionalsVarName): string
     {
         // PHP 8+ uses match() which already guards correctly
         if ($this->generatorRequest->isAtLeastPHP("8.0")) {
@@ -177,7 +177,7 @@ class UnionProperty extends AbstractProperty
         return "\${$outputVarName}->{{$keyStr}} = {$match->generate()};";
     }
 
-    public function convertTypeToArray(string $outputVarName = 'output'): string
+    public function convertTypeToArray(string $outputVarName): string
     {
         if ($this->generatorRequest->isAtLeastPHP("8.0")) {
             return $this->convertTypeToArrayMatch($outputVarName);
@@ -210,7 +210,7 @@ class UnionProperty extends AbstractProperty
         return str_replace("}\nelse", "} else", join("\n", $branches));
     }
 
-    public function convertTypeToStdClass(string $outputVarName = 'output'): string
+    public function convertTypeToStdClass(string $outputVarName): string
     {
         if ($this->generatorRequest->isAtLeastPHP("8.0")) {
             return $this->convertTypeToStdClassMatch($outputVarName);

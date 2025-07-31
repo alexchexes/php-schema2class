@@ -42,7 +42,7 @@ class ClassPropertyFactory
 
         $propertyGenerators = [
             ...$propertyGenerators,
-            ...$this->createPropertyGenerators($schemaProperties),
+            ...$this->createSchemaProperties($schemaProperties),
         ];
 
         return $propertyGenerators;
@@ -58,7 +58,7 @@ class ClassPropertyFactory
         }
 
         $prop = new PropertyGenerator(
-            'schema',
+            PropertyNames::SCHEMA_PROP,
             $validationSchema,
             PropertyGenerator::FLAG_PRIVATE | PropertyGenerator::FLAG_STATIC,
         );
@@ -107,15 +107,22 @@ class ClassPropertyFactory
 
     private function createDefaultsProperty(array $defaults): PropertyGenerator
     {
-        $prop = new PropertyGenerator('_defaults', $defaults, PropertyGenerator::FLAG_PRIVATE | PropertyGenerator::FLAG_STATIC);
+        $prop = new PropertyGenerator(
+            PropertyNames::DEFAULTS_PROP,
+            $defaults,
+            PropertyGenerator::FLAG_PRIVATE | PropertyGenerator::FLAG_STATIC
+        );
+
         $prop->setDocBlock(new DocBlockGenerator(
             'Default values from the schema',
             null,
             [new GenericTag('var', 'array')],
         ));
+
         if ($this->generatorRequest->isAtLeastPHP('7.4')) {
             $prop->setTypeHint('array');
         }
+
         if ($this->generatorRequest->getOptions()->getSingleLineSchema()) {
             $prop->setSingleLineDefaultValue(true);
         }
@@ -129,7 +136,7 @@ class ClassPropertyFactory
             ? PropertyGenerator::FLAG_PUBLIC
             : PropertyGenerator::FLAG_PRIVATE;
 
-        $prop = new PropertyGenerator('_providedOptionals', [] , $setVisibility);
+        $prop = new PropertyGenerator(PropertyNames::OPTIONALS_PROP, [] , $setVisibility);
         $prop->setDefaultValue([]);
         $prop->setSingleLineDefaultValue(true);
 
@@ -149,7 +156,7 @@ class ClassPropertyFactory
     /**
      * @return PropertyGenerator[]
      */
-    private function createPropertyGenerators(PropertyCollection $schemaProperties): array
+    private function createSchemaProperties(PropertyCollection $schemaProperties): array
     {
         $propertyGenerators = [];
 

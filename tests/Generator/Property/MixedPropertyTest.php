@@ -43,7 +43,7 @@ class MixedPropertyTest extends TestCase
 
     public function testConvertInputToType()
     {
-        $result = $this->underTest->convertInputToType('variable');
+        $result = $this->underTest->convertInputToType('variable', 'providedOptionals');
 
         $expected = <<<'EOCODE'
 $myPropertyName = $variable->{'myPropertyName'};

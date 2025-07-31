@@ -40,7 +40,7 @@ class PrimitiveArrayPropertyTest extends TestCase
 
         assertFalse($underTest->isComplex());
 
-        $result = $underTest->convertInputToType('variable');
+        $result = $underTest->convertInputToType('variable', 'providedOptionals');
 
         $expected = <<<'EOCODE'
 $myPropertyName = $variable->{'myPropertyName'};

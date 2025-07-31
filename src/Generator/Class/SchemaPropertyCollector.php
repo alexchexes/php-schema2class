@@ -136,13 +136,45 @@ class SchemaPropertyCollector
     private function ensureUniquePropertyNames(PropertyCollection $schemaProperties, bool $preservePropertyNames): void
     {
         $reservedPropertyNames = [
-            '_GLOBALS', 'GLOBALS', 'GLOBALS_1', '_SERVER', '_GET', '_POST', '_FILES',
-            '_REQUEST', '_SESSION', '_ENV', '_COOKIE', 'php_errormsg', 'http_response_header',
-            'argc', 'argv', 'schema', '_defaults', '_providedOptionals',
+            '_GLOBALS',
+            'GLOBALS',
+            'GLOBALS_1',
+            '_SERVER',
+            '_GET',
+            '_POST',
+            '_FILES',
+            '_REQUEST',
+            '_SESSION',
+            '_ENV',
+            '_COOKIE',
+            'php_errormsg',
+            'http_response_header',
+            'argc',
+            'argv',
+            PropertyNames::SCHEMA_PROP,
+            PropertyNames::DEFAULTS_PROP,
+            PropertyNames::OPTIONALS_PROP,
         ];
 
         $reservedMethodNames = [
-            'buildFromInput','toArray','toStdClass','validateInput','clone','__construct','__destruct','__get','__set','__call','__isset','__unset','__sleep','__wakeup','__toString','__invoke','__debugInfo','__clone',
+            'buildFromInput',
+            'toArray',
+            'toStdClass',
+            'validateInput',
+            'clone',
+            '__construct',
+            '__destruct',
+            '__get',
+            '__set',
+            '__call',
+            '__isset',
+            '__unset',
+            '__sleep',
+            '__wakeup',
+            '__toString',
+            '__invoke',
+            '__debugInfo',
+            '__clone',
         ];
 
         $used = [];

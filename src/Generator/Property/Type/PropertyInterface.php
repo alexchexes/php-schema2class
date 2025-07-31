@@ -64,7 +64,7 @@ interface PropertyInterface
      * @param string $inputVarName Name of the input variable used internally
      *                             in a generated `buildFromFromInput()` method.
      */
-    public function convertInputToType(string $inputVarName = 'input'): string;
+    public function convertInputToType(string $inputVarName, string $optionalsVarName): string;
 
     /**
      * Generates a statement that writes this property to an output array in
@@ -72,7 +72,7 @@ interface PropertyInterface
      *
      * @param string $outputVarName Name of the variable that receives the array data.
      */
-    public function convertTypeToArray(string $outputVarName = 'output'): string;
+    public function convertTypeToArray(string $outputVarName): string;
 
     /**
      * Like {@see convertTypeToArray()} but writes to a \stdClass instance for
@@ -80,7 +80,7 @@ interface PropertyInterface
      *
      * @param string $outputVarName Name of the variable that receives the object data.
      */
-    public function convertTypeToStdClass(string $outputVarName = 'output'): string;
+    public function convertTypeToStdClass(string $outputVarName): string;
 
     /**
      * Generates additional PHP classes or enums required by this property.

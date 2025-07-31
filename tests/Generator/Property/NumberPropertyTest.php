@@ -49,7 +49,7 @@ class NumberPropertyTest extends TestCase
 
     public function testConvertInputToType()
     {
-        $result = $this->property->convertInputToType('variable');
+        $result = $this->property->convertInputToType('variable', 'providedOptionals');
 
         $expected = <<<'EOCODE'
 $myPropertyName = (str_contains((string)$variable->{'myPropertyName'}, '.') ? (float)$variable->{'myPropertyName'} : (int)$variable->{'myPropertyName'});

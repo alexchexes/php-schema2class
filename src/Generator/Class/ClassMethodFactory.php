@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Class;
 
+use Helmich\Schema2Class\Generator\Class\Method\BuildMethodFactory;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\Collection\PropertyCollection;
 use Helmich\Schema2Class\Generator\Property\Collection\PropertyCollectionFilterFactory;
@@ -47,7 +48,7 @@ class ClassMethodFactory
             $this->generateConstructor($schemaProperties),
             ...$this->generateGetterMethods($schemaProperties),
             ...$this->generateSetterMethods($schemaProperties),
-            $this->generateBuildMethod($schemaProperties, $defaults, $hasOptionalNullable),
+            (new BuildMethodFactory($this->request, $schemaProperties, $defaults, $hasOptionalNullable))->generate(),
             $this->generateToArrayMethod($schemaProperties, $defaults),
             $this->generateToStdClassMethod($schemaProperties, $defaults),
             $this->generateValidateMethod(),
@@ -103,202 +104,6 @@ class ClassMethodFactory
         );
     }
 
-    private function generateBuildMethod(
-        PropertyCollection $schemaProperties,
-        array $defaults = [],
-        bool $hasOptionalNullable = false,
-    ): MethodGenerator
-    {
-        $inputArgName = 'input';
-        $validateArgName = 'validate';
-        $materializeArgName = 'materializeDefaults';
-
-        $paramType = null;
-        if ($this->request->isAtLeastPHP('8.0')) {
-            $paramType = 'array|object';
-        }
-
-        $inputParam = new ParameterGenerator($inputArgName, $paramType);
-        $validationParam = new ParameterGenerator($validateArgName, 'bool', true);
-        $materializeParam = $defaults ? new ParameterGenerator($materializeArgName, 'bool', false) : null;
-
-        $params = [$inputParam, $validationParam];
-        if ($defaults) {
-            $params[] = $materializeParam;
-        }
-
-        $docBlockParams = [
-            new ParamTag($inputArgName, ['array|object'], 'Input data'),
-            new ParamTag($validateArgName, ['bool'], 'Set this to false to skip validation; use at own risk'),
-        ];
-        if ($defaults) {
-            $docBlockParams[] = new ParamTag($materializeArgName, ['bool'], 'Apply defaults defined in schema when missing');
-        }
-        $docBlockParams[] = new ReturnTag([$this->request->getTargetClass()], 'Created instance');
-        $docBlockParams[] = new ThrowsTag('\\InvalidArgumentException');
-
-        $docBlock = new DocBlockGenerator(
-            'Builds a new instance from an input array',
-            null,
-            $docBlockParams
-        );
-        $docBlock->setWordWrap(false);
-
-        $body = $this->generateBuildMethodBody(
-            inputArgName: $inputArgName,
-            validateArgName: $validateArgName,
-            materializeArgName: $materializeArgName,
-            defaults: $defaults,
-            schemaProperties: $schemaProperties,
-            hasOptionalNullable: $hasOptionalNullable,
-        );
-
-        $method = new MethodGenerator(
-            'buildFromInput',
-            $params,
-            MethodGenerator::FLAG_PUBLIC | MethodGenerator::FLAG_STATIC,
-            $body,
-            $docBlock
-        );
-
-        if ($this->request->isAtLeastPHP('7.0')) {
-            $method->setReturnType(
-                $this->request->getTargetNamespace() . '\\' . $this->request->getTargetClass()
-            );
-        }
-
-        return $method;
-    }
-
-    private function generateBuildMethodBody(
-        string $inputArgName,
-        string $validateArgName,
-        string $materializeArgName,
-        array $defaults,
-        PropertyCollection $schemaProperties,
-        bool $hasOptionalNullable,
-    ): string {
-        $objVarName = 'obj';
-        if ($schemaProperties->hasPropertyWithName($objVarName)) {
-            $objVarName = '_obj';
-            $i = 2;
-            while ($schemaProperties->hasPropertyWithName($objVarName)) {
-                $objVarName = '_obj' . $i;
-                $i++;
-            }
-        }
-
-        $optionalProperties = $schemaProperties->filter(PropertyCollectionFilterFactory::optional());
-        $assignments = [];
-        foreach ($optionalProperties as $optionalProperty) {
-            $name = $optionalProperty->name();
-            $assignments[] = "\${$objVarName}->{$name} = \${$name};";
-        }
-
-        $inputArgAlias = $inputArgName;
-        if ($schemaProperties->hasPropertyWithKey($inputArgAlias)) {
-            $inputArgAlias = '_input';
-            $i = 2;
-            while ($schemaProperties->hasPropertyWithKey($inputArgAlias)) {
-                $inputArgAlias = '_input' . $i;
-                $i++;
-            }
-        }
-
-        $validateArgAlias = $validateArgName;
-        if ($schemaProperties->hasPropertyWithName($validateArgAlias)) {
-            $validateArgAlias = '_validate';
-            $i = 2;
-            while ($schemaProperties->hasPropertyWithName($validateArgAlias)) {
-                $validateArgAlias = '_validate' . $i;
-                $i++;
-            }
-        }
-
-        $materializeArgAlias = $materializeArgName;
-        if ($defaults && $schemaProperties->hasPropertyWithName($materializeArgAlias)) {
-            $materializeArgAlias = '_materializeDefaults';
-            $i = 2;
-            while ($schemaProperties->hasPropertyWithName($materializeArgAlias)) {
-                $materializeArgAlias = '_materializeDefaults' . $i;
-                $i++;
-            }
-        }
-
-        $this->request->setCurrValidateArgAlias($validateArgAlias);
-        $this->request->setCurrMaterializeArgAlias($defaults ? $materializeArgAlias : null);
-
-        $requiredProperties = $schemaProperties->filter(PropertyCollectionFilterFactory::required());
-        $constructorParams = [];
-        foreach ($requiredProperties as $requiredProperty) {
-            $constructorParams[] = '$' . $requiredProperty->name();
-        }
-
-        $aliasesLines = '';
-        if ($inputArgName !== $inputArgAlias) {
-            $aliasesLines .= "\${$inputArgAlias} = \${$inputArgName};\nunset(\${$inputArgName});\n";
-        }
-        if ($validateArgName !== $validateArgAlias) {
-            $aliasesLines .= "\${$validateArgAlias} = \${$validateArgName};\nunset(\${$validateArgName});\n";
-        }
-        if ($materializeArgName !== $materializeArgAlias) {
-            $aliasesLines .= "\${$materializeArgAlias} = \${$materializeArgName};\nunset(\${$materializeArgName});\n";
-        }
-        if ($aliasesLines) {
-            $aliasesLines .= "\n";
-        }
-
-        $inputGuard = '';
-        if (!$this->request->isAtLeastPHP('8.0')) {
-            $inputGuard =
-                "if (!is_array(\$$inputArgAlias) && !is_object(\$$inputArgAlias)) {\n" .
-                "    throw new \\InvalidArgumentException(\n" .
-                "        'Input to buildFromInput must be array or object, got ' . gettype(\$$inputArgAlias)\n" .
-                "    );\n" .
-                "}\n\n";
-        }
-
-        $materializeLine = '';
-
-        if ($defaults) {
-            $convertInputLine =
-                "\$$inputArgAlias = is_array(\$$inputArgAlias)\n" .
-                "    ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$$inputArgAlias)\n" .
-                "    : (\$$materializeArgAlias ? clone \$$inputArgAlias : \$$inputArgAlias);\n\n";
-
-            $materializeLine =
-                "if (\$$materializeArgAlias) {\n" .
-                "    foreach (self::\$_defaults as \$__k => \$__v) {\n" .
-                "        if (!property_exists(\$$inputArgAlias, (string) \$__k)) {\n" .
-                "           \${$inputArgAlias}->{\$__k} = (\$__v['type'] ?? null) === 'object'\n" .
-                "               ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$__v['default'])\n" .
-                "               : \$__v['default'];\n" .
-                "        }\n" .
-                "    }\n" .
-                "}\n\n";
-        } else {
-            $convertInputLine =
-                "\$$inputArgAlias = is_array(\$$inputArgAlias) ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$$inputArgAlias) : \$$inputArgAlias;\n";
-        }
-
-        $body =
-            $aliasesLines .
-            $inputGuard .
-            $convertInputLine .
-            $materializeLine .
-            "if (\${$validateArgAlias}) {\n" .
-            "    static::validateInput(\$$inputArgAlias);\n" .
-            "}\n\n" .
-            ($hasOptionalNullable ? "\$__providedOptionals = [];\n" : '') .
-            $schemaProperties->generateInputToTypeConversionCode($inputArgAlias) . "\n\n" .
-            "\${$objVarName} = new self(" . join(", ", $constructorParams) . ");" . "\n" .
-            join("\n", $assignments) . "\n" .
-            ($hasOptionalNullable ? "\${$objVarName}->_providedOptionals = \$__providedOptionals;\n" : '') .
-            "return \${$objVarName};";
-
-        return $body;
-    }
-
     private function generateToArrayMethod(PropertyCollection $schemaProperties, array $defaults = []): MethodGenerator
     {
         $tags = [];
@@ -324,7 +129,7 @@ class ClassMethodFactory
 
         if ($defaults) {
             $body .= "\nif (\$includeDefaults) {\n" .
-            "    foreach (self::\$_defaults as \$k => \$v) {\n" .
+            "    foreach (self::\$".PropertyNames::DEFAULTS_PROP." as \$k => \$v) {\n" .
             "        if (!array_key_exists(\$k, \$output)) {\n" .
             "            \$output[\$k] = \$v['default'];\n" .
             "        }\n" .
@@ -374,7 +179,7 @@ class ClassMethodFactory
 
         if ($defaults) {
             $body .= "\nif (\$includeDefaults) {\n" .
-            "    foreach (self::\$_defaults as \$k => \$v) {\n" .
+            "    foreach (self::\$".PropertyNames::DEFAULTS_PROP." as \$k => \$v) {\n" .
             "        if (!property_exists(\$output, (string) \$k)) {\n" .
             "            \$output->{\$k} = (isset(\$v['type']) && \$v['type'] === 'object')\n" .
             "               ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$v['default'])\n" .
@@ -426,7 +231,7 @@ class ClassMethodFactory
             MethodGenerator::FLAG_PUBLIC | MethodGenerator::FLAG_STATIC,
             '$validator = ' . $newValidatorClassExpr . ";\n" .
             '$input = is_array($input) ? \\JsonSchema\\Validator::arrayToObjectRecursive($input) : $input;' . "\n" .
-            '$validator->validate($input, self::$schema);' . "\n\n" .
+            '$validator->validate($input, self::$'.PropertyNames::SCHEMA_PROP.');' . "\n\n" .
             'if (!$validator->isValid() && !$return) {' . "\n" .
             (
                 $this->request->isAtLeastPHP('7.0')
@@ -485,7 +290,7 @@ class ClassMethodFactory
             'isOptionalProvided',
             [new ParameterGenerator('propertyName', 'string')],
             MethodGenerator::FLAG_PUBLIC,
-            'return array_key_exists($propertyName, $this->_providedOptionals);',
+            'return array_key_exists($propertyName, $this->'.PropertyNames::OPTIONALS_PROP.');',
             $doc
         );
 
@@ -615,7 +420,7 @@ class ClassMethodFactory
             $setterValidation =
                 "if (\$validate) {\n"
                 . "    \$validator = {$newValidatorClassExpr};\n"
-                . "    \$validator->validate(\$$name, self::\$schema['properties'][{$keyStr}]);\n"
+                . "    \$validator->validate(\$$name, self::\$".PropertyNames::SCHEMA_PROP."['properties'][{$keyStr}]);\n"
                 . "    if (!\$validator->isValid()) {\n"
                 . "        throw new \\InvalidArgumentException(\$validator->getErrors()[0]['message']);\n"
                 . "    }\n"
@@ -649,7 +454,7 @@ class ClassMethodFactory
             "\$clone->$name = \$$name;\n";
 
         if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
-            $body .= "\$clone->_providedOptionals[{$keyStr}] = true;\n";
+            $body .= "\$clone->".PropertyNames::OPTIONALS_PROP."[{$keyStr}] = true;\n";
         }
 
         $body .= "\nreturn \$clone;";
@@ -701,7 +506,7 @@ class ClassMethodFactory
             $setterValidation =
                 "if (\$validate) {\n" .
                 "    \$validator = {$newValidatorClassExpr};\n" .
-                "    \$validator->validate(\$$name, self::\$schema['properties'][{$keyStr}]);\n" .
+                "    \$validator->validate(\$$name, self::\$".PropertyNames::SCHEMA_PROP."['properties'][{$keyStr}]);\n" .
                 "    if (!\$validator->isValid()) {\n" .
                 "        throw new \\InvalidArgumentException(\$validator->getErrors()[0]['message']);\n" .
                 "    }\n" .
@@ -731,7 +536,7 @@ class ClassMethodFactory
 
         $body = $setterValidation . "\$this->{$name} = \$$name;";
         if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
-            $body .= "\n\$this->_providedOptionals[{$keyStr}] = true;";
+            $body .= "\n\$this->".PropertyNames::OPTIONALS_PROP."[{$keyStr}] = true;";
         }
         if ($chainable) {
             $body .= "\n\nreturn \$this;";
@@ -767,7 +572,7 @@ class ClassMethodFactory
 
         $body = "\$this->{$name} = null;\n";
         if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
-            $body .= "unset(\$this->_providedOptionals[{$keyStr}]);\n";
+            $body .= "unset(\$this->".PropertyNames::OPTIONALS_PROP."[{$keyStr}]);\n";
         }
         if ($chainable) {
             $body .= "\nreturn \$this;";
@@ -803,7 +608,7 @@ class ClassMethodFactory
         $body .= "unset(\$clone->$name);\n";
 
         if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
-            $body .= "unset(\$clone->_providedOptionals[{$keyStr}]);\n";
+            $body .= "unset(\$clone->".PropertyNames::OPTIONALS_PROP."[{$keyStr}]);\n";
         }
 
         $body .= "\nreturn \$clone;";

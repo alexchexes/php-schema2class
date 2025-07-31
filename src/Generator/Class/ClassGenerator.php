@@ -19,7 +19,7 @@ use Laminas\Code\Generator\DocBlockGenerator;
  * the actual writing of files happens outside of this class.
  */
 class ClassGenerator
-{ 
+{
     public function __construct(
         private GeneratorRequest $request,
         private array $schema,

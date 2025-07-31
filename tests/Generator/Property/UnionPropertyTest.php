@@ -48,7 +48,7 @@ class UnionPropertyTest extends TestCase
     {
         $underTest = new UnionProperty('myPropertyName', ['anyOf' => [['properties' => ['subFoo1' => ['type' => 'string']]], ['properties' => ['subFoo2' => ['type' => 'string']]]]], $this->generatorRequest);
 
-        $result = $underTest->convertInputToType('variable');
+        $result = $underTest->convertInputToType('variable', 'providedOptionals');
 
         $expected = <<<'EOCODE'
 $myPropertyName = match (true) {

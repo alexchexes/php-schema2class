@@ -30,19 +30,19 @@ class PropertyCollection implements \Iterator
         $this->properties[] = $propertyGenerator;
     }
 
-    public function generateInputToTypeConversionCode(string $inputVarName = 'input'): string
+    public function generateInputToTypeConversionCode(string $inputVarName, string $optionalsVarName): string
     {
-        $conv = array_map(fn ($p) => $p->convertInputToType($inputVarName), $this->properties);
+        $conv = array_map(fn ($p) => $p->convertInputToType($inputVarName, $optionalsVarName), $this->properties);
         return join("\n", $conv);
     }
 
-    public function generateTypeToArrayConversionCode(string $outputVarName = 'output'): string
+    public function generateTypeToArrayConversionCode(string $outputVarName): string
     {
         $conv = array_map(fn ($p) => $p->convertTypeToArray($outputVarName), $this->properties);
         return join("\n", $conv);
     }
 
-    public function generateTypeToStdClassConversionCode(string $outputVarName = 'output'): string
+    public function generateTypeToStdClassConversionCode(string $outputVarName): string
     {
         $conv = array_map(fn ($p) => $p->convertTypeToStdClass($outputVarName), $this->properties);
         return join("\n", $conv);

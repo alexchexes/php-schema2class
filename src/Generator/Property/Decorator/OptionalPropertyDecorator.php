@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Property\Decorator;
 
+use Helmich\Schema2Class\Generator\Class\ClassGenerator;
+use Helmich\Schema2Class\Generator\Class\PropertyNames;
 use Helmich\Schema2Class\Generator\Property\RenameablePropertyInterface;
 use Helmich\Schema2Class\Util\StringUtils;
 
@@ -24,7 +26,7 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator implements Ren
         return $this->isOptionalNullable;
     }
 
-    public function generateIssetCheckExpr(string $inputVarName = 'input'): string
+    public function generateIssetCheckExpr(string $inputVarName): string
     {
         $key = $this->key;
         $keyStr = var_export($key, true);
@@ -42,7 +44,7 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator implements Ren
      * @param string $inputVarName
      * @return string
      */
-    public function convertInputToType(string $inputVarName = 'input'): string
+    public function convertInputToType(string $inputVarName, string $optionalsVarName): string
     {
         $key   = $this->key;
         $keyStr = var_export($key, true);
@@ -66,7 +68,7 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator implements Ren
         $code = "\${$name} = {$existsCheck} ? {$mapped} : null;";
 
         if ($this->isOptionalNullable) {
-            $code .= "\nif ({$existsCheck}) {\n    \$__providedOptionals['{$this->key}'] = true;\n}";
+            $code .= "\nif ({$existsCheck}) {\n    \${$optionalsVarName}['{$this->key}'] = true;\n}";
         }
 
         return $code;
@@ -76,12 +78,12 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator implements Ren
      * @param string $outputVarName
      * @return string
      */
-    public function convertTypeToArray(string $outputVarName = 'output'): string
+    public function convertTypeToArray(string $outputVarName): string
     {
         $name  = $this->inner->name();
 
         if ($this->isOptionalNullable) {
-            $check = "isset(\$this->{$name}) || array_key_exists('{$this->key}', \$this->_providedOptionals)";
+            $check = "isset(\$this->{$name}) || array_key_exists('{$this->key}', \$this->".PropertyNames::OPTIONALS_PROP.")";
             $keyStr = var_export($this->key, true);
             $map = $this->generateOutputMappingExpr("\$this->{$name}");
             $inner = "\${$outputVarName}[{$keyStr}] = {$map};";
@@ -97,12 +99,12 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator implements Ren
         return "if (isset(\$this->{$name})) {\n" . StringUtils::indentCode($inner, 1) . "\n}";
     }
 
-    public function convertTypeToStdClass(string $outputVarName = 'output'): string
+    public function convertTypeToStdClass(string $outputVarName): string
     {
         $name  = $this->inner->name();
 
         if ($this->isOptionalNullable) {
-            $check = "isset(\$this->{$name}) || array_key_exists('{$this->key}', \$this->_providedOptionals)";
+            $check = "isset(\$this->{$name}) || array_key_exists('{$this->key}', \$this->".PropertyNames::OPTIONALS_PROP.")";
             $keyStr = var_export($this->key, true);
             $map = $this->generateOutputMappingExprStdClass("\$this->{$name}");
             $inner = "\${$outputVarName}->{{$keyStr}} = {$map};";

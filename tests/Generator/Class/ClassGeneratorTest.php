@@ -38,7 +38,7 @@ class ClassGeneratorTest extends TestCase
         $code = current($files);
 
         $this->assertStringContainsString('private static array $_defaults', $code);
-        $this->assertStringContainsString('private array $_providedOptionals', $code);
+        $this->assertStringContainsString('private array $' . PropertyNames::OPTIONALS_PROP, $code);
     }
 
     public function testConflictingGetterSetterNamesAreUnique(): void

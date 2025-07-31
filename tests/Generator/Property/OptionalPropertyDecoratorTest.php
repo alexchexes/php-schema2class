@@ -49,7 +49,7 @@ class OptionalPropertyDecoratorTest extends TestCase
             ->shouldBeCalled()
             ->willReturn('INNER_EXPR');
 
-        $result = $this->decorator->convertInputToType('variable');
+        $result = $this->decorator->convertInputToType('variable', 'providedOptionals');
 
         $expected = '$myPropertyName = isset($variable->{\'myPropertyName\'}) ? INNER_EXPR : null;';
 
@@ -69,7 +69,7 @@ class OptionalPropertyDecoratorTest extends TestCase
 
         $decorator = new OptionalPropertyDecorator('myPropertyName', $prophecy->reveal());
 
-        $result = $decorator->convertInputToType('variable');
+        $result = $decorator->convertInputToType('variable', 'providedOptionals');
 
         $expected = '$myPropertyName = property_exists($variable, \'myPropertyName\') ? INNER_EXPR : null;';
         assertSame($expected, $result);

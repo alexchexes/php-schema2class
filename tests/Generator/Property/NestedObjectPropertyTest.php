@@ -45,7 +45,7 @@ class NestedObjectPropertyTest extends TestCase
     {
         $underTest = new NestedObjectProperty('myPropertyName', ['allOf' => []], $this->generatorRequest);
 
-        $result = $underTest->convertInputToType('variable');
+        $result = $underTest->convertInputToType('variable', 'providedOptionals');
 
         $expected = <<<'EOCODE'
 $myPropertyName = FooMyPropertyName::buildFromInput($variable->{'myPropertyName'}, $validate);

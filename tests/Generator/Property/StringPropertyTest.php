@@ -41,7 +41,7 @@ class StringPropertyTest extends TestCase
 
     public function testConvertInputToType()
     {
-        $result = $this->property->convertInputToType('variable');
+        $result = $this->property->convertInputToType('variable', 'providedOptionals');
 
         $expected = <<<'EOCODE'
 $myString = $variable->{'myString'};

@@ -77,7 +77,7 @@ class ObjectArrayProperty extends AbstractProperty
         return true;
     }
 
-    public function convertTypeToArray(string $outputVarName = 'output'): string
+    public function convertTypeToArray(string $outputVarName): string
     {
         $name = $this->name;
         $key  = $this->key;
@@ -94,7 +94,7 @@ class ObjectArrayProperty extends AbstractProperty
         return "\${$outputVarName}[{$keyStr}] = array_map(function($st \$i) { return \$i->toArray(); }, \$this->{$name});";
     }
 
-    public function convertTypeToStdClass(string $outputVarName = 'output'): string
+    public function convertTypeToStdClass(string $outputVarName): string
     {
         $name = $this->name;
         $key  = $this->key;
