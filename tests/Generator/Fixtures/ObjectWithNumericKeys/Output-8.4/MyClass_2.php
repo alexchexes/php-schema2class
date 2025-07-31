@@ -176,9 +176,9 @@ class MyClass_2
             static::validateInput($input);
         }
 
-        $_1 = isset($input->{'1'}) ? $input->{'1'} : null;
-        $_2 = isset($input->{'2'}) ? $input->{'2'} : null;
-        $_3 = isset($input->{'3'}) ? $input->{'3'} : null;
+        $_1 = isset($input->{'1'}) ? ($input->{'1'}) : null;
+        $_2 = isset($input->{'2'}) ? ($input->{'2'}) : null;
+        $_3 = isset($input->{'3'}) ? ($input->{'3'}) : null;
 
         $obj = new self();
         $obj->_1 = $_1;

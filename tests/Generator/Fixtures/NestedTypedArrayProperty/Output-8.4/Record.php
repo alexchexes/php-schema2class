@@ -285,24 +285,24 @@ class Record
             static::validateInput($input);
         }
 
-        $dataArray = isset($input->{'dataArray'}) ? array_map(
+        $dataArray = isset($input->{'dataArray'}) ? (array_map(
             fn(array|object $i): Phone => Phone::buildFromInput($i, $validate),
             $input->{'dataArray'}
-        ) : null;
-        $dataArrayNested = isset($input->{'dataArrayNested'}) ? array_map(fn($i) => array_map(
+        )) : null;
+        $dataArrayNested = isset($input->{'dataArrayNested'}) ? (array_map(fn($i) => array_map(
             fn(array|object $i): Phone => Phone::buildFromInput($i, $validate),
             $i
-        ), $input->{'dataArrayNested'}) : null;
-        $dataArrayAnyOf = isset($input->{'dataArrayAnyOf'}) ? array_map(fn($i) => match (true) {
+        ), $input->{'dataArrayNested'})) : null;
+        $dataArrayAnyOf = isset($input->{'dataArrayAnyOf'}) ? (array_map(fn($i) => match (true) {
             Phone::validateInput($i, true) => Phone::buildFromInput($i, $validate),
             Fio::validateInput($i, true) => Fio::buildFromInput($i, $validate),
             default => null,
-        }, $input->{'dataArrayAnyOf'}) : null;
-        $dataArrayNestedAnyOf = isset($input->{'dataArrayNestedAnyOf'}) ? array_map(fn($i) => array_map(fn($i) => match (true) {
+        }, $input->{'dataArrayAnyOf'})) : null;
+        $dataArrayNestedAnyOf = isset($input->{'dataArrayNestedAnyOf'}) ? (array_map(fn($i) => array_map(fn($i) => match (true) {
             Phone::validateInput($i, true) => Phone::buildFromInput($i, $validate),
             Fio::validateInput($i, true) => Fio::buildFromInput($i, $validate),
             default => null,
-        }, $i), $input->{'dataArrayNestedAnyOf'}) : null;
+        }, $i), $input->{'dataArrayNestedAnyOf'})) : null;
 
         $obj = new self();
         $obj->dataArray = $dataArray;

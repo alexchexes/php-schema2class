@@ -126,7 +126,7 @@ class Qux
             static::validateInput($input);
         }
 
-        $grox = isset($input->{'grox'}) ? ((Foo::validateInput($input->{'grox'}, true)) || (Bar::validateInput($input->{'grox'}, true))) ? ((Bar::validateInput($input->{'grox'}, true)) ? (Bar::buildFromInput($input->{'grox'}, $validate)) : ((Foo::validateInput($input->{'grox'}, true)) ? (Foo::buildFromInput($input->{'grox'}, $validate)) : (null))) : ((is_array($input->{'grox'})) ? ($input->{'grox'}) : ((is_string($input->{'grox'})) ? ($input->{'grox'}) : (null))) : null;
+        $grox = isset($input->{'grox'}) ? (((Foo::validateInput($input->{'grox'}, true)) || (Bar::validateInput($input->{'grox'}, true))) ? ((Bar::validateInput($input->{'grox'}, true)) ? (Bar::buildFromInput($input->{'grox'}, $validate)) : ((Foo::validateInput($input->{'grox'}, true)) ? (Foo::buildFromInput($input->{'grox'}, $validate)) : (null))) : ((is_array($input->{'grox'})) ? ($input->{'grox'}) : ((is_string($input->{'grox'})) ? ($input->{'grox'}) : (null)))) : null;
 
         $obj = new self();
         $obj->grox = $grox;

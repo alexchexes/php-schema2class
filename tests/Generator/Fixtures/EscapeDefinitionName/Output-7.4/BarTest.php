@@ -113,7 +113,7 @@ class BarTest
             static::validateInput($input);
         }
 
-        $exampleProp = isset($input->{'exampleProp'}) ? (FooTest_1::validateInput($input->{'exampleProp'}, true)) ? (FooTest_1::buildFromInput($input->{'exampleProp'}, $validate)) : ((MoiKlass::validateInput($input->{'exampleProp'}, true)) ? (MoiKlass::buildFromInput($input->{'exampleProp'}, $validate)) : ((FooTest::validateInput($input->{'exampleProp'}, true)) ? (FooTest::buildFromInput($input->{'exampleProp'}, $validate)) : (null))) : null;
+        $exampleProp = isset($input->{'exampleProp'}) ? ((FooTest_1::validateInput($input->{'exampleProp'}, true)) ? (FooTest_1::buildFromInput($input->{'exampleProp'}, $validate)) : ((MoiKlass::validateInput($input->{'exampleProp'}, true)) ? (MoiKlass::buildFromInput($input->{'exampleProp'}, $validate)) : ((FooTest::validateInput($input->{'exampleProp'}, true)) ? (FooTest::buildFromInput($input->{'exampleProp'}, $validate)) : (null)))) : null;
 
         $obj = new self();
         $obj->exampleProp = $exampleProp;

@@ -1978,14 +1978,14 @@ class MyClass
         $_argc = $_input->{'argc'};
         $_argv = $_input->{'argv'};
         $input = $_input->{'input'};
-        $validate = isset($_input->{'validate'}) ? $_input->{'validate'} : null;
-        $materializeDefaults = property_exists($_input, 'materializeDefaults') ? $_input->{'materializeDefaults'} : null;
+        $validate = isset($_input->{'validate'}) ? ($_input->{'validate'}) : null;
+        $materializeDefaults = property_exists($_input, 'materializeDefaults') ? (($_input->{'materializeDefaults'} !== null) ? ($_input->{'materializeDefaults'}) : null) : null;
         if (property_exists($_input, 'materializeDefaults')) {
             $__providedOptionals['materializeDefaults'] = true;
         }
         $obj = $_input->{'obj'};
         $includeDefaults = $_input->{'includeDefaults'};
-        $testObj = isset($_input->{'testObj'}) ? MyClassTestObj::buildFromInput($_input->{'testObj'}, $_validate, $_materializeDefaults) : null;
+        $testObj = isset($_input->{'testObj'}) ? (MyClassTestObj::buildFromInput($_input->{'testObj'}, $_validate, $_materializeDefaults)) : null;
         $_buildFromInput_1 = $_input->{'buildFromInput'};
         $_toArray_1 = $_input->{'toArray'};
         $_validateInput_1 = $_input->{'validateInput'};
@@ -2007,14 +2007,14 @@ class MyClass
         $_debugInfo_1 = $_input->{'__debugInfo'};
         $_clone_2 = $_input->{'__clone'};
         $files = $_input->{'files'};
-        $ensureArgs1 = isset($_input->{'ensureArgs1'}) ? match (true) {
+        $ensureArgs1 = isset($_input->{'ensureArgs1'}) ? (match (true) {
             MyClassEnsureArgs1Alternative1::validateInput($_input->{'ensureArgs1'}, true) => MyClassEnsureArgs1Alternative1::buildFromInput($_input->{'ensureArgs1'}, $_validate, $_materializeDefaults),
             MyClassEnsureArgs1Alternative2::validateInput($_input->{'ensureArgs1'}, true) => MyClassEnsureArgs1Alternative2::buildFromInput($_input->{'ensureArgs1'}, $_validate, $_materializeDefaults),
             is_string($_input->{'ensureArgs1'}) => $_input->{'ensureArgs1'},
             default => null,
-        } : null;
-        $ensureArgs2 = isset($_input->{'ensureArgs2'}) ? MyClassEnsureArgs2::buildFromInput($_input->{'ensureArgs2'}, $_validate, $_materializeDefaults) : null;
-        $ensureArgs3 = isset($_input->{'ensureArgs3'}) ? array_map(fn (array|object $i): MyClassEnsureArgs3Item => MyClassEnsureArgs3Item::buildFromInput($i, $_validate, $_materializeDefaults), $_input->{'ensureArgs3'}) : null;
+        }) : null;
+        $ensureArgs2 = isset($_input->{'ensureArgs2'}) ? (MyClassEnsureArgs2::buildFromInput($_input->{'ensureArgs2'}, $_validate, $_materializeDefaults)) : null;
+        $ensureArgs3 = isset($_input->{'ensureArgs3'}) ? (array_map(fn (array|object $i): MyClassEnsureArgs3Item => MyClassEnsureArgs3Item::buildFromInput($i, $_validate, $_materializeDefaults), $_input->{'ensureArgs3'})) : null;
 
         $_obj = new self($_GLOBALS_1, $_GLOBALS_2, $_GLOBALS1_1, $_SERVER_1, $_GET_1, $_POST_1, $_FILES_1, $_REQUEST_1, $_SESSION_1, $_ENV_1, $_COOKIE_1, $_phpErrormsg, $_httpResponseHeader, $_argc, $_argv, $input, $obj, $includeDefaults, $_buildFromInput_1, $_toArray_1, $_validateInput_1, $_schema, $_defaults_1, $_providedOptionals_1, $_clone_1, $_construct_1, $_destruct_1, $_get_2, $_set_1, $_call_1, $_isset_1, $_unset_1, $_sleep_1, $_wakeup_1, $_toString_1, $_invoke_1, $_debugInfo_1, $_clone_2, $files);
         $_obj->validate = $validate;
@@ -2056,7 +2056,7 @@ class MyClass
             $output['validate'] = $this->validate;
         }
         if (isset($this->materializeDefaults) || array_key_exists('materializeDefaults', $this->_providedOptionals)) {
-            $output['materializeDefaults'] = $this->materializeDefaults;
+            $output['materializeDefaults'] = ($this->materializeDefaults !== null) ? ($this->materializeDefaults) : null;
         }
         $output['obj'] = $this->obj;
         $output['includeDefaults'] = $this->includeDefaults;
@@ -2138,7 +2138,7 @@ class MyClass
             $output->{'validate'} = $this->validate;
         }
         if (isset($this->materializeDefaults) || array_key_exists('materializeDefaults', $this->_providedOptionals)) {
-            $output->{'materializeDefaults'} = $this->materializeDefaults;
+            $output->{'materializeDefaults'} = ($this->materializeDefaults !== null) ? ($this->materializeDefaults) : null;
         }
         $output->{'obj'} = $this->obj;
         $output->{'includeDefaults'} = $this->includeDefaults;

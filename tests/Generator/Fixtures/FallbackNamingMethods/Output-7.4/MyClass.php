@@ -181,9 +181,9 @@ class MyClass
             static::validateInput($input);
         }
 
-        $bound = isset($input->{'bound'}) ? $input->{'bound'} : null;
-        $outbound = isset($input->{'outbound'}) ? $input->{'outbound'} : null;
-        $_outbound = isset($input->{'_outbound'}) ? $input->{'_outbound'} : null;
+        $bound = isset($input->{'bound'}) ? ($input->{'bound'}) : null;
+        $outbound = isset($input->{'outbound'}) ? ($input->{'outbound'}) : null;
+        $_outbound = isset($input->{'_outbound'}) ? ($input->{'_outbound'}) : null;
 
         $obj = new self();
         $obj->bound = $bound;
