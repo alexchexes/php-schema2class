@@ -51,7 +51,7 @@ class OptionalPropertyDecoratorTest extends TestCase
 
         $result = $this->decorator->convertInputToType('variable');
 
-        $expected = '$myPropertyName = isset($variable[\'myPropertyName\']) ? (INNER_EXPR) : null;';
+        $expected = '$myPropertyName = isset($variable[\'myPropertyName\']) ? INNER_EXPR : null;';
 
         assertSame($expected, $result);
     }
@@ -71,7 +71,7 @@ class OptionalPropertyDecoratorTest extends TestCase
 
         $result = $decorator->convertInputToType('variable');
 
-        $expected = '$myPropertyName = array_key_exists(\'myPropertyName\', $variable) ? (INNER_EXPR) : null;';
+        $expected = '$myPropertyName = array_key_exists(\'myPropertyName\', $variable) ? INNER_EXPR : null;';
         assertSame($expected, $result);
     }
 

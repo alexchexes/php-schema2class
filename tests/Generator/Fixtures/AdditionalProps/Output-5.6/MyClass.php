@@ -135,8 +135,8 @@ class MyClass
             static::validateInput($input);
         }
 
-        $name = isset($input->{'name'}) ? ($input->{'name'}) : null;
-        $params = isset($input->{'params'}) ? ((array)$input->{'params'}) : null;
+        $name = isset($input->{'name'}) ? $input->{'name'} : null;
+        $params = isset($input->{'params'}) ? (array)$input->{'params'} : null;
 
         $obj = new self();
         $obj->name = $name;

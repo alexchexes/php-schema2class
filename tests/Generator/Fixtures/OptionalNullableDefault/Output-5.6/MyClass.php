@@ -585,23 +585,23 @@ class MyClass
 
         $__providedOptionals = [];
         $foo = $input->{'foo'};
-        $bar = isset($input->{'bar'}) ? ($input->{'bar'}) : null;
-        $baz = property_exists($input, 'baz') ? (($input->{'baz'} !== null) ? ($input->{'baz'}) : null) : null;
+        $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
+        $baz = property_exists($input, 'baz') ? ($input->{'baz'} !== null) ? ($input->{'baz'}) : null : null;
         if (property_exists($input, 'baz')) {
             $__providedOptionals['baz'] = true;
         }
-        $qux = property_exists($input, 'qux') ? (($input->{'qux'} !== null) ? ($input->{'qux'}) : null) : null;
+        $qux = property_exists($input, 'qux') ? ($input->{'qux'} !== null) ? ($input->{'qux'}) : null : null;
         if (property_exists($input, 'qux')) {
             $__providedOptionals['qux'] = true;
         }
         $quux = $input->{'quux'};
-        $xyyz = isset($input->{'xyyz'}) ? ($input->{'xyyz'}) : null;
+        $xyyz = isset($input->{'xyyz'}) ? $input->{'xyyz'} : null;
         $thud = $input->{'thud'};
-        $grox = property_exists($input, 'grox') ? (($input->{'grox'} !== null) ? (MyClassGrox::buildFromInput($input->{'grox'}, $validate, $materializeDefaults)) : null) : null;
+        $grox = property_exists($input, 'grox') ? ($input->{'grox'} !== null) ? (MyClassGrox::buildFromInput($input->{'grox'}, $validate, $materializeDefaults)) : null : null;
         if (property_exists($input, 'grox')) {
             $__providedOptionals['grox'] = true;
         }
-        $gooks = property_exists($input, 'gooks') ? (($input->{'gooks'} !== null) ? (MyClassGooks::buildFromInput($input->{'gooks'}, $validate, $materializeDefaults)) : null) : null;
+        $gooks = property_exists($input, 'gooks') ? ($input->{'gooks'} !== null) ? (MyClassGooks::buildFromInput($input->{'gooks'}, $validate, $materializeDefaults)) : null : null;
         if (property_exists($input, 'gooks')) {
             $__providedOptionals['gooks'] = true;
         }

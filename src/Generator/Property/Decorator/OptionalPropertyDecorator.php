@@ -68,7 +68,7 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator implements Ren
 
         $existsCheck = $this->generateIssetCheckExpr($inputVarName, $object);
 
-        $code = "\${$name} = {$existsCheck} ? ({$mapped}) : null;";
+        $code = "\${$name} = {$existsCheck} ? {$mapped} : null;";
 
         if ($this->optionalNullable) {
             $code .= "\nif ({$existsCheck}) {\n    \$__providedOptionals['{$this->key}'] = true;\n}";

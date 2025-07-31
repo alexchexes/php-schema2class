@@ -302,10 +302,10 @@ class Foo
             static::validateInput($input);
         }
 
-        $floatEnum = isset($input->{'floatEnum'}) ? ($input->{'floatEnum'}) : null;
-        $floatEnumRef = isset($input->{'floatEnumRef'}) ? ($input->{'floatEnumRef'}) : null;
-        $boolEnum = isset($input->{'boolEnum'}) ? ($input->{'boolEnum'}) : null;
-        $boolEnumRef = isset($input->{'boolEnumRef'}) ? ($input->{'boolEnumRef'}) : null;
+        $floatEnum = isset($input->{'floatEnum'}) ? $input->{'floatEnum'} : null;
+        $floatEnumRef = isset($input->{'floatEnumRef'}) ? $input->{'floatEnumRef'} : null;
+        $boolEnum = isset($input->{'boolEnum'}) ? $input->{'boolEnum'} : null;
+        $boolEnumRef = isset($input->{'boolEnumRef'}) ? $input->{'boolEnumRef'} : null;
         $requiredBoolEnumRef = $input->{'requiredBoolEnumRef'};
 
         $obj = new self($requiredBoolEnumRef);

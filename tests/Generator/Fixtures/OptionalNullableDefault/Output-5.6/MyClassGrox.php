@@ -140,8 +140,8 @@ class MyClassGrox
             static::validateInput($input);
         }
 
-        $a = isset($input->{'a'}) ? ($input->{'a'}) : null;
-        $b = isset($input->{'b'}) ? ($input->{'b'}) : null;
+        $a = isset($input->{'a'}) ? $input->{'a'} : null;
+        $b = isset($input->{'b'}) ? $input->{'b'} : null;
 
         $obj = new self();
         $obj->a = $a;
