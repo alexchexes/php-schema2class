@@ -144,6 +144,9 @@ class MyClass
             '_providedOptionals' => [
                 'type' => 'string',
             ],
+            '__providedOptionals' => [
+                'type' => 'string',
+            ],
             'clone' => [
                 'type' => 'string',
             ],
@@ -283,7 +286,7 @@ class MyClass
     /**
      * @var string
      */
-    private string $_GLOBALS_1_1;
+    private string $GLOBALS_1;
 
     /**
      * @var string
@@ -406,6 +409,11 @@ class MyClass
     private string $_providedOptionals_1;
 
     /**
+     * @var string|null
+     */
+    private ?string $__providedOptionals = null;
+
+    /**
      * @var string
      */
     private string $_clone;
@@ -498,7 +506,7 @@ class MyClass
     /**
      * @param string $_GLOBALS_1
      * @param string $_GLOBALS_2
-     * @param string $_GLOBALS_1_1
+     * @param string $GLOBALS_1
      * @param string $_SERVER_1
      * @param string $_GET_1
      * @param string $_POST_1
@@ -536,11 +544,11 @@ class MyClass
      * @param string $__clone_1
      * @param string $files
      */
-    public function __construct(string $_GLOBALS_1, string $_GLOBALS_2, string $_GLOBALS_1_1, string $_SERVER_1, string $_GET_1, string $_POST_1, string $_FILES_1, string $_REQUEST_1, string $_SESSION_1, string $_ENV_1, string $_COOKIE_1, string $_php_errormsg, string $_http_response_header, string $_argc, string $_argv, string $input, string $obj, string $includeDefaults, string $_buildFromInput, string $_toArray, string $_validateInput, string $_schema, string $_defaults_1, string $_providedOptionals_1, string $_clone, string $__construct_1, string $__destruct_1, string $__get_1, string $__set_1, string $__call_1, string $__isset_1, string $__unset_1, string $__sleep_1, string $__wakeup_1, string $__toString_1, string $__invoke_1, string $__debugInfo_1, string $__clone_1, string $files)
+    public function __construct(string $_GLOBALS_1, string $_GLOBALS_2, string $GLOBALS_1, string $_SERVER_1, string $_GET_1, string $_POST_1, string $_FILES_1, string $_REQUEST_1, string $_SESSION_1, string $_ENV_1, string $_COOKIE_1, string $_php_errormsg, string $_http_response_header, string $_argc, string $_argv, string $input, string $obj, string $includeDefaults, string $_buildFromInput, string $_toArray, string $_validateInput, string $_schema, string $_defaults_1, string $_providedOptionals_1, string $_clone, string $__construct_1, string $__destruct_1, string $__get_1, string $__set_1, string $__call_1, string $__isset_1, string $__unset_1, string $__sleep_1, string $__wakeup_1, string $__toString_1, string $__invoke_1, string $__debugInfo_1, string $__clone_1, string $files)
     {
         $this->_GLOBALS_1 = $_GLOBALS_1;
         $this->_GLOBALS_2 = $_GLOBALS_2;
-        $this->_GLOBALS_1_1 = $_GLOBALS_1_1;
+        $this->GLOBALS_1 = $GLOBALS_1;
         $this->_SERVER_1 = $_SERVER_1;
         $this->_GET_1 = $_GET_1;
         $this->_POST_1 = $_POST_1;
@@ -598,9 +606,9 @@ class MyClass
     /**
      * @return string
      */
-    public function get_GLOBALS11(): string
+    public function getGLOBALS1(): string
     {
-        return $this->_GLOBALS_1_1;
+        return $this->GLOBALS_1;
     }
 
     /**
@@ -796,6 +804,14 @@ class MyClass
     }
 
     /**
+     * @return string|null
+     */
+    public function get__ProvidedOptionals(): ?string
+    {
+        return $this->__providedOptionals ?? null;
+    }
+
+    /**
      * @return string
      */
     public function get_Clone(): string
@@ -982,22 +998,22 @@ class MyClass
     }
 
     /**
-     * @param string $_GLOBALS_1_1
+     * @param string $GLOBALS_1
      * @return self
      * @param bool $validate
      */
-    public function with_GLOBALS11(string $_GLOBALS_1_1, bool $validate = true): self
+    public function withGLOBALS1(string $GLOBALS_1, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($_GLOBALS_1_1, self::$schema['properties']['GLOBALS_1']);
+            $validator->validate($GLOBALS_1, self::$schema['properties']['GLOBALS_1']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
         }
 
         $clone = clone $this;
-        $clone->_GLOBALS_1_1 = $_GLOBALS_1_1;
+        $clone->GLOBALS_1 = $GLOBALS_1;
 
         return $clone;
     }
@@ -1533,6 +1549,38 @@ class MyClass
     }
 
     /**
+     * @param string $__providedOptionals
+     * @return self
+     * @param bool $validate
+     */
+    public function with__ProvidedOptionals(string $__providedOptionals, bool $validate = true): self
+    {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($__providedOptionals, self::$schema['properties']['__providedOptionals']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
+        $clone = clone $this;
+        $clone->__providedOptionals = $__providedOptionals;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function without__ProvidedOptionals(): self
+    {
+        $clone = clone $this;
+        unset($clone->__providedOptionals);
+
+        return $clone;
+    }
+
+    /**
      * @param string $_clone
      * @return self
      * @param bool $validate
@@ -1967,10 +2015,10 @@ class MyClass
             static::validateInput($_input);
         }
 
-        $__providedOptionals = [];
+        $___providedOptionals = [];
         $_GLOBALS_1 = $_input->{'_GLOBALS'};
         $_GLOBALS_2 = $_input->{'GLOBALS'};
-        $_GLOBALS_1_1 = $_input->{'GLOBALS_1'};
+        $GLOBALS_1 = $_input->{'GLOBALS_1'};
         $_SERVER_1 = $_input->{'_SERVER'};
         $_GET_1 = $_input->{'_GET'};
         $_POST_1 = $_input->{'_POST'};
@@ -1987,7 +2035,7 @@ class MyClass
         $validate = isset($_input->{'validate'}) ? $_input->{'validate'} : null;
         $materializeDefaults = property_exists($_input, 'materializeDefaults') ? ($_input->{'materializeDefaults'} !== null ? $_input->{'materializeDefaults'} : null) : null;
         if (property_exists($_input, 'materializeDefaults')) {
-            $__providedOptionals['materializeDefaults'] = true;
+            $___providedOptionals['materializeDefaults'] = true;
         }
         $obj = $_input->{'obj'};
         $includeDefaults = $_input->{'includeDefaults'};
@@ -1998,6 +2046,7 @@ class MyClass
         $_schema = $_input->{'schema'};
         $_defaults_1 = $_input->{'_defaults'};
         $_providedOptionals_1 = $_input->{'_providedOptionals'};
+        $__providedOptionals = isset($_input->{'__providedOptionals'}) ? $_input->{'__providedOptionals'} : null;
         $_clone = $_input->{'clone'};
         $__construct_1 = $_input->{'__construct'};
         $__destruct_1 = $_input->{'__destruct'};
@@ -2017,14 +2066,15 @@ class MyClass
         $ensureArgs2 = isset($_input->{'ensureArgs2'}) ? MyClassEnsureArgs2::buildFromInput($_input->{'ensureArgs2'}, $_validate, $_materializeDefaults) : null;
         $ensureArgs3 = isset($_input->{'ensureArgs3'}) ? array_map(fn ($i): MyClassEnsureArgs3Item => MyClassEnsureArgs3Item::buildFromInput($i, $_validate, $_materializeDefaults), $_input->{'ensureArgs3'}) : null;
 
-        $_obj = new self($_GLOBALS_1, $_GLOBALS_2, $_GLOBALS_1_1, $_SERVER_1, $_GET_1, $_POST_1, $_FILES_1, $_REQUEST_1, $_SESSION_1, $_ENV_1, $_COOKIE_1, $_php_errormsg, $_http_response_header, $_argc, $_argv, $input, $obj, $includeDefaults, $_buildFromInput, $_toArray, $_validateInput, $_schema, $_defaults_1, $_providedOptionals_1, $_clone, $__construct_1, $__destruct_1, $__get_1, $__set_1, $__call_1, $__isset_1, $__unset_1, $__sleep_1, $__wakeup_1, $__toString_1, $__invoke_1, $__debugInfo_1, $__clone_1, $files);
+        $_obj = new self($_GLOBALS_1, $_GLOBALS_2, $GLOBALS_1, $_SERVER_1, $_GET_1, $_POST_1, $_FILES_1, $_REQUEST_1, $_SESSION_1, $_ENV_1, $_COOKIE_1, $_php_errormsg, $_http_response_header, $_argc, $_argv, $input, $obj, $includeDefaults, $_buildFromInput, $_toArray, $_validateInput, $_schema, $_defaults_1, $_providedOptionals_1, $_clone, $__construct_1, $__destruct_1, $__get_1, $__set_1, $__call_1, $__isset_1, $__unset_1, $__sleep_1, $__wakeup_1, $__toString_1, $__invoke_1, $__debugInfo_1, $__clone_1, $files);
         $_obj->validate = $validate;
         $_obj->materializeDefaults = $materializeDefaults;
         $_obj->testObj = $testObj;
+        $_obj->__providedOptionals = $__providedOptionals;
         $_obj->ensureArgs1 = $ensureArgs1;
         $_obj->ensureArgs2 = $ensureArgs2;
         $_obj->ensureArgs3 = $ensureArgs3;
-        $_obj->_providedOptionals = $__providedOptionals;
+        $_obj->_providedOptionals = $___providedOptionals;
         return $_obj;
     }
 
@@ -2039,7 +2089,7 @@ class MyClass
         $output = [];
         $output['_GLOBALS'] = $this->_GLOBALS_1;
         $output['GLOBALS'] = $this->_GLOBALS_2;
-        $output['GLOBALS_1'] = $this->_GLOBALS_1_1;
+        $output['GLOBALS_1'] = $this->GLOBALS_1;
         $output['_SERVER'] = $this->_SERVER_1;
         $output['_GET'] = $this->_GET_1;
         $output['_POST'] = $this->_POST_1;
@@ -2070,6 +2120,9 @@ class MyClass
         $output['schema'] = $this->_schema;
         $output['_defaults'] = $this->_defaults_1;
         $output['_providedOptionals'] = $this->_providedOptionals_1;
+        if (isset($this->__providedOptionals)) {
+            $output['__providedOptionals'] = $this->__providedOptionals;
+        }
         $output['clone'] = $this->_clone;
         $output['__construct'] = $this->__construct_1;
         $output['__destruct'] = $this->__destruct_1;
@@ -2121,7 +2174,7 @@ class MyClass
         $output = new \stdClass();
         $output->{'_GLOBALS'} = $this->_GLOBALS_1;
         $output->{'GLOBALS'} = $this->_GLOBALS_2;
-        $output->{'GLOBALS_1'} = $this->_GLOBALS_1_1;
+        $output->{'GLOBALS_1'} = $this->GLOBALS_1;
         $output->{'_SERVER'} = $this->_SERVER_1;
         $output->{'_GET'} = $this->_GET_1;
         $output->{'_POST'} = $this->_POST_1;
@@ -2152,6 +2205,9 @@ class MyClass
         $output->{'schema'} = $this->_schema;
         $output->{'_defaults'} = $this->_defaults_1;
         $output->{'_providedOptionals'} = $this->_providedOptionals_1;
+        if (isset($this->__providedOptionals)) {
+            $output->{'__providedOptionals'} = $this->__providedOptionals;
+        }
         $output->{'clone'} = $this->_clone;
         $output->{'__construct'} = $this->__construct_1;
         $output->{'__destruct'} = $this->__destruct_1;

@@ -79,6 +79,7 @@
     "schema": { "type": "string" },
     "_defaults": { "type": "string", "default": "foo" },
     "_providedOptionals": { "type": "string" },
+    "__providedOptionals": { "type": "string" },
 
     "clone": { "type": "string" },
     "__construct": { "type": "string" },

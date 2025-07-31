@@ -144,6 +144,9 @@ class MyClass
             '_providedOptionals' => [
                 'type' => 'string',
             ],
+            '__providedOptionals' => [
+                'type' => 'string',
+            ],
             'clone' => [
                 'type' => 'string',
             ],
@@ -404,6 +407,11 @@ class MyClass
      * @var string
      */
     private string $_providedOptionals_1;
+
+    /**
+     * @var string|null
+     */
+    private ?string $_providedOptionals_2 = null;
 
     /**
      * @var string
@@ -793,6 +801,14 @@ class MyClass
     public function getProvidedOptionals1(): string
     {
         return $this->_providedOptionals_1;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getProvidedOptionals2(): ?string
+    {
+        return $this->_providedOptionals_2 ?? null;
     }
 
     /**
@@ -1533,6 +1549,38 @@ class MyClass
     }
 
     /**
+     * @param string $_providedOptionals_2
+     * @return self
+     * @param bool $validate
+     */
+    public function withProvidedOptionals2(string $_providedOptionals_2, bool $validate = true): self
+    {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($_providedOptionals_2, self::$schema['properties']['__providedOptionals']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
+        $clone = clone $this;
+        $clone->_providedOptionals_2 = $_providedOptionals_2;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutProvidedOptionals2(): self
+    {
+        $clone = clone $this;
+        unset($clone->_providedOptionals_2);
+
+        return $clone;
+    }
+
+    /**
      * @param string $_clone_1
      * @return self
      * @param bool $validate
@@ -1992,6 +2040,7 @@ class MyClass
         $_schema = $_input->{'schema'};
         $_defaults_1 = $_input->{'_defaults'};
         $_providedOptionals_1 = $_input->{'_providedOptionals'};
+        $_providedOptionals_2 = isset($_input->{'__providedOptionals'}) ? $_input->{'__providedOptionals'} : null;
         $_clone_1 = $_input->{'clone'};
         $_construct_1 = $_input->{'__construct'};
         $_destruct_1 = $_input->{'__destruct'};
@@ -2020,6 +2069,7 @@ class MyClass
         $_obj->validate = $validate;
         $_obj->materializeDefaults = $materializeDefaults;
         $_obj->testObj = $testObj;
+        $_obj->_providedOptionals_2 = $_providedOptionals_2;
         $_obj->ensureArgs1 = $ensureArgs1;
         $_obj->ensureArgs2 = $ensureArgs2;
         $_obj->ensureArgs3 = $ensureArgs3;
@@ -2069,6 +2119,9 @@ class MyClass
         $output['schema'] = $this->_schema;
         $output['_defaults'] = $this->_defaults_1;
         $output['_providedOptionals'] = $this->_providedOptionals_1;
+        if (isset($this->_providedOptionals_2)) {
+            $output['__providedOptionals'] = $this->_providedOptionals_2;
+        }
         $output['clone'] = $this->_clone_1;
         $output['__construct'] = $this->_construct_1;
         $output['__destruct'] = $this->_destruct_1;
@@ -2151,6 +2204,9 @@ class MyClass
         $output->{'schema'} = $this->_schema;
         $output->{'_defaults'} = $this->_defaults_1;
         $output->{'_providedOptionals'} = $this->_providedOptionals_1;
+        if (isset($this->_providedOptionals_2)) {
+            $output->{'__providedOptionals'} = $this->_providedOptionals_2;
+        }
         $output->{'clone'} = $this->_clone_1;
         $output->{'__construct'} = $this->_construct_1;
         $output->{'__destruct'} = $this->_destruct_1;

@@ -138,7 +138,6 @@ class SchemaPropertyCollector
         $reservedPropertyNames = [
             '_GLOBALS',
             'GLOBALS',
-            'GLOBALS_1',
             '_SERVER',
             '_GET',
             '_POST',
