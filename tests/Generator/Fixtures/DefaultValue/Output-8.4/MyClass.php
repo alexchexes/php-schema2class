@@ -509,21 +509,21 @@ class MyClass
         }
 
         $__providedOptionals = [];
-        $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
-        $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
-        $baz = property_exists($input, 'baz') ? $input->{'baz'} : null;
+        $foo = isset($input->{'foo'}) ? ($input->{'foo'}) : null;
+        $bar = isset($input->{'bar'}) ? ($input->{'bar'}) : null;
+        $baz = property_exists($input, 'baz') ? (($input->{'baz'} !== null) ? ($input->{'baz'}) : null) : null;
         if (property_exists($input, 'baz')) {
             $__providedOptionals['baz'] = true;
         }
-        $qux = isset($input->{'qux'}) ? $input->{'qux'} : null;
-        $thud = isset($input->{'thud'}) ? $input->{'thud'} : null;
-        $grox = isset($input->{'grox'}) ? $input->{'grox'} : null;
-        $qwert = isset($input->{'qwert'}) ? match (true) {
+        $qux = isset($input->{'qux'}) ? ($input->{'qux'}) : null;
+        $thud = isset($input->{'thud'}) ? ($input->{'thud'}) : null;
+        $grox = isset($input->{'grox'}) ? ($input->{'grox'}) : null;
+        $qwert = isset($input->{'qwert'}) ? (match (true) {
             is_string($input->{'qwert'}) => $input->{'qwert'},
             is_int($input->{'qwert'}) || is_float($input->{'qwert'}) => str_contains((string)($input->{'qwert'}), '.') ? (float)($input->{'qwert'}) : (int)($input->{'qwert'}),
             default => null,
-        } : null;
-        $zyx = isset($input->{'zyx'}) ? $input->{'zyx'} : null;
+        }) : null;
+        $zyx = isset($input->{'zyx'}) ? ($input->{'zyx'}) : null;
 
         $obj = new self();
         $obj->foo = $foo;
@@ -554,7 +554,7 @@ class MyClass
             $output['bar'] = $this->bar;
         }
         if (isset($this->baz) || array_key_exists('baz', $this->_providedOptionals)) {
-            $output['baz'] = $this->baz;
+            $output['baz'] = ($this->baz !== null) ? ($this->baz) : null;
         }
         if (isset($this->qux)) {
             $output['qux'] = $this->qux;
@@ -602,7 +602,7 @@ class MyClass
             $output->{'bar'} = $this->bar;
         }
         if (isset($this->baz) || array_key_exists('baz', $this->_providedOptionals)) {
-            $output->{'baz'} = $this->baz;
+            $output->{'baz'} = ($this->baz !== null) ? ($this->baz) : null;
         }
         if (isset($this->qux)) {
             $output->{'qux'} = $this->qux;

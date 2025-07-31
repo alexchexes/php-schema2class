@@ -95,10 +95,10 @@ class Record
             static::validateInput($input);
         }
 
-        $dataArray = isset($input->{'dataArray'}) ? array_map(
+        $dataArray = isset($input->{'dataArray'}) ? (array_map(
             fn(array|object $i): Phone => Phone::buildFromInput($i, $validate),
             $input->{'dataArray'}
-        ) : null;
+        )) : null;
 
         $obj = new self();
         $obj->dataArray = $dataArray;

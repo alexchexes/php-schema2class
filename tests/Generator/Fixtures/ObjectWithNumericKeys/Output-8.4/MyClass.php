@@ -130,8 +130,8 @@ class MyClass
             static::validateInput($input);
         }
 
-        $_1 = isset($input->{'1'}) ? $input->{'1'} : null;
-        $_2 = isset($input->{'2'}) ? MyClass_2::buildFromInput($input->{'2'}, $validate) : null;
+        $_1 = isset($input->{'1'}) ? ($input->{'1'}) : null;
+        $_2 = isset($input->{'2'}) ? (MyClass_2::buildFromInput($input->{'2'}, $validate)) : null;
 
         $obj = new self();
         $obj->_1 = $_1;

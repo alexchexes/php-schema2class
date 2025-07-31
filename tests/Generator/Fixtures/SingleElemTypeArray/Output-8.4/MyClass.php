@@ -391,16 +391,16 @@ class MyClass
         }
 
         $__providedOptionals = [];
-        $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
-        $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
-        $baz = isset($input->{'baz'}) ? $input->{'baz'} : null;
-        $qux = isset($input->{'qux'}) ? $input->{'qux'} : null;
-        $grox = property_exists($input, 'grox') ? $input->{'grox'} : null;
+        $foo = isset($input->{'foo'}) ? ($input->{'foo'}) : null;
+        $bar = isset($input->{'bar'}) ? ($input->{'bar'}) : null;
+        $baz = isset($input->{'baz'}) ? ($input->{'baz'}) : null;
+        $qux = isset($input->{'qux'}) ? ($input->{'qux'}) : null;
+        $grox = property_exists($input, 'grox') ? (($input->{'grox'} !== null) ? ($input->{'grox'}) : null) : null;
         if (property_exists($input, 'grox')) {
             $__providedOptionals['grox'] = true;
         }
-        $quux = isset($input->{'quux'}) ? MyClassQuux::buildFromInput($input->{'quux'}, $validate) : null;
-        $thud = isset($input->{'thud'}) ? $input->{'thud'} : null;
+        $quux = isset($input->{'quux'}) ? (MyClassQuux::buildFromInput($input->{'quux'}, $validate)) : null;
+        $thud = isset($input->{'thud'}) ? ($input->{'thud'}) : null;
 
         $obj = new self();
         $obj->foo = $foo;
@@ -435,7 +435,7 @@ class MyClass
             $output['qux'] = $this->qux;
         }
         if (isset($this->grox) || array_key_exists('grox', $this->_providedOptionals)) {
-            $output['grox'] = $this->grox;
+            $output['grox'] = ($this->grox !== null) ? ($this->grox) : null;
         }
         if (isset($this->quux)) {
             $output['quux'] = ($this->quux)->toArray();
@@ -468,7 +468,7 @@ class MyClass
             $output->{'qux'} = $this->qux;
         }
         if (isset($this->grox) || array_key_exists('grox', $this->_providedOptionals)) {
-            $output->{'grox'} = $this->grox;
+            $output->{'grox'} = ($this->grox !== null) ? ($this->grox) : null;
         }
         if (isset($this->quux)) {
             $output->{'quux'} = ($this->quux)->toStdClass();

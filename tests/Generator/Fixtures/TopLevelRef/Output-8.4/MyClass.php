@@ -74,11 +74,11 @@ class MyClass
             static::validateInput($input);
         }
 
-        $foo = isset($input->{'foo'}) ? match (true) {
+        $foo = isset($input->{'foo'}) ? (match (true) {
             is_string($input->{'foo'}) => $input->{'foo'},
             is_int($input->{'foo'}) || is_float($input->{'foo'}) => str_contains((string)($input->{'foo'}), '.') ? (float)($input->{'foo'}) : (int)($input->{'foo'}),
             default => null,
-        } : null;
+        }) : null;
 
         $obj = new self();
         $obj->foo = $foo;

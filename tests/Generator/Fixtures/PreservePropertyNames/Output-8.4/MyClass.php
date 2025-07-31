@@ -702,7 +702,7 @@ class MyClass
         $nazvanie_iur_litsa = $input->{'название юр.лица'};
         $IP_adres = $input->{'IP-адрес'};
         $_tildas = $input->{'~~tildas~~'};
-        $it_s_A = isset($input->{'it\'s "A"'}) ? $input->{'it\'s "A"'} : null;
+        $it_s_A = isset($input->{'it\'s "A"'}) ? ($input->{'it\'s "A"'}) : null;
 
         $obj = new self($foo, $_foo, $__foo, $foo_, $foo__, $_foo_, $__foo__, $foo_bar, $_foo_bar, $baz_qux, $_123_qwe, $Gorod, $nazvanie_iur_litsa, $IP_adres, $_tildas);
         $obj->it_s_A = $it_s_A;
