@@ -29,7 +29,7 @@ use Laminas\Code\Generator\ParameterGenerator;
 class ClassMethodFactory
 {
     public function __construct(
-        private GeneratorRequest $generatorRequest,
+        private GeneratorRequest $request,
     ) {}
 
     /**
@@ -76,7 +76,7 @@ class ClassMethodFactory
             $paramName = $requiredProperty->name();
             $params[]  = new ParameterGenerator(
                 $paramName,
-                $requiredProperty->typeHint($this->generatorRequest->getTargetPHPVersion())
+                $requiredProperty->typeHint($this->request->getTargetPHPVersion())
             );
 
             $tags[] = new ParamTag(
@@ -114,7 +114,7 @@ class ClassMethodFactory
         $materializeArgName = 'materializeDefaults';
 
         $paramType = null;
-        if ($this->generatorRequest->isAtLeastPHP('8.0')) {
+        if ($this->request->isAtLeastPHP('8.0')) {
             $paramType = 'array|object';
         }
 
@@ -134,7 +134,7 @@ class ClassMethodFactory
         if ($defaults) {
             $docBlockParams[] = new ParamTag($materializeArgName, ['bool'], 'Apply defaults defined in schema when missing');
         }
-        $docBlockParams[] = new ReturnTag([$this->generatorRequest->getTargetClass()], 'Created instance');
+        $docBlockParams[] = new ReturnTag([$this->request->getTargetClass()], 'Created instance');
         $docBlockParams[] = new ThrowsTag('\\InvalidArgumentException');
 
         $docBlock = new DocBlockGenerator(
@@ -161,9 +161,9 @@ class ClassMethodFactory
             $docBlock
         );
 
-        if ($this->generatorRequest->isAtLeastPHP('7.0')) {
+        if ($this->request->isAtLeastPHP('7.0')) {
             $method->setReturnType(
-                $this->generatorRequest->getTargetNamespace() . '\\' . $this->generatorRequest->getTargetClass()
+                $this->request->getTargetNamespace() . '\\' . $this->request->getTargetClass()
             );
         }
 
@@ -225,8 +225,8 @@ class ClassMethodFactory
             }
         }
 
-        $this->generatorRequest->setCurrValidateArgAlias($validateArgAlias);
-        $this->generatorRequest->setCurrMaterializeArgAlias($defaults ? $materializeArgAlias : null);
+        $this->request->setCurrValidateArgAlias($validateArgAlias);
+        $this->request->setCurrMaterializeArgAlias($defaults ? $materializeArgAlias : null);
 
         $requiredProperties = $schemaProperties->filter(PropertyCollectionFilterFactory::required());
         $constructorParams = [];
@@ -249,7 +249,7 @@ class ClassMethodFactory
         }
 
         $inputGuard = '';
-        if (!$this->generatorRequest->isAtLeastPHP('8.0')) {
+        if (!$this->request->isAtLeastPHP('8.0')) {
             $inputGuard =
                 "if (!is_array(\$$inputArgAlias) && !is_object(\$$inputArgAlias)) {\n" .
                 "    throw new \\InvalidArgumentException(\n" .
@@ -342,7 +342,7 @@ class ClassMethodFactory
             $docBlock
         );
 
-        if ($this->generatorRequest->isAtLeastPHP('7.0')) {
+        if ($this->request->isAtLeastPHP('7.0')) {
             $method->setReturnType('array');
         }
 
@@ -394,7 +394,7 @@ class ClassMethodFactory
             $docBlock
         );
 
-        if ($this->generatorRequest->isAtLeastPHP('7.0')) {
+        if ($this->request->isAtLeastPHP('7.0')) {
             $method->setReturnType('\\stdClass');
         }
 
@@ -415,13 +415,13 @@ class ClassMethodFactory
         );
         $docBlock->setWordWrap(false);
 
-        $newValidatorClassExpr = $this->generatorRequest->getOptions()->getNewValidatorClassExpr();
+        $newValidatorClassExpr = $this->request->getOptions()->getNewValidatorClassExpr();
 
         $method = new MethodGenerator(
             'validateInput',
             [
-                new ParameterGenerator('input', $this->generatorRequest->isAtLeastPHP('8.0') ? 'array|object' : null),
-                new ParameterGenerator('return', $this->generatorRequest->isAtLeastPHP('7.0') ? 'bool' : null, false),
+                new ParameterGenerator('input', $this->request->isAtLeastPHP('8.0') ? 'array|object' : null),
+                new ParameterGenerator('return', $this->request->isAtLeastPHP('7.0') ? 'bool' : null, false),
             ],
             MethodGenerator::FLAG_PUBLIC | MethodGenerator::FLAG_STATIC,
             '$validator = ' . $newValidatorClassExpr . ";\n" .
@@ -429,7 +429,7 @@ class ClassMethodFactory
             '$validator->validate($input, self::$schema);' . "\n\n" .
             'if (!$validator->isValid() && !$return) {' . "\n" .
             (
-                $this->generatorRequest->isAtLeastPHP('7.0')
+                $this->request->isAtLeastPHP('7.0')
                 ? '    $errors = array_map(function(array $e): string {' . "\n"
                 : '    $errors = array_map(function($e) {' . "\n"
             ) .
@@ -440,7 +440,7 @@ class ClassMethodFactory
             'return $validator->isValid();',
             $docBlock
         );
-        if ($this->generatorRequest->isAtLeastPHP('7.0')) {
+        if ($this->request->isAtLeastPHP('7.0')) {
             $method->setReturnType('bool');
         }
 
@@ -489,7 +489,7 @@ class ClassMethodFactory
             $doc
         );
 
-        if ($this->generatorRequest->isAtLeastPHP('7.0')) {
+        if ($this->request->isAtLeastPHP('7.0')) {
             $method->setReturnType('bool');
         }
 
@@ -498,7 +498,7 @@ class ClassMethodFactory
 
     private function generateGetterMethods(PropertyCollection $schemaProperties): array
     {
-        if ($this->generatorRequest->getNoGetters()) {
+        if ($this->request->getNoGetters()) {
             return [];
         }
 
@@ -516,7 +516,7 @@ class ClassMethodFactory
     private function generateGetterMethod(PropertyInterface $property): MethodGenerator
     {
         $name           = $property->name();
-        if ($this->generatorRequest->getOptions()->getPreservePropertyNames()) {
+        if ($this->request->getOptions()->getPreservePropertyNames()) {
             $camelCasedName = StringUtils::pascalCasePreserveOuterUnderscores($property->name());
         } else {
             $camelCasedName = StringUtils::safePascalCase($property->name());
@@ -539,8 +539,8 @@ class ClassMethodFactory
             docBlock: $docBlockGenerator,
         );
 
-        if ($this->generatorRequest->isAtLeastPHP('7.0')) {
-            $typeHint = $property->typeHint($this->generatorRequest->getTargetPHPVersion());
+        if ($this->request->isAtLeastPHP('7.0')) {
+            $typeHint = $property->typeHint($this->request->getTargetPHPVersion());
             if ($typeHint !== null) {
                 $getMethod->setReturnType($typeHint);
 
@@ -555,11 +555,11 @@ class ClassMethodFactory
 
     private function generateSetterMethods(PropertyCollection $schemaProperties): array
     {
-        if ($this->generatorRequest->getNoSetters()) {
+        if ($this->request->getNoSetters()) {
             return [];
         }
 
-        $mutable = $this->generatorRequest->getMutableSetters();
+        $mutable = $this->request->getMutableSetters();
 
         $methods    = [];
         $schemaProperties = $schemaProperties->filter(PropertyCollectionFilterFactory::withoutDeprecatedAndSameName($schemaProperties));
@@ -587,14 +587,14 @@ class ClassMethodFactory
         $key  = $property->key();
         $keyStr = var_export($key, true);
         $name = $property->name();
-        $camelCaseName = $this->generatorRequest->getOptions()->getPreservePropertyNames()
+        $camelCaseName = $this->request->getOptions()->getPreservePropertyNames()
             ? StringUtils::pascalCasePreserveOuterUnderscores($name)
             : StringUtils::safePascalCase($name);
 
         $requiredProperty = ($property instanceof OptionalPropertyDecorator) ? $property->unwrap() : $property;
 
         $annotatedType = $requiredProperty->typeAnnotation();
-        $typeHint      = $requiredProperty->typeHint($this->generatorRequest->getTargetPHPVersion());
+        $typeHint      = $requiredProperty->typeHint($this->request->getTargetPHPVersion());
 
         $base = $property;
         while ($base instanceof PropertyDecoratorInterface) {
@@ -607,7 +607,7 @@ class ClassMethodFactory
             || $base instanceof ReferenceArrayProperty
             || $base instanceof TypedArrayProperty;
 
-        $newValidatorClassExpr = $this->generatorRequest->getOptions()->getNewValidatorClassExpr();
+        $newValidatorClassExpr = $this->request->getOptions()->getNewValidatorClassExpr();
 
         if ($property->isComplex() && !$isArray) {
             $setterValidation = '';
@@ -662,7 +662,7 @@ class ClassMethodFactory
             $docBlock
         );
 
-        if ($this->generatorRequest->isAtLeastPHP('7.0')) {
+        if ($this->request->isAtLeastPHP('7.0')) {
             $setMethod->setReturnType('self');
         }
 
@@ -674,13 +674,13 @@ class ClassMethodFactory
         $key  = $property->key();
         $keyStr = var_export($key, true);
         $name = $property->name();
-        $camelCaseName = $this->generatorRequest->getOptions()->getPreservePropertyNames()
+        $camelCaseName = $this->request->getOptions()->getPreservePropertyNames()
             ? StringUtils::pascalCasePreserveOuterUnderscores($name)
             : StringUtils::safePascalCase($name);
 
         $requiredProperty = ($property instanceof OptionalPropertyDecorator) ? $property->unwrap() : $property;
         $annotatedType = $requiredProperty->typeAnnotation();
-        $typeHint = $requiredProperty->typeHint($this->generatorRequest->getTargetPHPVersion());
+        $typeHint = $requiredProperty->typeHint($this->request->getTargetPHPVersion());
 
         $base = $property;
         while ($base instanceof PropertyDecoratorInterface) {
@@ -693,7 +693,7 @@ class ClassMethodFactory
             || $base instanceof ReferenceArrayProperty
             || $base instanceof TypedArrayProperty;
 
-        $newValidatorClassExpr = $this->generatorRequest->getOptions()->getNewValidatorClassExpr();
+        $newValidatorClassExpr = $this->request->getOptions()->getNewValidatorClassExpr();
 
         if ($property->isComplex() && !$isArray) {
             $setterValidation = '';
@@ -745,10 +745,10 @@ class ClassMethodFactory
             $docBlock
         );
 
-        if ($chainable && $this->generatorRequest->isAtLeastPHP('7.0')) {
+        if ($chainable && $this->request->isAtLeastPHP('7.0')) {
             $setMethod->setReturnType('self');
         } elseif (!$chainable) {
-            if ($this->generatorRequest->isAtLeastPHP('7.1')) {
+            if ($this->request->isAtLeastPHP('7.1')) {
                 $setMethod->setReturnType('void');
             }
         }
@@ -761,7 +761,7 @@ class ClassMethodFactory
         $key  = $property->key();
         $keyStr = var_export($key, true);
         $name = $property->name();
-        $camelCaseName = $this->generatorRequest->getOptions()->getPreservePropertyNames()
+        $camelCaseName = $this->request->getOptions()->getPreservePropertyNames()
             ? StringUtils::pascalCasePreserveOuterUnderscores($name)
             : StringUtils::safePascalCase($name);
 
@@ -781,9 +781,9 @@ class ClassMethodFactory
             new DocBlockGenerator(null, null, $chainable ? [new ReturnTag('self')] : [])
         );
 
-        if ($chainable && $this->generatorRequest->isAtLeastPHP('7.0')) {
+        if ($chainable && $this->request->isAtLeastPHP('7.0')) {
             $unsetMethod->setReturnType('self');
-        } elseif (!$chainable && $this->generatorRequest->isAtLeastPHP('7.1')) {
+        } elseif (!$chainable && $this->request->isAtLeastPHP('7.1')) {
             $unsetMethod->setReturnType('void');
         }
 
@@ -795,7 +795,7 @@ class ClassMethodFactory
         $name = $property->name();
         $key  = $property->key();
         $keyStr = var_export($key, true);
-        $camelCasedName = $this->generatorRequest->getOptions()->getPreservePropertyNames()
+        $camelCasedName = $this->request->getOptions()->getPreservePropertyNames()
             ? StringUtils::pascalCasePreserveOuterUnderscores($name)
             : StringUtils::safePascalCase($name);
 
@@ -818,7 +818,7 @@ class ClassMethodFactory
             ])
         );
 
-        if ($this->generatorRequest->isAtLeastPHP('7.0')) {
+        if ($this->request->isAtLeastPHP('7.0')) {
             $unsetMethod->setReturnType('self');
         }
 
