@@ -26,13 +26,41 @@ use Laminas\Code\Generator\ParameterGenerator;
 /**
  * Factory for creating all methods of a generated class.
  */
-class MethodFactory
+class ClassMethodFactory
 {
     public function __construct(private GeneratorRequest $generatorRequest)
     {
     }
 
-    public function generateConstructor(PropertyCollection $properties): ?MethodGenerator
+    /**
+     * Generate all methods for a class and ensure unique names.
+     *
+     * @return MethodGenerator[]
+     */
+    public function generateMethods(PropertyCollection $properties, array $defaults, bool $hasOptionalNullable): array
+    {
+        $methods = [
+            $this->generateConstructor($properties),
+            ...$this->generateGetterMethods($properties),
+            ...$this->generateSetterMethods($properties),
+            $this->generateBuildMethod($properties, $defaults, $hasOptionalNullable),
+            $this->generateToArrayMethod($properties, $defaults),
+            $this->generateToStdClassMethod($properties, $defaults),
+            $this->generateValidateMethod(),
+            $this->generateCloneMethod($properties),
+            $hasOptionalNullable ? $this->generateIsProvidedMethod() : null,
+        ];
+
+        // filter out empty items for methods that won't be generated
+        $methods = array_values(array_filter($methods));
+
+        // check whether all names are unique and rename if necessary
+        $this->ensureUniqueMethodNames($methods);
+
+        return $methods;
+    }
+
+    private function generateConstructor(PropertyCollection $properties): ?MethodGenerator
     {
         $params      = [];
         $tags        = [];
@@ -71,7 +99,7 @@ class MethodFactory
         );
     }
 
-    public function generateBuildMethod(PropertyCollection $properties, array $defaults = [], bool $hasOptionalNullable = false): MethodGenerator
+    private function generateBuildMethod(PropertyCollection $properties, array $defaults = [], bool $hasOptionalNullable = false): MethodGenerator
     {
         $inputArgName = 'input';
         $validateArgName = 'validate';
@@ -263,7 +291,7 @@ class MethodFactory
         return $body;
     }
 
-    public function generateToArrayMethod(PropertyCollection $properties, array $defaults = []): MethodGenerator
+    private function generateToArrayMethod(PropertyCollection $properties, array $defaults = []): MethodGenerator
     {
         $tags = [];
         if ($defaults) {
@@ -313,7 +341,7 @@ class MethodFactory
         return $method;
     }
 
-    public function generateToStdClassMethod(PropertyCollection $properties, array $defaults = []): MethodGenerator
+    private function generateToStdClassMethod(PropertyCollection $properties, array $defaults = []): MethodGenerator
     {
         $tags = [];
         if ($defaults) {
@@ -365,7 +393,7 @@ class MethodFactory
         return $method;
     }
 
-    public function generateValidateMethod(): MethodGenerator
+    private function generateValidateMethod(): MethodGenerator
     {
         $docBlock = new DocBlockGenerator(
             'Validates an input array',
@@ -411,7 +439,7 @@ class MethodFactory
         return $method;
     }
 
-    public function generateCloneMethod(PropertyCollection $properties): ?MethodGenerator
+    private function generateCloneMethod(PropertyCollection $properties): ?MethodGenerator
     {
         $clones = [];
         foreach ($properties as $property) {
@@ -433,7 +461,7 @@ class MethodFactory
         );
     }
 
-    public function generateIsProvidedMethod(): MethodGenerator
+    private function generateIsProvidedMethod(): MethodGenerator
     {
         $doc = new DocBlockGenerator(
             'Checks if an optional nullable property was explicitly set',
@@ -460,7 +488,7 @@ class MethodFactory
         return $method;
     }
 
-    public function generateGetterMethods(PropertyCollection $properties): array
+    private function generateGetterMethods(PropertyCollection $properties): array
     {
         if ($this->generatorRequest->getNoGetters()) {
             return [];
@@ -477,7 +505,7 @@ class MethodFactory
         return $methods;
     }
 
-    public function generateGetterMethod(PropertyInterface $property): MethodGenerator
+    private function generateGetterMethod(PropertyInterface $property): MethodGenerator
     {
         $name           = $property->name();
         if ($this->generatorRequest->getOptions()->getPreservePropertyNames()) {
@@ -517,7 +545,7 @@ class MethodFactory
         return $getMethod;
     }
 
-    public function generateSetterMethods(PropertyCollection $properties): array
+    private function generateSetterMethods(PropertyCollection $properties): array
     {
         if ($this->generatorRequest->getNoSetters()) {
             return [];
@@ -546,7 +574,7 @@ class MethodFactory
         return $methods;
     }
 
-    public function generateSetterMethod(PropertyInterface $property): MethodGenerator
+    private function generateSetterMethod(PropertyInterface $property): MethodGenerator
     {
         $key  = $property->key();
         $keyStr = var_export($key, true);
@@ -754,7 +782,7 @@ class MethodFactory
         return $unsetMethod;
     }
 
-    public function generateUnsetterMethod(PropertyInterface $property): MethodGenerator
+    private function generateUnsetterMethod(PropertyInterface $property): MethodGenerator
     {
         $name = $property->name();
         $key  = $property->key();
@@ -789,7 +817,7 @@ class MethodFactory
         return $unsetMethod;
     }
 
-    public function ensureUniqueMethodNames(array $methods): void
+    private function ensureUniqueMethodNames(array $methods): void
     {
         $reservedMethodNames = [
             'buildFromInput',

@@ -15,7 +15,7 @@ use Helmich\Schema2Class\Util\StringUtils;
  * Collects property information from a JSON schema and applies name sanitisation
  * and default value extraction.
  */
-class PropertyCollector
+class SchemaPropertyCollector
 {
     public function collectPropertiesFromSchema(array $schema, GeneratorRequest $req): PropertyCollection
     {

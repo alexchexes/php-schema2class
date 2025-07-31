@@ -24,7 +24,7 @@ class PropertyCollectorTest extends TestCase
             new SpecificationOptions(),
         );
 
-        $collector = new PropertyCollector();
+        $collector = new SchemaPropertyCollector();
         $defaults = $collector->collectDefaults($schema, $req);
 
         $this->assertSame(['a' => ['default' => 'x']], $defaults);

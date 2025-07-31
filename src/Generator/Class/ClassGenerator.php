@@ -11,8 +11,8 @@ use Helmich\Schema2Class\Writer\WriterInterface;
 use Laminas\Code\Generator\DocBlock\Tag\GenericTag;
 use Laminas\Code\Generator\DocBlockGenerator;
 use Symfony\Component\Console\Output\OutputInterface;
-use Helmich\Schema2Class\Generator\Class\PropertyCollector;
-use Helmich\Schema2Class\Generator\Class\MethodFactory;
+use Helmich\Schema2Class\Generator\Class\SchemaPropertyCollector;
+use Helmich\Schema2Class\Generator\Class\ClassMethodFactory;
 use Helmich\Schema2Class\Generator\Class\ClassFileWriter;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 
@@ -27,8 +27,8 @@ use Helmich\Schema2Class\Generator\GeneratorRequest;
  */
 class ClassGenerator
 { 
-    private PropertyCollector $propertyCollector;
-    private MethodFactory $methodFactory;
+    private SchemaPropertyCollector $propertyCollector;
+    private ClassMethodFactory $methodFactory;
     private ClassFileWriter $fileWriter;
 
     public function __construct(
@@ -37,8 +37,8 @@ class ClassGenerator
         private WriterInterface $writer,
         private OutputInterface $output,
     ) {
-        $this->propertyCollector = new PropertyCollector();
-        $this->methodFactory = new MethodFactory($this->generatorRequest);
+        $this->propertyCollector = new SchemaPropertyCollector();
+        $this->methodFactory = new ClassMethodFactory($this->generatorRequest);
         $this->fileWriter = new ClassFileWriter($this->writer);
     }
     
@@ -79,19 +79,11 @@ class ClassGenerator
             ...$this->generateProperties($schemaProperties),
         ];
 
-        $methods = [
-            $this->methodFactory->generateConstructor($schemaProperties),
-            ...$this->methodFactory->generateGetterMethods($schemaProperties),
-            ...$this->methodFactory->generateSetterMethods($schemaProperties),
-            $this->methodFactory->generateBuildMethod($schemaProperties, $defaults, $hasOptionalNullable),
-            $this->methodFactory->generateToArrayMethod($schemaProperties, $defaults),
-            $this->methodFactory->generateToStdClassMethod($schemaProperties, $defaults),
-            $this->methodFactory->generateValidateMethod(),
-            $this->methodFactory->generateCloneMethod($schemaProperties),
-            $hasOptionalNullable ? $this->methodFactory->generateIsProvidedMethod() : null,
-        ];
-        $methods = array_values(array_filter($methods));
-        $this->methodFactory->ensureUniqueMethodNames($methods);
+        $methods = $this->methodFactory->generateMethods(
+            $schemaProperties,
+            $defaults,
+            $hasOptionalNullable,
+        );
 
         $this->fileWriter->write($this->generatorRequest, $this->schema, $classProperties, $methods);
     }
