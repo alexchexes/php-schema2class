@@ -836,15 +836,15 @@ class MyClass
         $foo = $input->{'foo'};
         $bar = $input->{'bar'};
         $baz = isset($input->{'baz'}) ? MyClassBaz::buildFromInput($input->{'baz'}, $validate, $materializeDefaults) : null;
-        $quxObj = property_exists($input, 'quxObj') ? ($input->{'quxObj'} !== null) ? (MyClassQuxObj::buildFromInput($input->{'quxObj'}, $validate, $materializeDefaults)) : null : null;
+        $quxObj = property_exists($input, 'quxObj') ? ($input->{'quxObj'} !== null ? MyClassQuxObj::buildFromInput($input->{'quxObj'}, $validate, $materializeDefaults) : null) : null;
         if (property_exists($input, 'quxObj')) {
             $__providedOptionals['quxObj'] = true;
         }
-        $quxObjNest = property_exists($input, 'quxObjNest') ? ($input->{'quxObjNest'} !== null) ? (MyClassQuxObjNest::buildFromInput($input->{'quxObjNest'}, $validate, $materializeDefaults)) : null : null;
+        $quxObjNest = property_exists($input, 'quxObjNest') ? ($input->{'quxObjNest'} !== null ? MyClassQuxObjNest::buildFromInput($input->{'quxObjNest'}, $validate, $materializeDefaults) : null) : null;
         if (property_exists($input, 'quxObjNest')) {
             $__providedOptionals['quxObjNest'] = true;
         }
-        $thudArray = property_exists($input, 'thudArray') ? ($input->{'thudArray'} !== null) ? ($input->{'thudArray'}) : null : null;
+        $thudArray = property_exists($input, 'thudArray') ? ($input->{'thudArray'} !== null ? $input->{'thudArray'} : null) : null;
         if (property_exists($input, 'thudArray')) {
             $__providedOptionals['thudArray'] = true;
         }

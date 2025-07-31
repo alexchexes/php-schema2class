@@ -94,7 +94,7 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface, Renameabl
         $needsGuard = !($this->inner instanceof StringProperty || $this->inner instanceof NullProperty);
 
         $expr = $needsGuard
-            ? "({$accessor} !== null) ? ({$mapped}) : null"
+            ? "({$accessor} !== null ? {$mapped} : null)"
             : $mapped;               // clean one-liner for strings/nulls
 
         return "\${$name} = {$expr};";
@@ -183,7 +183,7 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface, Renameabl
         }
 
         // Top-level nullable field: we still need the null-guard here.
-        return "({$expr} !== null) ? ({$inner}) : null";
+        return "({$expr} !== null ? {$inner} : null)";
     }
 
     public function generateOutputMappingExpr(string $expr): string

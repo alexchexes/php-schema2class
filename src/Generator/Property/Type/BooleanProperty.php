@@ -52,7 +52,7 @@ class BooleanProperty extends AbstractProperty
             return $expr;
         }
 
-        return "(bool)({$expr})";
+        return "(bool){$expr}";
     }
 
 }

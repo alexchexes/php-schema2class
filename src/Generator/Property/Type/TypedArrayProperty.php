@@ -101,7 +101,8 @@ class TypedArrayProperty extends AbstractProperty
         if ($materializeArg !== null) {
             $use[] = '$' . $materializeArg;
         }
-        return sprintf('array_map(function($i) use (%s) { return %s; }, %s)', implode(', ', $use), $map, $expr);
+        $useExpr = implode(', ', $use);
+        return "array_map(function(\$i) use ({$useExpr}) { return {$map}; }, {$expr})";
     }
 
     public function generateOutputMappingExpr(string $expr): string

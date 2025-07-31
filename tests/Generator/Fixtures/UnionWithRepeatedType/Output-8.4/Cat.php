@@ -113,21 +113,21 @@ class Cat
         }
 
         $__providedOptionals = [];
-        $hasFur = property_exists($input, 'hasFur') ? ($input->{'hasFur'} !== null) ? (match (true) {
-            (($input->{'hasFur'}) === null) || (is_bool($input->{'hasFur'})) => ($input->{'hasFur'} !== null) ? ((bool)($input->{'hasFur'})) : null,
-            (($input->{'hasFur'}) === null) || ((is_string($input->{'hasFur'})) || (is_int($input->{'hasFur'}) || is_float($input->{'hasFur'}))) => ($input->{'hasFur'} !== null) ? (match (true) {
+        $hasFur = property_exists($input, 'hasFur') ? ($input->{'hasFur'} !== null ? match (true) {
+            (($input->{'hasFur'}) === null) || (is_bool($input->{'hasFur'})) => ($input->{'hasFur'} !== null ? (bool)$input->{'hasFur'} : null),
+            (($input->{'hasFur'}) === null) || ((is_string($input->{'hasFur'})) || (is_int($input->{'hasFur'}) || is_float($input->{'hasFur'}))) => ($input->{'hasFur'} !== null ? match (true) {
             is_string($input->{'hasFur'}) => $input->{'hasFur'},
-            is_int($input->{'hasFur'}) || is_float($input->{'hasFur'}) => str_contains((string)($input->{'hasFur'}), '.') ? (float)($input->{'hasFur'}) : (int)($input->{'hasFur'}),
+            is_int($input->{'hasFur'}) || is_float($input->{'hasFur'}) => (str_contains((string)$input->{'hasFur'}, '.') ? (float)$input->{'hasFur'} : (int)$input->{'hasFur'}),
             default => null,
-        }) : null,
+        } : null),
             (is_string($input->{'hasFur'})) || (is_int($input->{'hasFur'}) || is_float($input->{'hasFur'})) || (is_bool($input->{'hasFur'})) => match (true) {
             is_string($input->{'hasFur'}) => $input->{'hasFur'},
-            is_int($input->{'hasFur'}) || is_float($input->{'hasFur'}) => str_contains((string)($input->{'hasFur'}), '.') ? (float)($input->{'hasFur'}) : (int)($input->{'hasFur'}),
-            is_bool($input->{'hasFur'}) => (bool)($input->{'hasFur'}),
+            is_int($input->{'hasFur'}) || is_float($input->{'hasFur'}) => (str_contains((string)$input->{'hasFur'}, '.') ? (float)$input->{'hasFur'} : (int)$input->{'hasFur'}),
+            is_bool($input->{'hasFur'}) => (bool)$input->{'hasFur'},
             default => null,
         },
             default => null,
-        }) : null : null;
+        } : null) : null;
         if (property_exists($input, 'hasFur')) {
             $__providedOptionals['hasFur'] = true;
         }

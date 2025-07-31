@@ -47,7 +47,7 @@ class IntegerProperty extends AbstractProperty
             return $expr;
         }
 
-        return "(int)({$expr})";
+        return "(int){$expr}";
     }
 
 }

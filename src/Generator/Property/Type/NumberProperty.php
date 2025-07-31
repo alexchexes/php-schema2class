@@ -57,7 +57,7 @@ class NumberProperty extends AbstractProperty
             return $expr;
         }
 
-        return "str_contains((string)({$expr}), '.') ? (float)({$expr}) : (int)({$expr})";
+        return "(str_contains((string){$expr}, '.') ? (float){$expr} : (int){$expr})";
     }
 
 }

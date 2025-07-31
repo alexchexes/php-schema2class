@@ -154,7 +154,7 @@ class DefaultPropertyDecorator implements PropertyDecoratorInterface, Renameable
     public function generateInputMappingExpr(string $expr, bool $asserted = false): string
     {
         $inner = $this->inner->generateInputMappingExpr($expr);
-        return "({$expr} !== null) ? ({$inner}) : {$this->defaultExpr()}";
+        return "({$expr} !== null ? {$inner} : {$this->defaultExpr()})";
     }
 
     public function generateOutputMappingExpr(string $expr): string

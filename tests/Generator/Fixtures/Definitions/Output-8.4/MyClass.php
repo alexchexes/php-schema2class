@@ -149,7 +149,7 @@ class MyClass
             static::validateInput($input);
         }
 
-        $id = (int)($input->{'id'});
+        $id = (int)$input->{'id'};
         $address = isset($input->{'address'}) ? Address::buildFromInput($input->{'address'}, $validate) : null;
 
         $obj = new self($id);

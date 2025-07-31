@@ -335,7 +335,8 @@ class UnionProperty extends AbstractProperty
             $subAssertions[] = $prop->generateInputAssertionExpr($expr);
         }
 
-        return "(" . join(") || (", $subAssertions) . ")";
+        $glue = ") || (";
+        return "(" . implode($glue, $subAssertions) . ")";
     }
 
     public function generateInputMappingExpr(string $expr, bool $asserted = false): string
@@ -359,7 +360,7 @@ class UnionProperty extends AbstractProperty
         foreach ($this->subProperties as $subProperty) {
             $assert = $subProperty->generateInputAssertionExpr($expr);
             $map    = $subProperty->generateInputMappingExpr($expr);
-            $out    = "({$assert}) ? ({$map}) : ({$out})";
+            $out    = "(({$assert}) ? {$map} : ({$out}))";
         }
 
         return $out;

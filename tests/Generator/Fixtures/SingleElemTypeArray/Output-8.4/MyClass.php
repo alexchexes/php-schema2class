@@ -395,7 +395,7 @@ class MyClass
         $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
         $baz = isset($input->{'baz'}) ? $input->{'baz'} : null;
         $qux = isset($input->{'qux'}) ? $input->{'qux'} : null;
-        $grox = property_exists($input, 'grox') ? ($input->{'grox'} !== null) ? ($input->{'grox'}) : null : null;
+        $grox = property_exists($input, 'grox') ? ($input->{'grox'} !== null ? $input->{'grox'} : null) : null;
         if (property_exists($input, 'grox')) {
             $__providedOptionals['grox'] = true;
         }

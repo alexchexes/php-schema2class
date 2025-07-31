@@ -88,7 +88,7 @@ class MyClass
             static::validateInput($input);
         }
 
-        $id = (int)($input->{'id'});
+        $id = (int)$input->{'id'};
 
         $obj = new self($id);
 

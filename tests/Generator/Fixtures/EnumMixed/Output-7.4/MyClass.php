@@ -399,11 +399,11 @@ class MyClass
         $__providedOptionals = [];
         $foo = $input->{'foo'};
         $bar = $input->{'bar'};
-        $baz = ($input->{'baz'} !== null) ? ($input->{'baz'}) : null;
-        $contradiction = (int)($input->{'contradiction'});
+        $baz = ($input->{'baz'} !== null ? $input->{'baz'} : null);
+        $contradiction = (int)$input->{'contradiction'};
         $contradiction2 = $input->{'contradiction2'};
-        $nullable = ($input->{'nullable'} !== null) ? ($input->{'nullable'}) : null;
-        $optionalNullable = property_exists($input, 'optionalNullable') ? ($input->{'optionalNullable'} !== null) ? ($input->{'optionalNullable'}) : null : null;
+        $nullable = ($input->{'nullable'} !== null ? $input->{'nullable'} : null);
+        $optionalNullable = property_exists($input, 'optionalNullable') ? ($input->{'optionalNullable'} !== null ? $input->{'optionalNullable'} : null) : null;
         if (property_exists($input, 'optionalNullable')) {
             $__providedOptionals['optionalNullable'] = true;
         }

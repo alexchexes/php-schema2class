@@ -511,7 +511,7 @@ class MyClass
         $__providedOptionals = [];
         $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
         $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
-        $baz = property_exists($input, 'baz') ? ($input->{'baz'} !== null) ? ($input->{'baz'}) : null : null;
+        $baz = property_exists($input, 'baz') ? ($input->{'baz'} !== null ? $input->{'baz'} : null) : null;
         if (property_exists($input, 'baz')) {
             $__providedOptionals['baz'] = true;
         }
@@ -520,7 +520,7 @@ class MyClass
         $grox = isset($input->{'grox'}) ? $input->{'grox'} : null;
         $qwert = isset($input->{'qwert'}) ? match (true) {
             is_string($input->{'qwert'}) => $input->{'qwert'},
-            is_int($input->{'qwert'}) || is_float($input->{'qwert'}) => str_contains((string)($input->{'qwert'}), '.') ? (float)($input->{'qwert'}) : (int)($input->{'qwert'}),
+            is_int($input->{'qwert'}) || is_float($input->{'qwert'}) => (str_contains((string)$input->{'qwert'}, '.') ? (float)$input->{'qwert'} : (int)$input->{'qwert'}),
             default => null,
         } : null;
         $zyx = isset($input->{'zyx'}) ? $input->{'zyx'} : null;

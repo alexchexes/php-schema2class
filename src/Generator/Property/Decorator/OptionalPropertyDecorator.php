@@ -61,7 +61,7 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator implements Ren
         // guard itself.
         if ($this->optionalNullable) {
             $innerMap = $this->inner->generateInputMappingExpr($accessor, true);
-            $mapped   = "({$accessor} !== null) ? ({$innerMap}) : null";
+            $mapped   = "({$accessor} !== null ? {$innerMap} : null)";
         } else {
             $mapped = $this->generateInputMappingExpr($accessor, true);
         }

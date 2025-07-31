@@ -1985,7 +1985,7 @@ class MyClass
         $_argv = $_input->{'argv'};
         $input = $_input->{'input'};
         $validate = isset($_input->{'validate'}) ? $_input->{'validate'} : null;
-        $materializeDefaults = property_exists($_input, 'materializeDefaults') ? ($_input->{'materializeDefaults'} !== null) ? ($_input->{'materializeDefaults'}) : null : null;
+        $materializeDefaults = property_exists($_input, 'materializeDefaults') ? ($_input->{'materializeDefaults'} !== null ? $_input->{'materializeDefaults'} : null) : null;
         if (property_exists($_input, 'materializeDefaults')) {
             $__providedOptionals['materializeDefaults'] = true;
         }
@@ -2013,7 +2013,7 @@ class MyClass
         $__debugInfo_1 = $_input->{'__debugInfo'};
         $__clone_1 = $_input->{'__clone'};
         $files = $_input->{'files'};
-        $ensureArgs1 = isset($_input->{'ensureArgs1'}) ? (is_string($_input->{'ensureArgs1'})) ? ($_input->{'ensureArgs1'}) : ((MyClassEnsureArgs1Alternative2::validateInput($_input->{'ensureArgs1'}, true)) ? (MyClassEnsureArgs1Alternative2::buildFromInput($_input->{'ensureArgs1'}, $_validate, $_materializeDefaults)) : ((MyClassEnsureArgs1Alternative1::validateInput($_input->{'ensureArgs1'}, true)) ? (MyClassEnsureArgs1Alternative1::buildFromInput($_input->{'ensureArgs1'}, $_validate, $_materializeDefaults)) : (null))) : null;
+        $ensureArgs1 = isset($_input->{'ensureArgs1'}) ? ((is_string($_input->{'ensureArgs1'})) ? $_input->{'ensureArgs1'} : (((MyClassEnsureArgs1Alternative2::validateInput($_input->{'ensureArgs1'}, true)) ? MyClassEnsureArgs1Alternative2::buildFromInput($_input->{'ensureArgs1'}, $_validate, $_materializeDefaults) : (((MyClassEnsureArgs1Alternative1::validateInput($_input->{'ensureArgs1'}, true)) ? MyClassEnsureArgs1Alternative1::buildFromInput($_input->{'ensureArgs1'}, $_validate, $_materializeDefaults) : (null)))))) : null;
         $ensureArgs2 = isset($_input->{'ensureArgs2'}) ? MyClassEnsureArgs2::buildFromInput($_input->{'ensureArgs2'}, $_validate, $_materializeDefaults) : null;
         $ensureArgs3 = isset($_input->{'ensureArgs3'}) ? array_map(fn ($i): MyClassEnsureArgs3Item => MyClassEnsureArgs3Item::buildFromInput($i, $_validate, $_materializeDefaults), $_input->{'ensureArgs3'}) : null;
 
