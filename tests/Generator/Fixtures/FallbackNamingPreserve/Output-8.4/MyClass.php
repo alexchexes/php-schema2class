@@ -1978,14 +1978,14 @@ class MyClass
         $_argc = $_input->{'argc'};
         $_argv = $_input->{'argv'};
         $input = $_input->{'input'};
-        $validate = isset($_input->{'validate'}) ? $_input->{'validate'} : null;
-        $materializeDefaults = property_exists($_input, 'materializeDefaults') ? ($_input->{'materializeDefaults'} !== null) ? ($_input->{'materializeDefaults'}) : null : null;
+        $validate = isset($_input->{'validate'}) ? ($_input->{'validate'}) : null;
+        $materializeDefaults = property_exists($_input, 'materializeDefaults') ? (($_input->{'materializeDefaults'} !== null) ? ($_input->{'materializeDefaults'}) : null) : null;
         if (property_exists($_input, 'materializeDefaults')) {
             $__providedOptionals['materializeDefaults'] = true;
         }
         $obj = $_input->{'obj'};
         $includeDefaults = $_input->{'includeDefaults'};
-        $testObj = isset($_input->{'testObj'}) ? MyClassTestObj::buildFromInput($_input->{'testObj'}, $_validate, $_materializeDefaults) : null;
+        $testObj = isset($_input->{'testObj'}) ? (MyClassTestObj::buildFromInput($_input->{'testObj'}, $_validate, $_materializeDefaults)) : null;
         $_buildFromInput = $_input->{'buildFromInput'};
         $_toArray = $_input->{'toArray'};
         $_validateInput = $_input->{'validateInput'};
@@ -2007,14 +2007,14 @@ class MyClass
         $__debugInfo_1 = $_input->{'__debugInfo'};
         $__clone_1 = $_input->{'__clone'};
         $files = $_input->{'files'};
-        $ensureArgs1 = isset($_input->{'ensureArgs1'}) ? match (true) {
+        $ensureArgs1 = isset($_input->{'ensureArgs1'}) ? (match (true) {
             MyClassEnsureArgs1Alternative1::validateInput($_input->{'ensureArgs1'}, true) => MyClassEnsureArgs1Alternative1::buildFromInput($_input->{'ensureArgs1'}, $_validate, $_materializeDefaults),
             MyClassEnsureArgs1Alternative2::validateInput($_input->{'ensureArgs1'}, true) => MyClassEnsureArgs1Alternative2::buildFromInput($_input->{'ensureArgs1'}, $_validate, $_materializeDefaults),
             is_string($_input->{'ensureArgs1'}) => $_input->{'ensureArgs1'},
             default => null,
-        } : null;
-        $ensureArgs2 = isset($_input->{'ensureArgs2'}) ? MyClassEnsureArgs2::buildFromInput($_input->{'ensureArgs2'}, $_validate, $_materializeDefaults) : null;
-        $ensureArgs3 = isset($_input->{'ensureArgs3'}) ? array_map(fn (array|object $i): MyClassEnsureArgs3Item => MyClassEnsureArgs3Item::buildFromInput($i, $_validate, $_materializeDefaults), $_input->{'ensureArgs3'}) : null;
+        }) : null;
+        $ensureArgs2 = isset($_input->{'ensureArgs2'}) ? (MyClassEnsureArgs2::buildFromInput($_input->{'ensureArgs2'}, $_validate, $_materializeDefaults)) : null;
+        $ensureArgs3 = isset($_input->{'ensureArgs3'}) ? (array_map(fn (array|object $i): MyClassEnsureArgs3Item => MyClassEnsureArgs3Item::buildFromInput($i, $_validate, $_materializeDefaults), $_input->{'ensureArgs3'})) : null;
 
         $_obj = new self($_GLOBALS_1, $_GLOBALS_2, $_GLOBALS_1_1, $_SERVER_1, $_GET_1, $_POST_1, $_FILES_1, $_REQUEST_1, $_SESSION_1, $_ENV_1, $_COOKIE_1, $_php_errormsg, $_http_response_header, $_argc, $_argv, $input, $obj, $includeDefaults, $_buildFromInput, $_toArray, $_validateInput, $_schema, $_defaults_1, $_providedOptionals_1, $_clone, $__construct_1, $__destruct_1, $__get_1, $__set_1, $__call_1, $__isset_1, $__unset_1, $__sleep_1, $__wakeup_1, $__toString_1, $__invoke_1, $__debugInfo_1, $__clone_1, $files);
         $_obj->validate = $validate;

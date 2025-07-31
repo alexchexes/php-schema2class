@@ -68,7 +68,7 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator implements Ren
 
         $existsCheck = $this->generateIssetCheckExpr($inputVarName, $object);
 
-        $code = "\${$name} = {$existsCheck} ? {$mapped} : null;";
+        $code = "\${$name} = {$existsCheck} ? ({$mapped}) : null;";
 
         if ($this->optionalNullable) {
             $code .= "\nif ({$existsCheck}) {\n    \$__providedOptionals['{$this->key}'] = true;\n}";
@@ -88,8 +88,14 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator implements Ren
         if ($this->optionalNullable) {
             $check = "isset(\$this->{$name}) || array_key_exists('{$this->key}', \$this->_providedOptionals)";
             $keyStr = var_export($this->key, true);
-            $map = $this->generateOutputMappingExpr("\$this->{$name}");
-            $inner = "\${$outputVarName}[{$keyStr}] = {$map};";
+
+            if ($this->inner instanceof NullablePropertyDecorator) {
+                $inner = $this->inner->convertTypeToArray($outputVarName);
+            } else {
+                $map   = $this->generateOutputMappingExpr("\$this->{$name}");
+                $inner = "\${$outputVarName}[{$keyStr}] = {$map};";
+            }
+
             return "if ({$check}) {\n" . StringUtils::indentCode($inner, 1) . "\n}";
         }
 
@@ -109,8 +115,14 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator implements Ren
         if ($this->optionalNullable) {
             $check = "isset(\$this->{$name}) || array_key_exists('{$this->key}', \$this->_providedOptionals)";
             $keyStr = var_export($this->key, true);
-            $map = $this->generateOutputMappingExprStdClass("\$this->{$name}");
-            $inner = "\${$outputVarName}->{{$keyStr}} = {$map};";
+
+            if ($this->inner instanceof NullablePropertyDecorator) {
+                $inner = $this->inner->convertTypeToStdClass($outputVarName);
+            } else {
+                $map   = $this->generateOutputMappingExprStdClass("\$this->{$name}");
+                $inner = "\${$outputVarName}->{{$keyStr}} = {$map};";
+            }
+
             return "if ({$check}) {\n" . StringUtils::indentCode($inner, 1) . "\n}";
         }
 

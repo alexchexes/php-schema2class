@@ -379,7 +379,7 @@ class MyClass
         $contradiction = (int)($input->{'contradiction'});
         $contradiction2 = $input->{'contradiction2'};
         $nullable = ($input->{'nullable'} !== null) ? (MyClassNullable::from($input->{'nullable'})) : null;
-        $optionalNullable = property_exists($input, 'optionalNullable') ? ($input->{'optionalNullable'} !== null) ? (MyClassOptionalNullable::from($input->{'optionalNullable'})) : null : null;
+        $optionalNullable = property_exists($input, 'optionalNullable') ? (($input->{'optionalNullable'} !== null) ? (MyClassOptionalNullable::from($input->{'optionalNullable'})) : null) : null;
         if (property_exists($input, 'optionalNullable')) {
             $__providedOptionals['optionalNullable'] = true;
         }

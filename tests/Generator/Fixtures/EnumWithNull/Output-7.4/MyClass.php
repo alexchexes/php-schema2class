@@ -104,7 +104,7 @@ class MyClass
         }
 
         $__providedOptionals = [];
-        $foo = property_exists($input, 'foo') ? ($input->{'foo'} !== null) ? ($input->{'foo'}) : null : null;
+        $foo = property_exists($input, 'foo') ? (($input->{'foo'} !== null) ? ($input->{'foo'}) : null) : null;
         if (property_exists($input, 'foo')) {
             $__providedOptionals['foo'] = true;
         }

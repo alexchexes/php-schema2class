@@ -454,30 +454,30 @@ class MyClass
             is_string($input->{'d'}) => $input->{'d'},
             default => null,
         }) : null;
-        $e = isset($input->{'e'}) ? $input->{'e'} : null;
-        $f = isset($input->{'f'}) ? match (true) {
+        $e = isset($input->{'e'}) ? ($input->{'e'}) : null;
+        $f = isset($input->{'f'}) ? (match (true) {
             is_array($input->{'f'}),
             is_string($input->{'f'}) => $input->{'f'},
             default => null,
-        } : null;
-        $g = property_exists($input, 'g') ? ($input->{'g'} !== null) ? ($input->{'g'}) : null : null;
+        }) : null;
+        $g = property_exists($input, 'g') ? (($input->{'g'} !== null) ? ($input->{'g'}) : null) : null;
         if (property_exists($input, 'g')) {
             $__providedOptionals['g'] = true;
         }
-        $h = property_exists($input, 'h') ? ($input->{'h'} !== null) ? (match (true) {
+        $h = property_exists($input, 'h') ? (($input->{'h'} !== null) ? (match (true) {
             is_array($input->{'h'}),
             is_string($input->{'h'}) => $input->{'h'},
             default => null,
-        }) : null : null;
+        }) : null) : null;
         if (property_exists($input, 'h')) {
             $__providedOptionals['h'] = true;
         }
-        $i = property_exists($input, 'i') ? ($input->{'i'} !== null) ? (match (true) {
+        $i = property_exists($input, 'i') ? (($input->{'i'} !== null) ? (match (true) {
             is_array($input->{'i'}),
             is_string($input->{'i'}),
             is_array($input->{'i'}) || is_object($input->{'i'}) => $input->{'i'},
             default => null,
-        }) : null : null;
+        }) : null) : null;
         if (property_exists($input, 'i')) {
             $__providedOptionals['i'] = true;
         }
@@ -520,7 +520,9 @@ class MyClass
             };
         }
         if (isset($this->g) || array_key_exists('g', $this->_providedOptionals)) {
-            $output['g'] = ($this->g !== null) ? (($this->g !== null) ? ($this->g) : null) : null;
+            if (isset($this->g)) {
+                $output['g'] = $this->g;
+            }
         }
         if (isset($this->h) || array_key_exists('h', $this->_providedOptionals)) {
             $output['h'] = ($this->h !== null) ? (match (true) {
@@ -569,7 +571,9 @@ class MyClass
             };
         }
         if (isset($this->g) || array_key_exists('g', $this->_providedOptionals)) {
-            $output->{'g'} = ($this->g !== null) ? (($this->g !== null) ? ($this->g) : null) : null;
+            if (isset($this->g)) {
+                $output->{'g'} = $this->g;
+            }
         }
         if (isset($this->h) || array_key_exists('h', $this->_providedOptionals)) {
             $output->{'h'} = ($this->h !== null) ? (match (true) {

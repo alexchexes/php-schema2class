@@ -835,53 +835,53 @@ class MyClass
         $__providedOptionals = [];
         $foo = $input->{'foo'};
         $bar = $input->{'bar'};
-        $baz = isset($input->{'baz'}) ? MyClassBaz::buildFromInput($input->{'baz'}, $validate, $materializeDefaults) : null;
-        $quxObj = property_exists($input, 'quxObj') ? ($input->{'quxObj'} !== null) ? (MyClassQuxObj::buildFromInput($input->{'quxObj'}, $validate, $materializeDefaults)) : null : null;
+        $baz = isset($input->{'baz'}) ? (MyClassBaz::buildFromInput($input->{'baz'}, $validate, $materializeDefaults)) : null;
+        $quxObj = property_exists($input, 'quxObj') ? (($input->{'quxObj'} !== null) ? (MyClassQuxObj::buildFromInput($input->{'quxObj'}, $validate, $materializeDefaults)) : null) : null;
         if (property_exists($input, 'quxObj')) {
             $__providedOptionals['quxObj'] = true;
         }
-        $quxObjNest = property_exists($input, 'quxObjNest') ? ($input->{'quxObjNest'} !== null) ? (MyClassQuxObjNest::buildFromInput($input->{'quxObjNest'}, $validate, $materializeDefaults)) : null : null;
+        $quxObjNest = property_exists($input, 'quxObjNest') ? (($input->{'quxObjNest'} !== null) ? (MyClassQuxObjNest::buildFromInput($input->{'quxObjNest'}, $validate, $materializeDefaults)) : null) : null;
         if (property_exists($input, 'quxObjNest')) {
             $__providedOptionals['quxObjNest'] = true;
         }
-        $thudArray = property_exists($input, 'thudArray') ? ($input->{'thudArray'} !== null) ? ($input->{'thudArray'}) : null : null;
+        $thudArray = property_exists($input, 'thudArray') ? (($input->{'thudArray'} !== null) ? ($input->{'thudArray'}) : null) : null;
         if (property_exists($input, 'thudArray')) {
             $__providedOptionals['thudArray'] = true;
         }
-        $xyyz = isset($input->{'xyyz'}) ? match (true) {
+        $xyyz = isset($input->{'xyyz'}) ? (match (true) {
             is_string($input->{'xyyz'}),
             is_array($input->{'xyyz'}) => $input->{'xyyz'},
             ObjDef::validateInput($input->{'xyyz'}, true) => ObjDef::buildFromInput($input->{'xyyz'}, $validate, $materializeDefaults),
             default => null,
-        } : null;
-        $buux = isset($input->{'buux'}) ? match (true) {
+        }) : null;
+        $buux = isset($input->{'buux'}) ? (match (true) {
             is_string($input->{'buux'}),
             is_array($input->{'buux'}) => $input->{'buux'},
             ObjDef::validateInput($input->{'buux'}, true) => ObjDef::buildFromInput($input->{'buux'}, $validate, $materializeDefaults),
             default => null,
-        } : null;
-        $boic = isset($input->{'boic'}) ? match (true) {
+        }) : null;
+        $boic = isset($input->{'boic'}) ? (match (true) {
             is_string($input->{'boic'}),
             is_array($input->{'boic'}) => $input->{'boic'},
             ObjDef::validateInput($input->{'boic'}, true) => ObjDef::buildFromInput($input->{'boic'}, $validate, $materializeDefaults),
             default => null,
-        } : null;
-        $poox = isset($input->{'poox'}) ? match (true) {
+        }) : null;
+        $poox = isset($input->{'poox'}) ? (match (true) {
             is_string($input->{'poox'}) => $input->{'poox'},
             NumericKeysObj::validateInput($input->{'poox'}, true) => NumericKeysObj::buildFromInput($input->{'poox'}, $validate, $materializeDefaults),
             default => null,
-        } : null;
-        $arrObjUnion = isset($input->{'arrObjUnion'}) ? match (true) {
+        }) : null;
+        $arrObjUnion = isset($input->{'arrObjUnion'}) ? (match (true) {
             is_array($input->{'arrObjUnion'}),
             is_array($input->{'arrObjUnion'}) || is_object($input->{'arrObjUnion'}) => $input->{'arrObjUnion'},
             default => null,
-        } : null;
-        $objArrUnion = isset($input->{'objArrUnion'}) ? match (true) {
+        }) : null;
+        $objArrUnion = isset($input->{'objArrUnion'}) ? (match (true) {
             is_array($input->{'objArrUnion'}),
             is_array($input->{'objArrUnion'}) || is_object($input->{'objArrUnion'}) => $input->{'objArrUnion'},
             default => null,
-        } : null;
-        $numKeysDefaults = isset($input->{'numKeysDefaults'}) ? MyClassNumKeysDefaults::buildFromInput($input->{'numKeysDefaults'}, $validate, $materializeDefaults) : null;
+        }) : null;
+        $numKeysDefaults = isset($input->{'numKeysDefaults'}) ? (MyClassNumKeysDefaults::buildFromInput($input->{'numKeysDefaults'}, $validate, $materializeDefaults)) : null;
 
         $obj = new self($foo, $bar);
         $obj->baz = $baz;
@@ -914,13 +914,19 @@ class MyClass
             $output['baz'] = ($this->baz)->toArray($includeDefaults);
         }
         if (isset($this->quxObj) || array_key_exists('quxObj', $this->_providedOptionals)) {
-            $output['quxObj'] = ($this->quxObj !== null) ? (($this->quxObj !== null) ? (($this->quxObj)->toArray($includeDefaults)) : null) : null;
+            if (isset($this->quxObj)) {
+                $output['quxObj'] = ($this->quxObj)->toArray($includeDefaults);
+            }
         }
         if (isset($this->quxObjNest) || array_key_exists('quxObjNest', $this->_providedOptionals)) {
-            $output['quxObjNest'] = ($this->quxObjNest !== null) ? (($this->quxObjNest !== null) ? (($this->quxObjNest)->toArray($includeDefaults)) : null) : null;
+            if (isset($this->quxObjNest)) {
+                $output['quxObjNest'] = ($this->quxObjNest)->toArray($includeDefaults);
+            }
         }
         if (isset($this->thudArray) || array_key_exists('thudArray', $this->_providedOptionals)) {
-            $output['thudArray'] = ($this->thudArray !== null) ? (($this->thudArray !== null) ? ($this->thudArray) : null) : null;
+            if (isset($this->thudArray)) {
+                $output['thudArray'] = $this->thudArray;
+            }
         }
         if (isset($this->xyyz)) {
             $output['xyyz'] = match (true) {
@@ -991,13 +997,19 @@ class MyClass
             $output->{'baz'} = ($this->baz)->toStdClass($includeDefaults);
         }
         if (isset($this->quxObj) || array_key_exists('quxObj', $this->_providedOptionals)) {
-            $output->{'quxObj'} = ($this->quxObj !== null) ? (($this->quxObj !== null) ? (($this->quxObj)->toStdClass($includeDefaults)) : null) : null;
+            if (isset($this->quxObj)) {
+                $output->{'quxObj'} = ($this->quxObj)->toStdClass($includeDefaults);
+            }
         }
         if (isset($this->quxObjNest) || array_key_exists('quxObjNest', $this->_providedOptionals)) {
-            $output->{'quxObjNest'} = ($this->quxObjNest !== null) ? (($this->quxObjNest !== null) ? (($this->quxObjNest)->toStdClass($includeDefaults)) : null) : null;
+            if (isset($this->quxObjNest)) {
+                $output->{'quxObjNest'} = ($this->quxObjNest)->toStdClass($includeDefaults);
+            }
         }
         if (isset($this->thudArray) || array_key_exists('thudArray', $this->_providedOptionals)) {
-            $output->{'thudArray'} = ($this->thudArray !== null) ? (($this->thudArray !== null) ? ($this->thudArray) : null) : null;
+            if (isset($this->thudArray)) {
+                $output->{'thudArray'} = $this->thudArray;
+            }
         }
         if (isset($this->xyyz)) {
             $output->{'xyyz'} = match (true) {

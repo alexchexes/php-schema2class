@@ -391,16 +391,16 @@ class MyClass
         }
 
         $__providedOptionals = [];
-        $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
-        $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
-        $baz = isset($input->{'baz'}) ? $input->{'baz'} : null;
-        $qux = isset($input->{'qux'}) ? $input->{'qux'} : null;
-        $grox = property_exists($input, 'grox') ? ($input->{'grox'} !== null) ? ($input->{'grox'}) : null : null;
+        $foo = isset($input->{'foo'}) ? ($input->{'foo'}) : null;
+        $bar = isset($input->{'bar'}) ? ($input->{'bar'}) : null;
+        $baz = isset($input->{'baz'}) ? ($input->{'baz'}) : null;
+        $qux = isset($input->{'qux'}) ? ($input->{'qux'}) : null;
+        $grox = property_exists($input, 'grox') ? (($input->{'grox'} !== null) ? ($input->{'grox'}) : null) : null;
         if (property_exists($input, 'grox')) {
             $__providedOptionals['grox'] = true;
         }
-        $quux = isset($input->{'quux'}) ? MyClassQuux::buildFromInput($input->{'quux'}, $validate) : null;
-        $thud = isset($input->{'thud'}) ? $input->{'thud'} : null;
+        $quux = isset($input->{'quux'}) ? (MyClassQuux::buildFromInput($input->{'quux'}, $validate)) : null;
+        $thud = isset($input->{'thud'}) ? ($input->{'thud'}) : null;
 
         $obj = new self();
         $obj->foo = $foo;

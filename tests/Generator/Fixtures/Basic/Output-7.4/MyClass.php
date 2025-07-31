@@ -133,7 +133,7 @@ class MyClass
             static::validateInput($input);
         }
 
-        $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
+        $foo = isset($input->{'foo'}) ? ($input->{'foo'}) : null;
         $fooBar = $input->{'foo_bar'};
 
         $obj = new self($fooBar);
