@@ -6,7 +6,8 @@ use Helmich\Schema2Class\Generator\Property\Type\PropertyInterface;
 use Helmich\Schema2Class\Generator\Property\Decorator\OptionalPropertyDecorator;
 
 /**
- * Iterable list of {@see PropertyInterface} instances with helper methods for code generation.
+ * Iterable list of {@see PropertyInterface} instances (which represent schema properties)
+ * with helper methods for code generation.
  * 
  * @template-implements \Iterator<PropertyInterface>
  */

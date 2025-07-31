@@ -7,7 +7,6 @@ use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Writer\WriterInterface;
 use Laminas\Code\DeclareStatement;
 use Laminas\Code\Generator\ClassGenerator as LaminasClassGenerator;
-use Laminas\Code\Generator\DocBlockGenerator;
 use Laminas\Code\Generator\FileGenerator;
 
 /**
@@ -15,58 +14,43 @@ use Laminas\Code\Generator\FileGenerator;
  */
 class ClassFileWriter
 {
-    public function __construct(private WriterInterface $writer)
+    public function __construct(
+        private GeneratorRequest $request,
+        private WriterInterface $writer,
+    ) {}
+
+    public function write(LaminasClassGenerator $classGenerator): void
     {
+        $filename = $this->request->getTargetDirectory() . '/' . $this->request->getTargetClass() . '.php';
+
+        $fileGenerator = new FileGenerator();
+        $fileGenerator->setClasses([$classGenerator]);
+
+        // Invoke a hook
+        $this->request->onFileCreated($filename, $fileGenerator);
+
+        if ($this->request->isAtLeastPHP('7.0') && !$this->request->getOptions()->getDisableStrictTypes()) {
+            $fileGenerator->setDeclares([DeclareStatement::strictTypes(1)]);
+        }
+
+        $content = $fileGenerator->generate();
+        $content = $this->postProcess($content);
+
+        $this->writer->writeFile($filename, $content);
     }
 
-    /**
-     * @param array $schema Validation schema
-     * @param array $properties PropertyGenerator[]
-     * @param array $methods MethodGenerator[]
-     */
-    public function write(GeneratorRequest $req, array $schema, array $properties, array $methods): void
+    private function postProcess(string $content)
     {
-        $cls = new LaminasClassGenerator(
-            $req->getTargetClass(),
-            $req->getTargetNamespace(),
-            null,
-            null,
-            [],
-            $properties,
-            $methods,
-            null,
-        );
-
-        if (isset($schema['description']) && is_string($schema['description']) && $schema['description'] !== '') {
-            $doc = new DocBlockGenerator($schema['description']);
-            $doc->setWordWrap(false);
-            $cls->setDocBlock($doc);
-        }
-
-        $req->onClassCreated($cls);
-
-        $filename = $req->getTargetDirectory() . '/' . $req->getTargetClass() . '.php';
-
-        $file = new FileGenerator();
-        $file->setClasses([$cls]);
-
-        $req->onFileCreated($filename, $file);
-
-        if ($req->isAtLeastPHP('7.0') && !$req->getOptions()->getDisableStrictTypes()) {
-            $file->setDeclares([DeclareStatement::strictTypes(1)]);
-        }
-
-        $content = $file->generate();
-
         $content = preg_replace('/: \\\self/', ': self', $content);
-        $content = preg_replace('/\\\\' . preg_quote($req->getTargetNamespace(), '/') . '\\\\/', '', $content);
-        $ownClasses = $req->getGeneratedClassNames();
+        $content = preg_replace('/\\\\' . preg_quote($this->request->getTargetNamespace(), '/') . '\\\\/', '', $content);
+        $ownClasses = $this->request->getGeneratedClassNames();
+
         if ($ownClasses) {
             $escapedOwnClasses = array_map(fn ($n) => preg_quote($n, '/'), $ownClasses);
             $pattern = '/\\\\(' . join('|', $escapedOwnClasses) . ')(?=\s|[,;)|]|$)/';
             $content = preg_replace($pattern, '$1', $content);
         }
 
-        $this->writer->writeFile($filename, $content);
+        return $content;
     }
 }

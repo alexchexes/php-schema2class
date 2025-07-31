@@ -14,10 +14,17 @@ class MethodFactoryTest extends TestCase
     {
         $schema = [
             'type' => 'object',
-            'properties' => ['foo' => ['type' => 'string']],
+            'properties' => [
+                'foo' => ['type' => 'string']
+            ],
         ];
 
-        $req = new GeneratorRequest($schema, new ValidatedSpecificationFilesItem('Ns','Foo',''), new SpecificationOptions());
+        $req = new GeneratorRequest(
+            $schema,
+            new ValidatedSpecificationFilesItem('Ns','Foo',''),
+            new SpecificationOptions(),
+        );
+
         $factory = new ClassMethodFactory($req);
         $schemaProperties = (new SchemaPropertyCollector())->collectPropertiesFromSchema($schema, $req);
         $classMethods = $factory->generateMethods($schemaProperties, [], false);

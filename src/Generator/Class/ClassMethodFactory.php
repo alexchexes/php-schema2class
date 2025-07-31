@@ -28,45 +28,49 @@ use Laminas\Code\Generator\ParameterGenerator;
  */
 class ClassMethodFactory
 {
-    public function __construct(private GeneratorRequest $generatorRequest)
-    {
-    }
+    public function __construct(
+        private GeneratorRequest $generatorRequest,
+    ) {}
 
     /**
      * Generate all methods for a class and ensure unique names.
      *
      * @return MethodGenerator[]
      */
-    public function generateMethods(PropertyCollection $properties, array $defaults, bool $hasOptionalNullable): array
+    public function generateMethods(
+        PropertyCollection $schemaProperties,
+        array $defaults,
+        bool $hasOptionalNullable,
+    ): array
     {
-        $methods = [
-            $this->generateConstructor($properties),
-            ...$this->generateGetterMethods($properties),
-            ...$this->generateSetterMethods($properties),
-            $this->generateBuildMethod($properties, $defaults, $hasOptionalNullable),
-            $this->generateToArrayMethod($properties, $defaults),
-            $this->generateToStdClassMethod($properties, $defaults),
+        $methodGenerators = [
+            $this->generateConstructor($schemaProperties),
+            ...$this->generateGetterMethods($schemaProperties),
+            ...$this->generateSetterMethods($schemaProperties),
+            $this->generateBuildMethod($schemaProperties, $defaults, $hasOptionalNullable),
+            $this->generateToArrayMethod($schemaProperties, $defaults),
+            $this->generateToStdClassMethod($schemaProperties, $defaults),
             $this->generateValidateMethod(),
-            $this->generateCloneMethod($properties),
+            $this->generateCloneMethod($schemaProperties),
             $hasOptionalNullable ? $this->generateIsProvidedMethod() : null,
         ];
 
         // filter out empty items for methods that won't be generated
-        $methods = array_values(array_filter($methods));
+        $methodGenerators = array_values(array_filter($methodGenerators));
 
         // check whether all names are unique and rename if necessary
-        $this->ensureUniqueMethodNames($methods);
+        $this->ensureUniqueMethodNames($methodGenerators);
 
-        return $methods;
+        return $methodGenerators;
     }
 
-    private function generateConstructor(PropertyCollection $properties): ?MethodGenerator
+    private function generateConstructor(PropertyCollection $schemaProperties): ?MethodGenerator
     {
         $params      = [];
         $tags        = [];
         $assignments = [];
 
-        $requiredProperties = $properties->filter(PropertyCollectionFilterFactory::required());
+        $requiredProperties = $schemaProperties->filter(PropertyCollectionFilterFactory::required());
 
         foreach ($requiredProperties as $requiredProperty) {
             $paramName = $requiredProperty->name();
@@ -99,7 +103,11 @@ class ClassMethodFactory
         );
     }
 
-    private function generateBuildMethod(PropertyCollection $properties, array $defaults = [], bool $hasOptionalNullable = false): MethodGenerator
+    private function generateBuildMethod(
+        PropertyCollection $schemaProperties,
+        array $defaults = [],
+        bool $hasOptionalNullable = false,
+    ): MethodGenerator
     {
         $inputArgName = 'input';
         $validateArgName = 'validate';
@@ -141,7 +149,7 @@ class ClassMethodFactory
             validateArgName: $validateArgName,
             materializeArgName: $materializeArgName,
             defaults: $defaults,
-            properties: $properties,
+            schemaProperties: $schemaProperties,
             hasOptionalNullable: $hasOptionalNullable,
         );
 
@@ -167,20 +175,20 @@ class ClassMethodFactory
         string $validateArgName,
         string $materializeArgName,
         array $defaults,
-        PropertyCollection $properties,
+        PropertyCollection $schemaProperties,
         bool $hasOptionalNullable,
     ): string {
         $objVarName = 'obj';
-        if ($properties->hasPropertyWithName($objVarName)) {
+        if ($schemaProperties->hasPropertyWithName($objVarName)) {
             $objVarName = '_obj';
             $i = 2;
-            while ($properties->hasPropertyWithName($objVarName)) {
+            while ($schemaProperties->hasPropertyWithName($objVarName)) {
                 $objVarName = '_obj' . $i;
                 $i++;
             }
         }
 
-        $optionalProperties = $properties->filter(PropertyCollectionFilterFactory::optional());
+        $optionalProperties = $schemaProperties->filter(PropertyCollectionFilterFactory::optional());
         $assignments = [];
         foreach ($optionalProperties as $optionalProperty) {
             $name = $optionalProperty->name();
@@ -188,30 +196,30 @@ class ClassMethodFactory
         }
 
         $inputArgAlias = $inputArgName;
-        if ($properties->hasPropertyWithKey($inputArgAlias)) {
+        if ($schemaProperties->hasPropertyWithKey($inputArgAlias)) {
             $inputArgAlias = '_input';
             $i = 2;
-            while ($properties->hasPropertyWithKey($inputArgAlias)) {
+            while ($schemaProperties->hasPropertyWithKey($inputArgAlias)) {
                 $inputArgAlias = '_input' . $i;
                 $i++;
             }
         }
 
         $validateArgAlias = $validateArgName;
-        if ($properties->hasPropertyWithName($validateArgAlias)) {
+        if ($schemaProperties->hasPropertyWithName($validateArgAlias)) {
             $validateArgAlias = '_validate';
             $i = 2;
-            while ($properties->hasPropertyWithName($validateArgAlias)) {
+            while ($schemaProperties->hasPropertyWithName($validateArgAlias)) {
                 $validateArgAlias = '_validate' . $i;
                 $i++;
             }
         }
 
         $materializeArgAlias = $materializeArgName;
-        if ($defaults && $properties->hasPropertyWithName($materializeArgAlias)) {
+        if ($defaults && $schemaProperties->hasPropertyWithName($materializeArgAlias)) {
             $materializeArgAlias = '_materializeDefaults';
             $i = 2;
-            while ($properties->hasPropertyWithName($materializeArgAlias)) {
+            while ($schemaProperties->hasPropertyWithName($materializeArgAlias)) {
                 $materializeArgAlias = '_materializeDefaults' . $i;
                 $i++;
             }
@@ -220,7 +228,7 @@ class ClassMethodFactory
         $this->generatorRequest->setCurrValidateArgAlias($validateArgAlias);
         $this->generatorRequest->setCurrMaterializeArgAlias($defaults ? $materializeArgAlias : null);
 
-        $requiredProperties = $properties->filter(PropertyCollectionFilterFactory::required());
+        $requiredProperties = $schemaProperties->filter(PropertyCollectionFilterFactory::required());
         $constructorParams = [];
         foreach ($requiredProperties as $requiredProperty) {
             $constructorParams[] = '$' . $requiredProperty->name();
@@ -282,7 +290,7 @@ class ClassMethodFactory
             "    static::validateInput(\$$inputArgAlias);\n" .
             "}\n\n" .
             ($hasOptionalNullable ? "\$__providedOptionals = [];\n" : '') .
-            $properties->generateInputToTypeConversionCode($inputArgAlias) . "\n\n" .
+            $schemaProperties->generateInputToTypeConversionCode($inputArgAlias) . "\n\n" .
             "\${$objVarName} = new self(" . join(", ", $constructorParams) . ");" . "\n" .
             join("\n", $assignments) . "\n" .
             ($hasOptionalNullable ? "\${$objVarName}->_providedOptionals = \$__providedOptionals;\n" : '') .
@@ -291,7 +299,7 @@ class ClassMethodFactory
         return $body;
     }
 
-    private function generateToArrayMethod(PropertyCollection $properties, array $defaults = []): MethodGenerator
+    private function generateToArrayMethod(PropertyCollection $schemaProperties, array $defaults = []): MethodGenerator
     {
         $tags = [];
         if ($defaults) {
@@ -312,7 +320,7 @@ class ClassMethodFactory
         }
 
         $body = '$output = [];' . "\n" .
-            $properties->generateTypeToArrayConversionCode('output') . "\n";
+            $schemaProperties->generateTypeToArrayConversionCode('output') . "\n";
 
         if ($defaults) {
             $body .= "\nif (\$includeDefaults) {\n" .
@@ -341,7 +349,7 @@ class ClassMethodFactory
         return $method;
     }
 
-    private function generateToStdClassMethod(PropertyCollection $properties, array $defaults = []): MethodGenerator
+    private function generateToStdClassMethod(PropertyCollection $schemaProperties, array $defaults = []): MethodGenerator
     {
         $tags = [];
         if ($defaults) {
@@ -362,7 +370,7 @@ class ClassMethodFactory
         }
 
         $body = '$output = new \\stdClass();' . "\n" .
-            $properties->generateTypeToStdClassConversionCode('output') . "\n";
+            $schemaProperties->generateTypeToStdClassConversionCode('output') . "\n";
 
         if ($defaults) {
             $body .= "\nif (\$includeDefaults) {\n" .
@@ -439,10 +447,10 @@ class ClassMethodFactory
         return $method;
     }
 
-    private function generateCloneMethod(PropertyCollection $properties): ?MethodGenerator
+    private function generateCloneMethod(PropertyCollection $schemaProperties): ?MethodGenerator
     {
         $clones = [];
-        foreach ($properties as $property) {
+        foreach ($schemaProperties as $property) {
             $c = $property->cloneProperty();
             if ($c !== null) {
                 $clones[] = $c;
@@ -488,7 +496,7 @@ class ClassMethodFactory
         return $method;
     }
 
-    private function generateGetterMethods(PropertyCollection $properties): array
+    private function generateGetterMethods(PropertyCollection $schemaProperties): array
     {
         if ($this->generatorRequest->getNoGetters()) {
             return [];
@@ -496,9 +504,9 @@ class ClassMethodFactory
 
         $methods = [];
 
-        $properties = $properties->filter(PropertyCollectionFilterFactory::withoutDeprecatedAndSameName($properties));
+        $schemaProperties = $schemaProperties->filter(PropertyCollectionFilterFactory::withoutDeprecatedAndSameName($schemaProperties));
 
-        foreach ($properties as $property) {
+        foreach ($schemaProperties as $property) {
             $methods[] = $this->generateGetterMethod($property);
         }
 
@@ -545,7 +553,7 @@ class ClassMethodFactory
         return $getMethod;
     }
 
-    private function generateSetterMethods(PropertyCollection $properties): array
+    private function generateSetterMethods(PropertyCollection $schemaProperties): array
     {
         if ($this->generatorRequest->getNoSetters()) {
             return [];
@@ -554,9 +562,9 @@ class ClassMethodFactory
         $mutable = $this->generatorRequest->getMutableSetters();
 
         $methods    = [];
-        $properties = $properties->filter(PropertyCollectionFilterFactory::withoutDeprecatedAndSameName($properties));
+        $schemaProperties = $schemaProperties->filter(PropertyCollectionFilterFactory::withoutDeprecatedAndSameName($schemaProperties));
 
-        foreach ($properties as $property) {
+        foreach ($schemaProperties as $property) {
             if ($mutable !== null) {
                 $methods[] = $this->generateMutableSetterMethod($property, $mutable === 'chainable');
                 if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
@@ -817,7 +825,10 @@ class ClassMethodFactory
         return $unsetMethod;
     }
 
-    private function ensureUniqueMethodNames(array $methods): void
+    /** 
+     * @param MethodGenerator[] $methodGenerators 
+     */
+    private function ensureUniqueMethodNames(array $methodGenerators): void
     {
         $reservedMethodNames = [
             'buildFromInput',
@@ -843,7 +854,7 @@ class ClassMethodFactory
         $reserved = array_map('strtolower', $reservedMethodNames);
         $used = [];
 
-        foreach ($methods as $method) {
+        foreach ($methodGenerators as $method) {
             $name   = $method->getName();
             $lcName = strtolower($name);
 

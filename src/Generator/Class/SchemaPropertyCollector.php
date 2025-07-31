@@ -31,6 +31,11 @@ class SchemaPropertyCollector
             }
         }
 
+        $this->ensureUniquePropertyNames(
+            $properties,
+            $req->getOptions()->getPreservePropertyNames(),
+        );
+
         return $properties;
     }
 
@@ -59,6 +64,17 @@ class SchemaPropertyCollector
 
         return $defaults;
     }
+
+    public function hasOptionalNullable(PropertyCollection $properties): bool
+    {
+        foreach ($properties as $p) {
+            if ($p instanceof OptionalPropertyDecorator && $p->isOptionalNullable()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     private static function extractDefault(array $def, GeneratorRequest $req, bool &$found = false, object|null $rawDef = null): array
     {
@@ -116,8 +132,8 @@ class SchemaPropertyCollector
         $found = false;
         return ['default' => null, 'type' => null];
     }
-
-    public function ensureUniquePropertyNames(PropertyCollection $properties, bool $preservePropertyNames): void
+    
+    private function ensureUniquePropertyNames(PropertyCollection $schemaProperties, bool $preservePropertyNames): void
     {
         $reservedPropertyNames = [
             '_GLOBALS', 'GLOBALS', 'GLOBALS_1', '_SERVER', '_GET', '_POST', '_FILES',
@@ -143,8 +159,8 @@ class SchemaPropertyCollector
         }
         $usedMethods = array_values(array_unique($usedMethods));
 
-        foreach ($properties as $property) {
-            $base    = $property->name();
+        foreach ($schemaProperties as $schemaProp) {
+            $base    = $schemaProp->name();
             $unique  = $base;
             $pascal  = strtolower(StringUtils::safePascalCase($unique));
 
@@ -167,22 +183,12 @@ class SchemaPropertyCollector
                 }
             }
 
-            if ($unique !== $base && $property instanceof RenameablePropertyInterface) {
-                $property->setName($unique);
+            if ($unique !== $base && $schemaProp instanceof RenameablePropertyInterface) {
+                $schemaProp->setName($unique);
             }
 
             $used[]       = $unique;
             $usedMethods[] = $pascal;
         }
-    }
-
-    public function hasOptionalNullable(PropertyCollection $properties): bool
-    {
-        foreach ($properties as $p) {
-            if ($p instanceof OptionalPropertyDecorator && $p->isOptionalNullable()) {
-                return true;
-            }
-        }
-        return false;
     }
 }
