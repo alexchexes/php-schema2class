@@ -56,12 +56,19 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator implements Ren
             ? "\${$inputVarName}->{{$keyStr}}"
             : "\${$inputVarName}[{$keyStr}]";
 
-        // Single mapping expression (with null-guard if the property is nullable)
-        $mapped   = $this->generateInputMappingExpr($accessor, true);
+        // Build mapping expression. Nullable optionals must keep null values
+        // intact; if the wrapped property already allows null it will handle the
+        // guard itself.
+        if ($this->optionalNullable) {
+            $innerMap = $this->inner->generateInputMappingExpr($accessor, true);
+            $mapped   = "({$accessor} !== null) ? ({$innerMap}) : null";
+        } else {
+            $mapped = $this->generateInputMappingExpr($accessor, true);
+        }
 
         $existsCheck = $this->generateIssetCheckExpr($inputVarName, $object);
 
-        $code = "\${$name} = {$existsCheck} ? {$mapped} : null;";
+        $code = "\${$name} = {$existsCheck} ? ({$mapped}) : null;";
 
         if ($this->optionalNullable) {
             $code .= "\nif ({$existsCheck}) {\n    \$__providedOptionals['{$this->key}'] = true;\n}";
@@ -77,12 +84,16 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator implements Ren
     public function convertTypeToArray(string $outputVarName = 'output'): string
     {
         $name  = $this->inner->name();
-        $inner = $this->inner->convertTypeToArray($outputVarName);
 
         if ($this->optionalNullable) {
             $check = "isset(\$this->{$name}) || array_key_exists('{$this->key}', \$this->_providedOptionals)";
+            $keyStr = var_export($this->key, true);
+            $map = $this->generateOutputMappingExpr("\$this->{$name}");
+            $inner = "\${$outputVarName}[{$keyStr}] = {$map};";
             return "if ({$check}) {\n" . StringUtils::indentCode($inner, 1) . "\n}";
         }
+
+        $inner = $this->inner->convertTypeToArray($outputVarName);
 
         if ($this->inner->allowsNull()) {
             return $inner;
@@ -94,12 +105,16 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator implements Ren
     public function convertTypeToStdClass(string $outputVarName = 'output'): string
     {
         $name  = $this->inner->name();
-        $inner = $this->inner->convertTypeToStdClass($outputVarName);
 
         if ($this->optionalNullable) {
             $check = "isset(\$this->{$name}) || array_key_exists('{$this->key}', \$this->_providedOptionals)";
+            $keyStr = var_export($this->key, true);
+            $map = $this->generateOutputMappingExprStdClass("\$this->{$name}");
+            $inner = "\${$outputVarName}->{{$keyStr}} = {$map};";
             return "if ({$check}) {\n" . StringUtils::indentCode($inner, 1) . "\n}";
         }
+
+        $inner = $this->inner->convertTypeToStdClass($outputVarName);
 
         if ($this->inner->allowsNull()) {
             return $inner;

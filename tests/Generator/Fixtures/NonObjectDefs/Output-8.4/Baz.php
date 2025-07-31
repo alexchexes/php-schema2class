@@ -107,11 +107,11 @@ class Baz
             static::validateInput($input);
         }
 
-        $grox = isset($input->{'grox'}) ? match (true) {
+        $grox = isset($input->{'grox'}) ? (match (true) {
             Foo::validateInput($input->{'grox'}, true) => Foo::buildFromInput($input->{'grox'}, $validate),
             Bar::validateInput($input->{'grox'}, true) => Bar::buildFromInput($input->{'grox'}, $validate),
             default => null,
-        } : null;
+        }) : null;
 
         $obj = new self();
         $obj->grox = $grox;

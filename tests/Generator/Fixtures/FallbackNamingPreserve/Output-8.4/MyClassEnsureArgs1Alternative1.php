@@ -99,7 +99,7 @@ class MyClassEnsureArgs1Alternative1
             static::validateInput($input);
         }
 
-        $type = isset($input->{'type'}) ? MyClassEnsureArgs1Alternative1Type::from($input->{'type'}) : null;
+        $type = isset($input->{'type'}) ? (MyClassEnsureArgs1Alternative1Type::from($input->{'type'})) : null;
 
         $obj = new self();
         $obj->type = $type;

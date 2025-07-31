@@ -256,9 +256,9 @@ class MyClassNumKeysDefaults
             static::validateInput($input);
         }
 
-        $_0 = isset($input->{'0'}) ? $input->{'0'} : null;
-        $_1 = isset($input->{'1'}) ? $input->{'1'} : null;
-        $_2 = isset($input->{'2'}) ? $input->{'2'} : null;
+        $_0 = isset($input->{'0'}) ? ($input->{'0'}) : null;
+        $_1 = isset($input->{'1'}) ? ($input->{'1'}) : null;
+        $_2 = isset($input->{'2'}) ? ($input->{'2'}) : null;
 
         $obj = new self();
         $obj->_0 = $_0;
