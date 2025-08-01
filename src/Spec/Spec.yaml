@@ -41,11 +41,15 @@ definitions:
         type: boolean
       inlineAllofReferences:
         type: boolean
-      newValidatorClassExpr:
+      newValidatorExpr:
         type: string
         description: |
           The expression to use to create a new instance of the validator class.
           This is useful if you want to use a custom validator class.
+      arrayToObjectExpr:
+        type: string
+        description: |
+          Expression to use to recursively convert arrays to objects (e.g. `Utils::arrayToObjectRecursive` - no call parens!)
       preservePropertyNames:
         type: boolean
         description: |

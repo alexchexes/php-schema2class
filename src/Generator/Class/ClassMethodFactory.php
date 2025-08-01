@@ -176,13 +176,15 @@ class ClassMethodFactory
 
         $body = '$output = new \\stdClass();' . "\n" .
             $schemaProperties->generateTypeToStdClassConversionCode('output') . "\n";
+        
+        $arrayToObjectExpr = $this->request->getOptions()->getArrayToObjectExpr();
 
         if ($defaults) {
             $body .= "\nif (\$includeDefaults) {\n" .
             "    foreach (self::\$".PropertyNames::DEFAULTS_PROP." as \$k => \$v) {\n" .
             "        if (!property_exists(\$output, (string) \$k)) {\n" .
             "            \$output->{\$k} = (isset(\$v['type']) && \$v['type'] === 'object')\n" .
-            "               ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$v['default'])\n" .
+            "               ? {$arrayToObjectExpr}(\$v['default'])\n" .
             "               : \$v['default'];\n" .
             "        }\n" .
             "    }\n" .
@@ -220,7 +222,8 @@ class ClassMethodFactory
         );
         $docBlock->setWordWrap(false);
 
-        $newValidatorClassExpr = $this->request->getOptions()->getNewValidatorClassExpr();
+        $newValidatorExpr = $this->request->getOptions()->getNewValidatorExpr();
+        $arrayToObjectExpr = $this->request->getOptions()->getArrayToObjectExpr();
 
         $method = new MethodGenerator(
             'validateInput',
@@ -229,8 +232,8 @@ class ClassMethodFactory
                 new ParameterGenerator('return', $this->request->isAtLeastPHP('7.0') ? 'bool' : null, false),
             ],
             MethodGenerator::FLAG_PUBLIC | MethodGenerator::FLAG_STATIC,
-            '$validator = ' . $newValidatorClassExpr . ";\n" .
-            '$input = is_array($input) ? \\JsonSchema\\Validator::arrayToObjectRecursive($input) : $input;' . "\n" .
+            '$validator = ' . $newValidatorExpr . ";\n" .
+            "\$input = is_array(\$input) ? {$arrayToObjectExpr}(\$input) : \$input;" . "\n" .
             '$validator->validate($input, self::$'.PropertyNames::SCHEMA_PROP.');' . "\n\n" .
             'if (!$validator->isValid() && !$return) {' . "\n" .
             (
@@ -412,14 +415,14 @@ class ClassMethodFactory
             || $base instanceof ReferenceArrayProperty
             || $base instanceof TypedArrayProperty;
 
-        $newValidatorClassExpr = $this->request->getOptions()->getNewValidatorClassExpr();
+        $newValidatorExpr = $this->request->getOptions()->getNewValidatorExpr();
 
         if ($property->isComplex() && !$isArray) {
             $setterValidation = '';
         } else {
             $setterValidation =
                 "if (\$validate) {\n"
-                . "    \$validator = {$newValidatorClassExpr};\n"
+                . "    \$validator = {$newValidatorExpr};\n"
                 . "    \$validator->validate(\$$name, self::\$".PropertyNames::SCHEMA_PROP."['properties'][{$keyStr}]);\n"
                 . "    if (!\$validator->isValid()) {\n"
                 . "        throw new \\InvalidArgumentException(\$validator->getErrors()[0]['message']);\n"
@@ -498,14 +501,14 @@ class ClassMethodFactory
             || $base instanceof ReferenceArrayProperty
             || $base instanceof TypedArrayProperty;
 
-        $newValidatorClassExpr = $this->request->getOptions()->getNewValidatorClassExpr();
+        $newValidatorExpr = $this->request->getOptions()->getNewValidatorExpr();
 
         if ($property->isComplex() && !$isArray) {
             $setterValidation = '';
         } else {
             $setterValidation =
                 "if (\$validate) {\n" .
-                "    \$validator = {$newValidatorClassExpr};\n" .
+                "    \$validator = {$newValidatorExpr};\n" .
                 "    \$validator->validate(\$$name, self::\$".PropertyNames::SCHEMA_PROP."['properties'][{$keyStr}]);\n" .
                 "    if (!\$validator->isValid()) {\n" .
                 "        throw new \\InvalidArgumentException(\$validator->getErrors()[0]['message']);\n" .

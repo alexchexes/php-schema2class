@@ -168,10 +168,12 @@ class BuildMethodFactory
 
         $materializeLine = '';
 
+        $arrayToObjectExpr = $this->request->getOptions()->getArrayToObjectExpr();
+
         if ($this->defaults) {
             $convertInputLine =
                 "\$$inputArgAlias = is_array(\$$inputArgAlias)\n" .
-                "    ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$$inputArgAlias)\n" .
+                "    ? {$arrayToObjectExpr}(\$$inputArgAlias)\n" .
                 "    : (\$$materializeArgAlias ? clone \$$inputArgAlias : \$$inputArgAlias);\n\n";
 
             $materializeLine =
@@ -179,14 +181,14 @@ class BuildMethodFactory
                 "    foreach (self::\$".PropertyNames::DEFAULTS_PROP." as \$__k => \$__v) {\n" .
                 "        if (!property_exists(\$$inputArgAlias, (string) \$__k)) {\n" .
                 "           \${$inputArgAlias}->{\$__k} = (\$__v['type'] ?? null) === 'object'\n" .
-                "               ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$__v['default'])\n" .
+                "               ? {$arrayToObjectExpr}(\$__v['default'])\n" .
                 "               : \$__v['default'];\n" .
                 "        }\n" .
                 "    }\n" .
                 "}\n\n";
         } else {
             $convertInputLine =
-                "\$$inputArgAlias = is_array(\$$inputArgAlias) ? \\JsonSchema\\Validator::arrayToObjectRecursive(\$$inputArgAlias) : \$$inputArgAlias;\n";
+                "\$$inputArgAlias = is_array(\$$inputArgAlias) ? {$arrayToObjectExpr}(\$$inputArgAlias) : \$$inputArgAlias;\n";
         }
 
         // local var uses one more underscore

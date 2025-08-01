@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Spec;
@@ -10,7 +11,7 @@ class SpecificationOptions
      *
      * @var array
      */
-    private static array $schema = ['additionalProperties' => false, 'properties' => ['targetDirectory' => ['type' => 'string'], 'targetNamespace' => ['type' => 'string'], 'targetPHPVersion' => ['oneOf' => [['type' => 'integer', 'enum' => [5, 7, 8]], ['type' => 'string']]], 'cleanTargetDirectory' => ['type' => 'boolean'], 'disableStrictTypes' => ['type' => 'boolean'], 'inlineAllofReferences' => ['type' => 'boolean'], 'newValidatorClassExpr' => ['type' => 'string'], 'preservePropertyNames' => ['type' => 'boolean'], 'noGetters' => ['type' => 'boolean'], 'noSetters' => ['type' => 'boolean'], 'mutableSetters' => ['oneOf' => [['type' => 'boolean', 'enum' => [true]], ['type' => 'string', 'enum' => ['chainable']]]], 'noSchemaMetadata' => ['type' => 'boolean'], 'singleLineSchema' => ['type' => 'boolean'], 'noEnums' => ['type' => 'boolean']]];
+    private static array $schema = ['additionalProperties' => false, 'properties' => ['targetDirectory' => ['type' => 'string'], 'targetNamespace' => ['type' => 'string'], 'targetPHPVersion' => ['oneOf' => [['type' => 'integer', 'enum' => [5, 7, 8]], ['type' => 'string']]], 'cleanTargetDirectory' => ['type' => 'boolean'], 'disableStrictTypes' => ['type' => 'boolean'], 'inlineAllofReferences' => ['type' => 'boolean'], 'newValidatorExpr' => ['type' => 'string'], 'arrayToObjectExpr' => ['type' => 'string'], 'preservePropertyNames' => ['type' => 'boolean'], 'noGetters' => ['type' => 'boolean'], 'noSetters' => ['type' => 'boolean'], 'mutableSetters' => ['oneOf' => [['type' => 'boolean', 'enum' => [true]], ['type' => 'string', 'enum' => ['chainable']]]], 'noSchemaMetadata' => ['type' => 'boolean'], 'singleLineSchema' => ['type' => 'boolean'], 'noEnums' => ['type' => 'boolean']]];
 
     /**
      * @var string|null
@@ -53,7 +54,15 @@ class SpecificationOptions
      *
      * @var string|null
      */
-    private ?string $newValidatorClassExpr = null;
+    private ?string $newValidatorExpr = null;
+
+    /**
+     * Expression to use to recursively convert arrays to objects (e.g. `Utils::arrayToObjectRecursive` - no call parens!)
+     *
+     *
+     * @var string|null
+     */
+    private ?string $arrayToObjectExpr = null;
 
     /**
      * When true, properties names are not converted to camelCase.
@@ -174,9 +183,20 @@ class SpecificationOptions
      *
      * @return string|null
      */
-    public function getNewValidatorClassExpr(): ?string
+    public function getNewValidatorExpr(): ?string
     {
-        return $this->newValidatorClassExpr ?? null;
+        return $this->newValidatorExpr ?? null;
+    }
+
+    /**
+     * Expression to use to recursively convert arrays to objects (e.g. `Utils::arrayToObjectRecursive` - no call parens!)
+     *
+     *
+     * @return string|null
+     */
+    public function getArrayToObjectExpr(): ?string
+    {
+        return $this->arrayToObjectExpr ?? null;
     }
 
     /**
@@ -444,22 +464,22 @@ class SpecificationOptions
     }
 
     /**
-     * @param string $newValidatorClassExpr
+     * @param string $newValidatorExpr
      * @return self
      * @param bool $validate
      */
-    public function withNewValidatorClassExpr(string $newValidatorClassExpr, bool $validate = true): self
+    public function withNewValidatorExpr(string $newValidatorExpr, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($newValidatorClassExpr, self::$schema['properties']['newValidatorClassExpr']);
+            $validator->validate($newValidatorExpr, self::$schema['properties']['newValidatorExpr']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
         }
 
         $clone = clone $this;
-        $clone->newValidatorClassExpr = $newValidatorClassExpr;
+        $clone->newValidatorExpr = $newValidatorExpr;
 
         return $clone;
     }
@@ -467,10 +487,42 @@ class SpecificationOptions
     /**
      * @return self
      */
-    public function withoutNewValidatorClassExpr(): self
+    public function withoutNewValidatorExpr(): self
     {
         $clone = clone $this;
-        unset($clone->newValidatorClassExpr);
+        unset($clone->newValidatorExpr);
+
+        return $clone;
+    }
+
+    /**
+     * @param string $arrayToObjectExpr
+     * @return self
+     * @param bool $validate
+     */
+    public function withArrayToObjectExpr(string $arrayToObjectExpr, bool $validate = true): self
+    {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($arrayToObjectExpr, self::$schema['properties']['arrayToObjectExpr']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
+        $clone = clone $this;
+        $clone->arrayToObjectExpr = $arrayToObjectExpr;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutArrayToObjectExpr(): self
+    {
+        $clone = clone $this;
+        unset($clone->arrayToObjectExpr);
 
         return $clone;
     }
@@ -708,19 +760,20 @@ class SpecificationOptions
         $targetDirectory = isset($input->{'targetDirectory'}) ? $input->{'targetDirectory'} : null;
         $targetNamespace = isset($input->{'targetNamespace'}) ? $input->{'targetNamespace'} : null;
         $targetPHPVersion = isset($input->{'targetPHPVersion'}) ? match (true) {
-            is_int($input->{'targetPHPVersion'}) => (int)($input->{'targetPHPVersion'}),
+            is_int($input->{'targetPHPVersion'}) => (int)$input->{'targetPHPVersion'},
             is_string($input->{'targetPHPVersion'}) => $input->{'targetPHPVersion'},
             default => null,
         } : null;
         $cleanTargetDirectory = isset($input->{'cleanTargetDirectory'}) ? $input->{'cleanTargetDirectory'} : null;
         $disableStrictTypes = isset($input->{'disableStrictTypes'}) ? $input->{'disableStrictTypes'} : null;
         $inlineAllofReferences = isset($input->{'inlineAllofReferences'}) ? $input->{'inlineAllofReferences'} : null;
-        $newValidatorClassExpr = isset($input->{'newValidatorClassExpr'}) ? $input->{'newValidatorClassExpr'} : null;
+        $newValidatorExpr = isset($input->{'newValidatorExpr'}) ? $input->{'newValidatorExpr'} : null;
+        $arrayToObjectExpr = isset($input->{'arrayToObjectExpr'}) ? $input->{'arrayToObjectExpr'} : null;
         $preservePropertyNames = isset($input->{'preservePropertyNames'}) ? $input->{'preservePropertyNames'} : null;
         $noGetters = isset($input->{'noGetters'}) ? $input->{'noGetters'} : null;
         $noSetters = isset($input->{'noSetters'}) ? $input->{'noSetters'} : null;
         $mutableSetters = isset($input->{'mutableSetters'}) ? match (true) {
-            is_bool($input->{'mutableSetters'}) => (bool)($input->{'mutableSetters'}),
+            is_bool($input->{'mutableSetters'}) => (bool)$input->{'mutableSetters'},
             in_array($input->{'mutableSetters'}, array (
           0 => 'chainable',
         ), true) => $input->{'mutableSetters'},
@@ -737,7 +790,8 @@ class SpecificationOptions
         $obj->cleanTargetDirectory = $cleanTargetDirectory;
         $obj->disableStrictTypes = $disableStrictTypes;
         $obj->inlineAllofReferences = $inlineAllofReferences;
-        $obj->newValidatorClassExpr = $newValidatorClassExpr;
+        $obj->newValidatorExpr = $newValidatorExpr;
+        $obj->arrayToObjectExpr = $arrayToObjectExpr;
         $obj->preservePropertyNames = $preservePropertyNames;
         $obj->noGetters = $noGetters;
         $obj->noSetters = $noSetters;
@@ -777,8 +831,11 @@ class SpecificationOptions
         if (isset($this->inlineAllofReferences)) {
             $output['inlineAllofReferences'] = $this->inlineAllofReferences;
         }
-        if (isset($this->newValidatorClassExpr)) {
-            $output['newValidatorClassExpr'] = $this->newValidatorClassExpr;
+        if (isset($this->newValidatorExpr)) {
+            $output['newValidatorExpr'] = $this->newValidatorExpr;
+        }
+        if (isset($this->arrayToObjectExpr)) {
+            $output['arrayToObjectExpr'] = $this->arrayToObjectExpr;
         }
         if (isset($this->preservePropertyNames)) {
             $output['preservePropertyNames'] = $this->preservePropertyNames;
@@ -839,8 +896,11 @@ class SpecificationOptions
         if (isset($this->inlineAllofReferences)) {
             $output->{'inlineAllofReferences'} = $this->inlineAllofReferences;
         }
-        if (isset($this->newValidatorClassExpr)) {
-            $output->{'newValidatorClassExpr'} = $this->newValidatorClassExpr;
+        if (isset($this->newValidatorExpr)) {
+            $output->{'newValidatorExpr'} = $this->newValidatorExpr;
+        }
+        if (isset($this->arrayToObjectExpr)) {
+            $output->{'arrayToObjectExpr'} = $this->arrayToObjectExpr;
         }
         if (isset($this->preservePropertyNames)) {
             $output->{'preservePropertyNames'} = $this->preservePropertyNames;

@@ -33,6 +33,7 @@ final class GenerateCommand extends Command
         $this->addOption("disable-strict-types", null, InputOption::VALUE_NONE, "Do not emit strict_types declaration");
         $this->addOption("inline-allof", null, InputOption::VALUE_NONE, "Inline allOf references");
         $this->addOption("validator-expr", null, InputOption::VALUE_REQUIRED, "Expression used to create validator instance");
+        $this->addOption("arr-to-obj-expr", null, InputOption::VALUE_REQUIRED, "Expression used to recursively convert arrays to objects");
         $this->addOption("preserve-property-names", null, InputOption::VALUE_NONE, "Do not convert property names to camelCase");
         $this->addOption("no-getters", null, InputOption::VALUE_NONE, "Do not generate getter methods");
         $this->addOption("no-setters", null, InputOption::VALUE_NONE, "Do not generate withX()/withoutX() methods");
@@ -52,14 +53,15 @@ final class GenerateCommand extends Command
             'cleanTargetDirectory'              => $input->getOption('clean-dir'),
             'disableStrictTypes'                => $input->getOption('disable-strict-types'),
             'inlineAllofReferences'             => $input->getOption('inline-allof'),
-            'newValidatorClassExpr'             => $input->getOption('validator-expr'),
+            'newValidatorExpr'             => $input->getOption('validator-expr'),
+            'arrayToObjectExpr'                 => $input->getOption('arr-to-obj-expr'),
             'preservePropertyNames'             => $input->getOption('preserve-property-names'),
             'noGetters'                         => $input->getOption('no-getters'),
             'noSetters'                         => $input->getOption('no-setters'),
             'mutableSetters'                    => $input->hasParameterOption('--mutable-setters')
                 ? ($input->getOption('mutable-setters') ?: true)
                 : null,
-            'noSchemaMetadata'            => $input->getOption('no-schema-metadata'),
+            'noSchemaMetadata'                  => $input->getOption('no-schema-metadata'),
             'singleLineSchema'                  => $input->getOption('single-line-schema'),
             'noEnums'                           => $input->getOption('no-enums'),
         ];
