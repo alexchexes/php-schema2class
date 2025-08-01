@@ -119,9 +119,9 @@ class Cat
         if ($materializeDefaults) {
             foreach (self::$_defaults as $__k => $__v) {
                 if (!property_exists($input, (string) $__k)) {
-                   $input->{$__k} = ($__v['type'] ?? null) === 'object'
-                       ? \JsonSchema\Validator::arrayToObjectRecursive($__v['default'])
-                       : $__v['default'];
+                    $input->{$__k} = ($__v['type'] ?? null) === 'object'
+                        ? \JsonSchema\Validator::arrayToObjectRecursive($__v['default'])
+                        : $__v['default'];
                 }
             }
         }
