@@ -100,11 +100,11 @@ class Baz
      * @return Baz Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true): Baz
+    public static function fromInput($input, bool $validate = true): Baz
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($input)
+                'Input to fromInput must be array or object, got ' . gettype($input)
             );
         }
 
@@ -113,7 +113,7 @@ class Baz
             static::validateInput($input);
         }
 
-        $grox = isset($input->{'grox'}) ? ((Bar::validateInput($input->{'grox'}, true)) ? Bar::buildFromInput($input->{'grox'}, $validate) : (((Foo::validateInput($input->{'grox'}, true)) ? Foo::buildFromInput($input->{'grox'}, $validate) : (null)))) : null;
+        $grox = isset($input->{'grox'}) ? ((Bar::validateInput($input->{'grox'}, true)) ? Bar::fromInput($input->{'grox'}, $validate) : (((Foo::validateInput($input->{'grox'}, true)) ? Foo::fromInput($input->{'grox'}, $validate) : (null)))) : null;
 
         $obj = new self();
         $obj->grox = $grox;

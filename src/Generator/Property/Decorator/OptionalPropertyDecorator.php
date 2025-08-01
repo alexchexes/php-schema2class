@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class\Generator\Property\Decorator;
 
 use Helmich\Schema2Class\Generator\Class\ClassGenerator;
+use Helmich\Schema2Class\Generator\Class\Method\SerializeMethodFactory;
 use Helmich\Schema2Class\Generator\Class\PropertyNames;
 use Helmich\Schema2Class\Generator\Property\RenameablePropertyInterface;
 use Helmich\Schema2Class\Util\StringUtils;
@@ -40,10 +41,6 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator implements Ren
         return $existsCheck;
     }
 
-    /**
-     * @param string $inputVarName
-     * @return string
-     */
     public function convertInputToType(string $inputVarName, string $optionalsVarName): string
     {
         $key   = $this->key;
@@ -74,23 +71,22 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator implements Ren
         return $code;
     }
 
-    /**
-     * @param string $outputVarName
-     * @return string
-     */
-    public function convertTypeToArray(string $outputVarName): string
+    public function convertTypeToArray(): string
     {
         $name  = $this->inner->name();
+        $outputVarName = SerializeMethodFactory::OUTPUT_VAR_NAME;
 
         if ($this->isOptionalNullable) {
-            $check = "isset(\$this->{$name}) || array_key_exists('{$this->key}', \$this->".PropertyNames::OPTIONALS_PROP.")";
+            $OPTIONALS = PropertyNames::OPTIONALS;
+            $check = "isset(\$this->{$name}) || array_key_exists('{$this->key}', \$this->{$OPTIONALS})";
+
             $keyStr = var_export($this->key, true);
             $map = $this->generateOutputMappingExpr("\$this->{$name}");
             $inner = "\${$outputVarName}[{$keyStr}] = {$map};";
             return "if ({$check}) {\n" . StringUtils::indentCode($inner, 1) . "\n}";
         }
 
-        $inner = $this->inner->convertTypeToArray($outputVarName);
+        $inner = $this->inner->convertTypeToArray();
 
         if ($this->inner->allowsNull()) {
             return $inner;
@@ -99,19 +95,21 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator implements Ren
         return "if (isset(\$this->{$name})) {\n" . StringUtils::indentCode($inner, 1) . "\n}";
     }
 
-    public function convertTypeToStdClass(string $outputVarName): string
+    public function convertTypeToStdClass(): string
     {
         $name  = $this->inner->name();
+        $outputVarName = SerializeMethodFactory::OUTPUT_VAR_NAME;
 
         if ($this->isOptionalNullable) {
-            $check = "isset(\$this->{$name}) || array_key_exists('{$this->key}', \$this->".PropertyNames::OPTIONALS_PROP.")";
+            $OPTIONALS = PropertyNames::OPTIONALS;
+            $check = "isset(\$this->{$name}) || array_key_exists('{$this->key}', \$this->{$OPTIONALS})";
             $keyStr = var_export($this->key, true);
             $map = $this->generateOutputMappingExprStdClass("\$this->{$name}");
             $inner = "\${$outputVarName}->{{$keyStr}} = {$map};";
             return "if ({$check}) {\n" . StringUtils::indentCode($inner, 1) . "\n}";
         }
 
-        $inner = $this->inner->convertTypeToStdClass($outputVarName);
+        $inner = $this->inner->convertTypeToStdClass();
 
         if ($this->inner->allowsNull()) {
             return $inner;
@@ -120,9 +118,6 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator implements Ren
         return "if (isset(\$this->{$name})) {\n" . StringUtils::indentCode($inner, 1) . "\n}";
     }
 
-    /**
-     * @return string|null
-     */
     public function cloneProperty(): ?string
     {
         $name  = $this->name();

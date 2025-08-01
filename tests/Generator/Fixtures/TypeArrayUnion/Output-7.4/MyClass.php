@@ -74,11 +74,11 @@ class MyClass
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true): MyClass
+    public static function fromInput($input, bool $validate = true): MyClass
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($input)
+                'Input to fromInput must be array or object, got ' . gettype($input)
             );
         }
 
@@ -88,7 +88,7 @@ class MyClass
         }
 
         if ((MyClassFooAlternative2::validateInput($input->{'foo'}, true))) {
-            $foo = MyClassFooAlternative2::buildFromInput($input->{'foo'}, $validate);
+            $foo = MyClassFooAlternative2::fromInput($input->{'foo'}, $validate);
         } else {
             $foo = $input->{'foo'};
         }

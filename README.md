@@ -217,10 +217,10 @@ Next, use the generated classes in your code:
 $someApiResponse = '...';
 $userData = json_decode($someApiResponse, true);
 
-$user = \Example\Basic\User::buildFromInput($userData);
+$user = \Example\Basic\User::fromInput($userData);
 
 // or, if for some reason you don't care about validation:
-$user = \Example\Basic\User::buildFromInput($userData, false);
+$user = \Example\Basic\User::fromInput($userData, false);
 
 // Access object properties via getters:
 echo "User name:   " . $user->getName();
@@ -272,10 +272,10 @@ The generated classes offer:
 - Class/enum names for sub‑objects are derived from property names.
 - Classes generated for array items are suffixed with "Item". See [`Example\Advanced\User::$hobbies`](examples/advanced/generated/User.php#L203).
 - `oneOf`/`anyOf` alternatives are suffixed with "AlternativeX", where _X_ is an incrementing integer. See [`Example\Advanced\User::$payment`](examples/advanced/generated/User.php#L188).
-- The static method `buildFromInput(array $data[, bool $validate = true])` accepts an array (for example the result of `json_decode(..., true)`), validates it against the schema, and creates the full object graph. No additional mapping is required.
-  **Note:** Do not instantiate the class directly; always use `buildFromInput(...)`.
-- To disable validation, pass `false` as the second argument of `buildFromInput($data, false)`. Use at your own risk.
-- If your schema has default values and you want to use them to populate the object properties that are not set in the input, pass the parameter `materializeDefaults = true` to `buildFromInput`. The parameter is generated only when the schema has default values.
+- The static method `fromInput(array $data[, bool $validate = true])` accepts an array (for example the result of `json_decode(..., true)`), validates it against the schema, and creates the full object graph. No additional mapping is required.
+  **Note:** Do not instantiate the class directly; always use `fromInput(...)`.
+- To disable validation, pass `false` as the second argument of `fromInput($data, false)`. Use at your own risk.
+- If your schema has default values and you want to use them to populate the object properties that are not set in the input, pass the parameter `materializeDefaults = true` to `fromInput`. The parameter is generated only when the schema has default values.
 - The `toArray()` method returns a plain PHP array representation of the object
 - The `toStdClass()` method returns a plain PHP `stdClass` representation of the object (useful if you need to distinguish objects from arrays — for example, when the object is empty or has numeric keys)
 - Properties are immutable by default; use `withX()` (or `withoutX()` for optional values) to create modified copies. Pass `--mutable-setters` to generate classic `setX()` methods instead.

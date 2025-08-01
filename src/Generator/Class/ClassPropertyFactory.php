@@ -19,46 +19,48 @@ use Laminas\Code\Generator\DocBlockGenerator;
 class ClassPropertyFactory
 {
     public function __construct(
-      private GeneratorRequest $generatorRequest,
+      private GeneratorRequest $request,
       private array $schema,
+      private PropertyCollection $schemaProperties,
+      private array $defaults,
+      private bool $hasOptionalNullable,
     ) {}
 
-    public function generateProperties(
-      PropertyCollection $schemaProperties,
-      array $defaults,
-      bool $hasOptionalNullable,
-    )
+    /** 
+     * @return PropertyGenerator[]
+     */
+    public function generateProperties()
     {
-        $schemaProperty = $this->createValidationSchemaProperty();
+        $schemaProperty = $this->generateValidationSchemaProperty();
         $propertyGenerators[] = $schemaProperty;
 
-        if ($defaults) {
-            $propertyGenerators[] = $this->createDefaultsProperty($defaults);
+        if ($this->defaults) {
+            $propertyGenerators[] = $this->generateDefaultsProperty();
         }
 
-        if ($hasOptionalNullable) {
-            $propertyGenerators[] = $this->createProvidedOptionalsProperty();
+        if ($this->hasOptionalNullable) {
+            $propertyGenerators[] = $this->generateProvidedOptionalsProperty();
         }
 
         $propertyGenerators = [
             ...$propertyGenerators,
-            ...$this->createSchemaProperties($schemaProperties),
+            ...$this->generateSchemaProperties(),
         ];
 
         return $propertyGenerators;
     }
     
-    private function createValidationSchemaProperty(): PropertyGenerator
+    private function generateValidationSchemaProperty(): PropertyGenerator
     {
         // remove metadata like descriptions from schema if such option is set, but keep them
         // for building property documentation
         $validationSchema = $this->schema;
-        if ($this->generatorRequest->getOptions()->getNoSchemaMetadata()) {
+        if ($this->request->getOptions()->getNoSchemaMetadata()) {
             $this->stripSchemaMetadata($validationSchema);
         }
 
         $prop = new PropertyGenerator(
-            PropertyNames::SCHEMA_PROP,
+            PropertyNames::SCHEMA,
             $validationSchema,
             PropertyGenerator::FLAG_PRIVATE | PropertyGenerator::FLAG_STATIC,
         );
@@ -69,10 +71,10 @@ class ClassPropertyFactory
             [new GenericTag('var', 'array')],
         ));
 
-        if ($this->generatorRequest->isAtLeastPHP('7.4')) {
+        if ($this->request->isAtLeastPHP('7.4')) {
             $prop->setTypeHint('array');
         }
-        if ($this->generatorRequest->getOptions()->getSingleLineSchema()) {
+        if ($this->request->getOptions()->getSingleLineSchema()) {
             $prop->setSingleLineDefaultValue(true);
         }
 
@@ -105,11 +107,11 @@ class ClassPropertyFactory
         }
     }
 
-    private function createDefaultsProperty(array $defaults): PropertyGenerator
+    private function generateDefaultsProperty(): PropertyGenerator
     {
         $prop = new PropertyGenerator(
-            PropertyNames::DEFAULTS_PROP,
-            $defaults,
+            PropertyNames::DEFAULTS,
+            $this->defaults,
             PropertyGenerator::FLAG_PRIVATE | PropertyGenerator::FLAG_STATIC
         );
 
@@ -119,28 +121,28 @@ class ClassPropertyFactory
             [new GenericTag('var', 'array')],
         ));
 
-        if ($this->generatorRequest->isAtLeastPHP('7.4')) {
+        if ($this->request->isAtLeastPHP('7.4')) {
             $prop->setTypeHint('array');
         }
 
-        if ($this->generatorRequest->getOptions()->getSingleLineSchema()) {
+        if ($this->request->getOptions()->getSingleLineSchema()) {
             $prop->setSingleLineDefaultValue(true);
         }
 
         return $prop;
     }
 
-    private function createProvidedOptionalsProperty(): PropertyGenerator
+    private function generateProvidedOptionalsProperty(): PropertyGenerator
     {
-        $setVisibility = ($this->generatorRequest->getNoGetters() && $this->generatorRequest->getNoSetters())
+        $setVisibility = ($this->request->getNoGetters() && $this->request->getNoSetters())
             ? PropertyGenerator::FLAG_PUBLIC
             : PropertyGenerator::FLAG_PRIVATE;
 
-        $prop = new PropertyGenerator(PropertyNames::OPTIONALS_PROP, [] , $setVisibility);
+        $prop = new PropertyGenerator(PropertyNames::OPTIONALS, [] , $setVisibility);
         $prop->setDefaultValue([]);
         $prop->setSingleLineDefaultValue(true);
 
-        if ($this->generatorRequest->isAtLeastPHP("7.4")) {
+        if ($this->request->isAtLeastPHP("7.4")) {
             $prop->setTypeHint("array");
         }
 
@@ -156,15 +158,15 @@ class ClassPropertyFactory
     /**
      * @return PropertyGenerator[]
      */
-    private function createSchemaProperties(PropertyCollection $schemaProperties): array
+    private function generateSchemaProperties(): array
     {
         $propertyGenerators = [];
 
-        $visibility = $this->generatorRequest->getNoGetters()
+        $visibility = $this->request->getNoGetters()
             ? PropertyGenerator::FLAG_PUBLIC
             : PropertyGenerator::FLAG_PRIVATE;
 
-        foreach ($schemaProperties as $schemaProp) {
+        foreach ($this->schemaProperties as $schemaProp) {
             $schema     = $schemaProp->schema();
             $isOptional = false;
             $propGen    = new PropertyGenerator(
@@ -177,22 +179,22 @@ class ClassPropertyFactory
                 $isOptional = true;
             }
 
-            $tags = [new GenericTag("var", trim($schemaProp->typeAnnotation()))];
+            $docBlockTags = [new GenericTag("var", trim($schemaProp->typeAnnotation()))];
             if (PropertyQuery::isDeprecated($schemaProp)) {
-                $tags[] = new GenericTag("deprecated");
+                $docBlockTags[] = new GenericTag("deprecated");
             }
 
             $docBlock = new DocBlockGenerator(
                 $schema["description"] ?? null,
                 null,
-                $tags
+                $docBlockTags
             );
             $docBlock->setWordWrap(false);
 
             $propGen->setDocBlock($docBlock);
 
-            $typeHint = $schemaProp->typeHint($this->generatorRequest->getTargetPHPVersion());
-            if ($this->generatorRequest->isAtLeastPHP("7.4") && $typeHint !== null) {
+            $typeHint = $schemaProp->typeHint($this->request->getTargetPHPVersion());
+            if ($this->request->isAtLeastPHP("7.4") && $typeHint !== null) {
                 $propGen->setTypeHint($typeHint);
             }
 

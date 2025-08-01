@@ -85,14 +85,14 @@ class MyGenericStringNumberField
      * @return MyGenericStringNumberField Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): MyGenericStringNumberField
+    public static function fromInput(array|object $input, bool $validate = true): MyGenericStringNumberField
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $field = isset($input->{'field'}) ? MyGenericStringNumber::buildFromInput($input->{'field'}, $validate) : null;
+        $field = isset($input->{'field'}) ? MyGenericStringNumber::fromInput($input->{'field'}, $validate) : null;
 
         $obj = new self();
         $obj->field = $field;

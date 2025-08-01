@@ -29,7 +29,7 @@ class MyClass
             'input',
             'obj',
             'includeDefaults',
-            'buildFromInput',
+            'fromInput',
             'toArray',
             'validateInput',
             'schema',
@@ -123,7 +123,7 @@ class MyClass
                     ],
                 ],
             ],
-            'buildFromInput' => [
+            'fromInput' => [
                 'type' => 'string',
             ],
             'toArray' => [
@@ -379,7 +379,7 @@ class MyClass
     /**
      * @var string
      */
-    private $_buildFromInput;
+    private $_fromInput;
 
     /**
      * @var string
@@ -520,7 +520,7 @@ class MyClass
      * @param string $input
      * @param string $obj
      * @param string $includeDefaults
-     * @param string $_buildFromInput
+     * @param string $_fromInput
      * @param string $_toArray
      * @param string $_validateInput
      * @param string $_schema
@@ -542,7 +542,7 @@ class MyClass
      * @param string $__clone_1
      * @param string $files
      */
-    public function __construct($_GLOBALS_1, $_GLOBALS_2, $GLOBALS_1, $_SERVER_1, $_GET_1, $_POST_1, $_FILES_1, $_REQUEST_1, $_SESSION_1, $_ENV_1, $_COOKIE_1, $_php_errormsg, $_http_response_header, $_argc, $_argv, $input, $obj, $includeDefaults, $_buildFromInput, $_toArray, $_validateInput, $_schema, $_defaults_1, $_providedOptionals_1, $_clone, $__construct_1, $__destruct_1, $__get_1, $__set_1, $__call_1, $__isset_1, $__unset_1, $__sleep_1, $__wakeup_1, $__toString_1, $__invoke_1, $__debugInfo_1, $__clone_1, $files)
+    public function __construct($_GLOBALS_1, $_GLOBALS_2, $GLOBALS_1, $_SERVER_1, $_GET_1, $_POST_1, $_FILES_1, $_REQUEST_1, $_SESSION_1, $_ENV_1, $_COOKIE_1, $_php_errormsg, $_http_response_header, $_argc, $_argv, $input, $obj, $includeDefaults, $_fromInput, $_toArray, $_validateInput, $_schema, $_defaults_1, $_providedOptionals_1, $_clone, $__construct_1, $__destruct_1, $__get_1, $__set_1, $__call_1, $__isset_1, $__unset_1, $__sleep_1, $__wakeup_1, $__toString_1, $__invoke_1, $__debugInfo_1, $__clone_1, $files)
     {
         $this->_GLOBALS_1 = $_GLOBALS_1;
         $this->_GLOBALS_2 = $_GLOBALS_2;
@@ -562,7 +562,7 @@ class MyClass
         $this->input = $input;
         $this->obj = $obj;
         $this->includeDefaults = $includeDefaults;
-        $this->_buildFromInput = $_buildFromInput;
+        $this->_fromInput = $_fromInput;
         $this->_toArray = $_toArray;
         $this->_validateInput = $_validateInput;
         $this->_schema = $_schema;
@@ -756,9 +756,9 @@ class MyClass
     /**
      * @return string
      */
-    public function get_BuildFromInput()
+    public function get_FromInput()
     {
-        return $this->_buildFromInput;
+        return $this->_fromInput;
     }
 
     /**
@@ -1421,22 +1421,22 @@ class MyClass
     }
 
     /**
-     * @param string $_buildFromInput
+     * @param string $_fromInput
      * @return self
      * @param bool $validate
      */
-    public function with_BuildFromInput($_buildFromInput, bool $validate = true)
+    public function with_FromInput($_fromInput, bool $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($_buildFromInput, self::$schema['properties']['buildFromInput']);
+            $validator->validate($_fromInput, self::$schema['properties']['fromInput']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
         }
 
         $clone = clone $this;
-        $clone->_buildFromInput = $_buildFromInput;
+        $clone->_fromInput = $_fromInput;
 
         return $clone;
     }
@@ -1980,7 +1980,7 @@ class MyClass
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true, bool $materializeDefaults = false)
+    public static function fromInput($input, bool $validate = true, bool $materializeDefaults = false)
     {
         $_input = $input;
         unset($input);
@@ -1991,7 +1991,7 @@ class MyClass
 
         if (!is_array($_input) && !is_object($_input)) {
             throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($_input)
+                'Input to fromInput must be array or object, got ' . gettype($_input)
             );
         }
 
@@ -2037,8 +2037,8 @@ class MyClass
         }
         $obj = $_input->{'obj'};
         $includeDefaults = $_input->{'includeDefaults'};
-        $testObj = isset($_input->{'testObj'}) ? MyClassTestObj::buildFromInput($_input->{'testObj'}, $_validate, $_materializeDefaults) : null;
-        $_buildFromInput = $_input->{'buildFromInput'};
+        $testObj = isset($_input->{'testObj'}) ? MyClassTestObj::fromInput($_input->{'testObj'}, $_validate, $_materializeDefaults) : null;
+        $_fromInput = $_input->{'fromInput'};
         $_toArray = $_input->{'toArray'};
         $_validateInput = $_input->{'validateInput'};
         $_schema = $_input->{'schema'};
@@ -2060,11 +2060,11 @@ class MyClass
         $__debugInfo_1 = $_input->{'__debugInfo'};
         $__clone_1 = $_input->{'__clone'};
         $files = $_input->{'files'};
-        $ensureArgs1 = isset($_input->{'ensureArgs1'}) ? ((is_string($_input->{'ensureArgs1'})) ? $_input->{'ensureArgs1'} : (((MyClassEnsureArgs1Alternative2::validateInput($_input->{'ensureArgs1'}, true)) ? MyClassEnsureArgs1Alternative2::buildFromInput($_input->{'ensureArgs1'}, $_validate, $_materializeDefaults) : (((MyClassEnsureArgs1Alternative1::validateInput($_input->{'ensureArgs1'}, true)) ? MyClassEnsureArgs1Alternative1::buildFromInput($_input->{'ensureArgs1'}, $_validate, $_materializeDefaults) : (null)))))) : null;
-        $ensureArgs2 = isset($_input->{'ensureArgs2'}) ? MyClassEnsureArgs2::buildFromInput($_input->{'ensureArgs2'}, $_validate, $_materializeDefaults) : null;
-        $ensureArgs3 = isset($_input->{'ensureArgs3'}) ? array_map(function($i) use ($_validate, $_materializeDefaults) { return MyClassEnsureArgs3Item::buildFromInput($i, $_validate, $_materializeDefaults); }, $_input->{'ensureArgs3'}) : null;
+        $ensureArgs1 = isset($_input->{'ensureArgs1'}) ? ((is_string($_input->{'ensureArgs1'})) ? $_input->{'ensureArgs1'} : (((MyClassEnsureArgs1Alternative2::validateInput($_input->{'ensureArgs1'}, true)) ? MyClassEnsureArgs1Alternative2::fromInput($_input->{'ensureArgs1'}, $_validate, $_materializeDefaults) : (((MyClassEnsureArgs1Alternative1::validateInput($_input->{'ensureArgs1'}, true)) ? MyClassEnsureArgs1Alternative1::fromInput($_input->{'ensureArgs1'}, $_validate, $_materializeDefaults) : (null)))))) : null;
+        $ensureArgs2 = isset($_input->{'ensureArgs2'}) ? MyClassEnsureArgs2::fromInput($_input->{'ensureArgs2'}, $_validate, $_materializeDefaults) : null;
+        $ensureArgs3 = isset($_input->{'ensureArgs3'}) ? array_map(function($i) use ($_validate, $_materializeDefaults) { return MyClassEnsureArgs3Item::fromInput($i, $_validate, $_materializeDefaults); }, $_input->{'ensureArgs3'}) : null;
 
-        $_obj = new self($_GLOBALS_1, $_GLOBALS_2, $GLOBALS_1, $_SERVER_1, $_GET_1, $_POST_1, $_FILES_1, $_REQUEST_1, $_SESSION_1, $_ENV_1, $_COOKIE_1, $_php_errormsg, $_http_response_header, $_argc, $_argv, $input, $obj, $includeDefaults, $_buildFromInput, $_toArray, $_validateInput, $_schema, $_defaults_1, $_providedOptionals_1, $_clone, $__construct_1, $__destruct_1, $__get_1, $__set_1, $__call_1, $__isset_1, $__unset_1, $__sleep_1, $__wakeup_1, $__toString_1, $__invoke_1, $__debugInfo_1, $__clone_1, $files);
+        $_obj = new self($_GLOBALS_1, $_GLOBALS_2, $GLOBALS_1, $_SERVER_1, $_GET_1, $_POST_1, $_FILES_1, $_REQUEST_1, $_SESSION_1, $_ENV_1, $_COOKIE_1, $_php_errormsg, $_http_response_header, $_argc, $_argv, $input, $obj, $includeDefaults, $_fromInput, $_toArray, $_validateInput, $_schema, $_defaults_1, $_providedOptionals_1, $_clone, $__construct_1, $__destruct_1, $__get_1, $__set_1, $__call_1, $__isset_1, $__unset_1, $__sleep_1, $__wakeup_1, $__toString_1, $__invoke_1, $__debugInfo_1, $__clone_1, $files);
         $_obj->validate = $validate;
         $_obj->materializeDefaults = $materializeDefaults;
         $_obj->testObj = $testObj;
@@ -2112,7 +2112,7 @@ class MyClass
         if (isset($this->testObj)) {
             $output['testObj'] = ($this->testObj)->toArray($includeDefaults);
         }
-        $output['buildFromInput'] = $this->_buildFromInput;
+        $output['fromInput'] = $this->_fromInput;
         $output['toArray'] = $this->_toArray;
         $output['validateInput'] = $this->_validateInput;
         $output['schema'] = $this->_schema;
@@ -2197,7 +2197,7 @@ class MyClass
         if (isset($this->testObj)) {
             $output->{'testObj'} = ($this->testObj)->toStdClass($includeDefaults);
         }
-        $output->{'buildFromInput'} = $this->_buildFromInput;
+        $output->{'fromInput'} = $this->_fromInput;
         $output->{'toArray'} = $this->_toArray;
         $output->{'validateInput'} = $this->_validateInput;
         $output->{'schema'} = $this->_schema;

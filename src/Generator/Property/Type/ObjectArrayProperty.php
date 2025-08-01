@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Property\Type;
 
+use Helmich\Schema2Class\Generator\Class\Method\SerializeMethodFactory;
+use Helmich\Schema2Class\Generator\Class\MethodNames;
 use Helmich\Schema2Class\Generator\GeneratorException;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\PropertyBuilder;
@@ -77,29 +79,33 @@ class ObjectArrayProperty extends AbstractProperty
         return true;
     }
 
-    public function convertTypeToArray(string $outputVarName): string
+    public function convertTypeToArray(): string
     {
         $name = $this->name;
         $key  = $this->key;
         $keyStr = var_export($key, true);
         $st   = $this->subTypeName();
+        $outputVarName = SerializeMethodFactory::OUTPUT_VAR_NAME;
 
         if ($this->itemType instanceof MixedProperty) {
             return "\${$outputVarName}[{$keyStr}] = array_map(fn (\$i) => \$i, \$this->{$name});";
         }
 
+        $TO_ARRAY = MethodNames::TO_ARRAY;
+
         if ($this->generatorRequest->isAtLeastPHP('7.4')) {
-            return "\${$outputVarName}[{$keyStr}] = array_map(fn ($st \$i) => \$i->toArray(), \$this->{$name});";
+            return "\${$outputVarName}[{$keyStr}] = array_map(fn ($st \$i) => \$i->{$TO_ARRAY}(), \$this->{$name});";
         }
-        return "\${$outputVarName}[{$keyStr}] = array_map(function($st \$i) { return \$i->toArray(); }, \$this->{$name});";
+        return "\${$outputVarName}[{$keyStr}] = array_map(function($st \$i) { return \$i->{$TO_ARRAY}(); }, \$this->{$name});";
     }
 
-    public function convertTypeToStdClass(string $outputVarName): string
+    public function convertTypeToStdClass(): string
     {
         $name = $this->name;
         $key  = $this->key;
         $keyStr = var_export($key, true);
         $st   = $this->subTypeName();
+        $outputVarName = SerializeMethodFactory::OUTPUT_VAR_NAME;
 
         if ($this->itemType instanceof MixedProperty) {
             return "\${$outputVarName}->{{$keyStr}} = array_map(fn (\$i) => \$i, \$this->{$name});";
@@ -107,10 +113,12 @@ class ObjectArrayProperty extends AbstractProperty
 
         $inclDefaultsArg = $this->generatorRequest->getCurrReqHasDefaults() ? '$includeDefaults' : '';
 
+        $TO_STD_CLASS = MethodNames::TO_STD_CLASS;
+
         if ($this->generatorRequest->isAtLeastPHP('7.4')) {
-            return "\${$outputVarName}->{{$keyStr}} = array_map(fn ($st \$i) => \$i->toStdClass({$inclDefaultsArg}), \$this->{$name});";
+            return "\${$outputVarName}->{{$keyStr}} = array_map(fn ($st \$i) => \$i->{$TO_STD_CLASS}({$inclDefaultsArg}), \$this->{$name});";
         }
-        return "\${$outputVarName}->{{$keyStr}} = array_map(function($st \$i) { return \$i->toStdClass({$inclDefaultsArg}); }, \$this->{$name});";
+        return "\${$outputVarName}->{{$keyStr}} = array_map(function($st \$i) { return \$i->{$TO_STD_CLASS}({$inclDefaultsArg}); }, \$this->{$name});";
     }
 
     /**
@@ -157,7 +165,8 @@ class ObjectArrayProperty extends AbstractProperty
         }
 
         $st = $this->subTypeName();
-        return "is_array({$expr}) && count(array_filter({$expr}, function({$st} \$item) {return {$st}::validateInput(\$item, true)};)) === count({$expr})";
+        $VALIDATE_INPUT = MethodNames::VALIDATE_INPUT;
+        return "is_array({$expr}) && count(array_filter({$expr}, function({$st} \$item) {return {$st}::{$VALIDATE_INPUT}(\$item, true)};)) === count({$expr})";
     }
 
     public function generateInputMappingExpr(string $expr, bool $asserted = false): string

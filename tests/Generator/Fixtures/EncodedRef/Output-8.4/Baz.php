@@ -160,16 +160,16 @@ class Baz
      * @return Baz Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): Baz
+    public static function fromInput(array|object $input, bool $validate = true): Baz
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $a = isset($input->{'a'}) ? FooTest::buildFromInput($input->{'a'}, $validate) : null;
-        $b = isset($input->{'b'}) ? FooTest::buildFromInput($input->{'b'}, $validate) : null;
-        $c = isset($input->{'c'}) ? BarTest::buildFromInput($input->{'c'}, $validate) : null;
+        $a = isset($input->{'a'}) ? FooTest::fromInput($input->{'a'}, $validate) : null;
+        $b = isset($input->{'b'}) ? FooTest::fromInput($input->{'b'}, $validate) : null;
+        $c = isset($input->{'c'}) ? BarTest::fromInput($input->{'c'}, $validate) : null;
 
         $obj = new self();
         $obj->a = $a;

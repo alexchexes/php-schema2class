@@ -109,7 +109,7 @@ class SchemaToClassTest extends TestCase
             $optsYaml = [];
             if (file_exists($optionsFile)) {
                 $optsYaml = Yaml::parseFile($optionsFile);
-                $opts = SpecificationOptions::buildFromInput($optsYaml);
+                $opts = SpecificationOptions::fromInput($optsYaml);
             }
 
             if (!isset($optsYaml['inlineAllofReferences'])) {
@@ -234,7 +234,7 @@ class SchemaToClassTest extends TestCase
                     $optsData['inlineAllofReferences'] = true;
                 }
                 $optsData['targetPHPVersion'] = $version;
-                $specOpts = SpecificationOptions::buildFromInput($optsData);
+                $specOpts = SpecificationOptions::fromInput($optsData);
 
                 $nsName = $fixtureName . '_' . str_replace('.', '_', $version);
                 $testCases[$fixtureName . '-' . $version] = [
@@ -371,7 +371,7 @@ class SchemaToClassTest extends TestCase
 
                 foreach ($classInputs as $inputName => $input) {
                     try {
-                        $obj = $fqcn::buildFromInput($input);
+                        $obj = $fqcn::fromInput($input);
                     } catch (\Throwable $th) {
                         throw new \Exception("Failed to build {$fqcn} from input {$inputName}", 0, $th);
                     }
@@ -395,7 +395,7 @@ class SchemaToClassTest extends TestCase
                         "Object returned from {$fqcn}->toStdClass() doesn't match input from file '{$inputName}'."
                     );
                     try {
-                        $fqcn::buildFromInput($actualObject);
+                        $fqcn::fromInput($actualObject);
                     } catch (\Throwable $th) {
                         throw new \Exception("Failed to build {$fqcn} from input {$inputName} after the round trip", 0, $th);
                     }
@@ -527,7 +527,7 @@ class SchemaToClassTest extends TestCase
         $inputMaterialize = json_decode(file_get_contents($inputFileMaterialize));
 
         try {
-            $obj1 = $fqcn::buildFromInput($inputMaterialize, true, true);
+            $obj1 = $fqcn::fromInput($inputMaterialize, true, true);
         } catch (\Throwable $th) {
             throw new \Exception("Failed to build {$fqcn} from file '$inputFileMaterialize'", 0, $th);
         }
@@ -555,7 +555,7 @@ class SchemaToClassTest extends TestCase
         $inputInclude = json_decode(file_get_contents($inputFileInclude));
 
         try {
-            $obj2 = $fqcn::buildFromInput($inputInclude);
+            $obj2 = $fqcn::fromInput($inputInclude);
         } catch (\Throwable $th) {
             throw new \Exception("Failed to build {$fqcn} from file '$inputFileInclude'", 0, $th);
         }

@@ -53,10 +53,10 @@ EOCODE;
 
     public function testConvertTypeToArray()
     {
-        $result = $this->property->convertTypeToArray('variable');
+        $result = $this->property->convertTypeToArray();
 
         $expected = <<<'EOCODE'
-$variable['myPropertyName'] = ($this->myPropertyName)->format(\DateTime::ATOM);
+$output['myPropertyName'] = ($this->myPropertyName)->format(\DateTime::ATOM);
 EOCODE;
 
         assertSame($expected, $result);

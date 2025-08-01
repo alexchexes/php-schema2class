@@ -66,31 +66,21 @@ class DefaultPropertyDecorator implements PropertyDecoratorInterface, Renameable
         return "\${$name} = {$defaultExp};\nif (isset($accessor)) {\n" . StringUtils::indentCode($inner, 1) . "\n}";
     }
 
-    /**
-     * @param string $outputVarName
-     * @return string
-     */
-    public function convertTypeToArray(string $outputVarName): string
+    public function convertTypeToArray(): string
     {
-        return $this->inner->convertTypeToArray($outputVarName);
+        return $this->inner->convertTypeToArray();
     }
 
-    public function convertTypeToStdClass(string $outputVarName): string
+    public function convertTypeToStdClass(): string
     {
-        return $this->inner->convertTypeToStdClass($outputVarName);
+        return $this->inner->convertTypeToStdClass();
     }
 
-    /**
-     * @return void
-     */
     public function generateSubTypes(WriterInterface $writer, OutputInterface $output): void
     {
         $this->inner->generateSubTypes($writer, $output);
     }
 
-    /**
-     * @return string
-     */
     public function typeAnnotation(): string
     {
         return $this->inner->typeAnnotation();
@@ -106,17 +96,11 @@ class DefaultPropertyDecorator implements PropertyDecoratorInterface, Renameable
         return $this->inner->cloneProperty();
     }
 
-    /**
-     * @return array
-     */
     public function schema(): array
     {
         return $this->inner->schema();
     }
 
-    /**
-     * @return string
-     */
     public function key(): string
     {
         return $this->inner->key();
@@ -132,9 +116,6 @@ class DefaultPropertyDecorator implements PropertyDecoratorInterface, Renameable
         return $this->inner->description();
     }
 
-    /**
-     * @return PropertyInterface
-     */
     public function unwrap(): PropertyInterface
     {
         return $this->inner;

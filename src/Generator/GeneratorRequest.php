@@ -53,13 +53,13 @@ class GeneratorRequest
     private array $referenceLookup = [];
     
     /**
-     * Name of the $validate argument in the currently generated buildFromInput method.
+     * Name of the $validate argument in the currently generated fromInput method.
      * This is set from the Generator during generation.
      */
-    private string $currValidateArgAlias = 'validate';
+    private string $currValidateArgAlias;
 
     /**
-     * Name of the $materializeDefaults argument in the currently generated buildFromInput method
+     * Name of the $materializeDefaults argument in the currently generated fromInput method
      * (null when the argument is not generated). This is set from the Generator.
      */
     private ?string $currMaterializeArgAlias = null;
@@ -67,7 +67,7 @@ class GeneratorRequest
     /**
      * Whether the object schema from which the class is currently generated has defaults.
      */
-    private bool $currReqHasDefaults = false;
+    private bool $currReqHasDefaults;
 
     public static function normalizeTargetVersion(int|string $version): string
     {

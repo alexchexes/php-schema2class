@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Property\Type;
 
+use Helmich\Schema2Class\Generator\Class\MethodNames;
 use Helmich\Schema2Class\Generator\GeneratorException;
 use Helmich\Schema2Class\Generator\SchemaToClass;
 use Helmich\Schema2Class\Writer\WriterInterface;
@@ -66,7 +67,8 @@ class NestedObjectProperty extends AbstractProperty
 
     public function generateInputAssertionExpr(string $expr): string
     {
-        return "{$this->subTypeName()}::validateInput({$expr}, true)";
+        $VALIDATE_INPUT = MethodNames::VALIDATE_INPUT;
+        return "{$this->subTypeName()}::{$VALIDATE_INPUT}({$expr}, true)";
     }
 
     public function generateInputMappingExpr(string $expr, bool $asserted = false): string
@@ -79,20 +81,24 @@ class NestedObjectProperty extends AbstractProperty
             $args[] = '$' . $materializeArg;
         }
         $argsStr = implode(', ', $args);
-        
-        return "{$this->subTypeName()}::buildFromInput({$argsStr})";
+
+        $FROM_INPUT = MethodNames::FROM_INPUT;
+
+        return "{$this->subTypeName()}::{$FROM_INPUT}({$argsStr})";
     }
 
     public function generateOutputMappingExpr(string $expr): string
     {
         $inclDefaultsArg = $this->generatorRequest->getCurrReqHasDefaults() ? '$includeDefaults' : '';
-        return "({$expr})->toArray({$inclDefaultsArg})";
+        $TO_ARRAY = MethodNames::TO_ARRAY;
+        return "({$expr})->{$TO_ARRAY}({$inclDefaultsArg})";
     }
 
     public function generateOutputMappingExprStdClass(string $expr): string
     {
         $inclDefaultsArg = $this->generatorRequest->getCurrReqHasDefaults() ? '$includeDefaults' : '';
-        return "({$expr})->toStdClass({$inclDefaultsArg})";
+        $TO_STD_CLASS = MethodNames::TO_STD_CLASS;
+        return "({$expr})->{$TO_STD_CLASS}({$inclDefaultsArg})";
     }
 
     public function generateCloneExpr(string $expr): string

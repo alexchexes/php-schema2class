@@ -142,7 +142,7 @@ class MyClass
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): MyClass
+    public static function fromInput(array|object $input, bool $validate = true): MyClass
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -150,7 +150,7 @@ class MyClass
         }
 
         $id = (int)$input->{'id'};
-        $address = isset($input->{'address'}) ? Address::buildFromInput($input->{'address'}, $validate) : null;
+        $address = isset($input->{'address'}) ? Address::fromInput($input->{'address'}, $validate) : null;
 
         $obj = new self($id);
         $obj->address = $address;

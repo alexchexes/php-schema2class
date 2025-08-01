@@ -78,7 +78,7 @@ class MyClass
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): MyClass
+    public static function fromInput(array|object $input, bool $validate = true): MyClass
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -86,7 +86,7 @@ class MyClass
         }
 
         $foo = isset($input->{'foo'}) ? array_map(
-            fn(array|object $i): \Helmich\Schema2Class\Example\CustomerAddress => \Helmich\Schema2Class\Example\CustomerAddress::buildFromInput($i, $validate),
+            fn(array|object $i): \Helmich\Schema2Class\Example\CustomerAddress => \Helmich\Schema2Class\Example\CustomerAddress::fromInput($i, $validate),
             $input->{'foo'}
         ) : null;
 

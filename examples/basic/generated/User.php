@@ -150,11 +150,11 @@ class User
      * @return User Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true): User
+    public static function fromInput($input, bool $validate = true): User
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($input)
+                'Input to fromInput must be array or object, got ' . gettype($input)
             );
         }
 
@@ -164,7 +164,7 @@ class User
         }
 
         $name = $input->{'name'};
-        $address = isset($input->{'address'}) ? Address::buildFromInput($input->{'address'}, $validate) : null;
+        $address = isset($input->{'address'}) ? Address::fromInput($input->{'address'}, $validate) : null;
         $status = ($input->{'status'} !== null) ? ($input->{'status'}) : null;
 
         $obj = new self($name, $status);

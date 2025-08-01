@@ -53,10 +53,10 @@ EOCODE;
     {
         $underTest = new PrimitiveArrayProperty('myPropertyName', ['type' => 'array'], $this->generatorRequest);
 
-        $result = $underTest->convertTypeToArray('variable');
+        $result = $underTest->convertTypeToArray();
 
         $expected = <<<'EOCODE'
-$variable['myPropertyName'] = $this->myPropertyName;
+$output['myPropertyName'] = $this->myPropertyName;
 EOCODE;
 
         assertSame($expected, $result);

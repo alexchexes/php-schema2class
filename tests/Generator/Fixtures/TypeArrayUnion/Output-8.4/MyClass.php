@@ -74,7 +74,7 @@ class MyClass
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): MyClass
+    public static function fromInput(array|object $input, bool $validate = true): MyClass
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -83,7 +83,7 @@ class MyClass
 
         $foo = match (true) {
             is_string($input->{'foo'}) => $input->{'foo'},
-            MyClassFooAlternative2::validateInput($input->{'foo'}, true) => MyClassFooAlternative2::buildFromInput($input->{'foo'}, $validate),
+            MyClassFooAlternative2::validateInput($input->{'foo'}, true) => MyClassFooAlternative2::fromInput($input->{'foo'}, $validate),
             default => throw new \InvalidArgumentException("could not build property 'foo' from JSON"),
         };
 

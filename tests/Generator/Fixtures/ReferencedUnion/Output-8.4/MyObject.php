@@ -91,7 +91,7 @@ class MyObject
      * @return MyObject Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): MyObject
+    public static function fromInput(array|object $input, bool $validate = true): MyObject
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {

@@ -128,7 +128,7 @@ class MyClassGooks
      * @return MyClassGooks Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): MyClassGooks
+    public static function fromInput(array|object $input, bool $validate = true): MyClassGooks
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {

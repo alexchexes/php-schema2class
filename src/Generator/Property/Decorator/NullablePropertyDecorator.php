@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class\Generator\Property\Decorator;
 
 use Composer\Semver\Semver;
+use Helmich\Schema2Class\Generator\Class\Method\SerializeMethodFactory;
 use Helmich\Schema2Class\Generator\Property\Type\NullProperty;
 use Helmich\Schema2Class\Generator\Property\Type\PropertyInterface;
 use Helmich\Schema2Class\Generator\Property\Type\StringProperty;
@@ -98,14 +99,14 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface, Renameabl
         return "\${$name} = {$expr};";
     }
 
-    public function convertTypeToArray(string $outputVarName): string
+    public function convertTypeToArray(): string
     {
-        return $this->inner->convertTypeToArray($outputVarName);
+        return $this->inner->convertTypeToArray();
     }
 
-    public function convertTypeToStdClass(string $outputVarName): string
+    public function convertTypeToStdClass(): string
     {
-        return $this->inner->convertTypeToStdClass($outputVarName);
+        return $this->inner->convertTypeToStdClass();
     }
 
     public function typeAnnotation(): string

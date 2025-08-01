@@ -552,7 +552,7 @@ class User
      * @return User Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): User
+    public static function fromInput(array|object $input, bool $validate = true): User
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -564,16 +564,16 @@ class User
         $firstName = $input->{'firstName'};
         $lastName = $input->{'lastName'};
         $email = isset($input->{'email'}) ? $input->{'email'} : null;
-        $billing = isset($input->{'billing'}) ? UserBilling::buildFromInput($input->{'billing'}, $validate) : null;
+        $billing = isset($input->{'billing'}) ? UserBilling::fromInput($input->{'billing'}, $validate) : null;
         $payment = isset($input->{'payment'}) ? match (true) {
-            UserPaymentAlternative1::validateInput($input->{'payment'}, true) => UserPaymentAlternative1::buildFromInput($input->{'payment'}, $validate),
-            UserPaymentAlternative2::validateInput($input->{'payment'}, true) => UserPaymentAlternative2::buildFromInput($input->{'payment'}, $validate),
+            UserPaymentAlternative1::validateInput($input->{'payment'}, true) => UserPaymentAlternative1::fromInput($input->{'payment'}, $validate),
+            UserPaymentAlternative2::validateInput($input->{'payment'}, true) => UserPaymentAlternative2::fromInput($input->{'payment'}, $validate),
             is_string($input->{'payment'}) => $input->{'payment'},
             default => null,
         } : null;
-        $address = isset($input->{'address'}) ? UserAddress::buildFromInput($input->{'address'}, $validate) : null;
+        $address = isset($input->{'address'}) ? UserAddress::fromInput($input->{'address'}, $validate) : null;
         $tags = isset($input->{'tags'}) ? $input->{'tags'} : null;
-        $hobbies = isset($input->{'hobbies'}) ? array_map(fn (array|object $i): UserHobbiesItem => UserHobbiesItem::buildFromInput($i, $validate), $input->{'hobbies'}) : null;
+        $hobbies = isset($input->{'hobbies'}) ? array_map(fn (array|object $i): UserHobbiesItem => UserHobbiesItem::fromInput($i, $validate), $input->{'hobbies'}) : null;
 
         $obj = new self($firstName, $lastName);
         $obj->createdAt = $createdAt;

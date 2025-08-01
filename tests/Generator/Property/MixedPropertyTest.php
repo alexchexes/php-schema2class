@@ -54,10 +54,10 @@ EOCODE;
 
     public function testConvertTypeToArray()
     {
-        $result = $this->underTest->convertTypeToArray('variable');
+        $result = $this->underTest->convertTypeToArray();
 
         $expected = <<<'EOCODE'
-$variable['myPropertyName'] = $this->myPropertyName;
+$output['myPropertyName'] = $this->myPropertyName;
 EOCODE;
 
         assertSame($expected, $result);

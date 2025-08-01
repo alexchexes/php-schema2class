@@ -559,7 +559,7 @@ class MyClass
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true, bool $materializeDefaults = false): MyClass
+    public static function fromInput(array|object $input, bool $validate = true, bool $materializeDefaults = false): MyClass
     {
         $input = is_array($input)
             ? \JsonSchema\Validator::arrayToObjectRecursive($input)
@@ -593,11 +593,11 @@ class MyClass
         $quux = $input->{'quux'};
         $xyyz = isset($input->{'xyyz'}) ? $input->{'xyyz'} : null;
         $thud = $input->{'thud'};
-        $grox = property_exists($input, 'grox') ? ($input->{'grox'} !== null ? MyClassGrox::buildFromInput($input->{'grox'}, $validate, $materializeDefaults) : null) : null;
+        $grox = property_exists($input, 'grox') ? ($input->{'grox'} !== null ? MyClassGrox::fromInput($input->{'grox'}, $validate, $materializeDefaults) : null) : null;
         if (property_exists($input, 'grox')) {
             $__providedOptionals['grox'] = true;
         }
-        $gooks = property_exists($input, 'gooks') ? ($input->{'gooks'} !== null ? MyClassGooks::buildFromInput($input->{'gooks'}, $validate, $materializeDefaults) : null) : null;
+        $gooks = property_exists($input, 'gooks') ? ($input->{'gooks'} !== null ? MyClassGooks::fromInput($input->{'gooks'}, $validate, $materializeDefaults) : null) : null;
         if (property_exists($input, 'gooks')) {
             $__providedOptionals['gooks'] = true;
         }

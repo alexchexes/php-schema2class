@@ -54,7 +54,7 @@ class Schema2Class
                 }
                 $config = Yaml::parse($contents);
             }
-            $config = Specification::buildFromInput($config);
+            $config = Specification::fromInput($config);
         }
 
         $this->runner->generateFromSpecification($config, $output, $dryRun);

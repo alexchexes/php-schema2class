@@ -557,11 +557,11 @@ class MyClass
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true, bool $materializeDefaults = false)
+    public static function fromInput($input, bool $validate = true, bool $materializeDefaults = false)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($input)
+                'Input to fromInput must be array or object, got ' . gettype($input)
             );
         }
 
@@ -597,11 +597,11 @@ class MyClass
         $quux = $input->{'quux'};
         $xyyz = isset($input->{'xyyz'}) ? $input->{'xyyz'} : null;
         $thud = $input->{'thud'};
-        $grox = property_exists($input, 'grox') ? ($input->{'grox'} !== null ? MyClassGrox::buildFromInput($input->{'grox'}, $validate, $materializeDefaults) : null) : null;
+        $grox = property_exists($input, 'grox') ? ($input->{'grox'} !== null ? MyClassGrox::fromInput($input->{'grox'}, $validate, $materializeDefaults) : null) : null;
         if (property_exists($input, 'grox')) {
             $__providedOptionals['grox'] = true;
         }
-        $gooks = property_exists($input, 'gooks') ? ($input->{'gooks'} !== null ? MyClassGooks::buildFromInput($input->{'gooks'}, $validate, $materializeDefaults) : null) : null;
+        $gooks = property_exists($input, 'gooks') ? ($input->{'gooks'} !== null ? MyClassGooks::fromInput($input->{'gooks'}, $validate, $materializeDefaults) : null) : null;
         if (property_exists($input, 'gooks')) {
             $__providedOptionals['gooks'] = true;
         }

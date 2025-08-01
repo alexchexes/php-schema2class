@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Property\Type;
 
+use Helmich\Schema2Class\Generator\Class\Method\SerializeMethodFactory;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\RenameablePropertyInterface;
 use Helmich\Schema2Class\Generator\SchemaToClass;
@@ -99,25 +100,27 @@ abstract class AbstractProperty implements PropertyInterface, RenameableProperty
         $keyStr = var_export($key, true);
         // build the raw lookup expression (using the JSON key only inside the braces)
         $accessor = "\${$inputVarName}->{{$keyStr}}";
-        // now map from JSON→Type (this will call buildFromInput, etc.)
+        // now map from JSON→Type (this will call fromInput, etc.)
         $map = $this->generateInputMappingExpr($accessor);
         // assign to the *camelCased* local variable name
         return "\${$name} = {$map};";
     }
 
-    public function convertTypeToArray(string $outputVarName): string
+    public function convertTypeToArray(): string
     {
         $key    = $this->key;
         $keyStr = var_export($key, true);
         $map    = $this->generateOutputMappingExpr("\$this->{$this->name}");
+        $outputVarName = SerializeMethodFactory::OUTPUT_VAR_NAME;
         return "\${$outputVarName}[{$keyStr}] = {$map};";
     }
 
-    public function convertTypeToStdClass(string $outputVarName): string
+    public function convertTypeToStdClass(): string
     {
         $key    = $this->key;
         $keyStr = var_export($key, true);
         $map    = $this->generateOutputMappingExprStdClass("\$this->{$this->name}");
+        $outputVarName = SerializeMethodFactory::OUTPUT_VAR_NAME;
         return "\${$outputVarName}->{{$keyStr}} = {$map};";
     }
 

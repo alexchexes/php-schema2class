@@ -99,15 +99,15 @@ class Specification
      * @return Specification Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): Specification
+    public static function fromInput(array|object $input, bool $validate = true): Specification
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $options = isset($input->{'options'}) ? SpecificationOptions::buildFromInput($input->{'options'}, $validate) : null;
-        $files = array_map(fn (array|object $i): SpecificationFilesItem => SpecificationFilesItem::buildFromInput($i, $validate), $input->{'files'});
+        $options = isset($input->{'options'}) ? SpecificationOptions::fromInput($input->{'options'}, $validate) : null;
+        $files = array_map(fn (array|object $i): SpecificationFilesItem => SpecificationFilesItem::fromInput($i, $validate), $input->{'files'});
 
         $obj = new self($files);
         $obj->options = $options;

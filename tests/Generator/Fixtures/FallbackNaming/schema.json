@@ -20,7 +20,7 @@
     "obj",
     "includeDefaults",
 
-    "buildFromInput",
+    "fromInput",
     "toArray",
     "validateInput",
 
@@ -72,7 +72,7 @@
       "properties": { "a": { "type": "string" } }
     },
 
-    "buildFromInput": { "type": "string" },
+    "fromInput": { "type": "string" },
     "toArray": { "type": "string" },
     "validateInput": { "type": "string" },
 

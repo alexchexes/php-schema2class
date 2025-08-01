@@ -120,7 +120,7 @@ class MyClassFilesItem
      * @return MyClassFilesItem Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): MyClassFilesItem
+    public static function fromInput(array|object $input, bool $validate = true): MyClassFilesItem
     {
         $_input = $input;
         unset($input);
@@ -131,7 +131,7 @@ class MyClassFilesItem
         }
 
         $input = isset($_input->{'input'}) ? $_input->{'input'} : null;
-        $options = isset($_input->{'options'}) ? OptionsObject::buildFromInput($_input->{'options'}, $validate) : null;
+        $options = isset($_input->{'options'}) ? OptionsObject::fromInput($_input->{'options'}, $validate) : null;
 
         $obj = new self();
         $obj->input = $input;

@@ -108,7 +108,7 @@ class GenericPet
      * @return GenericPet Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true, bool $materializeDefaults = false): GenericPet
+    public static function fromInput(array|object $input, bool $validate = true, bool $materializeDefaults = false): GenericPet
     {
         $input = is_array($input)
             ? \JsonSchema\Validator::arrayToObjectRecursive($input)

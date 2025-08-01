@@ -62,10 +62,10 @@ EOCODE;
 
     public function testConvertTypeToArray()
     {
-        $result = $this->property->convertTypeToArray('variable');
+        $result = $this->property->convertTypeToArray();
 
         $expected = <<<'EOCODE'
-$variable['myPropertyName'] = $this->myPropertyName;
+$output['myPropertyName'] = $this->myPropertyName;
 EOCODE;
 
         assertSame($expected, $result);
@@ -73,10 +73,10 @@ EOCODE;
 
     public function testConvertTypeToStdClass()
     {
-        $result = $this->property->convertTypeToStdClass('variable');
+        $result = $this->property->convertTypeToStdClass();
 
         $expected = <<<'EOCODE'
-$variable->{'myPropertyName'} = $this->myPropertyName;
+$output->{'myPropertyName'} = $this->myPropertyName;
 EOCODE;
 
         assertSame($expected, $result);

@@ -14,12 +14,12 @@ class DebugWriter implements WriterInterface
         $this->output = $output;
     }
 
-    public function writeFile(string $filename, string $contents): void
+    public function writeFile(string $filePath, string $contents): void
     {
-        $this->output->writeln("writing to <comment>$filename</comment>:");
+        $this->output->writeln("writing to <comment>$filePath</comment>:");
         $this->output->writeln($contents);
 
-        $this->writtenFiles[$filename] = trim($contents);
+        $this->writtenFiles[$filePath] = trim($contents);
     }
 
     public function getWrittenFiles(): array

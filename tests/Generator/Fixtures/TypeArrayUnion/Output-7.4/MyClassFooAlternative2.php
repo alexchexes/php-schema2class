@@ -73,11 +73,11 @@ class MyClassFooAlternative2
      * @return MyClassFooAlternative2 Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true): MyClassFooAlternative2
+    public static function fromInput($input, bool $validate = true): MyClassFooAlternative2
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($input)
+                'Input to fromInput must be array or object, got ' . gettype($input)
             );
         }
 

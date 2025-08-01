@@ -72,11 +72,11 @@ class Bar
      * @return Bar Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true)
+    public static function fromInput($input, bool $validate = true)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($input)
+                'Input to fromInput must be array or object, got ' . gettype($input)
             );
         }
 
@@ -85,7 +85,7 @@ class Bar
             static::validateInput($input);
         }
 
-        $a = isset($input->{'a'}) ? Foo::buildFromInput($input->{'a'}, $validate) : null;
+        $a = isset($input->{'a'}) ? Foo::fromInput($input->{'a'}, $validate) : null;
 
         $obj = new self();
         $obj->a = $a;

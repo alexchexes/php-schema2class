@@ -135,7 +135,7 @@ class SpecificationFilesItem
      * @return SpecificationFilesItem Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): SpecificationFilesItem
+    public static function fromInput(array|object $input, bool $validate = true): SpecificationFilesItem
     {
         $_input = $input;
         unset($input);
@@ -151,7 +151,7 @@ class SpecificationFilesItem
             default => throw new \InvalidArgumentException("could not build property 'input' from JSON"),
         };
         $className = isset($_input->{'className'}) ? $_input->{'className'} : null;
-        $options = isset($_input->{'options'}) ? SpecificationOptions::buildFromInput($_input->{'options'}, $validate) : null;
+        $options = isset($_input->{'options'}) ? SpecificationOptions::fromInput($_input->{'options'}, $validate) : null;
 
         $obj = new self($input);
         $obj->className = $className;

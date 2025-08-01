@@ -130,15 +130,15 @@ class MyClass
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): MyClass
+    public static function fromInput(array|object $input, bool $validate = true): MyClass
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $files = isset($input->{'files'}) ? array_map(fn (array|object $i): MyClassFilesItem => MyClassFilesItem::buildFromInput($i, $validate), $input->{'files'}) : null;
-        $options = isset($input->{'options'}) ? OptionsObject::buildFromInput($input->{'options'}, $validate) : null;
+        $files = isset($input->{'files'}) ? array_map(fn (array|object $i): MyClassFilesItem => MyClassFilesItem::fromInput($i, $validate), $input->{'files'}) : null;
+        $options = isset($input->{'options'}) ? OptionsObject::fromInput($input->{'options'}, $validate) : null;
 
         $obj = new self();
         $obj->files = $files;

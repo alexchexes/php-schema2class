@@ -8,7 +8,6 @@ use Helmich\Schema2Class\Writer\DebugWriter;
 use Symfony\Component\Console\Output\NullOutput;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
 use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
-use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 use function PHPUnit\Framework\assertFalse;
 use function PHPUnit\Framework\assertSame;
@@ -24,6 +23,8 @@ class NestedObjectPropertyTest extends TestCase
     protected function setUp(): void
     {
         $this->generatorRequest = new GeneratorRequest([], new ValidatedSpecificationFilesItem("BarNs", "Foo", ""), new SpecificationOptions());
+        $this->generatorRequest->setCurrValidateArgAlias('validate');
+        $this->generatorRequest->setCurrReqHasDefaults(false);
         $this->property = new NestedObjectProperty('myPropertyName', ['allOf' => []], $this->generatorRequest);
     }
 
@@ -48,7 +49,7 @@ class NestedObjectPropertyTest extends TestCase
         $result = $underTest->convertInputToType('variable', 'providedOptionals');
 
         $expected = <<<'EOCODE'
-$myPropertyName = FooMyPropertyName::buildFromInput($variable->{'myPropertyName'}, $validate);
+$myPropertyName = FooMyPropertyName::fromInput($variable->{'myPropertyName'}, $validate);
 EOCODE;
 
         assertSame($expected, $result);
@@ -56,10 +57,10 @@ EOCODE;
 
     public function testConvertTypeToArray()
     {
-        $result = $this->property->convertTypeToArray('variable');
+        $result = $this->property->convertTypeToArray();
 
         $expected = <<<'EOCODE'
-$variable['myPropertyName'] = ($this->myPropertyName)->toArray();
+$output['myPropertyName'] = ($this->myPropertyName)->toArray();
 EOCODE;
 
         assertSame($expected, $result);
@@ -67,10 +68,10 @@ EOCODE;
 
     public function testConvertTypeToStdClass()
     {
-        $result = $this->property->convertTypeToStdClass('variable');
+        $result = $this->property->convertTypeToStdClass();
 
         $expected = <<<'EOCODE'
-$variable->{'myPropertyName'} = ($this->myPropertyName)->toStdClass();
+$output->{'myPropertyName'} = ($this->myPropertyName)->toStdClass();
 EOCODE;
 
         assertSame($expected, $result);

@@ -112,7 +112,7 @@ class UserAddress
      * @return UserAddress Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): UserAddress
+    public static function fromInput(array|object $input, bool $validate = true): UserAddress
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {

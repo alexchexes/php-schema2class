@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Property\Type;
 
+use Helmich\Schema2Class\Generator\Class\Method\SerializeMethodFactory;
 use Helmich\Schema2Class\Generator\GeneratorException;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\MatchGenerator;
@@ -143,7 +144,7 @@ class UnionProperty extends AbstractProperty
     }
     
 
-    private function convertTypeToArrayMatch(string $outputVarName = 'output'): string
+    private function convertTypeToArrayMatch(): string
     {
         $name   = $this->name;
         $key    = $this->key;
@@ -156,11 +157,11 @@ class UnionProperty extends AbstractProperty
 
             $match->addArm($discriminator, $mapping);
         }
-
+        $outputVarName = SerializeMethodFactory::OUTPUT_VAR_NAME;
         return "\${$outputVarName}[{$keyStr}] = {$match->generate()};";
     }
 
-    private function convertTypeToStdClassMatch(string $outputVarName = 'output'): string
+    private function convertTypeToStdClassMatch(): string
     {
         $name   = $this->name;
         $key    = $this->key;
@@ -174,13 +175,15 @@ class UnionProperty extends AbstractProperty
             $match->addArm($discriminator, $mapping);
         }
 
+        $outputVarName = SerializeMethodFactory::OUTPUT_VAR_NAME;
         return "\${$outputVarName}->{{$keyStr}} = {$match->generate()};";
     }
 
-    public function convertTypeToArray(string $outputVarName): string
+    public function convertTypeToArray(): string
     {
+        $outputVarName = SerializeMethodFactory::OUTPUT_VAR_NAME;
         if ($this->generatorRequest->isAtLeastPHP("8.0")) {
-            return $this->convertTypeToArrayMatch($outputVarName);
+            return $this->convertTypeToArrayMatch();
         }
 
         $name        = $this->name;
@@ -210,10 +213,11 @@ class UnionProperty extends AbstractProperty
         return str_replace("}\nelse", "} else", join("\n", $branches));
     }
 
-    public function convertTypeToStdClass(string $outputVarName): string
+    public function convertTypeToStdClass(): string
     {
+        $outputVarName = SerializeMethodFactory::OUTPUT_VAR_NAME;
         if ($this->generatorRequest->isAtLeastPHP("8.0")) {
-            return $this->convertTypeToStdClassMatch($outputVarName);
+            return $this->convertTypeToStdClassMatch();
         }
 
         $name        = $this->name;

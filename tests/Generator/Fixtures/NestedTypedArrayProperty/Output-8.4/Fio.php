@@ -85,7 +85,7 @@ class Fio
      * @return Fio Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): Fio
+    public static function fromInput(array|object $input, bool $validate = true): Fio
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {

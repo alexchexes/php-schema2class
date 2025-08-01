@@ -89,11 +89,11 @@ class MyGenericStringNumber
      * @return MyGenericStringNumber Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true)
+    public static function fromInput($input, bool $validate = true)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($input)
+                'Input to fromInput must be array or object, got ' . gettype($input)
             );
         }
 
@@ -102,7 +102,7 @@ class MyGenericStringNumber
             static::validateInput($input);
         }
 
-        $field = MyGenericStringNumberField::buildFromInput($input->{'field'}, $validate);
+        $field = MyGenericStringNumberField::fromInput($input->{'field'}, $validate);
 
         $obj = new self($field);
 

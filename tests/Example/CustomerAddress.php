@@ -8,7 +8,7 @@ namespace Helmich\Schema2Class\Example;
  * via ReferenceLookup. The test does not execute this class; only the FQN is important.
  */
 final class CustomerAddress {
-  public static function buildFromInput()
+  public static function fromInput()
   {
     return new self();
   }

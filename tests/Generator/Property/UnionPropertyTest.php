@@ -26,6 +26,8 @@ class UnionPropertyTest extends TestCase
     protected function setUp(): void
     {
         $this->generatorRequest = new GeneratorRequest([], new ValidatedSpecificationFilesItem("BarNs", "Foo", ""), new SpecificationOptions());
+        $this->generatorRequest->setCurrValidateArgAlias('validate');
+        $this->generatorRequest->setCurrReqHasDefaults(false);
         $this->property = new UnionProperty(
             'myPropertyName',
             ['anyOf' => [['properties' => ['subFoo1' => ['type' => 'string']]], ['properties' => ['subFoo2' => ['type' => 'string']]]]],
@@ -52,8 +54,8 @@ class UnionPropertyTest extends TestCase
 
         $expected = <<<'EOCODE'
 $myPropertyName = match (true) {
-    FooMyPropertyNameAlternative1::validateInput($variable->{'myPropertyName'}, true) => FooMyPropertyNameAlternative1::buildFromInput($variable->{'myPropertyName'}, $validate),
-    FooMyPropertyNameAlternative2::validateInput($variable->{'myPropertyName'}, true) => FooMyPropertyNameAlternative2::buildFromInput($variable->{'myPropertyName'}, $validate),
+    FooMyPropertyNameAlternative1::validateInput($variable->{'myPropertyName'}, true) => FooMyPropertyNameAlternative1::fromInput($variable->{'myPropertyName'}, $validate),
+    FooMyPropertyNameAlternative2::validateInput($variable->{'myPropertyName'}, true) => FooMyPropertyNameAlternative2::fromInput($variable->{'myPropertyName'}, $validate),
     default => throw new \InvalidArgumentException("could not build property 'myPropertyName' from JSON"),
 };
 EOCODE;
@@ -65,10 +67,10 @@ EOCODE;
     {
         $underTest = new UnionProperty('myPropertyName', ['anyOf' => [['properties' => ['subFoo1' => ['type' => 'string']]], ['properties' => ['subFoo2' => ['type' => 'string']]]]], $this->generatorRequest);
 
-        $result = $underTest->convertTypeToArray('variable');
+        $result = $underTest->convertTypeToArray();
 
         $expected = <<<'EOCODE'
-$variable['myPropertyName'] = match (true) {
+$output['myPropertyName'] = match (true) {
     $this->myPropertyName instanceof FooMyPropertyNameAlternative1,
     $this->myPropertyName instanceof FooMyPropertyNameAlternative2 => ($this->myPropertyName)->toArray(),
 };
@@ -81,10 +83,10 @@ EOCODE;
     {
         $underTest = new UnionProperty('myPropertyName', ['anyOf' => [['properties' => ['subFoo1' => ['type' => 'string']]], ['properties' => ['subFoo2' => ['type' => 'string']]]]], $this->generatorRequest);
 
-        $result = $underTest->convertTypeToStdClass('variable');
+        $result = $underTest->convertTypeToStdClass();
 
         $expected = <<<'EOCODE'
-$variable->{'myPropertyName'} = match (true) {
+$output->{'myPropertyName'} = match (true) {
     $this->myPropertyName instanceof FooMyPropertyNameAlternative1,
     $this->myPropertyName instanceof FooMyPropertyNameAlternative2 => ($this->myPropertyName)->toStdClass(),
 };

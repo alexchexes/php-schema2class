@@ -8,27 +8,23 @@ namespace Helmich\Schema2Class\Writer;
  */
 class LintingWriter implements WriterInterface
 {
-    private WriterInterface $inner;
-
-    public function __construct(WriterInterface $inner)
-    {
-        $this->inner = $inner;
-    }
+    public function __construct(
+        private WriterInterface $innerWriter
+    ) {}
 
     /** 
      * @throws \RuntimeException if written file contents is not valid PHP
      */
-    public function writeFile(string $filename, string $contents): void
+    public function writeFile(string $filePath, string $contents): void
     {
-        $this->inner->writeFile($filename, $contents);
+        $this->innerWriter->writeFile($filePath, $contents);
 
         $output = [];
         $result = 0;
-        exec(PHP_BINARY . ' -l ' . escapeshellarg($filename) . ' 2>&1', $output, $result);
+        exec(PHP_BINARY . ' -l ' . escapeshellarg($filePath) . ' 2>&1', $output, $result);
         if ($result !== 0) {
-            throw new \RuntimeException(
-                sprintf("Generated file %s contains syntax errors:\n%s", $filename, implode("\n", $output))
-            );
+            $errors = implode("\n", $output);
+            throw new \RuntimeException("Generated file {$filePath} contains syntax errors:\n{$errors}");
         }
     }
 }

@@ -24,6 +24,8 @@ class ObjectArrayPropertyTest extends TestCase
     protected function setUp(): void
     {
         $this->generatorRequest = new GeneratorRequest([], new ValidatedSpecificationFilesItem("", "Foo", ""), new SpecificationOptions());
+        $this->generatorRequest->setCurrValidateArgAlias('validate');
+        $this->generatorRequest->setCurrReqHasDefaults(false);
         $this->property = new ObjectArrayProperty('myPropertyName', ['type' => 'array', 'items' => ['type' => 'object']], $this->generatorRequest);
     }
 
@@ -63,7 +65,7 @@ class ObjectArrayPropertyTest extends TestCase
         $result = $underTest->convertInputToType('variable', 'providedOptionals');
 
         $expected = <<<'EOCODE'
-$myPropertyName = array_map(fn (array|object $i): FooMyPropertyNameItem => FooMyPropertyNameItem::buildFromInput($i, $validate), $variable->{'myPropertyName'});
+$myPropertyName = array_map(fn (array|object $i): FooMyPropertyNameItem => FooMyPropertyNameItem::fromInput($i, $validate), $variable->{'myPropertyName'});
 EOCODE;
 
         assertSame($expected, $result);
@@ -73,10 +75,10 @@ EOCODE;
     {
         $underTest = new ObjectArrayProperty('myPropertyName', ['type' => 'array', 'items' => ['properties' => ['foo' => ['type' => 'string']]]], $this->generatorRequest);
 
-        $result = $underTest->convertTypeToArray('variable');
+        $result = $underTest->convertTypeToArray();
 
         $expected = <<<'EOCODE'
-$variable['myPropertyName'] = array_map(fn (FooMyPropertyNameItem $i) => $i->toArray(), $this->myPropertyName);
+$output['myPropertyName'] = array_map(fn (FooMyPropertyNameItem $i) => $i->toArray(), $this->myPropertyName);
 EOCODE;
 
         assertSame($expected, $result);
@@ -86,10 +88,10 @@ EOCODE;
     {
         $underTest = new ObjectArrayProperty('myPropertyName', ['type' => 'array', 'items' => ['properties' => ['foo' => ['type' => 'string']]]], $this->generatorRequest);
 
-        $result = $underTest->convertTypeToStdClass('variable');
+        $result = $underTest->convertTypeToStdClass();
 
         $expected = <<<'EOCODE'
-$variable->{'myPropertyName'} = array_map(fn (FooMyPropertyNameItem $i) => $i->toStdClass(), $this->myPropertyName);
+$output->{'myPropertyName'} = array_map(fn (FooMyPropertyNameItem $i) => $i->toStdClass(), $this->myPropertyName);
 EOCODE;
 
         assertSame($expected, $result);

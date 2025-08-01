@@ -85,11 +85,11 @@ class MyClassEnsureArgs3Item
      * @return MyClassEnsureArgs3Item Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true, bool $materializeDefaults = false): MyClassEnsureArgs3Item
+    public static function fromInput($input, bool $validate = true, bool $materializeDefaults = false): MyClassEnsureArgs3Item
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($input)
+                'Input to fromInput must be array or object, got ' . gettype($input)
             );
         }
 

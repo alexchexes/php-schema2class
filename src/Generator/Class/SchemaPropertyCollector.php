@@ -150,16 +150,16 @@ class SchemaPropertyCollector
             'http_response_header',
             'argc',
             'argv',
-            PropertyNames::SCHEMA_PROP,
-            PropertyNames::DEFAULTS_PROP,
-            PropertyNames::OPTIONALS_PROP,
+            PropertyNames::SCHEMA,
+            PropertyNames::DEFAULTS,
+            PropertyNames::OPTIONALS,
         ];
 
         $reservedMethodNames = [
-            'buildFromInput',
-            'toArray',
-            'toStdClass',
-            'validateInput',
+            MethodNames::FROM_INPUT,
+            MethodNames::TO_ARRAY,
+            MethodNames::TO_STD_CLASS,
+            MethodNames::VALIDATE_INPUT,
             'clone',
             '__construct',
             '__destruct',

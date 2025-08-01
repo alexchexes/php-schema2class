@@ -58,7 +58,7 @@ class Baz
      * @return Baz Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): Baz
+    public static function fromInput(array|object $input, bool $validate = true): Baz
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {

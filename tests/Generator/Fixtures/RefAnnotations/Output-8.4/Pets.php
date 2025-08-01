@@ -131,15 +131,15 @@ class Pets
      * @return Pets Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): Pets
+    public static function fromInput(array|object $input, bool $validate = true): Pets
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $pet = isset($input->{'pet'}) ? GenericPet::buildFromInput($input->{'pet'}, $validate) : null;
-        $cat = isset($input->{'cat'}) ? Cat::buildFromInput($input->{'cat'}, $validate) : null;
+        $pet = isset($input->{'pet'}) ? GenericPet::fromInput($input->{'pet'}, $validate) : null;
+        $cat = isset($input->{'cat'}) ? Cat::fromInput($input->{'cat'}, $validate) : null;
 
         $obj = new self();
         $obj->pet = $pet;

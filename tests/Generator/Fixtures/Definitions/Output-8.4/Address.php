@@ -122,14 +122,14 @@ class Address
      * @return Address Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): Address
+    public static function fromInput(array|object $input, bool $validate = true): Address
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $name = isset($input->{'name'}) ? Address\Defs\Name::buildFromInput($input->{'name'}, $validate) : null;
+        $name = isset($input->{'name'}) ? Address\Defs\Name::fromInput($input->{'name'}, $validate) : null;
         $city = $input->{'city'};
 
         $obj = new self($city);

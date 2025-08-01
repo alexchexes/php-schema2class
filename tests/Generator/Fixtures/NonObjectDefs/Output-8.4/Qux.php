@@ -113,7 +113,7 @@ class Qux
      * @return Qux Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): Qux
+    public static function fromInput(array|object $input, bool $validate = true): Qux
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -124,8 +124,8 @@ class Qux
             is_string($input->{'grox'}),
             is_array($input->{'grox'}) => $input->{'grox'},
             (Foo::validateInput($input->{'grox'}, true)) || (Bar::validateInput($input->{'grox'}, true)) => match (true) {
-            Foo::validateInput($input->{'grox'}, true) => Foo::buildFromInput($input->{'grox'}, $validate),
-            Bar::validateInput($input->{'grox'}, true) => Bar::buildFromInput($input->{'grox'}, $validate),
+            Foo::validateInput($input->{'grox'}, true) => Foo::fromInput($input->{'grox'}, $validate),
+            Bar::validateInput($input->{'grox'}, true) => Bar::fromInput($input->{'grox'}, $validate),
             default => null,
         },
             default => null,

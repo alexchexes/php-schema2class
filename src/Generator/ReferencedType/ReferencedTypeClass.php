@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\ReferencedType;
 
+use Helmich\Schema2Class\Generator\Class\MethodNames;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 
 /**
@@ -66,7 +67,8 @@ readonly class ReferencedTypeClass implements ReferencedType
     public function inputAssertionExpr(GeneratorRequest $req, string $expr): string
     {
         $cls = $this->relativeName($req);
-        return "{$cls}::validateInput({$expr}, true)";
+        $VALIDATE_INPUT = MethodNames::VALIDATE_INPUT;
+        return "{$cls}::{$VALIDATE_INPUT}({$expr}, true)";
     }
 
     public function inputMappingExpr(GeneratorRequest $req, string $expr): string
@@ -81,18 +83,23 @@ readonly class ReferencedTypeClass implements ReferencedType
         $argsStr = implode(', ', $args);
         
         $cls = $this->relativeName($req);
-        return "{$cls}::buildFromInput({$argsStr})";
+
+        $FROM_INPUT = MethodNames::FROM_INPUT;
+
+        return "{$cls}::{$FROM_INPUT}({$argsStr})";
     }
 
     public function outputMappingExpr(GeneratorRequest $req, string $expr): string
     {
         $inclDefaultsArg = $req->getCurrReqHasDefaults() ? '$includeDefaults' : '';
-        return "{$expr}->toArray({$inclDefaultsArg})";
+        $TO_ARRAY = MethodNames::TO_ARRAY;
+        return "{$expr}->{$TO_ARRAY}({$inclDefaultsArg})";
     }
 
     public function outputMappingExprStdClass(GeneratorRequest $req, string $expr): string
     {
         $inclDefaultsArg = $req->getCurrReqHasDefaults() ? '$includeDefaults' : '';
-        return "{$expr}->toStdClass({$inclDefaultsArg})";
+        $TO_STD_CLASS = MethodNames::TO_STD_CLASS;
+        return "{$expr}->{$TO_STD_CLASS}({$inclDefaultsArg})";
     }
 }

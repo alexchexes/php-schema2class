@@ -812,7 +812,7 @@ class MyClass
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true, bool $materializeDefaults = false): MyClass
+    public static function fromInput(array|object $input, bool $validate = true, bool $materializeDefaults = false): MyClass
     {
         $input = is_array($input)
             ? \JsonSchema\Validator::arrayToObjectRecursive($input)
@@ -835,12 +835,12 @@ class MyClass
         $__providedOptionals = [];
         $foo = $input->{'foo'};
         $bar = $input->{'bar'};
-        $baz = isset($input->{'baz'}) ? MyClassBaz::buildFromInput($input->{'baz'}, $validate, $materializeDefaults) : null;
-        $quxObj = property_exists($input, 'quxObj') ? ($input->{'quxObj'} !== null ? MyClassQuxObj::buildFromInput($input->{'quxObj'}, $validate, $materializeDefaults) : null) : null;
+        $baz = isset($input->{'baz'}) ? MyClassBaz::fromInput($input->{'baz'}, $validate, $materializeDefaults) : null;
+        $quxObj = property_exists($input, 'quxObj') ? ($input->{'quxObj'} !== null ? MyClassQuxObj::fromInput($input->{'quxObj'}, $validate, $materializeDefaults) : null) : null;
         if (property_exists($input, 'quxObj')) {
             $__providedOptionals['quxObj'] = true;
         }
-        $quxObjNest = property_exists($input, 'quxObjNest') ? ($input->{'quxObjNest'} !== null ? MyClassQuxObjNest::buildFromInput($input->{'quxObjNest'}, $validate, $materializeDefaults) : null) : null;
+        $quxObjNest = property_exists($input, 'quxObjNest') ? ($input->{'quxObjNest'} !== null ? MyClassQuxObjNest::fromInput($input->{'quxObjNest'}, $validate, $materializeDefaults) : null) : null;
         if (property_exists($input, 'quxObjNest')) {
             $__providedOptionals['quxObjNest'] = true;
         }
@@ -851,24 +851,24 @@ class MyClass
         $xyyz = isset($input->{'xyyz'}) ? match (true) {
             is_string($input->{'xyyz'}),
             is_array($input->{'xyyz'}) => $input->{'xyyz'},
-            ObjDef::validateInput($input->{'xyyz'}, true) => ObjDef::buildFromInput($input->{'xyyz'}, $validate, $materializeDefaults),
+            ObjDef::validateInput($input->{'xyyz'}, true) => ObjDef::fromInput($input->{'xyyz'}, $validate, $materializeDefaults),
             default => null,
         } : null;
         $buux = isset($input->{'buux'}) ? match (true) {
             is_string($input->{'buux'}),
             is_array($input->{'buux'}) => $input->{'buux'},
-            ObjDef::validateInput($input->{'buux'}, true) => ObjDef::buildFromInput($input->{'buux'}, $validate, $materializeDefaults),
+            ObjDef::validateInput($input->{'buux'}, true) => ObjDef::fromInput($input->{'buux'}, $validate, $materializeDefaults),
             default => null,
         } : null;
         $boic = isset($input->{'boic'}) ? match (true) {
             is_string($input->{'boic'}),
             is_array($input->{'boic'}) => $input->{'boic'},
-            ObjDef::validateInput($input->{'boic'}, true) => ObjDef::buildFromInput($input->{'boic'}, $validate, $materializeDefaults),
+            ObjDef::validateInput($input->{'boic'}, true) => ObjDef::fromInput($input->{'boic'}, $validate, $materializeDefaults),
             default => null,
         } : null;
         $poox = isset($input->{'poox'}) ? match (true) {
             is_string($input->{'poox'}) => $input->{'poox'},
-            NumericKeysObj::validateInput($input->{'poox'}, true) => NumericKeysObj::buildFromInput($input->{'poox'}, $validate, $materializeDefaults),
+            NumericKeysObj::validateInput($input->{'poox'}, true) => NumericKeysObj::fromInput($input->{'poox'}, $validate, $materializeDefaults),
             default => null,
         } : null;
         $arrObjUnion = isset($input->{'arrObjUnion'}) ? match (true) {
@@ -881,7 +881,7 @@ class MyClass
             is_array($input->{'objArrUnion'}) || is_object($input->{'objArrUnion'}) => $input->{'objArrUnion'},
             default => null,
         } : null;
-        $numKeysDefaults = isset($input->{'numKeysDefaults'}) ? MyClassNumKeysDefaults::buildFromInput($input->{'numKeysDefaults'}, $validate, $materializeDefaults) : null;
+        $numKeysDefaults = isset($input->{'numKeysDefaults'}) ? MyClassNumKeysDefaults::fromInput($input->{'numKeysDefaults'}, $validate, $materializeDefaults) : null;
 
         $obj = new self($foo, $bar);
         $obj->baz = $baz;

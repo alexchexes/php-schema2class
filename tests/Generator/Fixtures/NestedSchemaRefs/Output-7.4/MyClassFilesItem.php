@@ -120,14 +120,14 @@ class MyClassFilesItem
      * @return MyClassFilesItem Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true): MyClassFilesItem
+    public static function fromInput($input, bool $validate = true): MyClassFilesItem
     {
         $_input = $input;
         unset($input);
 
         if (!is_array($_input) && !is_object($_input)) {
             throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($_input)
+                'Input to fromInput must be array or object, got ' . gettype($_input)
             );
         }
 
@@ -137,7 +137,7 @@ class MyClassFilesItem
         }
 
         $input = isset($_input->{'input'}) ? $_input->{'input'} : null;
-        $options = isset($_input->{'options'}) ? OptionsObject::buildFromInput($_input->{'options'}, $validate) : null;
+        $options = isset($_input->{'options'}) ? OptionsObject::fromInput($_input->{'options'}, $validate) : null;
 
         $obj = new self();
         $obj->input = $input;

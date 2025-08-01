@@ -69,18 +69,14 @@ interface PropertyInterface
     /**
      * Generates a statement that writes this property to an output array in
      * a generated `toArray()` method.
-     *
-     * @param string $outputVarName Name of the variable that receives the array data.
      */
-    public function convertTypeToArray(string $outputVarName): string;
+    public function convertTypeToArray(): string;
 
     /**
      * Like {@see convertTypeToArray()} but writes to a \stdClass instance for
      * the `toStdClass()` helper of the generated class.
-     *
-     * @param string $outputVarName Name of the variable that receives the object data.
      */
-    public function convertTypeToStdClass(string $outputVarName): string;
+    public function convertTypeToStdClass(): string;
 
     /**
      * Generates additional PHP classes or enums required by this property.

@@ -37,7 +37,7 @@ final class OptionsDefaults
             }
         }
 
-        return SpecificationOptions::buildFromInput($opts);
+        return SpecificationOptions::fromInput($opts);
     }
 
     /**
@@ -54,7 +54,7 @@ final class OptionsDefaults
         }
 
         $merged = array_merge($base->toArray(), $override->toArray());
-        $opts = SpecificationOptions::buildFromInput($merged, validate: false);
+        $opts = SpecificationOptions::fromInput($merged, validate: false);
 
         return self::applyDefaults($opts);
     }

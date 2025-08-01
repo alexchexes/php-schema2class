@@ -6,8 +6,10 @@ namespace Helmich\Schema2Class\Generator\Class;
 use Helmich\Schema2Class\Writer\WriterInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
+use Laminas\Code\DeclareStatement;
 use Laminas\Code\Generator\ClassGenerator as LaminasClassGenerator;
 use Laminas\Code\Generator\DocBlockGenerator;
+use Laminas\Code\Generator\FileGenerator;
 
 /**
  * Generates the `Laminas\Code` representation of a PHP class for a single schema.
@@ -27,7 +29,7 @@ class ClassGenerator
         private OutputInterface $output,
     ) {}
     
-    public function generateClass()
+    public function generateClass(): void
     {
         $collector = new SchemaPropertyCollector();
         $schemaProperties = $collector->collectPropertiesFromSchema($this->schema, $this->request);
@@ -40,54 +42,94 @@ class ClassGenerator
             $schemaProp->generateSubTypes($this->writer, $this->output);
         }
 
-        $propertyFactory = new ClassPropertyFactory($this->request, $this->schema);
-        $propertyGenerators = $propertyFactory->generateProperties(
+        $propertyGenerators = (new ClassPropertyFactory(
+            $this->request,
+            $this->schema,
             $schemaProperties,
             $defaults,
             $hasOptionalNullable,
-        );
+        ))->generateProperties();
 
-        $methodFactory = new ClassMethodFactory($this->request);
-        $methodGenerators = $methodFactory->generateMethods(
+        $methodGenerators = (new ClassMethodFactory(
+            $this->request,
             $schemaProperties,
             $defaults,
             $hasOptionalNullable,
-        );
+        ))->generateMethods();
 
-        $classGenerator = $this->createClassGenerator($propertyGenerators, $methodGenerators);
+        $classFileGenerator = $this->prepareFileGenerator($propertyGenerators, $methodGenerators);
 
-        $classWriter = new ClassFileWriter($this->request, $this->writer);
-        $classWriter->write($classGenerator);
+        $filePath = $this->request->getTargetDirectory() . '/' . $this->request->getTargetClass() . '.php';
+        
+        // Invoke a hook where user can modify file generator
+        $this->request->onFileCreated($filePath, $classFileGenerator);
+
+        $content = $classFileGenerator->generate();
+        $content = $this->postProcessContents($content);
+
+        $this->writer->writeFile($filePath, $content);
     }
     
     /**
      * @param PropertyGenerator[] $propertyGenerators
      * @param MethodGenerator[] $methodGenerators
      */
-    private function createClassGenerator(array $propertyGenerators, array $methodGenerators): LaminasClassGenerator
+    private function prepareFileGenerator(array $propertyGenerators, array $methodGenerators): FileGenerator
     {
-        $cls = new LaminasClassGenerator(
-            $this->request->getTargetClass(),
-            $this->request->getTargetNamespace(),
-            null,
-            null,
-            [],
-            $propertyGenerators,
-            $methodGenerators,
-            null,
-        );
-
-        // Add PHPDoc class description
+        $docBlock = null;
         $description = $this->schema['description'] ?? '';
         if ($description !== '') {
-            $doc = new DocBlockGenerator($this->schema['description']);
-            $doc->setWordWrap(false);
-            $cls->setDocBlock($doc);
+            $docBlock = new DocBlockGenerator($this->schema['description']);
+            $docBlock->setWordWrap(false);
         }
 
-        // Invoke a hook
-        $this->request->onClassCreated($cls);
+        $classGenerator = new LaminasClassGenerator(
+            name:           $this->request->getTargetClass(),
+            namespaceName:  $this->request->getTargetNamespace(),
+            flags:          null,
+            extends:        null,
+            interfaces:     [],
+            properties:     $propertyGenerators,
+            methods:        $methodGenerators,
+            docBlock:       $docBlock,
+        );
 
-        return $cls;
+        // Invoke a hook where user can modify class generator
+        $this->request->onClassCreated($classGenerator);
+
+        $fileGenerator = new FileGenerator();
+        $fileGenerator->setClasses([$classGenerator]);
+
+        if ($this->request->isAtLeastPHP('7.0') && !$this->request->getOptions()->getDisableStrictTypes()) {
+            $fileGenerator->setDeclares([DeclareStatement::strictTypes(1)]);
+        }
+
+        return $fileGenerator;
+    }
+
+    /** 
+     * Performs adjustements that Laminas can't handle:
+     * Removes redundant namespace specifiers, namespace separators, etc.
+     */
+    private function postProcessContents(string $content)
+    {
+        // remove redundant `\` before `self`
+        $content = preg_replace('/: \\\self/', ': self', $content);
+
+        // remove current namespace everywhere
+        $targetNs = $this->request->getTargetNamespace();
+        $nsPattern = '/\\\\' . preg_quote($targetNs, '/') . '\\\\/';
+        $content = preg_replace($nsPattern, '', $content);
+
+        // remove `\` before classes in the current namespace
+        // TODO: Make sure this works when different classes have different namespaces in Spec options!
+        $ownClasses = $this->request->getGeneratedClassNames();
+        if ($ownClasses) {
+            $escapedOwnClasses = array_map(fn ($n) => preg_quote($n, '/'), $ownClasses);
+            $classesPattern = '/\\\\(' . join('|', $escapedOwnClasses) . ')(?=\s|[,;)|]|$)/';
+            $content = preg_replace($classesPattern, '$1', $content);
+        }
+
+        return $content;
     }
 }

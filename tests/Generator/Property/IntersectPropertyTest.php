@@ -29,6 +29,8 @@ class IntersectPropertyTest extends TestCase
             new ValidatedSpecificationFilesItem("BarNs", "Foo", ""),
             new SpecificationOptions(),
         );
+        $this->generatorRequest->setCurrValidateArgAlias('validate');
+        $this->generatorRequest->setCurrReqHasDefaults(false);
         $this->property = new IntersectProperty('myPropertyName', ['allOf' => []], $this->generatorRequest);
     }
 
@@ -51,7 +53,7 @@ class IntersectPropertyTest extends TestCase
         $result = $underTest->convertInputToType('variable', 'providedOptionals');
 
         $expected = <<<'EOCODE'
-$myPropertyName = FooMyPropertyName::buildFromInput($variable->{'myPropertyName'}, $validate);
+$myPropertyName = FooMyPropertyName::fromInput($variable->{'myPropertyName'}, $validate);
 EOCODE;
 
         assertSame($expected, $result);
@@ -59,10 +61,10 @@ EOCODE;
 
     public function testConvertTypeToArray()
     {
-        $result = $this->property->convertTypeToArray('variable');
+        $result = $this->property->convertTypeToArray();
 
         $expected = <<<'EOCODE'
-$variable['myPropertyName'] = ($this->myPropertyName)->toArray();
+$output['myPropertyName'] = ($this->myPropertyName)->toArray();
 EOCODE;
 
         assertSame($expected, $result);
@@ -70,10 +72,10 @@ EOCODE;
 
     public function testConvertTypeToStdClass()
     {
-        $result = $this->property->convertTypeToStdClass('variable');
+        $result = $this->property->convertTypeToStdClass();
 
         $expected = <<<'EOCODE'
-$variable->{'myPropertyName'} = ($this->myPropertyName)->toStdClass();
+$output->{'myPropertyName'} = ($this->myPropertyName)->toStdClass();
 EOCODE;
 
         assertSame($expected, $result);

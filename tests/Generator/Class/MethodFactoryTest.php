@@ -25,9 +25,13 @@ class MethodFactoryTest extends TestCase
             new SpecificationOptions(),
         );
 
-        $factory = new ClassMethodFactory($req);
         $schemaProperties = (new SchemaPropertyCollector())->collectPropertiesFromSchema($schema, $req);
-        $classMethods = $factory->generateMethods($schemaProperties, [], false);
+        $classMethods = (new ClassMethodFactory(
+            $req,
+            $schemaProperties,
+            [],
+            false,
+        ))->generateMethods();
 
         $names = array_map(static fn ($m) => $m->getName(), $classMethods);
         self::assertNotContains('__construct', $names);

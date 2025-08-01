@@ -123,11 +123,11 @@ class MyClassEnsureArgs1Alternative2
      * @return MyClassEnsureArgs1Alternative2 Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true, bool $materializeDefaults = false)
+    public static function fromInput($input, bool $validate = true, bool $materializeDefaults = false)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($input)
+                'Input to fromInput must be array or object, got ' . gettype($input)
             );
         }
 

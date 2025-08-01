@@ -278,11 +278,11 @@ class Record
      * @return Record Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true): Record
+    public static function fromInput($input, bool $validate = true): Record
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($input)
+                'Input to fromInput must be array or object, got ' . gettype($input)
             );
         }
 
@@ -292,15 +292,15 @@ class Record
         }
 
         $dataArray = isset($input->{'dataArray'}) ? array_map(
-            fn($i) => Phone::buildFromInput($i, $validate),
+            fn($i) => Phone::fromInput($i, $validate),
             $input->{'dataArray'}
         ) : null;
         $dataArrayNested = isset($input->{'dataArrayNested'}) ? array_map(fn($i) => array_map(
-            fn($i) => Phone::buildFromInput($i, $validate),
+            fn($i) => Phone::fromInput($i, $validate),
             $i
         ), $input->{'dataArrayNested'}) : null;
-        $dataArrayAnyOf = isset($input->{'dataArrayAnyOf'}) ? array_map(fn($i) => ((Fio::validateInput($i, true)) ? Fio::buildFromInput($i, $validate) : (((Phone::validateInput($i, true)) ? Phone::buildFromInput($i, $validate) : (null)))), $input->{'dataArrayAnyOf'}) : null;
-        $dataArrayNestedAnyOf = isset($input->{'dataArrayNestedAnyOf'}) ? array_map(fn($i) => array_map(fn($i) => ((Fio::validateInput($i, true)) ? Fio::buildFromInput($i, $validate) : (((Phone::validateInput($i, true)) ? Phone::buildFromInput($i, $validate) : (null)))), $i), $input->{'dataArrayNestedAnyOf'}) : null;
+        $dataArrayAnyOf = isset($input->{'dataArrayAnyOf'}) ? array_map(fn($i) => ((Fio::validateInput($i, true)) ? Fio::fromInput($i, $validate) : (((Phone::validateInput($i, true)) ? Phone::fromInput($i, $validate) : (null)))), $input->{'dataArrayAnyOf'}) : null;
+        $dataArrayNestedAnyOf = isset($input->{'dataArrayNestedAnyOf'}) ? array_map(fn($i) => array_map(fn($i) => ((Fio::validateInput($i, true)) ? Fio::fromInput($i, $validate) : (((Phone::validateInput($i, true)) ? Phone::fromInput($i, $validate) : (null)))), $i), $input->{'dataArrayNestedAnyOf'}) : null;
 
         $obj = new self();
         $obj->dataArray = $dataArray;

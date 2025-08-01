@@ -80,7 +80,7 @@ class ObjDef
      * @return ObjDef Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): ObjDef
+    public static function fromInput(array|object $input, bool $validate = true): ObjDef
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {

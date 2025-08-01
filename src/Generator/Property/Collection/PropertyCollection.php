@@ -36,15 +36,15 @@ class PropertyCollection implements \Iterator
         return join("\n", $conv);
     }
 
-    public function generateTypeToArrayConversionCode(string $outputVarName): string
+    public function generateTypeToArrayConversionCode(): string
     {
-        $conv = array_map(fn ($p) => $p->convertTypeToArray($outputVarName), $this->properties);
+        $conv = array_map(fn ($p) => $p->convertTypeToArray(), $this->properties);
         return join("\n", $conv);
     }
 
-    public function generateTypeToStdClassConversionCode(string $outputVarName): string
+    public function generateTypeToStdClassConversionCode(): string
     {
-        $conv = array_map(fn ($p) => $p->convertTypeToStdClass($outputVarName), $this->properties);
+        $conv = array_map(fn ($p) => $p->convertTypeToStdClass(), $this->properties);
         return join("\n", $conv);
     }
 

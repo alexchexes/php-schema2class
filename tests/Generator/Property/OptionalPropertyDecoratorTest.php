@@ -79,9 +79,9 @@ class OptionalPropertyDecoratorTest extends TestCase
     {
         $this->innerProperty->name()->shouldBeCalled()->willReturn('myPropertyName');
         $this->innerProperty->allowsNull()->shouldBeCalled()->willReturn(false);
-        $this->innerProperty->convertTypeToArray('variable')->shouldBeCalled()->willReturn('echo "InnerCode";');
+        $this->innerProperty->convertTypeToArray()->shouldBeCalled()->willReturn('echo "InnerCode";');
 
-        $result = $this->decorator->convertTypeToArray('variable');
+        $result = $this->decorator->convertTypeToArray();
 
         $expected = <<<'EOCODE'
 if (isset($this->myPropertyName)) {
@@ -96,9 +96,9 @@ EOCODE;
     {
         $this->innerProperty->name()->shouldBeCalled()->willReturn('myPropertyName');
         $this->innerProperty->allowsNull()->shouldBeCalled()->willReturn(false);
-        $this->innerProperty->convertTypeToStdClass('variable')->shouldBeCalled()->willReturn('echo "InnerCode";');
+        $this->innerProperty->convertTypeToStdClass()->shouldBeCalled()->willReturn('echo "InnerCode";');
 
-        $result = $this->decorator->convertTypeToStdClass('variable');
+        $result = $this->decorator->convertTypeToStdClass();
 
         $expected = <<<'EOCODE'
 if (isset($this->myPropertyName)) {

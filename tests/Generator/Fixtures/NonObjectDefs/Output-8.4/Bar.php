@@ -80,7 +80,7 @@ class Bar
      * @return Bar Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): Bar
+    public static function fromInput(array|object $input, bool $validate = true): Bar
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {

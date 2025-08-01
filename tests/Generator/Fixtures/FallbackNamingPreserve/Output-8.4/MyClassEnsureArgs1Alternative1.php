@@ -79,7 +79,7 @@ class MyClassEnsureArgs1Alternative1
      * @return MyClassEnsureArgs1Alternative1 Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true, bool $materializeDefaults = false): MyClassEnsureArgs1Alternative1
+    public static function fromInput(array|object $input, bool $validate = true, bool $materializeDefaults = false): MyClassEnsureArgs1Alternative1
     {
         $input = is_array($input)
             ? \JsonSchema\Validator::arrayToObjectRecursive($input)
