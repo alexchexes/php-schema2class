@@ -115,19 +115,22 @@ class BuildMethodFactory
         return $newName;
     }
 
+    /** 
+     * Generates the whole `buildFromInput` method body and returns it as a string.
+     */
     private function generateBody(): string
     {
-        $objVarName = $this->ensureUniqueName(self::OBJ_VAR_NAME);
-        $providedOptionalsVarName = $this->ensureUniqueName('_'.PropertyNames::OPTIONALS_PROP);
-
         $inputArgAlias = $this->ensureUniqueName(self::INPUT_ARG_NAME);
         $validateArgAlias = $this->ensureUniqueName(self::VALIDATE_ARG_NAME);
         $materializeArgAlias = $this->ensureUniqueName(self::DEFAULTS_ARG_NAME);
 
+        $providedOptionalsVarName = $this->ensureUniqueName('_'.PropertyNames::OPTIONALS_PROP);
+        $objVarName = $this->ensureUniqueName(self::OBJ_VAR_NAME);
+
         // TODO: find another way to propagate aliases names instead of mutating GeneratorRequest
         $this->request->setCurrValidateArgAlias($validateArgAlias);
         $this->request->setCurrMaterializeArgAlias($this->defaults ? $materializeArgAlias : null);
-
+        
         $arrayToObjectExpr = $this->request->getOptions()->getArrayToObjectExpr();
 
         $bodyParts = [
@@ -159,24 +162,38 @@ class BuildMethodFactory
         return $body;
     }
 
+    /** 
+     * When there are collisions between internal var names and schema properties,
+     * it generates a block such as:
+     * ```
+     *     $_input = $input;
+     *     unset($input);
+     *     $_validate = $validate;
+     *     unset($validate);
+     *     $_materializeDefaults = $materializeDefaults;
+     *     unset($materializeDefaults);
+     * ```
+     */
     private function bodyVarAliases(string $inputArgAlias, string $validateArgAlias, string $materializeArgAlias): string
     {
         $aliases = '';
 
-        // let's accept https://wiki.php.net/rfc/arbitrary_string_interpolation so we don't do this:
-        $INPUT_ARG_NAME = self::INPUT_ARG_NAME;
-        $VALIDATE_ARG_NAME = self::VALIDATE_ARG_NAME;
-        $DEFAULTS_ARG_NAME = self::DEFAULTS_ARG_NAME;
+        $setAndUnset = static fn(string $set, string $unset): string =>
+            <<<PHP
+            \${$set} = \$$unset;
+            unset(\$$unset);\n
+            PHP;
 
-        if (self::INPUT_ARG_NAME !== $inputArgAlias) {
-            $aliases .= "\${$inputArgAlias} = \${$INPUT_ARG_NAME};\nunset(\${$INPUT_ARG_NAME});\n";
+        if ($inputArgAlias !== self::INPUT_ARG_NAME) {
+            $aliases .= $setAndUnset($inputArgAlias, self::INPUT_ARG_NAME);
         }
-        if (self::VALIDATE_ARG_NAME !== $validateArgAlias) {
-            $aliases .= "\${$validateArgAlias} = \${$VALIDATE_ARG_NAME};\nunset(\${$VALIDATE_ARG_NAME});\n";
+        if ($validateArgAlias !== self::VALIDATE_ARG_NAME) {
+            $aliases .= $setAndUnset($validateArgAlias, self::VALIDATE_ARG_NAME);
         }
-        if (self::DEFAULTS_ARG_NAME !== $materializeArgAlias) {
-            $aliases .= "\${$materializeArgAlias} = \${$DEFAULTS_ARG_NAME};\nunset(\${$DEFAULTS_ARG_NAME});\n";
+        if ($materializeArgAlias !== self::DEFAULTS_ARG_NAME) {
+            $aliases .= $setAndUnset($materializeArgAlias, self::DEFAULTS_ARG_NAME);
         }
+
         if ($aliases) {
             $aliases .= "\n";
         }
@@ -184,6 +201,16 @@ class BuildMethodFactory
         return $aliases;
     }
 
+    /** 
+     * When target PHP version is below 8, it generates block such as:
+     * ```
+     *     if (!is_array($input) && !is_object($input)) {
+     *         throw new \InvalidArgumentException(
+     *             'Input to buildFromInput must be array or object, got ' . gettype($input)
+     *         );
+     *     }
+     * ```
+     */
     private function bodyInputGuard(string $inputArgAlias): string
     {
         if ($this->request->isAtLeastPHP('8.0')) {
@@ -202,6 +229,18 @@ class BuildMethodFactory
         return $inputGuard;
     }
 
+    /** 
+     * Generates block like 
+     * ```
+     *     $input = is_array($input)
+     *         ? \JsonSchema\Validator::arrayToObjectRecursive($input)
+     *         : ($_materializeDefaults ? clone $input : $input);
+     * ```
+     * or
+     * ```
+     * $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
+     * ```
+     */
     private function bodyInputToObjectConversion(string $inputArgAlias, string $materializeArgAlias, string $arrayToObjectExpr): string
     {
         $inputToObjectConversion = '';
@@ -231,12 +270,28 @@ class BuildMethodFactory
         return $inputToObjectConversion;
     }
 
+    /** 
+     * When there is "defaults" in schema, it generates block for assigning the
+     * default values to input, depending on `materializeDefault` argument, like this:
+     * ```
+     *     if ($materializeDefaults) {
+     *         foreach (self::$_defaults as $__k => $__v) {
+     *             if (!property_exists($input, (string) $__k)) {
+     *                 $input->{$__k} = ($__v['type'] ?? null) === 'object'
+     *                     ? \JsonSchema\Validator::arrayToObjectRecursive($__v['default'])
+     *                     : $__v['default'];
+     *             }
+     *         }
+     *     }
+     * ```
+     */
     private function bodyMaterializeDefaultsBlock(string $inputArgAlias, string $materializeArgAlias, string $arrayToObjectExpr): string
     {
         if (!$this->defaults) {
             return '';
         }
 
+        // let's accept https://wiki.php.net/rfc/arbitrary_string_interpolation so we don't do this:
         $DEFAULTS_PROP = PropertyNames::DEFAULTS_PROP;
 
         $materializeDefaultsBlock = 
@@ -255,6 +310,14 @@ class BuildMethodFactory
         return $materializeDefaultsBlock;
     }
 
+    /** 
+     * Generates block like:
+     * ```
+     *     if ($validate) {
+     *         static::validateInput($input);
+     *     }
+     * ```
+     */
     private function bodyInputValidation(string $inputArgAlias, string $validateArgAlias): string
     {
         $inputValidation =
@@ -267,6 +330,12 @@ class BuildMethodFactory
         return $inputValidation;
     }
 
+    /** 
+     * If schema has optional nullables, it generates line:
+     * ```
+     *     $__providedOptionals = [];
+     * ```
+     */
     private function bodyCreateProvidedOptionalsVar(string $providedOptionalsVarName): string
     {
         return $this->hasOptionalNullable
@@ -274,11 +343,30 @@ class BuildMethodFactory
             : '';
     }
 
+    /** 
+     * Calls `PropertyCollection::generateInputToTypeConversionCode` to generate the whole
+     * conversions block where each schema property type mapped to appropriate PHP type
+     * and assigned to a local var:
+     * ```
+     *     $foo = $input->{'foo'};
+     *     $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
+     *     $baz = isset($input->{'baz'}) ? Baz::buildFromInput($input->{'baz'}, $validate) : null;
+     *     if (property_exists($input, 'qux')) {
+     *     //………
+     * ```
+     */
     private function bodySchemaPropertyVars(string $inputArgAlias, string $providedOptionalsVarName): string
     {
         return $this->schemaProperties->generateInputToTypeConversionCode($inputArgAlias, $providedOptionalsVarName) . "\n\n";
     }
 
+    /**
+     * Generates an expression that creates a new instance of the current class,
+     * passing all necessary arguments to the constructor in the correct order:
+     * ``` 
+     *     $obj = new self($city, $street, $country);
+     * ```
+     */
     private function bodyCreateNewInstance(string $objVarName): string
     {
         $requiredProperties = $this->schemaProperties->filter(PropertyCollectionFilterFactory::required());
@@ -292,6 +380,15 @@ class BuildMethodFactory
         return $createNewInstance;
     }
 
+    /**
+     * Generates set of assignments of local variables holding schema property values
+     * to according properties of the created instance of the class:
+     * ``` 
+     *     $obj->bar = $bar;
+     *     $obj->baz = $baz;
+     *     $obj->qux = $qux;
+     * ```
+     */
     private function bodyAssignOptionalsToInstance(string $objVarName): string
     {
         
@@ -306,6 +403,13 @@ class BuildMethodFactory
         return $assignOptionalsToInstance;
     }
 
+    /** 
+     * Generates an assignment of the local `__providedOptionals` var
+     * to the `_providedOptionals` property of the created instance of the class:
+     * ```
+     *     $obj->_providedOptionals = $__providedOptionals;
+     * ```
+     */
     private function bodyAssignProvidedOptionalsProperty(string $objVarName, string $providedOptionalsVarName): string
     {
         return $this->hasOptionalNullable
