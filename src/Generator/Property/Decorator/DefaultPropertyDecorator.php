@@ -4,8 +4,6 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class\Generator\Property\Decorator;
 
 use Helmich\Schema2Class\Generator\Property\Type\PropertyInterface;
-use Helmich\Schema2Class\Generator\Property\RenameablePropertyInterface;
-use Helmich\Schema2Class\Generator\SchemaToClass;
 use Helmich\Schema2Class\Util\StringUtils;
 use Helmich\Schema2Class\Writer\WriterInterface;
 use Laminas\Code\Generator\PropertyValueGenerator;
@@ -14,7 +12,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Decorator that injects default value support to another property.
  */
-class DefaultPropertyDecorator implements PropertyDecoratorInterface, RenameablePropertyInterface
+class DefaultPropertyDecorator implements PropertyDecoratorInterface
 {
     private string $key;
 
@@ -159,9 +157,7 @@ class DefaultPropertyDecorator implements PropertyDecoratorInterface, Renameable
 
     public function setName(string $name): void
     {
-        if ($this->inner instanceof RenameablePropertyInterface) {
-            $this->inner->setName($name);
-        }
+        $this->inner->setName($name);
     }
 
     public function allowsNull(): bool { return $this->inner->allowsNull(); }

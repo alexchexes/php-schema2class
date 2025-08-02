@@ -5,8 +5,6 @@ namespace Helmich\Schema2Class\Generator\Property\Type;
 
 use Helmich\Schema2Class\Generator\Class\Method\SerializeMethodFactory;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
-use Helmich\Schema2Class\Generator\Property\RenameablePropertyInterface;
-use Helmich\Schema2Class\Generator\SchemaToClass;
 use Helmich\Schema2Class\Util\StringUtils;
 use Helmich\Schema2Class\Writer\WriterInterface;
 use Laminas\Code\Generator\PropertyValueGenerator;
@@ -18,7 +16,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  * Subclasses implement the actual mapping, type hints and validation logic for
  * a specific JSON Schema type.
  */
-abstract class AbstractProperty implements PropertyInterface, RenameablePropertyInterface
+abstract class AbstractProperty implements PropertyInterface
 {
     protected string $key;
 

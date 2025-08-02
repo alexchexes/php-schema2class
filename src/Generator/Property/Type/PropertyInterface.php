@@ -46,6 +46,12 @@ interface PropertyInterface
     public function name(): string;
 
     /** 
+     * Sets property name used for generating class property.
+     * Allows renaming property when collisions detected.
+     */
+    public function setName(string $name): void;
+
+    /** 
      * Gets the string from "description" field in the schema
      */
     public function description(): ?string;

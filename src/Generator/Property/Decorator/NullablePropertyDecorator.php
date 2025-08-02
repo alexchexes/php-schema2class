@@ -4,12 +4,9 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class\Generator\Property\Decorator;
 
 use Composer\Semver\Semver;
-use Helmich\Schema2Class\Generator\Class\Method\SerializeMethodFactory;
 use Helmich\Schema2Class\Generator\Property\Type\NullProperty;
 use Helmich\Schema2Class\Generator\Property\Type\PropertyInterface;
 use Helmich\Schema2Class\Generator\Property\Type\StringProperty;
-use Helmich\Schema2Class\Generator\Property\RenameablePropertyInterface;
-use Helmich\Schema2Class\Generator\SchemaToClass;
 use Helmich\Schema2Class\Writer\WriterInterface;
 use Laminas\Code\Generator\PropertyValueGenerator;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -18,7 +15,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  * Decorator that wraps another property to allow `null` values in addition to
  * its normal type.
  */
-class NullablePropertyDecorator implements PropertyDecoratorInterface, RenameablePropertyInterface
+class NullablePropertyDecorator implements PropertyDecoratorInterface
 {
     protected string $key;
     protected PropertyInterface $inner;
@@ -209,8 +206,6 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface, Renameabl
 
     public function setName(string $name): void
     {
-        if ($this->inner instanceof RenameablePropertyInterface) {
-            $this->inner->setName($name);
-        }
+        $this->inner->setName($name);
     }
 }

@@ -7,7 +7,6 @@ use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\Collection\PropertyCollection;
 use Helmich\Schema2Class\Generator\Property\PropertyBuilder;
 use Helmich\Schema2Class\Generator\Property\Decorator\OptionalPropertyDecorator;
-use Helmich\Schema2Class\Generator\Property\RenameablePropertyInterface;
 use Helmich\Schema2Class\Util\ReservedNames;
 use Helmich\Schema2Class\Util\SchemaUtils;
 use Helmich\Schema2Class\Util\StringUtils;
@@ -179,7 +178,7 @@ class SchemaPropertyCollector
                 }
             }
 
-            if ($unique !== $base && $schemaProp instanceof RenameablePropertyInterface) {
+            if ($unique !== $base) {
                 $schemaProp->setName($unique);
             }
 
