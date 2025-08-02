@@ -80,7 +80,9 @@ Now it:
 
 ### Breaking changes
 
-- The `toJson` method of the generated class was renamed to `toArray` to reflect its purpose.
+- The `toJson` method of the generated class was renamed to `toArray` to reflect its purpose (`toStdClass` method is added but it is not breaking).
+
+- The `buildFromInput` method of the generated class was renamed to `fromInput`.
 
 - The `treatValuesWithDefaultAsOptional` option was removed in favor of the runtime options `$materializeDefaults` in `fromInput()` and `$includeDefaults` in `toArray()`.
 
