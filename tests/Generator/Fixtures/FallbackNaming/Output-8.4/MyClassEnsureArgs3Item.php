@@ -11,7 +11,7 @@ class MyClassEnsureArgs3Item
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'properties' => [
             'name' => [
                 'type' => 'string',
@@ -53,7 +53,7 @@ class MyClassEnsureArgs3Item
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($name, self::$schema['properties']['name']);
+            $validator->validate($name, self::$_schema['properties']['name']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -174,7 +174,7 @@ class MyClassEnsureArgs3Item
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {

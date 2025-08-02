@@ -11,7 +11,7 @@ class Name
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'type' => 'object',
         'properties' => [
             'first' => [
@@ -42,7 +42,7 @@ class Name
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($first, self::$schema['properties']['first']);
+            $validator->validate($first, self::$_schema['properties']['first']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -129,7 +129,7 @@ class Name
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {

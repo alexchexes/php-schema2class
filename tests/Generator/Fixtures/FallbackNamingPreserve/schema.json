@@ -22,10 +22,13 @@
 
     "fromInput",
     "toArray",
+    "toStdClass",
     "validateInput",
 
+    "_schema",
     "schema",
     "_defaults",
+    "defaults",
     "_providedOptionals",
 
     "clone",
@@ -43,7 +46,8 @@
     "__debugInfo",
     "__clone",
 
-    "files"
+    "files",
+    "this"
   ],
   "properties": {
     "_GLOBALS": { "type": "string" },
@@ -74,10 +78,13 @@
 
     "fromInput": { "type": "string" },
     "toArray": { "type": "string" },
+    "toStdClass": { "type": "string" },
     "validateInput": { "type": "string" },
 
+    "_schema": { "type": "string" },
     "schema": { "type": "string" },
     "_defaults": { "type": "string", "default": "foo" },
+    "defaults": { "type": "string", "default": "foo" },
     "_providedOptionals": { "type": "string" },
     "__providedOptionals": { "type": "string" },
 
@@ -97,6 +104,7 @@
     "__clone": { "type": "string" },
 
     "files": { "type": "string" },
+    "this": { "type": "string" },
 
     "ensureArgs1": {
       "oneOf": [
