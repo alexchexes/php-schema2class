@@ -26,7 +26,7 @@ class ClassPropertySuiteFactory
     public function generateProperties()
     {
         $validationSchemaFactory = new ValidationSchemaPropertyFactory($this->request, $this->schema);
-        $providedOptionalsFactory = new ProvidedOptionalsPropertyFactory($this->request, $this->schema);
+        $providedOptionalsFactory = new ProvidedOptionalsPropertyFactory($this->request);
         $defaultsFactory = new DefaultsPropertyFactory($this->request, $this->defaults);
         $schemaPropertyFactory = new SchemaPropertyFactory($this->request);
 
