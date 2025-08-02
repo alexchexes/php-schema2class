@@ -52,6 +52,7 @@ class MyClass
             '__debugInfo',
             '__clone',
             'files',
+            'this',
         ],
         'properties' => [
             '_GLOBALS' => [
@@ -190,6 +191,9 @@ class MyClass
                 'type' => 'string',
             ],
             'files' => [
+                'type' => 'string',
+            ],
+            'this' => [
                 'type' => 'string',
             ],
             'ensureArgs1' => [
@@ -489,6 +493,11 @@ class MyClass
     private string $files;
 
     /**
+     * @var string
+     */
+    private string $_this;
+
+    /**
      * @var MyClassEnsureArgs1Alternative1|MyClassEnsureArgs1Alternative2|string|null
      */
     private $ensureArgs1 = null;
@@ -543,8 +552,9 @@ class MyClass
      * @param string $_debugInfo_1
      * @param string $_clone_2
      * @param string $files
+     * @param string $_this
      */
-    public function __construct(string $_GLOBALS_1, string $_GLOBALS_2, string $_GLOBALS1_1, string $_SERVER_1, string $_GET_1, string $_POST_1, string $_FILES_1, string $_REQUEST_1, string $_SESSION_1, string $_ENV_1, string $_COOKIE_1, string $_phpErrormsg, string $_httpResponseHeader, string $_argc, string $_argv, string $input, string $obj, string $includeDefaults, string $_fromInput_1, string $_toArray_1, string $_validateInput_1, string $_schema, string $_defaults_1, string $_providedOptionals_1, string $_clone_1, string $_construct_1, string $_destruct_1, string $_get_2, string $_set_1, string $_call_1, string $_isset_1, string $_unset_1, string $_sleep_1, string $_wakeup_1, string $_toString_1, string $_invoke_1, string $_debugInfo_1, string $_clone_2, string $files)
+    public function __construct(string $_GLOBALS_1, string $_GLOBALS_2, string $_GLOBALS1_1, string $_SERVER_1, string $_GET_1, string $_POST_1, string $_FILES_1, string $_REQUEST_1, string $_SESSION_1, string $_ENV_1, string $_COOKIE_1, string $_phpErrormsg, string $_httpResponseHeader, string $_argc, string $_argv, string $input, string $obj, string $includeDefaults, string $_fromInput_1, string $_toArray_1, string $_validateInput_1, string $_schema, string $_defaults_1, string $_providedOptionals_1, string $_clone_1, string $_construct_1, string $_destruct_1, string $_get_2, string $_set_1, string $_call_1, string $_isset_1, string $_unset_1, string $_sleep_1, string $_wakeup_1, string $_toString_1, string $_invoke_1, string $_debugInfo_1, string $_clone_2, string $files, string $_this)
     {
         $this->_GLOBALS_1 = $_GLOBALS_1;
         $this->_GLOBALS_2 = $_GLOBALS_2;
@@ -585,6 +595,7 @@ class MyClass
         $this->_debugInfo_1 = $_debugInfo_1;
         $this->_clone_2 = $_clone_2;
         $this->files = $files;
+        $this->_this = $_this;
     }
 
     /**
@@ -1872,6 +1883,35 @@ class MyClass
     }
 
     /**
+     * @return string
+     */
+    public function getThis(): string
+    {
+        return $this->_this;
+    }
+
+    /**
+     * @param string $_this
+     * @return self
+     * @param bool $validate
+     */
+    public function withThis(string $_this, bool $validate = true): self
+    {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($_this, self::$schema['properties']['this']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
+        $clone = clone $this;
+        $clone->_this = $_this;
+
+        return $clone;
+    }
+
+    /**
      * @return MyClassEnsureArgs1Alternative1|MyClassEnsureArgs1Alternative2|string|null
      */
     public function getEnsureArgs1()
@@ -2062,11 +2102,12 @@ class MyClass
         $_debugInfo_1 = $_input->{'__debugInfo'};
         $_clone_2 = $_input->{'__clone'};
         $files = $_input->{'files'};
+        $_this = $_input->{'this'};
         $ensureArgs1 = isset($_input->{'ensureArgs1'}) ? ((is_string($_input->{'ensureArgs1'})) ? $_input->{'ensureArgs1'} : (((MyClassEnsureArgs1Alternative2::validateInput($_input->{'ensureArgs1'}, true)) ? MyClassEnsureArgs1Alternative2::fromInput($_input->{'ensureArgs1'}, $_validate, $_materializeDefaults) : (((MyClassEnsureArgs1Alternative1::validateInput($_input->{'ensureArgs1'}, true)) ? MyClassEnsureArgs1Alternative1::fromInput($_input->{'ensureArgs1'}, $_validate, $_materializeDefaults) : (null)))))) : null;
         $ensureArgs2 = isset($_input->{'ensureArgs2'}) ? MyClassEnsureArgs2::fromInput($_input->{'ensureArgs2'}, $_validate, $_materializeDefaults) : null;
         $ensureArgs3 = isset($_input->{'ensureArgs3'}) ? array_map(fn ($i): MyClassEnsureArgs3Item => MyClassEnsureArgs3Item::fromInput($i, $_validate, $_materializeDefaults), $_input->{'ensureArgs3'}) : null;
 
-        $_obj = new self($_GLOBALS_1, $_GLOBALS_2, $_GLOBALS1_1, $_SERVER_1, $_GET_1, $_POST_1, $_FILES_1, $_REQUEST_1, $_SESSION_1, $_ENV_1, $_COOKIE_1, $_phpErrormsg, $_httpResponseHeader, $_argc, $_argv, $input, $obj, $includeDefaults, $_fromInput_1, $_toArray_1, $_validateInput_1, $_schema, $_defaults_1, $_providedOptionals_1, $_clone_1, $_construct_1, $_destruct_1, $_get_2, $_set_1, $_call_1, $_isset_1, $_unset_1, $_sleep_1, $_wakeup_1, $_toString_1, $_invoke_1, $_debugInfo_1, $_clone_2, $files);
+        $_obj = new self($_GLOBALS_1, $_GLOBALS_2, $_GLOBALS1_1, $_SERVER_1, $_GET_1, $_POST_1, $_FILES_1, $_REQUEST_1, $_SESSION_1, $_ENV_1, $_COOKIE_1, $_phpErrormsg, $_httpResponseHeader, $_argc, $_argv, $input, $obj, $includeDefaults, $_fromInput_1, $_toArray_1, $_validateInput_1, $_schema, $_defaults_1, $_providedOptionals_1, $_clone_1, $_construct_1, $_destruct_1, $_get_2, $_set_1, $_call_1, $_isset_1, $_unset_1, $_sleep_1, $_wakeup_1, $_toString_1, $_invoke_1, $_debugInfo_1, $_clone_2, $files, $_this);
         $_obj->validate = $validate;
         $_obj->materializeDefaults = $materializeDefaults;
         $_obj->testObj = $testObj;
@@ -2138,6 +2179,7 @@ class MyClass
         $output['__debugInfo'] = $this->_debugInfo_1;
         $output['__clone'] = $this->_clone_2;
         $output['files'] = $this->files;
+        $output['this'] = $this->_this;
         if (isset($this->ensureArgs1)) {
             if (($this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative1) || ($this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative2)) {
                 $output['ensureArgs1'] = ($this->ensureArgs1)->toArray($includeDefaults);
@@ -2223,6 +2265,7 @@ class MyClass
         $output->{'__debugInfo'} = $this->_debugInfo_1;
         $output->{'__clone'} = $this->_clone_2;
         $output->{'files'} = $this->files;
+        $output->{'this'} = $this->_this;
         if (isset($this->ensureArgs1)) {
             if (($this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative1) || ($this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative2)) {
             $output->{'ensureArgs1'} = ($this->ensureArgs1)->toStdClass($includeDefaults);

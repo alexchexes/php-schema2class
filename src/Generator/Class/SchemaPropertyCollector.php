@@ -8,6 +8,7 @@ use Helmich\Schema2Class\Generator\Property\Collection\PropertyCollection;
 use Helmich\Schema2Class\Generator\Property\PropertyBuilder;
 use Helmich\Schema2Class\Generator\Property\Decorator\OptionalPropertyDecorator;
 use Helmich\Schema2Class\Generator\Property\RenameablePropertyInterface;
+use Helmich\Schema2Class\Util\ReservedNames;
 use Helmich\Schema2Class\Util\SchemaUtils;
 use Helmich\Schema2Class\Util\StringUtils;
 
@@ -135,46 +136,8 @@ class SchemaPropertyCollector
     
     private function ensureUniquePropertyNames(PropertyCollection $schemaProperties, bool $preservePropertyNames): void
     {
-        $reservedPropertyNames = [
-            '_GLOBALS',
-            'GLOBALS',
-            '_SERVER',
-            '_GET',
-            '_POST',
-            '_FILES',
-            '_REQUEST',
-            '_SESSION',
-            '_ENV',
-            '_COOKIE',
-            'php_errormsg',
-            'http_response_header',
-            'argc',
-            'argv',
-            PropertyNames::SCHEMA,
-            PropertyNames::DEFAULTS,
-            PropertyNames::OPTIONALS,
-        ];
-
-        $reservedMethodNames = [
-            MethodNames::FROM_INPUT,
-            MethodNames::TO_ARRAY,
-            MethodNames::TO_STD_CLASS,
-            MethodNames::VALIDATE_INPUT,
-            'clone',
-            '__construct',
-            '__destruct',
-            '__get',
-            '__set',
-            '__call',
-            '__isset',
-            '__unset',
-            '__sleep',
-            '__wakeup',
-            '__toString',
-            '__invoke',
-            '__debugInfo',
-            '__clone',
-        ];
+        $reservedPropertyNames = ReservedNames::getBannedVarNames();
+        $reservedMethodNames = ReservedNames::getBannedMethodNames();
 
         $used = [];
         foreach (array_merge($reservedPropertyNames, $reservedMethodNames) as $n) {
@@ -206,8 +169,10 @@ class SchemaPropertyCollector
 
                 $i = 1;
                 $baseUnique = $unique;
-                while (in_array($unique, $used, true)
-                    || (!$preservePropertyNames && in_array($pascal, $usedMethods, true))) {
+                while (
+                    in_array($unique, $used, true)
+                    || (!$preservePropertyNames && in_array($pascal, $usedMethods, true))
+                ) {
                     $unique = $baseUnique . '_' . $i;
                     $pascal = strtolower(StringUtils::safePascalCase($unique));
                     $i++;

@@ -14,25 +14,25 @@ class CloneMethodFactory
 
     public function generateCloneMethod(): ?MethodGenerator
     {
-        $clones = [];
+        $expressions = [];
 
         foreach ($this->schemaProperties as $property) {
-            $c = $property->cloneProperty();
-
-            if ($c !== null) {
-                $clones[] = $c;
-            }
+            $expressions[] = $property->cloneProperty();
         }
 
-        if ($clones === []) {
+        $expressions = array_values(array_filter($expressions));
+
+        if ($expressions === []) {
             return null;
         }
+        
+        $body = join("\n", $expressions);
 
         return new MethodGenerator(
             name: '__clone',
             parameters: [],
             flags: MethodGenerator::FLAG_PUBLIC,
-            body: join("\n", $clones),
+            body: $body,
         );
     }
 }

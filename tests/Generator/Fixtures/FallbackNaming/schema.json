@@ -43,7 +43,8 @@
     "__debugInfo",
     "__clone",
 
-    "files"
+    "files",
+    "this"
   ],
   "properties": {
     "_GLOBALS": { "type": "string" },
@@ -97,6 +98,7 @@
     "__clone": { "type": "string" },
 
     "files": { "type": "string" },
+    "this": { "type": "string" },
 
     "ensureArgs1": {
       "oneOf": [

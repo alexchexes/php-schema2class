@@ -6,6 +6,7 @@ namespace Helmich\Schema2Class\Generator\Class\Method;
 use Helmich\Schema2Class\Generator\Class\MethodNames;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\Collection\PropertyCollection;
+use Helmich\Schema2Class\Util\ReservedNames;
 use Laminas\Code\Generator\MethodGenerator;
 
 /**
@@ -59,26 +60,7 @@ class ClassMethodSuiteFactory
      */
     private function ensureUniqueMethodNames(array $methodGenerators): void
     {
-        $reservedMethodNames = [
-            MethodNames::FROM_INPUT,
-            MethodNames::TO_ARRAY,
-            MethodNames::TO_STD_CLASS,
-            MethodNames::VALIDATE_INPUT,
-            'clone',
-            '__construct',
-            '__destruct',
-            '__get',
-            '__set',
-            '__call',
-            '__isset',
-            '__unset',
-            '__sleep',
-            '__wakeup',
-            '__toString',
-            '__invoke',
-            '__debugInfo',
-            '__clone',
-        ];
+        $reservedMethodNames = ReservedNames::getBannedMethodNames();
 
         $reserved = array_map('strtolower', $reservedMethodNames);
         $used = [];
