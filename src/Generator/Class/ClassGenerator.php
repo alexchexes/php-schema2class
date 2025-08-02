@@ -8,6 +8,8 @@ use Helmich\Schema2Class\Generator\Class\Property\ClassPropertySuiteFactory;
 use Helmich\Schema2Class\Writer\WriterInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
+use Helmich\Schema2Class\Generator\PropertyGenerator;
+use Laminas\Code\Generator\MethodGenerator;
 use Laminas\Code\DeclareStatement;
 use Laminas\Code\Generator\ClassGenerator as LaminasClassGenerator;
 use Laminas\Code\Generator\DocBlockGenerator;
@@ -74,7 +76,7 @@ class ClassGenerator
     
     /**
      * @param PropertyGenerator[] $propertyGenerators
-     * @param MethodGenerator[] $methodGenerators
+     * @param MethodGenerator[]   $methodGenerators
      */
     private function prepareFileGenerator(array $propertyGenerators, array $methodGenerators): FileGenerator
     {

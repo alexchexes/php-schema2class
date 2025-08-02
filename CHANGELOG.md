@@ -38,6 +38,8 @@ Now it:
 - Improves type hints and PHPDoc type generation for complex types like unions, nested arrays, etc.
 - Adds a guard against passing anything other than an array/object to `fromInput`, building multi-line validation error messages.
 - Setter methods (`withX()`) now accept an optional `$validate` argument to be able skip validation, mirroring `fromInput()`.
+- Internal generation now consistently uses `SchemaToClassFactory` for nested types, enabling easier customization of the
+  generator instance.
 - Option `mutableSetters` allows generating mutable `setX()` methods (optionally chainable).
 - Skips emitting empty `__construct` or `__clone` methods.
 - Prints a notice when skipping `definitions` that do not describe an object.

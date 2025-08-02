@@ -5,7 +5,6 @@ namespace Helmich\Schema2Class\Generator\Property\Type;
 
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\PropertyBuilder;
-use Helmich\Schema2Class\Generator\SchemaToClass;
 use Helmich\Schema2Class\Writer\WriterInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 

@@ -207,6 +207,7 @@ class GenerationRunner
                 $schema,
                 $validated,
                 $opts,
+                $this->factory,
             ))->withRootDefinitions(
                 array_merge($schema['definitions'] ?? [], $schema['$defs'] ?? [])
             );

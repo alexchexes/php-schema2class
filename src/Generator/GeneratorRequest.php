@@ -14,6 +14,7 @@ use Helmich\Schema2Class\Generator\ReferenceLookup\ReferenceLookup;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
 use Helmich\Schema2Class\Spec\OptionsDefaults;
 use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
+use Helmich\Schema2Class\Generator\SchemaToClassFactory;
 use Helmich\Schema2Class\Loader\SchemaLoader;
 use Laminas\Code\Generator\MethodGenerator;
 use Laminas\Code\Generator\PropertyGenerator;
@@ -69,6 +70,8 @@ class GeneratorRequest
      */
     private bool $currReqHasDefaults;
 
+    private SchemaToClassFactory $factory;
+
     public static function normalizeTargetVersion(int|string $version): string
     {
         $mapped = match ($version) {
@@ -81,7 +84,12 @@ class GeneratorRequest
         return self::semversifyVersionNumber($mapped);
     }
 
-    public function __construct(array $schema, ValidatedSpecificationFilesItem $spec, SpecificationOptions $opts)
+    public function __construct(
+        array $schema,
+        ValidatedSpecificationFilesItem $spec,
+        SpecificationOptions $opts,
+        ?SchemaToClassFactory $factory = null,
+    )
     {
         $opts = OptionsDefaults::applyDefaults($opts);
         $opts = $opts->withTargetPHPVersion(
@@ -96,6 +104,7 @@ class GeneratorRequest
         $this->schema = $schema;
         $this->spec   = $spec;
         $this->opts   = $opts;
+        $this->factory = $factory ?? new SchemaToClassFactory();
     }
 
     /**
@@ -122,6 +131,11 @@ class GeneratorRequest
     public function getRawSchema(): ?object
     {
         return $this->rawSchema;
+    }
+
+    public function getSchemaToClassFactory(): SchemaToClassFactory
+    {
+        return $this->factory;
     }
 
     private static function semversifyVersionNumber(string|int $versionNumber): string

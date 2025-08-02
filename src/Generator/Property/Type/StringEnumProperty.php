@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class\Generator\Property\Type;
 
 use Helmich\Schema2Class\Generator\GeneratorException;
-use Helmich\Schema2Class\Generator\SchemaToClass;
 use Helmich\Schema2Class\Generator\Enum\SchemaToEnum;
 use Helmich\Schema2Class\Writer\WriterInterface;
 use Laminas\Code\Generator\PropertyValueGenerator;
@@ -42,7 +41,7 @@ class StringEnumProperty extends AbstractProperty
                 ->withSchema($this->schema)
                 ->withClass($this->subTypeName());
                 
-            $generator = new SchemaToClass($writer, $output);
+            $generator = $this->generatorRequest->getSchemaToClassFactory()->build($writer, $output);
             $generator->schemaToClass($this->propagateRootDefinitions($req));
         }
     }
