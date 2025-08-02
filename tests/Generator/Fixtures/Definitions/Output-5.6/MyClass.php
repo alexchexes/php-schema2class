@@ -81,14 +81,6 @@ class MyClass
     }
 
     /**
-     * @return Address|null
-     */
-    public function getAddress()
-    {
-        return $this->address;
-    }
-
-    /**
      * @param int $id
      * @return self
      * @param bool $validate
@@ -107,6 +99,14 @@ class MyClass
         $clone->id = $id;
 
         return $clone;
+    }
+
+    /**
+     * @return Address|null
+     */
+    public function getAddress()
+    {
+        return $this->address;
     }
 
     /**

@@ -273,6 +273,9 @@ class GeneratorRequest
         return $this->opts->getNoSetters() === true;
     }
 
+    /** 
+     * @return true|'chainable'|null
+     */
     public function getMutableSetters(): bool|string|null
     {
         return $this->opts->getMutableSetters();

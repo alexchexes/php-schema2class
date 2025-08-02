@@ -114,7 +114,6 @@ class PropertyBuilder
             if ($propertyType::canHandleSchema($definition)) {
                 /** @var PropertyInterface $property */
                 $property = new $propertyType($name, $definition, $req);
-
                 return self::wrapProperty($property, $definition, $name, $isRequired);
             }
         }
@@ -222,7 +221,9 @@ class PropertyBuilder
         return $decorator;
     }
 
-    /** Expand multi-type definitions like ["string", "object"] into an anyOf union */
+    /**
+     * Expand multi-type definitions like ["string", "object"] into an "anyOf" union
+     */
     private static function tryExpandMultiType(
         GeneratorRequest $req,
         string $name,
@@ -319,7 +320,6 @@ class PropertyBuilder
         return $property->allowsNull() ? new NullablePropertyDecorator($name, $property) : $property;
     }
 
-
     private static function testInvariants(array $definition): void
     {
         $hasAdditionalProperties =
@@ -409,6 +409,7 @@ class PropertyBuilder
             $definition['type'] = $definition['type'][0];
         }
 
+        // TODO: Do we need this?
         if (is_array($definition['type']) && count($definition['type']) > 1) {
             $definition['type'] = array_values($definition['type']);
         }

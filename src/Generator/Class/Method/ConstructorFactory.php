@@ -19,7 +19,7 @@ class ConstructorFactory
     ) {}
 
     /** 
-     * @return MethodGenerator|null - null when ctor should not be generated due to being empty
+     * Returns `null` when constructor should not be generated
      */
     public function generateConstructor(): ?MethodGenerator
     {
@@ -27,7 +27,7 @@ class ConstructorFactory
         $tags        = [];
         $assignments = [];
 
-        $requiredProperties = $this->schemaProperties->filter(PropertyCollectionFilterFactory::required());
+        $requiredProperties = $this->schemaProperties->filter(PropertyCollectionFilterFactory::onlyRequired());
 
         foreach ($requiredProperties as $requiredProperty) {
             $paramName = $requiredProperty->name();

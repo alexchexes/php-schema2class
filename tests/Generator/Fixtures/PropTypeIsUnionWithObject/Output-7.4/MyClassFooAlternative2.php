@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ns\TypeArrayUnion_7_4;
+namespace Ns\PropTypeIsUnionWithObject_7_4;
 
-class MyClass
+class MyClassFooAlternative2
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -12,56 +12,55 @@ class MyClass
      * @var array
      */
     private static array $schema = [
+        'type' => 'object',
         'required' => [
-            'foo',
+            'bar',
         ],
         'properties' => [
-            'foo' => [
-                'type' => [
-                    'string',
-                    'object',
-                ],
-                'required' => [
-                    'bar',
-                ],
-                'properties' => [
-                    'bar' => [
-                        'type' => 'string',
-                    ],
-                ],
+            'bar' => [
+                'type' => 'string',
             ],
         ],
     ];
 
     /**
-     * @var string|MyClassFooAlternative2
+     * @var string
      */
-    private $foo;
+    private string $bar;
 
     /**
-     * @param string|MyClassFooAlternative2 $foo
+     * @param string $bar
      */
-    public function __construct($foo)
+    public function __construct(string $bar)
     {
-        $this->foo = $foo;
+        $this->bar = $bar;
     }
 
     /**
-     * @return string|MyClassFooAlternative2
+     * @return string
      */
-    public function getFoo()
+    public function getBar(): string
     {
-        return $this->foo;
+        return $this->bar;
     }
 
     /**
-     * @param string|MyClassFooAlternative2 $foo
+     * @param string $bar
      * @return self
+     * @param bool $validate
      */
-    public function withFoo($foo): self
+    public function withBar(string $bar, bool $validate = true): self
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($bar, self::$schema['properties']['bar']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
-        $clone->foo = $foo;
+        $clone->bar = $bar;
 
         return $clone;
     }
@@ -71,10 +70,10 @@ class MyClass
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
-     * @return MyClass Created instance
+     * @return MyClassFooAlternative2 Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput($input, bool $validate = true): MyClass
+    public static function fromInput($input, bool $validate = true): MyClassFooAlternative2
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
@@ -87,13 +86,9 @@ class MyClass
             static::validateInput($input);
         }
 
-        if ((MyClassFooAlternative2::validateInput($input->{'foo'}, true))) {
-            $foo = MyClassFooAlternative2::fromInput($input->{'foo'}, $validate);
-        } else {
-            $foo = $input->{'foo'};
-        }
+        $bar = $input->{'bar'};
 
-        $obj = new self($foo);
+        $obj = new self($bar);
 
         return $obj;
     }
@@ -106,11 +101,7 @@ class MyClass
     public function toArray(): array
     {
         $output = [];
-        if ((is_string($this->foo))) {
-            $output['foo'] = $this->foo;
-        } else if (($this->foo instanceof MyClassFooAlternative2)) {
-            $output['foo'] = ($this->foo)->toArray();
-        }
+        $output['bar'] = $this->bar;
 
         return $output;
     }
@@ -123,11 +114,7 @@ class MyClass
     public function toStdClass(): \stdClass
     {
         $output = new \stdClass();
-        if ((is_string($this->foo))) {
-        $output->{'foo'} = $this->foo;
-        } else if (($this->foo instanceof MyClassFooAlternative2)) {
-        $output->{'foo'} = ($this->foo)->toStdClass();
-        }
+        $output->{'bar'} = $this->bar;
 
         return $output;
     }
@@ -154,10 +141,5 @@ class MyClass
         }
 
         return $validator->isValid();
-    }
-
-    public function __clone()
-    {
-        $this->foo = ($this->foo instanceof MyClassFooAlternative2) ? (clone $this->foo) : ((is_string($this->foo)) ? ($this->foo) : ($this->foo));
     }
 }

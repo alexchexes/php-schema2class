@@ -49,22 +49,6 @@ class MyClass
     }
 
     /**
-     * @return string|null
-     */
-    public function getOutbound(): ?string
-    {
-        return $this->outbound ?? null;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function get_Outbound(): ?string
-    {
-        return $this->_outbound ?? null;
-    }
-
-    /**
      * @param string $bound
      * @return self
      * @param bool $validate
@@ -97,6 +81,14 @@ class MyClass
     }
 
     /**
+     * @return string|null
+     */
+    public function getOutbound(): ?string
+    {
+        return $this->outbound ?? null;
+    }
+
+    /**
      * @param string $outbound
      * @return self
      * @param bool $validate
@@ -126,6 +118,14 @@ class MyClass
         unset($clone->outbound);
 
         return $clone;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function get_Outbound(): ?string
+    {
+        return $this->_outbound ?? null;
     }
 
     /**

@@ -68,14 +68,6 @@ class MyClassEnsureArgs2
     }
 
     /**
-     * @return string
-     */
-    public function getStreet(): string
-    {
-        return $this->street;
-    }
-
-    /**
      * @param string $city
      * @return self
      * @param bool $validate
@@ -94,6 +86,14 @@ class MyClassEnsureArgs2
         $clone->city = $city;
 
         return $clone;
+    }
+
+    /**
+     * @return string
+     */
+    public function getStreet(): string
+    {
+        return $this->street;
     }
 
     /**

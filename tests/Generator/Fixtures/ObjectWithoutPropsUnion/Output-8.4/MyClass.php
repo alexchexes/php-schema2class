@@ -58,14 +58,6 @@ class MyClass
     }
 
     /**
-     * @return string|array|object|null
-     */
-    public function getBar(): string|array|object|null
-    {
-        return $this->bar;
-    }
-
-    /**
      * @param string|array|object $foo
      * @return self
      */
@@ -75,6 +67,14 @@ class MyClass
         $clone->foo = $foo;
 
         return $clone;
+    }
+
+    /**
+     * @return string|array|object|null
+     */
+    public function getBar(): string|array|object|null
+    {
+        return $this->bar;
     }
 
     /**

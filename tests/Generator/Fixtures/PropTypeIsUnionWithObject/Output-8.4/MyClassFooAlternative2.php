@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ns\TypeArrayUnion_7_4;
+namespace Ns\PropTypeIsUnionWithObject_8_4;
 
 class MyClassFooAlternative2
 {
@@ -73,14 +73,8 @@ class MyClassFooAlternative2
      * @return MyClassFooAlternative2 Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput($input, bool $validate = true): MyClassFooAlternative2
+    public static function fromInput(array|object $input, bool $validate = true): MyClassFooAlternative2
     {
-        if (!is_array($input) && !is_object($input)) {
-            throw new \InvalidArgumentException(
-                'Input to fromInput must be array or object, got ' . gettype($input)
-            );
-        }
-
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
@@ -127,7 +121,7 @@ class MyClassFooAlternative2
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput($input, bool $return = false): bool
+    public static function validateInput(array|object $input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;

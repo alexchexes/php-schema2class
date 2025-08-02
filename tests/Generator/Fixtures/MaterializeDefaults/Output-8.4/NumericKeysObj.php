@@ -55,22 +55,6 @@ class NumericKeysObj
     }
 
     /**
-     * @return string|null
-     */
-    public function get_1(): ?string
-    {
-        return $this->_1 ?? null;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function get_2(): ?string
-    {
-        return $this->_2 ?? null;
-    }
-
-    /**
      * @param string $_0
      * @return self
      * @param bool $validate
@@ -103,6 +87,14 @@ class NumericKeysObj
     }
 
     /**
+     * @return string|null
+     */
+    public function get_1(): ?string
+    {
+        return $this->_1 ?? null;
+    }
+
+    /**
      * @param string $_1
      * @return self
      * @param bool $validate
@@ -132,6 +124,14 @@ class NumericKeysObj
         unset($clone->_1);
 
         return $clone;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function get_2(): ?string
+    {
+        return $this->_2 ?? null;
     }
 
     /**

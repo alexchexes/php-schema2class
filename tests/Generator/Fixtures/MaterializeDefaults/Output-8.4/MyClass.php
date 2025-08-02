@@ -392,108 +392,6 @@ class MyClass
     }
 
     /**
-     * @return string
-     */
-    public function getBar(): string
-    {
-        return $this->bar;
-    }
-
-    /**
-     * @return MyClassBaz|null
-     */
-    public function getBaz(): ?MyClassBaz
-    {
-        return $this->baz ?? null;
-    }
-
-    /**
-     * optional nullable object with default value that is empty object
-     *
-     * @return MyClassQuxObj|null
-     */
-    public function getQuxObj(): ?MyClassQuxObj
-    {
-        return $this->quxObj ?? null;
-    }
-
-    /**
-     * optional nullable object with default empty object value, and with nested default for its property
-     *
-     * @return MyClassQuxObjNest|null
-     */
-    public function getQuxObjNest(): ?MyClassQuxObjNest
-    {
-        return $this->quxObjNest ?? null;
-    }
-
-    /**
-     * optional nullable array with default value that is empty array
-     *
-     * @return string[]|null
-     */
-    public function getThudArray(): ?array
-    {
-        return $this->thudArray ?? null;
-    }
-
-    /**
-     * @return string|ObjDef|string[]|null
-     */
-    public function getXyyz(): ObjDef|string|array|null
-    {
-        return $this->xyyz;
-    }
-
-    /**
-     * @return string|string[]|ObjDef|null
-     */
-    public function getBuux(): ObjDef|string|array|null
-    {
-        return $this->buux;
-    }
-
-    /**
-     * @return string|string[]|ObjDef|null
-     */
-    public function getBoic(): ObjDef|string|array|null
-    {
-        return $this->boic;
-    }
-
-    /**
-     * @return string|NumericKeysObj|null
-     */
-    public function getPoox(): NumericKeysObj|string|null
-    {
-        return $this->poox;
-    }
-
-    /**
-     * @return array|object|null
-     */
-    public function getArrObjUnion(): array|object|null
-    {
-        return $this->arrObjUnion;
-    }
-
-    /**
-     * @return array|object|null
-     */
-    public function getObjArrUnion(): array|object|null
-    {
-        return $this->objArrUnion;
-    }
-
-    /**
-     * @return MyClassNumKeysDefaults|null
-     */
-    public function getNumKeysDefaults(): ?MyClassNumKeysDefaults
-    {
-        return $this->numKeysDefaults ?? null;
-    }
-
-    /**
      * @param string $foo
      * @return self
      * @param bool $validate
@@ -512,6 +410,14 @@ class MyClass
         $clone->foo = $foo;
 
         return $clone;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBar(): string
+    {
+        return $this->bar;
     }
 
     /**
@@ -536,6 +442,14 @@ class MyClass
     }
 
     /**
+     * @return MyClassBaz|null
+     */
+    public function getBaz(): ?MyClassBaz
+    {
+        return $this->baz ?? null;
+    }
+
+    /**
      * @param MyClassBaz $baz
      * @return self
      */
@@ -556,6 +470,16 @@ class MyClass
         unset($clone->baz);
 
         return $clone;
+    }
+
+    /**
+     * optional nullable object with default value that is empty object
+     *
+     * @return MyClassQuxObj|null
+     */
+    public function getQuxObj(): ?MyClassQuxObj
+    {
+        return $this->quxObj ?? null;
     }
 
     /**
@@ -584,6 +508,16 @@ class MyClass
     }
 
     /**
+     * optional nullable object with default empty object value, and with nested default for its property
+     *
+     * @return MyClassQuxObjNest|null
+     */
+    public function getQuxObjNest(): ?MyClassQuxObjNest
+    {
+        return $this->quxObjNest ?? null;
+    }
+
+    /**
      * @param MyClassQuxObjNest $quxObjNest
      * @return self
      */
@@ -606,6 +540,16 @@ class MyClass
         unset($clone->_providedOptionals['quxObjNest']);
 
         return $clone;
+    }
+
+    /**
+     * optional nullable array with default value that is empty array
+     *
+     * @return string[]|null
+     */
+    public function getThudArray(): ?array
+    {
+        return $this->thudArray ?? null;
     }
 
     /**
@@ -643,6 +587,14 @@ class MyClass
     }
 
     /**
+     * @return string|ObjDef|string[]|null
+     */
+    public function getXyyz(): ObjDef|string|array|null
+    {
+        return $this->xyyz;
+    }
+
+    /**
      * @param string|ObjDef|string[] $xyyz
      * @return self
      */
@@ -663,6 +615,14 @@ class MyClass
         unset($clone->xyyz);
 
         return $clone;
+    }
+
+    /**
+     * @return string|string[]|ObjDef|null
+     */
+    public function getBuux(): ObjDef|string|array|null
+    {
+        return $this->buux;
     }
 
     /**
@@ -689,6 +649,14 @@ class MyClass
     }
 
     /**
+     * @return string|string[]|ObjDef|null
+     */
+    public function getBoic(): ObjDef|string|array|null
+    {
+        return $this->boic;
+    }
+
+    /**
      * @param string|string[]|ObjDef $boic
      * @return self
      */
@@ -709,6 +677,14 @@ class MyClass
         unset($clone->boic);
 
         return $clone;
+    }
+
+    /**
+     * @return string|NumericKeysObj|null
+     */
+    public function getPoox(): NumericKeysObj|string|null
+    {
+        return $this->poox;
     }
 
     /**
@@ -735,6 +711,14 @@ class MyClass
     }
 
     /**
+     * @return array|object|null
+     */
+    public function getArrObjUnion(): array|object|null
+    {
+        return $this->arrObjUnion;
+    }
+
+    /**
      * @param array|object $arrObjUnion
      * @return self
      */
@@ -758,6 +742,14 @@ class MyClass
     }
 
     /**
+     * @return array|object|null
+     */
+    public function getObjArrUnion(): array|object|null
+    {
+        return $this->objArrUnion;
+    }
+
+    /**
      * @param array|object $objArrUnion
      * @return self
      */
@@ -778,6 +770,14 @@ class MyClass
         unset($clone->objArrUnion);
 
         return $clone;
+    }
+
+    /**
+     * @return MyClassNumKeysDefaults|null
+     */
+    public function getNumKeysDefaults(): ?MyClassNumKeysDefaults
+    {
+        return $this->numKeysDefaults ?? null;
     }
 
     /**

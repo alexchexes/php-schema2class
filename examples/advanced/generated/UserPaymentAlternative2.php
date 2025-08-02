@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Example\Advanced;
@@ -57,14 +58,6 @@ class UserPaymentAlternative2
     }
 
     /**
-     * @return string
-     */
-    public function getAccountNumber(): string
-    {
-        return $this->accountNumber;
-    }
-
-    /**
      * @param UserPaymentAlternative2Type $type
      * @return self
      */
@@ -74,6 +67,14 @@ class UserPaymentAlternative2
         $clone->type = $type;
 
         return $clone;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAccountNumber(): string
+    {
+        return $this->accountNumber;
     }
 
     /**

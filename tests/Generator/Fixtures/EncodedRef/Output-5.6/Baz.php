@@ -66,22 +66,6 @@ class Baz
     }
 
     /**
-     * @return FooTest|null
-     */
-    public function getB()
-    {
-        return $this->b;
-    }
-
-    /**
-     * @return BarTest|null
-     */
-    public function getC()
-    {
-        return $this->c;
-    }
-
-    /**
      * @param FooTest $a
      * @return self
      */
@@ -105,6 +89,14 @@ class Baz
     }
 
     /**
+     * @return FooTest|null
+     */
+    public function getB()
+    {
+        return $this->b;
+    }
+
+    /**
      * @param FooTest $b
      * @return self
      */
@@ -125,6 +117,14 @@ class Baz
         unset($clone->b);
 
         return $clone;
+    }
+
+    /**
+     * @return BarTest|null
+     */
+    public function getC()
+    {
+        return $this->c;
     }
 
     /**

@@ -70,14 +70,6 @@ class Pets
     }
 
     /**
-     * @return Cat|null
-     */
-    public function getCat(): ?Cat
-    {
-        return $this->cat ?? null;
-    }
-
-    /**
      * @param GenericPet $pet
      * @return self
      */
@@ -98,6 +90,14 @@ class Pets
         unset($clone->pet);
 
         return $clone;
+    }
+
+    /**
+     * @return Cat|null
+     */
+    public function getCat(): ?Cat
+    {
+        return $this->cat ?? null;
     }
 
     /**

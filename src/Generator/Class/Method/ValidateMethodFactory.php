@@ -25,23 +25,18 @@ class ValidateMethodFactory
     public function generateValidateMethod(): MethodGenerator
     {
         $params = [
-            new ParameterGenerator(self::INPUT_ARG_NAME, $this->request->isAtLeastPHP('8.0') ? 'array|object' : null),
-            new ParameterGenerator(self::RETURN_ARG_NAME, $this->request->isAtLeastPHP('7.0') ? 'bool' : null, false),
+            new ParameterGenerator(
+                name: self::INPUT_ARG_NAME,
+                type: $this->request->isAtLeastPHP('8.0') ? 'array|object' : null
+            ),
+            new ParameterGenerator(
+                name: self::RETURN_ARG_NAME,
+                type: $this->request->isAtLeastPHP('7.0') ? 'bool' : null,
+                defaultValue: false
+            ),
         ];
 
-        $docBlockTags = [
-            new ParamTag(self::INPUT_ARG_NAME, ['array|object'], 'Input data'),
-            new ParamTag(self::RETURN_ARG_NAME, ['bool'], 'Return instead of throwing errors'),
-            new ReturnTag(['bool'], 'Validation result'),
-            new ThrowsTag('\\InvalidArgumentException'),
-        ];
-
-        $docBlock = new DocBlockGenerator(
-            'Validates an input array',
-            null,
-            $docBlockTags
-        );
-        $docBlock->setWordWrap(false);
+        $docBlock = $this->buildDocBlock();
 
         $method = new MethodGenerator(
             name: MethodNames::VALIDATE_INPUT,
@@ -56,6 +51,25 @@ class ValidateMethodFactory
         }
 
         return $method;
+    }
+
+    private function buildDocBlock(): DocBlockGenerator
+    {
+        $tags = [
+            new ParamTag(self::INPUT_ARG_NAME, ['array|object'], 'Input data'),
+            new ParamTag(self::RETURN_ARG_NAME, ['bool'], 'Return instead of throwing errors'),
+            new ReturnTag(['bool'], 'Validation result'),
+            new ThrowsTag('\\InvalidArgumentException'),
+        ];
+
+        $docBlock = new DocBlockGenerator(
+            shortDescription: 'Validates an input array',
+            longDescription: null,
+            tags: $tags
+        );
+        $docBlock->setWordWrap(false);
+
+        return $docBlock;
     }
 
     private function generateBody(): string

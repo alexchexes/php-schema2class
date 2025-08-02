@@ -43,14 +43,6 @@ class MyClass
     }
 
     /**
-     * @return mixed[]|null
-     */
-    public function getParams()
-    {
-        return $this->params;
-    }
-
-    /**
      * @param string $name
      * @return self
      * @param bool $validate
@@ -80,6 +72,14 @@ class MyClass
         unset($clone->name);
 
         return $clone;
+    }
+
+    /**
+     * @return mixed[]|null
+     */
+    public function getParams()
+    {
+        return $this->params;
     }
 
     /**

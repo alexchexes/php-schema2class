@@ -224,86 +224,6 @@ class MyClass
     }
 
     /**
-     * optional, not nullable, no default
-     *
-     * @return string|null
-     */
-    public function getBar()
-    {
-        return $this->bar;
-    }
-
-    /**
-     * optional, nullable, no default
-     *
-     * @return string|null
-     */
-    public function getBaz()
-    {
-        return $this->baz;
-    }
-
-    /**
-     * optional, nullable, with default
-     *
-     * @return string|null
-     */
-    public function getQux()
-    {
-        return $this->qux;
-    }
-
-    /**
-     * required, nullable, with default
-     *
-     * @return string|null
-     */
-    public function getQuux()
-    {
-        return $this->quux;
-    }
-
-    /**
-     * optional, not nullable, with default
-     *
-     * @return string|null
-     */
-    public function getXyyz()
-    {
-        return $this->xyyz;
-    }
-
-    /**
-     * required, not nullable, with default
-     *
-     * @return string
-     */
-    public function getThud()
-    {
-        return $this->thud;
-    }
-
-    /**
-     * optional, nullable, with default, object
-     *
-     * @return MyClassGrox|null
-     */
-    public function getGrox()
-    {
-        return $this->grox;
-    }
-
-    /**
-     * optional, nullable, with default, object, and default is empty object
-     *
-     * @return MyClassGooks|null
-     */
-    public function getGooks()
-    {
-        return $this->gooks;
-    }
-
-    /**
      * @param string $foo
      * @return self
      * @param bool $validate
@@ -322,6 +242,16 @@ class MyClass
         $clone->foo = $foo;
 
         return $clone;
+    }
+
+    /**
+     * optional, not nullable, no default
+     *
+     * @return string|null
+     */
+    public function getBar()
+    {
+        return $this->bar;
     }
 
     /**
@@ -354,6 +284,16 @@ class MyClass
         unset($clone->bar);
 
         return $clone;
+    }
+
+    /**
+     * optional, nullable, no default
+     *
+     * @return string|null
+     */
+    public function getBaz()
+    {
+        return $this->baz;
     }
 
     /**
@@ -391,6 +331,16 @@ class MyClass
     }
 
     /**
+     * optional, nullable, with default
+     *
+     * @return string|null
+     */
+    public function getQux()
+    {
+        return $this->qux;
+    }
+
+    /**
      * @param string $qux
      * @return self
      * @param bool $validate
@@ -425,6 +375,16 @@ class MyClass
     }
 
     /**
+     * required, nullable, with default
+     *
+     * @return string|null
+     */
+    public function getQuux()
+    {
+        return $this->quux;
+    }
+
+    /**
      * @param string $quux
      * @return self
      * @param bool $validate
@@ -443,6 +403,16 @@ class MyClass
         $clone->quux = $quux;
 
         return $clone;
+    }
+
+    /**
+     * optional, not nullable, with default
+     *
+     * @return string|null
+     */
+    public function getXyyz()
+    {
+        return $this->xyyz;
     }
 
     /**
@@ -478,6 +448,16 @@ class MyClass
     }
 
     /**
+     * required, not nullable, with default
+     *
+     * @return string
+     */
+    public function getThud()
+    {
+        return $this->thud;
+    }
+
+    /**
      * @param string $thud
      * @return self
      * @param bool $validate
@@ -496,6 +476,16 @@ class MyClass
         $clone->thud = $thud;
 
         return $clone;
+    }
+
+    /**
+     * optional, nullable, with default, object
+     *
+     * @return MyClassGrox|null
+     */
+    public function getGrox()
+    {
+        return $this->grox;
     }
 
     /**
@@ -521,6 +511,16 @@ class MyClass
         unset($clone->_providedOptionals['grox']);
 
         return $clone;
+    }
+
+    /**
+     * optional, nullable, with default, object, and default is empty object
+     *
+     * @return MyClassGooks|null
+     */
+    public function getGooks()
+    {
+        return $this->gooks;
     }
 
     /**

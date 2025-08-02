@@ -169,68 +169,6 @@ class MyClass
     }
 
     /**
-     * @return string|null
-     */
-    public function getBar(): ?string
-    {
-        return $this->bar ?? null;
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getBaz(): ?int
-    {
-        return $this->baz ?? null;
-    }
-
-    /**
-     * Description of Def1 (string) which has default value
-     *
-     * @return string|null
-     */
-    public function getQux(): ?string
-    {
-        return $this->qux ?? null;
-    }
-
-    /**
-     * Description of Def1 (string) which has default value
-     *
-     * @return string|null
-     */
-    public function getThud(): ?string
-    {
-        return $this->thud ?? null;
-    }
-
-    /**
-     * Description of Def2 (string) which doesn't have default value
-     *
-     * @return string|null
-     */
-    public function getGrox(): ?string
-    {
-        return $this->grox ?? null;
-    }
-
-    /**
-     * @return string|int|float|null
-     */
-    public function getQwert(): int|float|string|null
-    {
-        return $this->qwert;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getZyx(): ?string
-    {
-        return $this->zyx ?? null;
-    }
-
-    /**
      * @param int $foo
      * @return self
      * @param bool $validate
@@ -263,6 +201,14 @@ class MyClass
     }
 
     /**
+     * @return string|null
+     */
+    public function getBar(): ?string
+    {
+        return $this->bar ?? null;
+    }
+
+    /**
      * @param string $bar
      * @return self
      * @param bool $validate
@@ -292,6 +238,14 @@ class MyClass
         unset($clone->bar);
 
         return $clone;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getBaz(): ?int
+    {
+        return $this->baz ?? null;
     }
 
     /**
@@ -329,6 +283,16 @@ class MyClass
     }
 
     /**
+     * Description of Def1 (string) which has default value
+     *
+     * @return string|null
+     */
+    public function getQux(): ?string
+    {
+        return $this->qux ?? null;
+    }
+
+    /**
      * @param string $qux
      * @return self
      * @param bool $validate
@@ -358,6 +322,16 @@ class MyClass
         unset($clone->qux);
 
         return $clone;
+    }
+
+    /**
+     * Description of Def1 (string) which has default value
+     *
+     * @return string|null
+     */
+    public function getThud(): ?string
+    {
+        return $this->thud ?? null;
     }
 
     /**
@@ -393,6 +367,16 @@ class MyClass
     }
 
     /**
+     * Description of Def2 (string) which doesn't have default value
+     *
+     * @return string|null
+     */
+    public function getGrox(): ?string
+    {
+        return $this->grox ?? null;
+    }
+
+    /**
      * @param string $grox
      * @return self
      * @param bool $validate
@@ -425,6 +409,14 @@ class MyClass
     }
 
     /**
+     * @return string|int|float|null
+     */
+    public function getQwert(): int|float|string|null
+    {
+        return $this->qwert;
+    }
+
+    /**
      * @param string|int|float $qwert
      * @return self
      */
@@ -445,6 +437,14 @@ class MyClass
         unset($clone->qwert);
 
         return $clone;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getZyx(): ?string
+    {
+        return $this->zyx ?? null;
     }
 
     /**

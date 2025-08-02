@@ -1,0 +1,16 @@
+{
+  "type": "object",
+  "required": ["foo", "bar", "baz", "qux", "thud"],
+  "properties": {
+    "foo": { "type": ["string", "number", "boolean"] },
+    "bar": { "type": ["string", "number", "boolean", "array"] },
+    "baz": { "type": ["string", "number", "boolean", "object"] },
+    "qux": { "type": ["string", "number", "boolean", "array", "object"] },
+    "thud": { "type": ["string", "number", "boolean", "array", "object", "null"] },
+    "optFoo": { "type": ["string", "number", "boolean"] },
+    "optBar": { "type": ["string", "number", "boolean", "array"] },
+    "optBaz": { "type": ["string", "number", "boolean", "object"] },
+    "optQux": { "type": ["string", "number", "boolean", "array", "object"] },
+    "optThud": { "type": ["string", "number", "boolean", "array", "object", "null"] }
+  }
+}

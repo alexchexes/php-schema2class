@@ -5,8 +5,6 @@ namespace Helmich\Schema2Class\Generator\Class\Method;
 
 use Helmich\Schema2Class\Generator\Class\PropertyNames;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
-use Helmich\Schema2Class\Generator\Property\Collection\PropertyCollection;
-use Helmich\Schema2Class\Generator\Property\Collection\PropertyCollectionFilterFactory;
 use Helmich\Schema2Class\Generator\Property\Decorator\OptionalPropertyDecorator;
 use Helmich\Schema2Class\Generator\Property\Decorator\PropertyDecoratorInterface;
 use Helmich\Schema2Class\Generator\Property\PropertyQuery;
@@ -15,7 +13,6 @@ use Helmich\Schema2Class\Generator\Property\Type\PrimitiveArrayProperty;
 use Helmich\Schema2Class\Generator\Property\Type\PropertyInterface;
 use Helmich\Schema2Class\Generator\Property\Type\ReferenceArrayProperty;
 use Helmich\Schema2Class\Generator\Property\Type\TypedArrayProperty;
-use Helmich\Schema2Class\Util\StringUtils;
 use Laminas\Code\Generator\DocBlock\Tag\GenericTag;
 use Laminas\Code\Generator\DocBlock\Tag\ParamTag;
 use Laminas\Code\Generator\DocBlock\Tag\ReturnTag;
@@ -25,61 +22,36 @@ use Laminas\Code\Generator\ParameterGenerator;
 
 class SetterFactory
 {
+    private bool $mutating;
+    private bool $chainable;
+
     public function __construct(
         private GeneratorRequest $request,
-        private PropertyCollection $schemaProperties,
-    )
-    {}
+    ) {
+        $mutableConfig = $this->request->getMutableSetters();
+        $this->mutating = $mutableConfig !== null;
+        $this->chainable = $mutableConfig === 'chainable' || $this->mutating === false;
+    }
 
-    /** 
-     * @return MethodGenerator[]
-     */
-    public function generateSetters(): array
+    public function generateSetter(PropertyInterface $property, string $pascalName): ?MethodGenerator
     {
         if ($this->request->getNoSetters()) {
-            return [];
+            return null;
         }
 
-        $mutableConfig = $this->request->getMutableSetters();
+        $prefix = $this->mutating ? 'set' : 'with';
+        $methodName = $prefix . $pascalName;
+        $propName = $property->name();
 
-        $methods = [];
-
-        $filteredProperties = $this->schemaProperties->filter(
-            PropertyCollectionFilterFactory::withoutDeprecatedAndSameName($this->schemaProperties)
-        );
-
-        foreach ($filteredProperties as $property) {
-            if ($mutableConfig !== null) {
-                $methods[] = $this->generateMutatingSetter($property, $mutableConfig === 'chainable');
-                if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
-                    $methods[] = $this->generateMutatingUnsetter($property, $mutableConfig === 'chainable');
-                }
-            } else {
-                $methods[] = $this->generateNonMutatingSetter($property);
-
-                if ($property instanceof OptionalPropertyDecorator) {
-                    $methods[] = $this->generateNonMutatingUnsetter($property);
-                }
-            }
-        }
-
-        return $methods;
-    }
-
-    private function generateNonMutatingSetter(PropertyInterface $property): MethodGenerator
-    {
-        $key  = $property->key();
-        $keyStr = var_export($key, true);
-        $name = $property->name();
-        $camelCaseName = $this->request->getOptions()->getPreservePropertyNames()
-            ? StringUtils::pascalCasePreserveOuterUnderscores($name)
-            : StringUtils::safePascalCase($name);
-
+        // We first unwrap only optional property decorator but leave other
+        // decorators in place to get the correct type hint / annotation
+        // TODO: FIXME This logic flawed: sometimes we generate setters with parameter types that are
+        // misaligned with PHPDoc type annotations of those params, and we also sometimes don't allow nulls where we should've.
         $requiredProperty = ($property instanceof OptionalPropertyDecorator) ? $property->unwrap() : $property;
+        $propAnnotatedType = $requiredProperty->typeAnnotation();
+        $propTypeHint = $requiredProperty->typeHint($this->request->getTargetPHPVersion());
 
-        $annotatedType = $requiredProperty->typeAnnotation();
-        $typeHint      = $requiredProperty->typeHint($this->request->getTargetPHPVersion());
-
+        // then we fully unwrap any other decorators to be able to see the real type
         $base = $property;
         while ($base instanceof PropertyDecoratorInterface) {
             /** @var PropertyDecoratorInterface $base */
@@ -91,221 +63,127 @@ class SetterFactory
             || $base instanceof ReferenceArrayProperty
             || $base instanceof TypedArrayProperty;
 
-        $newValidatorExpr = $this->request->getOptions()->getNewValidatorExpr();
+        $addValidation = true;
 
+        // If property is complex (except arrays), no validation needed
+        // TODO: this is not right; Validation is not generated in some cases where it should've been
         if ($property->isComplex() && !$isArray) {
-            $setterValidation = '';
-        } else {
-            $setterValidation =
-                "if (\$validate) {\n"
-                . "    \$validator = {$newValidatorExpr};\n"
-                . "    \$validator->validate(\$$name, self::\$".PropertyNames::SCHEMA."['properties'][{$keyStr}]);\n"
-                . "    if (!\$validator->isValid()) {\n"
-                . "        throw new \\InvalidArgumentException(\$validator->getErrors()[0]['message']);\n"
-                . "    }\n"
-                . "}\n\n";
+            $addValidation = false;
         }
 
+        $docBlock = $this->buildDocBlock($property, $propName, $propAnnotatedType, $addValidation);
+        $parameters = $this->buildParams($propName, $propTypeHint, $addValidation);
+        $body = $this->generateBody($property, $propName, $addValidation);
+
+        $methodGen = new MethodGenerator(
+            name: $methodName,
+            parameters: $parameters,
+            flags: MethodGenerator::FLAG_PUBLIC,
+            body: $body,
+            docBlock: $docBlock
+        );
+
+        if ($this->chainable && $this->request->isAtLeastPHP('7.0')) {
+            $methodGen->setReturnType('self');
+        } elseif (!$this->chainable) {
+            if ($this->request->isAtLeastPHP('7.1')) {
+                $methodGen->setReturnType('void');
+            }
+        }
+
+        return $methodGen;
+    }
+
+    private function buildDocBlock(
+        PropertyInterface $property,
+        string $propName,
+        string $propAnnotatedType,
+        bool $addValidation,
+    ): DocBlockGenerator
+    {
         $tags = [
-            new ParamTag($name, [str_replace('|null', '', $annotatedType)]),
-            new ReturnTag('self'),
+            new ParamTag($propName, [str_replace('|null', '', $propAnnotatedType)])
         ];
 
-        if (PropertyQuery::isDeprecated($property)) {
-            $tags[] = new GenericTag('deprecated');
-        }
-
-        $docBlock = new DocBlockGenerator(null, null, $tags);
-        $docBlock->setWordWrap(false);
-
-        $parameters = [new ParameterGenerator($name, $typeHint)];
-        if ($setterValidation !== '') {
-            $validateParam = new ParameterGenerator('validate', 'bool');
-            $validateParam->setDefaultValue(true);
-            $parameters[] = $validateParam;
-
-            $tags[] = new ParamTag('validate', ['bool']);
-            $docBlock = new DocBlockGenerator(null, null, $tags);
-            $docBlock->setWordWrap(false);
-        }
-
-        $body = $setterValidation . "\$clone = clone \$this;\n" .
-            "\$clone->$name = \$$name;\n";
-
-        if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
-            $body .= "\$clone->".PropertyNames::OPTIONALS."[{$keyStr}] = true;\n";
-        }
-
-        $body .= "\nreturn \$clone;";
-
-        $setMethod = new MethodGenerator(
-            'with' . $camelCaseName,
-            $parameters,
-            MethodGenerator::FLAG_PUBLIC,
-            $body,
-            $docBlock
-        );
-
-        if ($this->request->isAtLeastPHP('7.0')) {
-            $setMethod->setReturnType('self');
-        }
-
-        return $setMethod;
-    }
-
-    private function generateNonMutatingUnsetter(PropertyInterface $property): MethodGenerator
-    {
-        $name = $property->name();
-        $key  = $property->key();
-        $keyStr = var_export($key, true);
-        $camelCasedName = $this->request->getOptions()->getPreservePropertyNames()
-            ? StringUtils::pascalCasePreserveOuterUnderscores($name)
-            : StringUtils::safePascalCase($name);
-
-        $body = "\$clone = clone \$this;\n";
-        $body .= "unset(\$clone->$name);\n";
-
-        if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
-            $body .= "unset(\$clone->".PropertyNames::OPTIONALS."[{$keyStr}]);\n";
-        }
-
-        $body .= "\nreturn \$clone;";
-
-        $unsetMethod = new MethodGenerator(
-            'without' . $camelCasedName,
-            [],
-            MethodGenerator::FLAG_PUBLIC,
-            $body,
-            new DocBlockGenerator(null, null, [
-                new ReturnTag('self'),
-            ])
-        );
-
-        if ($this->request->isAtLeastPHP('7.0')) {
-            $unsetMethod->setReturnType('self');
-        }
-
-        return $unsetMethod;
-    }
-
-    private function generateMutatingSetter(PropertyInterface $property, bool $chainable): MethodGenerator
-    {
-        $key  = $property->key();
-        $keyStr = var_export($key, true);
-        $name = $property->name();
-        $camelCaseName = $this->request->getOptions()->getPreservePropertyNames()
-            ? StringUtils::pascalCasePreserveOuterUnderscores($name)
-            : StringUtils::safePascalCase($name);
-
-        $requiredProperty = ($property instanceof OptionalPropertyDecorator) ? $property->unwrap() : $property;
-        $annotatedType = $requiredProperty->typeAnnotation();
-        $typeHint = $requiredProperty->typeHint($this->request->getTargetPHPVersion());
-
-        $base = $property;
-        while ($base instanceof PropertyDecoratorInterface) {
-            /** @var PropertyDecoratorInterface $base */
-            $base = $base->unwrap();
-        }
-
-        $isArray = $base instanceof PrimitiveArrayProperty
-            || $base instanceof ObjectArrayProperty
-            || $base instanceof ReferenceArrayProperty
-            || $base instanceof TypedArrayProperty;
-
-        $newValidatorExpr = $this->request->getOptions()->getNewValidatorExpr();
-
-        if ($property->isComplex() && !$isArray) {
-            $setterValidation = '';
-        } else {
-            $setterValidation =
-                "if (\$validate) {\n" .
-                "    \$validator = {$newValidatorExpr};\n" .
-                "    \$validator->validate(\$$name, self::\$".PropertyNames::SCHEMA."['properties'][{$keyStr}]);\n" .
-                "    if (!\$validator->isValid()) {\n" .
-                "        throw new \\InvalidArgumentException(\$validator->getErrors()[0]['message']);\n" .
-                "    }\n" .
-                "}\n\n";
-        }
-
-        $tags = [new ParamTag($name, [str_replace('|null', '', $annotatedType)])];
-        if ($chainable) {
+        if ($this->chainable) {
             $tags[] = new ReturnTag('self');
         }
+
         if (PropertyQuery::isDeprecated($property)) {
             $tags[] = new GenericTag('deprecated');
         }
+
         $docBlock = new DocBlockGenerator(null, null, $tags);
         $docBlock->setWordWrap(false);
 
-        $parameters = [new ParameterGenerator($name, $typeHint)];
-        if ($setterValidation !== '') {
-            $validateParam = new ParameterGenerator('validate', 'bool');
-            $validateParam->setDefaultValue(true);
-            $parameters[] = $validateParam;
-
+        if ($addValidation) {
             $tags[] = new ParamTag('validate', ['bool']);
             $docBlock = new DocBlockGenerator(null, null, $tags);
             $docBlock->setWordWrap(false);
         }
 
-        $body = $setterValidation . "\$this->{$name} = \$$name;";
-        if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
-            $body .= "\n\$this->".PropertyNames::OPTIONALS."[{$keyStr}] = true;";
-        }
-        if ($chainable) {
-            $body .= "\n\nreturn \$this;";
-        }
-
-        $setMethod = new MethodGenerator(
-            'set' . $camelCaseName,
-            $parameters,
-            MethodGenerator::FLAG_PUBLIC,
-            $body,
-            $docBlock
-        );
-
-        if ($chainable && $this->request->isAtLeastPHP('7.0')) {
-            $setMethod->setReturnType('self');
-        } elseif (!$chainable) {
-            if ($this->request->isAtLeastPHP('7.1')) {
-                $setMethod->setReturnType('void');
-            }
-        }
-
-        return $setMethod;
+        return $docBlock;
     }
 
-    private function generateMutatingUnsetter(PropertyInterface $property, bool $chainable): MethodGenerator
+    private function buildParams(string $propName, ?string $propTypeHint, bool $addValidation): array
     {
-        $key  = $property->key();
-        $keyStr = var_export($key, true);
-        $name = $property->name();
-        $camelCaseName = $this->request->getOptions()->getPreservePropertyNames()
-            ? StringUtils::pascalCasePreserveOuterUnderscores($name)
-            : StringUtils::safePascalCase($name);
-
-        $body = "\$this->{$name} = null;\n";
-        if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
-            $body .= "unset(\$this->".PropertyNames::OPTIONALS."[{$keyStr}]);\n";
+        $parameters = [new ParameterGenerator($propName, $propTypeHint)];
+        if ($addValidation) {
+            $validateParam = new ParameterGenerator('validate', 'bool');
+            $validateParam->setDefaultValue(true);
+            $parameters[] = $validateParam;
         }
-        if ($chainable) {
-            $body .= "\nreturn \$this;";
+        return $parameters;
+    }
+
+    private function generateBody(PropertyInterface $property, string $propName, bool $addValidation): string
+    {
+        $propKey = var_export($property->key(), true);
+        
+        $validationBlock = '';
+        if ($addValidation) {
+            $newValidatorExpr = $this->request->getOptions()->getNewValidatorExpr();
+
+            $SCHEMA = PropertyNames::SCHEMA;
+            $validationBlock =
+                <<<PHP
+                if (\$validate) {
+                    \$validator = {$newValidatorExpr};
+                    \$validator->validate(\$$propName, self::\${$SCHEMA}['properties'][{$propKey}]);
+                    if (!\$validator->isValid()) {
+                        throw new \\InvalidArgumentException(\$validator->getErrors()[0]['message']);
+                    }
+                }\n\n
+                PHP;
         }
 
-        $unsetMethod = new MethodGenerator(
-            'unset' . $camelCaseName,
-            [],
-            MethodGenerator::FLAG_PUBLIC,
-            $body,
-            new DocBlockGenerator(null, null, $chainable ? [new ReturnTag('self')] : [])
-        );
+        $OPTIONALS = PropertyNames::OPTIONALS;
 
-        if ($chainable && $this->request->isAtLeastPHP('7.0')) {
-            $unsetMethod->setReturnType('self');
-        } elseif (!$chainable && $this->request->isAtLeastPHP('7.1')) {
-            $unsetMethod->setReturnType('void');
+        if ($this->mutating) {
+            $body =
+                $validationBlock .
+                "\$this->{$propName} = \$$propName;";
+
+            if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
+                $body .= "\n\$this->{$OPTIONALS}[{$propKey}] = true;";
+            }
+
+            if ($this->chainable) {
+                $body .= "\n\nreturn \$this;";
+            }
+        } else {
+            $body =
+                $validationBlock .
+                "\$clone = clone \$this;\n" .
+                "\$clone->$propName = \$$propName;\n";
+
+            if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
+                $body .= "\$clone->{$OPTIONALS}[{$propKey}] = true;\n";
+            }
+
+            $body .= "\nreturn \$clone;";
         }
 
-        return $unsetMethod;
+        return $body;
     }
 }

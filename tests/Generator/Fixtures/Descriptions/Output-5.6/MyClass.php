@@ -61,14 +61,6 @@ class MyClass
     }
 
     /**
-     * @return Baz|null
-     */
-    public function getBar()
-    {
-        return $this->bar;
-    }
-
-    /**
      * @param string $foo
      * @return self
      * @param bool $validate
@@ -98,6 +90,14 @@ class MyClass
         unset($clone->foo);
 
         return $clone;
+    }
+
+    /**
+     * @return Baz|null
+     */
+    public function getBar()
+    {
+        return $this->bar;
     }
 
     /**

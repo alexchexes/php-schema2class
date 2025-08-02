@@ -103,38 +103,6 @@ class Foo
     }
 
     /**
-     * @return 0|1.5|2.5|3.5|null
-     */
-    public function getFloatEnumRef()
-    {
-        return $this->floatEnumRef;
-    }
-
-    /**
-     * @return false|null
-     */
-    public function getBoolEnum(): ?bool
-    {
-        return $this->boolEnum ?? null;
-    }
-
-    /**
-     * @return false|null
-     */
-    public function getBoolEnumRef(): ?bool
-    {
-        return $this->boolEnumRef ?? null;
-    }
-
-    /**
-     * @return false
-     */
-    public function getRequiredBoolEnumRef(): bool
-    {
-        return $this->requiredBoolEnumRef;
-    }
-
-    /**
      * @param 0|1.5|2.5|3.5 $floatEnum
      * @return self
      * @param bool $validate
@@ -164,6 +132,14 @@ class Foo
         unset($clone->floatEnum);
 
         return $clone;
+    }
+
+    /**
+     * @return 0|1.5|2.5|3.5|null
+     */
+    public function getFloatEnumRef()
+    {
+        return $this->floatEnumRef;
     }
 
     /**
@@ -199,6 +175,14 @@ class Foo
     }
 
     /**
+     * @return false|null
+     */
+    public function getBoolEnum(): ?bool
+    {
+        return $this->boolEnum ?? null;
+    }
+
+    /**
      * @param false $boolEnum
      * @return self
      * @param bool $validate
@@ -231,6 +215,14 @@ class Foo
     }
 
     /**
+     * @return false|null
+     */
+    public function getBoolEnumRef(): ?bool
+    {
+        return $this->boolEnumRef ?? null;
+    }
+
+    /**
      * @param false $boolEnumRef
      * @return self
      * @param bool $validate
@@ -260,6 +252,14 @@ class Foo
         unset($clone->boolEnumRef);
 
         return $clone;
+    }
+
+    /**
+     * @return false
+     */
+    public function getRequiredBoolEnumRef(): bool
+    {
+        return $this->requiredBoolEnumRef;
     }
 
     /**

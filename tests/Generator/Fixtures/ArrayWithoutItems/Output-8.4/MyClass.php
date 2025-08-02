@@ -158,70 +158,6 @@ class MyClass
     }
 
     /**
-     * @return array|string
-     */
-    public function getB(): string|array
-    {
-        return $this->b;
-    }
-
-    /**
-     * @return array|null
-     */
-    public function getC(): ?array
-    {
-        return $this->c ?? null;
-    }
-
-    /**
-     * @return array|string|null
-     */
-    public function getD(): string|array|null
-    {
-        return $this->d;
-    }
-
-    /**
-     * @return array|null
-     */
-    public function getE(): ?array
-    {
-        return $this->e ?? null;
-    }
-
-    /**
-     * @return array|string|null
-     */
-    public function getF(): string|array|null
-    {
-        return $this->f;
-    }
-
-    /**
-     * @return array|null
-     */
-    public function getG(): ?array
-    {
-        return $this->g ?? null;
-    }
-
-    /**
-     * @return array|string|null
-     */
-    public function getH(): string|array|null
-    {
-        return $this->h;
-    }
-
-    /**
-     * @return array|string|object|null
-     */
-    public function getI(): string|array|object|null
-    {
-        return $this->i;
-    }
-
-    /**
      * @param array $a
      * @return self
      * @param bool $validate
@@ -243,6 +179,14 @@ class MyClass
     }
 
     /**
+     * @return array|string
+     */
+    public function getB(): string|array
+    {
+        return $this->b;
+    }
+
+    /**
      * @param array|string $b
      * @return self
      */
@@ -252,6 +196,14 @@ class MyClass
         $clone->b = $b;
 
         return $clone;
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getC(): ?array
+    {
+        return $this->c ?? null;
     }
 
     /**
@@ -276,6 +228,14 @@ class MyClass
     }
 
     /**
+     * @return array|string|null
+     */
+    public function getD(): string|array|null
+    {
+        return $this->d;
+    }
+
+    /**
      * @param array|string $d
      * @return self
      */
@@ -285,6 +245,14 @@ class MyClass
         $clone->d = $d;
 
         return $clone;
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getE(): ?array
+    {
+        return $this->e ?? null;
     }
 
     /**
@@ -320,6 +288,14 @@ class MyClass
     }
 
     /**
+     * @return array|string|null
+     */
+    public function getF(): string|array|null
+    {
+        return $this->f;
+    }
+
+    /**
      * @param array|string $f
      * @return self
      */
@@ -340,6 +316,14 @@ class MyClass
         unset($clone->f);
 
         return $clone;
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getG(): ?array
+    {
+        return $this->g ?? null;
     }
 
     /**
@@ -377,6 +361,14 @@ class MyClass
     }
 
     /**
+     * @return array|string|null
+     */
+    public function getH(): string|array|null
+    {
+        return $this->h;
+    }
+
+    /**
      * @param array|string $h
      * @return self
      */
@@ -399,6 +391,14 @@ class MyClass
         unset($clone->_providedOptionals['h']);
 
         return $clone;
+    }
+
+    /**
+     * @return array|string|object|null
+     */
+    public function getI(): string|array|object|null
+    {
+        return $this->i;
     }
 
     /**

@@ -58,14 +58,6 @@ class MyClass
     }
 
     /**
-     * @return OptionsObject|null
-     */
-    public function getOptions()
-    {
-        return $this->options;
-    }
-
-    /**
      * @param MyClassFilesItem[] $files
      * @return self
      * @param bool $validate
@@ -95,6 +87,14 @@ class MyClass
         unset($clone->files);
 
         return $clone;
+    }
+
+    /**
+     * @return OptionsObject|null
+     */
+    public function getOptions()
+    {
+        return $this->options;
     }
 
     /**

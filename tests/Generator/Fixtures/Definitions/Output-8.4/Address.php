@@ -63,14 +63,6 @@ class Address
     }
 
     /**
-     * @return string
-     */
-    public function getCity(): string
-    {
-        return $this->city;
-    }
-
-    /**
      * @param Address\Defs\Name $name
      * @return self
      */
@@ -91,6 +83,14 @@ class Address
         unset($clone->name);
 
         return $clone;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCity(): string
+    {
+        return $this->city;
     }
 
     /**

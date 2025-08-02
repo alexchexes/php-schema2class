@@ -63,14 +63,6 @@ class MyClass
     }
 
     /**
-     * @return Baz|null
-     */
-    public function getBar(): ?Baz
-    {
-        return $this->bar ?? null;
-    }
-
-    /**
      * @param string $foo
      * @return self
      * @param bool $validate
@@ -100,6 +92,14 @@ class MyClass
         unset($clone->foo);
 
         return $clone;
+    }
+
+    /**
+     * @return Baz|null
+     */
+    public function getBar(): ?Baz
+    {
+        return $this->bar ?? null;
     }
 
     /**

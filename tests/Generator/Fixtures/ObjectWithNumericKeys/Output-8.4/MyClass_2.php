@@ -50,22 +50,6 @@ class MyClass_2
     }
 
     /**
-     * @return string|null
-     */
-    public function get_2(): ?string
-    {
-        return $this->_2 ?? null;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function get_3(): ?string
-    {
-        return $this->_3 ?? null;
-    }
-
-    /**
      * @param string $_1
      * @return self
      * @param bool $validate
@@ -98,6 +82,14 @@ class MyClass_2
     }
 
     /**
+     * @return string|null
+     */
+    public function get_2(): ?string
+    {
+        return $this->_2 ?? null;
+    }
+
+    /**
      * @param string $_2
      * @return self
      * @param bool $validate
@@ -127,6 +119,14 @@ class MyClass_2
         unset($clone->_2);
 
         return $clone;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function get_3(): ?string
+    {
+        return $this->_3 ?? null;
     }
 
     /**

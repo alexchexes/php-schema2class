@@ -70,14 +70,6 @@ class Foo
     }
 
     /**
-     * @return Size|null
-     */
-    public function getSize(): ?Size
-    {
-        return $this->size ?? null;
-    }
-
-    /**
      * @param Color $color
      * @return self
      */
@@ -87,6 +79,14 @@ class Foo
         $clone->color = $color;
 
         return $clone;
+    }
+
+    /**
+     * @return Size|null
+     */
+    public function getSize(): ?Size
+    {
+        return $this->size ?? null;
     }
 
     /**

@@ -45,14 +45,6 @@ class MyClass
     }
 
     /**
-     * @return array|object|null
-     */
-    public function getParams()
-    {
-        return $this->params;
-    }
-
-    /**
      * @param string $name
      * @return self
      * @param bool $validate
@@ -82,6 +74,14 @@ class MyClass
         unset($clone->name);
 
         return $clone;
+    }
+
+    /**
+     * @return array|object|null
+     */
+    public function getParams()
+    {
+        return $this->params;
     }
 
     /**

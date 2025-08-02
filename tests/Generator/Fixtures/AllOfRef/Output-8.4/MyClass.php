@@ -67,22 +67,6 @@ class MyClass
     }
 
     /**
-     * @return string
-     */
-    public function getStreet(): string
-    {
-        return $this->street;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCountry(): string
-    {
-        return $this->country;
-    }
-
-    /**
      * @param string $city
      * @return self
      * @param bool $validate
@@ -104,6 +88,14 @@ class MyClass
     }
 
     /**
+     * @return string
+     */
+    public function getStreet(): string
+    {
+        return $this->street;
+    }
+
+    /**
      * @param string $street
      * @return self
      * @param bool $validate
@@ -122,6 +114,14 @@ class MyClass
         $clone->street = $street;
 
         return $clone;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCountry(): string
+    {
+        return $this->country;
     }
 
     /**

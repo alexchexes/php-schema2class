@@ -1,0 +1,118 @@
+<?php
+declare(strict_types=1);
+
+namespace Helmich\Schema2Class\Generator\Class\Method;
+
+use Helmich\Schema2Class\Generator\Class\PropertyNames;
+use Helmich\Schema2Class\Generator\GeneratorRequest;
+use Helmich\Schema2Class\Generator\Property\Decorator\OptionalPropertyDecorator;
+use Helmich\Schema2Class\Generator\Property\Type\PropertyInterface;
+use Laminas\Code\Generator\DocBlock\Tag\ReturnTag;
+use Laminas\Code\Generator\DocBlockGenerator;
+use Laminas\Code\Generator\MethodGenerator;
+
+class UnsetterFactory
+{
+    private bool $mutating;
+    private bool $chainable;
+
+    public function __construct(
+        private GeneratorRequest $request,
+    ) {
+        $mutableConfig = $this->request->getMutableSetters();
+        $this->mutating = $mutableConfig !== null;
+        $this->chainable = $mutableConfig === 'chainable' || $this->mutating === false;
+    }
+
+    /** 
+     * Depending on GeneratorRequest options, decides whether unsetter should be mutating, non-mutating,
+     * or shouldn't be generated at all, and creates one if needed.
+     * If no unsetter should be generated, returns `null`.
+     */
+    public function generateUnsetter(PropertyInterface $property, string $pascalName): ?MethodGenerator
+    {
+        if ($this->request->getNoSetters()) {
+            return null;
+        }
+
+        if ($this->mutating) {
+            // TODO: check why for "mutable" style we generate unsetter only when property is not just optional, but also nullable. Is this necessary?
+            if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
+                return $this->generateMutatingUnsetter($property, $pascalName);
+            }
+        } else {
+            if ($property instanceof OptionalPropertyDecorator) {
+                return $this->generateNonMutatingUnsetter($property, $pascalName);
+            }
+        }
+
+        return null;
+    }
+
+    private function generateNonMutatingUnsetter(PropertyInterface $property, string $pascalName): MethodGenerator
+    {
+        $methodName = 'without' . $pascalName;
+        $propKey = var_export($property->key(), true);
+        $propName = $property->name();
+
+        $body = "\$clone = clone \$this;\n";
+        $body .= "unset(\$clone->$propName);\n";
+
+        if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
+            $body .= "unset(\$clone->".PropertyNames::OPTIONALS."[{$propKey}]);\n";
+        }
+
+        $body .= "\nreturn \$clone;";
+
+        $dockBlock = new DocBlockGenerator(null, null, [new ReturnTag('self')]);
+
+        $unsetMethod = new MethodGenerator(
+            name: $methodName,
+            parameters: [],
+            flags: MethodGenerator::FLAG_PUBLIC,
+            body: $body,
+            docBlock: $dockBlock,
+        );
+
+        if ($this->request->isAtLeastPHP('7.0')) {
+            $unsetMethod->setReturnType('self');
+        }
+
+        return $unsetMethod;
+    }
+
+    private function generateMutatingUnsetter(PropertyInterface $property, string $pascalName): MethodGenerator
+    {
+        $methodName = 'unset' . $pascalName;
+        $propKey = var_export($property->key(), true);
+        $propName = $property->name();
+
+        $body = "\$this->{$propName} = null;\n";
+        if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
+            $body .= "unset(\$this->".PropertyNames::OPTIONALS."[{$propKey}]);\n";
+        }
+        if ($this->chainable) {
+            $body .= "\nreturn \$this;";
+        }
+
+        $returnTag = $this->chainable ? [new ReturnTag('self')] : [];
+
+        $dockBlock = new DocBlockGenerator(null, null, $returnTag);
+
+        $unsetMethod = new MethodGenerator(
+            name: $methodName,
+            parameters: [],
+            flags: MethodGenerator::FLAG_PUBLIC,
+            body: $body,
+            docBlock: $dockBlock,
+        );
+
+        if ($this->chainable && $this->request->isAtLeastPHP('7.0')) {
+            $unsetMethod->setReturnType('self');
+        } elseif (!$this->chainable && $this->request->isAtLeastPHP('7.1')) {
+            $unsetMethod->setReturnType('void');
+        }
+
+        return $unsetMethod;
+    }
+}

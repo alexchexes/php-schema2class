@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ns\TypeArrayUnion_8_4;
+namespace Ns\PropTypeIsUnionWithObject_7_4;
 
-class MyClassFooAlternative2
+class MyClass
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -12,55 +12,56 @@ class MyClassFooAlternative2
      * @var array
      */
     private static array $schema = [
-        'type' => 'object',
         'required' => [
-            'bar',
+            'foo',
         ],
         'properties' => [
-            'bar' => [
-                'type' => 'string',
+            'foo' => [
+                'type' => [
+                    'string',
+                    'object',
+                ],
+                'required' => [
+                    'bar',
+                ],
+                'properties' => [
+                    'bar' => [
+                        'type' => 'string',
+                    ],
+                ],
             ],
         ],
     ];
 
     /**
-     * @var string
+     * @var string|MyClassFooAlternative2
      */
-    private string $bar;
+    private $foo;
 
     /**
-     * @param string $bar
+     * @param string|MyClassFooAlternative2 $foo
      */
-    public function __construct(string $bar)
+    public function __construct($foo)
     {
-        $this->bar = $bar;
+        $this->foo = $foo;
     }
 
     /**
-     * @return string
+     * @return string|MyClassFooAlternative2
      */
-    public function getBar(): string
+    public function getFoo()
     {
-        return $this->bar;
+        return $this->foo;
     }
 
     /**
-     * @param string $bar
+     * @param string|MyClassFooAlternative2 $foo
      * @return self
-     * @param bool $validate
      */
-    public function withBar(string $bar, bool $validate = true): self
+    public function withFoo($foo): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($bar, self::$schema['properties']['bar']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
-        $clone->bar = $bar;
+        $clone->foo = $foo;
 
         return $clone;
     }
@@ -70,19 +71,29 @@ class MyClassFooAlternative2
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
-     * @return MyClassFooAlternative2 Created instance
+     * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput(array|object $input, bool $validate = true): MyClassFooAlternative2
+    public static function fromInput($input, bool $validate = true): MyClass
     {
+        if (!is_array($input) && !is_object($input)) {
+            throw new \InvalidArgumentException(
+                'Input to fromInput must be array or object, got ' . gettype($input)
+            );
+        }
+
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $bar = $input->{'bar'};
+        if ((MyClassFooAlternative2::validateInput($input->{'foo'}, true))) {
+            $foo = MyClassFooAlternative2::fromInput($input->{'foo'}, $validate);
+        } else {
+            $foo = $input->{'foo'};
+        }
 
-        $obj = new self($bar);
+        $obj = new self($foo);
 
         return $obj;
     }
@@ -95,7 +106,11 @@ class MyClassFooAlternative2
     public function toArray(): array
     {
         $output = [];
-        $output['bar'] = $this->bar;
+        if ((is_string($this->foo))) {
+            $output['foo'] = $this->foo;
+        } else if (($this->foo instanceof MyClassFooAlternative2)) {
+            $output['foo'] = ($this->foo)->toArray();
+        }
 
         return $output;
     }
@@ -108,7 +123,11 @@ class MyClassFooAlternative2
     public function toStdClass(): \stdClass
     {
         $output = new \stdClass();
-        $output->{'bar'} = $this->bar;
+        if ((is_string($this->foo))) {
+        $output->{'foo'} = $this->foo;
+        } else if (($this->foo instanceof MyClassFooAlternative2)) {
+        $output->{'foo'} = ($this->foo)->toStdClass();
+        }
 
         return $output;
     }
@@ -121,7 +140,7 @@ class MyClassFooAlternative2
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput(array|object $input, bool $return = false): bool
+    public static function validateInput($input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
@@ -135,5 +154,10 @@ class MyClassFooAlternative2
         }
 
         return $validator->isValid();
+    }
+
+    public function __clone()
+    {
+        $this->foo = ($this->foo instanceof MyClassFooAlternative2) ? (clone $this->foo) : ((is_string($this->foo)) ? ($this->foo) : ($this->foo));
     }
 }

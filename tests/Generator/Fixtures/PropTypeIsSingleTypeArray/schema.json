@@ -1,0 +1,59 @@
+{
+  "type": "object",
+  "required": [
+    "foo",
+    "bar",
+    "baz",
+    "qux",
+    "quux",
+    "thud",
+    "grox",
+    "nullFoo",
+    "nullBar",
+    "nullBaz",
+    "nullQux",
+    "nullQuux",
+    "nullThud",
+    "nullGrox"
+  ],
+  "properties": {
+    "foo": { "type": ["string"] },
+    "bar": { "type": ["number"] },
+    "baz": { "type": ["integer"] },
+    "qux": { "type": ["boolean"] },
+    "quux": { "type": ["object"], "properties": { "a": { "type": "string" } } },
+    "thud": { "type": ["array"], "items": { "type": "string" } },
+    "grox": { "type": ["null"] },
+
+    "nullFoo": { "type": ["string", "null"] },
+    "nullBar": { "type": ["number", "null"] },
+    "nullBaz": { "type": ["integer", "null"] },
+    "nullQux": { "type": ["boolean", "null"] },
+    "nullQuux": {
+      "type": ["object", "null"],
+      "properties": { "a": { "type": "string" } }
+    },
+    "nullThud": { "type": ["array", "null"], "items": { "type": "string" } },
+
+    "optFoo": { "type": ["string"] },
+    "optBar": { "type": ["number"] },
+    "optBaz": { "type": ["integer"] },
+    "optQux": { "type": ["boolean"] },
+    "optQuux": {
+      "type": ["object"],
+      "properties": { "a": { "type": "string" } }
+    },
+    "optThud": { "type": ["array"], "items": { "type": "string" } },
+    "optGrox": { "type": ["null"] },
+
+    "optNullFoo": { "type": ["string", "null"] },
+    "optNullBar": { "type": ["number", "null"] },
+    "optNullBaz": { "type": ["integer", "null"] },
+    "optNullQux": { "type": ["boolean", "null"] },
+    "optNullQuux": {
+      "type": ["object", "null"],
+      "properties": { "a": { "type": "string" } }
+    },
+    "optNullThud": { "type": ["array", "null"], "items": { "type": "string" } }
+  }
+}

@@ -48,14 +48,6 @@ class MyClass
     }
 
     /**
-     * @return array|object|null
-     */
-    public function getB(): array|object|null
-    {
-        return $this->b;
-    }
-
-    /**
      * @param string[] $a
      * @return self
      * @param bool $validate
@@ -85,6 +77,14 @@ class MyClass
         unset($clone->a);
 
         return $clone;
+    }
+
+    /**
+     * @return array|object|null
+     */
+    public function getB(): array|object|null
+    {
+        return $this->b;
     }
 
     /**

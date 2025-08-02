@@ -65,14 +65,6 @@ class MyClassEnsureArgs1Alternative2
     }
 
     /**
-     * @return string
-     */
-    public function getAccountNumber()
-    {
-        return $this->accountNumber;
-    }
-
-    /**
      * @param string $type
      * @return self
      * @param bool $validate
@@ -91,6 +83,14 @@ class MyClassEnsureArgs1Alternative2
         $clone->type = $type;
 
         return $clone;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAccountNumber()
+    {
+        return $this->accountNumber;
     }
 
     /**

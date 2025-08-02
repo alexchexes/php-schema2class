@@ -80,22 +80,6 @@ class MyClass
     }
 
     /**
-     * @return Baz
-     */
-    public function getBar(): Baz
-    {
-        return $this->bar;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getOpt(): ?string
-    {
-        return $this->opt ?? null;
-    }
-
-    /**
      * @param string $foo
      * @return self
      * @param bool $validate
@@ -116,6 +100,14 @@ class MyClass
     }
 
     /**
+     * @return Baz
+     */
+    public function getBar(): Baz
+    {
+        return $this->bar;
+    }
+
+    /**
      * @param Baz $bar
      * @return self
      */
@@ -124,6 +116,14 @@ class MyClass
         $this->bar = $bar;
 
         return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getOpt(): ?string
+    {
+        return $this->opt ?? null;
     }
 
     /**

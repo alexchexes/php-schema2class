@@ -57,14 +57,6 @@ class MyClass
     }
 
     /**
-     * @return array|object|null
-     */
-    public function getEncoded()
-    {
-        return $this->encoded;
-    }
-
-    /**
      * @param array|object $foo
      * @return self
      * @param bool $validate
@@ -94,6 +86,14 @@ class MyClass
         unset($clone->foo);
 
         return $clone;
+    }
+
+    /**
+     * @return array|object|null
+     */
+    public function getEncoded()
+    {
+        return $this->encoded;
     }
 
     /**

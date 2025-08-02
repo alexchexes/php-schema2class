@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Example\Advanced;
@@ -55,14 +56,6 @@ class UserAddress
     }
 
     /**
-     * @return string
-     */
-    public function getStreet(): string
-    {
-        return $this->street;
-    }
-
-    /**
      * @param string $city
      * @return self
      * @param bool $validate
@@ -81,6 +74,14 @@ class UserAddress
         $clone->city = $city;
 
         return $clone;
+    }
+
+    /**
+     * @return string
+     */
+    public function getStreet(): string
+    {
+        return $this->street;
     }
 
     /**

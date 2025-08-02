@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Example\Basic;
@@ -31,14 +32,6 @@ class Address
     }
 
     /**
-     * @return int|null
-     */
-    public function getHouse(): ?int
-    {
-        return $this->house ?? null;
-    }
-
-    /**
      * @param string $street
      * @return self
      * @param bool $validate
@@ -68,6 +61,14 @@ class Address
         unset($clone->street);
 
         return $clone;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getHouse(): ?int
+    {
+        return $this->house ?? null;
     }
 
     /**

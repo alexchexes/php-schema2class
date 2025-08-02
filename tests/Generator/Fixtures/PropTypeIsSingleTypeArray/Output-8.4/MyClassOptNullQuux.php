@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ns\TypeArrayUnion_8_4;
+namespace Ns\PropTypeIsSingleTypeArray_8_4;
 
-class MyClass
+class MyClassOptNullQuux
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -12,56 +12,55 @@ class MyClass
      * @var array
      */
     private static array $schema = [
-        'required' => [
-            'foo',
-        ],
+        'type' => 'object',
         'properties' => [
-            'foo' => [
-                'type' => [
-                    'string',
-                    'object',
-                ],
-                'required' => [
-                    'bar',
-                ],
-                'properties' => [
-                    'bar' => [
-                        'type' => 'string',
-                    ],
-                ],
+            'a' => [
+                'type' => 'string',
             ],
         ],
     ];
 
     /**
-     * @var string|MyClassFooAlternative2
+     * @var string|null
      */
-    private string|MyClassFooAlternative2 $foo;
+    private ?string $a = null;
 
     /**
-     * @param string|MyClassFooAlternative2 $foo
+     * @return string|null
      */
-    public function __construct(MyClassFooAlternative2|string $foo)
+    public function getA(): ?string
     {
-        $this->foo = $foo;
+        return $this->a ?? null;
     }
 
     /**
-     * @return string|MyClassFooAlternative2
+     * @param string $a
+     * @return self
+     * @param bool $validate
      */
-    public function getFoo(): MyClassFooAlternative2|string
+    public function withA(string $a, bool $validate = true): self
     {
-        return $this->foo;
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($a, self::$schema['properties']['a']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
+        $clone = clone $this;
+        $clone->a = $a;
+
+        return $clone;
     }
 
     /**
-     * @param string|MyClassFooAlternative2 $foo
      * @return self
      */
-    public function withFoo(MyClassFooAlternative2|string $foo): self
+    public function withoutA(): self
     {
         $clone = clone $this;
-        $clone->foo = $foo;
+        unset($clone->a);
 
         return $clone;
     }
@@ -71,24 +70,20 @@ class MyClass
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
-     * @return MyClass Created instance
+     * @return MyClassOptNullQuux Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput(array|object $input, bool $validate = true): MyClass
+    public static function fromInput(array|object $input, bool $validate = true): MyClassOptNullQuux
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $foo = match (true) {
-            is_string($input->{'foo'}) => $input->{'foo'},
-            MyClassFooAlternative2::validateInput($input->{'foo'}, true) => MyClassFooAlternative2::fromInput($input->{'foo'}, $validate),
-            default => throw new \InvalidArgumentException("could not build property 'foo' from JSON"),
-        };
+        $a = isset($input->{'a'}) ? $input->{'a'} : null;
 
-        $obj = new self($foo);
-
+        $obj = new self();
+        $obj->a = $a;
         return $obj;
     }
 
@@ -100,10 +95,9 @@ class MyClass
     public function toArray(): array
     {
         $output = [];
-        $output['foo'] = match (true) {
-            is_string($this->foo) => $this->foo,
-            $this->foo instanceof MyClassFooAlternative2 => ($this->foo)->toArray(),
-        };
+        if (isset($this->a)) {
+            $output['a'] = $this->a;
+        }
 
         return $output;
     }
@@ -116,10 +110,9 @@ class MyClass
     public function toStdClass(): \stdClass
     {
         $output = new \stdClass();
-        $output->{'foo'} = match (true) {
-            is_string($this->foo) => $this->foo,
-            $this->foo instanceof MyClassFooAlternative2 => ($this->foo)->toStdClass(),
-        };
+        if (isset($this->a)) {
+            $output->{'a'} = $this->a;
+        }
 
         return $output;
     }
@@ -146,13 +139,5 @@ class MyClass
         }
 
         return $validator->isValid();
-    }
-
-    public function __clone()
-    {
-        $this->foo = match (true) {
-            is_string($this->foo) => $this->foo,
-            $this->foo instanceof MyClassFooAlternative2 => clone $this->foo,
-        };
     }
 }

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Class;
 
+use Helmich\Schema2Class\Generator\Class\Method\ClassMethodSuiteFactory;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
 use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
@@ -26,7 +27,7 @@ class MethodFactoryTest extends TestCase
         );
 
         $schemaProperties = (new SchemaPropertyCollector())->collectPropertiesFromSchema($schema, $req);
-        $classMethods = (new ClassMethodFactory(
+        $classMethods = (new ClassMethodSuiteFactory(
             $req,
             $schemaProperties,
             [],

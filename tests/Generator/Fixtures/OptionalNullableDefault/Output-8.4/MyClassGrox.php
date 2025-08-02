@@ -50,14 +50,6 @@ class MyClassGrox
     }
 
     /**
-     * @return int|float|null
-     */
-    public function getB(): int|float|null
-    {
-        return $this->b;
-    }
-
-    /**
      * @param string $a
      * @return self
      * @param bool $validate
@@ -87,6 +79,14 @@ class MyClassGrox
         unset($clone->a);
 
         return $clone;
+    }
+
+    /**
+     * @return int|float|null
+     */
+    public function getB(): int|float|null
+    {
+        return $this->b;
     }
 
     /**

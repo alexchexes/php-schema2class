@@ -596,366 +596,6 @@ class MyClass
     }
 
     /**
-     * @return string
-     */
-    public function getGLOBALS2(): string
-    {
-        return $this->_GLOBALS_2;
-    }
-
-    /**
-     * @return string
-     */
-    public function getGLOBALS11(): string
-    {
-        return $this->_GLOBALS1_1;
-    }
-
-    /**
-     * @return string
-     */
-    public function getSERVER1(): string
-    {
-        return $this->_SERVER_1;
-    }
-
-    /**
-     * @return string
-     */
-    public function getGET1(): string
-    {
-        return $this->_GET_1;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPOST1(): string
-    {
-        return $this->_POST_1;
-    }
-
-    /**
-     * @return string
-     */
-    public function getFILES1(): string
-    {
-        return $this->_FILES_1;
-    }
-
-    /**
-     * @return string
-     */
-    public function getREQUEST1(): string
-    {
-        return $this->_REQUEST_1;
-    }
-
-    /**
-     * @return string
-     */
-    public function getSESSION1(): string
-    {
-        return $this->_SESSION_1;
-    }
-
-    /**
-     * @return string
-     */
-    public function getENV1(): string
-    {
-        return $this->_ENV_1;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCOOKIE1(): string
-    {
-        return $this->_COOKIE_1;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPhpErrormsg(): string
-    {
-        return $this->_phpErrormsg;
-    }
-
-    /**
-     * @return string
-     */
-    public function getHttpResponseHeader(): string
-    {
-        return $this->_httpResponseHeader;
-    }
-
-    /**
-     * @return string
-     */
-    public function getArgc(): string
-    {
-        return $this->_argc;
-    }
-
-    /**
-     * @return string
-     */
-    public function getArgv(): string
-    {
-        return $this->_argv;
-    }
-
-    /**
-     * @return string
-     */
-    public function getInput(): string
-    {
-        return $this->input;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getValidate(): ?string
-    {
-        return $this->validate ?? null;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getMaterializeDefaults(): ?string
-    {
-        return $this->materializeDefaults ?? null;
-    }
-
-    /**
-     * @return string
-     */
-    public function getObj(): string
-    {
-        return $this->obj;
-    }
-
-    /**
-     * @return string
-     */
-    public function getIncludeDefaults(): string
-    {
-        return $this->includeDefaults;
-    }
-
-    /**
-     * @return MyClassTestObj|null
-     */
-    public function getTestObj(): ?MyClassTestObj
-    {
-        return $this->testObj ?? null;
-    }
-
-    /**
-     * @return string
-     */
-    public function getFromInput1(): string
-    {
-        return $this->_fromInput_1;
-    }
-
-    /**
-     * @return string
-     */
-    public function getToArray1(): string
-    {
-        return $this->_toArray_1;
-    }
-
-    /**
-     * @return string
-     */
-    public function getValidateInput1(): string
-    {
-        return $this->_validateInput_1;
-    }
-
-    /**
-     * @return string
-     */
-    public function getSchema(): string
-    {
-        return $this->_schema;
-    }
-
-    /**
-     * @return string
-     */
-    public function getDefaults1(): string
-    {
-        return $this->_defaults_1;
-    }
-
-    /**
-     * @return string
-     */
-    public function getProvidedOptionals1(): string
-    {
-        return $this->_providedOptionals_1;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getProvidedOptionals2(): ?string
-    {
-        return $this->_providedOptionals_2 ?? null;
-    }
-
-    /**
-     * @return string
-     */
-    public function getClone1(): string
-    {
-        return $this->_clone_1;
-    }
-
-    /**
-     * @return string
-     */
-    public function getConstruct1(): string
-    {
-        return $this->_construct_1;
-    }
-
-    /**
-     * @return string
-     */
-    public function getDestruct1(): string
-    {
-        return $this->_destruct_1;
-    }
-
-    /**
-     * @return string
-     */
-    public function getGet2(): string
-    {
-        return $this->_get_2;
-    }
-
-    /**
-     * @return string
-     */
-    public function getSet1(): string
-    {
-        return $this->_set_1;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCall1(): string
-    {
-        return $this->_call_1;
-    }
-
-    /**
-     * @return string
-     */
-    public function getIsset1(): string
-    {
-        return $this->_isset_1;
-    }
-
-    /**
-     * @return string
-     */
-    public function getUnset1(): string
-    {
-        return $this->_unset_1;
-    }
-
-    /**
-     * @return string
-     */
-    public function getSleep1(): string
-    {
-        return $this->_sleep_1;
-    }
-
-    /**
-     * @return string
-     */
-    public function getWakeup1(): string
-    {
-        return $this->_wakeup_1;
-    }
-
-    /**
-     * @return string
-     */
-    public function getToString1(): string
-    {
-        return $this->_toString_1;
-    }
-
-    /**
-     * @return string
-     */
-    public function getInvoke1(): string
-    {
-        return $this->_invoke_1;
-    }
-
-    /**
-     * @return string
-     */
-    public function getDebugInfo1(): string
-    {
-        return $this->_debugInfo_1;
-    }
-
-    /**
-     * @return string
-     */
-    public function getClone2(): string
-    {
-        return $this->_clone_2;
-    }
-
-    /**
-     * @return string
-     */
-    public function getFiles(): string
-    {
-        return $this->files;
-    }
-
-    /**
-     * @return MyClassEnsureArgs1Alternative1|MyClassEnsureArgs1Alternative2|string|null
-     */
-    public function getEnsureArgs1()
-    {
-        return $this->ensureArgs1;
-    }
-
-    /**
-     * @return MyClassEnsureArgs2|null
-     */
-    public function getEnsureArgs2(): ?MyClassEnsureArgs2
-    {
-        return $this->ensureArgs2 ?? null;
-    }
-
-    /**
-     * @return MyClassEnsureArgs3Item[]|null
-     */
-    public function getEnsureArgs3(): ?array
-    {
-        return $this->ensureArgs3 ?? null;
-    }
-
-    /**
      * @param string $_GLOBALS_1
      * @return self
      * @param bool $validate
@@ -974,6 +614,14 @@ class MyClass
         $clone->_GLOBALS_1 = $_GLOBALS_1;
 
         return $clone;
+    }
+
+    /**
+     * @return string
+     */
+    public function getGLOBALS2(): string
+    {
+        return $this->_GLOBALS_2;
     }
 
     /**
@@ -998,6 +646,14 @@ class MyClass
     }
 
     /**
+     * @return string
+     */
+    public function getGLOBALS11(): string
+    {
+        return $this->_GLOBALS1_1;
+    }
+
+    /**
      * @param string $_GLOBALS1_1
      * @return self
      * @param bool $validate
@@ -1016,6 +672,14 @@ class MyClass
         $clone->_GLOBALS1_1 = $_GLOBALS1_1;
 
         return $clone;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSERVER1(): string
+    {
+        return $this->_SERVER_1;
     }
 
     /**
@@ -1040,6 +704,14 @@ class MyClass
     }
 
     /**
+     * @return string
+     */
+    public function getGET1(): string
+    {
+        return $this->_GET_1;
+    }
+
+    /**
      * @param string $_GET_1
      * @return self
      * @param bool $validate
@@ -1058,6 +730,14 @@ class MyClass
         $clone->_GET_1 = $_GET_1;
 
         return $clone;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPOST1(): string
+    {
+        return $this->_POST_1;
     }
 
     /**
@@ -1082,6 +762,14 @@ class MyClass
     }
 
     /**
+     * @return string
+     */
+    public function getFILES1(): string
+    {
+        return $this->_FILES_1;
+    }
+
+    /**
      * @param string $_FILES_1
      * @return self
      * @param bool $validate
@@ -1100,6 +788,14 @@ class MyClass
         $clone->_FILES_1 = $_FILES_1;
 
         return $clone;
+    }
+
+    /**
+     * @return string
+     */
+    public function getREQUEST1(): string
+    {
+        return $this->_REQUEST_1;
     }
 
     /**
@@ -1124,6 +820,14 @@ class MyClass
     }
 
     /**
+     * @return string
+     */
+    public function getSESSION1(): string
+    {
+        return $this->_SESSION_1;
+    }
+
+    /**
      * @param string $_SESSION_1
      * @return self
      * @param bool $validate
@@ -1142,6 +846,14 @@ class MyClass
         $clone->_SESSION_1 = $_SESSION_1;
 
         return $clone;
+    }
+
+    /**
+     * @return string
+     */
+    public function getENV1(): string
+    {
+        return $this->_ENV_1;
     }
 
     /**
@@ -1166,6 +878,14 @@ class MyClass
     }
 
     /**
+     * @return string
+     */
+    public function getCOOKIE1(): string
+    {
+        return $this->_COOKIE_1;
+    }
+
+    /**
      * @param string $_COOKIE_1
      * @return self
      * @param bool $validate
@@ -1184,6 +904,14 @@ class MyClass
         $clone->_COOKIE_1 = $_COOKIE_1;
 
         return $clone;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPhpErrormsg(): string
+    {
+        return $this->_phpErrormsg;
     }
 
     /**
@@ -1208,6 +936,14 @@ class MyClass
     }
 
     /**
+     * @return string
+     */
+    public function getHttpResponseHeader(): string
+    {
+        return $this->_httpResponseHeader;
+    }
+
+    /**
      * @param string $_httpResponseHeader
      * @return self
      * @param bool $validate
@@ -1226,6 +962,14 @@ class MyClass
         $clone->_httpResponseHeader = $_httpResponseHeader;
 
         return $clone;
+    }
+
+    /**
+     * @return string
+     */
+    public function getArgc(): string
+    {
+        return $this->_argc;
     }
 
     /**
@@ -1250,6 +994,14 @@ class MyClass
     }
 
     /**
+     * @return string
+     */
+    public function getArgv(): string
+    {
+        return $this->_argv;
+    }
+
+    /**
      * @param string $_argv
      * @return self
      * @param bool $validate
@@ -1271,6 +1023,14 @@ class MyClass
     }
 
     /**
+     * @return string
+     */
+    public function getInput(): string
+    {
+        return $this->input;
+    }
+
+    /**
      * @param string $input
      * @return self
      * @param bool $validate
@@ -1289,6 +1049,14 @@ class MyClass
         $clone->input = $input;
 
         return $clone;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getValidate(): ?string
+    {
+        return $this->validate ?? null;
     }
 
     /**
@@ -1321,6 +1089,14 @@ class MyClass
         unset($clone->validate);
 
         return $clone;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getMaterializeDefaults(): ?string
+    {
+        return $this->materializeDefaults ?? null;
     }
 
     /**
@@ -1358,6 +1134,14 @@ class MyClass
     }
 
     /**
+     * @return string
+     */
+    public function getObj(): string
+    {
+        return $this->obj;
+    }
+
+    /**
      * @param string $obj
      * @return self
      * @param bool $validate
@@ -1379,6 +1163,14 @@ class MyClass
     }
 
     /**
+     * @return string
+     */
+    public function getIncludeDefaults(): string
+    {
+        return $this->includeDefaults;
+    }
+
+    /**
      * @param string $includeDefaults
      * @return self
      * @param bool $validate
@@ -1397,6 +1189,14 @@ class MyClass
         $clone->includeDefaults = $includeDefaults;
 
         return $clone;
+    }
+
+    /**
+     * @return MyClassTestObj|null
+     */
+    public function getTestObj(): ?MyClassTestObj
+    {
+        return $this->testObj ?? null;
     }
 
     /**
@@ -1423,6 +1223,14 @@ class MyClass
     }
 
     /**
+     * @return string
+     */
+    public function getFromInput1(): string
+    {
+        return $this->_fromInput_1;
+    }
+
+    /**
      * @param string $_fromInput_1
      * @return self
      * @param bool $validate
@@ -1441,6 +1249,14 @@ class MyClass
         $clone->_fromInput_1 = $_fromInput_1;
 
         return $clone;
+    }
+
+    /**
+     * @return string
+     */
+    public function getToArray1(): string
+    {
+        return $this->_toArray_1;
     }
 
     /**
@@ -1465,6 +1281,14 @@ class MyClass
     }
 
     /**
+     * @return string
+     */
+    public function getValidateInput1(): string
+    {
+        return $this->_validateInput_1;
+    }
+
+    /**
      * @param string $_validateInput_1
      * @return self
      * @param bool $validate
@@ -1483,6 +1307,14 @@ class MyClass
         $clone->_validateInput_1 = $_validateInput_1;
 
         return $clone;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSchema(): string
+    {
+        return $this->_schema;
     }
 
     /**
@@ -1507,6 +1339,14 @@ class MyClass
     }
 
     /**
+     * @return string
+     */
+    public function getDefaults1(): string
+    {
+        return $this->_defaults_1;
+    }
+
+    /**
      * @param string $_defaults_1
      * @return self
      * @param bool $validate
@@ -1528,6 +1368,14 @@ class MyClass
     }
 
     /**
+     * @return string
+     */
+    public function getProvidedOptionals1(): string
+    {
+        return $this->_providedOptionals_1;
+    }
+
+    /**
      * @param string $_providedOptionals_1
      * @return self
      * @param bool $validate
@@ -1546,6 +1394,14 @@ class MyClass
         $clone->_providedOptionals_1 = $_providedOptionals_1;
 
         return $clone;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getProvidedOptionals2(): ?string
+    {
+        return $this->_providedOptionals_2 ?? null;
     }
 
     /**
@@ -1581,6 +1437,14 @@ class MyClass
     }
 
     /**
+     * @return string
+     */
+    public function getClone1(): string
+    {
+        return $this->_clone_1;
+    }
+
+    /**
      * @param string $_clone_1
      * @return self
      * @param bool $validate
@@ -1599,6 +1463,14 @@ class MyClass
         $clone->_clone_1 = $_clone_1;
 
         return $clone;
+    }
+
+    /**
+     * @return string
+     */
+    public function getConstruct1(): string
+    {
+        return $this->_construct_1;
     }
 
     /**
@@ -1623,6 +1495,14 @@ class MyClass
     }
 
     /**
+     * @return string
+     */
+    public function getDestruct1(): string
+    {
+        return $this->_destruct_1;
+    }
+
+    /**
      * @param string $_destruct_1
      * @return self
      * @param bool $validate
@@ -1641,6 +1521,14 @@ class MyClass
         $clone->_destruct_1 = $_destruct_1;
 
         return $clone;
+    }
+
+    /**
+     * @return string
+     */
+    public function getGet2(): string
+    {
+        return $this->_get_2;
     }
 
     /**
@@ -1665,6 +1553,14 @@ class MyClass
     }
 
     /**
+     * @return string
+     */
+    public function getSet1(): string
+    {
+        return $this->_set_1;
+    }
+
+    /**
      * @param string $_set_1
      * @return self
      * @param bool $validate
@@ -1683,6 +1579,14 @@ class MyClass
         $clone->_set_1 = $_set_1;
 
         return $clone;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCall1(): string
+    {
+        return $this->_call_1;
     }
 
     /**
@@ -1707,6 +1611,14 @@ class MyClass
     }
 
     /**
+     * @return string
+     */
+    public function getIsset1(): string
+    {
+        return $this->_isset_1;
+    }
+
+    /**
      * @param string $_isset_1
      * @return self
      * @param bool $validate
@@ -1725,6 +1637,14 @@ class MyClass
         $clone->_isset_1 = $_isset_1;
 
         return $clone;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUnset1(): string
+    {
+        return $this->_unset_1;
     }
 
     /**
@@ -1749,6 +1669,14 @@ class MyClass
     }
 
     /**
+     * @return string
+     */
+    public function getSleep1(): string
+    {
+        return $this->_sleep_1;
+    }
+
+    /**
      * @param string $_sleep_1
      * @return self
      * @param bool $validate
@@ -1767,6 +1695,14 @@ class MyClass
         $clone->_sleep_1 = $_sleep_1;
 
         return $clone;
+    }
+
+    /**
+     * @return string
+     */
+    public function getWakeup1(): string
+    {
+        return $this->_wakeup_1;
     }
 
     /**
@@ -1791,6 +1727,14 @@ class MyClass
     }
 
     /**
+     * @return string
+     */
+    public function getToString1(): string
+    {
+        return $this->_toString_1;
+    }
+
+    /**
      * @param string $_toString_1
      * @return self
      * @param bool $validate
@@ -1809,6 +1753,14 @@ class MyClass
         $clone->_toString_1 = $_toString_1;
 
         return $clone;
+    }
+
+    /**
+     * @return string
+     */
+    public function getInvoke1(): string
+    {
+        return $this->_invoke_1;
     }
 
     /**
@@ -1833,6 +1785,14 @@ class MyClass
     }
 
     /**
+     * @return string
+     */
+    public function getDebugInfo1(): string
+    {
+        return $this->_debugInfo_1;
+    }
+
+    /**
      * @param string $_debugInfo_1
      * @return self
      * @param bool $validate
@@ -1851,6 +1811,14 @@ class MyClass
         $clone->_debugInfo_1 = $_debugInfo_1;
 
         return $clone;
+    }
+
+    /**
+     * @return string
+     */
+    public function getClone2(): string
+    {
+        return $this->_clone_2;
     }
 
     /**
@@ -1875,6 +1843,14 @@ class MyClass
     }
 
     /**
+     * @return string
+     */
+    public function getFiles(): string
+    {
+        return $this->files;
+    }
+
+    /**
      * @param string $files
      * @return self
      * @param bool $validate
@@ -1893,6 +1869,14 @@ class MyClass
         $clone->files = $files;
 
         return $clone;
+    }
+
+    /**
+     * @return MyClassEnsureArgs1Alternative1|MyClassEnsureArgs1Alternative2|string|null
+     */
+    public function getEnsureArgs1()
+    {
+        return $this->ensureArgs1;
     }
 
     /**
@@ -1919,6 +1903,14 @@ class MyClass
     }
 
     /**
+     * @return MyClassEnsureArgs2|null
+     */
+    public function getEnsureArgs2(): ?MyClassEnsureArgs2
+    {
+        return $this->ensureArgs2 ?? null;
+    }
+
+    /**
      * @param MyClassEnsureArgs2 $ensureArgs2
      * @return self
      */
@@ -1939,6 +1931,14 @@ class MyClass
         unset($clone->ensureArgs2);
 
         return $clone;
+    }
+
+    /**
+     * @return MyClassEnsureArgs3Item[]|null
+     */
+    public function getEnsureArgs3(): ?array
+    {
+        return $this->ensureArgs3 ?? null;
     }
 
     /**

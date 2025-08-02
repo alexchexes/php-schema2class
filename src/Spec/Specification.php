@@ -40,14 +40,6 @@ class Specification
     }
 
     /**
-     * @return SpecificationFilesItem[]
-     */
-    public function getFiles(): array
-    {
-        return $this->files;
-    }
-
-    /**
      * @param SpecificationOptions $options
      * @return self
      */
@@ -68,6 +60,14 @@ class Specification
         unset($clone->options);
 
         return $clone;
+    }
+
+    /**
+     * @return SpecificationFilesItem[]
+     */
+    public function getFiles(): array
+    {
+        return $this->files;
     }
 
     /**

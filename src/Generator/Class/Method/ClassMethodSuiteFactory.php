@@ -1,16 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Helmich\Schema2Class\Generator\Class;
+namespace Helmich\Schema2Class\Generator\Class\Method;
 
-use Helmich\Schema2Class\Generator\Class\Method\FromInputMethodFactory;
-use Helmich\Schema2Class\Generator\Class\Method\CloneMethodFactory;
-use Helmich\Schema2Class\Generator\Class\Method\ConstructorFactory;
-use Helmich\Schema2Class\Generator\Class\Method\GetterFactory;
-use Helmich\Schema2Class\Generator\Class\Method\IsProvidedMethodFactory;
-use Helmich\Schema2Class\Generator\Class\Method\SerializeMethodFactory;
-use Helmich\Schema2Class\Generator\Class\Method\SetterFactory;
-use Helmich\Schema2Class\Generator\Class\Method\ValidateMethodFactory;
+use Helmich\Schema2Class\Generator\Class\MethodNames;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\Collection\PropertyCollection;
 use Laminas\Code\Generator\MethodGenerator;
@@ -18,7 +11,7 @@ use Laminas\Code\Generator\MethodGenerator;
 /**
  * Factory for creating all methods of a generated class.
  */
-class ClassMethodFactory
+class ClassMethodSuiteFactory
 {
     public function __construct(
         private GeneratorRequest $request,
@@ -35,26 +28,21 @@ class ClassMethodFactory
     public function generateMethods(): array
     {
         $constructorFactory = new ConstructorFactory($this->request, $this->schemaProperties);
-        $getterMethodFactory = new GetterFactory($this->request, $this->schemaProperties);
-        $setterMethodFactory = new SetterFactory($this->request, $this->schemaProperties);
-        $buildMethodFactory = 
-            new FromInputMethodFactory($this->request, $this->schemaProperties, $this->defaults, $this->hasOptionalNullable);
+        $accessorsFactory = new PropertyAccessorsFactory($this->request, $this->schemaProperties);
+        $buildMethodFactory = new FromInputMethodFactory($this->request, $this->schemaProperties, $this->defaults, $this->hasOptionalNullable);
         $serializeMethodFactory = new SerializeMethodFactory($this->request, $this->schemaProperties, $this->defaults);
         $validateMethodFactory = new ValidateMethodFactory($this->request);
         $cloneMethodFactory = new CloneMethodFactory($this->schemaProperties);
-        $isProvidedMethodFactory = new IsProvidedMethodFactory($this->request);
+        $isProvidedMethodFactory = new IsProvidedMethodFactory($this->request, $this->hasOptionalNullable);
 
         $methodGenerators = [
             $constructorFactory->generateConstructor(),
-            ...$getterMethodFactory->generateGetters(),
-            ...$setterMethodFactory->generateSetters(),
+            ...$accessorsFactory->generatePropertyAccessors(),
             $buildMethodFactory->generateFromInputMethod(),
             ...$serializeMethodFactory->generateSerializeMethods(),
             $validateMethodFactory->generateValidateMethod(),
             $cloneMethodFactory->generateCloneMethod(),
-            $this->hasOptionalNullable
-                ? $isProvidedMethodFactory->generateIsProvidedMethod()
-                : null,
+            $isProvidedMethodFactory->generateIsProvidedMethod(),
         ];
 
         $methodGenerators = array_values(array_filter($methodGenerators));

@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Class;
 
+use Helmich\Schema2Class\Generator\Class\Method\ClassMethodSuiteFactory;
+use Helmich\Schema2Class\Generator\Class\Property\ClassPropertySuiteFactory;
 use Helmich\Schema2Class\Writer\WriterInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
@@ -42,7 +44,7 @@ class ClassGenerator
             $schemaProp->generateSubTypes($this->writer, $this->output);
         }
 
-        $propertyGenerators = (new ClassPropertyFactory(
+        $propertyGenerators = (new ClassPropertySuiteFactory(
             $this->request,
             $this->schema,
             $schemaProperties,
@@ -50,7 +52,7 @@ class ClassGenerator
             $hasOptionalNullable,
         ))->generateProperties();
 
-        $methodGenerators = (new ClassMethodFactory(
+        $methodGenerators = (new ClassMethodSuiteFactory(
             $this->request,
             $schemaProperties,
             $defaults,
@@ -61,7 +63,7 @@ class ClassGenerator
 
         $filePath = $this->request->getTargetDirectory() . '/' . $this->request->getTargetClass() . '.php';
         
-        // Invoke a hook where user can modify file generator
+        // Invoke a hook where user can modify FileGenerator
         $this->request->onFileCreated($filePath, $classFileGenerator);
 
         $content = $classFileGenerator->generate();

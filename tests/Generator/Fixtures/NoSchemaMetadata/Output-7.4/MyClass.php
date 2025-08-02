@@ -59,17 +59,6 @@ class MyClass
     }
 
     /**
-     * Bar description
-     *
-     * @return int|null
-     * @deprecated
-     */
-    public function getBar(): ?int
-    {
-        return $this->bar ?? null;
-    }
-
-    /**
      * @param string $foo
      * @return self
      * @param bool $validate
@@ -88,6 +77,17 @@ class MyClass
         $clone->foo = $foo;
 
         return $clone;
+    }
+
+    /**
+     * Bar description
+     *
+     * @return int|null
+     * @deprecated
+     */
+    public function getBar(): ?int
+    {
+        return $this->bar ?? null;
     }
 
     /**

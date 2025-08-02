@@ -204,126 +204,6 @@ class MyClass
     }
 
     /**
-     * @return string
-     */
-    public function get_Foo()
-    {
-        return $this->_foo;
-    }
-
-    /**
-     * @return string
-     */
-    public function get__Foo()
-    {
-        return $this->__foo;
-    }
-
-    /**
-     * @return string
-     */
-    public function getFoo_()
-    {
-        return $this->foo_;
-    }
-
-    /**
-     * @return string
-     */
-    public function getFoo__()
-    {
-        return $this->foo__;
-    }
-
-    /**
-     * @return string
-     */
-    public function get_Foo_()
-    {
-        return $this->_foo_;
-    }
-
-    /**
-     * @return string
-     */
-    public function get__Foo__()
-    {
-        return $this->__foo__;
-    }
-
-    /**
-     * @return string
-     */
-    public function getFooBar()
-    {
-        return $this->foo_bar;
-    }
-
-    /**
-     * @return string
-     */
-    public function get_FooBar()
-    {
-        return $this->_foo_bar;
-    }
-
-    /**
-     * @return string
-     */
-    public function getBazQux()
-    {
-        return $this->baz_qux;
-    }
-
-    /**
-     * @return string
-     */
-    public function get__123Qwe()
-    {
-        return $this->_123_qwe;
-    }
-
-    /**
-     * @return string
-     */
-    public function getGorod()
-    {
-        return $this->Gorod;
-    }
-
-    /**
-     * @return string
-     */
-    public function getNazvanieIurLitsa()
-    {
-        return $this->nazvanie_iur_litsa;
-    }
-
-    /**
-     * @return string
-     */
-    public function getIPAdres()
-    {
-        return $this->IP_adres;
-    }
-
-    /**
-     * @return string
-     */
-    public function get_Tildas()
-    {
-        return $this->_tildas;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getItSA()
-    {
-        return $this->it_s_A;
-    }
-
-    /**
      * @param string $foo
      * @return self
      * @param bool $validate
@@ -342,6 +222,14 @@ class MyClass
         $clone->foo = $foo;
 
         return $clone;
+    }
+
+    /**
+     * @return string
+     */
+    public function get_Foo()
+    {
+        return $this->_foo;
     }
 
     /**
@@ -366,6 +254,14 @@ class MyClass
     }
 
     /**
+     * @return string
+     */
+    public function get__Foo()
+    {
+        return $this->__foo;
+    }
+
+    /**
      * @param string $__foo
      * @return self
      * @param bool $validate
@@ -384,6 +280,14 @@ class MyClass
         $clone->__foo = $__foo;
 
         return $clone;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFoo_()
+    {
+        return $this->foo_;
     }
 
     /**
@@ -408,6 +312,14 @@ class MyClass
     }
 
     /**
+     * @return string
+     */
+    public function getFoo__()
+    {
+        return $this->foo__;
+    }
+
+    /**
      * @param string $foo__
      * @return self
      * @param bool $validate
@@ -426,6 +338,14 @@ class MyClass
         $clone->foo__ = $foo__;
 
         return $clone;
+    }
+
+    /**
+     * @return string
+     */
+    public function get_Foo_()
+    {
+        return $this->_foo_;
     }
 
     /**
@@ -450,6 +370,14 @@ class MyClass
     }
 
     /**
+     * @return string
+     */
+    public function get__Foo__()
+    {
+        return $this->__foo__;
+    }
+
+    /**
      * @param string $__foo__
      * @return self
      * @param bool $validate
@@ -468,6 +396,14 @@ class MyClass
         $clone->__foo__ = $__foo__;
 
         return $clone;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFooBar()
+    {
+        return $this->foo_bar;
     }
 
     /**
@@ -492,6 +428,14 @@ class MyClass
     }
 
     /**
+     * @return string
+     */
+    public function get_FooBar()
+    {
+        return $this->_foo_bar;
+    }
+
+    /**
      * @param string $_foo_bar
      * @return self
      * @param bool $validate
@@ -510,6 +454,14 @@ class MyClass
         $clone->_foo_bar = $_foo_bar;
 
         return $clone;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBazQux()
+    {
+        return $this->baz_qux;
     }
 
     /**
@@ -534,6 +486,14 @@ class MyClass
     }
 
     /**
+     * @return string
+     */
+    public function get__123Qwe()
+    {
+        return $this->_123_qwe;
+    }
+
+    /**
      * @param string $_123_qwe
      * @return self
      * @param bool $validate
@@ -552,6 +512,14 @@ class MyClass
         $clone->_123_qwe = $_123_qwe;
 
         return $clone;
+    }
+
+    /**
+     * @return string
+     */
+    public function getGorod()
+    {
+        return $this->Gorod;
     }
 
     /**
@@ -576,6 +544,14 @@ class MyClass
     }
 
     /**
+     * @return string
+     */
+    public function getNazvanieIurLitsa()
+    {
+        return $this->nazvanie_iur_litsa;
+    }
+
+    /**
      * @param string $nazvanie_iur_litsa
      * @return self
      * @param bool $validate
@@ -594,6 +570,14 @@ class MyClass
         $clone->nazvanie_iur_litsa = $nazvanie_iur_litsa;
 
         return $clone;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIPAdres()
+    {
+        return $this->IP_adres;
     }
 
     /**
@@ -618,6 +602,14 @@ class MyClass
     }
 
     /**
+     * @return string
+     */
+    public function get_Tildas()
+    {
+        return $this->_tildas;
+    }
+
+    /**
      * @param string $_tildas
      * @return self
      * @param bool $validate
@@ -636,6 +628,14 @@ class MyClass
         $clone->_tildas = $_tildas;
 
         return $clone;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getItSA()
+    {
+        return $this->it_s_A;
     }
 
     /**

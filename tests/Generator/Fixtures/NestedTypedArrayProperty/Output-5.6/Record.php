@@ -117,30 +117,6 @@ class Record
     }
 
     /**
-     * @return Phone[][]|null
-     */
-    public function getDataArrayNested()
-    {
-        return $this->dataArrayNested;
-    }
-
-    /**
-     * @return (Phone|Fio)[]|null
-     */
-    public function getDataArrayAnyOf()
-    {
-        return $this->dataArrayAnyOf;
-    }
-
-    /**
-     * @return ((Phone|Fio)[])[]|null
-     */
-    public function getDataArrayNestedAnyOf()
-    {
-        return $this->dataArrayNestedAnyOf;
-    }
-
-    /**
      * @param Phone[] $dataArray
      * @return self
      * @param bool $validate
@@ -170,6 +146,14 @@ class Record
         unset($clone->dataArray);
 
         return $clone;
+    }
+
+    /**
+     * @return Phone[][]|null
+     */
+    public function getDataArrayNested()
+    {
+        return $this->dataArrayNested;
     }
 
     /**
@@ -205,6 +189,14 @@ class Record
     }
 
     /**
+     * @return (Phone|Fio)[]|null
+     */
+    public function getDataArrayAnyOf()
+    {
+        return $this->dataArrayAnyOf;
+    }
+
+    /**
      * @param (Phone|Fio)[] $dataArrayAnyOf
      * @return self
      * @param bool $validate
@@ -234,6 +226,14 @@ class Record
         unset($clone->dataArrayAnyOf);
 
         return $clone;
+    }
+
+    /**
+     * @return ((Phone|Fio)[])[]|null
+     */
+    public function getDataArrayNestedAnyOf()
+    {
+        return $this->dataArrayNestedAnyOf;
     }
 
     /**

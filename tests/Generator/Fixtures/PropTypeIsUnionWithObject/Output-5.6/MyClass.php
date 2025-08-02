@@ -1,6 +1,6 @@
 <?php
 
-namespace Ns\TypeArrayUnion_5_6;
+namespace Ns\PropTypeIsUnionWithObject_5_6;
 
 class MyClass
 {

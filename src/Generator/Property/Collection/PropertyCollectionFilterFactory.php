@@ -12,7 +12,7 @@ use Helmich\Schema2Class\Generator\Property\PropertyQuery;
  */
 readonly class PropertyCollectionFilterFactory
 {
-    public static function withoutDeprecatedAndSameName(PropertyCollection $properties): PropertyCollectionFilter
+    public static function excludeDeprecatedCaseVariants(PropertyCollection $properties): PropertyCollectionFilter
     {
         return new class($properties) implements PropertyCollectionFilter {
             private array $propertyNamesCaseInsensitive = [];
@@ -43,7 +43,7 @@ readonly class PropertyCollectionFilterFactory
         };
     }
 
-    public static function optional(): PropertyCollectionFilter
+    public static function onlyOptional(): PropertyCollectionFilter
     {
         return new class implements PropertyCollectionFilter {
             public function apply(PropertyInterface $property): bool
@@ -53,9 +53,9 @@ readonly class PropertyCollectionFilterFactory
         };
     }
 
-    public static function required(): PropertyCollectionFilter
+    public static function onlyRequired(): PropertyCollectionFilter
     {
-        return new class(self::optional()) implements PropertyCollectionFilter {
+        return new class(self::onlyOptional()) implements PropertyCollectionFilter {
             public function __construct(private PropertyCollectionFilter $optional)
             {
             }

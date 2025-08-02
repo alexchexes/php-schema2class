@@ -166,54 +166,6 @@ class MyClass
     }
 
     /**
-     * @return 3|4|'3'|'4'
-     */
-    public function getBar()
-    {
-        return $this->bar;
-    }
-
-    /**
-     * @return 'red'|'amber'|'green'|'42'|42|42.5|false|null
-     */
-    public function getBaz()
-    {
-        return $this->baz;
-    }
-
-    /**
-     * @return int
-     */
-    public function getContradiction()
-    {
-        return $this->contradiction;
-    }
-
-    /**
-     * @return 1|2|'one'
-     */
-    public function getContradiction2()
-    {
-        return $this->contradiction2;
-    }
-
-    /**
-     * @return 'red'|'green'|null
-     */
-    public function getNullable()
-    {
-        return $this->nullable;
-    }
-
-    /**
-     * @return 'red'|'green'|null
-     */
-    public function getOptionalNullable()
-    {
-        return $this->optionalNullable;
-    }
-
-    /**
      * @param 1|2|'1'|'2' $foo
      * @return self
      * @param bool $validate
@@ -232,6 +184,14 @@ class MyClass
         $clone->foo = $foo;
 
         return $clone;
+    }
+
+    /**
+     * @return 3|4|'3'|'4'
+     */
+    public function getBar()
+    {
+        return $this->bar;
     }
 
     /**
@@ -256,6 +216,14 @@ class MyClass
     }
 
     /**
+     * @return 'red'|'amber'|'green'|'42'|42|42.5|false|null
+     */
+    public function getBaz()
+    {
+        return $this->baz;
+    }
+
+    /**
      * @param 'red'|'amber'|'green'|'42'|42|42.5|false $baz
      * @return self
      * @param bool $validate
@@ -274,6 +242,14 @@ class MyClass
         $clone->baz = $baz;
 
         return $clone;
+    }
+
+    /**
+     * @return int
+     */
+    public function getContradiction()
+    {
+        return $this->contradiction;
     }
 
     /**
@@ -298,6 +274,14 @@ class MyClass
     }
 
     /**
+     * @return 1|2|'one'
+     */
+    public function getContradiction2()
+    {
+        return $this->contradiction2;
+    }
+
+    /**
      * @param 1|2|'one' $contradiction2
      * @return self
      * @param bool $validate
@@ -319,6 +303,14 @@ class MyClass
     }
 
     /**
+     * @return 'red'|'green'|null
+     */
+    public function getNullable()
+    {
+        return $this->nullable;
+    }
+
+    /**
      * @param 'red'|'green' $nullable
      * @return self
      * @param bool $validate
@@ -337,6 +329,14 @@ class MyClass
         $clone->nullable = $nullable;
 
         return $clone;
+    }
+
+    /**
+     * @return 'red'|'green'|null
+     */
+    public function getOptionalNullable()
+    {
+        return $this->optionalNullable;
     }
 
     /**

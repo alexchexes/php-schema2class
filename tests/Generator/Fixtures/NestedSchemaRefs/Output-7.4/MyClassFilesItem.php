@@ -50,14 +50,6 @@ class MyClassFilesItem
     }
 
     /**
-     * @return OptionsObject|null
-     */
-    public function getOptions(): ?OptionsObject
-    {
-        return $this->options ?? null;
-    }
-
-    /**
      * @param string $input
      * @return self
      * @param bool $validate
@@ -87,6 +79,14 @@ class MyClassFilesItem
         unset($clone->input);
 
         return $clone;
+    }
+
+    /**
+     * @return OptionsObject|null
+     */
+    public function getOptions(): ?OptionsObject
+    {
+        return $this->options ?? null;
     }
 
     /**

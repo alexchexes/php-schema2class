@@ -50,14 +50,6 @@ class MyClass
     }
 
     /**
-     * @return string
-     */
-    public function getFooBar()
-    {
-        return $this->fooBar;
-    }
-
-    /**
      * @param string $foo
      * @return self
      * @param bool $validate
@@ -87,6 +79,14 @@ class MyClass
         unset($clone->foo);
 
         return $clone;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFooBar()
+    {
+        return $this->fooBar;
     }
 
     /**

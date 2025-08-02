@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Example\Basic;
@@ -56,28 +57,6 @@ class User
     }
 
     /**
-     * Object representing address of the user, field is optional.
-     *
-     * @return Address|null
-     */
-    public function getAddress(): ?Address
-    {
-        return $this->address ?? null;
-    }
-
-    /**
-     * User status. Field is obligatory, but nullable.
-     *
-     * If target PHP is 8.1+ the type will be an `enum` with cases `CUSTOMER = 'customer'` and `MANAGER = 'manager'`
-     *
-     * @return 'customer'|'manager'|null
-     */
-    public function getStatus(): ?string
-    {
-        return $this->status ?? null;
-    }
-
-    /**
      * @param string $name
      * @return self
      * @param bool $validate
@@ -96,6 +75,16 @@ class User
         $clone->name = $name;
 
         return $clone;
+    }
+
+    /**
+     * Object representing address of the user, field is optional.
+     *
+     * @return Address|null
+     */
+    public function getAddress(): ?Address
+    {
+        return $this->address ?? null;
     }
 
     /**
@@ -119,6 +108,18 @@ class User
         unset($clone->address);
 
         return $clone;
+    }
+
+    /**
+     * User status. Field is obligatory, but nullable.
+     *
+     * If target PHP is 8.1+ the type will be an `enum` with cases `CUSTOMER = 'customer'` and `MANAGER = 'manager'`
+     *
+     * @return 'customer'|'manager'|null
+     */
+    public function getStatus(): ?string
+    {
+        return $this->status ?? null;
     }
 
     /**
@@ -165,7 +166,7 @@ class User
 
         $name = $input->{'name'};
         $address = isset($input->{'address'}) ? Address::fromInput($input->{'address'}, $validate) : null;
-        $status = ($input->{'status'} !== null) ? ($input->{'status'}) : null;
+        $status = ($input->{'status'} !== null ? $input->{'status'} : null);
 
         $obj = new self($name, $status);
         $obj->address = $address;

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Example\Advanced;
@@ -220,78 +221,6 @@ class User
     }
 
     /**
-     * @return UserGender|null
-     */
-    public function getGender(): ?UserGender
-    {
-        return $this->gender ?? null;
-    }
-
-    /**
-     * @return string
-     */
-    public function getFirstName(): string
-    {
-        return $this->firstName;
-    }
-
-    /**
-     * @return string
-     */
-    public function getLastName(): string
-    {
-        return $this->lastName;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getEmail(): ?string
-    {
-        return $this->email ?? null;
-    }
-
-    /**
-     * @return UserBilling|null
-     */
-    public function getBilling(): ?UserBilling
-    {
-        return $this->billing ?? null;
-    }
-
-    /**
-     * @return UserPaymentAlternative1|UserPaymentAlternative2|string|null
-     */
-    public function getPayment(): UserPaymentAlternative1|UserPaymentAlternative2|string|null
-    {
-        return $this->payment;
-    }
-
-    /**
-     * @return UserAddress|null
-     */
-    public function getAddress(): ?UserAddress
-    {
-        return $this->address ?? null;
-    }
-
-    /**
-     * @return string[]|null
-     */
-    public function getTags(): ?array
-    {
-        return $this->tags ?? null;
-    }
-
-    /**
-     * @return UserHobbiesItem[]|null
-     */
-    public function getHobbies(): ?array
-    {
-        return $this->hobbies ?? null;
-    }
-
-    /**
      * @param \DateTime $createdAt
      * @return self
      */
@@ -312,6 +241,14 @@ class User
         unset($clone->createdAt);
 
         return $clone;
+    }
+
+    /**
+     * @return UserGender|null
+     */
+    public function getGender(): ?UserGender
+    {
+        return $this->gender ?? null;
     }
 
     /**
@@ -338,6 +275,14 @@ class User
     }
 
     /**
+     * @return string
+     */
+    public function getFirstName(): string
+    {
+        return $this->firstName;
+    }
+
+    /**
      * @param string $firstName
      * @return self
      * @param bool $validate
@@ -359,6 +304,14 @@ class User
     }
 
     /**
+     * @return string
+     */
+    public function getLastName(): string
+    {
+        return $this->lastName;
+    }
+
+    /**
      * @param string $lastName
      * @return self
      * @param bool $validate
@@ -377,6 +330,14 @@ class User
         $clone->lastName = $lastName;
 
         return $clone;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getEmail(): ?string
+    {
+        return $this->email ?? null;
     }
 
     /**
@@ -412,6 +373,14 @@ class User
     }
 
     /**
+     * @return UserBilling|null
+     */
+    public function getBilling(): ?UserBilling
+    {
+        return $this->billing ?? null;
+    }
+
+    /**
      * @param UserBilling $billing
      * @return self
      */
@@ -432,6 +401,14 @@ class User
         unset($clone->billing);
 
         return $clone;
+    }
+
+    /**
+     * @return UserPaymentAlternative1|UserPaymentAlternative2|string|null
+     */
+    public function getPayment(): UserPaymentAlternative1|UserPaymentAlternative2|string|null
+    {
+        return $this->payment;
     }
 
     /**
@@ -458,6 +435,14 @@ class User
     }
 
     /**
+     * @return UserAddress|null
+     */
+    public function getAddress(): ?UserAddress
+    {
+        return $this->address ?? null;
+    }
+
+    /**
      * @param UserAddress $address
      * @return self
      */
@@ -478,6 +463,14 @@ class User
         unset($clone->address);
 
         return $clone;
+    }
+
+    /**
+     * @return string[]|null
+     */
+    public function getTags(): ?array
+    {
+        return $this->tags ?? null;
     }
 
     /**
@@ -510,6 +503,14 @@ class User
         unset($clone->tags);
 
         return $clone;
+    }
+
+    /**
+     * @return UserHobbiesItem[]|null
+     */
+    public function getHobbies(): ?array
+    {
+        return $this->hobbies ?? null;
     }
 
     /**
@@ -638,7 +639,7 @@ class User
     {
         $output = new \stdClass();
         if (isset($this->createdAt)) {
-            $output->{'createdAt'} = ($this->createdAt)->format(\DateTime::ATOM);
+            $output->{'createdAt'} = $this->createdAt;
         }
         if (isset($this->gender)) {
             $output->{'gender'} = ($this->gender)->value;

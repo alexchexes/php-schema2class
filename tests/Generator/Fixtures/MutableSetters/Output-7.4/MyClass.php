@@ -80,22 +80,6 @@ class MyClass
     }
 
     /**
-     * @return Baz
-     */
-    public function getBar(): Baz
-    {
-        return $this->bar;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getOpt(): ?string
-    {
-        return $this->opt ?? null;
-    }
-
-    /**
      * @param string $foo
      * @param bool $validate
      */
@@ -113,11 +97,27 @@ class MyClass
     }
 
     /**
+     * @return Baz
+     */
+    public function getBar(): Baz
+    {
+        return $this->bar;
+    }
+
+    /**
      * @param Baz $bar
      */
     public function setBar(Baz $bar): void
     {
         $this->bar = $bar;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getOpt(): ?string
+    {
+        return $this->opt ?? null;
     }
 
     /**

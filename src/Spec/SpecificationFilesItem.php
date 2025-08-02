@@ -45,22 +45,6 @@ class SpecificationFilesItem
     }
 
     /**
-     * @return string|null
-     */
-    public function getClassName(): ?string
-    {
-        return $this->className ?? null;
-    }
-
-    /**
-     * @return SpecificationOptions|null
-     */
-    public function getOptions(): ?SpecificationOptions
-    {
-        return $this->options ?? null;
-    }
-
-    /**
      * @param string|array|object $input
      * @return self
      */
@@ -70,6 +54,14 @@ class SpecificationFilesItem
         $clone->input = $input;
 
         return $clone;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getClassName(): ?string
+    {
+        return $this->className ?? null;
     }
 
     /**
@@ -102,6 +94,14 @@ class SpecificationFilesItem
         unset($clone->className);
 
         return $clone;
+    }
+
+    /**
+     * @return SpecificationOptions|null
+     */
+    public function getOptions(): ?SpecificationOptions
+    {
+        return $this->options ?? null;
     }
 
     /**

@@ -134,9 +134,9 @@ class FromInputMethodFactory
         $arrayToObjectExpr = $this->request->getOptions()->getArrayToObjectExpr();
 
         $bodyParts = [
-            // assign arguments to alias vars if there are properties with same names as args
+            // assign arguments to alias vars if there are properties with same names
             $this->bodyVarAliases($inputArgAlias, $validateArgAlias, $materializeArgAlias),
-            // in target PHP<8 we can't type input as `array|object` so we add a guard
+            // in target PHP<8 we can't input specify $input type as `array|object` so we add a guard
             $this->bodyInputGuard($inputArgAlias),
             // convert input to object if needed, optionally cloning it when "defaults" are present
             $this->bodyInputToObjectConversion($inputArgAlias, $materializeArgAlias, $arrayToObjectExpr),
@@ -373,7 +373,7 @@ class FromInputMethodFactory
      */
     private function bodyCreateNewInstance(string $objVarName): string
     {
-        $requiredProperties = $this->schemaProperties->filter(PropertyCollectionFilterFactory::required());
+        $requiredProperties = $this->schemaProperties->filter(PropertyCollectionFilterFactory::onlyRequired());
         $constructorParams = [];
         foreach ($requiredProperties as $requiredProperty) {
             $constructorParams[] = '$' . $requiredProperty->name();
@@ -396,7 +396,7 @@ class FromInputMethodFactory
     private function bodyAssignOptionalsToInstance(string $objVarName): string
     {
 
-        $optionalProperties = $this->schemaProperties->filter(PropertyCollectionFilterFactory::optional());
+        $optionalProperties = $this->schemaProperties->filter(PropertyCollectionFilterFactory::onlyOptional());
         $assignments = [];
         foreach ($optionalProperties as $optionalProperty) {
             $name = $optionalProperty->name();

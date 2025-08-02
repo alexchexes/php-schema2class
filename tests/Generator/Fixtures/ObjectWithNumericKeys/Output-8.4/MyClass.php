@@ -53,14 +53,6 @@ class MyClass
     }
 
     /**
-     * @return MyClass_2|null
-     */
-    public function get_2(): ?MyClass_2
-    {
-        return $this->_2 ?? null;
-    }
-
-    /**
      * @param string $_1
      * @return self
      * @param bool $validate
@@ -90,6 +82,14 @@ class MyClass
         unset($clone->_1);
 
         return $clone;
+    }
+
+    /**
+     * @return MyClass_2|null
+     */
+    public function get_2(): ?MyClass_2
+    {
+        return $this->_2 ?? null;
     }
 
     /**

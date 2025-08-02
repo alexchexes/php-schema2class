@@ -64,22 +64,6 @@ class MyClass
     }
 
     /**
-     * @return string
-     */
-    public function getNazvanieIurLitsa()
-    {
-        return $this->nazvanieIurLitsa;
-    }
-
-    /**
-     * @return string
-     */
-    public function getIPAdres()
-    {
-        return $this->IPAdres;
-    }
-
-    /**
      * @param string $Gorod
      * @return self
      * @param bool $validate
@@ -101,6 +85,14 @@ class MyClass
     }
 
     /**
+     * @return string
+     */
+    public function getNazvanieIurLitsa()
+    {
+        return $this->nazvanieIurLitsa;
+    }
+
+    /**
      * @param string $nazvanieIurLitsa
      * @return self
      * @param bool $validate
@@ -119,6 +111,14 @@ class MyClass
         $clone->nazvanieIurLitsa = $nazvanieIurLitsa;
 
         return $clone;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIPAdres()
+    {
+        return $this->IPAdres;
     }
 
     /**

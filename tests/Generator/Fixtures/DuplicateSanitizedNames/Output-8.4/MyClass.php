@@ -55,14 +55,6 @@ class MyClass
     }
 
     /**
-     * @return string
-     */
-    public function get_FooBar(): string
-    {
-        return $this->_foo_bar;
-    }
-
-    /**
      * @param string $foo_bar
      * @return self
      * @param bool $validate
@@ -81,6 +73,14 @@ class MyClass
         $clone->foo_bar = $foo_bar;
 
         return $clone;
+    }
+
+    /**
+     * @return string
+     */
+    public function get_FooBar(): string
+    {
+        return $this->_foo_bar;
     }
 
     /**

@@ -49,14 +49,6 @@ class MyClassGooks
     }
 
     /**
-     * @return int|float|null
-     */
-    public function getB(): int|float|null
-    {
-        return $this->b;
-    }
-
-    /**
      * @param string $a
      * @return self
      * @param bool $validate
@@ -86,6 +78,14 @@ class MyClassGooks
         unset($clone->a);
 
         return $clone;
+    }
+
+    /**
+     * @return int|float|null
+     */
+    public function getB(): int|float|null
+    {
+        return $this->b;
     }
 
     /**

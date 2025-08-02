@@ -16,11 +16,16 @@ class IsProvidedMethodFactory
 {
     public function __construct(
         private GeneratorRequest $request,
+        private bool $hasOptionalNullable = false,
     )
     {}
 
-    public function generateIsProvidedMethod(): MethodGenerator
+    public function generateIsProvidedMethod(): ?MethodGenerator
     {
+        if (!$this->hasOptionalNullable) {
+            return null;
+        }
+
         $argumentName = 'propertyName';
 
         $docBlockTags = [

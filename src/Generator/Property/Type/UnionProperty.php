@@ -16,6 +16,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Represents a JSON Schema `oneOf`/`anyOf` union property - i.e. property
  * that can hold several alternative property types.
+ * We expand multi-type definitions like "type": ["string", "object"] into an "anyOf" union,
+ * so those definitions are handled by this type as well.
  */
 class UnionProperty extends AbstractProperty
 {

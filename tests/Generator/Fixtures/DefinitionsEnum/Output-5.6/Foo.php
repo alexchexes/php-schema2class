@@ -68,14 +68,6 @@ class Foo
     }
 
     /**
-     * @return 'small'|'big'|null
-     */
-    public function getSize()
-    {
-        return $this->size;
-    }
-
-    /**
      * @param 'red'|'green' $color
      * @return self
      * @param bool $validate
@@ -94,6 +86,14 @@ class Foo
         $clone->color = $color;
 
         return $clone;
+    }
+
+    /**
+     * @return 'small'|'big'|null
+     */
+    public function getSize()
+    {
+        return $this->size;
     }
 
     /**

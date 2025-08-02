@@ -13,7 +13,7 @@ use Helmich\Schema2Class\Util\StringUtils;
  * Decorator that marks a property as optional. Can also track if null was
  * explicitly provided to distinguish between missing and null values.
  */
-class OptionalPropertyDecorator extends NullablePropertyDecorator implements RenameablePropertyInterface
+class OptionalPropertyDecorator extends NullablePropertyDecorator
 {
     private bool $isOptionalNullable = false;
 
