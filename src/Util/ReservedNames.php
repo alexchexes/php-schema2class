@@ -35,9 +35,7 @@ class ReservedNames
             'argc',
             'argv',
             'this',
-            PropertyNames::SCHEMA,
-            PropertyNames::DEFAULTS,
-            PropertyNames::OPTIONALS,
+            ...PropertyNames::all(),
         ];
     }
 
@@ -58,10 +56,7 @@ class ReservedNames
             '__invoke',
             '__debugInfo',
             '__clone',
-            MethodNames::FROM_INPUT,
-            MethodNames::TO_ARRAY,
-            MethodNames::TO_STD_CLASS,
-            MethodNames::VALIDATE_INPUT,
+            ...MethodNames::all(),
         ];
     }
 }
