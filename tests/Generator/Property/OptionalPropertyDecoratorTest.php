@@ -32,6 +32,7 @@ class OptionalPropertyDecoratorTest extends TestCase
         $this->innerProperty->schema()->willReturn([]);
         $this->innerProperty->allowsNull()->willReturn(false);
         $this->innerProperty->formatValue(Argument::any())->willReturn(new PropertyValueGenerator(null));
+        $this->innerProperty->varName()->willReturn('myPropertyName');
         
         $this->request = new GeneratorRequest(
                 [],
@@ -59,7 +60,6 @@ class OptionalPropertyDecoratorTest extends TestCase
 
     public function testConvertInputToType()
     {
-        $this->innerProperty->name()->shouldBeCalled()->willReturn('myPropertyName');
         $this->innerProperty
             ->inputMappingExpr('$variable->{\'myPropertyName\'}', true)
             ->shouldBeCalled()
@@ -78,6 +78,7 @@ class OptionalPropertyDecoratorTest extends TestCase
         $prophecy->schema()->willReturn(['default' => false]);
         $prophecy->allowsNull()->willReturn(true);
         $prophecy->name()->willReturn('myPropertyName');
+        $prophecy->varName()->willReturn('myPropertyName');
         $prophecy
             ->inputMappingExpr('$variable->{\'myPropertyName\'}', true)
             ->willReturn('INNER_EXPR');

@@ -29,7 +29,6 @@ class IntersectPropertyTest extends TestCase
             new ValidatedSpecificationFilesItem("BarNs", "Foo", ""),
             new SpecificationOptions(),
         );
-        $this->generatorRequest->setCurrValidateArgAlias('validate');
         $this->generatorRequest->setCurrReqHasDefaults(false);
         $this->property = new IntersectProperty('myPropertyName', ['allOf' => []], $this->generatorRequest);
     }

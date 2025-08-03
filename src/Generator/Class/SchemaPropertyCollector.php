@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Class;
 
+use Helmich\Schema2Class\Generator\Class\Method\FromInputMethodFactory;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\Collection\PropertyCollection;
 use Helmich\Schema2Class\Generator\Property\PropertyBuilder;
@@ -152,6 +153,12 @@ class SchemaPropertyCollector
         }
         $usedMethods = array_values(array_unique($usedMethods));
 
+        $usedVars = [
+            FromInputMethodFactory::INPUT_ARG_NAME,
+            FromInputMethodFactory::VALIDATE_ARG_NAME,
+            FromInputMethodFactory::DEFAULTS_ARG_NAME,
+        ];
+
         foreach ($schemaProperties as $schemaProp) {
             $base    = $schemaProp->name();
             $newName = $base;
@@ -183,8 +190,25 @@ class SchemaPropertyCollector
                 $schemaProp->setName($newName);
             }
 
-            $used[]       = $newName;
+            // ensure unique var name for fromInput variables
+            $varBase = $newName;
+            $newVar = $varBase;
+            if (in_array($newVar, $usedVars, true)) {
+                if ($varBase[0] !== '_') {
+                    $newVar = '_' . $varBase;
+                }
+                $i = 1;
+                $varBaseUnique = $newVar;
+                while (in_array($newVar, $usedVars, true)) {
+                    $newVar = $varBaseUnique . '_' . $i;
+                    $i++;
+                }
+            }
+            $schemaProp->setVarName($newVar);
+
+            $used[]        = $newName;
             $usedMethods[] = $newPascal;
+            $usedVars[]    = $newVar;
         }
     }
 }

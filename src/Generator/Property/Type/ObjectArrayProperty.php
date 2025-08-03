@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Property\Type;
 
+use Helmich\Schema2Class\Generator\Class\Method\FromInputMethodFactory;
 use Helmich\Schema2Class\Generator\Class\Method\SerializeMethodFactory;
 use Helmich\Schema2Class\Generator\Class\MethodNames;
 use Helmich\Schema2Class\Generator\GeneratorException;
@@ -164,12 +165,9 @@ class ObjectArrayProperty extends AbstractProperty
     
     private function buildUseClause(): string
     {
-        $validateArg = $this->request->getCurrValidateArgAlias();
-        $materializeArg = $this->request->getCurrMaterializeArgAlias();
-        
-        $vars = ['$' . $validateArg];
-        if ($materializeArg !== null) {
-            $vars[] = '$' . $materializeArg;
+        $vars = ['$' . FromInputMethodFactory::VALIDATE_ARG_NAME];
+        if ($this->request->getCurrReqHasDefaults()) {
+            $vars[] = '$' . FromInputMethodFactory::DEFAULTS_ARG_NAME;
         }
         return implode(', ', $vars);
     }
