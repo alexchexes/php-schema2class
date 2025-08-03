@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class\Generator\Property\Decorator;
 
 use Composer\Semver\Semver;
+use Helmich\Schema2Class\Generator\Class\Method\FromInputMethodFactory;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\Type\NullProperty;
 use Helmich\Schema2Class\Generator\Property\Type\PropertyInterface;
@@ -97,13 +98,14 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface
         return true; // that's the point of NullableProperty
     }
 
-    public function convertInputToType(string $inputVarName, string $optionalsVarName): string
+    public function convertInputToType(): string
     {
         // Key name in the JSON object
         $key   = $this->key;
         $keyStr  = var_export($key, true);
-        $name  = $this->inner->name(); // local variable to assign to
+        $name  = $this->inner->varName(); // local variable to assign to
 
+        $inputVarName = FromInputMethodFactory::INPUT_ARG_NAME;
         $accessor = "\${$inputVarName}->{{$keyStr}}";
 
         $mapped = $this->inner->inputMappingExpr($accessor);

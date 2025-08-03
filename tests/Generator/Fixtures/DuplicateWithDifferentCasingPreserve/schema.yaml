@@ -1,0 +1,11 @@
+required:
+  - fooBar
+properties:
+  foobar:
+    type: string
+    deprecated: true
+  fooBar:
+    type: string
+  bar:
+    type: string
+    deprecated: true

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Property\Decorator;
 
+use Helmich\Schema2Class\Generator\Class\Method\FromInputMethodFactory;
 use Helmich\Schema2Class\Generator\Class\Method\SerializeMethodFactory;
 use Helmich\Schema2Class\Generator\Class\PropertyNames;
 use Helmich\Schema2Class\Util\StringUtils;
@@ -38,11 +39,12 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator
         return $existsCheck;
     }
 
-    public function convertInputToType(string $inputVarName, string $optionalsVarName): string
+    public function convertInputToType(): string
     {
         $keyStr = var_export($this->key, true);
-        $name  = $this->inner->name();
+        $name  = $this->inner->varName();
 
+        $inputVarName = FromInputMethodFactory::INPUT_ARG_NAME;
         // JSON accessor:  $input->{'key'}   or   $input['key']
         $accessor = "\${$inputVarName}->{{$keyStr}}";
 
@@ -61,7 +63,8 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator
         $code = "\${$name} = {$existsCheck} ? {$mapped} : null;";
 
         if ($this->isOptionalNullable) {
-            $code .= "\nif ({$existsCheck}) {\n    \${$optionalsVarName}['{$this->key}'] = true;\n}";
+            $OPTIONALS_VAR_NAME = FromInputMethodFactory::OPTIONALS_VAR_NAME();
+            $code .= "\nif ({$existsCheck}) {\n    \${$OPTIONALS_VAR_NAME}['{$this->key}'] = true;\n}";
         }
 
         return $code;

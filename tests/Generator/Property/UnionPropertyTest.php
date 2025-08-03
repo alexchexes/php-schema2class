@@ -26,7 +26,6 @@ class UnionPropertyTest extends TestCase
     protected function setUp(): void
     {
         $this->generatorRequest = new GeneratorRequest([], new ValidatedSpecificationFilesItem("BarNs", "Foo", ""), new SpecificationOptions());
-        $this->generatorRequest->setCurrValidateArgAlias('validate');
         $this->generatorRequest->setCurrReqHasDefaults(false);
         $this->property = new UnionProperty(
             'myPropertyName',
@@ -50,12 +49,12 @@ class UnionPropertyTest extends TestCase
     {
         $underTest = new UnionProperty('myPropertyName', ['anyOf' => [['properties' => ['subFoo1' => ['type' => 'string']]], ['properties' => ['subFoo2' => ['type' => 'string']]]]], $this->generatorRequest);
 
-        $result = $underTest->convertInputToType('variable', 'providedOptionals');
+        $result = $underTest->convertInputToType();
 
         $expected = <<<'EOCODE'
 $myPropertyName = match (true) {
-    FooMyPropertyNameAlternative1::validateInput($variable->{'myPropertyName'}, true) => FooMyPropertyNameAlternative1::fromInput($variable->{'myPropertyName'}, $validate),
-    FooMyPropertyNameAlternative2::validateInput($variable->{'myPropertyName'}, true) => FooMyPropertyNameAlternative2::fromInput($variable->{'myPropertyName'}, $validate),
+    FooMyPropertyNameAlternative1::validateInput($input->{'myPropertyName'}, true) => FooMyPropertyNameAlternative1::fromInput($input->{'myPropertyName'}, $validate),
+    FooMyPropertyNameAlternative2::validateInput($input->{'myPropertyName'}, true) => FooMyPropertyNameAlternative2::fromInput($input->{'myPropertyName'}, $validate),
     default => throw new \InvalidArgumentException("could not build property 'myPropertyName' from JSON"),
 };
 EOCODE;

@@ -23,7 +23,6 @@ class NestedObjectPropertyTest extends TestCase
     protected function setUp(): void
     {
         $this->generatorRequest = new GeneratorRequest([], new ValidatedSpecificationFilesItem("BarNs", "Foo", ""), new SpecificationOptions());
-        $this->generatorRequest->setCurrValidateArgAlias('validate');
         $this->generatorRequest->setCurrReqHasDefaults(false);
         $this->property = new NestedObjectProperty('myPropertyName', ['allOf' => []], $this->generatorRequest);
     }
@@ -46,10 +45,10 @@ class NestedObjectPropertyTest extends TestCase
     {
         $underTest = new NestedObjectProperty('myPropertyName', ['allOf' => []], $this->generatorRequest);
 
-        $result = $underTest->convertInputToType('variable', 'providedOptionals');
+        $result = $underTest->convertInputToType();
 
         $expected = <<<'EOCODE'
-$myPropertyName = FooMyPropertyName::fromInput($variable->{'myPropertyName'}, $validate);
+$myPropertyName = FooMyPropertyName::fromInput($input->{'myPropertyName'}, $validate);
 EOCODE;
 
         assertSame($expected, $result);

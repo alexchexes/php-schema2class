@@ -41,10 +41,10 @@ class StringPropertyTest extends TestCase
 
     public function testConvertInputToType()
     {
-        $result = $this->property->convertInputToType('variable', 'providedOptionals');
+        $result = $this->property->convertInputToType();
 
         $expected = <<<'EOCODE'
-$myString = $variable->{'myString'};
+$myString = $input->{'myString'};
 EOCODE;
 
         assertSame($expected, $result);

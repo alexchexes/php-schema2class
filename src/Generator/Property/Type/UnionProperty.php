@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Property\Type;
 
+use Helmich\Schema2Class\Generator\Class\Method\FromInputMethodFactory;
 use Helmich\Schema2Class\Generator\Class\Method\SerializeMethodFactory;
 use Helmich\Schema2Class\Generator\GeneratorException;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
@@ -50,12 +51,13 @@ class UnionProperty extends AbstractProperty
         return true;
     }
 
-    public function convertInputToTypeMatch(string $inputVarName = 'input'): string
+    public function convertInputToTypeMatch(): string
     {
-        $name  = $this->name;
+        $name  = $this->varName;
         $key   = $this->key;
         $keyStr = var_export($key, true);
 
+        $inputVarName = FromInputMethodFactory::INPUT_ARG_NAME;
         $accessor = "\${$inputVarName}->{{$keyStr}}";
 
         $match = new MatchGenerator("true");
@@ -75,28 +77,29 @@ class UnionProperty extends AbstractProperty
         return "\${$name} = {$match->generate()};";
     }
 
-    public function convertInputToType(string $inputVarName, string $optionalsVarName): string
+    public function convertInputToType(): string
     {
         // PHP 8+ uses match() which already guards correctly
         if ($this->request->isAtLeastPHP("8.0")) {
-            return $this->convertInputToTypeMatch($inputVarName);
+            return $this->convertInputToTypeMatch();
         }
     
-        $name   = $this->name;
+        $name   = $this->varName;
         $key    = $this->key;
         $keyStr = var_export($key, true);
     
+        $inputVarName = FromInputMethodFactory::INPUT_ARG_NAME;
         $accessor = "\${$inputVarName}->{{$keyStr}}";
     
         // Start with a "fallback" that just reassigns the raw value
         $conversions = [
-            "\$$key = {$accessor};" => ["discriminators" => [], "fallback" => true],
+            "\${$name} = {$accessor};" => ["discriminators" => [], "fallback" => true],
         ];
     
         // Build up per‑arm conversions
         foreach ($this->subProperties as $subProp) {
             $mapping       = $subProp->inputMappingExpr($accessor, asserted: true);
-            $assignment    = "\$$name = {$mapping};";
+            $assignment    = "\${$name} = {$mapping};";
             $discriminator = $subProp->inputAssertionExpr($accessor);
     
             // If this arm is an "array" type, prefix its test with is_array(...)

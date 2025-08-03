@@ -1,71 +1,114 @@
 <?php
 
-declare(strict_types=1);
+namespace Ns\DuplicateWithDifferentCasingPreserve_5_6;
 
-namespace Ns\NestedSchemaRefs_7_4;
-
-class MyClassFilesItem
+class MyClass
 {
     /**
      * Schema used to validate input for creating instances of this class
      *
      * @var array
      */
-    private static array $_schema = [
+    private static $_schema = [
+        'required' => [
+            'fooBar',
+        ],
         'properties' => [
-            'input' => [
+            'foobar' => [
+                'type' => 'string',
+                'deprecated' => true,
+            ],
+            'fooBar' => [
                 'type' => 'string',
             ],
-            'options' => [
-                '$ref' => '#/definitions/OptionsObject',
-            ],
-        ],
-        'definitions' => [
-            'OptionsObject' => [
-                'properties' => [
-                    'output' => [
-                        'type' => 'string',
-                    ],
-                ],
+            'bar' => [
+                'type' => 'string',
+                'deprecated' => true,
             ],
         ],
     ];
 
     /**
      * @var string|null
+     * @deprecated
      */
-    private ?string $input = null;
+    private $foobar = null;
 
     /**
-     * @var OptionsObject|null
+     * @var string
      */
-    private ?OptionsObject $options = null;
+    private $fooBar;
 
     /**
-     * @return string|null
+     * @var string|null
+     * @deprecated
      */
-    public function getInput(): ?string
+    private $bar = null;
+
+    /**
+     * @param string $fooBar
+     */
+    public function __construct($fooBar)
     {
-        return $this->input ?? null;
+        $this->fooBar = $fooBar;
     }
 
     /**
-     * @param string $input
+     * @return string
+     */
+    public function getFooBar()
+    {
+        return $this->fooBar;
+    }
+
+    /**
+     * @param string $fooBar
      * @return self
      * @param bool $validate
      */
-    public function withInput(string $input, bool $validate = true): self
+    public function withFooBar($fooBar, bool $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($input, self::$_schema['properties']['input']);
+            $validator->validate($fooBar, self::$_schema['properties']['fooBar']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
         }
 
         $clone = clone $this;
-        $clone->input = $input;
+        $clone->fooBar = $fooBar;
+
+        return $clone;
+    }
+
+    /**
+     * @return string|null
+     * @deprecated
+     */
+    public function getBar()
+    {
+        return $this->bar;
+    }
+
+    /**
+     * @param string $bar
+     * @return self
+     * @deprecated
+     * @param bool $validate
+     */
+    public function withBar($bar, bool $validate = true)
+    {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($bar, self::$_schema['properties']['bar']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
+        $clone = clone $this;
+        $clone->bar = $bar;
 
         return $clone;
     }
@@ -73,41 +116,10 @@ class MyClassFilesItem
     /**
      * @return self
      */
-    public function withoutInput(): self
+    public function withoutBar()
     {
         $clone = clone $this;
-        unset($clone->input);
-
-        return $clone;
-    }
-
-    /**
-     * @return OptionsObject|null
-     */
-    public function getOptions(): ?OptionsObject
-    {
-        return $this->options ?? null;
-    }
-
-    /**
-     * @param OptionsObject $options
-     * @return self
-     */
-    public function withOptions(OptionsObject $options): self
-    {
-        $clone = clone $this;
-        $clone->options = $options;
-
-        return $clone;
-    }
-
-    /**
-     * @return self
-     */
-    public function withoutOptions(): self
-    {
-        $clone = clone $this;
-        unset($clone->options);
+        unset($clone->bar);
 
         return $clone;
     }
@@ -117,10 +129,10 @@ class MyClassFilesItem
      *
      * @param array|object $input Input data
      * @param bool $validate Set this to false to skip validation; use at own risk
-     * @return MyClassFilesItem Created instance
+     * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput($input, bool $validate = true): MyClassFilesItem
+    public static function fromInput($input, bool $validate = true)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
@@ -133,12 +145,13 @@ class MyClassFilesItem
             static::validateInput($input);
         }
 
-        $_input = isset($input->{'input'}) ? $input->{'input'} : null;
-        $options = isset($input->{'options'}) ? OptionsObject::fromInput($input->{'options'}, $validate) : null;
+        $foobar = isset($input->{'foobar'}) ? $input->{'foobar'} : null;
+        $fooBar = $input->{'fooBar'};
+        $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
 
-        $obj = new self();
-        $obj->input = $_input;
-        $obj->options = $options;
+        $obj = new self($fooBar);
+        $obj->foobar = $foobar;
+        $obj->bar = $bar;
         return $obj;
     }
 
@@ -147,14 +160,15 @@ class MyClassFilesItem
      *
      * @return array Converted array
      */
-    public function toArray(): array
+    public function toArray()
     {
         $output = [];
-        if (isset($this->input)) {
-            $output['input'] = $this->input;
+        if (isset($this->foobar)) {
+            $output['foobar'] = $this->foobar;
         }
-        if (isset($this->options)) {
-            $output['options'] = $this->options->toArray();
+        $output['fooBar'] = $this->fooBar;
+        if (isset($this->bar)) {
+            $output['bar'] = $this->bar;
         }
 
         return $output;
@@ -165,14 +179,15 @@ class MyClassFilesItem
      *
      * @return \stdClass Converted object
      */
-    public function toStdClass(): \stdClass
+    public function toStdClass()
     {
         $output = new \stdClass();
-        if (isset($this->input)) {
-            $output->{'input'} = $this->input;
+        if (isset($this->foobar)) {
+            $output->{'foobar'} = $this->foobar;
         }
-        if (isset($this->options)) {
-            $output->{'options'} = $this->options->toStdClass();
+        $output->{'fooBar'} = $this->fooBar;
+        if (isset($this->bar)) {
+            $output->{'bar'} = $this->bar;
         }
 
         return $output;
@@ -186,14 +201,14 @@ class MyClassFilesItem
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput($input, bool $return = false): bool
+    public static function validateInput($input, $return = false)
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
-            $errors = array_map(function(array $e): string {
+            $errors = array_map(function($e) {
                 return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];
             }, $validator->getErrors());
             throw new \InvalidArgumentException(join(".\n", $errors));

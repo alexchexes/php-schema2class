@@ -32,6 +32,7 @@ class OptionalPropertyDecoratorTest extends TestCase
         $this->innerProperty->schema()->willReturn([]);
         $this->innerProperty->allowsNull()->willReturn(false);
         $this->innerProperty->formatValue(Argument::any())->willReturn(new PropertyValueGenerator(null));
+        $this->innerProperty->varName()->willReturn('myPropertyName');
         
         $this->request = new GeneratorRequest(
                 [],
@@ -59,15 +60,15 @@ class OptionalPropertyDecoratorTest extends TestCase
 
     public function testConvertInputToType()
     {
-        $this->innerProperty->name()->shouldBeCalled()->willReturn('myPropertyName');
+        $this->innerProperty->varName()->shouldBeCalled()->willReturn('myPropertyName');
         $this->innerProperty
-            ->inputMappingExpr('$variable->{\'myPropertyName\'}', true)
+            ->inputMappingExpr('$input->{\'myPropertyName\'}', true)
             ->shouldBeCalled()
             ->willReturn('INNER_EXPR');
 
-        $result = $this->decorator->convertInputToType('variable', 'providedOptionals');
+        $result = $this->decorator->convertInputToType();
 
-        $expected = '$myPropertyName = isset($variable->{\'myPropertyName\'}) ? INNER_EXPR : null;';
+        $expected = '$myPropertyName = isset($input->{\'myPropertyName\'}) ? INNER_EXPR : null;';
 
         assertSame($expected, $result);
     }
@@ -77,9 +78,9 @@ class OptionalPropertyDecoratorTest extends TestCase
         $prophecy = $this->prophesize(PropertyInterface::class);
         $prophecy->schema()->willReturn(['default' => false]);
         $prophecy->allowsNull()->willReturn(true);
-        $prophecy->name()->willReturn('myPropertyName');
+        $prophecy->varName()->willReturn('myPropertyName');
         $prophecy
-            ->inputMappingExpr('$variable->{\'myPropertyName\'}', true)
+            ->inputMappingExpr('$input->{\'myPropertyName\'}', true)
             ->willReturn('INNER_EXPR');
         $prophecy->formatValue(false)->willReturn(new PropertyValueGenerator(false));
 
@@ -93,9 +94,9 @@ class OptionalPropertyDecoratorTest extends TestCase
             )
         );
 
-        $result = $decorator->convertInputToType('variable', 'providedOptionals');
+        $result = $decorator->convertInputToType();
 
-        $expected = '$myPropertyName = property_exists($variable, \'myPropertyName\') ? INNER_EXPR : null;';
+        $expected = '$myPropertyName = property_exists($input, \'myPropertyName\') ? INNER_EXPR : null;';
         assertSame($expected, $result);
     }
 

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Property\Type;
 
+use Helmich\Schema2Class\Generator\Class\Method\FromInputMethodFactory;
 use Helmich\Schema2Class\Generator\Class\Method\SerializeMethodFactory;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Util\StringUtils;
@@ -100,15 +101,19 @@ abstract class AbstractProperty implements PropertyInterface
         $this->methodName = $name;
     }
 
-    public function convertInputToType(string $inputVarName, string $optionalsVarName): string
+    public function convertInputToType(): string
     {
-        $name = $this->name;
+        $name = $this->varName;
         $key  = $this->key;
         $keyStr = var_export($key, true);
+
         // build the raw lookup expression (using the JSON key only inside the braces)
+        $inputVarName = FromInputMethodFactory::INPUT_ARG_NAME;
         $accessor = "\${$inputVarName}->{{$keyStr}}";
+
         // now map from JSON→Type (this will call fromInput, etc.)
         $map = $this->inputMappingExpr($accessor);
+
         // assign to the *camelCased* local variable name
         return "\${$name} = {$map};";
     }

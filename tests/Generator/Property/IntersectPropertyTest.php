@@ -29,7 +29,6 @@ class IntersectPropertyTest extends TestCase
             new ValidatedSpecificationFilesItem("BarNs", "Foo", ""),
             new SpecificationOptions(),
         );
-        $this->generatorRequest->setCurrValidateArgAlias('validate');
         $this->generatorRequest->setCurrReqHasDefaults(false);
         $this->property = new IntersectProperty('myPropertyName', ['allOf' => []], $this->generatorRequest);
     }
@@ -50,10 +49,10 @@ class IntersectPropertyTest extends TestCase
     {
         $underTest = new IntersectProperty('myPropertyName', ['allOf' => []], $this->generatorRequest);
 
-        $result = $underTest->convertInputToType('variable', 'providedOptionals');
+        $result = $underTest->convertInputToType();
 
         $expected = <<<'EOCODE'
-$myPropertyName = FooMyPropertyName::fromInput($variable->{'myPropertyName'}, $validate);
+$myPropertyName = FooMyPropertyName::fromInput($input->{'myPropertyName'}, $validate);
 EOCODE;
 
         assertSame($expected, $result);

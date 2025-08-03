@@ -51,10 +51,10 @@ class DatePropertyTest extends TestCase
 
     public function testConvertInputToType()
     {
-        $result = $this->property->convertInputToType('variable', 'providedOptionals');
+        $result = $this->property->convertInputToType();
 
         $expected = <<<'EOCODE'
-$myPropertyName = new \DateTime($variable->{'myPropertyName'});
+$myPropertyName = new \DateTime($input->{'myPropertyName'});
 EOCODE;
 
         assertSame($expected, $result);

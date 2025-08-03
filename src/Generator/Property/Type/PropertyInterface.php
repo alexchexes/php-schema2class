@@ -91,12 +91,9 @@ interface PropertyInterface extends TypeExpressionInterface
 
     /**
      * Generates a code snippet that reads the value for this property from the
-     * provided input variable and assigns the correctly typed local variable.
-     *
-     * @param string $inputVarName Name of the input variable used internally
-     *                             in a generated `buildFromFromInput()` method.
+     * input variable and assigns the correctly typed local variable.
      */
-    public function convertInputToType(string $inputVarName, string $optionalsVarName): string;
+    public function convertInputToType(): string;
 
     /**
      * Generates a statement that writes this property to an output array in

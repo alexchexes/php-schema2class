@@ -51,10 +51,10 @@ class IntegerPropertyTest extends TestCase
 
     public function testConvertInputToType()
     {
-        $result = $this->property->convertInputToType('variable', 'providedOptionals');
+        $result = $this->property->convertInputToType();
 
         $expected = <<<'EOCODE'
-$myPropertyName = (int)$variable->{'myPropertyName'};
+$myPropertyName = (int)$input->{'myPropertyName'};
 EOCODE;
 
         assertSame($expected, $result);
