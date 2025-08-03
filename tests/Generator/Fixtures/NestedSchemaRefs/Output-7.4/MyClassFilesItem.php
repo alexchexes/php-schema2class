@@ -122,25 +122,22 @@ class MyClassFilesItem
      */
     public static function fromInput($input, bool $validate = true): MyClassFilesItem
     {
-        $_input = $input;
-        unset($input);
-
-        if (!is_array($_input) && !is_object($_input)) {
+        if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
-                'Input to fromInput must be array or object, got ' . gettype($_input)
+                'Input to fromInput must be array or object, got ' . gettype($input)
             );
         }
 
-        $_input = is_array($_input) ? \JsonSchema\Validator::arrayToObjectRecursive($_input) : $_input;
+        $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
-            static::validateInput($_input);
+            static::validateInput($input);
         }
 
-        $input = isset($_input->{'input'}) ? $_input->{'input'} : null;
-        $options = isset($_input->{'options'}) ? OptionsObject::fromInput($_input->{'options'}, $validate) : null;
+        $_input = isset($input->{'input'}) ? $input->{'input'} : null;
+        $options = isset($input->{'options'}) ? OptionsObject::fromInput($input->{'options'}, $validate) : null;
 
         $obj = new self();
-        $obj->input = $input;
+        $obj->input = $_input;
         $obj->options = $options;
         return $obj;
     }

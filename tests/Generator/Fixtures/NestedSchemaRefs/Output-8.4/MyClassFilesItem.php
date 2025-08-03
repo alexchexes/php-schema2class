@@ -122,19 +122,16 @@ class MyClassFilesItem
      */
     public static function fromInput(array|object $input, bool $validate = true): MyClassFilesItem
     {
-        $_input = $input;
-        unset($input);
-
-        $_input = is_array($_input) ? \JsonSchema\Validator::arrayToObjectRecursive($_input) : $_input;
+        $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
-            static::validateInput($_input);
+            static::validateInput($input);
         }
 
-        $input = isset($_input->{'input'}) ? $_input->{'input'} : null;
-        $options = isset($_input->{'options'}) ? OptionsObject::fromInput($_input->{'options'}, $validate) : null;
+        $_input = isset($input->{'input'}) ? $input->{'input'} : null;
+        $options = isset($input->{'options'}) ? OptionsObject::fromInput($input->{'options'}, $validate) : null;
 
         $obj = new self();
-        $obj->input = $input;
+        $obj->input = $_input;
         $obj->options = $options;
         return $obj;
     }

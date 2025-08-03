@@ -41,7 +41,7 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator
     public function convertInputToType(string $inputVarName, string $optionalsVarName): string
     {
         $keyStr = var_export($this->key, true);
-        $name  = $this->inner->name();
+        $name  = $this->inner->varName();
 
         // JSON accessor:  $input->{'key'}   or   $input['key']
         $accessor = "\${$inputVarName}->{{$keyStr}}";

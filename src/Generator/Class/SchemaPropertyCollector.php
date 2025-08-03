@@ -7,6 +7,7 @@ use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\Collection\PropertyCollection;
 use Helmich\Schema2Class\Generator\Property\PropertyBuilder;
 use Helmich\Schema2Class\Generator\Property\Decorator\OptionalPropertyDecorator;
+use Helmich\Schema2Class\Generator\Class\Method\FromInputMethodFactory;
 use Helmich\Schema2Class\Util\ReservedNames;
 use Helmich\Schema2Class\Util\SchemaUtils;
 use Helmich\Schema2Class\Util\StringUtils;
@@ -138,6 +139,17 @@ class SchemaPropertyCollector
         $reservedPropertyNames = ReservedNames::getBannedVarNames();
         $reservedMethodNames = ReservedNames::getBannedMethodNames();
 
+        $reservedVarNames = array_merge(
+            $reservedPropertyNames,
+            [
+                FromInputMethodFactory::INPUT_ARG_NAME,
+                FromInputMethodFactory::VALIDATE_ARG_NAME,
+                FromInputMethodFactory::DEFAULTS_ARG_NAME,
+                FromInputMethodFactory::OBJ_VAR_NAME,
+                '_' . PropertyNames::OPTIONALS,
+            ]
+        );
+
         $used = [];
         foreach (array_merge($reservedPropertyNames, $reservedMethodNames) as $n) {
             $used[] = StringUtils::safeCamelCase($n);
@@ -146,11 +158,18 @@ class SchemaPropertyCollector
         $used = array_values(array_unique($used));
 
         $usedMethods = [];
+        $usedVars = [];
         foreach ($reservedMethodNames as $n) {
             $usedMethods[] = strtolower(StringUtils::safePascalCase(StringUtils::safeCamelCase($n)));
             $usedMethods[] = strtolower(StringUtils::safePascalCase(StringUtils::sanitizeIdentifier($n)));
         }
         $usedMethods = array_values(array_unique($usedMethods));
+
+        foreach ($reservedVarNames as $n) {
+            $usedVars[] = StringUtils::safeCamelCase($n);
+            $usedVars[] = StringUtils::sanitizeIdentifier($n);
+        }
+        $usedVars = array_values(array_unique($usedVars));
 
         foreach ($schemaProperties as $schemaProp) {
             $base    = $schemaProp->name();
@@ -183,8 +202,30 @@ class SchemaPropertyCollector
                 $schemaProp->setName($newName);
             }
 
-            $used[]       = $newName;
+            $schemaProp->setVarName($newName);
+
+            $varBase = $schemaProp->varName();
+            $newVar = $varBase;
+
+            if (in_array($newVar, $usedVars, true)) {
+                if ($varBase[0] !== '_') {
+                    $newVar = '_' . $varBase;
+                }
+                $i = 1;
+                $baseUnique = $newVar;
+                while (in_array($newVar, $usedVars, true)) {
+                    $newVar = $baseUnique . '_' . $i;
+                    $i++;
+                }
+            }
+
+            if ($newVar !== $varBase) {
+                $schemaProp->setVarName($newVar);
+            }
+
+            $used[]        = $newName;
             $usedMethods[] = $newPascal;
+            $usedVars[]    = $schemaProp->varName();
         }
     }
 }
