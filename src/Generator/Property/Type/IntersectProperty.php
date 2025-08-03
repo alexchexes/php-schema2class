@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Property\Type;
 
+use Helmich\Schema2Class\Generator\Class\Method\FromInputMethodFactory;
 use Helmich\Schema2Class\Generator\Class\MethodNames;
 use Helmich\Schema2Class\Generator\GeneratorException;
 use Helmich\Schema2Class\Writer\WriterInterface;
@@ -63,12 +64,9 @@ class IntersectProperty extends AbstractProperty
 
     public function inputMappingExpr(string $expr, bool $asserted = false): string
     {
-        $validateArg = $this->request->getCurrValidateArgAlias();
-        $materializeArg = $this->request->getCurrMaterializeArgAlias();
-
-        $args = [$expr, '$' . $validateArg];
-        if ($materializeArg !== null) {
-            $args[] = '$' . $materializeArg;
+        $args = [$expr, '$' . FromInputMethodFactory::VALIDATE_ARG_NAME];
+        if ($this->request->getCurrReqHasDefaults()) {
+            $args[] = '$' . FromInputMethodFactory::DEFAULTS_ARG_NAME;
         }
         $argsStr = implode(', ', $args);
 

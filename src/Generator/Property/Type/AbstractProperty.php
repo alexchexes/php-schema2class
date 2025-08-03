@@ -102,7 +102,7 @@ abstract class AbstractProperty implements PropertyInterface
 
     public function convertInputToType(string $inputVarName, string $optionalsVarName): string
     {
-        $name = $this->name;
+        $name = $this->varName;
         $key  = $this->key;
         $keyStr = var_export($key, true);
         // build the raw lookup expression (using the JSON key only inside the braces)

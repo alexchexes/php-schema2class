@@ -7,6 +7,8 @@ use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\Collection\PropertyCollection;
 use Helmich\Schema2Class\Generator\Property\PropertyBuilder;
 use Helmich\Schema2Class\Generator\Property\Decorator\OptionalPropertyDecorator;
+use Helmich\Schema2Class\Generator\Class\Method\FromInputMethodFactory;
+use Helmich\Schema2Class\Generator\Class\PropertyNames;
 use Helmich\Schema2Class\Util\ReservedNames;
 use Helmich\Schema2Class\Util\SchemaUtils;
 use Helmich\Schema2Class\Util\StringUtils;
@@ -182,9 +184,38 @@ class SchemaPropertyCollector
             if ($newName !== $base) {
                 $schemaProp->setName($newName);
             }
+            $schemaProp->setVarName($schemaProp->name());
 
             $used[]       = $newName;
             $usedMethods[] = $newPascal;
+        }
+
+        $usedVarNames = [
+            FromInputMethodFactory::INPUT_ARG_NAME,
+            FromInputMethodFactory::VALIDATE_ARG_NAME,
+            FromInputMethodFactory::DEFAULTS_ARG_NAME,
+            FromInputMethodFactory::OBJ_VAR_NAME,
+            '_' . PropertyNames::OPTIONALS,
+        ];
+
+        foreach ($schemaProperties as $schemaProp) {
+            $baseVar = $schemaProp->varName();
+            $newVar = $baseVar;
+            if (in_array($newVar, $usedVarNames, true)) {
+                if ($baseVar[0] !== '_') {
+                    $newVar = '_' . $baseVar;
+                }
+                $i = 1;
+                $baseUnique = $newVar;
+                while (in_array($newVar, $usedVarNames, true)) {
+                    $newVar = $baseUnique . '_' . $i;
+                    $i++;
+                }
+            }
+            if ($newVar !== $baseVar) {
+                $schemaProp->setVarName($newVar);
+            }
+            $usedVarNames[] = $newVar;
         }
     }
 }

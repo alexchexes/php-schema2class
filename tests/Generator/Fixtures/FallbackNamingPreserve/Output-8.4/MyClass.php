@@ -2148,101 +2148,94 @@ class MyClass
      */
     public static function fromInput(array|object $input, bool $validate = true, bool $materializeDefaults = false): MyClass
     {
-        $_input = $input;
-        unset($input);
-        $_validate = $validate;
-        unset($validate);
-        $_materializeDefaults = $materializeDefaults;
-        unset($materializeDefaults);
+        $input = is_array($input)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($input)
+            : ($materializeDefaults ? clone $input : $input);
 
-        $_input = is_array($_input)
-            ? \JsonSchema\Validator::arrayToObjectRecursive($_input)
-            : ($_materializeDefaults ? clone $_input : $_input);
-
-        if ($_materializeDefaults) {
+        if ($materializeDefaults) {
             foreach (self::$_defaults as $__k => $__v) {
-                if (!property_exists($_input, (string) $__k)) {
-                    $_input->{$__k} = ($__v['type'] ?? null) === 'object'
+                if (!property_exists($input, (string) $__k)) {
+                    $input->{$__k} = ($__v['type'] ?? null) === 'object'
                         ? \JsonSchema\Validator::arrayToObjectRecursive($__v['default'])
                         : $__v['default'];
                 }
             }
         }
 
-        if ($_validate) {
-            static::validateInput($_input);
+        if ($validate) {
+            static::validateInput($input);
         }
 
-        $___providedOptionals = [];
-        $_GLOBALS_1 = $_input->{'_GLOBALS'};
-        $_GLOBALS_2 = $_input->{'GLOBALS'};
-        $GLOBALS_1 = $_input->{'GLOBALS_1'};
-        $_SERVER_1 = $_input->{'_SERVER'};
-        $_GET_1 = $_input->{'_GET'};
-        $_POST_1 = $_input->{'_POST'};
-        $_FILES_1 = $_input->{'_FILES'};
-        $_REQUEST_1 = $_input->{'_REQUEST'};
-        $_SESSION_1 = $_input->{'_SESSION'};
-        $_ENV_1 = $_input->{'_ENV'};
-        $_COOKIE_1 = $_input->{'_COOKIE'};
-        $_php_errormsg = $_input->{'php_errormsg'};
-        $_http_response_header = $_input->{'http_response_header'};
-        $_argc = $_input->{'argc'};
-        $_argv = $_input->{'argv'};
-        $input = $_input->{'input'};
-        $validate = isset($_input->{'validate'}) ? $_input->{'validate'} : null;
-        $materializeDefaults = property_exists($_input, 'materializeDefaults') ? ($_input->{'materializeDefaults'} !== null ? $_input->{'materializeDefaults'} : null) : null;
-        if (property_exists($_input, 'materializeDefaults')) {
-            $___providedOptionals['materializeDefaults'] = true;
+        $__providedOptionals = [];
+        $_GLOBALS_1 = $input->{'_GLOBALS'};
+        $_GLOBALS_2 = $input->{'GLOBALS'};
+        $GLOBALS_1 = $input->{'GLOBALS_1'};
+        $_SERVER_1 = $input->{'_SERVER'};
+        $_GET_1 = $input->{'_GET'};
+        $_POST_1 = $input->{'_POST'};
+        $_FILES_1 = $input->{'_FILES'};
+        $_REQUEST_1 = $input->{'_REQUEST'};
+        $_SESSION_1 = $input->{'_SESSION'};
+        $_ENV_1 = $input->{'_ENV'};
+        $_COOKIE_1 = $input->{'_COOKIE'};
+        $_php_errormsg = $input->{'php_errormsg'};
+        $_http_response_header = $input->{'http_response_header'};
+        $_argc = $input->{'argc'};
+        $_argv = $input->{'argv'};
+        $_input = $input->{'input'};
+        $_validate = isset($input->{'validate'}) ? $input->{'validate'} : null;
+        $_materializeDefaults = property_exists($input, 'materializeDefaults') ? ($input->{'materializeDefaults'} !== null ? $input->{'materializeDefaults'} : null) : null;
+        if (property_exists($input, 'materializeDefaults')) {
+            $__providedOptionals['materializeDefaults'] = true;
         }
-        $obj = $_input->{'obj'};
-        $includeDefaults = $_input->{'includeDefaults'};
-        $testObj = isset($_input->{'testObj'}) ? MyClassTestObj::fromInput($_input->{'testObj'}, $_validate, $_materializeDefaults) : null;
-        $_fromInput = $_input->{'fromInput'};
-        $_toArray = $_input->{'toArray'};
-        $_toStdClass = $_input->{'toStdClass'};
-        $_validateInput = $_input->{'validateInput'};
-        $_schema_1 = $_input->{'_schema'};
-        $_schema_2 = $_input->{'schema'};
-        $_defaults_1 = $_input->{'_defaults'};
-        $_defaults_2 = $_input->{'defaults'};
-        $_providedOptionals_1 = $_input->{'_providedOptionals'};
-        $__providedOptionals = isset($_input->{'__providedOptionals'}) ? $_input->{'__providedOptionals'} : null;
-        $_clone = $_input->{'clone'};
-        $__construct_1 = $_input->{'__construct'};
-        $__destruct_1 = $_input->{'__destruct'};
-        $__get_1 = $_input->{'__get'};
-        $__set_1 = $_input->{'__set'};
-        $__call_1 = $_input->{'__call'};
-        $__isset_1 = $_input->{'__isset'};
-        $__unset_1 = $_input->{'__unset'};
-        $__sleep_1 = $_input->{'__sleep'};
-        $__wakeup_1 = $_input->{'__wakeup'};
-        $__toString_1 = $_input->{'__toString'};
-        $__invoke_1 = $_input->{'__invoke'};
-        $__debugInfo_1 = $_input->{'__debugInfo'};
-        $__clone_1 = $_input->{'__clone'};
-        $files = $_input->{'files'};
-        $_this = $_input->{'this'};
-        $ensureArgs1 = isset($_input->{'ensureArgs1'}) ? match (true) {
-            MyClassEnsureArgs1Alternative1::validateInput($_input->{'ensureArgs1'}, true) => MyClassEnsureArgs1Alternative1::fromInput($_input->{'ensureArgs1'}, $_validate, $_materializeDefaults),
-            MyClassEnsureArgs1Alternative2::validateInput($_input->{'ensureArgs1'}, true) => MyClassEnsureArgs1Alternative2::fromInput($_input->{'ensureArgs1'}, $_validate, $_materializeDefaults),
-            is_string($_input->{'ensureArgs1'}) => $_input->{'ensureArgs1'},
+        $_obj = $input->{'obj'};
+        $includeDefaults = $input->{'includeDefaults'};
+        $testObj = isset($input->{'testObj'}) ? MyClassTestObj::fromInput($input->{'testObj'}, $validate, $materializeDefaults) : null;
+        $_fromInput = $input->{'fromInput'};
+        $_toArray = $input->{'toArray'};
+        $_toStdClass = $input->{'toStdClass'};
+        $_validateInput = $input->{'validateInput'};
+        $_schema_1 = $input->{'_schema'};
+        $_schema_2 = $input->{'schema'};
+        $_defaults_1 = $input->{'_defaults'};
+        $_defaults_2 = $input->{'defaults'};
+        $_providedOptionals_1 = $input->{'_providedOptionals'};
+        $__providedOptionals_1 = isset($input->{'__providedOptionals'}) ? $input->{'__providedOptionals'} : null;
+        $_clone = $input->{'clone'};
+        $__construct_1 = $input->{'__construct'};
+        $__destruct_1 = $input->{'__destruct'};
+        $__get_1 = $input->{'__get'};
+        $__set_1 = $input->{'__set'};
+        $__call_1 = $input->{'__call'};
+        $__isset_1 = $input->{'__isset'};
+        $__unset_1 = $input->{'__unset'};
+        $__sleep_1 = $input->{'__sleep'};
+        $__wakeup_1 = $input->{'__wakeup'};
+        $__toString_1 = $input->{'__toString'};
+        $__invoke_1 = $input->{'__invoke'};
+        $__debugInfo_1 = $input->{'__debugInfo'};
+        $__clone_1 = $input->{'__clone'};
+        $files = $input->{'files'};
+        $_this = $input->{'this'};
+        $ensureArgs1 = isset($input->{'ensureArgs1'}) ? match (true) {
+            MyClassEnsureArgs1Alternative1::validateInput($input->{'ensureArgs1'}, true) => MyClassEnsureArgs1Alternative1::fromInput($input->{'ensureArgs1'}, $validate, $materializeDefaults),
+            MyClassEnsureArgs1Alternative2::validateInput($input->{'ensureArgs1'}, true) => MyClassEnsureArgs1Alternative2::fromInput($input->{'ensureArgs1'}, $validate, $materializeDefaults),
+            is_string($input->{'ensureArgs1'}) => $input->{'ensureArgs1'},
             default => null,
         } : null;
-        $ensureArgs2 = isset($_input->{'ensureArgs2'}) ? MyClassEnsureArgs2::fromInput($_input->{'ensureArgs2'}, $_validate, $_materializeDefaults) : null;
-        $ensureArgs3 = isset($_input->{'ensureArgs3'}) ? array_map(fn (array|object $i): MyClassEnsureArgs3Item => MyClassEnsureArgs3Item::fromInput($i, $_validate, $_materializeDefaults), $_input->{'ensureArgs3'}) : null;
+        $ensureArgs2 = isset($input->{'ensureArgs2'}) ? MyClassEnsureArgs2::fromInput($input->{'ensureArgs2'}, $validate, $materializeDefaults) : null;
+        $ensureArgs3 = isset($input->{'ensureArgs3'}) ? array_map(fn (array|object $i): MyClassEnsureArgs3Item => MyClassEnsureArgs3Item::fromInput($i, $validate, $materializeDefaults), $input->{'ensureArgs3'}) : null;
 
-        $_obj = new self($_GLOBALS_1, $_GLOBALS_2, $GLOBALS_1, $_SERVER_1, $_GET_1, $_POST_1, $_FILES_1, $_REQUEST_1, $_SESSION_1, $_ENV_1, $_COOKIE_1, $_php_errormsg, $_http_response_header, $_argc, $_argv, $input, $obj, $includeDefaults, $_fromInput, $_toArray, $_toStdClass, $_validateInput, $_schema_1, $_schema_2, $_defaults_1, $_defaults_2, $_providedOptionals_1, $_clone, $__construct_1, $__destruct_1, $__get_1, $__set_1, $__call_1, $__isset_1, $__unset_1, $__sleep_1, $__wakeup_1, $__toString_1, $__invoke_1, $__debugInfo_1, $__clone_1, $files, $_this);
-        $_obj->validate = $validate;
-        $_obj->materializeDefaults = $materializeDefaults;
-        $_obj->testObj = $testObj;
-        $_obj->__providedOptionals = $__providedOptionals;
-        $_obj->ensureArgs1 = $ensureArgs1;
-        $_obj->ensureArgs2 = $ensureArgs2;
-        $_obj->ensureArgs3 = $ensureArgs3;
-        $_obj->_providedOptionals = $___providedOptionals;
-        return $_obj;
+        $obj = new self($_GLOBALS_1, $_GLOBALS_2, $GLOBALS_1, $_SERVER_1, $_GET_1, $_POST_1, $_FILES_1, $_REQUEST_1, $_SESSION_1, $_ENV_1, $_COOKIE_1, $_php_errormsg, $_http_response_header, $_argc, $_argv, $_input, $_obj, $includeDefaults, $_fromInput, $_toArray, $_toStdClass, $_validateInput, $_schema_1, $_schema_2, $_defaults_1, $_defaults_2, $_providedOptionals_1, $_clone, $__construct_1, $__destruct_1, $__get_1, $__set_1, $__call_1, $__isset_1, $__unset_1, $__sleep_1, $__wakeup_1, $__toString_1, $__invoke_1, $__debugInfo_1, $__clone_1, $files, $_this);
+        $obj->validate = $_validate;
+        $obj->materializeDefaults = $_materializeDefaults;
+        $obj->testObj = $testObj;
+        $obj->__providedOptionals = $__providedOptionals_1;
+        $obj->ensureArgs1 = $ensureArgs1;
+        $obj->ensureArgs2 = $ensureArgs2;
+        $obj->ensureArgs3 = $ensureArgs3;
+        $obj->_providedOptionals = $__providedOptionals;
+        return $obj;
     }
 
     /**

@@ -102,7 +102,7 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface
         // Key name in the JSON object
         $key   = $this->key;
         $keyStr  = var_export($key, true);
-        $name  = $this->inner->name(); // local variable to assign to
+        $name  = $this->inner->varName(); // local variable to assign to
 
         $accessor = "\${$inputVarName}->{{$keyStr}}";
 
