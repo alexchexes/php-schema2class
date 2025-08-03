@@ -44,7 +44,8 @@
         "phpstan/phpstan": "^2.1.2",
         "phpspec/prophecy": "^1.17",
         "phpspec/prophecy-phpunit": "^2.0",
-        "cweagans/composer-patches": "^1.7"
+        "cweagans/composer-patches": "^1.7",
+        "robiningelbrecht/phpunit-pretty-print": "^1.4"
     },
 	"extra": {
 		"patches": {
