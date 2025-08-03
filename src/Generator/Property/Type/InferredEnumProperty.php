@@ -68,7 +68,7 @@ class InferredEnumProperty extends AbstractProperty
         return implode('|', array_keys($this->valueTypes));
     }
 
-    public function generateTypeAssertionExpr(string $expr): string
+    public function genTypeAssertionExpr(string $expr): string
     {
         $values = var_export($this->schema['enum'], true);
         return "in_array({$expr}, {$values}, true)";

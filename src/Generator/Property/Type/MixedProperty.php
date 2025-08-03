@@ -23,7 +23,7 @@ class MixedProperty extends AbstractProperty
         return null;
     }
 
-    public function generateTypeAssertionExpr(string $expr): string
+    public function genTypeAssertionExpr(string $expr): string
     {
         return "true";
     }

@@ -104,7 +104,7 @@ EOCODE;
         $expected = <<<'EOCODE'
 $this->myPropertyName = array_map(fn (FooMyPropertyNameItem $i) => clone $i, $this->myPropertyName);
 EOCODE;
-        assertSame($expected, $underTest->cloneProperty());
+        assertSame($expected, $underTest->cloneAssignment());
     }
 
     public function testGetAnnotationAndHintWithComplexArray()

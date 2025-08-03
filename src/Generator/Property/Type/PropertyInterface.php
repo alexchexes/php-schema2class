@@ -45,10 +45,36 @@ interface PropertyInterface
     public function name(): string;
 
     /** 
-     * Sets property name used for generating class property.
+     * Name used for creating temporary variable names inside `fromInput` method
+     */
+    public function varName(): string;
+
+    /** 
+     * Base name used for creating methods for this property.
+     * Basically a *suffix* for all methods: get/set/unset/with/without.
+     * There must be special treatment of names starting with "out" to avoid
+     * collisions in case schema has, for example, "bound" and "outbound" properties,
+     * and the generated methods SHOULD NOT be like:
+     * withBound / withoutBound / withOutbound / withoutOutbound
+     */
+    public function methodName(): string;
+
+    /** 
+     * Sets name used for generating class property.
      * Allows renaming property when collisions detected.
      */
     public function setName(string $name): void;
+
+    /** 
+     * Sets name used for creating temporary variable names inside `fromInput` method
+     */
+    public function setVarName(string $name): void;
+
+    /** 
+     * Sets base name used for creating methods for this property.
+     * (a suffix for all methods: get/set/unset/with/without).
+     */
+    public function setMethodName(string $name): void;
 
     /** 
      * Gets the string from "description" field in the schema
@@ -112,23 +138,23 @@ interface PropertyInterface
      * @param string $expr  PHP expression usually containing the variable name
      *                      or accessor like `$this->property`
      */
-    public function generateTypeAssertionExpr(string $expr): string;
+    public function genTypeAssertionExpr(string $expr): string;
 
     /**
      * Generates a boolean expression that checks whether a raw input value can
      * be converted to this property type.
      */
-    public function generateInputAssertionExpr(string $expr): string;
+    public function genInputAssertionExpr(string $expr): string;
 
     /**
      * Generates an expression that maps an input value to the internal PHP value representation.
      *
      * @param string $expr     Expression returning the raw input value.
      * @param bool   $asserted  When `$asserted` is true the caller promises that `$expr` already satisfies
-     *                          the input assertion (typically by `{@see generateInputAssertionExpr()}`) 
+     *                          the input assertion (typically by `{@see genInputAssertionExpr()}`) 
      *                          and the implementation may omit redundant checks
      */
-    public function generateInputMappingExpr(string $expr, bool $asserted = false): string;
+    public function genMappingExpr(string $expr, bool $asserted = false): string;
 
     /**
      * Generates an expression converting a typed property value into a value
@@ -136,15 +162,15 @@ interface PropertyInterface
      * 
      * Used for generation of `toArray` method.
      */
-    public function generateOutputMappingExpr(string $expr): string;
+    public function genOutputMappingExpr(string $expr): string;
 
     /**
-     * Like {@see generateOutputMappingExpr()} but returns a value compatible with
+     * Like {@see genOutputMappingExpr()} but returns a value compatible with
      * an \StdClass representation.
      * 
      * Used for generation of `toStdClass` method.
      */
-    public function generateOutputMappingExprStdClass(string $expr): string;
+    public function genOutputMappingExprStdClass(string $expr): string;
 
     /**
      * Generates an expression for cloning this property when cloning the containing object.
@@ -153,13 +179,14 @@ interface PropertyInterface
      * 
      * Used for generation of `__clone` method.
      */
-    public function generateCloneExpr(string $expr): string;
+    public function cloneExpr(string $expr): string;
 
     /**
      * Provides a full cloning statement used inside the generated `__clone`
      * method or `null` when cloning the property requires no special handling.
+     * Returned string usually looks like `$this->prop = <cloneExpr()>`
      */
-    public function cloneProperty(): ?string;
+    public function cloneAssignment(): ?string;
 
     /** 
      * Formats a literal "default" value for inclusion in generated code.

@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class\Generator\ReferenceLookup;
 
 use Helmich\Schema2Class\Generator\Definition\Definition;
-use Helmich\Schema2Class\Generator\ReferencedType\ReferencedType;
+use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeInterface;
 use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeClass;
 use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeUnknown;
 use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeEnum;
@@ -51,7 +51,7 @@ class DefinitionsReferenceLookup implements ReferenceLookup
         return $ref;
     }
 
-    public function lookupReference(string $ref): ReferencedType
+    public function lookupReference(string $ref): ReferencedTypeInterface
     {
         $ref = $this->canonicalize($ref);
 

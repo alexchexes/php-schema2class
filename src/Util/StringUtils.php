@@ -23,11 +23,12 @@ class StringUtils
         // Replace everything that is not a letter, digit or underscore with underscore
         $sanitized = preg_replace('/[^A-Za-z0-9_]+/', '_', $transliterated);
 
+        // if new name got '_' at the end, but original name didn't have it, remove that trailing '_'
         if (str_ends_with($sanitized, '_') && !str_ends_with($input, '_')) {
             $sanitized = rtrim($sanitized, '_');
         }
 
-        // fallback to hash id if empty or underscores-only
+        // fallback to hash id if empty or underscores-only (unless original already was just '_')
         if ($sanitized === '' || ($sanitized === '_' && $input !== '_')) {
             $hash = substr(md5($input), 0, 8);
             $sanitized = '_' . $hash;

@@ -12,7 +12,7 @@ use Helmich\Schema2Class\Generator\GeneratorRequest;
  * It resolves type hints and annotations relative to the current namespace
  * so that the generated code can refer to generated classes correctly.
  */
-readonly class ReferencedTypeClass implements ReferencedType
+readonly class ReferencedTypeClass implements ReferencedTypeInterface
 {
     public function __construct(private string $className)
     {
@@ -58,20 +58,20 @@ readonly class ReferencedTypeClass implements ReferencedType
         return 'object';
     }
 
-    public function typeAssertionExpr(GeneratorRequest $req, string $expr): string
+    public function generateTypeAssertionExpr(GeneratorRequest $req, string $expr): string
     {
         $cls = $this->relativeName($req);
         return "({$expr}) instanceof {$cls}";
     }
 
-    public function inputAssertionExpr(GeneratorRequest $req, string $expr): string
+    public function generateInputAssertionExpr(GeneratorRequest $req, string $expr): string
     {
         $cls = $this->relativeName($req);
         $VALIDATE_INPUT = MethodNames::VALIDATE_INPUT;
         return "{$cls}::{$VALIDATE_INPUT}({$expr}, true)";
     }
 
-    public function inputMappingExpr(GeneratorRequest $req, string $expr): string
+    public function generateInputMappingExpr(GeneratorRequest $req, string $expr): string
     {
         $validateArg = $req->getCurrValidateArgAlias();
         $materializeArg = $req->getCurrMaterializeArgAlias();
@@ -89,14 +89,14 @@ readonly class ReferencedTypeClass implements ReferencedType
         return "{$cls}::{$FROM_INPUT}({$argsStr})";
     }
 
-    public function outputMappingExpr(GeneratorRequest $req, string $expr): string
+    public function generateOutputMappingExpr(GeneratorRequest $req, string $expr): string
     {
         $inclDefaultsArg = $req->getCurrReqHasDefaults() ? '$includeDefaults' : '';
         $TO_ARRAY = MethodNames::TO_ARRAY;
         return "{$expr}->{$TO_ARRAY}({$inclDefaultsArg})";
     }
 
-    public function outputMappingExprStdClass(GeneratorRequest $req, string $expr): string
+    public function generateOutputMappingExprStdClass(GeneratorRequest $req, string $expr): string
     {
         $inclDefaultsArg = $req->getCurrReqHasDefaults() ? '$includeDefaults' : '';
         $TO_STD_CLASS = MethodNames::TO_STD_CLASS;

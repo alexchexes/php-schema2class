@@ -8,7 +8,7 @@ use function PHPUnit\Framework\equalTo;
 
 use Helmich\Schema2Class\Command\GenerateCommand;
 use Helmich\Schema2Class\Example\CustomerAddress;
-use Helmich\Schema2Class\Generator\ReferencedType\ReferencedType;
+use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeInterface;
 use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeClass;
 use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeUnknown;
 use Helmich\Schema2Class\Generator\ReferenceLookup\DefinitionsReferenceLookup;
@@ -275,7 +275,7 @@ class SchemaToClassTest extends TestCase
         $req = $req->withReferenceLookup(new class ($definitionsLookup) implements ReferenceLookup {
             public function __construct(private DefinitionsReferenceLookup $lookup) {}
 
-            public function lookupReference(string $ref): ReferencedType
+            public function lookupReference(string $ref): ReferencedTypeInterface
             {
                 if ($ref === "#/properties/address") {
                     return new ReferencedTypeClass(CustomerAddress::class);

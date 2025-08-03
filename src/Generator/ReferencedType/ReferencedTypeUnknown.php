@@ -12,7 +12,7 @@ use Helmich\Schema2Class\Generator\GeneratorRequest;
  * conversions. Currently no code outside of type resolution is using this class
  * directly.
  */
-readonly class ReferencedTypeUnknown implements ReferencedType
+readonly class ReferencedTypeUnknown implements ReferencedTypeInterface
 {
     public function name(): string
     {
@@ -56,27 +56,27 @@ readonly class ReferencedTypeUnknown implements ReferencedType
         return $this->serializedTypeHint($req);
     }
 
-    public function typeAssertionExpr(GeneratorRequest $req, string $expr): string
+    public function generateTypeAssertionExpr(GeneratorRequest $req, string $expr): string
     {
         return "true";
     }
 
-    public function inputAssertionExpr(GeneratorRequest $req, string $expr): string
+    public function generateInputAssertionExpr(GeneratorRequest $req, string $expr): string
     {
         return "true";
     }
 
-    public function inputMappingExpr(GeneratorRequest $req, string $expr): string
+    public function generateInputMappingExpr(GeneratorRequest $req, string $expr): string
     {
         return $expr;
     }
 
-    public function outputMappingExpr(GeneratorRequest $req, string $expr): string
+    public function generateOutputMappingExpr(GeneratorRequest $req, string $expr): string
     {
         return $expr;
     }
 
-    public function outputMappingExprStdClass(GeneratorRequest $req, string $expr): string
+    public function generateOutputMappingExprStdClass(GeneratorRequest $req, string $expr): string
     {
         return $expr;
     }

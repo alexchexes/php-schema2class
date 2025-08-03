@@ -42,7 +42,7 @@ class NumberProperty extends AbstractProperty
         return 'int|float';
     }
 
-    public function generateTypeAssertionExpr(string $expr): string
+    public function genTypeAssertionExpr(string $expr): string
     {
         if (isset($this->schema['enum'])) {
             return EnumUtils::assertionExpr($this->schema['enum'], $expr);
@@ -51,7 +51,7 @@ class NumberProperty extends AbstractProperty
         return "is_int({$expr}) || is_float({$expr})";
     }
 
-    public function generateInputMappingExpr(string $expr, bool $asserted = false): string
+    public function genMappingExpr(string $expr, bool $asserted = false): string
     {
         if ($asserted) {
             return $expr;

@@ -17,7 +17,7 @@ use Helmich\Schema2Class\Util\EnumUtils;
  * it resolves type hints and annotations relative to the current namespace
  * so that the generated code can refer generated Enums correctly.
  */
-readonly class ReferencedTypeEnum implements ReferencedType
+readonly class ReferencedTypeEnum implements ReferencedTypeInterface
 {
     /**
      * @param string $enumName Fully-qualified enum class name
@@ -27,7 +27,7 @@ readonly class ReferencedTypeEnum implements ReferencedType
     {
     }
 
-    private function useNativeEnum(GeneratorRequest $req): bool
+    private function canUseNativeEnum(GeneratorRequest $req): bool
     {
         return SchemaToEnum::canGenerateEnum($this->schema, $req);
     }
@@ -49,7 +49,7 @@ readonly class ReferencedTypeEnum implements ReferencedType
 
     public function typeAnnotation(GeneratorRequest $req): string
     {
-        if ($this->useNativeEnum($req)) {
+        if ($this->canUseNativeEnum($req)) {
             return $this->relativeName($req);
         }
 
@@ -58,7 +58,7 @@ readonly class ReferencedTypeEnum implements ReferencedType
 
     public function typeHint(GeneratorRequest $req): ?string
     {
-        if ($this->useNativeEnum($req)) {
+        if ($this->canUseNativeEnum($req)) {
             return $this->relativeName($req);
         }
 
@@ -80,50 +80,50 @@ readonly class ReferencedTypeEnum implements ReferencedType
         return $this->serializedTypeHint($req);
     }
 
-    public function typeAssertionExpr(GeneratorRequest $req, string $expr): string
+    public function generateTypeAssertionExpr(GeneratorRequest $req, string $expr): string
     {
-        if ($this->useNativeEnum($req)) {
+        if ($this->canUseNativeEnum($req)) {
             return "({$expr}) instanceof " . $this->relativeName($req);
         }
 
         return EnumUtils::assertionExpr($this->schema['enum'], $expr);
     }
 
-    public function inputAssertionExpr(GeneratorRequest $req, string $expr): string
+    public function generateInputAssertionExpr(GeneratorRequest $req, string $expr): string
     {
-        if ($this->useNativeEnum($req)) {
+        if ($this->canUseNativeEnum($req)) {
             return "" . $this->relativeName($req) . "::tryFrom({$expr}) !== null";
         }
 
         return EnumUtils::assertionExpr($this->schema['enum'], $expr);
     }
 
-    public function inputMappingExpr(GeneratorRequest $req, string $expr): string
+    public function generateInputMappingExpr(GeneratorRequest $req, string $expr): string
     {
-        if ($this->useNativeEnum($req)) {
+        if ($this->canUseNativeEnum($req)) {
             return $this->relativeName($req) . "::from({$expr})";
         }
 
         return $expr;
     }
 
-    public function outputMappingExpr(GeneratorRequest $req, string $expr): string
+    public function generateOutputMappingExpr(GeneratorRequest $req, string $expr): string
     {
-        if ($this->useNativeEnum($req)) {
+        if ($this->canUseNativeEnum($req)) {
             return "{$expr}->value";
         }
 
         return $expr;
     }
 
-    public function outputMappingExprStdClass(GeneratorRequest $req, string $expr): string
+    public function generateOutputMappingExprStdClass(GeneratorRequest $req, string $expr): string
     {
-        return $this->outputMappingExpr($req, $expr);
+        return $this->generateOutputMappingExpr($req, $expr);
     }
 
     public function usesNativeEnum(GeneratorRequest $req): bool
     {
-        return $this->useNativeEnum($req);
+        return $this->canUseNativeEnum($req);
     }
 
 }

@@ -32,17 +32,17 @@ class RawObjectProperty extends AbstractProperty
         return null;
     }
 
-    public function generateTypeAssertionExpr(string $expr): string
+    public function genTypeAssertionExpr(string $expr): string
     {
         return 'is_array(' . $expr . ') || is_object(' . $expr . ')';
     }
 
-    public function generateOutputMappingExpr(string $expr): string
+    public function genOutputMappingExpr(string $expr): string
     {
         return 'json_decode(json_encode(' . $expr . '), true)';
     }
 
-    public function generateOutputMappingExprStdClass(string $expr): string
+    public function genOutputMappingExprStdClass(string $expr): string
     {
         return 'json_decode(json_encode(' . $expr . '))';
     }

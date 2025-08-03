@@ -40,12 +40,12 @@ class NullProperty extends AbstractProperty
     /* ---------------------------------------------------------------------
      * (4)  Assertions, mappings, cloning – all no-ops for a scalar null
      * ------------------------------------------------------------------- */
-    public function generateTypeAssertionExpr(string $expr): string  { return "{$expr} === null"; }
-    public function generateInputAssertionExpr(string $expr): string { return "{$expr} === null"; }
-    public function generateInputMappingExpr(string $expr, bool $asserted = false): string { return $expr; }
-    public function generateOutputMappingExpr(string $expr): string { return $expr; }
-    public function generateOutputMappingExprStdClass(string $expr): string { return $expr; }
-    public function generateCloneExpr(string $expr): string { return $expr; }
+    public function genTypeAssertionExpr(string $expr): string  { return "{$expr} === null"; }
+    public function genInputAssertionExpr(string $expr): string { return "{$expr} === null"; }
+    public function genMappingExpr(string $expr, bool $asserted = false): string { return $expr; }
+    public function genOutputMappingExpr(string $expr): string { return $expr; }
+    public function genOutputMappingExprStdClass(string $expr): string { return $expr; }
+    public function cloneExpr(string $expr): string { return $expr; }
 
     /* ---------------------------------------------------------------------
      * (5)  `null` is the only possible literal value.

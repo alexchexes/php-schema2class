@@ -154,36 +154,37 @@ class SchemaPropertyCollector
 
         foreach ($schemaProperties as $schemaProp) {
             $base    = $schemaProp->name();
-            $unique  = $base;
-            $pascal  = strtolower(StringUtils::safePascalCase($unique));
+            $newName = $base;
+            $newPascal  = strtolower(StringUtils::safePascalCase($newName));
 
-            $needsChange = in_array($unique, $used, true)
-                || (!$preservePropertyNames && in_array($pascal, $usedMethods, true));
+            // Of collides with "used",
+            // OR if "preserve" option disabled and pascal-variant collides with "usedMethods" – change
+            $needsChange = fn($_newName, $_newPascal) => in_array($_newName, $used, true)
+                || (!$preservePropertyNames && in_array($_newPascal, $usedMethods, true));
 
-            if ($needsChange) {
+            if ($needsChange($newName, $newPascal)) {
                 if ($base[0] !== '_') {
-                    $unique = '_' . $base;
-                    $pascal = strtolower(StringUtils::safePascalCase($unique));
+                    $newName = '_' . $base;
+                    $newPascal = strtolower(StringUtils::safePascalCase($newName));
                 }
 
                 $i = 1;
-                $baseUnique = $unique;
-                while (
-                    in_array($unique, $used, true)
-                    || (!$preservePropertyNames && in_array($pascal, $usedMethods, true))
-                ) {
-                    $unique = $baseUnique . '_' . $i;
-                    $pascal = strtolower(StringUtils::safePascalCase($unique));
+                $baseUnique = $newName;
+
+                while ($needsChange($newName, $newPascal)) {
+                    $newName = $baseUnique . '_' . $i;
+                    $newPascal = strtolower(StringUtils::safePascalCase($newName));
                     $i++;
                 }
             }
 
-            if ($unique !== $base) {
-                $schemaProp->setName($unique);
+            // rename the property
+            if ($newName !== $base) {
+                $schemaProp->setName($newName);
             }
 
-            $used[]       = $unique;
-            $usedMethods[] = $pascal;
+            $used[]       = $newName;
+            $usedMethods[] = $newPascal;
         }
     }
 }

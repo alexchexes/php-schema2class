@@ -11,7 +11,7 @@ use Helmich\Schema2Class\Generator\GeneratorRequest;
  * Implementations represent referenced classes or enums (or unknown types as fallback)
  * and are produced by {@see ReferenceLookup} implementations.
  */
-interface ReferencedType
+interface ReferencedTypeInterface
 {
     function name(): string;
     function typeAnnotation(GeneratorRequest $req): string;
@@ -19,9 +19,9 @@ interface ReferencedType
     function serializedInputTypeHint(GeneratorRequest $req): ?string;
     function serializedTypeHint(GeneratorRequest $req): ?string;
     function serializedTypeHintStdClass(GeneratorRequest $req): ?string;
-    function typeAssertionExpr(GeneratorRequest $req, string $expr): string;
-    function inputAssertionExpr(GeneratorRequest $req, string $expr): string;
-    function inputMappingExpr(GeneratorRequest $req, string $expr): string;
-    function outputMappingExpr(GeneratorRequest $req, string $expr): string;
-    function outputMappingExprStdClass(GeneratorRequest $req, string $expr): string;
+    function generateTypeAssertionExpr(GeneratorRequest $req, string $expr): string;
+    function generateInputAssertionExpr(GeneratorRequest $req, string $expr): string;
+    function generateInputMappingExpr(GeneratorRequest $req, string $expr): string;
+    function generateOutputMappingExpr(GeneratorRequest $req, string $expr): string;
+    function generateOutputMappingExprStdClass(GeneratorRequest $req, string $expr): string;
 }

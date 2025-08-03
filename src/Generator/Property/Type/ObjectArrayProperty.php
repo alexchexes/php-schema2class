@@ -147,7 +147,7 @@ class ObjectArrayProperty extends AbstractProperty
         return "array";
     }
 
-    public function generateTypeAssertionExpr(string $expr): string
+    public function genTypeAssertionExpr(string $expr): string
     {
         if ($this->itemType instanceof MixedProperty) {
             return "is_array({$expr})";
@@ -157,7 +157,7 @@ class ObjectArrayProperty extends AbstractProperty
         return "is_array({$expr}) && count(array_filter({$expr}, function({$st} \$item) {return \$item instanceof {$st};})) === count({$expr})";
     }
 
-    public function generateInputAssertionExpr(string $expr): string
+    public function genInputAssertionExpr(string $expr): string
     {
         if ($this->itemType instanceof MixedProperty) {
             return "is_array({$expr})";
@@ -168,9 +168,9 @@ class ObjectArrayProperty extends AbstractProperty
         return "is_array({$expr}) && count(array_filter({$expr}, function({$st} \$item) {return {$st}::{$VALIDATE_INPUT}(\$item, true)};)) === count({$expr})";
     }
 
-    public function generateInputMappingExpr(string $expr, bool $asserted = false): string
+    public function genMappingExpr(string $expr, bool $asserted = false): string
     {
-        $sm = $this->itemType->generateInputMappingExpr('$i');
+        $sm = $this->itemType->genMappingExpr('$i');
 
         if ($this->itemType instanceof MixedProperty) {
             return match (true) {
@@ -196,14 +196,14 @@ class ObjectArrayProperty extends AbstractProperty
         };
     }
 
-    public function generateOutputMappingExpr(string $expr): string
+    public function genOutputMappingExpr(string $expr): string
     {
         if ($this->itemType instanceof MixedProperty) {
             return "array_map(fn (\$i) => \$i, {$expr})";
         }
 
         $st = $this->subTypeName();
-        $sm = $this->itemType->generateOutputMappingExpr('$i');
+        $sm = $this->itemType->genOutputMappingExpr('$i');
 
         if ($this->generatorRequest->isAtLeastPHP('7.4')) {
             return "array_map(fn ($st \$i) => {$sm}, {$expr})";
@@ -211,14 +211,14 @@ class ObjectArrayProperty extends AbstractProperty
         return "array_map(function($st \$i) { return {$sm} }, {$expr})";
     }
 
-    public function generateOutputMappingExprStdClass(string $expr): string
+    public function genOutputMappingExprStdClass(string $expr): string
     {
         if ($this->itemType instanceof MixedProperty) {
             return "array_map(fn (\$i) => \$i, {$expr})";
         }
 
         $st = $this->subTypeName();
-        $sm = $this->itemType->generateOutputMappingExprStdClass('$i');
+        $sm = $this->itemType->genOutputMappingExprStdClass('$i');
 
         if ($this->generatorRequest->isAtLeastPHP('7.4')) {
             return "array_map(fn ($st \$i) => {$sm}, {$expr})";
@@ -226,7 +226,7 @@ class ObjectArrayProperty extends AbstractProperty
         return "array_map(function($st \$i) { return {$sm} }, {$expr})";
     }
 
-    public function generateCloneExpr(string $expr): string
+    public function cloneExpr(string $expr): string
     {
         if ($this->itemType instanceof MixedProperty) {
             return "array_map(fn (\$i) => \$i, {$expr})";
@@ -242,7 +242,7 @@ class ObjectArrayProperty extends AbstractProperty
 
     private function subTypeName(): string
     {
-        return $this->generatorRequest->getTargetClass() . $this->capitalizedName . 'Item';
+        return $this->generatorRequest->getTargetClass() . $this->nameForClass . 'Item';
     }
 
 }

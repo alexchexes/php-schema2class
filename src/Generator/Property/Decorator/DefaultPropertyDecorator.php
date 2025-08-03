@@ -89,14 +89,19 @@ class DefaultPropertyDecorator implements PropertyDecoratorInterface
         return $this->inner->typeHint($phpVersion);
     }
 
-    public function cloneProperty(): ?string
+    public function cloneAssignment(): ?string
     {
-        return $this->inner->cloneProperty();
+        return $this->inner->cloneAssignment();
     }
 
     public function schema(): array
     {
         return $this->inner->schema();
+    }
+    
+    public function description(): ?string
+    {
+        return $this->inner->description();
     }
 
     public function key(): string
@@ -109,9 +114,29 @@ class DefaultPropertyDecorator implements PropertyDecoratorInterface
         return $this->inner->name();
     }
 
-    public function description(): ?string
+    public function varName(): string
     {
-        return $this->inner->description();
+        return $this->inner->varName();
+    }
+
+    public function methodName(): string
+    {
+        return $this->inner->methodName();
+    }
+
+    public function setName(string $name): void
+    {
+        $this->inner->setName($name);
+    }
+
+    public function setVarName(string $name): void
+    {
+        $this->inner->setVarName($name);
+    }
+
+    public function setMethodName(string $name): void
+    {
+        $this->inner->setMethodName($name);
     }
 
     public function unwrap(): PropertyInterface
@@ -119,45 +144,40 @@ class DefaultPropertyDecorator implements PropertyDecoratorInterface
         return $this->inner;
     }
 
-    public function generateTypeAssertionExpr(string $expr): string
+    public function genTypeAssertionExpr(string $expr): string
     {
-        return $this->inner->generateTypeAssertionExpr($expr);
+        return $this->inner->genTypeAssertionExpr($expr);
     }
 
-    public function generateInputAssertionExpr(string $expr): string
+    public function genInputAssertionExpr(string $expr): string
     {
-        return "(({$expr}) === null) || ({$this->inner->generateInputAssertionExpr($expr)})";
+        return "(({$expr}) === null) || ({$this->inner->genInputAssertionExpr($expr)})";
     }
 
-    public function generateInputMappingExpr(string $expr, bool $asserted = false): string
+    public function genMappingExpr(string $expr, bool $asserted = false): string
     {
-        $inner = $this->inner->generateInputMappingExpr($expr);
+        $inner = $this->inner->genMappingExpr($expr);
         return "({$expr} !== null ? {$inner} : {$this->defaultExpr()})";
     }
 
-    public function generateOutputMappingExpr(string $expr): string
+    public function genOutputMappingExpr(string $expr): string
     {
-        return $this->inner->generateOutputMappingExpr($expr);
+        return $this->inner->genOutputMappingExpr($expr);
     }
 
-    public function generateOutputMappingExprStdClass(string $expr): string
+    public function genOutputMappingExprStdClass(string $expr): string
     {
-        return $this->inner->generateOutputMappingExprStdClass($expr);
+        return $this->inner->genOutputMappingExprStdClass($expr);
     }
 
-    public function generateCloneExpr(string $expr): string
+    public function cloneExpr(string $expr): string
     {
-        return $this->inner->generateCloneExpr($expr);
+        return $this->inner->cloneExpr($expr);
     }
 
     public function formatValue(mixed $value): PropertyValueGenerator
     {
         return $this->inner->formatValue($value);
-    }
-
-    public function setName(string $name): void
-    {
-        $this->inner->setName($name);
     }
 
     public function allowsNull(): bool { return $this->inner->allowsNull(); }

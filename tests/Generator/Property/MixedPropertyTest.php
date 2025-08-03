@@ -65,7 +65,7 @@ EOCODE;
 
     public function testCloneProperty()
     {
-        assertNull($this->underTest->cloneProperty());
+        assertNull($this->underTest->cloneAssignment());
     }
 
     public function testGetAnnotationAndHintWithSimpleArray()

@@ -17,7 +17,7 @@ class CloneMethodFactory
         $expressions = [];
 
         foreach ($this->schemaProperties as $property) {
-            $expressions[] = $property->cloneProperty();
+            $expressions[] = $property->cloneAssignment();
         }
 
         $expressions = array_values(array_filter($expressions));

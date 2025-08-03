@@ -31,12 +31,12 @@ class DateProperty extends AbstractProperty
         return "\\DateTime";
     }
 
-    public function generateTypeAssertionExpr(string $expr): string
+    public function genTypeAssertionExpr(string $expr): string
     {
         return "{$expr} instanceof \\DateTime";
     }
 
-    public function generateInputMappingExpr(string $expr, bool $asserted = false): string
+    public function genMappingExpr(string $expr, bool $asserted = false): string
     {
         if ($asserted) {
             return $expr;
@@ -45,12 +45,12 @@ class DateProperty extends AbstractProperty
         return "new \\DateTime({$expr})";
     }
 
-    public function generateOutputMappingExpr(string $expr): string
+    public function genOutputMappingExpr(string $expr): string
     {
         return "({$expr})->format(\\DateTime::ATOM)";
     }
 
-    public function generateCloneExpr(string $expr): string
+    public function cloneExpr(string $expr): string
     {
         return "clone {$expr}";
     }

@@ -76,15 +76,15 @@ class PrimitiveUnionEnumProperty extends AbstractProperty
     /**
      * Runtime checks & mappings (straight-through)
      */
-    public function generateTypeAssertionExpr(string $expr): string
+    public function genTypeAssertionExpr(string $expr): string
     {
         $values = var_export($this->schema['enum'], true);
         return "in_array({$expr}, {$values}, true)";
     }
 
-    public function generateInputAssertionExpr(string $expr): string
+    public function genInputAssertionExpr(string $expr): string
     {
-        return $this->generateTypeAssertionExpr($expr);
+        return $this->genTypeAssertionExpr($expr);
     }
 
     /**

@@ -66,7 +66,7 @@ EOCODE;
     {
         $underTest = new PrimitiveArrayProperty('myPropertyName', ['type' => 'array'], $this->generatorRequest);
 
-        assertThat($underTest->cloneProperty(), isNull());
+        assertThat($underTest->cloneAssignment(), isNull());
     }
 
     public function testGetAnnotationAndHintWithSimpleArray()

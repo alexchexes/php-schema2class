@@ -8,7 +8,7 @@ use Helmich\Schema2Class\Generator\Hook\AddInterfaceHook;
 use Helmich\Schema2Class\Generator\Hook\AddMethodHook;
 use Helmich\Schema2Class\Generator\Hook\AddPropertyHook;
 use Helmich\Schema2Class\Generator\Hook\GeneratorHookRunner;
-use Helmich\Schema2Class\Generator\ReferencedType\ReferencedType;
+use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeInterface;
 use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeUnknown;
 use Helmich\Schema2Class\Generator\ReferenceLookup\ReferenceLookup;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
@@ -342,7 +342,7 @@ class GeneratorRequest
         return $this->opts;
     }
 
-    public function lookupReference(string $ref): ReferencedType
+    public function lookupReference(string $ref): ReferencedTypeInterface
     {
         if (empty($this->referenceLookup)) {
             throw new GeneratorException("unresolvable reference: {$ref}");

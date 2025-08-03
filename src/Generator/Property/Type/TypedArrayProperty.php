@@ -74,21 +74,21 @@ class TypedArrayProperty extends AbstractProperty
         return 'array';
     }
 
-    public function generateTypeAssertionExpr(string $expr): string
+    public function genTypeAssertionExpr(string $expr): string
     {
-        $inner = $this->itemType->generateTypeAssertionExpr('$i');
+        $inner = $this->itemType->genTypeAssertionExpr('$i');
         return "is_array({$expr}) && count(array_filter({$expr}, fn(\$i) => {$inner})) === count({$expr})";
     }
 
-    public function generateInputAssertionExpr(string $expr): string
+    public function genInputAssertionExpr(string $expr): string
     {
-        $inner = $this->itemType->generateInputAssertionExpr('$i');
+        $inner = $this->itemType->genInputAssertionExpr('$i');
         return "is_array({$expr}) && count(array_filter({$expr}, fn(\$i) => {$inner})) === count({$expr})";
     }
 
-    public function generateInputMappingExpr(string $expr, bool $asserted = false): string
+    public function genMappingExpr(string $expr, bool $asserted = false): string
     {
-        $map = $this->itemType->generateInputMappingExpr('$i');
+        $map = $this->itemType->genMappingExpr('$i');
         if ($this->generatorRequest->isAtLeastPHP('7.4')) {
             return "array_map(fn(\$i) => {$map}, {$expr})";
         }
@@ -104,27 +104,27 @@ class TypedArrayProperty extends AbstractProperty
         return "array_map(function(\$i) use ({$useExpr}) { return {$map}; }, {$expr})";
     }
 
-    public function generateOutputMappingExpr(string $expr): string
+    public function genOutputMappingExpr(string $expr): string
     {
-        $map = $this->itemType->generateOutputMappingExpr('$i');
+        $map = $this->itemType->genOutputMappingExpr('$i');
         if ($this->generatorRequest->isAtLeastPHP('7.4')) {
             return "array_map(fn(\$i) => {$map}, {$expr})";
         }
         return "array_map(function(\$i) { return {$map}; }, {$expr})";
     }
 
-    public function generateOutputMappingExprStdClass(string $expr): string
+    public function genOutputMappingExprStdClass(string $expr): string
     {
-        $map = $this->itemType->generateOutputMappingExprStdClass('$i');
+        $map = $this->itemType->genOutputMappingExprStdClass('$i');
         if ($this->generatorRequest->isAtLeastPHP('7.4')) {
             return "array_map(fn(\$i) => {$map}, {$expr})";
         }
         return "array_map(function(\$i) { return {$map}; }, {$expr})";
     }
 
-    public function generateCloneExpr(string $expr): string
+    public function cloneExpr(string $expr): string
     {
-        $map = $this->itemType->generateCloneExpr('$i');
+        $map = $this->itemType->cloneExpr('$i');
         if ($this->generatorRequest->isAtLeastPHP('7.4')) {
             return "array_map(fn(\$i) => {$map}, {$expr})";
         }

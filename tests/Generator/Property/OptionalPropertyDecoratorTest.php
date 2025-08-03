@@ -45,7 +45,7 @@ class OptionalPropertyDecoratorTest extends TestCase
     {
         $this->innerProperty->name()->shouldBeCalled()->willReturn('myPropertyName');
         $this->innerProperty
-            ->generateInputMappingExpr('$variable->{\'myPropertyName\'}', true)
+            ->genMappingExpr('$variable->{\'myPropertyName\'}', true)
             ->shouldBeCalled()
             ->willReturn('INNER_EXPR');
 
@@ -63,7 +63,7 @@ class OptionalPropertyDecoratorTest extends TestCase
         $prophecy->allowsNull()->willReturn(true);
         $prophecy->name()->willReturn('myPropertyName');
         $prophecy
-            ->generateInputMappingExpr('$variable->{\'myPropertyName\'}', true)
+            ->genMappingExpr('$variable->{\'myPropertyName\'}', true)
             ->willReturn('INNER_EXPR');
         $prophecy->formatValue(false)->willReturn(new PropertyValueGenerator(false));
 
@@ -112,21 +112,21 @@ EOCODE;
     public function testClonePropertyWithoutInnerCode()
     {
         $this->innerProperty->name()->shouldBeCalled()->willReturn('innerPropertyName');
-        $this->innerProperty->cloneProperty()->shouldBeCalled()->willReturn(null);
+        $this->innerProperty->cloneAssignment()->shouldBeCalled()->willReturn(null);
 
-        assertNull($this->decorator->cloneProperty());
+        assertNull($this->decorator->cloneAssignment());
     }
 
     public function testClonePropertyWithInnerCode()
     {
         $this->innerProperty->name()->shouldBeCalled()->willReturn('innerPropertyName');
-        $this->innerProperty->cloneProperty()->shouldBeCalled()->willReturn('echo "InnerCode";');
+        $this->innerProperty->cloneAssignment()->shouldBeCalled()->willReturn('echo "InnerCode";');
         $expected = <<<'EOCODE'
 if (isset($this->innerPropertyName)) {
     echo "InnerCode";
 }
 EOCODE;
-        assertSame($expected, $this->decorator->cloneProperty());
+        assertSame($expected, $this->decorator->cloneAssignment());
     }
 
     public function testGetAnnotationAndHintWithSimpleArray()

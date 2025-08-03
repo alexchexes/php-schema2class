@@ -103,7 +103,7 @@ $this->myPropertyName = match (true) {
     $this->myPropertyName instanceof FooMyPropertyNameAlternative2 => clone $this->myPropertyName,
 };
 EOCODE;
-        assertSame($expected, $this->property->cloneProperty());
+        assertSame($expected, $this->property->cloneAssignment());
     }
 
     public function testAllowsNullIfSubPropertyAllowsNull(): void

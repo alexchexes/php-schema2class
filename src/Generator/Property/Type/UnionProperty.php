@@ -61,8 +61,8 @@ class UnionProperty extends AbstractProperty
         $match = new MatchGenerator("true");
 
         foreach ($this->subProperties as $subProperty) {
-            $mapping       = $subProperty->generateInputMappingExpr($accessor, asserted: true);
-            $discriminator = $subProperty->generateInputAssertionExpr($accessor);
+            $mapping       = $subProperty->genMappingExpr($accessor, asserted: true);
+            $discriminator = $subProperty->genInputAssertionExpr($accessor);
             $match->addArm($discriminator, $mapping);
         }
 
@@ -95,9 +95,9 @@ class UnionProperty extends AbstractProperty
     
         // Build up per‑arm conversions
         foreach ($this->subProperties as $subProp) {
-            $mapping       = $subProp->generateInputMappingExpr($accessor, asserted: true);
+            $mapping       = $subProp->genMappingExpr($accessor, asserted: true);
             $assignment    = "\$$name = {$mapping};";
-            $discriminator = $subProp->generateInputAssertionExpr($accessor);
+            $discriminator = $subProp->genInputAssertionExpr($accessor);
     
             // If this arm is an "array" type, prefix its test with is_array(...)
             if (
@@ -153,8 +153,8 @@ class UnionProperty extends AbstractProperty
         $match  = new MatchGenerator("true");
 
         foreach ($this->subProperties as $subProperty) {
-            $mapping       = $subProperty->generateOutputMappingExpr("\$this->{$name}");
-            $discriminator = $subProperty->generateTypeAssertionExpr("\$this->{$name}");
+            $mapping       = $subProperty->genOutputMappingExpr("\$this->{$name}");
+            $discriminator = $subProperty->genTypeAssertionExpr("\$this->{$name}");
 
             $match->addArm($discriminator, $mapping);
         }
@@ -170,8 +170,8 @@ class UnionProperty extends AbstractProperty
         $match  = new MatchGenerator("true");
 
         foreach ($this->subProperties as $subProperty) {
-            $mapping       = $subProperty->generateOutputMappingExprStdClass("\$this->{$name}");
-            $discriminator = $subProperty->generateTypeAssertionExpr("\$this->{$name}");
+            $mapping       = $subProperty->genOutputMappingExprStdClass("\$this->{$name}");
+            $discriminator = $subProperty->genTypeAssertionExpr("\$this->{$name}");
 
             $match->addArm($discriminator, $mapping);
         }
@@ -193,9 +193,9 @@ class UnionProperty extends AbstractProperty
         $conversions = [];
 
         foreach ($this->subProperties as $subProperty) {
-            $mapping       = $subProperty->generateOutputMappingExpr("\$this->{$name}");
+            $mapping       = $subProperty->genOutputMappingExpr("\$this->{$name}");
             $assignment    = "\${$outputVarName}[{$keyStr}] = {$mapping};";
-            $discriminator = $subProperty->generateTypeAssertionExpr("\$this->{$name}");
+            $discriminator = $subProperty->genTypeAssertionExpr("\$this->{$name}");
 
             if (!isset($conversions[$assignment])) {
                 $conversions[$assignment] = ["discriminators" => []];
@@ -227,9 +227,9 @@ class UnionProperty extends AbstractProperty
         $conversions = [];
 
         foreach ($this->subProperties as $subProperty) {
-            $mapping       = $subProperty->generateOutputMappingExprStdClass("\$this->{$name}");
+            $mapping       = $subProperty->genOutputMappingExprStdClass("\$this->{$name}");
             $assignment    = "\${$outputVarName}->{{$keyStr}} = {$mapping};";
-            $discriminator = $subProperty->generateTypeAssertionExpr("\$this->{$name}");
+            $discriminator = $subProperty->genTypeAssertionExpr("\$this->{$name}");
 
             if (!isset($conversions[$assignment])) {
                 $conversions[$assignment] = ["discriminators" => []];
@@ -317,37 +317,37 @@ class UnionProperty extends AbstractProperty
         return null;
     }
 
-    public function generateTypeAssertionExpr(string $expr): string
+    public function genTypeAssertionExpr(string $expr): string
     {
         $subAssertions = [];
 
         foreach ($this->subProperties as $prop) {
-            $subAssertions[] = $prop->generateTypeAssertionExpr($expr);
+            $subAssertions[] = $prop->genTypeAssertionExpr($expr);
         }
 
         return "(" . join(") || (", $subAssertions) . ")";
     }
 
-    public function generateInputAssertionExpr(string $expr): string
+    public function genInputAssertionExpr(string $expr): string
     {
         $subAssertions = [];
 
         foreach ($this->subProperties as $prop) {
-            $subAssertions[] = $prop->generateInputAssertionExpr($expr);
+            $subAssertions[] = $prop->genInputAssertionExpr($expr);
         }
 
         $glue = ") || (";
         return "(" . implode($glue, $subAssertions) . ")";
     }
 
-    public function generateInputMappingExpr(string $expr, bool $asserted = false): string
+    public function genMappingExpr(string $expr, bool $asserted = false): string
     {
         if ($this->generatorRequest->isAtLeastPHP("8.0")) {
             $match = new MatchGenerator("true");
 
             foreach ($this->subProperties as $subProperty) {
-                $assert = $subProperty->generateInputAssertionExpr($expr);
-                $map    = $subProperty->generateInputMappingExpr($expr);
+                $assert = $subProperty->genInputAssertionExpr($expr);
+                $map    = $subProperty->genMappingExpr($expr);
                 $match->addArm($assert, $map);
             }
             
@@ -359,23 +359,23 @@ class UnionProperty extends AbstractProperty
         $out = "null";
 
         foreach ($this->subProperties as $subProperty) {
-            $assert = $subProperty->generateInputAssertionExpr($expr);
-            $map    = $subProperty->generateInputMappingExpr($expr);
+            $assert = $subProperty->genInputAssertionExpr($expr);
+            $map    = $subProperty->genMappingExpr($expr);
             $out    = "(({$assert}) ? {$map} : ({$out}))";
         }
 
         return $out;
     }
 
-    public function generateOutputMappingExpr(string $expr): string
+    public function genOutputMappingExpr(string $expr): string
     {
         if ($this->generatorRequest->isAtLeastPHP("8.0")) {
             $match = new MatchGenerator("true");
             $match->addArm("default", "null");
 
             foreach ($this->subProperties as $subProperty) {
-                $assert = $subProperty->generateTypeAssertionExpr($expr);
-                $map    = $subProperty->generateOutputMappingExpr($expr);
+                $assert = $subProperty->genTypeAssertionExpr($expr);
+                $map    = $subProperty->genOutputMappingExpr($expr);
                 $match->addArm($assert, $map);
             }
 
@@ -385,23 +385,23 @@ class UnionProperty extends AbstractProperty
         $out = "null";
 
         foreach ($this->subProperties as $subProperty) {
-            $assert = $subProperty->generateTypeAssertionExpr($expr);
-            $map    = $subProperty->generateOutputMappingExpr($expr);
+            $assert = $subProperty->genTypeAssertionExpr($expr);
+            $map    = $subProperty->genOutputMappingExpr($expr);
             $out    = "({$assert}) ? ({$map}) : ({$out})";
         }
 
         return $out;
     }
 
-    public function generateOutputMappingExprStdClass(string $expr): string
+    public function genOutputMappingExprStdClass(string $expr): string
     {
         if ($this->generatorRequest->isAtLeastPHP("8.0")) {
             $match = new MatchGenerator("true");
             $match->addArm("default", "null");
 
             foreach ($this->subProperties as $subProperty) {
-                $assert = $subProperty->generateTypeAssertionExpr($expr);
-                $map    = $subProperty->generateOutputMappingExprStdClass($expr);
+                $assert = $subProperty->genTypeAssertionExpr($expr);
+                $map    = $subProperty->genOutputMappingExprStdClass($expr);
                 $match->addArm($assert, $map);
             }
 
@@ -411,22 +411,22 @@ class UnionProperty extends AbstractProperty
         $out = "null";
 
         foreach ($this->subProperties as $subProperty) {
-            $assert = $subProperty->generateTypeAssertionExpr($expr);
-            $map    = $subProperty->generateOutputMappingExprStdClass($expr);
+            $assert = $subProperty->genTypeAssertionExpr($expr);
+            $map    = $subProperty->genOutputMappingExprStdClass($expr);
             $out    = "({$assert}) ? ({$map}) : ({$out})";
         }
 
         return $out;
     }
 
-    public function generateCloneExpr(string $expr): string
+    public function cloneExpr(string $expr): string
     {
         if ($this->generatorRequest->isAtLeastPHP("8.0")) {
             $match = new MatchGenerator("true");
 
             foreach ($this->subProperties as $subProperty) {
-                $assert = $subProperty->generateTypeAssertionExpr($expr);
-                $map    = $subProperty->generateCloneExpr($expr);
+                $assert = $subProperty->genTypeAssertionExpr($expr);
+                $map    = $subProperty->cloneExpr($expr);
                 $match->addArm($assert, $map);
             }
 
@@ -436,8 +436,8 @@ class UnionProperty extends AbstractProperty
         $out = $expr;
 
         foreach ($this->subProperties as $subProperty) {
-            $assert = $subProperty->generateTypeAssertionExpr($expr);
-            $map    = $subProperty->generateCloneExpr($expr);
+            $assert = $subProperty->genTypeAssertionExpr($expr);
+            $map    = $subProperty->cloneExpr($expr);
             $out    = "({$assert}) ? ({$map}) : ({$out})";
         }
 
@@ -457,7 +457,7 @@ class UnionProperty extends AbstractProperty
 
     private function subTypeName(int $idx = 0): string
     {
-        return $this->generatorRequest->getTargetClass() . $this->capitalizedName . "Alternative" . ($idx + 1);
+        return $this->generatorRequest->getTargetClass() . $this->nameForClass . "Alternative" . ($idx + 1);
     }
 
 }

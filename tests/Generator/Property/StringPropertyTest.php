@@ -63,7 +63,7 @@ EOCODE;
 
     public function testCloneProperty()
     {
-        assertNull($this->property->cloneProperty());
+        assertNull($this->property->cloneAssignment());
     }
 
     public function testGetAnnotationAndHint()

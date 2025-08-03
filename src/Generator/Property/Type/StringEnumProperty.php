@@ -76,7 +76,7 @@ class StringEnumProperty extends AbstractProperty
         return 'string';
     }
 
-    public function generateTypeAssertionExpr(string $expr): string
+    public function genTypeAssertionExpr(string $expr): string
     {
         if ($this->generatorRequest->isAtLeastPHP("8.1") && !$this->generatorRequest->getNoEnums()) {
             return "{$expr} instanceof {$this->subTypeName()}";
@@ -87,7 +87,7 @@ class StringEnumProperty extends AbstractProperty
         return "is_string({$expr}) && in_array({$expr}, {$values}, true)";
     }
 
-    public function generateInputAssertionExpr(string $expr): string
+    public function genInputAssertionExpr(string $expr): string
     {
         if ($this->generatorRequest->isAtLeastPHP("8.1") && !$this->generatorRequest->getNoEnums()) {
             return "{$this->subTypeName()}::tryFrom({$expr}) !== null";
@@ -97,7 +97,7 @@ class StringEnumProperty extends AbstractProperty
         return "in_array({$expr}, {$values}, true)";
     }
 
-    public function generateInputMappingExpr(string $expr, bool $asserted = false): string
+    public function genMappingExpr(string $expr, bool $asserted = false): string
     {
         if ($this->generatorRequest->isAtLeastPHP("8.1") && !$this->generatorRequest->getNoEnums()) {
             return "{$this->subTypeName()}::from({$expr})";
@@ -107,7 +107,7 @@ class StringEnumProperty extends AbstractProperty
         return $expr;
     }
 
-    public function generateOutputMappingExpr(string $expr): string
+    public function genOutputMappingExpr(string $expr): string
     {
         if ($this->generatorRequest->isAtLeastPHP("8.1") && !$this->generatorRequest->getNoEnums()) {
             return "({$expr})->value";
@@ -116,12 +116,12 @@ class StringEnumProperty extends AbstractProperty
         return $expr;
     }
 
-    public function generateOutputMappingExprStdClass(string $expr): string
+    public function genOutputMappingExprStdClass(string $expr): string
     {
-        return $this->generateOutputMappingExpr($expr);
+        return $this->genOutputMappingExpr($expr);
     }
 
-    public function generateCloneExpr(string $expr): string
+    public function cloneExpr(string $expr): string
     {
         // enum or string, same copy semantics
         return $expr;
@@ -147,6 +147,6 @@ class StringEnumProperty extends AbstractProperty
 
     private function subTypeName(): string
     {
-        return $this->generatorRequest->getTargetClass() . $this->capitalizedName;
+        return $this->generatorRequest->getTargetClass() . $this->nameForClass;
     }
 }

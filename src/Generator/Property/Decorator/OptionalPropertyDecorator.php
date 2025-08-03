@@ -27,8 +27,7 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator
 
     public function generateIssetCheckExpr(string $inputVarName): string
     {
-        $key = $this->key;
-        $keyStr = var_export($key, true);
+        $keyStr = var_export($this->key, true);
         $accessor = "\${$inputVarName}->{{$keyStr}}";
 
         $existsCheck = "isset($accessor)";
@@ -41,8 +40,7 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator
 
     public function convertInputToType(string $inputVarName, string $optionalsVarName): string
     {
-        $key   = $this->key;
-        $keyStr = var_export($key, true);
+        $keyStr = var_export($this->key, true);
         $name  = $this->inner->name();
 
         // JSON accessor:  $input->{'key'}   or   $input['key']
@@ -52,10 +50,10 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator
         // intact; if the wrapped property already allows null it will handle the
         // guard itself.
         if ($this->isOptionalNullable) {
-            $innerMap = $this->inner->generateInputMappingExpr($accessor, true);
+            $innerMap = $this->inner->genMappingExpr($accessor, true);
             $mapped   = "({$accessor} !== null ? {$innerMap} : null)";
         } else {
-            $mapped = $this->generateInputMappingExpr($accessor, true);
+            $mapped = $this->genMappingExpr($accessor, true);
         }
 
         $existsCheck = $this->generateIssetCheckExpr($inputVarName);
@@ -79,7 +77,7 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator
             $check = "isset(\$this->{$name}) || array_key_exists('{$this->key}', \$this->{$OPTIONALS})";
 
             $keyStr = var_export($this->key, true);
-            $map = $this->generateOutputMappingExpr("\$this->{$name}");
+            $map = $this->genOutputMappingExpr("\$this->{$name}");
             $inner = "\${$outputVarName}[{$keyStr}] = {$map};";
             return "if ({$check}) {\n" . StringUtils::indentCode($inner, 1) . "\n}";
         }
@@ -102,7 +100,7 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator
             $OPTIONALS = PropertyNames::OPTIONALS;
             $check = "isset(\$this->{$name}) || array_key_exists('{$this->key}', \$this->{$OPTIONALS})";
             $keyStr = var_export($this->key, true);
-            $map = $this->generateOutputMappingExprStdClass("\$this->{$name}");
+            $map = $this->genOutputMappingExprStdClass("\$this->{$name}");
             $inner = "\${$outputVarName}->{{$keyStr}} = {$map};";
             return "if ({$check}) {\n" . StringUtils::indentCode($inner, 1) . "\n}";
         }
@@ -116,10 +114,10 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator
         return "if (isset(\$this->{$name})) {\n" . StringUtils::indentCode($inner, 1) . "\n}";
     }
 
-    public function cloneProperty(): ?string
+    public function cloneAssignment(): ?string
     {
         $name  = $this->name();
-        $inner = $this->inner->cloneProperty();
+        $inner = $this->inner->cloneAssignment();
 
         if ($inner !== null) {
             return "if (isset(\$this->{$name})) {\n" . StringUtils::indentCode($inner, 1) . "\n}";

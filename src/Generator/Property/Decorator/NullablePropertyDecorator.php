@@ -39,16 +39,6 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface
         $this->inner->generateSubTypes($writer, $output);
     }
 
-    public function name(): string
-    {
-        return $this->inner->name();
-    }
-
-    public function key(): string
-    {
-        return $this->inner->key();
-    }
-
     public function schema(): array
     {
         return $this->inner->schema();
@@ -57,6 +47,41 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface
     public function description(): ?string
     {
         return $this->inner->description();
+    }
+
+    public function key(): string
+    {
+        return $this->inner->key();
+    }
+
+    public function name(): string
+    {
+        return $this->inner->name();
+    }
+
+    public function varName(): string
+    {
+        return $this->inner->varName();
+    }
+
+    public function methodName(): string
+    {
+        return $this->inner->methodName();
+    }
+
+    public function setName(string $name): void
+    {
+        $this->inner->setName($name);
+    }
+
+    public function setVarName(string $name): void
+    {
+        $this->inner->setVarName($name);
+    }
+
+    public function setMethodName(string $name): void
+    {
+        $this->inner->setMethodName($name);
     }
 
     public function isComplex(): bool
@@ -71,8 +96,7 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface
 
     public function allowsNull(): bool
     {
-        // We *always* allow null once decorated
-        return true;
+        return true; // that's the point of NullableProperty
     }
 
     public function convertInputToType(string $inputVarName, string $optionalsVarName): string
@@ -84,7 +108,7 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface
 
         $accessor = "\${$inputVarName}->{{$keyStr}}";
 
-        $mapped = $this->inner->generateInputMappingExpr($accessor);
+        $mapped = $this->inner->genMappingExpr($accessor);
 
         // we don't need null guards for string and null type properties
         $needsGuard = !($this->inner instanceof StringProperty || $this->inner instanceof NullProperty);
@@ -118,9 +142,9 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface
         return $ann;
     }
 
-    public function cloneProperty(): ?string
+    public function cloneAssignment(): ?string
     {
-        return $this->inner->cloneProperty();
+        return $this->inner->cloneAssignment();
     }
 
     /**
@@ -157,20 +181,20 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface
         return $hint;
     }
 
-    public function generateTypeAssertionExpr(string $expr): string
+    public function genTypeAssertionExpr(string $expr): string
     {
-        return "(({$expr}) === null) || ({$this->inner->generateTypeAssertionExpr($expr)})";
+        return "(({$expr}) === null) || ({$this->inner->genTypeAssertionExpr($expr)})";
     }
 
-    public function generateInputAssertionExpr(string $expr): string
+    public function genInputAssertionExpr(string $expr): string
     {
-        return "(({$expr}) === null) || ({$this->inner->generateInputAssertionExpr($expr)})";
+        return "(({$expr}) === null) || ({$this->inner->genInputAssertionExpr($expr)})";
     }
 
-    public function generateInputMappingExpr(string $expr, bool $asserted = false): string
+    public function genMappingExpr(string $expr, bool $asserted = false): string
     {
         // Let the inner property build its own mapping (casts, builder calls, …)
-        $inner = $this->inner->generateInputMappingExpr($expr, $asserted);
+        $inner = $this->inner->genMappingExpr($expr, $asserted);
 
         // If we're already inside an `isset()` check (asserted === true),
         // the value cannot be null → no extra guard needed.
@@ -182,19 +206,19 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface
         return "({$expr} !== null ? {$inner} : null)";
     }
 
-    public function generateOutputMappingExpr(string $expr): string
+    public function genOutputMappingExpr(string $expr): string
     {
-        $inner = $this->inner->generateOutputMappingExpr($expr);
+        $inner = $this->inner->genOutputMappingExpr($expr);
         return "({$expr} !== null) ? ({$inner}) : null";
     }
 
-    public function generateOutputMappingExprStdClass(string $expr): string
+    public function genOutputMappingExprStdClass(string $expr): string
     {
-        $inner = $this->inner->generateOutputMappingExprStdClass($expr);
+        $inner = $this->inner->genOutputMappingExprStdClass($expr);
         return "({$expr} !== null) ? ({$inner}) : null";
     }
 
-    public function generateCloneExpr(string $expr): string
+    public function cloneExpr(string $expr): string
     {
         return "isset({$expr}) ? (clone {$expr}) : null";
     }
@@ -202,10 +226,5 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface
     public function formatValue(mixed $value): PropertyValueGenerator
     {
         return $this->inner->formatValue($value);
-    }
-
-    public function setName(string $name): void
-    {
-        $this->inner->setName($name);
     }
 }
