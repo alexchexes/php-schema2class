@@ -11,7 +11,7 @@ class MyClass
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'properties' => [
             'foo' => [
                 'type' => [
@@ -78,6 +78,16 @@ class MyClass
                     'green',
                 ],
             ],
+            'optionalNullable' => [
+                'type' => [
+                    'string',
+                    null,
+                ],
+                'enum' => [
+                    'red',
+                    'green',
+                ],
+            ],
         ],
         'required' => [
             'foo',
@@ -88,6 +98,13 @@ class MyClass
             'nullable',
         ],
     ];
+
+    /**
+     * Map of optional nullable property names that were explicitly set
+     *
+     * @var array<string,true>
+     */
+    private array $_providedOptionals = [];
 
     /**
      * @var 1|2|'1'|'2'
@@ -120,6 +137,11 @@ class MyClass
     private ?MyClassNullable $nullable;
 
     /**
+     * @var MyClassOptionalNullable|null
+     */
+    private ?MyClassOptionalNullable $optionalNullable = null;
+
+    /**
      * @param 1|2|'1'|'2' $foo
      * @param 3|4|'3'|'4' $bar
      * @param 'red'|'amber'|'green'|'42'|42|42.5|false|null $baz
@@ -146,46 +168,6 @@ class MyClass
     }
 
     /**
-     * @return 3|4|'3'|'4'
-     */
-    public function getBar(): int|string
-    {
-        return $this->bar;
-    }
-
-    /**
-     * @return 'red'|'amber'|'green'|'42'|42|42.5|false|null
-     */
-    public function getBaz(): bool|int|float|string|null
-    {
-        return $this->baz;
-    }
-
-    /**
-     * @return int
-     */
-    public function getContradiction(): int
-    {
-        return $this->contradiction;
-    }
-
-    /**
-     * @return 1|2|'one'
-     */
-    public function getContradiction2(): int|string
-    {
-        return $this->contradiction2;
-    }
-
-    /**
-     * @return MyClassNullable|null
-     */
-    public function getNullable(): ?MyClassNullable
-    {
-        return $this->nullable ?? null;
-    }
-
-    /**
      * @param 1|2|'1'|'2' $foo
      * @return self
      * @param bool $validate
@@ -194,7 +176,7 @@ class MyClass
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($foo, self::$schema['properties']['foo']);
+            $validator->validate($foo, self::$_schema['properties']['foo']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -207,6 +189,14 @@ class MyClass
     }
 
     /**
+     * @return 3|4|'3'|'4'
+     */
+    public function getBar(): int|string
+    {
+        return $this->bar;
+    }
+
+    /**
      * @param 3|4|'3'|'4' $bar
      * @return self
      * @param bool $validate
@@ -215,7 +205,7 @@ class MyClass
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($bar, self::$schema['properties']['bar']);
+            $validator->validate($bar, self::$_schema['properties']['bar']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -228,6 +218,14 @@ class MyClass
     }
 
     /**
+     * @return 'red'|'amber'|'green'|'42'|42|42.5|false|null
+     */
+    public function getBaz(): bool|int|float|string|null
+    {
+        return $this->baz;
+    }
+
+    /**
      * @param 'red'|'amber'|'green'|'42'|42|42.5|false $baz
      * @return self
      * @param bool $validate
@@ -236,7 +234,7 @@ class MyClass
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($baz, self::$schema['properties']['baz']);
+            $validator->validate($baz, self::$_schema['properties']['baz']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -249,6 +247,14 @@ class MyClass
     }
 
     /**
+     * @return int
+     */
+    public function getContradiction(): int
+    {
+        return $this->contradiction;
+    }
+
+    /**
      * @param int $contradiction
      * @return self
      * @param bool $validate
@@ -257,7 +263,7 @@ class MyClass
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($contradiction, self::$schema['properties']['contradiction']);
+            $validator->validate($contradiction, self::$_schema['properties']['contradiction']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -270,6 +276,14 @@ class MyClass
     }
 
     /**
+     * @return 1|2|'one'
+     */
+    public function getContradiction2(): int|string
+    {
+        return $this->contradiction2;
+    }
+
+    /**
      * @param 1|2|'one' $contradiction2
      * @return self
      * @param bool $validate
@@ -278,7 +292,7 @@ class MyClass
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($contradiction2, self::$schema['properties']['contradiction2']);
+            $validator->validate($contradiction2, self::$_schema['properties']['contradiction2']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -288,6 +302,14 @@ class MyClass
         $clone->contradiction2 = $contradiction2;
 
         return $clone;
+    }
+
+    /**
+     * @return MyClassNullable|null
+     */
+    public function getNullable(): ?MyClassNullable
+    {
+        return $this->nullable ?? null;
     }
 
     /**
@@ -303,6 +325,39 @@ class MyClass
     }
 
     /**
+     * @return MyClassOptionalNullable|null
+     */
+    public function getOptionalNullable(): ?MyClassOptionalNullable
+    {
+        return $this->optionalNullable ?? null;
+    }
+
+    /**
+     * @param MyClassOptionalNullable $optionalNullable
+     * @return self
+     */
+    public function withOptionalNullable(MyClassOptionalNullable $optionalNullable): self
+    {
+        $clone = clone $this;
+        $clone->optionalNullable = $optionalNullable;
+        $clone->_providedOptionals['optionalNullable'] = true;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutOptionalNullable(): self
+    {
+        $clone = clone $this;
+        unset($clone->optionalNullable);
+        unset($clone->_providedOptionals['optionalNullable']);
+
+        return $clone;
+    }
+
+    /**
      * Builds a new instance from an input array
      *
      * @param array|object $input Input data
@@ -310,22 +365,28 @@ class MyClass
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): MyClass
+    public static function fromInput(array|object $input, bool $validate = true): MyClass
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
+        $__providedOptionals = [];
         $foo = $input->{'foo'};
         $bar = $input->{'bar'};
-        $baz = ($input->{'baz'} !== null) ? ($input->{'baz'}) : null;
-        $contradiction = (int)($input->{'contradiction'});
+        $baz = ($input->{'baz'} !== null ? $input->{'baz'} : null);
+        $contradiction = (int)$input->{'contradiction'};
         $contradiction2 = $input->{'contradiction2'};
-        $nullable = ($input->{'nullable'} !== null) ? (MyClassNullable::from($input->{'nullable'})) : null;
+        $nullable = ($input->{'nullable'} !== null ? MyClassNullable::from($input->{'nullable'}) : null);
+        $optionalNullable = property_exists($input, 'optionalNullable') ? ($input->{'optionalNullable'} !== null ? MyClassOptionalNullable::from($input->{'optionalNullable'}) : null) : null;
+        if (property_exists($input, 'optionalNullable')) {
+            $__providedOptionals['optionalNullable'] = true;
+        }
 
         $obj = new self($foo, $bar, $baz, $contradiction, $contradiction2, $nullable);
-
+        $obj->optionalNullable = $optionalNullable;
+        $obj->_providedOptionals = $__providedOptionals;
         return $obj;
     }
 
@@ -343,6 +404,9 @@ class MyClass
         $output['contradiction'] = $this->contradiction;
         $output['contradiction2'] = $this->contradiction2;
         $output['nullable'] = ($this->nullable)->value;
+        if (isset($this->optionalNullable) || array_key_exists('optionalNullable', $this->_providedOptionals)) {
+            $output['optionalNullable'] = ($this->optionalNullable !== null) ? (($this->optionalNullable)->value) : null;
+        }
 
         return $output;
     }
@@ -361,6 +425,9 @@ class MyClass
         $output->{'contradiction'} = $this->contradiction;
         $output->{'contradiction2'} = $this->contradiction2;
         $output->{'nullable'} = ($this->nullable)->value;
+        if (isset($this->optionalNullable) || array_key_exists('optionalNullable', $this->_providedOptionals)) {
+            $output->{'optionalNullable'} = ($this->optionalNullable !== null) ? (($this->optionalNullable)->value) : null;
+        }
 
         return $output;
     }
@@ -377,7 +444,7 @@ class MyClass
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {
@@ -387,5 +454,16 @@ class MyClass
         }
 
         return $validator->isValid();
+    }
+
+    /**
+     * Checks if an optional nullable property was explicitly set
+     *
+     * @param string $propertyName Property name to check (exactly as it appears in the schema)
+     * @return bool
+     */
+    public function isOptionalProvided(string $propertyName): bool
+    {
+        return array_key_exists($propertyName, $this->_providedOptionals);
     }
 }

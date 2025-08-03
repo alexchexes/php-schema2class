@@ -58,14 +58,6 @@ class UserPaymentAlternative2
     }
 
     /**
-     * @return string
-     */
-    public function getAccountNumber(): string
-    {
-        return $this->accountNumber;
-    }
-
-    /**
      * @param UserPaymentAlternative2Type $type
      * @return self
      */
@@ -75,6 +67,14 @@ class UserPaymentAlternative2
         $clone->type = $type;
 
         return $clone;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAccountNumber(): string
+    {
+        return $this->accountNumber;
     }
 
     /**
@@ -106,7 +106,7 @@ class UserPaymentAlternative2
      * @return UserPaymentAlternative2 Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): UserPaymentAlternative2
+    public static function fromInput(array|object $input, bool $validate = true): UserPaymentAlternative2
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {

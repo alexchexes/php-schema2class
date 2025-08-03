@@ -9,7 +9,7 @@ class Fio
      *
      * @var array
      */
-    private static $schema = [
+    private static $_schema = [
         'type' => 'object',
         'properties' => [
             'bar' => [
@@ -50,7 +50,7 @@ class Fio
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($bar, self::$schema['properties']['bar']);
+            $validator->validate($bar, self::$_schema['properties']['bar']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -83,11 +83,11 @@ class Fio
      * @return Fio Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true)
+    public static function fromInput($input, bool $validate = true)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($input)
+                'Input to fromInput must be array or object, got ' . gettype($input)
             );
         }
 
@@ -97,7 +97,7 @@ class Fio
         }
 
         $__providedOptionals = [];
-        $bar = property_exists($input, 'bar') ? $input->{'bar'} : null;
+        $bar = property_exists($input, 'bar') ? ($input->{'bar'} !== null ? $input->{'bar'} : null) : null;
         if (property_exists($input, 'bar')) {
             $__providedOptionals['bar'] = true;
         }
@@ -117,7 +117,7 @@ class Fio
     {
         $output = [];
         if (isset($this->bar) || array_key_exists('bar', $this->_providedOptionals)) {
-            $output['bar'] = $this->bar;
+            $output['bar'] = ($this->bar !== null) ? ($this->bar) : null;
         }
 
         return $output;
@@ -132,7 +132,7 @@ class Fio
     {
         $output = new \stdClass();
         if (isset($this->bar) || array_key_exists('bar', $this->_providedOptionals)) {
-            $output->{'bar'} = $this->bar;
+            $output->{'bar'} = ($this->bar !== null) ? ($this->bar) : null;
         }
 
         return $output;
@@ -150,7 +150,7 @@ class Fio
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function($e) {
@@ -168,7 +168,7 @@ class Fio
      * @param string $propertyName Property name to check (exactly as it appears in the schema)
      * @return bool
      */
-    public function isProvidedOptional(string $propertyName)
+    public function isOptionalProvided(string $propertyName)
     {
         return array_key_exists($propertyName, $this->_providedOptionals);
     }

@@ -11,7 +11,7 @@ class MyClass
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'properties' => [
             'foo' => [
                 'type' => [
@@ -67,7 +67,7 @@ class MyClass
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): MyClass
+    public static function fromInput(array|object $input, bool $validate = true): MyClass
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -76,7 +76,7 @@ class MyClass
 
         $foo = isset($input->{'foo'}) ? match (true) {
             is_string($input->{'foo'}) => $input->{'foo'},
-            is_int($input->{'foo'}) || is_float($input->{'foo'}) => str_contains((string)($input->{'foo'}), '.') ? (float)($input->{'foo'}) : (int)($input->{'foo'}),
+            is_int($input->{'foo'}) || is_float($input->{'foo'}) => (str_contains((string)$input->{'foo'}, '.') ? (float)$input->{'foo'} : (int)$input->{'foo'}),
             default => null,
         } : null;
 
@@ -133,7 +133,7 @@ class MyClass
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {

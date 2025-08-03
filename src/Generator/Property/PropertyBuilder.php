@@ -1,0 +1,446 @@
+<?php
+declare(strict_types=1);
+
+namespace Helmich\Schema2Class\Generator\Property;
+
+use Helmich\Schema2Class\Generator\GeneratorException;
+use Helmich\Schema2Class\Generator\GeneratorRequest;
+use Helmich\Schema2Class\Generator\Property\Type\BooleanProperty;
+use Helmich\Schema2Class\Generator\Property\Type\DateProperty;
+use Helmich\Schema2Class\Generator\Property\Type\InferredEnumProperty;
+use Helmich\Schema2Class\Generator\Property\Type\IntegerProperty;
+use Helmich\Schema2Class\Generator\Property\Type\IntersectProperty;
+use Helmich\Schema2Class\Generator\Property\Type\MixedProperty;
+use Helmich\Schema2Class\Generator\Property\Type\NestedObjectProperty;
+use Helmich\Schema2Class\Generator\Property\Type\NullProperty;
+use Helmich\Schema2Class\Generator\Property\Type\NumberProperty;
+use Helmich\Schema2Class\Generator\Property\Type\ObjectArrayProperty;
+use Helmich\Schema2Class\Generator\Property\Type\PrimitiveArrayProperty;
+use Helmich\Schema2Class\Generator\Property\Type\PrimitiveUnionEnumProperty;
+use Helmich\Schema2Class\Generator\Property\Type\PropertyInterface;
+use Helmich\Schema2Class\Generator\Property\Type\RawObjectProperty;
+use Helmich\Schema2Class\Generator\Property\Type\ReferenceArrayProperty;
+use Helmich\Schema2Class\Generator\Property\Type\ReferenceProperty;
+use Helmich\Schema2Class\Generator\Property\Type\StringEnumProperty;
+use Helmich\Schema2Class\Generator\Property\Type\StringProperty;
+use Helmich\Schema2Class\Generator\Property\Type\TypedArrayProperty;
+use Helmich\Schema2Class\Generator\Property\Type\UnionProperty;
+use Helmich\Schema2Class\Generator\Property\Decorator\NullablePropertyDecorator;
+use Helmich\Schema2Class\Generator\Property\Decorator\OptionalPropertyDecorator;
+
+/**
+ * Factory that creates the correct {@see PropertyInterface} implementation
+ * for a given schema fragment.
+ * 
+ * It inspects the schema fragment and chooses the most specific property class able to handle it.
+ * 
+ * Optional and nullable semantics are handled here as well.
+ * 
+ * Used by {@see Helmich\Schema2Class\Generator\Class\SchemaPropertyCollector}
+ * when turning a schema object `"properties"` section into a {@see Property\PropertyCollection}.
+ */
+class PropertyBuilder
+{
+    /** @var class-string[] */
+    private static array $propertyTypes = [
+        IntersectProperty::class,
+        UnionProperty::class,
+        DateProperty::class,
+        StringEnumProperty::class,
+        PrimitiveUnionEnumProperty::class,
+        InferredEnumProperty::class,
+        NullProperty::class,
+        StringProperty::class,
+        IntegerProperty::class,
+        NumberProperty::class,
+        NestedObjectProperty::class,
+        ObjectArrayProperty::class,
+        ReferenceArrayProperty::class,
+        TypedArrayProperty::class,
+        PrimitiveArrayProperty::class,
+        BooleanProperty::class,
+        ReferenceProperty::class,
+        RawObjectProperty::class,
+        MixedProperty::class,
+    ];
+
+    /**
+     * @param GeneratorRequest $req
+     * @param string           $name
+     * @param array            $definition
+     * @param bool             $isRequired
+     * @return PropertyInterface
+     * @throws GeneratorException
+     */
+    public static function buildPropertyFromSchema(
+        GeneratorRequest $req,
+        string $name,
+        array $definition,
+        bool $isRequired
+    ): PropertyInterface
+    {
+        self::testInvariants($definition);
+
+        $definition = self::sanitizeEnum($definition);
+        $definition = self::collapseSingleTypeArray($definition);
+
+        if ($property = self::tryInlineReference($req, $name, $definition, $isRequired)) {
+            return $property;
+        }
+
+        if ($property = self::tryPrimitiveWithNull($req, $name, $definition, $isRequired)) {
+            return $property;
+        }
+
+        if (PrimitiveUnionEnumProperty::canHandleSchema($definition)) {
+            $property = new PrimitiveUnionEnumProperty($name, $definition, $req);
+            return self::wrapProperty($property, $definition, $name, $isRequired);
+        }
+
+        if (InferredEnumProperty::canHandleSchema($definition)) {
+            $property = new InferredEnumProperty($name, $definition, $req);
+            return self::wrapProperty($property, $definition, $name, $isRequired);
+        }
+
+        if ($property = self::tryExpandMultiType($req, $name, $definition, $isRequired)) {
+            return $property;
+        }
+
+        if ($property = self::tryNullableUnion($req, $name, $definition, $isRequired)) {
+            return $property;
+        }
+
+        foreach (self::$propertyTypes as $propertyType) {
+            if ($propertyType::canHandleSchema($definition)) {
+                /** @var PropertyInterface $property */
+                $property = new $propertyType($name, $definition, $req);
+                return self::wrapProperty($property, $definition, $name, $isRequired);
+            }
+        }
+
+        throw new GeneratorException("cannot map type " . (string) json_encode($definition));
+    }
+
+    /** Collapse single-element type arrays (e.g. ["string"] -> "string") */
+    private static function collapseSingleTypeArray(array $definition): array
+    {
+        $defType = $definition['type'] ?? null;
+        if (is_array($defType) && count($defType) === 1) {
+            $definition['type'] = $defType[0];
+        }
+
+        return $definition;
+    }
+
+    /**
+     * Inline referenced schema definitions when they would not create a new class
+     */
+    private static function tryInlineReference(
+        GeneratorRequest $req,
+        string $name,
+        array $definition,
+        bool $isRequired
+    ): ?PropertyInterface {
+        if (!isset($definition['$ref'])) {
+            return null;
+        }
+
+        $refSchema = $req->lookupSchema($definition['$ref']);
+        if (empty($refSchema)) {
+            return null;
+        }
+
+        $shouldInline =
+            (isset($refSchema['oneOf']) || isset($refSchema['anyOf'])) ||
+            (!NestedObjectProperty::canHandleSchema($refSchema)
+                && !IntersectProperty::canHandleSchema($refSchema)
+                && !array_key_exists('enum', $refSchema));
+
+        if (!$shouldInline) {
+            return null;
+        }
+
+        foreach ([
+            'title',
+            'description',
+            'summary',
+            'default',
+            'deprecated',
+            'readOnly',
+            'writeOnly',
+            'examples',
+            'example',
+        ] as $k) {
+            if (array_key_exists($k, $definition)) {
+                $refSchema[$k] = $definition[$k];
+            }
+        }
+
+        return self::buildPropertyFromSchema($req, $name, $refSchema, $isRequired);
+    }
+
+    /** Handle ["null", "<primitive>"] optional primitives */
+    private static function tryPrimitiveWithNull(
+        GeneratorRequest $req,
+        string $name,
+        array $definition,
+        bool $isRequired
+    ): ?PropertyInterface {
+        if (!isset($definition['type']) || !is_array($definition['type']) || count($definition['type']) !== 2) {
+            return null;
+        }
+        if (!(in_array('null', $definition['type'], true) || in_array(null, $definition['type'], true))) {
+            return null;
+        }
+
+        [$a, $b] = $definition['type'];
+        $prim = $a === 'null' ? $b : $a;
+        $prop = match ($prim) {
+            'string'  => isset($definition['enum'])
+                ? new StringEnumProperty($name, $definition, $req)
+                : new StringProperty($name, $definition, $req),
+            'integer' => new IntegerProperty($name, $definition, $req),
+            'number'  => new NumberProperty($name, $definition, $req),
+            'boolean' => new BooleanProperty($name, $definition, $req),
+            default   => null,
+        };
+
+        if ($prop === null) {
+            return null;
+        }
+
+        if ($isRequired) {
+            return new NullablePropertyDecorator($name, $prop);
+        }
+
+        $decorator = new OptionalPropertyDecorator($name, $prop);
+        if (self::definitionAllowsNull($definition) || $prop->allowsNull()) {
+            $decorator->markOptionalNullable();
+        }
+
+        return $decorator;
+    }
+
+    /**
+     * Expand multi-type definitions like ["string", "object"] into an "anyOf" union
+     */
+    private static function tryExpandMultiType(
+        GeneratorRequest $req,
+        string $name,
+        array $definition,
+        bool $isRequired
+    ): ?PropertyInterface {
+        if (!isset($definition['type']) || !is_array($definition['type']) || count($definition['type']) <= 1) {
+            return null;
+        }
+
+        $types      = $definition['type'];
+        $subSchemas = [];
+        foreach ($types as $t) {
+            $sub       = $definition;
+            $sub['type'] = $t;
+            if ($t !== 'object') {
+                unset($sub['properties'], $sub['required'], $sub['additionalProperties']);
+            }
+            $subSchemas[] = $sub;
+        }
+
+        $unionDef = $definition;
+        unset($unionDef['type']);
+        $unionDef['anyOf'] = $subSchemas;
+
+        return self::buildPropertyFromSchema($req, $name, $unionDef, $isRequired);
+    }
+
+    /** Strip out null arms from anyOf/oneOf definitions */
+    private static function tryNullableUnion(
+        GeneratorRequest $req,
+        string $name,
+        array $definition,
+        bool $isRequired
+    ): ?PropertyInterface {
+        $unionKey = isset($definition['anyOf']) ? 'anyOf' : (isset($definition['oneOf']) ? 'oneOf' : null);
+        if (!$unionKey) {
+            return null;
+        }
+
+        $subs   = $definition[$unionKey];
+        $nullIx = null;
+        foreach ($subs as $i => $sub) {
+            if (isset($sub['type']) && $sub['type'] === 'null') {
+                $nullIx = $i;
+                break;
+            }
+        }
+
+        if ($nullIx === null || count($subs) <= 1) {
+            return null;
+        }
+
+        $otherArms = $subs;
+        array_splice($otherArms, $nullIx, 1);
+
+        if (count($otherArms) === 1) {
+            $singleSchema = $otherArms[0];
+            foreach (['description', 'title', 'default', 'deprecated'] as $k) {
+                if (isset($definition[$k]) && !isset($singleSchema[$k])) {
+                    $singleSchema[$k] = $definition[$k];
+                }
+            }
+            $inner = self::buildPropertyFromSchema($req, $name, $singleSchema, $isRequired);
+            return $isRequired
+                ? new NullablePropertyDecorator($name, $inner)
+                : self::wrapProperty($inner, $definition, $name, false);
+        }
+
+        $cleanDef            = $definition;
+        $cleanDef[$unionKey] = $otherArms;
+        $unionProp           = new UnionProperty($name, $cleanDef, $req);
+
+        return $isRequired
+            ? new NullablePropertyDecorator($name, $unionProp)
+            : self::wrapProperty($unionProp, $definition, $name, false);
+    }
+
+    /** Apply optional/nullable decorators around a property */
+    private static function wrapProperty(
+        PropertyInterface $property,
+        array $definition,
+        string $name,
+        bool $isRequired
+    ): PropertyInterface {
+        if (!$isRequired) {
+            $decorator = new OptionalPropertyDecorator($name, $property);
+            if (self::definitionAllowsNull($definition) || $property->allowsNull()) {
+                $decorator->markOptionalNullable();
+            }
+            return $decorator;
+        }
+
+        return $property->allowsNull() ? new NullablePropertyDecorator($name, $property) : $property;
+    }
+
+    private static function testInvariants(array $definition): void
+    {
+        $hasAdditionalProperties =
+            isset($definition["additionalProperties"])
+            && is_array($definition["additionalProperties"])
+            && count($definition["additionalProperties"]) > 0;
+
+        $hasProperties =
+            isset($definition["properties"])
+            && is_array($definition["properties"])
+            && count($definition["properties"]) > 0;
+
+        if ($hasProperties && $hasAdditionalProperties) {
+            throw new GeneratorException("using 'properties' and 'additionalProperties' in the same schema is currently not supported.");
+        }
+    }
+
+    /**
+     * Remove enum values that do not match the declared type and drop
+     * type entries that are not represented in the remaining enum.
+     */
+    private static function sanitizeEnum(array $definition): array
+    {
+        if (!isset($definition['enum']) || !isset($definition['type'])) {
+            return $definition;
+        }
+
+        $originalIsArray = is_array($definition['type']);
+        $types = $originalIsArray ? $definition['type'] : [$definition['type']];
+        $types = array_map(static function ($t) {
+            return $t === 'int' ? 'integer' : ($t === null ? 'null' : $t);
+        }, $types);
+
+        $allowed = [];
+        foreach ($definition['enum'] as $v) {
+            /** @var  'null'|'string'|'integer'|'number'|'boolean'|null */
+            $t = match (true) {
+                $v === null      => 'null',
+                is_string($v)    => 'string',
+                is_int($v)       => 'integer',
+                is_float($v)     => 'number',
+                is_bool($v)      => 'boolean',
+                default          => null,
+            };
+            if ($t === null) {
+                continue;
+            }
+            if (in_array($t, $types, true) || ($t === 'integer' && in_array('number', $types, true))) {
+                $allowed[] = $v;
+            }
+        }
+
+        $definition['enum'] = $allowed;
+
+        $foundTypes = [];
+        foreach ($allowed as $v) {
+            $t = match (true) {
+                $v === null      => 'null',
+                is_string($v)    => 'string',
+                is_int($v)       => 'integer',
+                is_float($v)     => 'number',
+                is_bool($v)      => 'boolean',
+                default          => null,
+            };
+            if ($t !== null) {
+                $foundTypes[$t] = true;
+            }
+        }
+
+        $newTypes = array_values(array_filter($types, static function ($t) use ($foundTypes) {
+            if ($t === 'null') {
+                return true; // keep null if declared
+            }
+            if ($t === 'number') {
+                return isset($foundTypes['number']) || isset($foundTypes['integer']);
+            }
+            return isset($foundTypes[$t]);
+        }));
+
+        if (count($newTypes) === 1 && !$originalIsArray) {
+            $definition['type'] = $newTypes[0];
+        } else {
+            $definition['type'] = $newTypes;
+        }
+
+        if (is_array($definition['type']) && count($definition['type']) === 1 && !$originalIsArray) {
+            $definition['type'] = $definition['type'][0];
+        }
+
+        // TODO: Do we need this?
+        if (is_array($definition['type']) && count($definition['type']) > 1) {
+            $definition['type'] = array_values($definition['type']);
+        }
+
+        return $definition;
+    }
+
+    private static function definitionAllowsNull(array $definition): bool
+    {
+        if (isset($definition['enum']) && in_array(null, $definition['enum'], true)) {
+            return true;
+        }
+
+        $type = $definition['type'] ?? null;
+        if ($type === 'null') {
+            return true;
+        }
+        if (is_array($type) && in_array('null', $type, true)) {
+            return true;
+        }
+
+        foreach (['anyOf', 'oneOf'] as $k) {
+            if (isset($definition[$k]) && is_array($definition[$k])) {
+                foreach ($definition[$k] as $sub) {
+                    if (($sub['type'] ?? null) === 'null') {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+}

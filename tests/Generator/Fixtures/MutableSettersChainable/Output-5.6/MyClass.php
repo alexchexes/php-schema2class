@@ -9,7 +9,7 @@ class MyClass
      *
      * @var array
      */
-    private static $schema = [
+    private static $_schema = [
         'required' => [
             'bar',
         ],
@@ -78,22 +78,6 @@ class MyClass
     }
 
     /**
-     * @return Baz
-     */
-    public function getBar()
-    {
-        return $this->bar;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getOpt()
-    {
-        return $this->opt;
-    }
-
-    /**
      * @param string $foo
      * @return self
      * @param bool $validate
@@ -102,7 +86,7 @@ class MyClass
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($foo, self::$schema['properties']['foo']);
+            $validator->validate($foo, self::$_schema['properties']['foo']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -111,6 +95,14 @@ class MyClass
         $this->foo = $foo;
 
         return $this;
+    }
+
+    /**
+     * @return Baz
+     */
+    public function getBar()
+    {
+        return $this->bar;
     }
 
     /**
@@ -125,6 +117,14 @@ class MyClass
     }
 
     /**
+     * @return string|null
+     */
+    public function getOpt()
+    {
+        return $this->opt;
+    }
+
+    /**
      * @param string $opt
      * @return self
      * @param bool $validate
@@ -133,7 +133,7 @@ class MyClass
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($opt, self::$schema['properties']['opt']);
+            $validator->validate($opt, self::$_schema['properties']['opt']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -164,11 +164,11 @@ class MyClass
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true)
+    public static function fromInput($input, bool $validate = true)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($input)
+                'Input to fromInput must be array or object, got ' . gettype($input)
             );
         }
 
@@ -179,8 +179,8 @@ class MyClass
 
         $__providedOptionals = [];
         $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
-        $bar = Baz::buildFromInput($input->{'bar'}, $validate);
-        $opt = property_exists($input, 'opt') ? $input->{'opt'} : null;
+        $bar = Baz::fromInput($input->{'bar'}, $validate);
+        $opt = property_exists($input, 'opt') ? ($input->{'opt'} !== null ? $input->{'opt'} : null) : null;
         if (property_exists($input, 'opt')) {
             $__providedOptionals['opt'] = true;
         }
@@ -205,7 +205,7 @@ class MyClass
         }
         $output['bar'] = $this->bar->toArray();
         if (isset($this->opt) || array_key_exists('opt', $this->_providedOptionals)) {
-            $output['opt'] = $this->opt;
+            $output['opt'] = ($this->opt !== null) ? ($this->opt) : null;
         }
 
         return $output;
@@ -224,7 +224,7 @@ class MyClass
         }
         $output->{'bar'} = $this->bar->toStdClass();
         if (isset($this->opt) || array_key_exists('opt', $this->_providedOptionals)) {
-            $output->{'opt'} = $this->opt;
+            $output->{'opt'} = ($this->opt !== null) ? ($this->opt) : null;
         }
 
         return $output;
@@ -242,7 +242,7 @@ class MyClass
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function($e) {
@@ -260,7 +260,7 @@ class MyClass
      * @param string $propertyName Property name to check (exactly as it appears in the schema)
      * @return bool
      */
-    public function isProvidedOptional(string $propertyName)
+    public function isOptionalProvided(string $propertyName)
     {
         return array_key_exists($propertyName, $this->_providedOptionals);
     }

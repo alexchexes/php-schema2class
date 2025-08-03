@@ -11,7 +11,7 @@ class MyGenericStringNumberField
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'additionalProperties' => false,
         'properties' => [
             'field' => [
@@ -85,14 +85,14 @@ class MyGenericStringNumberField
      * @return MyGenericStringNumberField Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): MyGenericStringNumberField
+    public static function fromInput(array|object $input, bool $validate = true): MyGenericStringNumberField
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $field = isset($input->{'field'}) ? MyGenericStringNumber::buildFromInput($input->{'field'}, $validate) : null;
+        $field = isset($input->{'field'}) ? MyGenericStringNumber::fromInput($input->{'field'}, $validate) : null;
 
         $obj = new self();
         $obj->field = $field;
@@ -141,7 +141,7 @@ class MyGenericStringNumberField
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {

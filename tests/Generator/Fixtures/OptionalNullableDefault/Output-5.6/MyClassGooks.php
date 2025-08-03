@@ -12,7 +12,7 @@ class MyClassGooks
      *
      * @var array
      */
-    private static $schema = [
+    private static $_schema = [
         'type' => 'object',
         'description' => 'optional, nullable, with default, object, and default is empty object',
         'properties' => [
@@ -47,14 +47,6 @@ class MyClassGooks
     }
 
     /**
-     * @return int|float|null
-     */
-    public function getB()
-    {
-        return $this->b;
-    }
-
-    /**
      * @param string $a
      * @return self
      * @param bool $validate
@@ -63,7 +55,7 @@ class MyClassGooks
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($a, self::$schema['properties']['a']);
+            $validator->validate($a, self::$_schema['properties']['a']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -87,6 +79,14 @@ class MyClassGooks
     }
 
     /**
+     * @return int|float|null
+     */
+    public function getB()
+    {
+        return $this->b;
+    }
+
+    /**
      * @param int|float $b
      * @return self
      * @param bool $validate
@@ -95,7 +95,7 @@ class MyClassGooks
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($b, self::$schema['properties']['b']);
+            $validator->validate($b, self::$_schema['properties']['b']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -126,11 +126,11 @@ class MyClassGooks
      * @return MyClassGooks Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true)
+    public static function fromInput($input, bool $validate = true)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($input)
+                'Input to fromInput must be array or object, got ' . gettype($input)
             );
         }
 
@@ -196,7 +196,7 @@ class MyClassGooks
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function($e) {

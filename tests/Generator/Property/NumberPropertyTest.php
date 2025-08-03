@@ -1,16 +1,15 @@
 <?php
-declare(strict_types = 1);
+declare(strict_types=1);
 
-namespace Helmich\Schema2Class\Generator\Property;
+namespace Helmich\Schema2Class\Generator\Property\Type;
 
 
 use Helmich\Schema2Class\Generator\GeneratorRequest;
-use Helmich\Schema2Class\Generator\SchemaToClass;
+use Helmich\Schema2Class\Writer\DebugWriter;
+use Symfony\Component\Console\Output\NullOutput;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
 use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
-use Prophecy\PhpUnit\ProphecyTrait;
 use function PHPUnit\Framework\assertFalse;
 use function PHPUnit\Framework\assertNull;
 use function PHPUnit\Framework\assertSame;
@@ -18,7 +17,6 @@ use function PHPUnit\Framework\assertTrue;
 
 class NumberPropertyTest extends TestCase
 {
-    use ProphecyTrait;
 
     private NumberProperty $property;
 
@@ -51,10 +49,10 @@ class NumberPropertyTest extends TestCase
 
     public function testConvertInputToType()
     {
-        $result = $this->property->convertInputToType('variable');
+        $result = $this->property->convertInputToType('variable', 'providedOptionals');
 
         $expected = <<<'EOCODE'
-$myPropertyName = str_contains((string)($variable['myPropertyName']), '.') ? (float)($variable['myPropertyName']) : (int)($variable['myPropertyName']);
+$myPropertyName = (str_contains((string)$variable->{'myPropertyName'}, '.') ? (float)$variable->{'myPropertyName'} : (int)$variable->{'myPropertyName'});
 EOCODE;
 
         assertSame($expected, $result);
@@ -62,10 +60,10 @@ EOCODE;
 
     public function testConvertTypeToArray()
     {
-        $result = $this->property->convertTypeToArray('variable');
+        $result = $this->property->convertTypeToArray();
 
         $expected = <<<'EOCODE'
-$variable['myPropertyName'] = $this->myPropertyName;
+$output['myPropertyName'] = $this->myPropertyName;
 EOCODE;
 
         assertSame($expected, $result);
@@ -85,11 +83,11 @@ EOCODE;
 
     public function testGenerateSubTypesWithSimpleArray()
     {
-        $schemaToClass = $this->prophesize(SchemaToClass::class);
+        $writer = new DebugWriter(new NullOutput());
 
-        $this->property->generateSubTypes($schemaToClass->reveal());
+        $this->property->generateSubTypes($writer, new NullOutput());
 
-        $schemaToClass->schemaToClass(Argument::any(), Argument::any(), Argument::any())->shouldNotHaveBeenCalled();
+        $this->assertCount(0, $writer->getWrittenFiles());
     }
 
 }

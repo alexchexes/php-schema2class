@@ -11,7 +11,7 @@ class MyClass
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'type' => 'object',
         'required' => [
             'foo',
@@ -392,108 +392,6 @@ class MyClass
     }
 
     /**
-     * @return string
-     */
-    public function getBar(): string
-    {
-        return $this->bar;
-    }
-
-    /**
-     * @return MyClassBaz|null
-     */
-    public function getBaz(): ?MyClassBaz
-    {
-        return $this->baz ?? null;
-    }
-
-    /**
-     * optional nullable object with default value that is empty object
-     *
-     * @return MyClassQuxObj|null
-     */
-    public function getQuxObj(): ?MyClassQuxObj
-    {
-        return $this->quxObj ?? null;
-    }
-
-    /**
-     * optional nullable object with default empty object value, and with nested default for its property
-     *
-     * @return MyClassQuxObjNest|null
-     */
-    public function getQuxObjNest(): ?MyClassQuxObjNest
-    {
-        return $this->quxObjNest ?? null;
-    }
-
-    /**
-     * optional nullable array with default value that is empty array
-     *
-     * @return string[]|null
-     */
-    public function getThudArray(): ?array
-    {
-        return $this->thudArray ?? null;
-    }
-
-    /**
-     * @return string|ObjDef|string[]|null
-     */
-    public function getXyyz(): ObjDef|string|array|null
-    {
-        return $this->xyyz;
-    }
-
-    /**
-     * @return string|string[]|ObjDef|null
-     */
-    public function getBuux(): ObjDef|string|array|null
-    {
-        return $this->buux;
-    }
-
-    /**
-     * @return string|string[]|ObjDef|null
-     */
-    public function getBoic(): ObjDef|string|array|null
-    {
-        return $this->boic;
-    }
-
-    /**
-     * @return string|NumericKeysObj|null
-     */
-    public function getPoox(): NumericKeysObj|string|null
-    {
-        return $this->poox;
-    }
-
-    /**
-     * @return array|object|null
-     */
-    public function getArrObjUnion(): array|object|null
-    {
-        return $this->arrObjUnion;
-    }
-
-    /**
-     * @return array|object|null
-     */
-    public function getObjArrUnion(): array|object|null
-    {
-        return $this->objArrUnion;
-    }
-
-    /**
-     * @return MyClassNumKeysDefaults|null
-     */
-    public function getNumKeysDefaults(): ?MyClassNumKeysDefaults
-    {
-        return $this->numKeysDefaults ?? null;
-    }
-
-    /**
      * @param string $foo
      * @return self
      * @param bool $validate
@@ -502,7 +400,7 @@ class MyClass
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($foo, self::$schema['properties']['foo']);
+            $validator->validate($foo, self::$_schema['properties']['foo']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -515,6 +413,14 @@ class MyClass
     }
 
     /**
+     * @return string
+     */
+    public function getBar(): string
+    {
+        return $this->bar;
+    }
+
+    /**
      * @param string $bar
      * @return self
      * @param bool $validate
@@ -523,7 +429,7 @@ class MyClass
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($bar, self::$schema['properties']['bar']);
+            $validator->validate($bar, self::$_schema['properties']['bar']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -533,6 +439,14 @@ class MyClass
         $clone->bar = $bar;
 
         return $clone;
+    }
+
+    /**
+     * @return MyClassBaz|null
+     */
+    public function getBaz(): ?MyClassBaz
+    {
+        return $this->baz ?? null;
     }
 
     /**
@@ -556,6 +470,16 @@ class MyClass
         unset($clone->baz);
 
         return $clone;
+    }
+
+    /**
+     * optional nullable object with default value that is empty object
+     *
+     * @return MyClassQuxObj|null
+     */
+    public function getQuxObj(): ?MyClassQuxObj
+    {
+        return $this->quxObj ?? null;
     }
 
     /**
@@ -584,6 +508,16 @@ class MyClass
     }
 
     /**
+     * optional nullable object with default empty object value, and with nested default for its property
+     *
+     * @return MyClassQuxObjNest|null
+     */
+    public function getQuxObjNest(): ?MyClassQuxObjNest
+    {
+        return $this->quxObjNest ?? null;
+    }
+
+    /**
      * @param MyClassQuxObjNest $quxObjNest
      * @return self
      */
@@ -609,6 +543,16 @@ class MyClass
     }
 
     /**
+     * optional nullable array with default value that is empty array
+     *
+     * @return string[]|null
+     */
+    public function getThudArray(): ?array
+    {
+        return $this->thudArray ?? null;
+    }
+
+    /**
      * @param string[] $thudArray
      * @return self
      * @param bool $validate
@@ -617,7 +561,7 @@ class MyClass
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($thudArray, self::$schema['properties']['thudArray']);
+            $validator->validate($thudArray, self::$_schema['properties']['thudArray']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -640,6 +584,14 @@ class MyClass
         unset($clone->_providedOptionals['thudArray']);
 
         return $clone;
+    }
+
+    /**
+     * @return string|ObjDef|string[]|null
+     */
+    public function getXyyz(): ObjDef|string|array|null
+    {
+        return $this->xyyz;
     }
 
     /**
@@ -666,6 +618,14 @@ class MyClass
     }
 
     /**
+     * @return string|string[]|ObjDef|null
+     */
+    public function getBuux(): ObjDef|string|array|null
+    {
+        return $this->buux;
+    }
+
+    /**
      * @param string|string[]|ObjDef $buux
      * @return self
      */
@@ -686,6 +646,14 @@ class MyClass
         unset($clone->buux);
 
         return $clone;
+    }
+
+    /**
+     * @return string|string[]|ObjDef|null
+     */
+    public function getBoic(): ObjDef|string|array|null
+    {
+        return $this->boic;
     }
 
     /**
@@ -712,6 +680,14 @@ class MyClass
     }
 
     /**
+     * @return string|NumericKeysObj|null
+     */
+    public function getPoox(): NumericKeysObj|string|null
+    {
+        return $this->poox;
+    }
+
+    /**
      * @param string|NumericKeysObj $poox
      * @return self
      */
@@ -732,6 +708,14 @@ class MyClass
         unset($clone->poox);
 
         return $clone;
+    }
+
+    /**
+     * @return array|object|null
+     */
+    public function getArrObjUnion(): array|object|null
+    {
+        return $this->arrObjUnion;
     }
 
     /**
@@ -758,6 +742,14 @@ class MyClass
     }
 
     /**
+     * @return array|object|null
+     */
+    public function getObjArrUnion(): array|object|null
+    {
+        return $this->objArrUnion;
+    }
+
+    /**
      * @param array|object $objArrUnion
      * @return self
      */
@@ -778,6 +770,14 @@ class MyClass
         unset($clone->objArrUnion);
 
         return $clone;
+    }
+
+    /**
+     * @return MyClassNumKeysDefaults|null
+     */
+    public function getNumKeysDefaults(): ?MyClassNumKeysDefaults
+    {
+        return $this->numKeysDefaults ?? null;
     }
 
     /**
@@ -812,7 +812,7 @@ class MyClass
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true, bool $materializeDefaults = false): MyClass
+    public static function fromInput(array|object $input, bool $validate = true, bool $materializeDefaults = false): MyClass
     {
         $input = is_array($input)
             ? \JsonSchema\Validator::arrayToObjectRecursive($input)
@@ -821,9 +821,9 @@ class MyClass
         if ($materializeDefaults) {
             foreach (self::$_defaults as $__k => $__v) {
                 if (!property_exists($input, (string) $__k)) {
-                   $input->{$__k} = ($__v['type'] ?? null) === 'object'
-                       ? \JsonSchema\Validator::arrayToObjectRecursive($__v['default'])
-                       : $__v['default'];
+                    $input->{$__k} = ($__v['type'] ?? null) === 'object'
+                        ? \JsonSchema\Validator::arrayToObjectRecursive($__v['default'])
+                        : $__v['default'];
                 }
             }
         }
@@ -835,40 +835,40 @@ class MyClass
         $__providedOptionals = [];
         $foo = $input->{'foo'};
         $bar = $input->{'bar'};
-        $baz = isset($input->{'baz'}) ? MyClassBaz::buildFromInput($input->{'baz'}, $validate, $materializeDefaults) : null;
-        $quxObj = property_exists($input, 'quxObj') ? MyClassQuxObj::buildFromInput($input->{'quxObj'}, $validate, $materializeDefaults) : null;
+        $baz = isset($input->{'baz'}) ? MyClassBaz::fromInput($input->{'baz'}, $validate, $materializeDefaults) : null;
+        $quxObj = property_exists($input, 'quxObj') ? ($input->{'quxObj'} !== null ? MyClassQuxObj::fromInput($input->{'quxObj'}, $validate, $materializeDefaults) : null) : null;
         if (property_exists($input, 'quxObj')) {
             $__providedOptionals['quxObj'] = true;
         }
-        $quxObjNest = property_exists($input, 'quxObjNest') ? MyClassQuxObjNest::buildFromInput($input->{'quxObjNest'}, $validate, $materializeDefaults) : null;
+        $quxObjNest = property_exists($input, 'quxObjNest') ? ($input->{'quxObjNest'} !== null ? MyClassQuxObjNest::fromInput($input->{'quxObjNest'}, $validate, $materializeDefaults) : null) : null;
         if (property_exists($input, 'quxObjNest')) {
             $__providedOptionals['quxObjNest'] = true;
         }
-        $thudArray = property_exists($input, 'thudArray') ? $input->{'thudArray'} : null;
+        $thudArray = property_exists($input, 'thudArray') ? ($input->{'thudArray'} !== null ? $input->{'thudArray'} : null) : null;
         if (property_exists($input, 'thudArray')) {
             $__providedOptionals['thudArray'] = true;
         }
         $xyyz = isset($input->{'xyyz'}) ? match (true) {
             is_string($input->{'xyyz'}),
             is_array($input->{'xyyz'}) => $input->{'xyyz'},
-            ObjDef::validateInput($input->{'xyyz'}, true) => ObjDef::buildFromInput($input->{'xyyz'}, $validate, $materializeDefaults),
+            ObjDef::validateInput($input->{'xyyz'}, true) => ObjDef::fromInput($input->{'xyyz'}, $validate, $materializeDefaults),
             default => null,
         } : null;
         $buux = isset($input->{'buux'}) ? match (true) {
             is_string($input->{'buux'}),
             is_array($input->{'buux'}) => $input->{'buux'},
-            ObjDef::validateInput($input->{'buux'}, true) => ObjDef::buildFromInput($input->{'buux'}, $validate, $materializeDefaults),
+            ObjDef::validateInput($input->{'buux'}, true) => ObjDef::fromInput($input->{'buux'}, $validate, $materializeDefaults),
             default => null,
         } : null;
         $boic = isset($input->{'boic'}) ? match (true) {
             is_string($input->{'boic'}),
             is_array($input->{'boic'}) => $input->{'boic'},
-            ObjDef::validateInput($input->{'boic'}, true) => ObjDef::buildFromInput($input->{'boic'}, $validate, $materializeDefaults),
+            ObjDef::validateInput($input->{'boic'}, true) => ObjDef::fromInput($input->{'boic'}, $validate, $materializeDefaults),
             default => null,
         } : null;
         $poox = isset($input->{'poox'}) ? match (true) {
             is_string($input->{'poox'}) => $input->{'poox'},
-            NumericKeysObj::validateInput($input->{'poox'}, true) => NumericKeysObj::buildFromInput($input->{'poox'}, $validate, $materializeDefaults),
+            NumericKeysObj::validateInput($input->{'poox'}, true) => NumericKeysObj::fromInput($input->{'poox'}, $validate, $materializeDefaults),
             default => null,
         } : null;
         $arrObjUnion = isset($input->{'arrObjUnion'}) ? match (true) {
@@ -881,7 +881,7 @@ class MyClass
             is_array($input->{'objArrUnion'}) || is_object($input->{'objArrUnion'}) => $input->{'objArrUnion'},
             default => null,
         } : null;
-        $numKeysDefaults = isset($input->{'numKeysDefaults'}) ? MyClassNumKeysDefaults::buildFromInput($input->{'numKeysDefaults'}, $validate, $materializeDefaults) : null;
+        $numKeysDefaults = isset($input->{'numKeysDefaults'}) ? MyClassNumKeysDefaults::fromInput($input->{'numKeysDefaults'}, $validate, $materializeDefaults) : null;
 
         $obj = new self($foo, $bar);
         $obj->baz = $baz;
@@ -914,19 +914,13 @@ class MyClass
             $output['baz'] = ($this->baz)->toArray($includeDefaults);
         }
         if (isset($this->quxObj) || array_key_exists('quxObj', $this->_providedOptionals)) {
-            if (isset($this->quxObj)) {
-                $output['quxObj'] = ($this->quxObj)->toArray($includeDefaults);
-            }
+            $output['quxObj'] = ($this->quxObj !== null) ? (($this->quxObj !== null) ? (($this->quxObj)->toArray($includeDefaults)) : null) : null;
         }
         if (isset($this->quxObjNest) || array_key_exists('quxObjNest', $this->_providedOptionals)) {
-            if (isset($this->quxObjNest)) {
-                $output['quxObjNest'] = ($this->quxObjNest)->toArray($includeDefaults);
-            }
+            $output['quxObjNest'] = ($this->quxObjNest !== null) ? (($this->quxObjNest !== null) ? (($this->quxObjNest)->toArray($includeDefaults)) : null) : null;
         }
         if (isset($this->thudArray) || array_key_exists('thudArray', $this->_providedOptionals)) {
-            if (isset($this->thudArray)) {
-                $output['thudArray'] = $this->thudArray;
-            }
+            $output['thudArray'] = ($this->thudArray !== null) ? (($this->thudArray !== null) ? ($this->thudArray) : null) : null;
         }
         if (isset($this->xyyz)) {
             $output['xyyz'] = match (true) {
@@ -997,19 +991,13 @@ class MyClass
             $output->{'baz'} = ($this->baz)->toStdClass($includeDefaults);
         }
         if (isset($this->quxObj) || array_key_exists('quxObj', $this->_providedOptionals)) {
-            if (isset($this->quxObj)) {
-                $output->{'quxObj'} = ($this->quxObj)->toStdClass($includeDefaults);
-            }
+            $output->{'quxObj'} = ($this->quxObj !== null) ? (($this->quxObj !== null) ? (($this->quxObj)->toStdClass($includeDefaults)) : null) : null;
         }
         if (isset($this->quxObjNest) || array_key_exists('quxObjNest', $this->_providedOptionals)) {
-            if (isset($this->quxObjNest)) {
-                $output->{'quxObjNest'} = ($this->quxObjNest)->toStdClass($includeDefaults);
-            }
+            $output->{'quxObjNest'} = ($this->quxObjNest !== null) ? (($this->quxObjNest !== null) ? (($this->quxObjNest)->toStdClass($includeDefaults)) : null) : null;
         }
         if (isset($this->thudArray) || array_key_exists('thudArray', $this->_providedOptionals)) {
-            if (isset($this->thudArray)) {
-                $output->{'thudArray'} = $this->thudArray;
-            }
+            $output->{'thudArray'} = ($this->thudArray !== null) ? (($this->thudArray !== null) ? ($this->thudArray) : null) : null;
         }
         if (isset($this->xyyz)) {
             $output->{'xyyz'} = match (true) {
@@ -1079,7 +1067,7 @@ class MyClass
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {
@@ -1156,7 +1144,7 @@ class MyClass
      * @param string $propertyName Property name to check (exactly as it appears in the schema)
      * @return bool
      */
-    public function isProvidedOptional(string $propertyName): bool
+    public function isOptionalProvided(string $propertyName): bool
     {
         return array_key_exists($propertyName, $this->_providedOptionals);
     }

@@ -11,7 +11,7 @@ class Foo
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'type' => 'object',
         'properties' => [
             'floatEnum' => [
@@ -103,38 +103,6 @@ class Foo
     }
 
     /**
-     * @return 0|1.5|2.5|3.5|null
-     */
-    public function getFloatEnumRef()
-    {
-        return $this->floatEnumRef;
-    }
-
-    /**
-     * @return false|null
-     */
-    public function getBoolEnum(): ?bool
-    {
-        return $this->boolEnum ?? null;
-    }
-
-    /**
-     * @return false|null
-     */
-    public function getBoolEnumRef(): ?bool
-    {
-        return $this->boolEnumRef ?? null;
-    }
-
-    /**
-     * @return false
-     */
-    public function getRequiredBoolEnumRef(): bool
-    {
-        return $this->requiredBoolEnumRef;
-    }
-
-    /**
      * @param 0|1.5|2.5|3.5 $floatEnum
      * @return self
      * @param bool $validate
@@ -143,7 +111,7 @@ class Foo
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($floatEnum, self::$schema['properties']['floatEnum']);
+            $validator->validate($floatEnum, self::$_schema['properties']['floatEnum']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -167,6 +135,14 @@ class Foo
     }
 
     /**
+     * @return 0|1.5|2.5|3.5|null
+     */
+    public function getFloatEnumRef()
+    {
+        return $this->floatEnumRef;
+    }
+
+    /**
      * @param 0|1.5|2.5|3.5 $floatEnumRef
      * @return self
      * @param bool $validate
@@ -175,7 +151,7 @@ class Foo
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($floatEnumRef, self::$schema['properties']['floatEnumRef']);
+            $validator->validate($floatEnumRef, self::$_schema['properties']['floatEnumRef']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -199,6 +175,14 @@ class Foo
     }
 
     /**
+     * @return false|null
+     */
+    public function getBoolEnum(): ?bool
+    {
+        return $this->boolEnum ?? null;
+    }
+
+    /**
      * @param false $boolEnum
      * @return self
      * @param bool $validate
@@ -207,7 +191,7 @@ class Foo
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($boolEnum, self::$schema['properties']['boolEnum']);
+            $validator->validate($boolEnum, self::$_schema['properties']['boolEnum']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -231,6 +215,14 @@ class Foo
     }
 
     /**
+     * @return false|null
+     */
+    public function getBoolEnumRef(): ?bool
+    {
+        return $this->boolEnumRef ?? null;
+    }
+
+    /**
      * @param false $boolEnumRef
      * @return self
      * @param bool $validate
@@ -239,7 +231,7 @@ class Foo
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($boolEnumRef, self::$schema['properties']['boolEnumRef']);
+            $validator->validate($boolEnumRef, self::$_schema['properties']['boolEnumRef']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -263,6 +255,14 @@ class Foo
     }
 
     /**
+     * @return false
+     */
+    public function getRequiredBoolEnumRef(): bool
+    {
+        return $this->requiredBoolEnumRef;
+    }
+
+    /**
      * @param false $requiredBoolEnumRef
      * @return self
      * @param bool $validate
@@ -271,7 +271,7 @@ class Foo
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($requiredBoolEnumRef, self::$schema['properties']['requiredBoolEnumRef']);
+            $validator->validate($requiredBoolEnumRef, self::$_schema['properties']['requiredBoolEnumRef']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -291,11 +291,11 @@ class Foo
      * @return Foo Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true): Foo
+    public static function fromInput($input, bool $validate = true): Foo
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($input)
+                'Input to fromInput must be array or object, got ' . gettype($input)
             );
         }
 
@@ -380,7 +380,7 @@ class Foo
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {

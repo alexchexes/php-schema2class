@@ -1,23 +1,21 @@
 <?php
-declare(strict_types = 1);
+declare(strict_types=1);
 
-namespace Helmich\Schema2Class\Generator\Property;
+namespace Helmich\Schema2Class\Generator\Property\Type;
 
 use Helmich\Schema2Class\Generator\GeneratorRequest;
-use Helmich\Schema2Class\Generator\SchemaToClass;
+use Helmich\Schema2Class\Writer\DebugWriter;
+use Symfony\Component\Console\Output\NullOutput;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
 use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
-use Prophecy\PhpUnit\ProphecyTrait;
 use function PHPUnit\Framework\assertFalse;
 use function PHPUnit\Framework\assertSame;
 use function PHPUnit\Framework\assertTrue;
 
 class ObjectArrayPropertyTest extends TestCase
 {
-    use ProphecyTrait;
 
     private ObjectArrayProperty $property;
 
@@ -26,6 +24,8 @@ class ObjectArrayPropertyTest extends TestCase
     protected function setUp(): void
     {
         $this->generatorRequest = new GeneratorRequest([], new ValidatedSpecificationFilesItem("", "Foo", ""), new SpecificationOptions());
+        $this->generatorRequest->setCurrValidateArgAlias('validate');
+        $this->generatorRequest->setCurrReqHasDefaults(false);
         $this->property = new ObjectArrayProperty('myPropertyName', ['type' => 'array', 'items' => ['type' => 'object']], $this->generatorRequest);
     }
 
@@ -62,10 +62,10 @@ class ObjectArrayPropertyTest extends TestCase
 
         assertTrue($underTest->isComplex());
 
-        $result = $underTest->convertInputToType('variable');
+        $result = $underTest->convertInputToType('variable', 'providedOptionals');
 
         $expected = <<<'EOCODE'
-$myPropertyName = array_map(fn (array|object $i): FooMyPropertyNameItem => FooMyPropertyNameItem::buildFromInput($i, $validate), $variable['myPropertyName']);
+$myPropertyName = array_map(fn (array|object $i): FooMyPropertyNameItem => FooMyPropertyNameItem::fromInput($i, $validate), $variable->{'myPropertyName'});
 EOCODE;
 
         assertSame($expected, $result);
@@ -75,10 +75,10 @@ EOCODE;
     {
         $underTest = new ObjectArrayProperty('myPropertyName', ['type' => 'array', 'items' => ['properties' => ['foo' => ['type' => 'string']]]], $this->generatorRequest);
 
-        $result = $underTest->convertTypeToArray('variable');
+        $result = $underTest->convertTypeToArray();
 
         $expected = <<<'EOCODE'
-$variable['myPropertyName'] = array_map(fn (FooMyPropertyNameItem $i) => $i->toArray(), $this->myPropertyName);
+$output['myPropertyName'] = array_map(fn (FooMyPropertyNameItem $i) => $i->toArray(), $this->myPropertyName);
 EOCODE;
 
         assertSame($expected, $result);
@@ -88,10 +88,10 @@ EOCODE;
     {
         $underTest = new ObjectArrayProperty('myPropertyName', ['type' => 'array', 'items' => ['properties' => ['foo' => ['type' => 'string']]]], $this->generatorRequest);
 
-        $result = $underTest->convertTypeToStdClass('variable');
+        $result = $underTest->convertTypeToStdClass();
 
         $expected = <<<'EOCODE'
-$variable->{'myPropertyName'} = array_map(fn (FooMyPropertyNameItem $i) => $i->toStdClass(), $this->myPropertyName);
+$output->{'myPropertyName'} = array_map(fn (FooMyPropertyNameItem $i) => $i->toStdClass(), $this->myPropertyName);
 EOCODE;
 
         assertSame($expected, $result);
@@ -122,11 +122,11 @@ EOCODE;
         $arrayProperties = ['properties' => []];
         $underTest = new ObjectArrayProperty('myPropertyName', ['type' => 'array', 'items' => $arrayProperties], $this->generatorRequest);
 
-        $schemaToClass = $this->prophesize(SchemaToClass::class);
+        $writer = new DebugWriter(new NullOutput());
 
-        $underTest->generateSubTypes($schemaToClass->reveal());
+        $underTest->generateSubTypes($writer, new NullOutput());
 
-        $schemaToClass->schemaToClass(Argument::any())->shouldNotHaveBeenCalled();
+        $this->assertCount(0, $writer->getWrittenFiles());
     }
 
 }

@@ -8,6 +8,11 @@ use function PHPUnit\Framework\equalTo;
 
 use Helmich\Schema2Class\Command\GenerateCommand;
 use Helmich\Schema2Class\Example\CustomerAddress;
+use Helmich\Schema2Class\Generator\ReferencedType\ReferencedType;
+use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeClass;
+use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeUnknown;
+use Helmich\Schema2Class\Generator\ReferenceLookup\DefinitionsReferenceLookup;
+use Helmich\Schema2Class\Generator\ReferenceLookup\ReferenceLookup;
 use Helmich\Schema2Class\Generator\SchemaToClassFactory;
 use Helmich\Schema2Class\Loader\SchemaLoader;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
@@ -104,7 +109,7 @@ class SchemaToClassTest extends TestCase
             $optsYaml = [];
             if (file_exists($optionsFile)) {
                 $optsYaml = Yaml::parseFile($optionsFile);
-                $opts = SpecificationOptions::buildFromInput($optsYaml);
+                $opts = SpecificationOptions::fromInput($optsYaml);
             }
 
             if (!isset($optsYaml['inlineAllofReferences'])) {
@@ -229,7 +234,7 @@ class SchemaToClassTest extends TestCase
                     $optsData['inlineAllofReferences'] = true;
                 }
                 $optsData['targetPHPVersion'] = $version;
-                $specOpts = SpecificationOptions::buildFromInput($optsData);
+                $specOpts = SpecificationOptions::fromInput($optsData);
 
                 $nsName = $fixtureName . '_' . str_replace('.', '_', $version);
                 $testCases[$fixtureName . '-' . $version] = [
@@ -270,40 +275,32 @@ class SchemaToClassTest extends TestCase
         $req = $req->withReferenceLookup(new class ($definitionsLookup) implements ReferenceLookup {
             public function __construct(private DefinitionsReferenceLookup $lookup) {}
 
-            public function lookupReference(string $reference): ReferencedType
+            public function lookupReference(string $ref): ReferencedType
             {
-                if ($reference === "#/properties/address") {
-                    return new ReferencedTypeClass(CustomerAddress::class); // ← necessary for 'RefList' test though not really exist
+                if ($ref === "#/properties/address") {
+                    return new ReferencedTypeClass(CustomerAddress::class);
                 }
 
-                $result = $this->lookup->lookupReference($reference);
+                $result = $this->lookup->lookupReference($ref);
                 if ($result instanceof ReferencedTypeUnknown) {
                     return new ReferencedTypeUnknown();
                 }
                 return $result;
             }
 
-            public function lookupSchema(string $reference): array
+            public function lookupSchema(string $ref): array
             {
-                if ($reference === "#/properties/address") {
+                if ($ref === "#/properties/address") {
                     return [
-                        'required' => [
-                            'city',
-                            'street',
-                        ],
+                        'required' => ['city', 'street'],
                         'properties' => [
-                            'city' => [
-                                'type' => 'string',
-                                'maxLength' => 32,
-                            ],
-                            'street' => [
-                                'type' => 'string',
-                            ],
+                            'city' => ['type' => 'string', 'maxLength' => 32],
+                            'street' => ['type' => 'string'],
                         ],
                     ];
                 }
 
-                return $this->lookup->lookupSchema($reference);
+                return $this->lookup->lookupSchema($ref);
             }
         });
 
@@ -374,7 +371,7 @@ class SchemaToClassTest extends TestCase
 
                 foreach ($classInputs as $inputName => $input) {
                     try {
-                        $obj = $fqcn::buildFromInput($input);
+                        $obj = $fqcn::fromInput($input);
                     } catch (\Throwable $th) {
                         throw new \Exception("Failed to build {$fqcn} from input {$inputName}", 0, $th);
                     }
@@ -398,7 +395,7 @@ class SchemaToClassTest extends TestCase
                         "Object returned from {$fqcn}->toStdClass() doesn't match input from file '{$inputName}'."
                     );
                     try {
-                        $fqcn::buildFromInput($actualObject);
+                        $fqcn::fromInput($actualObject);
                     } catch (\Throwable $th) {
                         throw new \Exception("Failed to build {$fqcn} from input {$inputName} after the round trip", 0, $th);
                     }
@@ -530,7 +527,7 @@ class SchemaToClassTest extends TestCase
         $inputMaterialize = json_decode(file_get_contents($inputFileMaterialize));
 
         try {
-            $obj1 = $fqcn::buildFromInput($inputMaterialize, true, true);
+            $obj1 = $fqcn::fromInput($inputMaterialize, true, true);
         } catch (\Throwable $th) {
             throw new \Exception("Failed to build {$fqcn} from file '$inputFileMaterialize'", 0, $th);
         }
@@ -558,7 +555,7 @@ class SchemaToClassTest extends TestCase
         $inputInclude = json_decode(file_get_contents($inputFileInclude));
 
         try {
-            $obj2 = $fqcn::buildFromInput($inputInclude);
+            $obj2 = $fqcn::fromInput($inputInclude);
         } catch (\Throwable $th) {
             throw new \Exception("Failed to build {$fqcn} from file '$inputFileInclude'", 0, $th);
         }

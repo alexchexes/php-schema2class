@@ -11,7 +11,7 @@ class MyClass
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'type' => 'object',
         'required' => [
             'a',
@@ -158,70 +158,6 @@ class MyClass
     }
 
     /**
-     * @return array|string
-     */
-    public function getB(): string|array
-    {
-        return $this->b;
-    }
-
-    /**
-     * @return array|null
-     */
-    public function getC(): ?array
-    {
-        return $this->c ?? null;
-    }
-
-    /**
-     * @return array|string|null
-     */
-    public function getD(): string|array|null
-    {
-        return $this->d;
-    }
-
-    /**
-     * @return array|null
-     */
-    public function getE(): ?array
-    {
-        return $this->e ?? null;
-    }
-
-    /**
-     * @return array|string|null
-     */
-    public function getF(): string|array|null
-    {
-        return $this->f;
-    }
-
-    /**
-     * @return array|null
-     */
-    public function getG(): ?array
-    {
-        return $this->g ?? null;
-    }
-
-    /**
-     * @return array|string|null
-     */
-    public function getH(): string|array|null
-    {
-        return $this->h;
-    }
-
-    /**
-     * @return array|string|object|null
-     */
-    public function getI(): string|array|object|null
-    {
-        return $this->i;
-    }
-
-    /**
      * @param array $a
      * @return self
      * @param bool $validate
@@ -230,7 +166,7 @@ class MyClass
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($a, self::$schema['properties']['a']);
+            $validator->validate($a, self::$_schema['properties']['a']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -240,6 +176,14 @@ class MyClass
         $clone->a = $a;
 
         return $clone;
+    }
+
+    /**
+     * @return array|string
+     */
+    public function getB(): string|array
+    {
+        return $this->b;
     }
 
     /**
@@ -255,6 +199,14 @@ class MyClass
     }
 
     /**
+     * @return array|null
+     */
+    public function getC(): ?array
+    {
+        return $this->c ?? null;
+    }
+
+    /**
      * @param array $c
      * @return self
      * @param bool $validate
@@ -263,7 +215,7 @@ class MyClass
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($c, self::$schema['properties']['c']);
+            $validator->validate($c, self::$_schema['properties']['c']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -273,6 +225,14 @@ class MyClass
         $clone->c = $c;
 
         return $clone;
+    }
+
+    /**
+     * @return array|string|null
+     */
+    public function getD(): string|array|null
+    {
+        return $this->d;
     }
 
     /**
@@ -288,6 +248,14 @@ class MyClass
     }
 
     /**
+     * @return array|null
+     */
+    public function getE(): ?array
+    {
+        return $this->e ?? null;
+    }
+
+    /**
      * @param array $e
      * @return self
      * @param bool $validate
@@ -296,7 +264,7 @@ class MyClass
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($e, self::$schema['properties']['e']);
+            $validator->validate($e, self::$_schema['properties']['e']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -317,6 +285,14 @@ class MyClass
         unset($clone->e);
 
         return $clone;
+    }
+
+    /**
+     * @return array|string|null
+     */
+    public function getF(): string|array|null
+    {
+        return $this->f;
     }
 
     /**
@@ -343,6 +319,14 @@ class MyClass
     }
 
     /**
+     * @return array|null
+     */
+    public function getG(): ?array
+    {
+        return $this->g ?? null;
+    }
+
+    /**
      * @param array $g
      * @return self
      * @param bool $validate
@@ -351,7 +335,7 @@ class MyClass
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($g, self::$schema['properties']['g']);
+            $validator->validate($g, self::$_schema['properties']['g']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -377,6 +361,14 @@ class MyClass
     }
 
     /**
+     * @return array|string|null
+     */
+    public function getH(): string|array|null
+    {
+        return $this->h;
+    }
+
+    /**
      * @param array|string $h
      * @return self
      */
@@ -399,6 +391,14 @@ class MyClass
         unset($clone->_providedOptionals['h']);
 
         return $clone;
+    }
+
+    /**
+     * @return array|string|object|null
+     */
+    public function getI(): string|array|object|null
+    {
+        return $this->i;
     }
 
     /**
@@ -434,7 +434,7 @@ class MyClass
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): MyClass
+    public static function fromInput(array|object $input, bool $validate = true): MyClass
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -448,36 +448,36 @@ class MyClass
             is_string($input->{'b'}) => $input->{'b'},
             default => throw new \InvalidArgumentException("could not build property 'b' from JSON"),
         };
-        $c = ($input->{'c'} !== null) ? ($input->{'c'}) : null;
-        $d = ($input->{'d'} !== null) ? (match (true) {
+        $c = ($input->{'c'} !== null ? $input->{'c'} : null);
+        $d = ($input->{'d'} !== null ? match (true) {
             is_array($input->{'d'}),
             is_string($input->{'d'}) => $input->{'d'},
             default => null,
-        }) : null;
+        } : null);
         $e = isset($input->{'e'}) ? $input->{'e'} : null;
         $f = isset($input->{'f'}) ? match (true) {
             is_array($input->{'f'}),
             is_string($input->{'f'}) => $input->{'f'},
             default => null,
         } : null;
-        $g = property_exists($input, 'g') ? $input->{'g'} : null;
+        $g = property_exists($input, 'g') ? ($input->{'g'} !== null ? $input->{'g'} : null) : null;
         if (property_exists($input, 'g')) {
             $__providedOptionals['g'] = true;
         }
-        $h = property_exists($input, 'h') ? match (true) {
+        $h = property_exists($input, 'h') ? ($input->{'h'} !== null ? match (true) {
             is_array($input->{'h'}),
             is_string($input->{'h'}) => $input->{'h'},
             default => null,
-        } : null;
+        } : null) : null;
         if (property_exists($input, 'h')) {
             $__providedOptionals['h'] = true;
         }
-        $i = property_exists($input, 'i') ? match (true) {
+        $i = property_exists($input, 'i') ? ($input->{'i'} !== null ? match (true) {
             is_array($input->{'i'}),
             is_string($input->{'i'}),
             is_array($input->{'i'}) || is_object($input->{'i'}) => $input->{'i'},
             default => null,
-        } : null;
+        } : null) : null;
         if (property_exists($input, 'i')) {
             $__providedOptionals['i'] = true;
         }
@@ -520,22 +520,22 @@ class MyClass
             };
         }
         if (isset($this->g) || array_key_exists('g', $this->_providedOptionals)) {
-            if (isset($this->g)) {
-                $output['g'] = $this->g;
-            }
+            $output['g'] = ($this->g !== null) ? (($this->g !== null) ? ($this->g) : null) : null;
         }
         if (isset($this->h) || array_key_exists('h', $this->_providedOptionals)) {
-            $output['h'] = match (true) {
+            $output['h'] = ($this->h !== null) ? (match (true) {
+                default => null,
                 is_array($this->h),
                 is_string($this->h) => $this->h,
-            };
+            }) : null;
         }
         if (isset($this->i) || array_key_exists('i', $this->_providedOptionals)) {
-            $output['i'] = match (true) {
+            $output['i'] = ($this->i !== null) ? (match (true) {
+                default => null,
                 is_array($this->i),
                 is_string($this->i) => $this->i,
                 is_array($this->i) || is_object($this->i) => json_decode(json_encode($this->i), true),
-            };
+            }) : null;
         }
 
         return $output;
@@ -569,22 +569,22 @@ class MyClass
             };
         }
         if (isset($this->g) || array_key_exists('g', $this->_providedOptionals)) {
-            if (isset($this->g)) {
-                $output->{'g'} = $this->g;
-            }
+            $output->{'g'} = ($this->g !== null) ? (($this->g !== null) ? ($this->g) : null) : null;
         }
         if (isset($this->h) || array_key_exists('h', $this->_providedOptionals)) {
-            $output->{'h'} = match (true) {
+            $output->{'h'} = ($this->h !== null) ? (match (true) {
+                default => null,
                 is_array($this->h),
                 is_string($this->h) => $this->h,
-            };
+            }) : null;
         }
         if (isset($this->i) || array_key_exists('i', $this->_providedOptionals)) {
-            $output->{'i'} = match (true) {
+            $output->{'i'} = ($this->i !== null) ? (match (true) {
+                default => null,
                 is_array($this->i),
                 is_string($this->i) => $this->i,
                 is_array($this->i) || is_object($this->i) => json_decode(json_encode($this->i)),
-            };
+            }) : null;
         }
 
         return $output;
@@ -602,7 +602,7 @@ class MyClass
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {
@@ -651,7 +651,7 @@ class MyClass
      * @param string $propertyName Property name to check (exactly as it appears in the schema)
      * @return bool
      */
-    public function isProvidedOptional(string $propertyName): bool
+    public function isOptionalProvided(string $propertyName): bool
     {
         return array_key_exists($propertyName, $this->_providedOptionals);
     }

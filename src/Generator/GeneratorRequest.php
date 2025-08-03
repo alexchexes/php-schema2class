@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator;
@@ -8,13 +7,31 @@ use Composer\Semver\Comparator;
 use Helmich\Schema2Class\Generator\Hook\AddInterfaceHook;
 use Helmich\Schema2Class\Generator\Hook\AddMethodHook;
 use Helmich\Schema2Class\Generator\Hook\AddPropertyHook;
+use Helmich\Schema2Class\Generator\Hook\GeneratorHookRunner;
+use Helmich\Schema2Class\Generator\ReferencedType\ReferencedType;
+use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeUnknown;
+use Helmich\Schema2Class\Generator\ReferenceLookup\ReferenceLookup;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
 use Helmich\Schema2Class\Spec\OptionsDefaults;
 use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
+use Helmich\Schema2Class\Generator\SchemaToClassFactory;
 use Helmich\Schema2Class\Loader\SchemaLoader;
 use Laminas\Code\Generator\MethodGenerator;
 use Laminas\Code\Generator\PropertyGenerator;
 
+/** 
+ * (Mostly) immutable data object describing what and how to generate.
+ * 
+ * Every class or enum is generated from a `GeneratorRequest`. It bundles the JSON schema
+ * to operate on, generation options and information about the surrounding specification file.
+ * 
+ * The request also stores runtime information such as registered {@see ReferenceLookup}
+ * implementations and is cloned when modifications are needed for nested classes
+ * 
+ * Mutation is deliberately allowed for `currValidateArgAlias`, `currMaterializeArgAlias`,
+ * and `currReqHasDefaults` to simplify passing information to nested contexts.
+ * TODO: Rethink this.
+ */
 class GeneratorRequest
 {
     use GeneratorHookRunner;
@@ -37,21 +54,23 @@ class GeneratorRequest
     private array $referenceLookup = [];
     
     /**
-     * Name of the $validate argument in the currently generated buildFromInput method.
+     * Name of the $validate argument in the currently generated fromInput method.
      * This is set from the Generator during generation.
      */
-    private string $currValidateArgAlias = 'validate';
+    private string $currValidateArgAlias;
 
     /**
-     * Name of the $materializeDefaults argument in the currently generated buildFromInput method
+     * Name of the $materializeDefaults argument in the currently generated fromInput method
      * (null when the argument is not generated). This is set from the Generator.
      */
     private ?string $currMaterializeArgAlias = null;
 
     /**
-     * 
+     * Whether the object schema from which the class is currently generated has defaults.
      */
-    private bool $currReqHasDefaults = false;
+    private bool $currReqHasDefaults;
+
+    private SchemaToClassFactory $factory;
 
     public static function normalizeTargetVersion(int|string $version): string
     {
@@ -65,21 +84,27 @@ class GeneratorRequest
         return self::semversifyVersionNumber($mapped);
     }
 
-    public function __construct(array $schema, ValidatedSpecificationFilesItem $spec, SpecificationOptions $opts)
+    public function __construct(
+        array $schema,
+        ValidatedSpecificationFilesItem $spec,
+        SpecificationOptions $opts,
+        ?SchemaToClassFactory $factory = null,
+    )
     {
         $opts = OptionsDefaults::applyDefaults($opts);
         $opts = $opts->withTargetPHPVersion(
             self::normalizeTargetVersion($opts->getTargetPHPVersion())
         );
 
-        $this->rawSchema = $schema[\Helmich\Schema2Class\Loader\SchemaLoader::RAW_KEY] ?? null;
+        $this->rawSchema = $schema[SchemaLoader::RAW_KEY] ?? null;
         if ($this->rawSchema !== null) {
-            unset($schema[\Helmich\Schema2Class\Loader\SchemaLoader::RAW_KEY]);
+            unset($schema[SchemaLoader::RAW_KEY]);
         }
 
         $this->schema = $schema;
         $this->spec   = $spec;
         $this->opts   = $opts;
+        $this->factory = $factory ?? new SchemaToClassFactory();
     }
 
     /**
@@ -106,6 +131,11 @@ class GeneratorRequest
     public function getRawSchema(): ?object
     {
         return $this->rawSchema;
+    }
+
+    public function getSchemaToClassFactory(): SchemaToClassFactory
+    {
+        return $this->factory;
     }
 
     private static function semversifyVersionNumber(string|int $versionNumber): string
@@ -233,7 +263,6 @@ class GeneratorRequest
     /**
      * Adds an "implements" clause to generated classes.
      *
-     * @psalm-param class-string $interface
      * @param string $interface The interface to add to generated classes.
      * @param bool $propagateToSubObjects Controls if the interface should be added to sub-objects.
      * @return self
@@ -250,14 +279,17 @@ class GeneratorRequest
 
     public function getNoGetters(): bool
     {
-        return $this->opts->getNoGetters();
+        return $this->opts->getNoGetters() === true;
     }
     
     public function getNoSetters(): bool
     {
-        return $this->opts->getNoSetters();
+        return $this->opts->getNoSetters() === true;
     }
 
+    /** 
+     * @return true|'chainable'|null
+     */
     public function getMutableSetters(): bool|string|null
     {
         return $this->opts->getMutableSetters();
@@ -265,7 +297,7 @@ class GeneratorRequest
 
     public function getNoEnums(): bool
     {
-        return $this->opts->getNoEnums();
+        return $this->opts->getNoEnums() === true;
     }
 
     public function isAtLeastPHP(string $version): bool
@@ -290,7 +322,7 @@ class GeneratorRequest
     }
 
     /**
-     * @return string
+     * @return non-empty-string|null
      */
     public function getTargetClass(): ?string
     {
@@ -363,7 +395,8 @@ class GeneratorRequest
     }
 
     /**
-     * 
+     * This method is deliberately mutating (not `with...`) so that the information about
+     * the presence of defaults is available to all property generators in nested contexts.
      */
     public function setCurrReqHasDefaults(bool $currReqHasDefaults): void
     {

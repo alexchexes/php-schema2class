@@ -11,7 +11,7 @@ class MyClass_2
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'type' => 'object',
         'properties' => [
             1 => [
@@ -50,22 +50,6 @@ class MyClass_2
     }
 
     /**
-     * @return string|null
-     */
-    public function get_2(): ?string
-    {
-        return $this->_2 ?? null;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function get_3(): ?string
-    {
-        return $this->_3 ?? null;
-    }
-
-    /**
      * @param string $_1
      * @return self
      * @param bool $validate
@@ -74,7 +58,7 @@ class MyClass_2
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($_1, self::$schema['properties']['1']);
+            $validator->validate($_1, self::$_schema['properties']['1']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -98,6 +82,14 @@ class MyClass_2
     }
 
     /**
+     * @return string|null
+     */
+    public function get_2(): ?string
+    {
+        return $this->_2 ?? null;
+    }
+
+    /**
      * @param string $_2
      * @return self
      * @param bool $validate
@@ -106,7 +98,7 @@ class MyClass_2
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($_2, self::$schema['properties']['2']);
+            $validator->validate($_2, self::$_schema['properties']['2']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -130,6 +122,14 @@ class MyClass_2
     }
 
     /**
+     * @return string|null
+     */
+    public function get_3(): ?string
+    {
+        return $this->_3 ?? null;
+    }
+
+    /**
      * @param string $_3
      * @return self
      * @param bool $validate
@@ -138,7 +138,7 @@ class MyClass_2
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($_3, self::$schema['properties']['3']);
+            $validator->validate($_3, self::$_schema['properties']['3']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -169,7 +169,7 @@ class MyClass_2
      * @return MyClass_2 Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): MyClass_2
+    public static function fromInput(array|object $input, bool $validate = true): MyClass_2
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -241,7 +241,7 @@ class MyClass_2
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {

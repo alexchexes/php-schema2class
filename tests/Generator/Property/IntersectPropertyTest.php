@@ -1,24 +1,22 @@
 <?php
-declare(strict_types = 1);
+declare(strict_types=1);
 
-namespace Helmich\Schema2Class\Generator\Property;
+namespace Helmich\Schema2Class\Generator\Property\Type;
 
 use Helmich\Schema2Class\Generator\GeneratorRequest;
-use Helmich\Schema2Class\Generator\SchemaToClass;
+use Helmich\Schema2Class\Writer\DebugWriter;
+use Symfony\Component\Console\Output\NullOutput;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
 use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
-use Prophecy\PhpUnit\ProphecyTrait;
 use function PHPUnit\Framework\assertFalse;
 use function PHPUnit\Framework\assertSame;
 use function PHPUnit\Framework\assertTrue;
 
 class IntersectPropertyTest extends TestCase
 {
-    use ProphecyTrait;
 
     private IntersectProperty $property;
 
@@ -31,6 +29,8 @@ class IntersectPropertyTest extends TestCase
             new ValidatedSpecificationFilesItem("BarNs", "Foo", ""),
             new SpecificationOptions(),
         );
+        $this->generatorRequest->setCurrValidateArgAlias('validate');
+        $this->generatorRequest->setCurrReqHasDefaults(false);
         $this->property = new IntersectProperty('myPropertyName', ['allOf' => []], $this->generatorRequest);
     }
 
@@ -50,10 +50,10 @@ class IntersectPropertyTest extends TestCase
     {
         $underTest = new IntersectProperty('myPropertyName', ['allOf' => []], $this->generatorRequest);
 
-        $result = $underTest->convertInputToType('variable');
+        $result = $underTest->convertInputToType('variable', 'providedOptionals');
 
         $expected = <<<'EOCODE'
-$myPropertyName = FooMyPropertyName::buildFromInput($variable['myPropertyName'], $validate);
+$myPropertyName = FooMyPropertyName::fromInput($variable->{'myPropertyName'}, $validate);
 EOCODE;
 
         assertSame($expected, $result);
@@ -61,10 +61,10 @@ EOCODE;
 
     public function testConvertTypeToArray()
     {
-        $result = $this->property->convertTypeToArray('variable');
+        $result = $this->property->convertTypeToArray();
 
         $expected = <<<'EOCODE'
-$variable['myPropertyName'] = ($this->myPropertyName)->toArray();
+$output['myPropertyName'] = ($this->myPropertyName)->toArray();
 EOCODE;
 
         assertSame($expected, $result);
@@ -72,10 +72,10 @@ EOCODE;
 
     public function testConvertTypeToStdClass()
     {
-        $result = $this->property->convertTypeToStdClass('variable');
+        $result = $this->property->convertTypeToStdClass();
 
         $expected = <<<'EOCODE'
-$variable->{'myPropertyName'} = ($this->myPropertyName)->toStdClass();
+$output->{'myPropertyName'} = ($this->myPropertyName)->toStdClass();
 EOCODE;
 
         assertSame($expected, $result);
@@ -143,12 +143,11 @@ EOCODE;
     {
         $underTest = new IntersectProperty('myPropertyName', $schema, $this->generatorRequest);
 
-        $schemaToClass = $this->prophesize(SchemaToClass::class);
+        $writer = new DebugWriter(new NullOutput());
 
-        $underTest->generateSubTypes($schemaToClass->reveal());
+        $underTest->generateSubTypes($writer, new NullOutput());
 
-        $schemaToClass->schemaToClass(Argument::that(function(GeneratorRequest $subReq) use ($subschema) {
-            return Assert::equalTo($subschema)->evaluate($subReq->getSchema());
-        }))->shouldHaveBeenCalled();
+        $expectedFiles = count($subschema['properties']) > 0 ? 1 : 0;
+        $this->assertCount($expectedFiles, $writer->getWrittenFiles());
     }
 }

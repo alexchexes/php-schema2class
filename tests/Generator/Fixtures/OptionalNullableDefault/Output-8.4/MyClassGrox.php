@@ -14,7 +14,7 @@ class MyClassGrox
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'type' => 'object',
         'description' => 'optional, nullable, with default, object',
         'properties' => [
@@ -50,14 +50,6 @@ class MyClassGrox
     }
 
     /**
-     * @return int|float|null
-     */
-    public function getB(): int|float|null
-    {
-        return $this->b;
-    }
-
-    /**
      * @param string $a
      * @return self
      * @param bool $validate
@@ -66,7 +58,7 @@ class MyClassGrox
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($a, self::$schema['properties']['a']);
+            $validator->validate($a, self::$_schema['properties']['a']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -90,6 +82,14 @@ class MyClassGrox
     }
 
     /**
+     * @return int|float|null
+     */
+    public function getB(): int|float|null
+    {
+        return $this->b;
+    }
+
+    /**
      * @param int|float $b
      * @return self
      * @param bool $validate
@@ -98,7 +98,7 @@ class MyClassGrox
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($b, self::$schema['properties']['b']);
+            $validator->validate($b, self::$_schema['properties']['b']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -129,7 +129,7 @@ class MyClassGrox
      * @return MyClassGrox Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): MyClassGrox
+    public static function fromInput(array|object $input, bool $validate = true): MyClassGrox
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -193,7 +193,7 @@ class MyClassGrox
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {

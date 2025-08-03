@@ -11,7 +11,7 @@ class Record
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'type' => 'object',
         'properties' => [
             'dataArray' => [
@@ -119,30 +119,6 @@ class Record
     }
 
     /**
-     * @return Phone[][]|null
-     */
-    public function getDataArrayNested(): ?array
-    {
-        return $this->dataArrayNested ?? null;
-    }
-
-    /**
-     * @return (Phone|Fio)[]|null
-     */
-    public function getDataArrayAnyOf(): ?array
-    {
-        return $this->dataArrayAnyOf ?? null;
-    }
-
-    /**
-     * @return ((Phone|Fio)[])[]|null
-     */
-    public function getDataArrayNestedAnyOf(): ?array
-    {
-        return $this->dataArrayNestedAnyOf ?? null;
-    }
-
-    /**
      * @param Phone[] $dataArray
      * @return self
      * @param bool $validate
@@ -151,7 +127,7 @@ class Record
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($dataArray, self::$schema['properties']['dataArray']);
+            $validator->validate($dataArray, self::$_schema['properties']['dataArray']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -175,6 +151,14 @@ class Record
     }
 
     /**
+     * @return Phone[][]|null
+     */
+    public function getDataArrayNested(): ?array
+    {
+        return $this->dataArrayNested ?? null;
+    }
+
+    /**
      * @param Phone[][] $dataArrayNested
      * @return self
      * @param bool $validate
@@ -183,7 +167,7 @@ class Record
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($dataArrayNested, self::$schema['properties']['dataArrayNested']);
+            $validator->validate($dataArrayNested, self::$_schema['properties']['dataArrayNested']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -207,6 +191,14 @@ class Record
     }
 
     /**
+     * @return (Phone|Fio)[]|null
+     */
+    public function getDataArrayAnyOf(): ?array
+    {
+        return $this->dataArrayAnyOf ?? null;
+    }
+
+    /**
      * @param (Phone|Fio)[] $dataArrayAnyOf
      * @return self
      * @param bool $validate
@@ -215,7 +207,7 @@ class Record
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($dataArrayAnyOf, self::$schema['properties']['dataArrayAnyOf']);
+            $validator->validate($dataArrayAnyOf, self::$_schema['properties']['dataArrayAnyOf']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -239,6 +231,14 @@ class Record
     }
 
     /**
+     * @return ((Phone|Fio)[])[]|null
+     */
+    public function getDataArrayNestedAnyOf(): ?array
+    {
+        return $this->dataArrayNestedAnyOf ?? null;
+    }
+
+    /**
      * @param ((Phone|Fio)[])[] $dataArrayNestedAnyOf
      * @return self
      * @param bool $validate
@@ -247,7 +247,7 @@ class Record
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($dataArrayNestedAnyOf, self::$schema['properties']['dataArrayNestedAnyOf']);
+            $validator->validate($dataArrayNestedAnyOf, self::$_schema['properties']['dataArrayNestedAnyOf']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -278,7 +278,7 @@ class Record
      * @return Record Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): Record
+    public static function fromInput(array|object $input, bool $validate = true): Record
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -286,21 +286,21 @@ class Record
         }
 
         $dataArray = isset($input->{'dataArray'}) ? array_map(
-            fn(array|object $i): Phone => Phone::buildFromInput($i, $validate),
+            fn(array|object $i): Phone => Phone::fromInput($i, $validate),
             $input->{'dataArray'}
         ) : null;
         $dataArrayNested = isset($input->{'dataArrayNested'}) ? array_map(fn($i) => array_map(
-            fn(array|object $i): Phone => Phone::buildFromInput($i, $validate),
+            fn(array|object $i): Phone => Phone::fromInput($i, $validate),
             $i
         ), $input->{'dataArrayNested'}) : null;
         $dataArrayAnyOf = isset($input->{'dataArrayAnyOf'}) ? array_map(fn($i) => match (true) {
-            Phone::validateInput($i, true) => Phone::buildFromInput($i, $validate),
-            Fio::validateInput($i, true) => Fio::buildFromInput($i, $validate),
+            Phone::validateInput($i, true) => Phone::fromInput($i, $validate),
+            Fio::validateInput($i, true) => Fio::fromInput($i, $validate),
             default => null,
         }, $input->{'dataArrayAnyOf'}) : null;
         $dataArrayNestedAnyOf = isset($input->{'dataArrayNestedAnyOf'}) ? array_map(fn($i) => array_map(fn($i) => match (true) {
-            Phone::validateInput($i, true) => Phone::buildFromInput($i, $validate),
-            Fio::validateInput($i, true) => Fio::buildFromInput($i, $validate),
+            Phone::validateInput($i, true) => Phone::fromInput($i, $validate),
+            Fio::validateInput($i, true) => Fio::fromInput($i, $validate),
             default => null,
         }, $i), $input->{'dataArrayNestedAnyOf'}) : null;
 
@@ -388,7 +388,7 @@ class Record
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {

@@ -1,0 +1,58 @@
+<?php
+declare(strict_types=1);
+
+namespace Helmich\Schema2Class\Generator\Class\Method;
+
+use Helmich\Schema2Class\Generator\GeneratorRequest;
+use Helmich\Schema2Class\Generator\Property\Collection\PropertyCollection;
+use Helmich\Schema2Class\Generator\Property\Collection\PropertyCollectionFilterFactory;
+use Helmich\Schema2Class\Generator\Property\Type\PropertyInterface;
+use Helmich\Schema2Class\Util\StringUtils;
+use Laminas\Code\Generator\MethodGenerator;
+
+/** 
+ * Factory for creating all accessors (get/set/unset/with/without) of a generated class.
+ */
+class PropertyAccessorsFactory
+{
+    public function __construct(
+        private GeneratorRequest $request,
+        private PropertyCollection $schemaProperties,
+    )
+    {}
+
+    /**
+     * @return MethodGenerator[]
+     */
+    public function generatePropertyAccessors(): array
+    {
+        $methodsGenerators = [];
+
+        $filteredProperties = $this->schemaProperties->filter(
+            PropertyCollectionFilterFactory::excludeDeprecatedCaseVariants($this->schemaProperties)
+        );
+
+        $getterFactory = new GetterFactory($this->request);
+        $setterFactory = new SetterFactory($this->request);
+        $unsetterFactory = new UnsetterFactory($this->request);
+        
+        foreach ($filteredProperties as $property) {
+            // TODO: move pascal-casing logic into a method in PropertyInterface?
+            $pascalName = $this->pascalName($property);
+
+            $methodsGenerators[] = $getterFactory->generateGetter($property, $pascalName);
+            $methodsGenerators[] = $setterFactory->generateSetter($property, $pascalName);
+            $methodsGenerators[] = $unsetterFactory->generateUnsetter($property, $pascalName);
+        }
+
+        return array_values(array_filter($methodsGenerators));
+    }
+
+    private function pascalName(PropertyInterface $property): string
+    {
+        $propName = $property->name();
+        return $this->request->getOptions()->getPreservePropertyNames()
+            ? StringUtils::pascalCasePreserveOuterUnderscores($propName)
+            : StringUtils::safePascalCase($propName);
+    }
+}

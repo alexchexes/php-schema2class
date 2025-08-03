@@ -11,7 +11,7 @@ class Cat
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'type' => 'object',
         'properties' => [
             'hasFur' => [
@@ -76,7 +76,7 @@ class Cat
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($hasFur, self::$schema['properties']['hasFur']);
+            $validator->validate($hasFur, self::$_schema['properties']['hasFur']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -110,7 +110,7 @@ class Cat
      * @return Cat Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true, bool $materializeDefaults = false): Cat
+    public static function fromInput(array|object $input, bool $validate = true, bool $materializeDefaults = false): Cat
     {
         $input = is_array($input)
             ? \JsonSchema\Validator::arrayToObjectRecursive($input)
@@ -119,9 +119,9 @@ class Cat
         if ($materializeDefaults) {
             foreach (self::$_defaults as $__k => $__v) {
                 if (!property_exists($input, (string) $__k)) {
-                   $input->{$__k} = ($__v['type'] ?? null) === 'object'
-                       ? \JsonSchema\Validator::arrayToObjectRecursive($__v['default'])
-                       : $__v['default'];
+                    $input->{$__k} = ($__v['type'] ?? null) === 'object'
+                        ? \JsonSchema\Validator::arrayToObjectRecursive($__v['default'])
+                        : $__v['default'];
                 }
             }
         }
@@ -131,7 +131,7 @@ class Cat
         }
 
         $__providedOptionals = [];
-        $hasFur = property_exists($input, 'hasFur') ? $input->{'hasFur'} : null;
+        $hasFur = property_exists($input, 'hasFur') ? ($input->{'hasFur'} !== null ? $input->{'hasFur'} : null) : null;
         if (property_exists($input, 'hasFur')) {
             $__providedOptionals['hasFur'] = true;
         }
@@ -152,7 +152,7 @@ class Cat
     {
         $output = [];
         if (isset($this->hasFur) || array_key_exists('hasFur', $this->_providedOptionals)) {
-            $output['hasFur'] = $this->hasFur;
+            $output['hasFur'] = ($this->hasFur !== null) ? ($this->hasFur) : null;
         }
 
         if ($includeDefaults) {
@@ -176,7 +176,7 @@ class Cat
     {
         $output = new \stdClass();
         if (isset($this->hasFur) || array_key_exists('hasFur', $this->_providedOptionals)) {
-            $output->{'hasFur'} = $this->hasFur;
+            $output->{'hasFur'} = ($this->hasFur !== null) ? ($this->hasFur) : null;
         }
 
         if ($includeDefaults) {
@@ -204,7 +204,7 @@ class Cat
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {
@@ -222,7 +222,7 @@ class Cat
      * @param string $propertyName Property name to check (exactly as it appears in the schema)
      * @return bool
      */
-    public function isProvidedOptional(string $propertyName): bool
+    public function isOptionalProvided(string $propertyName): bool
     {
         return array_key_exists($propertyName, $this->_providedOptionals);
     }

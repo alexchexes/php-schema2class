@@ -11,7 +11,7 @@ class MyClassEnsureArgs2
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'required' => [
             'city',
             'street',
@@ -68,14 +68,6 @@ class MyClassEnsureArgs2
     }
 
     /**
-     * @return string
-     */
-    public function getStreet(): string
-    {
-        return $this->street;
-    }
-
-    /**
      * @param string $city
      * @return self
      * @param bool $validate
@@ -84,7 +76,7 @@ class MyClassEnsureArgs2
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($city, self::$schema['properties']['city']);
+            $validator->validate($city, self::$_schema['properties']['city']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -97,6 +89,14 @@ class MyClassEnsureArgs2
     }
 
     /**
+     * @return string
+     */
+    public function getStreet(): string
+    {
+        return $this->street;
+    }
+
+    /**
      * @param string $street
      * @return self
      * @param bool $validate
@@ -105,7 +105,7 @@ class MyClassEnsureArgs2
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($street, self::$schema['properties']['street']);
+            $validator->validate($street, self::$_schema['properties']['street']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -126,7 +126,7 @@ class MyClassEnsureArgs2
      * @return MyClassEnsureArgs2 Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true, bool $materializeDefaults = false): MyClassEnsureArgs2
+    public static function fromInput(array|object $input, bool $validate = true, bool $materializeDefaults = false): MyClassEnsureArgs2
     {
         $input = is_array($input)
             ? \JsonSchema\Validator::arrayToObjectRecursive($input)
@@ -135,9 +135,9 @@ class MyClassEnsureArgs2
         if ($materializeDefaults) {
             foreach (self::$_defaults as $__k => $__v) {
                 if (!property_exists($input, (string) $__k)) {
-                   $input->{$__k} = ($__v['type'] ?? null) === 'object'
-                       ? \JsonSchema\Validator::arrayToObjectRecursive($__v['default'])
-                       : $__v['default'];
+                    $input->{$__k} = ($__v['type'] ?? null) === 'object'
+                        ? \JsonSchema\Validator::arrayToObjectRecursive($__v['default'])
+                        : $__v['default'];
                 }
             }
         }
@@ -214,7 +214,7 @@ class MyClassEnsureArgs2
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {

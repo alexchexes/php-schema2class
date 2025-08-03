@@ -36,8 +36,8 @@ Now it:
 - Improves camelCase/PascalCase handling when generating identifier names.
 - Omits the default `null` value for properties listed in the `required` schema block.
 - Improves type hints and PHPDoc type generation for complex types like unions, nested arrays, etc.
-- Adds a guard against passing anything other than an array/object to `buildFromInput`, building multi-line validation error messages.
-- Setter methods (`withX()`) now accept an optional `$validate` argument to be able skip validation, mirroring `buildFromInput()`.
+- Adds a guard against passing anything other than an array/object to `fromInput`, building multi-line validation error messages.
+- Setter methods (`withX()`) now accept an optional `$validate` argument to be able skip validation, mirroring `fromInput()`.
 - Option `mutableSetters` allows generating mutable `setX()` methods (optionally chainable).
 - Skips emitting empty `__construct` or `__clone` methods.
 - Prints a notice when skipping `definitions` that do not describe an object.
@@ -56,12 +56,12 @@ Now it:
 
 ### Enums
 
-- Laminas's immutable `EnumGenerator` replaced with own mutable implementation `PhpParserEnumGenerator` built on `nikic/php-parser` which allows modifications via the hook system.
+- Laminas's immutable `EnumGenerator` replaced with own mutable implementation built on `nikic/php-parser` which allows modifications via the hook system.
 - Unsupported enum types are now skipped with fallback to type hints instead of raising an error.
 
 ### Defaults handling
 
-- Now, if the schema has a default for some property, the generated class includes the parameter `$materializeDefaults` in `buildFromInput` and `$includeDefaults` in `toArray()`/`toStdClass()`.
+- Now, if the schema has a default for some property, the generated class includes the parameter `$materializeDefaults` in `fromInput` and `$includeDefaults` in `toArray()`/`toStdClass()`.
 
 ### Documentation
 
@@ -80,9 +80,11 @@ Now it:
 
 ### Breaking changes
 
-- The `toJson` method of the generated class was renamed to `toArray` to reflect its purpose.
+- The `toJson` method of the generated class was renamed to `toArray` to reflect its purpose (`toStdClass` method is added but it is not breaking).
 
-- The `treatValuesWithDefaultAsOptional` option was removed in favor of the runtime options `$materializeDefaults` in `buildFromInput()` and `$includeDefaults` in `toArray()`.
+- The `buildFromInput` method of the generated class was renamed to `fromInput`.
+
+- The `treatValuesWithDefaultAsOptional` option was removed in favor of the runtime options `$materializeDefaults` in `fromInput()` and `$includeDefaults` in `toArray()`.
 
 - Configuration layout has been simplified: there are now only two top-level keys, `options` and `files`. Each `files` item has three keys: `input`, an optional `className`, and `options`, where the `options` object can override any setting from the top-level `options`.
 

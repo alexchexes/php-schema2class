@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Util;
 
@@ -10,38 +11,50 @@ class StringUtilsTest extends TestCase
 {
     public function testCapitalizeWordCapitalizesWord()
     {
-        $capitalized = StringUtils::capitalizeWord("foo");
+        $capitalized = StringUtils::capitalize("foo");
         assertThat($capitalized, equalTo("Foo"));
     }
 
     public function testCapitalizeWordDoesNotModifyAlreadyCapitalizedWord()
     {
-        $capitalized = StringUtils::capitalizeWord("Foo");
+        $capitalized = StringUtils::capitalize("Foo");
         assertThat($capitalized, equalTo("Foo"));
     }
 
-    public function testPascalCaseMakesWordPascalCase()
+    public function testSafePascalCaseWorks()
     {
-        $pascaled = StringUtils::pascalCase("foo");
+        $pascaled = StringUtils::safePascalCase("foo");
         assertThat($pascaled, equalTo("Foo"));
     }
 
-    public function testPascalCaseHandlesWordsWithDashes()
+    public function testSafePascalCaseHandlesWordsWithDashes()
     {
-        $pascaled = StringUtils::pascalCase("content-disposition");
+        $pascaled = StringUtils::safePascalCase("content-disposition");
         assertThat($pascaled, equalTo("ContentDisposition"));
     }
 
-    public function testCamelCaseCamelCases()
+    public function testSafeCamelCaseWorks()
     {
-        $camelCased = StringUtils::camelCase("content-disposition");
+        $camelCased = StringUtils::safeCamelCase("content-disposition");
         assertThat($camelCased, equalTo("contentDisposition"));
     }
 
-    public function testCamelCaseTransliteratesNonAsciiCharacters()
+    public function testSafeCamelCaseTransliteratesNonAscii()
     {
-        $camelCased = StringUtils::camelCase("ЕГРЮЛ Казахстан");
+        $camelCased = StringUtils::safeCamelCase("ЕГРЮЛ Казахстан");
         assertThat($camelCased, equalTo("EGRIuLKazakhstan"));
+    }
+
+    public function testSafeCamelCaseFallbackForInvalidString()
+    {
+        $camel = StringUtils::safeCamelCase("!!!");
+        $this->assertMatchesRegularExpression('/^_[a-f0-9]{8}$/', $camel);
+    }
+
+    public function testSafeCamelCasePrefixesNumericNames()
+    {
+        $camel = StringUtils::safeCamelCase("123name");
+        assertThat($camel, equalTo("_123name"));
     }
 
     public function testSanitizeIdentifierTransliteratesAndRemovesInvalidCharacters()
@@ -59,7 +72,7 @@ class StringUtilsTest extends TestCase
 
     public function testCapitalizeWordHandlesEmptyString()
     {
-        $capitalized = StringUtils::capitalizeWord("");
+        $capitalized = StringUtils::capitalize("");
         assertThat($capitalized, equalTo(""));
     }
 
@@ -67,17 +80,5 @@ class StringUtilsTest extends TestCase
     {
         $sanitized = StringUtils::sanitizeIdentifier("!!!");
         $this->assertMatchesRegularExpression('/^_[a-f0-9]{8}$/', $sanitized);
-    }
-
-    public function testCamelCaseFallbackForInvalidString()
-    {
-        $camel = StringUtils::camelCase("!!!");
-        $this->assertMatchesRegularExpression('/^_[a-f0-9]{8}$/', $camel);
-    }
-
-    public function testCamelCasePrefixesNumericNames()
-    {
-        $camel = StringUtils::camelCase("123name");
-        assertThat($camel, equalTo("_123name"));
     }
 }

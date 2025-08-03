@@ -9,7 +9,7 @@ class MyClassEnsureArgs3Item
      *
      * @var array
      */
-    private static $schema = [
+    private static $_schema = [
         'properties' => [
             'name' => [
                 'type' => 'string',
@@ -51,7 +51,7 @@ class MyClassEnsureArgs3Item
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($name, self::$schema['properties']['name']);
+            $validator->validate($name, self::$_schema['properties']['name']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -83,11 +83,11 @@ class MyClassEnsureArgs3Item
      * @return MyClassEnsureArgs3Item Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true, bool $materializeDefaults = false)
+    public static function fromInput($input, bool $validate = true, bool $materializeDefaults = false)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($input)
+                'Input to fromInput must be array or object, got ' . gettype($input)
             );
         }
 
@@ -98,9 +98,9 @@ class MyClassEnsureArgs3Item
         if ($materializeDefaults) {
             foreach (self::$_defaults as $__k => $__v) {
                 if (!property_exists($input, (string) $__k)) {
-                   $input->{$__k} = ($__v['type'] ?? null) === 'object'
-                       ? \JsonSchema\Validator::arrayToObjectRecursive($__v['default'])
-                       : $__v['default'];
+                    $input->{$__k} = ($__v['type'] ?? null) === 'object'
+                        ? \JsonSchema\Validator::arrayToObjectRecursive($__v['default'])
+                        : $__v['default'];
                 }
             }
         }
@@ -178,7 +178,7 @@ class MyClassEnsureArgs3Item
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function($e) {

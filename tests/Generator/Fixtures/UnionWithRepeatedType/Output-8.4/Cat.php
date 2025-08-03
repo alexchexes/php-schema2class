@@ -11,7 +11,7 @@ class Cat
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'type' => 'object',
         'properties' => [
             'hasFur' => [
@@ -105,7 +105,7 @@ class Cat
      * @return Cat Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): Cat
+    public static function fromInput(array|object $input, bool $validate = true): Cat
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -113,21 +113,21 @@ class Cat
         }
 
         $__providedOptionals = [];
-        $hasFur = property_exists($input, 'hasFur') ? match (true) {
-            (($input->{'hasFur'}) === null) || (is_bool($input->{'hasFur'})) => ($input->{'hasFur'} !== null) ? ((bool)($input->{'hasFur'})) : null,
-            (($input->{'hasFur'}) === null) || ((is_string($input->{'hasFur'})) || (is_int($input->{'hasFur'}) || is_float($input->{'hasFur'}))) => ($input->{'hasFur'} !== null) ? (match (true) {
+        $hasFur = property_exists($input, 'hasFur') ? ($input->{'hasFur'} !== null ? match (true) {
+            (($input->{'hasFur'}) === null) || (is_bool($input->{'hasFur'})) => ($input->{'hasFur'} !== null ? (bool)$input->{'hasFur'} : null),
+            (($input->{'hasFur'}) === null) || ((is_string($input->{'hasFur'})) || (is_int($input->{'hasFur'}) || is_float($input->{'hasFur'}))) => ($input->{'hasFur'} !== null ? match (true) {
             is_string($input->{'hasFur'}) => $input->{'hasFur'},
-            is_int($input->{'hasFur'}) || is_float($input->{'hasFur'}) => str_contains((string)($input->{'hasFur'}), '.') ? (float)($input->{'hasFur'}) : (int)($input->{'hasFur'}),
+            is_int($input->{'hasFur'}) || is_float($input->{'hasFur'}) => (str_contains((string)$input->{'hasFur'}, '.') ? (float)$input->{'hasFur'} : (int)$input->{'hasFur'}),
             default => null,
-        }) : null,
+        } : null),
             (is_string($input->{'hasFur'})) || (is_int($input->{'hasFur'}) || is_float($input->{'hasFur'})) || (is_bool($input->{'hasFur'})) => match (true) {
             is_string($input->{'hasFur'}) => $input->{'hasFur'},
-            is_int($input->{'hasFur'}) || is_float($input->{'hasFur'}) => str_contains((string)($input->{'hasFur'}), '.') ? (float)($input->{'hasFur'}) : (int)($input->{'hasFur'}),
-            is_bool($input->{'hasFur'}) => (bool)($input->{'hasFur'}),
+            is_int($input->{'hasFur'}) || is_float($input->{'hasFur'}) => (str_contains((string)$input->{'hasFur'}, '.') ? (float)$input->{'hasFur'} : (int)$input->{'hasFur'}),
+            is_bool($input->{'hasFur'}) => (bool)$input->{'hasFur'},
             default => null,
         },
             default => null,
-        } : null;
+        } : null) : null;
         if (property_exists($input, 'hasFur')) {
             $__providedOptionals['hasFur'] = true;
         }
@@ -147,7 +147,8 @@ class Cat
     {
         $output = [];
         if (isset($this->hasFur) || array_key_exists('hasFur', $this->_providedOptionals)) {
-            $output['hasFur'] = match (true) {
+            $output['hasFur'] = ($this->hasFur !== null) ? (match (true) {
+                default => null,
                 (($this->hasFur) === null) || (is_bool($this->hasFur)) => ($this->hasFur !== null) ? ($this->hasFur) : null,
                 (($this->hasFur) === null) || ((is_string($this->hasFur)) || (is_int($this->hasFur) || is_float($this->hasFur))) => ($this->hasFur !== null) ? (match (true) {
                 default => null,
@@ -160,7 +161,7 @@ class Cat
                 is_int($this->hasFur) || is_float($this->hasFur),
                 is_bool($this->hasFur) => $this->hasFur,
             },
-            };
+            }) : null;
         }
 
         return $output;
@@ -175,7 +176,8 @@ class Cat
     {
         $output = new \stdClass();
         if (isset($this->hasFur) || array_key_exists('hasFur', $this->_providedOptionals)) {
-            $output->{'hasFur'} = match (true) {
+            $output->{'hasFur'} = ($this->hasFur !== null) ? (match (true) {
+                default => null,
                 (($this->hasFur) === null) || (is_bool($this->hasFur)) => ($this->hasFur !== null) ? ($this->hasFur) : null,
                 (($this->hasFur) === null) || ((is_string($this->hasFur)) || (is_int($this->hasFur) || is_float($this->hasFur))) => ($this->hasFur !== null) ? (match (true) {
                 default => null,
@@ -188,7 +190,7 @@ class Cat
                 is_int($this->hasFur) || is_float($this->hasFur),
                 is_bool($this->hasFur) => $this->hasFur,
             },
-            };
+            }) : null;
         }
 
         return $output;
@@ -206,7 +208,7 @@ class Cat
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {
@@ -239,7 +241,7 @@ class Cat
      * @param string $propertyName Property name to check (exactly as it appears in the schema)
      * @return bool
      */
-    public function isProvidedOptional(string $propertyName): bool
+    public function isOptionalProvided(string $propertyName): bool
     {
         return array_key_exists($propertyName, $this->_providedOptionals);
     }

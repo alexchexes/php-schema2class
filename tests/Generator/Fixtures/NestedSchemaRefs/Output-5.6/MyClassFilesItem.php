@@ -9,7 +9,7 @@ class MyClassFilesItem
      *
      * @var array
      */
-    private static $schema = [
+    private static $_schema = [
         'properties' => [
             'input' => [
                 'type' => 'string',
@@ -48,14 +48,6 @@ class MyClassFilesItem
     }
 
     /**
-     * @return OptionsObject|null
-     */
-    public function getOptions()
-    {
-        return $this->options;
-    }
-
-    /**
      * @param string $input
      * @return self
      * @param bool $validate
@@ -64,7 +56,7 @@ class MyClassFilesItem
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($input, self::$schema['properties']['input']);
+            $validator->validate($input, self::$_schema['properties']['input']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -85,6 +77,14 @@ class MyClassFilesItem
         unset($clone->input);
 
         return $clone;
+    }
+
+    /**
+     * @return OptionsObject|null
+     */
+    public function getOptions()
+    {
+        return $this->options;
     }
 
     /**
@@ -118,14 +118,14 @@ class MyClassFilesItem
      * @return MyClassFilesItem Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true)
+    public static function fromInput($input, bool $validate = true)
     {
         $_input = $input;
         unset($input);
 
         if (!is_array($_input) && !is_object($_input)) {
             throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($_input)
+                'Input to fromInput must be array or object, got ' . gettype($_input)
             );
         }
 
@@ -135,7 +135,7 @@ class MyClassFilesItem
         }
 
         $input = isset($_input->{'input'}) ? $_input->{'input'} : null;
-        $options = isset($_input->{'options'}) ? OptionsObject::buildFromInput($_input->{'options'}, $validate) : null;
+        $options = isset($_input->{'options'}) ? OptionsObject::fromInput($_input->{'options'}, $validate) : null;
 
         $obj = new self();
         $obj->input = $input;
@@ -191,7 +191,7 @@ class MyClassFilesItem
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function($e) {

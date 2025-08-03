@@ -9,7 +9,7 @@ class MyClassEnsureArgs1Alternative2
      *
      * @var array
      */
-    private static $schema = [
+    private static $_schema = [
         'required' => [
             'type',
             'accountNumber',
@@ -65,14 +65,6 @@ class MyClassEnsureArgs1Alternative2
     }
 
     /**
-     * @return string
-     */
-    public function getAccountNumber()
-    {
-        return $this->accountNumber;
-    }
-
-    /**
      * @param string $type
      * @return self
      * @param bool $validate
@@ -81,7 +73,7 @@ class MyClassEnsureArgs1Alternative2
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($type, self::$schema['properties']['type']);
+            $validator->validate($type, self::$_schema['properties']['type']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -94,6 +86,14 @@ class MyClassEnsureArgs1Alternative2
     }
 
     /**
+     * @return string
+     */
+    public function getAccountNumber()
+    {
+        return $this->accountNumber;
+    }
+
+    /**
      * @param string $accountNumber
      * @return self
      * @param bool $validate
@@ -102,7 +102,7 @@ class MyClassEnsureArgs1Alternative2
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($accountNumber, self::$schema['properties']['accountNumber']);
+            $validator->validate($accountNumber, self::$_schema['properties']['accountNumber']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -123,11 +123,11 @@ class MyClassEnsureArgs1Alternative2
      * @return MyClassEnsureArgs1Alternative2 Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true, bool $materializeDefaults = false)
+    public static function fromInput($input, bool $validate = true, bool $materializeDefaults = false)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($input)
+                'Input to fromInput must be array or object, got ' . gettype($input)
             );
         }
 
@@ -138,9 +138,9 @@ class MyClassEnsureArgs1Alternative2
         if ($materializeDefaults) {
             foreach (self::$_defaults as $__k => $__v) {
                 if (!property_exists($input, (string) $__k)) {
-                   $input->{$__k} = ($__v['type'] ?? null) === 'object'
-                       ? \JsonSchema\Validator::arrayToObjectRecursive($__v['default'])
-                       : $__v['default'];
+                    $input->{$__k} = ($__v['type'] ?? null) === 'object'
+                        ? \JsonSchema\Validator::arrayToObjectRecursive($__v['default'])
+                        : $__v['default'];
                 }
             }
         }
@@ -217,7 +217,7 @@ class MyClassEnsureArgs1Alternative2
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function($e) {

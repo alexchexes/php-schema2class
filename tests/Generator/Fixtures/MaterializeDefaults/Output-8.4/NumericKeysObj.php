@@ -11,7 +11,7 @@ class NumericKeysObj
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'type' => 'object',
         'properties' => [
             [
@@ -55,22 +55,6 @@ class NumericKeysObj
     }
 
     /**
-     * @return string|null
-     */
-    public function get_1(): ?string
-    {
-        return $this->_1 ?? null;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function get_2(): ?string
-    {
-        return $this->_2 ?? null;
-    }
-
-    /**
      * @param string $_0
      * @return self
      * @param bool $validate
@@ -79,7 +63,7 @@ class NumericKeysObj
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($_0, self::$schema['properties']['0']);
+            $validator->validate($_0, self::$_schema['properties']['0']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -103,6 +87,14 @@ class NumericKeysObj
     }
 
     /**
+     * @return string|null
+     */
+    public function get_1(): ?string
+    {
+        return $this->_1 ?? null;
+    }
+
+    /**
      * @param string $_1
      * @return self
      * @param bool $validate
@@ -111,7 +103,7 @@ class NumericKeysObj
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($_1, self::$schema['properties']['1']);
+            $validator->validate($_1, self::$_schema['properties']['1']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -135,6 +127,14 @@ class NumericKeysObj
     }
 
     /**
+     * @return string|null
+     */
+    public function get_2(): ?string
+    {
+        return $this->_2 ?? null;
+    }
+
+    /**
      * @param string $_2
      * @return self
      * @param bool $validate
@@ -143,7 +143,7 @@ class NumericKeysObj
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($_2, self::$schema['properties']['2']);
+            $validator->validate($_2, self::$_schema['properties']['2']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -174,7 +174,7 @@ class NumericKeysObj
      * @return NumericKeysObj Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): NumericKeysObj
+    public static function fromInput(array|object $input, bool $validate = true): NumericKeysObj
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -246,7 +246,7 @@ class NumericKeysObj
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {

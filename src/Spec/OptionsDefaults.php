@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Spec;
@@ -16,17 +15,18 @@ final class OptionsDefaults
         $opts = $options->toArray();
 
         $defaults = [
-            'cleanTargetDirectory'              => false,
-            'disableStrictTypes'                => false,
-            'inlineAllofReferences'             => false,
-            'targetPHPVersion'                  => GeneratorRequest::DEFAULT_PHP8_VERSION,
-            'newValidatorClassExpr'             => 'new \JsonSchema\Validator()',
-            'preservePropertyNames'             => false,
-            'noGetters'                         => false,
-            'noSetters'                         => false,
-            'noSchemaMetadata'                  => false,
-            'singleLineSchema'                  => false,
-            'noEnums'                           => false,
+            'cleanTargetDirectory'  => false,
+            'disableStrictTypes'    => false,
+            'inlineAllofReferences' => false,
+            'targetPHPVersion'      => GeneratorRequest::DEFAULT_PHP8_VERSION,
+            'newValidatorExpr' => 'new \JsonSchema\Validator()',
+            'arrayToObjectExpr'     => '\JsonSchema\Validator::arrayToObjectRecursive',
+            'preservePropertyNames' => false,
+            'noGetters'             => false,
+            'noSetters'             => false,
+            'noSchemaMetadata'      => false,
+            'singleLineSchema'      => false,
+            'noEnums'               => false,
         ];
 
         $all_keys = array_unique(array_merge(array_keys($opts), array_keys($defaults)));
@@ -37,7 +37,7 @@ final class OptionsDefaults
             }
         }
 
-        return SpecificationOptions::buildFromInput($opts);
+        return SpecificationOptions::fromInput($opts);
     }
 
     /**
@@ -54,7 +54,7 @@ final class OptionsDefaults
         }
 
         $merged = array_merge($base->toArray(), $override->toArray());
-        $opts = SpecificationOptions::buildFromInput($merged, validate: false);
+        $opts = SpecificationOptions::fromInput($merged, validate: false);
 
         return self::applyDefaults($opts);
     }

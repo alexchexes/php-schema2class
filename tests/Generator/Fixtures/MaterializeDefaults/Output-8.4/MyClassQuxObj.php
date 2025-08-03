@@ -14,7 +14,7 @@ class MyClassQuxObj
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'type' => 'object',
         'description' => 'optional nullable object with default value that is empty object',
         'properties' => [
@@ -92,7 +92,7 @@ class MyClassQuxObj
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($a, self::$schema['properties']['a']);
+            $validator->validate($a, self::$_schema['properties']['a']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -123,7 +123,7 @@ class MyClassQuxObj
      * @return MyClassQuxObj Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): MyClassQuxObj
+    public static function fromInput(array|object $input, bool $validate = true): MyClassQuxObj
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -179,7 +179,7 @@ class MyClassQuxObj
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {

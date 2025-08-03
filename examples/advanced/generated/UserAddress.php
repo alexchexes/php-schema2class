@@ -56,14 +56,6 @@ class UserAddress
     }
 
     /**
-     * @return string
-     */
-    public function getStreet(): string
-    {
-        return $this->street;
-    }
-
-    /**
      * @param string $city
      * @return self
      * @param bool $validate
@@ -82,6 +74,14 @@ class UserAddress
         $clone->city = $city;
 
         return $clone;
+    }
+
+    /**
+     * @return string
+     */
+    public function getStreet(): string
+    {
+        return $this->street;
     }
 
     /**
@@ -113,7 +113,7 @@ class UserAddress
      * @return UserAddress Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): UserAddress
+    public static function fromInput(array|object $input, bool $validate = true): UserAddress
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {

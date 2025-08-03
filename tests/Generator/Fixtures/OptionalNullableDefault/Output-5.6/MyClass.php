@@ -9,7 +9,7 @@ class MyClass
      *
      * @var array
      */
-    private static $schema = [
+    private static $_schema = [
         'type' => 'object',
         'properties' => [
             'foo' => [
@@ -224,86 +224,6 @@ class MyClass
     }
 
     /**
-     * optional, not nullable, no default
-     *
-     * @return string|null
-     */
-    public function getBar()
-    {
-        return $this->bar;
-    }
-
-    /**
-     * optional, nullable, no default
-     *
-     * @return string|null
-     */
-    public function getBaz()
-    {
-        return $this->baz;
-    }
-
-    /**
-     * optional, nullable, with default
-     *
-     * @return string|null
-     */
-    public function getQux()
-    {
-        return $this->qux;
-    }
-
-    /**
-     * required, nullable, with default
-     *
-     * @return string|null
-     */
-    public function getQuux()
-    {
-        return $this->quux;
-    }
-
-    /**
-     * optional, not nullable, with default
-     *
-     * @return string|null
-     */
-    public function getXyyz()
-    {
-        return $this->xyyz;
-    }
-
-    /**
-     * required, not nullable, with default
-     *
-     * @return string
-     */
-    public function getThud()
-    {
-        return $this->thud;
-    }
-
-    /**
-     * optional, nullable, with default, object
-     *
-     * @return MyClassGrox|null
-     */
-    public function getGrox()
-    {
-        return $this->grox;
-    }
-
-    /**
-     * optional, nullable, with default, object, and default is empty object
-     *
-     * @return MyClassGooks|null
-     */
-    public function getGooks()
-    {
-        return $this->gooks;
-    }
-
-    /**
      * @param string $foo
      * @return self
      * @param bool $validate
@@ -312,7 +232,7 @@ class MyClass
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($foo, self::$schema['properties']['foo']);
+            $validator->validate($foo, self::$_schema['properties']['foo']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -325,6 +245,16 @@ class MyClass
     }
 
     /**
+     * optional, not nullable, no default
+     *
+     * @return string|null
+     */
+    public function getBar()
+    {
+        return $this->bar;
+    }
+
+    /**
      * @param string $bar
      * @return self
      * @param bool $validate
@@ -333,7 +263,7 @@ class MyClass
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($bar, self::$schema['properties']['bar']);
+            $validator->validate($bar, self::$_schema['properties']['bar']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -357,6 +287,16 @@ class MyClass
     }
 
     /**
+     * optional, nullable, no default
+     *
+     * @return string|null
+     */
+    public function getBaz()
+    {
+        return $this->baz;
+    }
+
+    /**
      * @param string $baz
      * @return self
      * @param bool $validate
@@ -365,7 +305,7 @@ class MyClass
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($baz, self::$schema['properties']['baz']);
+            $validator->validate($baz, self::$_schema['properties']['baz']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -391,6 +331,16 @@ class MyClass
     }
 
     /**
+     * optional, nullable, with default
+     *
+     * @return string|null
+     */
+    public function getQux()
+    {
+        return $this->qux;
+    }
+
+    /**
      * @param string $qux
      * @return self
      * @param bool $validate
@@ -399,7 +349,7 @@ class MyClass
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($qux, self::$schema['properties']['qux']);
+            $validator->validate($qux, self::$_schema['properties']['qux']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -425,6 +375,16 @@ class MyClass
     }
 
     /**
+     * required, nullable, with default
+     *
+     * @return string|null
+     */
+    public function getQuux()
+    {
+        return $this->quux;
+    }
+
+    /**
      * @param string $quux
      * @return self
      * @param bool $validate
@@ -433,7 +393,7 @@ class MyClass
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($quux, self::$schema['properties']['quux']);
+            $validator->validate($quux, self::$_schema['properties']['quux']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -446,6 +406,16 @@ class MyClass
     }
 
     /**
+     * optional, not nullable, with default
+     *
+     * @return string|null
+     */
+    public function getXyyz()
+    {
+        return $this->xyyz;
+    }
+
+    /**
      * @param string $xyyz
      * @return self
      * @param bool $validate
@@ -454,7 +424,7 @@ class MyClass
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($xyyz, self::$schema['properties']['xyyz']);
+            $validator->validate($xyyz, self::$_schema['properties']['xyyz']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -478,6 +448,16 @@ class MyClass
     }
 
     /**
+     * required, not nullable, with default
+     *
+     * @return string
+     */
+    public function getThud()
+    {
+        return $this->thud;
+    }
+
+    /**
      * @param string $thud
      * @return self
      * @param bool $validate
@@ -486,7 +466,7 @@ class MyClass
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($thud, self::$schema['properties']['thud']);
+            $validator->validate($thud, self::$_schema['properties']['thud']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -496,6 +476,16 @@ class MyClass
         $clone->thud = $thud;
 
         return $clone;
+    }
+
+    /**
+     * optional, nullable, with default, object
+     *
+     * @return MyClassGrox|null
+     */
+    public function getGrox()
+    {
+        return $this->grox;
     }
 
     /**
@@ -521,6 +511,16 @@ class MyClass
         unset($clone->_providedOptionals['grox']);
 
         return $clone;
+    }
+
+    /**
+     * optional, nullable, with default, object, and default is empty object
+     *
+     * @return MyClassGooks|null
+     */
+    public function getGooks()
+    {
+        return $this->gooks;
     }
 
     /**
@@ -557,11 +557,11 @@ class MyClass
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true, bool $materializeDefaults = false)
+    public static function fromInput($input, bool $validate = true, bool $materializeDefaults = false)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($input)
+                'Input to fromInput must be array or object, got ' . gettype($input)
             );
         }
 
@@ -572,9 +572,9 @@ class MyClass
         if ($materializeDefaults) {
             foreach (self::$_defaults as $__k => $__v) {
                 if (!property_exists($input, (string) $__k)) {
-                   $input->{$__k} = ($__v['type'] ?? null) === 'object'
-                       ? \JsonSchema\Validator::arrayToObjectRecursive($__v['default'])
-                       : $__v['default'];
+                    $input->{$__k} = ($__v['type'] ?? null) === 'object'
+                        ? \JsonSchema\Validator::arrayToObjectRecursive($__v['default'])
+                        : $__v['default'];
                 }
             }
         }
@@ -586,22 +586,22 @@ class MyClass
         $__providedOptionals = [];
         $foo = $input->{'foo'};
         $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
-        $baz = property_exists($input, 'baz') ? $input->{'baz'} : null;
+        $baz = property_exists($input, 'baz') ? ($input->{'baz'} !== null ? $input->{'baz'} : null) : null;
         if (property_exists($input, 'baz')) {
             $__providedOptionals['baz'] = true;
         }
-        $qux = property_exists($input, 'qux') ? $input->{'qux'} : null;
+        $qux = property_exists($input, 'qux') ? ($input->{'qux'} !== null ? $input->{'qux'} : null) : null;
         if (property_exists($input, 'qux')) {
             $__providedOptionals['qux'] = true;
         }
         $quux = $input->{'quux'};
         $xyyz = isset($input->{'xyyz'}) ? $input->{'xyyz'} : null;
         $thud = $input->{'thud'};
-        $grox = property_exists($input, 'grox') ? MyClassGrox::buildFromInput($input->{'grox'}, $validate, $materializeDefaults) : null;
+        $grox = property_exists($input, 'grox') ? ($input->{'grox'} !== null ? MyClassGrox::fromInput($input->{'grox'}, $validate, $materializeDefaults) : null) : null;
         if (property_exists($input, 'grox')) {
             $__providedOptionals['grox'] = true;
         }
-        $gooks = property_exists($input, 'gooks') ? MyClassGooks::buildFromInput($input->{'gooks'}, $validate, $materializeDefaults) : null;
+        $gooks = property_exists($input, 'gooks') ? ($input->{'gooks'} !== null ? MyClassGooks::fromInput($input->{'gooks'}, $validate, $materializeDefaults) : null) : null;
         if (property_exists($input, 'gooks')) {
             $__providedOptionals['gooks'] = true;
         }
@@ -631,10 +631,10 @@ class MyClass
             $output['bar'] = $this->bar;
         }
         if (isset($this->baz) || array_key_exists('baz', $this->_providedOptionals)) {
-            $output['baz'] = $this->baz;
+            $output['baz'] = ($this->baz !== null) ? ($this->baz) : null;
         }
         if (isset($this->qux) || array_key_exists('qux', $this->_providedOptionals)) {
-            $output['qux'] = $this->qux;
+            $output['qux'] = ($this->qux !== null) ? ($this->qux) : null;
         }
         $output['quux'] = $this->quux;
         if (isset($this->xyyz)) {
@@ -642,14 +642,10 @@ class MyClass
         }
         $output['thud'] = $this->thud;
         if (isset($this->grox) || array_key_exists('grox', $this->_providedOptionals)) {
-            if (isset($this->grox)) {
-                $output['grox'] = ($this->grox)->toArray($includeDefaults);
-            }
+            $output['grox'] = ($this->grox !== null) ? (($this->grox !== null) ? (($this->grox)->toArray($includeDefaults)) : null) : null;
         }
         if (isset($this->gooks) || array_key_exists('gooks', $this->_providedOptionals)) {
-            if (isset($this->gooks)) {
-                $output['gooks'] = ($this->gooks)->toArray($includeDefaults);
-            }
+            $output['gooks'] = ($this->gooks !== null) ? (($this->gooks !== null) ? (($this->gooks)->toArray($includeDefaults)) : null) : null;
         }
 
         if ($includeDefaults) {
@@ -677,10 +673,10 @@ class MyClass
             $output->{'bar'} = $this->bar;
         }
         if (isset($this->baz) || array_key_exists('baz', $this->_providedOptionals)) {
-            $output->{'baz'} = $this->baz;
+            $output->{'baz'} = ($this->baz !== null) ? ($this->baz) : null;
         }
         if (isset($this->qux) || array_key_exists('qux', $this->_providedOptionals)) {
-            $output->{'qux'} = $this->qux;
+            $output->{'qux'} = ($this->qux !== null) ? ($this->qux) : null;
         }
         $output->{'quux'} = $this->quux;
         if (isset($this->xyyz)) {
@@ -688,14 +684,10 @@ class MyClass
         }
         $output->{'thud'} = $this->thud;
         if (isset($this->grox) || array_key_exists('grox', $this->_providedOptionals)) {
-            if (isset($this->grox)) {
-                $output->{'grox'} = ($this->grox)->toStdClass($includeDefaults);
-            }
+            $output->{'grox'} = ($this->grox !== null) ? (($this->grox !== null) ? (($this->grox)->toStdClass($includeDefaults)) : null) : null;
         }
         if (isset($this->gooks) || array_key_exists('gooks', $this->_providedOptionals)) {
-            if (isset($this->gooks)) {
-                $output->{'gooks'} = ($this->gooks)->toStdClass($includeDefaults);
-            }
+            $output->{'gooks'} = ($this->gooks !== null) ? (($this->gooks !== null) ? (($this->gooks)->toStdClass($includeDefaults)) : null) : null;
         }
 
         if ($includeDefaults) {
@@ -723,7 +715,7 @@ class MyClass
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function($e) {
@@ -755,7 +747,7 @@ class MyClass
      * @param string $propertyName Property name to check (exactly as it appears in the schema)
      * @return bool
      */
-    public function isProvidedOptional(string $propertyName)
+    public function isOptionalProvided(string $propertyName)
     {
         return array_key_exists($propertyName, $this->_providedOptionals);
     }

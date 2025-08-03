@@ -24,7 +24,7 @@ class InferNamespaceTest extends TestCase
         $dir = sys_get_temp_dir() . '/s2c_' . uniqid();
         mkdir($dir);
         try {
-            $expected = StringUtils::pascalCase(basename($dir));
+            $expected = StringUtils::safePascalCase(basename($dir));
             $ns = $runner->inferNamespace($dir);
             $this->assertSame($expected, $ns);
         } finally {

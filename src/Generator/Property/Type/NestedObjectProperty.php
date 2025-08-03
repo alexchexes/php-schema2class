@@ -1,0 +1,113 @@
+<?php
+declare(strict_types=1);
+
+namespace Helmich\Schema2Class\Generator\Property\Type;
+
+use Helmich\Schema2Class\Generator\Class\MethodNames;
+use Helmich\Schema2Class\Generator\GeneratorException;
+use Helmich\Schema2Class\Writer\WriterInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+
+/**
+ * Represents a property of type "object" (with nested properties).
+ * 
+ * When this class claims the schema, another class is generated to represent the property.
+ */
+class NestedObjectProperty extends AbstractProperty
+{
+    public static function canHandleSchema(array $schema): bool
+    {
+        $isObject = (isset($schema["type"]) && $schema["type"] === "object")
+            || isset($schema["properties"]);
+
+        $hasProperties = isset($schema["properties"])
+            && is_array($schema["properties"])
+            && count($schema["properties"]) > 0;
+
+        $hasAdditionalProperties = isset($schema["additionalProperties"])
+            && is_array($schema["additionalProperties"])
+            && count($schema["additionalProperties"]) > 0;
+
+        return $isObject && $hasProperties && !$hasAdditionalProperties;
+    }
+
+    public function isComplex(): bool
+    {
+        return true;
+    }
+
+    /**
+     * @throws GeneratorException
+     */
+    public function generateSubTypes(WriterInterface $writer, OutputInterface $output): void
+    {
+        $req = $this->generatorRequest
+            ->withSchema($this->schema)
+            ->withClass($this->subTypeName());
+
+        $generator = $this->generatorRequest->getSchemaToClassFactory()->build($writer, $output);
+        $generator->schemaToClass($this->propagateRootDefinitions($req));
+    }
+
+    public function typeAnnotation(): string
+    {
+        return $this->subTypeName();
+    }
+
+    public function typeHint(string $phpVersion): ?string
+    {
+        return "\\" . $this->generatorRequest->getTargetNamespace() . "\\" . $this->subTypeName();
+    }
+
+    public function generateTypeAssertionExpr(string $expr): string
+    {
+        return "{$expr} instanceof {$this->subTypeName()}";
+    }
+
+    public function generateInputAssertionExpr(string $expr): string
+    {
+        $VALIDATE_INPUT = MethodNames::VALIDATE_INPUT;
+        return "{$this->subTypeName()}::{$VALIDATE_INPUT}({$expr}, true)";
+    }
+
+    public function generateInputMappingExpr(string $expr, bool $asserted = false): string
+    {
+        $validateArg = $this->generatorRequest->getCurrValidateArgAlias();
+        $materializeArg = $this->generatorRequest->getCurrMaterializeArgAlias();
+
+        $args = [$expr, '$' . $validateArg];
+        if ($materializeArg !== null) {
+            $args[] = '$' . $materializeArg;
+        }
+        $argsStr = implode(', ', $args);
+
+        $FROM_INPUT = MethodNames::FROM_INPUT;
+
+        return "{$this->subTypeName()}::{$FROM_INPUT}({$argsStr})";
+    }
+
+    public function generateOutputMappingExpr(string $expr): string
+    {
+        $inclDefaultsArg = $this->generatorRequest->getCurrReqHasDefaults() ? '$includeDefaults' : '';
+        $TO_ARRAY = MethodNames::TO_ARRAY;
+        return "({$expr})->{$TO_ARRAY}({$inclDefaultsArg})";
+    }
+
+    public function generateOutputMappingExprStdClass(string $expr): string
+    {
+        $inclDefaultsArg = $this->generatorRequest->getCurrReqHasDefaults() ? '$includeDefaults' : '';
+        $TO_STD_CLASS = MethodNames::TO_STD_CLASS;
+        return "({$expr})->{$TO_STD_CLASS}({$inclDefaultsArg})";
+    }
+
+    public function generateCloneExpr(string $expr): string
+    {
+        return "clone {$expr}";
+    }
+
+    private function subTypeName(): string
+    {
+        return $this->generatorRequest->getTargetClass() . $this->capitalizedName;
+    }
+
+}
