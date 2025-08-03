@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class\Generator\ReferencedType;
 
 use Helmich\Schema2Class\Generator\Class\MethodNames;
+use Helmich\Schema2Class\Generator\Class\Method\FromInputMethodFactory;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 
 /**
@@ -74,15 +75,15 @@ readonly class ReferencedTypeClass implements ReferencedTypeInterface
 
     public function inputMappingExpr(string $expr, bool $asserted = false): string
     {
-        $validateArg = $this->request->getCurrValidateArgAlias();
-        $materializeArg = $this->request->getCurrMaterializeArgAlias();
-
-        $args = [$expr, '$' . $validateArg];
-        if ($materializeArg !== null) {
-            $args[] = '$' . $materializeArg;
+        $args = [
+            $expr,
+            '$' . FromInputMethodFactory::VALIDATE_ARG_NAME,
+        ];
+        if ($this->request->getCurrReqHasDefaults()) {
+            $args[] = '$' . FromInputMethodFactory::DEFAULTS_ARG_NAME;
         }
         $argsStr = implode(', ', $args);
-        
+
         $cls = $this->relativeName();
         $FROM_INPUT = MethodNames::FROM_INPUT;
         return "{$cls}::{$FROM_INPUT}({$argsStr})";

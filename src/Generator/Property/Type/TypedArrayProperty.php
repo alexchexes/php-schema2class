@@ -7,6 +7,7 @@ use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\PropertyBuilder;
 use Helmich\Schema2Class\Writer\WriterInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Helmich\Schema2Class\Generator\Class\Method\FromInputMethodFactory;
 
 /**
  * Represents array of complex objects defined "items" schema.
@@ -93,12 +94,9 @@ class TypedArrayProperty extends AbstractProperty
             return "array_map(fn(\$i) => {$map}, {$expr})";
         }
 
-        $validateArg = $this->request->getCurrValidateArgAlias();
-        $materializeArg = $this->request->getCurrMaterializeArgAlias();
-
-        $use = ['$' . $validateArg];
-        if ($materializeArg !== null) {
-            $use[] = '$' . $materializeArg;
+        $use = ['$' . FromInputMethodFactory::VALIDATE_ARG_NAME];
+        if ($this->request->getCurrReqHasDefaults()) {
+            $use[] = '$' . FromInputMethodFactory::DEFAULTS_ARG_NAME;
         }
         $useExpr = implode(', ', $use);
         return "array_map(function(\$i) use ({$useExpr}) { return {$map}; }, {$expr})";

@@ -52,7 +52,7 @@ class UnionProperty extends AbstractProperty
 
     public function convertInputToTypeMatch(string $inputVarName = 'input'): string
     {
-        $name  = $this->name;
+        $name  = $this->varName;
         $key   = $this->key;
         $keyStr = var_export($key, true);
 
@@ -82,15 +82,15 @@ class UnionProperty extends AbstractProperty
             return $this->convertInputToTypeMatch($inputVarName);
         }
     
-        $name   = $this->name;
+        $name   = $this->varName;
         $key    = $this->key;
         $keyStr = var_export($key, true);
-    
+
         $accessor = "\${$inputVarName}->{{$keyStr}}";
-    
+
         // Start with a "fallback" that just reassigns the raw value
         $conversions = [
-            "\$$key = {$accessor};" => ["discriminators" => [], "fallback" => true],
+            "\$$name = {$accessor};" => ["discriminators" => [], "fallback" => true],
         ];
     
         // Build up per‑arm conversions

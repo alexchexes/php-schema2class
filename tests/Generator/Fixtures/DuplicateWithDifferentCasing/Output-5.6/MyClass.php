@@ -146,10 +146,10 @@ class MyClass
         }
 
         $foobar = isset($input->{'foobar'}) ? $input->{'foobar'} : null;
-        $_fooBar_1 = $input->{'fooBar'};
+        $fooBar = $input->{'fooBar'};
         $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
 
-        $obj = new self($_fooBar_1);
+        $obj = new self($fooBar);
         $obj->foobar = $foobar;
         $obj->bar = $bar;
         return $obj;

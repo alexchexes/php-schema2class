@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class\Generator\Class;
 
 use Helmich\Schema2Class\Generator\GeneratorRequest;
+use Helmich\Schema2Class\Generator\Class\Method\FromInputMethodFactory;
+use Helmich\Schema2Class\Generator\Class\PropertyNames;
 use Helmich\Schema2Class\Generator\Property\Collection\PropertyCollection;
 use Helmich\Schema2Class\Generator\Property\PropertyBuilder;
 use Helmich\Schema2Class\Generator\Property\Decorator\OptionalPropertyDecorator;
@@ -145,6 +147,23 @@ class SchemaPropertyCollector
         }
         $used = array_values(array_unique($used));
 
+        $reservedVarNames = array_merge(
+            $reservedPropertyNames,
+            [
+                FromInputMethodFactory::INPUT_ARG_NAME,
+                FromInputMethodFactory::VALIDATE_ARG_NAME,
+                FromInputMethodFactory::DEFAULTS_ARG_NAME,
+                FromInputMethodFactory::OBJ_VAR_NAME,
+                '_' . PropertyNames::OPTIONALS,
+            ],
+        );
+        $usedVars = [];
+        foreach ($reservedVarNames as $n) {
+            $usedVars[] = StringUtils::safeCamelCase($n);
+            $usedVars[] = StringUtils::sanitizeIdentifier($n);
+        }
+        $usedVars = array_values(array_unique($usedVars));
+
         $usedMethods = [];
         foreach ($reservedMethodNames as $n) {
             $usedMethods[] = strtolower(StringUtils::safePascalCase(StringUtils::safeCamelCase($n)));
@@ -185,6 +204,24 @@ class SchemaPropertyCollector
 
             $used[]       = $newName;
             $usedMethods[] = $newPascal;
+
+            $baseVar = $schemaProp->varName();
+            $newVar = $baseVar;
+            if (in_array($newVar, $usedVars, true)) {
+                if ($baseVar[0] !== '_') {
+                    $newVar = '_' . $baseVar;
+                }
+                $i = 1;
+                $baseVarUnique = $newVar;
+                while (in_array($newVar, $usedVars, true)) {
+                    $newVar = $baseVarUnique . '_' . $i;
+                    $i++;
+                }
+            }
+            if ($newVar !== $baseVar) {
+                $schemaProp->setVarName($newVar);
+            }
+            $usedVars[] = $newVar;
         }
     }
 }
