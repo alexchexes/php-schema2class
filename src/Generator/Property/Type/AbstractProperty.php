@@ -28,17 +28,17 @@ abstract class AbstractProperty implements PropertyInterface
     protected array $schema;
     protected ?string $description;
 
-    protected GeneratorRequest $generatorRequest;
+    protected GeneratorRequest $request;
 
-    public function __construct(string $key, array $schema, GeneratorRequest $generatorRequest)
+    public function __construct(string $key, array $schema, GeneratorRequest $request)
     {
         $this->schema           = $schema;
         $this->description      = $schema['description'] ?? null;
-        $this->generatorRequest = $generatorRequest;
+        $this->request = $request;
 
         $this->key = $key;
 
-        if ($generatorRequest->getOptions()->getPreservePropertyNames()) {
+        if ($request->getOptions()->getPreservePropertyNames()) {
             $this->name = StringUtils::sanitizeIdentifier($key);
             $this->methodName = StringUtils::pascalCasePreserveOuterUnderscores($key);
         } else {
@@ -108,7 +108,7 @@ abstract class AbstractProperty implements PropertyInterface
         // build the raw lookup expression (using the JSON key only inside the braces)
         $accessor = "\${$inputVarName}->{{$keyStr}}";
         // now map from JSON→Type (this will call fromInput, etc.)
-        $map = $this->genMappingExpr($accessor);
+        $map = $this->inputMappingExpr($accessor);
         // assign to the *camelCased* local variable name
         return "\${$name} = {$map};";
     }
@@ -117,7 +117,7 @@ abstract class AbstractProperty implements PropertyInterface
     {
         $key    = $this->key;
         $keyStr = var_export($key, true);
-        $map    = $this->genOutputMappingExpr("\$this->{$this->name}");
+        $map    = $this->outputMappingExpr("\$this->{$this->name}");
         $outputVarName = SerializeMethodFactory::OUTPUT_VAR_NAME;
         return "\${$outputVarName}[{$keyStr}] = {$map};";
     }
@@ -126,27 +126,27 @@ abstract class AbstractProperty implements PropertyInterface
     {
         $key    = $this->key;
         $keyStr = var_export($key, true);
-        $map    = $this->genOutputMappingExprStdClass("\$this->{$this->name}");
+        $map    = $this->outputMappingExprStdClass("\$this->{$this->name}");
         $outputVarName = SerializeMethodFactory::OUTPUT_VAR_NAME;
         return "\${$outputVarName}->{{$keyStr}} = {$map};";
     }
 
-    public function genInputAssertionExpr(string $expr): string
+    public function inputAssertionExpr(string $expr): string
     {
-        return $this->genTypeAssertionExpr($expr);
+        return $this->typeAssertionExpr($expr);
     }
 
-    public function genMappingExpr(string $expr, bool $asserted = false): string
-    {
-        return $expr;
-    }
-
-    public function genOutputMappingExpr(string $expr): string
+    public function inputMappingExpr(string $expr, bool $asserted = false): string
     {
         return $expr;
     }
 
-    public function genOutputMappingExprStdClass(string $expr): string
+    public function outputMappingExpr(string $expr): string
+    {
+        return $expr;
+    }
+
+    public function outputMappingExprStdClass(string $expr): string
     {
         return $expr;
     }
@@ -177,9 +177,9 @@ abstract class AbstractProperty implements PropertyInterface
      */
     protected function propagateRootDefinitions(GeneratorRequest $req): GeneratorRequest
     {
-        $defs = $this->generatorRequest->getRootDefinitions();
+        $defs = $this->request->getRootDefinitions();
         if ($defs === null) {
-            $schema = $this->generatorRequest->getSchema();
+            $schema = $this->request->getSchema();
             $defs = array_merge($schema['definitions'] ?? [], $schema['$defs'] ?? []);
         }
 

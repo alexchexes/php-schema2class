@@ -28,7 +28,7 @@ class ClassMethodSuiteFactory
      */
     public function generateMethods(): array
     {
-        $constructorFactory = new ConstructorFactory($this->request, $this->schemaProperties);
+        $constructorFactory = new ConstructorFactory($this->schemaProperties);
         $accessorsFactory = new PropertyAccessorsFactory($this->request, $this->schemaProperties);
         $buildMethodFactory = new FromInputMethodFactory($this->request, $this->schemaProperties, $this->defaults, $this->hasOptionalNullable);
         $serializeMethodFactory = new SerializeMethodFactory($this->request, $this->schemaProperties, $this->defaults);

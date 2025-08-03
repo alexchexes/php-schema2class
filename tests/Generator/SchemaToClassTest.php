@@ -270,39 +270,44 @@ class SchemaToClassTest extends TestCase
         );
 
         $definitions = $schema['definitions'] ?? [];
-        $definitionsLookup = new DefinitionsReferenceLookup($definitions);
+        $definitionsLookup = new DefinitionsReferenceLookup($definitions, $req);
 
-        $req = $req->withReferenceLookup(new class ($definitionsLookup) implements ReferenceLookup {
-            public function __construct(private DefinitionsReferenceLookup $lookup) {}
+        $req = $req->withReferenceLookup(
+            new class ($definitionsLookup, $req) implements ReferenceLookup {
+                public function __construct(
+                    private DefinitionsReferenceLookup $lookup,
+                    private GeneratorRequest $request,
+                ) {}
 
-            public function lookupReference(string $ref): ReferencedTypeInterface
-            {
-                if ($ref === "#/properties/address") {
-                    return new ReferencedTypeClass(CustomerAddress::class);
+                public function lookupReference(string $ref): ReferencedTypeInterface
+                {
+                    if ($ref === "#/properties/address") {
+                        return new ReferencedTypeClass(CustomerAddress::class, $this->request);
+                    }
+
+                    $result = $this->lookup->lookupReference($ref);
+                    if ($result instanceof ReferencedTypeUnknown) {
+                        return new ReferencedTypeUnknown($this->request);
+                    }
+                    return $result;
                 }
 
-                $result = $this->lookup->lookupReference($ref);
-                if ($result instanceof ReferencedTypeUnknown) {
-                    return new ReferencedTypeUnknown();
+                public function lookupSchema(string $ref): array
+                {
+                    if ($ref === "#/properties/address") {
+                        return [
+                            'required' => ['city', 'street'],
+                            'properties' => [
+                                'city' => ['type' => 'string', 'maxLength' => 32],
+                                'street' => ['type' => 'string'],
+                            ],
+                        ];
+                    }
+
+                    return $this->lookup->lookupSchema($ref);
                 }
-                return $result;
             }
-
-            public function lookupSchema(string $ref): array
-            {
-                if ($ref === "#/properties/address") {
-                    return [
-                        'required' => ['city', 'street'],
-                        'properties' => [
-                            'city' => ['type' => 'string', 'maxLength' => 32],
-                            'street' => ['type' => 'string'],
-                        ],
-                    ];
-                }
-
-                return $this->lookup->lookupSchema($ref);
-            }
-        });
+        );
 
         $output   = new NullOutput();
         $writer   = new DebugWriter($output);

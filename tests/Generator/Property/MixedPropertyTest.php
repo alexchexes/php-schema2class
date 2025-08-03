@@ -71,8 +71,12 @@ EOCODE;
     public function testGetAnnotationAndHintWithSimpleArray()
     {
         assertSame('mixed', $this->underTest->typeAnnotation());
-        assertSame(null, $this->underTest->typeHint("7.2.0"));
-        assertSame(null, $this->underTest->typeHint("5.6.0"));
+        
+        $underTest = new MixedProperty('myPropertyName', [], $this->generatorRequest->withPHPVersion('7.2.0'));
+        assertSame(null, $underTest->typeHint());
+        
+        $underTest = new MixedProperty('myPropertyName', [], $this->generatorRequest->withPHPVersion('5.6.0'));
+        assertSame(null, $underTest->typeHint());
     }
 
     public function testGenerateSubTypesWithSimpleArray()

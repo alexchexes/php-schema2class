@@ -3,11 +3,10 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Class\Property;
 
-use Helmich\Schema2Class\Generator\Class\PropertyNames;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\Decorator\OptionalPropertyDecorator;
 use Helmich\Schema2Class\Generator\Property\PropertyQuery;
-use Helmich\Schema2Class\Generator\PropertyGenerator;
+use Helmich\Schema2Class\Generator\Property\Type\PropertyInterface;
 use Laminas\Code\Generator\DocBlock\Tag\GenericTag;
 use Laminas\Code\Generator\DocBlockGenerator;
 
@@ -17,7 +16,7 @@ class SchemaPropertyFactory
       private GeneratorRequest $request,
     ) {}
     
-    public function generateClassSchemaProperty($schemaProp): PropertyGenerator
+    public function generateClassSchemaProperty(PropertyInterface $schemaProp): PropertyGenerator
     {
         $visibility = $this->request->getNoGetters()
             ? PropertyGenerator::FLAG_PUBLIC
@@ -26,9 +25,9 @@ class SchemaPropertyFactory
         $schema     = $schemaProp->schema();
         $isOptional = false;
         $propertyGenerator    = new PropertyGenerator(
-            $schemaProp->name(),
-            $schemaProp->formatValue(null),
-            $visibility
+            name: $schemaProp->name(),
+            defaultValue: $schemaProp->formatValue(null),
+            flags: $visibility
         );
 
         if ($schemaProp instanceof OptionalPropertyDecorator) {
@@ -49,7 +48,7 @@ class SchemaPropertyFactory
 
         $propertyGenerator->setDocBlock($docBlock);
 
-        $typeHint = $schemaProp->typeHint($this->request->getTargetPHPVersion());
+        $typeHint = $schemaProp->typeHint();
         if ($this->request->isAtLeastPHP("7.4") && $typeHint !== null) {
             $propertyGenerator->setTypeHint($typeHint);
         }

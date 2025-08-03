@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class\Generator\Property\Type;
 
 use Composer\Semver\Semver;
+use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Laminas\Code\Generator\PropertyValueGenerator;
 
 /** 
@@ -14,9 +15,13 @@ class InferredEnumProperty extends AbstractProperty
 {
     private array $valueTypes = [];
 
-    public function __construct(string $key, array $schema, \Helmich\Schema2Class\Generator\GeneratorRequest $generatorRequest)
+    public function __construct(
+        string $key,
+        array $schema,
+        GeneratorRequest $request
+    )
     {
-        parent::__construct($key, $schema, $generatorRequest);
+        parent::__construct($key, $schema, $request);
         foreach ($schema['enum'] as $v) {
             if ($v === null) {
                 $this->valueTypes['null'] = true;
@@ -43,23 +48,24 @@ class InferredEnumProperty extends AbstractProperty
     {
         $quote = static fn(string $s): string => "'" . str_replace("'", "\\'", $s) . "'";
 
-        $values = array_map(static function ($v) use ($quote) {
-            return match (true) {
-                $v === null      => 'null',
-                is_bool($v)      => $v ? 'true' : 'false',
-                is_string($v)    => $quote($v),
+        $values = array_map(
+            static fn (mixed $v) => match (true) {
+                $v === null     => 'null',
+                is_bool($v)     => $v ? 'true' : 'false',
+                is_string($v)   => $quote($v),
                 is_int($v),
-                is_float($v)     => (string) $v,
-                default          => 'null',
-            };
-        }, $this->schema['enum']);
+                is_float($v)    => (string) $v,
+                default         => 'null',
+            },
+            $this->schema['enum']
+        );
 
         return implode('|', $values);
     }
 
-    public function typeHint(string $phpVersion): ?string
+    public function typeHint(): ?string
     {
-        if (!Semver::satisfies($phpVersion, '>=8.0')) {
+        if (!Semver::satisfies($this->request->getTargetPHPVersion(), '>=8.0')) {
             return null;
         }
         if (isset($this->valueTypes['mixed'])) {
@@ -68,7 +74,7 @@ class InferredEnumProperty extends AbstractProperty
         return implode('|', array_keys($this->valueTypes));
     }
 
-    public function genTypeAssertionExpr(string $expr): string
+    public function typeAssertionExpr(string $expr): string
     {
         $values = var_export($this->schema['enum'], true);
         return "in_array({$expr}, {$values}, true)";

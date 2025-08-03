@@ -8,16 +8,16 @@ use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeInterface;
 use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeEnum;
 
 /**
- * Property that refers to another generated PHP artifact (class, Enum) via `$ref`.
+ * Property that refers to a generated PHP artifact (class, Enum) via `$ref`.
  */
 class ReferenceProperty extends AbstractProperty
 {
     private ReferencedTypeInterface $refType;
 
-    public function __construct(string $key, array $schema, GeneratorRequest $generatorRequest)
+    public function __construct(string $key, array $schema, GeneratorRequest $request)
     {
-        parent::__construct($key, $schema, $generatorRequest);
-        $this->refType = $generatorRequest->lookupReference($schema['$ref']);
+        parent::__construct($key, $schema, $request);
+        $this->refType = $request->lookupReference($schema['$ref']);
     }
 
     public static function canHandleSchema(array $schema): bool
@@ -27,43 +27,43 @@ class ReferenceProperty extends AbstractProperty
 
     public function typeAnnotation(): string
     {
-        return $this->refType->typeAnnotation($this->generatorRequest);
+        return $this->refType->typeAnnotation();
     }
 
-    public function typeHint(string $phpVersion): ?string
+    public function typeHint(): ?string
     {
-        return $this->refType->typeHint($this->generatorRequest);
+        return $this->refType->typeHint();
     }
 
-    public function genTypeAssertionExpr(string $expr): string
+    public function typeAssertionExpr(string $expr): string
     {
-        return $this->refType->generateTypeAssertionExpr($this->generatorRequest, $expr);
+        return $this->refType->typeAssertionExpr($expr);
     }
 
-    public function genInputAssertionExpr(string $expr): string
+    public function inputAssertionExpr(string $expr): string
     {
-        return $this->refType->generateInputAssertionExpr($this->generatorRequest, $expr);
+        return $this->refType->inputAssertionExpr($expr);
     }
 
-    public function genMappingExpr(string $expr, bool $asserted = false): string
+    public function inputMappingExpr(string $expr, bool $asserted = false): string
     {
-        return $this->refType->generateInputMappingExpr($this->generatorRequest, expr: $expr);
+        return $this->refType->inputMappingExpr($expr);
     }
 
-    public function genOutputMappingExpr(string $expr): string
+    public function outputMappingExpr(string $expr): string
     {
-        return $this->refType->generateOutputMappingExpr($this->generatorRequest, $expr);
+        return $this->refType->outputMappingExpr($expr);
     }
 
-    public function genOutputMappingExprStdClass(string $expr): string
+    public function outputMappingExprStdClass(string $expr): string
     {
-        return $this->refType->generateOutputMappingExprStdClass($this->generatorRequest, $expr);
+        return $this->refType->outputMappingExprStdClass($expr);
     }
 
     public function isComplex(): bool
     {
         if ($this->refType instanceof ReferencedTypeEnum) {
-            return $this->refType->usesNativeEnum($this->generatorRequest);
+            return $this->refType->usesNativeEnum();
         }
 
         return true;

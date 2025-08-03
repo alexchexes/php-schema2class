@@ -14,7 +14,6 @@ use Laminas\Code\Generator\ParameterGenerator;
 class ConstructorFactory
 {
     public function __construct(
-        private GeneratorRequest $request,
         private PropertyCollection $schemaProperties,
     ) {}
 
@@ -33,7 +32,7 @@ class ConstructorFactory
             $paramName = $requiredProperty->name();
             $params[]  = new ParameterGenerator(
                 $paramName,
-                $requiredProperty->typeHint($this->request->getTargetPHPVersion())
+                $requiredProperty->typeHint()
             );
 
             $tags[] = new ParamTag(

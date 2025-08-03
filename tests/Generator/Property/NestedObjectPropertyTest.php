@@ -90,8 +90,10 @@ EOCODE;
         $underTest = new NestedObjectProperty('myPropertyName',  ['allOf' => []], $this->generatorRequest);
 
         assertSame('FooMyPropertyName', $underTest->typeAnnotation());
-        assertSame('\\BarNs\\FooMyPropertyName', $underTest->typeHint("7.2.0"));
-        assertSame('\\BarNs\\FooMyPropertyName', $underTest->typeHint("5.6.0"));
+
+        $underTest = new NestedObjectProperty('myPropertyName',  ['allOf' => []], $this->generatorRequest->withPHPVersion('5.6.0'));
+
+        assertSame('\\BarNs\\FooMyPropertyName', $underTest->typeHint());
     }
 
     public function testGenerateSubTypesWithSimpleArray()

@@ -17,18 +17,6 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class ObjectArrayProperty extends AbstractProperty
 {
-    private function buildUseClause(): string
-    {
-        $validateArg = $this->generatorRequest->getCurrValidateArgAlias();
-        $materializeArg = $this->generatorRequest->getCurrMaterializeArgAlias();
-        
-        $vars = ['$' . $validateArg];
-        if ($materializeArg !== null) {
-            $vars[] = '$' . $materializeArg;
-        }
-        return implode(', ', $vars);
-    }
-
     private PropertyInterface $itemType;
     private array $itemSchema;
 
@@ -42,7 +30,13 @@ class ObjectArrayProperty extends AbstractProperty
     {
         $this->itemSchema = $schema["additionalProperties"] ?? $schema["items"];
 
-        $this->itemType = PropertyBuilder::buildPropertyFromSchema($generatorRequest, $key . "Item", $this->itemSchema, true);
+        $this->itemType = PropertyBuilder::buildPropertyFromSchema(
+            req: $generatorRequest,
+            name: $key . "Item",
+            definition: $this->itemSchema,
+            isRequired: true
+        );
+
         parent::__construct($key, $schema, $generatorRequest);
     }
 
@@ -92,7 +86,7 @@ class ObjectArrayProperty extends AbstractProperty
 
         $TO_ARRAY = MethodNames::TO_ARRAY;
 
-        if ($this->generatorRequest->isAtLeastPHP('7.4')) {
+        if ($this->request->isAtLeastPHP('7.4')) {
             return "\${$outputVarName}[{$keyStr}] = array_map(fn ($st \$i) => \$i->{$TO_ARRAY}(), \$this->{$name});";
         }
         return "\${$outputVarName}[{$keyStr}] = array_map(function($st \$i) { return \$i->{$TO_ARRAY}(); }, \$this->{$name});";
@@ -110,11 +104,11 @@ class ObjectArrayProperty extends AbstractProperty
             return "\${$outputVarName}->{{$keyStr}} = array_map(fn (\$i) => \$i, \$this->{$name});";
         }
 
-        $inclDefaultsArg = $this->generatorRequest->getCurrReqHasDefaults() ? '$includeDefaults' : '';
+        $inclDefaultsArg = $this->request->getCurrReqHasDefaults() ? '$includeDefaults' : '';
 
         $TO_STD_CLASS = MethodNames::TO_STD_CLASS;
 
-        if ($this->generatorRequest->isAtLeastPHP('7.4')) {
+        if ($this->request->isAtLeastPHP('7.4')) {
             return "\${$outputVarName}->{{$keyStr}} = array_map(fn ($st \$i) => \$i->{$TO_STD_CLASS}({$inclDefaultsArg}), \$this->{$name});";
         }
         return "\${$outputVarName}->{{$keyStr}} = array_map(function($st \$i) { return \$i->{$TO_STD_CLASS}({$inclDefaultsArg}); }, \$this->{$name});";
@@ -129,11 +123,11 @@ class ObjectArrayProperty extends AbstractProperty
             return;
         }
 
-        $req = $this->generatorRequest
+        $req = $this->request
             ->withSchema($this->itemSchema)
             ->withClass($this->subTypeName());
 
-        $generator = $this->generatorRequest->getSchemaToClassFactory()->build($writer, $output);
+        $generator = $this->request->getSchemaToClassFactory()->build($writer, $output);
         $generator->schemaToClass($this->propagateRootDefinitions($req));
     }
 
@@ -142,12 +136,12 @@ class ObjectArrayProperty extends AbstractProperty
         return $this->subTypeName() . "[]";
     }
 
-    public function typeHint(string $phpVersion): ?string
+    public function typeHint(): ?string
     {
         return "array";
     }
 
-    public function genTypeAssertionExpr(string $expr): string
+    public function typeAssertionExpr(string $expr): string
     {
         if ($this->itemType instanceof MixedProperty) {
             return "is_array({$expr})";
@@ -157,7 +151,7 @@ class ObjectArrayProperty extends AbstractProperty
         return "is_array({$expr}) && count(array_filter({$expr}, function({$st} \$item) {return \$item instanceof {$st};})) === count({$expr})";
     }
 
-    public function genInputAssertionExpr(string $expr): string
+    public function inputAssertionExpr(string $expr): string
     {
         if ($this->itemType instanceof MixedProperty) {
             return "is_array({$expr})";
@@ -167,14 +161,26 @@ class ObjectArrayProperty extends AbstractProperty
         $VALIDATE_INPUT = MethodNames::VALIDATE_INPUT;
         return "is_array({$expr}) && count(array_filter({$expr}, function({$st} \$item) {return {$st}::{$VALIDATE_INPUT}(\$item, true)};)) === count({$expr})";
     }
-
-    public function genMappingExpr(string $expr, bool $asserted = false): string
+    
+    private function buildUseClause(): string
     {
-        $sm = $this->itemType->genMappingExpr('$i');
+        $validateArg = $this->request->getCurrValidateArgAlias();
+        $materializeArg = $this->request->getCurrMaterializeArgAlias();
+        
+        $vars = ['$' . $validateArg];
+        if ($materializeArg !== null) {
+            $vars[] = '$' . $materializeArg;
+        }
+        return implode(', ', $vars);
+    }
+
+    public function inputMappingExpr(string $expr, bool $asserted = false): string
+    {
+        $sm = $this->itemType->inputMappingExpr('$i');
 
         if ($this->itemType instanceof MixedProperty) {
             return match (true) {
-                $this->generatorRequest->isAtLeastPHP('7.0') => "array_map(fn (\$i) => {$sm}, {$expr})",
+                $this->request->isAtLeastPHP('7.0') => "array_map(fn (\$i) => {$sm}, {$expr})",
                 default => "array_map(function(\$i) { return {$sm}; }, {$expr})",
             };
         }
@@ -182,13 +188,13 @@ class ObjectArrayProperty extends AbstractProperty
         $typeHint = $this->subTypeName();
 
         return match (true) {
-            $this->generatorRequest->isAtLeastPHP('8.0')
+            $this->request->isAtLeastPHP('8.0')
                 => "array_map(fn (array|object \$i): {$typeHint} => {$sm}, {$expr})",
 
-            $this->generatorRequest->isAtLeastPHP('7.4')
+            $this->request->isAtLeastPHP('7.4')
                 => "array_map(fn (\$i): {$typeHint} => {$sm}, {$expr})",
 
-            $this->generatorRequest->isAtLeastPHP('7.0')
+            $this->request->isAtLeastPHP('7.0')
                 => "array_map(function(\$i): {$typeHint} use ({$this->buildUseClause()}) { return {$sm}; }, {$expr})",
 
             default
@@ -196,31 +202,31 @@ class ObjectArrayProperty extends AbstractProperty
         };
     }
 
-    public function genOutputMappingExpr(string $expr): string
+    public function outputMappingExpr(string $expr): string
     {
         if ($this->itemType instanceof MixedProperty) {
             return "array_map(fn (\$i) => \$i, {$expr})";
         }
 
         $st = $this->subTypeName();
-        $sm = $this->itemType->genOutputMappingExpr('$i');
+        $sm = $this->itemType->outputMappingExpr('$i');
 
-        if ($this->generatorRequest->isAtLeastPHP('7.4')) {
+        if ($this->request->isAtLeastPHP('7.4')) {
             return "array_map(fn ($st \$i) => {$sm}, {$expr})";
         }
         return "array_map(function($st \$i) { return {$sm} }, {$expr})";
     }
 
-    public function genOutputMappingExprStdClass(string $expr): string
+    public function outputMappingExprStdClass(string $expr): string
     {
         if ($this->itemType instanceof MixedProperty) {
             return "array_map(fn (\$i) => \$i, {$expr})";
         }
 
         $st = $this->subTypeName();
-        $sm = $this->itemType->genOutputMappingExprStdClass('$i');
+        $sm = $this->itemType->outputMappingExprStdClass('$i');
 
-        if ($this->generatorRequest->isAtLeastPHP('7.4')) {
+        if ($this->request->isAtLeastPHP('7.4')) {
             return "array_map(fn ($st \$i) => {$sm}, {$expr})";
         }
         return "array_map(function($st \$i) { return {$sm} }, {$expr})";
@@ -234,7 +240,7 @@ class ObjectArrayProperty extends AbstractProperty
 
         $st = $this->subTypeName();
 
-        if ($this->generatorRequest->isAtLeastPHP('7.4')) {
+        if ($this->request->isAtLeastPHP('7.4')) {
             return "array_map(fn ({$st} \$i) => clone \$i, {$expr})";
         }
         return "array_map(function({$st} \$i) { return clone \$i; }, {$expr})";
@@ -242,7 +248,6 @@ class ObjectArrayProperty extends AbstractProperty
 
     private function subTypeName(): string
     {
-        return $this->generatorRequest->getTargetClass() . $this->nameForClass . 'Item';
+        return $this->request->getTargetClass() . $this->nameForClass . 'Item';
     }
-
 }

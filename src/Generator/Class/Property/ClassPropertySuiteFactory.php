@@ -5,7 +5,6 @@ namespace Helmich\Schema2Class\Generator\Class\Property;
 
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\Collection\PropertyCollection;
-use Helmich\Schema2Class\Generator\PropertyGenerator;
 
 /**
  * Factory for creating all methods of a generated class.

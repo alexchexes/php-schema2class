@@ -3,7 +3,10 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Property\Type;
 
+use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\Decorator\OptionalPropertyDecorator;
+use Helmich\Schema2Class\Spec\SpecificationOptions;
+use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
 use Laminas\Code\Generator\PropertyValueGenerator;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
@@ -21,13 +24,26 @@ class OptionalPropertyDecoratorTest extends TestCase
 
     private ObjectProphecy $innerProperty;
 
+    private GeneratorRequest $request;
+
     protected function setUp(): void
     {
         $this->innerProperty = $this->prophesize(PropertyInterface::class);
         $this->innerProperty->schema()->willReturn([]);
         $this->innerProperty->allowsNull()->willReturn(false);
         $this->innerProperty->formatValue(Argument::any())->willReturn(new PropertyValueGenerator(null));
-        $this->decorator     = new OptionalPropertyDecorator('myPropertyName', $this->innerProperty->reveal());
+        
+        $this->request = new GeneratorRequest(
+                [],
+                new ValidatedSpecificationFilesItem('', null, ''),
+                new SpecificationOptions,
+        );
+
+        $this->decorator = new OptionalPropertyDecorator(
+            'myPropertyName',
+            $this->innerProperty->reveal(),
+            $this->request,
+        );
     }
 
     public function testCanHandleSchema()
@@ -45,7 +61,7 @@ class OptionalPropertyDecoratorTest extends TestCase
     {
         $this->innerProperty->name()->shouldBeCalled()->willReturn('myPropertyName');
         $this->innerProperty
-            ->genMappingExpr('$variable->{\'myPropertyName\'}', true)
+            ->inputMappingExpr('$variable->{\'myPropertyName\'}', true)
             ->shouldBeCalled()
             ->willReturn('INNER_EXPR');
 
@@ -63,11 +79,19 @@ class OptionalPropertyDecoratorTest extends TestCase
         $prophecy->allowsNull()->willReturn(true);
         $prophecy->name()->willReturn('myPropertyName');
         $prophecy
-            ->genMappingExpr('$variable->{\'myPropertyName\'}', true)
+            ->inputMappingExpr('$variable->{\'myPropertyName\'}', true)
             ->willReturn('INNER_EXPR');
         $prophecy->formatValue(false)->willReturn(new PropertyValueGenerator(false));
 
-        $decorator = new OptionalPropertyDecorator('myPropertyName', $prophecy->reveal());
+        $decorator = new OptionalPropertyDecorator(
+            'myPropertyName',
+            $prophecy->reveal(),
+            new GeneratorRequest(
+                [],
+                new ValidatedSpecificationFilesItem('', null, ''),
+                new SpecificationOptions()
+            )
+        );
 
         $result = $decorator->convertInputToType('variable', 'providedOptionals');
 
@@ -134,14 +158,29 @@ EOCODE;
         $this->innerProperty->typeAnnotation()->shouldBeCalled()->willReturn('Foo');
         assertSame('Foo|null', $this->decorator->typeAnnotation());
 
-        $this->innerProperty->typeHint("7.2.0")->shouldBeCalled()->willReturn('Foo');
-        assertSame('?Foo', $this->decorator->typeHint("7.2.0"));
+        $decorator = new OptionalPropertyDecorator(
+            'myPropertyName',
+            $this->innerProperty->reveal(),
+            $this->request->withPHPVersion('7.2.0'),
+        );
+        $this->innerProperty->typeHint()->shouldBeCalled()->willReturn('Foo');
+        assertSame('?Foo', $decorator->typeHint());
 
-        $this->innerProperty->typeHint("5.6.0")->shouldBeCalled()->willReturn('Foo');
-        assertSame('Foo', $this->decorator->typeHint("5.6.0"));
+        $decorator = new OptionalPropertyDecorator(
+            'myPropertyName',
+            $this->innerProperty->reveal(),
+            $this->request->withPHPVersion('5.6.0'),
+        );
+        $this->innerProperty->typeHint()->shouldBeCalled()->willReturn('Foo');
+        assertSame('Foo', $decorator->typeHint());
 
-        $this->innerProperty->typeHint("7.2.0")->shouldBeCalled()->willReturn(null);
-        assertSame(null, $this->decorator->typeHint("7.2.0"));
+        $decorator = new OptionalPropertyDecorator(
+            'myPropertyName',
+            $this->innerProperty->reveal(),
+            $this->request->withPHPVersion('7.2.0'),
+        );
+        $this->innerProperty->typeHint()->shouldBeCalled()->willReturn(null);
+        assertSame(null, $decorator->typeHint());
 
     }
 

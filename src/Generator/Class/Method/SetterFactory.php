@@ -49,7 +49,7 @@ class SetterFactory
         // misaligned with PHPDoc type annotations of those params, and we also sometimes don't allow nulls where we should've.
         $requiredProperty = ($property instanceof OptionalPropertyDecorator) ? $property->unwrap() : $property;
         $propAnnotatedType = $requiredProperty->typeAnnotation();
-        $propTypeHint = $requiredProperty->typeHint($this->request->getTargetPHPVersion());
+        $propTypeHint = $requiredProperty->typeHint();
 
         // then we fully unwrap any other decorators to be able to see the real type
         $base = $property;

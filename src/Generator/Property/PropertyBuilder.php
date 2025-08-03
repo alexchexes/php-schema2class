@@ -94,12 +94,12 @@ class PropertyBuilder
 
         if (PrimitiveUnionEnumProperty::canHandleSchema($definition)) {
             $property = new PrimitiveUnionEnumProperty($name, $definition, $req);
-            return self::wrapProperty($property, $definition, $name, $isRequired);
+            return self::wrapProperty($req, $property, $definition, $name, $isRequired);
         }
 
         if (InferredEnumProperty::canHandleSchema($definition)) {
             $property = new InferredEnumProperty($name, $definition, $req);
-            return self::wrapProperty($property, $definition, $name, $isRequired);
+            return self::wrapProperty($req, $property, $definition, $name, $isRequired);
         }
 
         if ($property = self::tryExpandMultiType($req, $name, $definition, $isRequired)) {
@@ -114,7 +114,7 @@ class PropertyBuilder
             if ($propertyType::canHandleSchema($definition)) {
                 /** @var PropertyInterface $property */
                 $property = new $propertyType($name, $definition, $req);
-                return self::wrapProperty($property, $definition, $name, $isRequired);
+                return self::wrapProperty($req, $property, $definition, $name, $isRequired);
             }
         }
 
@@ -210,10 +210,10 @@ class PropertyBuilder
         }
 
         if ($isRequired) {
-            return new NullablePropertyDecorator($name, $prop);
+            return new NullablePropertyDecorator($name, $prop, $req);
         }
 
-        $decorator = new OptionalPropertyDecorator($name, $prop);
+        $decorator = new OptionalPropertyDecorator($name, $prop, $req);
         if (self::definitionAllowsNull($definition) || $prop->allowsNull()) {
             $decorator->markOptionalNullable();
         }
@@ -289,8 +289,8 @@ class PropertyBuilder
             }
             $inner = self::buildPropertyFromSchema($req, $name, $singleSchema, $isRequired);
             return $isRequired
-                ? new NullablePropertyDecorator($name, $inner)
-                : self::wrapProperty($inner, $definition, $name, false);
+                ? new NullablePropertyDecorator($name, $inner, $req)
+                : self::wrapProperty($req, $inner, $definition, $name, false);
         }
 
         $cleanDef            = $definition;
@@ -298,26 +298,27 @@ class PropertyBuilder
         $unionProp           = new UnionProperty($name, $cleanDef, $req);
 
         return $isRequired
-            ? new NullablePropertyDecorator($name, $unionProp)
-            : self::wrapProperty($unionProp, $definition, $name, false);
+            ? new NullablePropertyDecorator($name, $unionProp, $req)
+            : self::wrapProperty($req, $unionProp, $definition, $name, false);
     }
 
     /** Apply optional/nullable decorators around a property */
     private static function wrapProperty(
+        GeneratorRequest $req,
         PropertyInterface $property,
         array $definition,
         string $name,
         bool $isRequired
     ): PropertyInterface {
         if (!$isRequired) {
-            $decorator = new OptionalPropertyDecorator($name, $property);
+            $decorator = new OptionalPropertyDecorator($name, $property, $req);
             if (self::definitionAllowsNull($definition) || $property->allowsNull()) {
                 $decorator->markOptionalNullable();
             }
             return $decorator;
         }
 
-        return $property->allowsNull() ? new NullablePropertyDecorator($name, $property) : $property;
+        return $property->allowsNull() ? new NullablePropertyDecorator($name, $property, $req) : $property;
     }
 
     private static function testInvariants(array $definition): void
@@ -349,9 +350,10 @@ class PropertyBuilder
 
         $originalIsArray = is_array($definition['type']);
         $types = $originalIsArray ? $definition['type'] : [$definition['type']];
-        $types = array_map(static function ($t) {
-            return $t === 'int' ? 'integer' : ($t === null ? 'null' : $t);
-        }, $types);
+        $types = array_map(
+            static fn (?string $t) => $t === 'int' ? 'integer' : ($t === null ? 'null' : $t),
+            $types
+        );
 
         $allowed = [];
         foreach ($definition['enum'] as $v) {
@@ -407,11 +409,6 @@ class PropertyBuilder
 
         if (is_array($definition['type']) && count($definition['type']) === 1 && !$originalIsArray) {
             $definition['type'] = $definition['type'][0];
-        }
-
-        // TODO: Do we need this?
-        if (is_array($definition['type']) && count($definition['type']) > 1) {
-            $definition['type'] = array_values($definition['type']);
         }
 
         return $definition;

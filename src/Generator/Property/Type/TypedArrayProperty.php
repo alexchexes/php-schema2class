@@ -69,32 +69,32 @@ class TypedArrayProperty extends AbstractProperty
         return $inner . '[]';
     }
 
-    public function typeHint(string $phpVersion): ?string
+    public function typeHint(): ?string
     {
         return 'array';
     }
 
-    public function genTypeAssertionExpr(string $expr): string
+    public function typeAssertionExpr(string $expr): string
     {
-        $inner = $this->itemType->genTypeAssertionExpr('$i');
+        $inner = $this->itemType->typeAssertionExpr('$i');
         return "is_array({$expr}) && count(array_filter({$expr}, fn(\$i) => {$inner})) === count({$expr})";
     }
 
-    public function genInputAssertionExpr(string $expr): string
+    public function inputAssertionExpr(string $expr): string
     {
-        $inner = $this->itemType->genInputAssertionExpr('$i');
+        $inner = $this->itemType->inputAssertionExpr('$i');
         return "is_array({$expr}) && count(array_filter({$expr}, fn(\$i) => {$inner})) === count({$expr})";
     }
 
-    public function genMappingExpr(string $expr, bool $asserted = false): string
+    public function inputMappingExpr(string $expr, bool $asserted = false): string
     {
-        $map = $this->itemType->genMappingExpr('$i');
-        if ($this->generatorRequest->isAtLeastPHP('7.4')) {
+        $map = $this->itemType->inputMappingExpr('$i');
+        if ($this->request->isAtLeastPHP('7.4')) {
             return "array_map(fn(\$i) => {$map}, {$expr})";
         }
 
-        $validateArg = $this->generatorRequest->getCurrValidateArgAlias();
-        $materializeArg = $this->generatorRequest->getCurrMaterializeArgAlias();
+        $validateArg = $this->request->getCurrValidateArgAlias();
+        $materializeArg = $this->request->getCurrMaterializeArgAlias();
 
         $use = ['$' . $validateArg];
         if ($materializeArg !== null) {
@@ -104,19 +104,19 @@ class TypedArrayProperty extends AbstractProperty
         return "array_map(function(\$i) use ({$useExpr}) { return {$map}; }, {$expr})";
     }
 
-    public function genOutputMappingExpr(string $expr): string
+    public function outputMappingExpr(string $expr): string
     {
-        $map = $this->itemType->genOutputMappingExpr('$i');
-        if ($this->generatorRequest->isAtLeastPHP('7.4')) {
+        $map = $this->itemType->outputMappingExpr('$i');
+        if ($this->request->isAtLeastPHP('7.4')) {
             return "array_map(fn(\$i) => {$map}, {$expr})";
         }
         return "array_map(function(\$i) { return {$map}; }, {$expr})";
     }
 
-    public function genOutputMappingExprStdClass(string $expr): string
+    public function outputMappingExprStdClass(string $expr): string
     {
-        $map = $this->itemType->genOutputMappingExprStdClass('$i');
-        if ($this->generatorRequest->isAtLeastPHP('7.4')) {
+        $map = $this->itemType->outputMappingExprStdClass('$i');
+        if ($this->request->isAtLeastPHP('7.4')) {
             return "array_map(fn(\$i) => {$map}, {$expr})";
         }
         return "array_map(function(\$i) { return {$map}; }, {$expr})";
@@ -125,7 +125,7 @@ class TypedArrayProperty extends AbstractProperty
     public function cloneExpr(string $expr): string
     {
         $map = $this->itemType->cloneExpr('$i');
-        if ($this->generatorRequest->isAtLeastPHP('7.4')) {
+        if ($this->request->isAtLeastPHP('7.4')) {
             return "array_map(fn(\$i) => {$map}, {$expr})";
         }
         return "array_map(function(\$i) { return {$map}; }, {$expr})";

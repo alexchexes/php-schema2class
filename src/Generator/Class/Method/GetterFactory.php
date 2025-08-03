@@ -46,7 +46,7 @@ class GetterFactory
         $body = "return \$this->{$propName};";
 
         if ($this->request->isAtLeastPHP('7.0')) {
-            $typeHint = $property->typeHint($this->request->getTargetPHPVersion());
+            $typeHint = $property->typeHint();
 
             if ($typeHint !== null) {
                 $methodGen->setReturnType($typeHint);

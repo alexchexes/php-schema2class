@@ -113,7 +113,7 @@ EOCODE;
             '#/definitions/bar' => new Definition('Ns', '', 'Ns\\Bar', 'Bar', ['type' => 'string']),
         ];
 
-        $lookup = new DefinitionsReferenceLookup($defs);
+        $lookup = new DefinitionsReferenceLookup($defs, $this->generatorRequest);
         $req    = $this->generatorRequest->withReferenceLookup($lookup);
 
         $prop = new UnionProperty('myPropertyName', [
@@ -130,7 +130,8 @@ EOCODE;
     {
         $php8Ver = GeneratorRequest::DEFAULT_PHP8_VERSION;
         return [
-            "php {$php8Ver}" => [$php8Ver, '\BarNs\FooMyPropertyNameAlternative1|\BarNs\FooMyPropertyNameAlternative2'],
+            "php {$php8Ver}" =>
+                [$php8Ver, '\BarNs\FooMyPropertyNameAlternative1|\BarNs\FooMyPropertyNameAlternative2'],
             'php 7.2' => ['7.2.0', null],
             'php 5.6' => ['5.6.0', null],
         ];
@@ -140,7 +141,11 @@ EOCODE;
     public function testGetAnnotationAndHintWithSimpleArray(string $phpVersion, mixed $expected)
     {
         $request = $this->generatorRequest->withPHPVersion($phpVersion);
-        $underTest = new UnionProperty('myPropertyName', ['anyOf' => [['properties' => ['subFoo1' => ['type' => 'string']]], ['properties' => ['subFoo2' => ['type' => 'string']]]]], $request);
+        $underTest = new UnionProperty(
+            'myPropertyName',
+            ['anyOf' => [['properties' => ['subFoo1' => ['type' => 'string']]], ['properties' => ['subFoo2' => ['type' => 'string']]]]],
+            $request
+        );
 
         assertSame('FooMyPropertyNameAlternative1|FooMyPropertyNameAlternative2', $underTest->typeAnnotation());
         assertSame($expected, $underTest->typeHint("n/a"));

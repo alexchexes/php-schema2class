@@ -109,12 +109,16 @@ EOCODE;
 
     public function testGetAnnotationAndHintWithComplexArray()
     {
-        $underTest = new ObjectArrayProperty('myPropertyName', ['type' => 'array', 'items' => ['properties' => ['foo' => ['type' => 'string']]]], $this->generatorRequest);
+        $schema = ['type' => 'array', 'items' => ['properties' => ['foo' => ['type' => 'string']]]];
+
+        $underTest = new ObjectArrayProperty('myPropertyName', $schema, $this->generatorRequest);
 
         assertSame('FooMyPropertyNameItem[]', $underTest->typeAnnotation());
-        assertSame('array', $underTest->typeHint("7.2.0"));
-        assertSame('array', $underTest->typeHint("5.6.0"));
+        
+        assertSame('array', $underTest->typeHint());
 
+        $underTest = new ObjectArrayProperty('myPropertyName', $schema, $this->generatorRequest->withPHPVersion('5.6.0'));
+        assertSame('array', $underTest->typeHint());
     }
 
     public function testGenerateSubTypesWithComplexArray()

@@ -159,7 +159,7 @@ class SchemaPropertyCollector
 
             // Of collides with "used",
             // OR if "preserve" option disabled and pascal-variant collides with "usedMethods" – change
-            $needsChange = fn($_newName, $_newPascal) => in_array($_newName, $used, true)
+            $needsChange = fn(string $_newName, string $_newPascal) => in_array($_newName, $used, true)
                 || (!$preservePropertyNames && in_array($_newPascal, $usedMethods, true));
 
             if ($needsChange($newName, $newPascal)) {

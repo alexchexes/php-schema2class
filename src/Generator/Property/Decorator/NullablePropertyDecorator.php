@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class\Generator\Property\Decorator;
 
 use Composer\Semver\Semver;
+use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\Type\NullProperty;
 use Helmich\Schema2Class\Generator\Property\Type\PropertyInterface;
 use Helmich\Schema2Class\Generator\Property\Type\StringProperty;
@@ -17,14 +18,11 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class NullablePropertyDecorator implements PropertyDecoratorInterface
 {
-    protected string $key;
-    protected PropertyInterface $inner;
-
-    public function __construct(string $key, PropertyInterface $inner)
-    {
-        $this->key   = $key;
-        $this->inner = $inner;
-    }
+    public function __construct(
+        protected string $key,
+        protected PropertyInterface $inner,
+        private GeneratorRequest $request,
+    ) {}
 
     public static function canHandleSchema(array $schema): bool
     {
@@ -108,7 +106,7 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface
 
         $accessor = "\${$inputVarName}->{{$keyStr}}";
 
-        $mapped = $this->inner->genMappingExpr($accessor);
+        $mapped = $this->inner->inputMappingExpr($accessor);
 
         // we don't need null guards for string and null type properties
         $needsGuard = !($this->inner instanceof StringProperty || $this->inner instanceof NullProperty);
@@ -151,9 +149,10 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface
      * @param $phpVersion
      * @return string|null
      */
-    public function typeHint(string $phpVersion): ?string
+    public function typeHint(): ?string
     {
-        $hint = $this->inner->typeHint($phpVersion);
+        $phpVersion = $this->request->getTargetPHPVersion();
+        $hint = $this->inner->typeHint();
 
         if (Semver::satisfies($phpVersion, "<7.0")) {
             return $hint;
@@ -181,20 +180,20 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface
         return $hint;
     }
 
-    public function genTypeAssertionExpr(string $expr): string
+    public function typeAssertionExpr(string $expr): string
     {
-        return "(({$expr}) === null) || ({$this->inner->genTypeAssertionExpr($expr)})";
+        return "(({$expr}) === null) || ({$this->inner->typeAssertionExpr($expr)})";
     }
 
-    public function genInputAssertionExpr(string $expr): string
+    public function inputAssertionExpr(string $expr): string
     {
-        return "(({$expr}) === null) || ({$this->inner->genInputAssertionExpr($expr)})";
+        return "(({$expr}) === null) || ({$this->inner->inputAssertionExpr($expr)})";
     }
 
-    public function genMappingExpr(string $expr, bool $asserted = false): string
+    public function inputMappingExpr(string $expr, bool $asserted = false): string
     {
         // Let the inner property build its own mapping (casts, builder calls, …)
-        $inner = $this->inner->genMappingExpr($expr, $asserted);
+        $inner = $this->inner->inputMappingExpr($expr, $asserted);
 
         // If we're already inside an `isset()` check (asserted === true),
         // the value cannot be null → no extra guard needed.
@@ -206,15 +205,15 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface
         return "({$expr} !== null ? {$inner} : null)";
     }
 
-    public function genOutputMappingExpr(string $expr): string
+    public function outputMappingExpr(string $expr): string
     {
-        $inner = $this->inner->genOutputMappingExpr($expr);
+        $inner = $this->inner->outputMappingExpr($expr);
         return "({$expr} !== null) ? ({$inner}) : null";
     }
 
-    public function genOutputMappingExprStdClass(string $expr): string
+    public function outputMappingExprStdClass(string $expr): string
     {
-        $inner = $this->inner->genOutputMappingExprStdClass($expr);
+        $inner = $this->inner->outputMappingExprStdClass($expr);
         return "({$expr} !== null) ? ({$inner}) : null";
     }
 

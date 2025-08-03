@@ -72,8 +72,12 @@ EOCODE;
     public function testGetAnnotationAndHintWithSimpleArray()
     {
         assertSame('array', $this->property->typeAnnotation());
-        assertSame('array', $this->property->typeHint("7.2.0"));
-        assertSame('array', $this->property->typeHint("5.6.0"));
+        assertSame('array', $this->property->typeHint());
+
+        $property = new PrimitiveArrayProperty(
+            'myPropertyName', ['type' => 'integer'], $this->generatorRequest->withPHPVersion('5.6.0')
+        );
+        assertSame('array', $property->typeHint());
     }
 
     public function testGetAnnotationWithSimpleItemsArray()
@@ -81,9 +85,12 @@ EOCODE;
         $underTest = new PrimitiveArrayProperty('myPropertyName', ['type' => 'array', 'items' => ['type' => 'string']], $this->generatorRequest);
 
         assertSame('string[]', $underTest->typeAnnotation());
-        assertSame('array', $underTest->typeHint("7.2.0"));
-        assertSame('array', $underTest->typeHint("5.6.0"));
+        assertSame('array', $underTest->typeHint());
 
+        $underTest = new PrimitiveArrayProperty(
+            'myPropertyName', ['type' => 'integer'], $this->generatorRequest->withPHPVersion('5.6.0')
+        );
+        assertSame('array', $underTest->typeHint());
     }
 
     public function testGenerateSubTypesWithSimpleArray()

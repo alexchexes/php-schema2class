@@ -41,11 +41,11 @@ class NestedObjectProperty extends AbstractProperty
      */
     public function generateSubTypes(WriterInterface $writer, OutputInterface $output): void
     {
-        $req = $this->generatorRequest
+        $req = $this->request
             ->withSchema($this->schema)
             ->withClass($this->subTypeName());
 
-        $generator = $this->generatorRequest->getSchemaToClassFactory()->build($writer, $output);
+        $generator = $this->request->getSchemaToClassFactory()->build($writer, $output);
         $generator->schemaToClass($this->propagateRootDefinitions($req));
     }
 
@@ -54,26 +54,26 @@ class NestedObjectProperty extends AbstractProperty
         return $this->subTypeName();
     }
 
-    public function typeHint(string $phpVersion): ?string
+    public function typeHint(): ?string
     {
-        return "\\" . $this->generatorRequest->getTargetNamespace() . "\\" . $this->subTypeName();
+        return "\\" . $this->request->getTargetNamespace() . "\\" . $this->subTypeName();
     }
 
-    public function genTypeAssertionExpr(string $expr): string
+    public function typeAssertionExpr(string $expr): string
     {
         return "{$expr} instanceof {$this->subTypeName()}";
     }
 
-    public function genInputAssertionExpr(string $expr): string
+    public function inputAssertionExpr(string $expr): string
     {
         $VALIDATE_INPUT = MethodNames::VALIDATE_INPUT;
         return "{$this->subTypeName()}::{$VALIDATE_INPUT}({$expr}, true)";
     }
 
-    public function genMappingExpr(string $expr, bool $asserted = false): string
+    public function inputMappingExpr(string $expr, bool $asserted = false): string
     {
-        $validateArg = $this->generatorRequest->getCurrValidateArgAlias();
-        $materializeArg = $this->generatorRequest->getCurrMaterializeArgAlias();
+        $validateArg = $this->request->getCurrValidateArgAlias();
+        $materializeArg = $this->request->getCurrMaterializeArgAlias();
 
         $args = [$expr, '$' . $validateArg];
         if ($materializeArg !== null) {
@@ -86,16 +86,16 @@ class NestedObjectProperty extends AbstractProperty
         return "{$this->subTypeName()}::{$FROM_INPUT}({$argsStr})";
     }
 
-    public function genOutputMappingExpr(string $expr): string
+    public function outputMappingExpr(string $expr): string
     {
-        $inclDefaultsArg = $this->generatorRequest->getCurrReqHasDefaults() ? '$includeDefaults' : '';
+        $inclDefaultsArg = $this->request->getCurrReqHasDefaults() ? '$includeDefaults' : '';
         $TO_ARRAY = MethodNames::TO_ARRAY;
         return "({$expr})->{$TO_ARRAY}({$inclDefaultsArg})";
     }
 
-    public function genOutputMappingExprStdClass(string $expr): string
+    public function outputMappingExprStdClass(string $expr): string
     {
-        $inclDefaultsArg = $this->generatorRequest->getCurrReqHasDefaults() ? '$includeDefaults' : '';
+        $inclDefaultsArg = $this->request->getCurrReqHasDefaults() ? '$includeDefaults' : '';
         $TO_STD_CLASS = MethodNames::TO_STD_CLASS;
         return "({$expr})->{$TO_STD_CLASS}({$inclDefaultsArg})";
     }
@@ -107,7 +107,7 @@ class NestedObjectProperty extends AbstractProperty
 
     private function subTypeName(): string
     {
-        return $this->generatorRequest->getTargetClass() . $this->nameForClass;
+        return $this->request->getTargetClass() . $this->nameForClass;
     }
 
 }

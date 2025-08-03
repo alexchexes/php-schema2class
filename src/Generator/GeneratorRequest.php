@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class\Generator;
 
 use Composer\Semver\Comparator;
+use Helmich\Schema2Class\Generator\Class\Method\FromInputMethodFactory;
 use Helmich\Schema2Class\Generator\Hook\AddInterfaceHook;
 use Helmich\Schema2Class\Generator\Hook\AddMethodHook;
 use Helmich\Schema2Class\Generator\Hook\AddPropertyHook;
@@ -17,7 +18,7 @@ use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
 use Helmich\Schema2Class\Generator\SchemaToClassFactory;
 use Helmich\Schema2Class\Loader\SchemaLoader;
 use Laminas\Code\Generator\MethodGenerator;
-use Laminas\Code\Generator\PropertyGenerator;
+use Laminas\Code\Generator\PropertyGenerator as LaminasPropertyGenerator;
 
 /** 
  * (Mostly) immutable data object describing what and how to generate.
@@ -57,7 +58,7 @@ class GeneratorRequest
      * Name of the $validate argument in the currently generated fromInput method.
      * This is set from the Generator during generation.
      */
-    private string $currValidateArgAlias;
+    private string $currValidateArgAlias = FromInputMethodFactory::VALIDATE_ARG_NAME;
 
     /**
      * Name of the $materializeDefaults argument in the currently generated fromInput method
@@ -68,7 +69,7 @@ class GeneratorRequest
     /**
      * Whether the object schema from which the class is currently generated has defaults.
      */
-    private bool $currReqHasDefaults;
+    private bool $currReqHasDefaults = false;
 
     private SchemaToClassFactory $factory;
 
@@ -239,11 +240,11 @@ class GeneratorRequest
     /**
      * Adds a property to generated classes.
      *
-     * @param PropertyGenerator $property The property to add to generated classes.
+     * @param LaminasPropertyGenerator $property The property to add to generated classes.
      * @param bool $propagateToSubObjects Controls if the property should be added to sub-objects.
      * @return self
      */
-    public function withAdditionalProperty(PropertyGenerator $property, bool $propagateToSubObjects = false): self
+    public function withAdditionalProperty(LaminasPropertyGenerator $property, bool $propagateToSubObjects = false): self
     {
         return $this->withHook(new AddPropertyHook($property), $propagateToSubObjects);
     }

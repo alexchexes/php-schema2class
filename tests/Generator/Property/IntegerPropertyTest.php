@@ -90,8 +90,10 @@ EOCODE;
     public function testGetAnnotationAndHintWithSimpleArray()
     {
         assertSame('int', $this->property->typeAnnotation());
-        assertSame('int', $this->property->typeHint("7.2.0"));
-        assertSame(null, $this->property->typeHint("5.6.0"));
+        assertSame('int', $this->property->typeHint());
+
+        $property = new IntegerProperty('myPropertyName', ['type' => 'integer'], $this->generatorRequest->withPHPVersion('5.6.0'));
+        assertSame(null, $property->typeHint());
     }
 
     public function testGenerateSubTypesWithSimpleArray()

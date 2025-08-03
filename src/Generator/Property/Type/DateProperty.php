@@ -26,17 +26,17 @@ class DateProperty extends AbstractProperty
         return "\\DateTime";
     }
 
-    public function typeHint(string $phpVersion): ?string
+    public function typeHint(): ?string
     {
         return "\\DateTime";
     }
 
-    public function genTypeAssertionExpr(string $expr): string
+    public function typeAssertionExpr(string $expr): string
     {
         return "{$expr} instanceof \\DateTime";
     }
 
-    public function genMappingExpr(string $expr, bool $asserted = false): string
+    public function inputMappingExpr(string $expr, bool $asserted = false): string
     {
         if ($asserted) {
             return $expr;
@@ -45,7 +45,7 @@ class DateProperty extends AbstractProperty
         return "new \\DateTime({$expr})";
     }
 
-    public function genOutputMappingExpr(string $expr): string
+    public function outputMappingExpr(string $expr): string
     {
         return "({$expr})->format(\\DateTime::ATOM)";
     }

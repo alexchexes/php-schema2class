@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class\Generator\ReferenceLookup;
 
 use Helmich\Schema2Class\Generator\Definition\Definition;
+use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeInterface;
 use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeClass;
 use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeUnknown;
@@ -19,14 +20,13 @@ use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeEnum;
  */
 class DefinitionsReferenceLookup implements ReferenceLookup
 {
-    /** @var array<string, Definition> */
-    private array $definitions;
-
-    /** @param array<string, Definition> $definitions */
-    public function __construct(array $definitions)
-    {
-        $this->definitions = $definitions;
-    }
+    /**
+     * @param array<string, Definition> $definitions
+     */
+    public function __construct(
+        private array $definitions,
+        private GeneratorRequest $request,
+    ) {}
 
     private function canonicalize(string $ref): string
     {
@@ -56,16 +56,16 @@ class DefinitionsReferenceLookup implements ReferenceLookup
         $ref = $this->canonicalize($ref);
 
         if (!isset($this->definitions[$ref])) {
-            return new ReferencedTypeUnknown();
+            return new ReferencedTypeUnknown($this->request);
         }
 
         $def = $this->definitions[$ref];
 
         if (isset($def->schema['enum'])) {
-            return new ReferencedTypeEnum($def->classFQN, $def->schema);
+            return new ReferencedTypeEnum($def->classFQN, $def->schema, $this->request);
         }
 
-        return new ReferencedTypeClass($def->classFQN);
+        return new ReferencedTypeClass($def->classFQN, $this->request);
     }
 
     public function lookupSchema(string $ref): array

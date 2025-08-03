@@ -69,8 +69,11 @@ EOCODE;
     public function testGetAnnotationAndHint()
     {
         assertSame('string', $this->property->typeAnnotation());
-        assertSame('string', $this->property->typeHint("7.2.0"));
-        assertSame(null, $this->property->typeHint("5.6.0"));
+
+        assertSame('string', $this->property->typeHint());
+
+        $property = new StringProperty('myString', ['type' => 'string'], $this->generatorRequest->withPHPVersion('5.6.0'));
+        assertSame(null, $property->typeHint());
     }
 
     public function testGenerateSubTypesWithSimpleArray()
