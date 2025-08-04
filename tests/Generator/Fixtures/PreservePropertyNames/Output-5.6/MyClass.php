@@ -117,12 +117,12 @@ class MyClass
     /**
      * @var string
      */
-    private $foo_bar;
+    private $_foo_bar;
 
     /**
      * @var string
      */
-    private $_foo_bar;
+    private $foo_bar;
 
     /**
      * @var string
@@ -167,8 +167,8 @@ class MyClass
      * @param string $foo__
      * @param string $_foo_
      * @param string $__foo__
-     * @param string $foo_bar
      * @param string $_foo_bar
+     * @param string $foo_bar
      * @param string $baz_qux
      * @param string $_123_qwe
      * @param string $Gorod
@@ -176,7 +176,7 @@ class MyClass
      * @param string $IP_adres
      * @param string $_tildas
      */
-    public function __construct($foo, $_foo, $__foo, $foo_, $foo__, $_foo_, $__foo__, $foo_bar, $_foo_bar, $baz_qux, $_123_qwe, $Gorod, $nazvanie_iur_litsa, $IP_adres, $_tildas)
+    public function __construct($foo, $_foo, $__foo, $foo_, $foo__, $_foo_, $__foo__, $_foo_bar, $foo_bar, $baz_qux, $_123_qwe, $Gorod, $nazvanie_iur_litsa, $IP_adres, $_tildas)
     {
         $this->foo = $foo;
         $this->_foo = $_foo;
@@ -185,8 +185,8 @@ class MyClass
         $this->foo__ = $foo__;
         $this->_foo_ = $_foo_;
         $this->__foo__ = $__foo__;
-        $this->foo_bar = $foo_bar;
         $this->_foo_bar = $_foo_bar;
+        $this->foo_bar = $foo_bar;
         $this->baz_qux = $baz_qux;
         $this->_123_qwe = $_123_qwe;
         $this->Gorod = $Gorod;
@@ -401,35 +401,6 @@ class MyClass
     /**
      * @return string
      */
-    public function getFooBar()
-    {
-        return $this->foo_bar;
-    }
-
-    /**
-     * @param string $foo_bar
-     * @return self
-     * @param bool $validate
-     */
-    public function withFooBar($foo_bar, bool $validate = true)
-    {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($foo_bar, self::$_schema['properties']['foo-bar']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
-        $clone = clone $this;
-        $clone->foo_bar = $foo_bar;
-
-        return $clone;
-    }
-
-    /**
-     * @return string
-     */
     public function get_FooBar()
     {
         return $this->_foo_bar;
@@ -444,7 +415,7 @@ class MyClass
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($_foo_bar, self::$_schema['properties']['foo bar']);
+            $validator->validate($_foo_bar, self::$_schema['properties']['foo-bar']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -452,6 +423,35 @@ class MyClass
 
         $clone = clone $this;
         $clone->_foo_bar = $_foo_bar;
+
+        return $clone;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFooBar()
+    {
+        return $this->foo_bar;
+    }
+
+    /**
+     * @param string $foo_bar
+     * @return self
+     * @param bool $validate
+     */
+    public function withFooBar($foo_bar, bool $validate = true)
+    {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($foo_bar, self::$_schema['properties']['foo bar']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
+        $clone = clone $this;
+        $clone->foo_bar = $foo_bar;
 
         return $clone;
     }
@@ -698,8 +698,8 @@ class MyClass
         $foo__ = $input->{'foo__'};
         $_foo_ = $input->{'_foo_'};
         $__foo__ = $input->{'__foo__'};
-        $foo_bar = $input->{'foo-bar'};
-        $_foo_bar = $input->{'foo bar'};
+        $_foo_bar = $input->{'foo-bar'};
+        $foo_bar = $input->{'foo bar'};
         $baz_qux = $input->{'baz qux'};
         $_123_qwe = $input->{'123 qwe'};
         $Gorod = $input->{'Город'};
@@ -708,7 +708,7 @@ class MyClass
         $_tildas = $input->{'~~tildas~~'};
         $it_s_A = isset($input->{'it\'s "A"'}) ? $input->{'it\'s "A"'} : null;
 
-        $obj = new self($foo, $_foo, $__foo, $foo_, $foo__, $_foo_, $__foo__, $foo_bar, $_foo_bar, $baz_qux, $_123_qwe, $Gorod, $nazvanie_iur_litsa, $IP_adres, $_tildas);
+        $obj = new self($foo, $_foo, $__foo, $foo_, $foo__, $_foo_, $__foo__, $_foo_bar, $foo_bar, $baz_qux, $_123_qwe, $Gorod, $nazvanie_iur_litsa, $IP_adres, $_tildas);
         $obj->it_s_A = $it_s_A;
         return $obj;
     }
@@ -728,8 +728,8 @@ class MyClass
         $output['foo__'] = $this->foo__;
         $output['_foo_'] = $this->_foo_;
         $output['__foo__'] = $this->__foo__;
-        $output['foo-bar'] = $this->foo_bar;
-        $output['foo bar'] = $this->_foo_bar;
+        $output['foo-bar'] = $this->_foo_bar;
+        $output['foo bar'] = $this->foo_bar;
         $output['baz qux'] = $this->baz_qux;
         $output['123 qwe'] = $this->_123_qwe;
         $output['Город'] = $this->Gorod;
@@ -758,8 +758,8 @@ class MyClass
         $output->{'foo__'} = $this->foo__;
         $output->{'_foo_'} = $this->_foo_;
         $output->{'__foo__'} = $this->__foo__;
-        $output->{'foo-bar'} = $this->foo_bar;
-        $output->{'foo bar'} = $this->_foo_bar;
+        $output->{'foo-bar'} = $this->_foo_bar;
+        $output->{'foo bar'} = $this->foo_bar;
         $output->{'baz qux'} = $this->baz_qux;
         $output->{'123 qwe'} = $this->_123_qwe;
         $output->{'Город'} = $this->Gorod;

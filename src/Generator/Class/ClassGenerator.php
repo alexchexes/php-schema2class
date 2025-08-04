@@ -7,6 +7,7 @@ use Helmich\Schema2Class\Generator\Class\Method\ClassMethodSuiteFactory;
 use Helmich\Schema2Class\Generator\Class\Property\ClassPropertySuiteFactory;
 use Helmich\Schema2Class\Generator\Class\Property\PropertyGenerator;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
+use Helmich\Schema2Class\Generator\Class\IdentifierResolver;
 use Helmich\Schema2Class\Writer\WriterInterface;
 use Laminas\Code\DeclareStatement;
 use Laminas\Code\Generator\ClassGenerator as LaminasClassGenerator;
@@ -37,6 +38,9 @@ class ClassGenerator
     {
         $collector = new SchemaPropertyCollector();
         $schemaProperties = $collector->collectPropertiesFromSchema($this->schema, $this->request);
+
+        (new IdentifierResolver($this->request))->resolve($schemaProperties);
+
         $hasOptionalNullable = $collector->hasOptionalNullable($schemaProperties);
         $defaults = $collector->collectDefaults($this->schema, $this->request);
 

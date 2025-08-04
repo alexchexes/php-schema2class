@@ -39,7 +39,7 @@ class MyClass
     /**
      * @var string
      */
-    private string $_fooBar_1;
+    private string $fooBar;
 
     /**
      * @var string|null
@@ -48,38 +48,38 @@ class MyClass
     private ?string $bar = null;
 
     /**
-     * @param string $_fooBar_1
+     * @param string $fooBar
      */
-    public function __construct(string $_fooBar_1)
+    public function __construct(string $fooBar)
     {
-        $this->_fooBar_1 = $_fooBar_1;
+        $this->fooBar = $fooBar;
     }
 
     /**
      * @return string
      */
-    public function getFooBar1(): string
+    public function getFooBar(): string
     {
-        return $this->_fooBar_1;
+        return $this->fooBar;
     }
 
     /**
-     * @param string $_fooBar_1
+     * @param string $fooBar
      * @return self
      * @param bool $validate
      */
-    public function withFooBar1(string $_fooBar_1, bool $validate = true): self
+    public function withFooBar(string $fooBar, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($_fooBar_1, self::$_schema['properties']['fooBar']);
+            $validator->validate($fooBar, self::$_schema['properties']['fooBar']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
         }
 
         $clone = clone $this;
-        $clone->_fooBar_1 = $_fooBar_1;
+        $clone->fooBar = $fooBar;
 
         return $clone;
     }
@@ -142,10 +142,10 @@ class MyClass
         }
 
         $foobar = isset($input->{'foobar'}) ? $input->{'foobar'} : null;
-        $_fooBar_1 = $input->{'fooBar'};
+        $fooBar = $input->{'fooBar'};
         $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
 
-        $obj = new self($_fooBar_1);
+        $obj = new self($fooBar);
         $obj->foobar = $foobar;
         $obj->bar = $bar;
         return $obj;
@@ -162,7 +162,7 @@ class MyClass
         if (isset($this->foobar)) {
             $output['foobar'] = $this->foobar;
         }
-        $output['fooBar'] = $this->_fooBar_1;
+        $output['fooBar'] = $this->fooBar;
         if (isset($this->bar)) {
             $output['bar'] = $this->bar;
         }
@@ -181,7 +181,7 @@ class MyClass
         if (isset($this->foobar)) {
             $output->{'foobar'} = $this->foobar;
         }
-        $output->{'fooBar'} = $this->_fooBar_1;
+        $output->{'fooBar'} = $this->fooBar;
         if (isset($this->bar)) {
             $output->{'bar'} = $this->bar;
         }

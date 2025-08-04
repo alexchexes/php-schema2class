@@ -29,7 +29,7 @@ class UnsetterFactory
      * or shouldn't be generated at all, and creates one if needed.
      * If no unsetter should be generated, returns `null`.
      */
-    public function generateUnsetter(PropertyInterface $property, string $pascalName): ?MethodGenerator
+    public function generateUnsetter(PropertyInterface $property): ?MethodGenerator
     {
         if ($this->request->getNoSetters()) {
             return null;
@@ -38,20 +38,20 @@ class UnsetterFactory
         if ($this->mutating) {
             // TODO: check why for "mutable" style we generate unsetter only when property is not just optional, but also nullable. Is this necessary?
             if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
-                return $this->generateMutatingUnsetter($property, $pascalName);
+                return $this->generateMutatingUnsetter($property);
             }
         } else {
             if ($property instanceof OptionalPropertyDecorator) {
-                return $this->generateNonMutatingUnsetter($property, $pascalName);
+                return $this->generateNonMutatingUnsetter($property);
             }
         }
 
         return null;
     }
 
-    private function generateNonMutatingUnsetter(PropertyInterface $property, string $pascalName): MethodGenerator
+    private function generateNonMutatingUnsetter(PropertyInterface $property): MethodGenerator
     {
-        $methodName = 'without' . $pascalName;
+        $methodName = 'without' . $property->methodName();
         $propKey = var_export($property->key(), true);
         $propName = $property->name();
 
@@ -81,9 +81,9 @@ class UnsetterFactory
         return $unsetMethod;
     }
 
-    private function generateMutatingUnsetter(PropertyInterface $property, string $pascalName): MethodGenerator
+    private function generateMutatingUnsetter(PropertyInterface $property): MethodGenerator
     {
-        $methodName = 'unset' . $pascalName;
+        $methodName = 'unset' . $property->methodName();
         $propKey = var_export($property->key(), true);
         $propName = $property->name();
 

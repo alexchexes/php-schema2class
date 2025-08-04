@@ -33,22 +33,22 @@ class OptionsObject
     }
 
     /**
-     * @param string $output
+     * @param string $_output
      * @return self
      * @param bool $validate
      */
-    public function withOutput(string $output, bool $validate = true): self
+    public function withOutput(string $_output, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($output, self::$_schema['properties']['output']);
+            $validator->validate($_output, self::$_schema['properties']['output']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
         }
 
         $clone = clone $this;
-        $clone->output = $output;
+        $clone->output = $_output;
 
         return $clone;
     }
@@ -85,10 +85,10 @@ class OptionsObject
             static::validateInput($input);
         }
 
-        $output = isset($input->{'output'}) ? $input->{'output'} : null;
+        $_output = isset($input->{'output'}) ? $input->{'output'} : null;
 
         $obj = new self();
-        $obj->output = $output;
+        $obj->output = $_output;
         return $obj;
     }
 

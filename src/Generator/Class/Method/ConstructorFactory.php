@@ -29,7 +29,7 @@ class ConstructorFactory
         $requiredProperties = $this->schemaProperties->filter(PropertyCollectionFilterFactory::onlyRequired());
 
         foreach ($requiredProperties as $requiredProperty) {
-            $paramName = $requiredProperty->name();
+            $paramName = $requiredProperty->varName();
             $params[]  = new ParameterGenerator(
                 $paramName,
                 $requiredProperty->typeHint()

@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Util;
 
-use Helmich\Schema2Class\Generator\Class\MethodNames;
 use Helmich\Schema2Class\Generator\Class\PropertyNames;
 
 /**
@@ -56,7 +55,6 @@ class ReservedNames
             '__invoke',
             '__debugInfo',
             '__clone',
-            ...MethodNames::all(),
         ];
     }
 }
