@@ -20,9 +20,9 @@ class IntersectProperty extends AbstractProperty
         return isset($schema["allOf"]);
     }
 
-    public function isComplex(): bool
+    public function needsValidation(): bool
     {
-        return true;
+        return false;
     }
 
     /**

@@ -54,4 +54,9 @@ class NullProperty extends AbstractProperty
     {
         return new PropertyValueGenerator(null, ValueGenerator::TYPE_NULL);
     }
+
+    public function needsValidation(): bool
+    {
+        return true;
+    }
 }

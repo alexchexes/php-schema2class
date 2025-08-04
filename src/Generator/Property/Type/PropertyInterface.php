@@ -88,11 +88,10 @@ interface PropertyInterface extends TypeExpressionInterface
     public function description(): ?string;
 
     /**
-     * Indicates whether the property maps to a complex value (object, collection, enum)
-     * rather than a simple scalar. Complex properties may trigger generation
-     * of additional classes and require deep cloning.
+     * Indicates whether setter methods for this property require runtime
+     * validation in addition to PHP type hints.
      */
-    public function isComplex(): bool;
+    public function needsValidation(): bool;
 
     /**
      * Generates a code snippet that reads the value for this property from the

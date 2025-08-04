@@ -51,7 +51,7 @@ abstract class AbstractProperty implements PropertyInterface
         $this->nameForClass = StringUtils::safePascalCase($key);
     }
 
-    public function isComplex(): bool
+    public function needsValidation(): bool
     {
         return false;
     }

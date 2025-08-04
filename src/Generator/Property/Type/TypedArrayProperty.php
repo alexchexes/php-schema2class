@@ -51,7 +51,7 @@ class TypedArrayProperty extends AbstractProperty
         return true;
     }
 
-    public function isComplex(): bool
+    public function needsValidation(): bool
     {
         return true;
     }

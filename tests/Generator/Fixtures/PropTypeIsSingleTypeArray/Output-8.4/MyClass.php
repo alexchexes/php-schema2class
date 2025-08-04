@@ -387,18 +387,9 @@ class MyClass
     /**
      * @param string $foo
      * @return self
-     * @param bool $validate
      */
-    public function withFoo(string $foo, bool $validate = true): self
+    public function withFoo(string $foo): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($foo, self::$_schema['properties']['foo']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->foo = $foo;
 
@@ -416,18 +407,9 @@ class MyClass
     /**
      * @param int|float $bar
      * @return self
-     * @param bool $validate
      */
-    public function withBar(int|float $bar, bool $validate = true): self
+    public function withBar(int|float $bar): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($bar, self::$_schema['properties']['bar']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->bar = $bar;
 
@@ -445,18 +427,9 @@ class MyClass
     /**
      * @param int $baz
      * @return self
-     * @param bool $validate
      */
-    public function withBaz(int $baz, bool $validate = true): self
+    public function withBaz(int $baz): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($baz, self::$_schema['properties']['baz']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->baz = $baz;
 
@@ -474,18 +447,9 @@ class MyClass
     /**
      * @param bool $qux
      * @return self
-     * @param bool $validate
      */
-    public function withQux(bool $qux, bool $validate = true): self
+    public function withQux(bool $qux): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($qux, self::$_schema['properties']['qux']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->qux = $qux;
 
@@ -581,18 +545,9 @@ class MyClass
     /**
      * @param string|null $nullFoo
      * @return self
-     * @param bool $validate
      */
-    public function withNullFoo(?string $nullFoo, bool $validate = true): self
+    public function withNullFoo(?string $nullFoo): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($nullFoo, self::$_schema['properties']['nullFoo']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->nullFoo = $nullFoo;
 
@@ -610,18 +565,9 @@ class MyClass
     /**
      * @param int|float|null $nullBar
      * @return self
-     * @param bool $validate
      */
-    public function withNullBar(int|float|null $nullBar, bool $validate = true): self
+    public function withNullBar(int|float|null $nullBar): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($nullBar, self::$_schema['properties']['nullBar']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->nullBar = $nullBar;
 
@@ -639,18 +585,9 @@ class MyClass
     /**
      * @param int|null $nullBaz
      * @return self
-     * @param bool $validate
      */
-    public function withNullBaz(?int $nullBaz, bool $validate = true): self
+    public function withNullBaz(?int $nullBaz): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($nullBaz, self::$_schema['properties']['nullBaz']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->nullBaz = $nullBaz;
 
@@ -668,18 +605,9 @@ class MyClass
     /**
      * @param bool|null $nullQux
      * @return self
-     * @param bool $validate
      */
-    public function withNullQux(?bool $nullQux, bool $validate = true): self
+    public function withNullQux(?bool $nullQux): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($nullQux, self::$_schema['properties']['nullQux']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->nullQux = $nullQux;
 
@@ -746,18 +674,9 @@ class MyClass
     /**
      * @param string $optFoo
      * @return self
-     * @param bool $validate
      */
-    public function withOptFoo(string $optFoo, bool $validate = true): self
+    public function withOptFoo(string $optFoo): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($optFoo, self::$_schema['properties']['optFoo']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->optFoo = $optFoo;
 
@@ -786,18 +705,9 @@ class MyClass
     /**
      * @param int|float $optBar
      * @return self
-     * @param bool $validate
      */
-    public function withOptBar(int|float $optBar, bool $validate = true): self
+    public function withOptBar(int|float $optBar): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($optBar, self::$_schema['properties']['optBar']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->optBar = $optBar;
 
@@ -826,18 +736,9 @@ class MyClass
     /**
      * @param int $optBaz
      * @return self
-     * @param bool $validate
      */
-    public function withOptBaz(int $optBaz, bool $validate = true): self
+    public function withOptBaz(int $optBaz): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($optBaz, self::$_schema['properties']['optBaz']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->optBaz = $optBaz;
 
@@ -866,18 +767,9 @@ class MyClass
     /**
      * @param bool $optQux
      * @return self
-     * @param bool $validate
      */
-    public function withOptQux(bool $optQux, bool $validate = true): self
+    public function withOptQux(bool $optQux): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($optQux, self::$_schema['properties']['optQux']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->optQux = $optQux;
 
@@ -1019,18 +911,9 @@ class MyClass
     /**
      * @param string|null $optNullFoo
      * @return self
-     * @param bool $validate
      */
-    public function withOptNullFoo(?string $optNullFoo, bool $validate = true): self
+    public function withOptNullFoo(?string $optNullFoo): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($optNullFoo, self::$_schema['properties']['optNullFoo']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->optNullFoo = $optNullFoo;
         $clone->_providedOptionals['optNullFoo'] = true;
@@ -1061,18 +944,9 @@ class MyClass
     /**
      * @param int|float|null $optNullBar
      * @return self
-     * @param bool $validate
      */
-    public function withOptNullBar(int|float|null $optNullBar, bool $validate = true): self
+    public function withOptNullBar(int|float|null $optNullBar): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($optNullBar, self::$_schema['properties']['optNullBar']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->optNullBar = $optNullBar;
         $clone->_providedOptionals['optNullBar'] = true;
@@ -1103,18 +977,9 @@ class MyClass
     /**
      * @param int|null $optNullBaz
      * @return self
-     * @param bool $validate
      */
-    public function withOptNullBaz(?int $optNullBaz, bool $validate = true): self
+    public function withOptNullBaz(?int $optNullBaz): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($optNullBaz, self::$_schema['properties']['optNullBaz']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->optNullBaz = $optNullBaz;
         $clone->_providedOptionals['optNullBaz'] = true;
@@ -1145,18 +1010,9 @@ class MyClass
     /**
      * @param bool|null $optNullQux
      * @return self
-     * @param bool $validate
      */
-    public function withOptNullQux(?bool $optNullQux, bool $validate = true): self
+    public function withOptNullQux(?bool $optNullQux): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($optNullQux, self::$_schema['properties']['optNullQux']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->optNullQux = $optNullQux;
         $clone->_providedOptionals['optNullQux'] = true;

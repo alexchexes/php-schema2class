@@ -103,4 +103,9 @@ class PrimitiveUnionEnumProperty extends AbstractProperty
 
         return new PropertyValueGenerator($value);   // auto-detect ⇒ `null` stays null
     }
+
+    public function needsValidation(): bool
+    {
+        return true;
+    }
 }

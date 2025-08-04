@@ -68,7 +68,7 @@ class ObjectArrayProperty extends AbstractProperty
         );
     }
 
-    public function isComplex(): bool
+    public function needsValidation(): bool
     {
         return true;
     }

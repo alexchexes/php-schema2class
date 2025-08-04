@@ -16,9 +16,9 @@ class DateProperty extends AbstractProperty
             && $schema["format"] === "date-time";
     }
 
-    public function isComplex(): bool
+    public function needsValidation(): bool
     {
-        return true;
+        return false;
     }
 
     public function typeAnnotation(): string

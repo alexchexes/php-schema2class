@@ -60,13 +60,13 @@ class ReferenceProperty extends AbstractProperty
         return $this->refType->outputMappingExprStdClass($expr);
     }
 
-    public function isComplex(): bool
+    public function needsValidation(): bool
     {
         if ($this->refType instanceof ReferencedTypeEnum) {
-            return $this->refType->usesNativeEnum();
+            return !$this->refType->usesNativeEnum();
         }
 
-        return true;
+        return false;
     }
 
 }

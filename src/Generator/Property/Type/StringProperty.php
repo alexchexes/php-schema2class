@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class\Generator\Property\Type;
 
 use Composer\Semver\Semver;
+use Helmich\Schema2Class\Util\SchemaKeywords;
 
 /**
  * Represents plain string values.
@@ -37,4 +38,12 @@ class StringProperty extends AbstractProperty
         return "is_string({$expr})";
     }
 
+    public function needsValidation(): bool
+    {
+        if (!$this->request->isAtLeastPHP('7.0')) {
+            return true;
+        }
+
+        return SchemaKeywords::hasAny($this->schema, SchemaKeywords::STRING_VALIDATION);
+    }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class\Generator\Property\Type;
 
 use Helmich\Schema2Class\Generator\GeneratorRequest;
+use Helmich\Schema2Class\Util\SchemaKeywords;
 use Helmich\Schema2Class\Util\SchemaUtils;
 use Helmich\Schema2Class\Writer\WriterInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -34,8 +35,38 @@ class PrimitiveArrayProperty extends AbstractProperty
         $this->isAssociativeArray = isset($schema["additionalProperties"]) && is_array($schema["additionalProperties"]);
     }
 
-    public function isComplex(): bool
+    public function needsValidation(): bool
     {
+        // array-level constraints
+        if (SchemaKeywords::hasAny($this->schema, SchemaKeywords::ARRAY_VALIDATION)) {
+            return true;
+        }
+
+        // typed items
+        if (isset($this->schema['items']) && is_array($this->schema['items'])) {
+            $items = $this->schema['items'];
+            if (
+                isset($items['type'])
+                || SchemaKeywords::hasAny($items, SchemaKeywords::STRING_VALIDATION)
+                || SchemaKeywords::hasAny($items, SchemaKeywords::NUMERIC_VALIDATION)
+                || SchemaKeywords::hasAny($items, SchemaKeywords::BOOLEAN)
+            ) {
+                return true;
+            }
+        }
+
+        if (isset($this->schema['additionalProperties']) && is_array($this->schema['additionalProperties'])) {
+            $items = $this->schema['additionalProperties'];
+            if (
+                isset($items['type'])
+                || SchemaKeywords::hasAny($items, SchemaKeywords::STRING_VALIDATION)
+                || SchemaKeywords::hasAny($items, SchemaKeywords::NUMERIC_VALIDATION)
+                || SchemaKeywords::hasAny($items, SchemaKeywords::BOOLEAN)
+            ) {
+                return true;
+            }
+        }
+
         return false;
     }
 

@@ -99,18 +99,9 @@ class MyClassEnsureArgs2
     /**
      * @param string $street
      * @return self
-     * @param bool $validate
      */
-    public function withStreet(string $street, bool $validate = true): self
+    public function withStreet(string $street): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($street, self::$_schema['properties']['street']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->street = $street;
 

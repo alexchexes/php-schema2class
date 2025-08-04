@@ -37,7 +37,7 @@ class NestedObjectPropertyTest extends TestCase
 
     public function testIsComplex()
     {
-        assertTrue($this->property->isComplex());
+        assertFalse($this->property->needsValidation());
     }
 
     public function testConvertInputToType()
