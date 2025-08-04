@@ -25,41 +25,41 @@ class MyClass
     /**
      * @var string
      */
-    private string $_schema_1;
+    private string $schema;
 
     /**
-     * @param string $_schema_1
+     * @param string $schema
      */
-    public function __construct(string $_schema_1)
+    public function __construct(string $schema)
     {
-        $this->_schema_1 = $_schema_1;
+        $this->schema = $schema;
     }
 
     /**
      * @return string
      */
-    public function getSchema1(): string
+    public function getSchema(): string
     {
-        return $this->_schema_1;
+        return $this->schema;
     }
 
     /**
-     * @param string $_schema_1
+     * @param string $schema
      * @return self
      * @param bool $validate
      */
-    public function withSchema1(string $_schema_1, bool $validate = true): self
+    public function withSchema(string $schema, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($_schema_1, self::$_schema['properties']['schema']);
+            $validator->validate($schema, self::$_schema['properties']['schema']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
         }
 
         $clone = clone $this;
-        $clone->_schema_1 = $_schema_1;
+        $clone->schema = $schema;
 
         return $clone;
     }
@@ -79,9 +79,9 @@ class MyClass
             static::validateInput($input);
         }
 
-        $_schema_1 = $input->{'schema'};
+        $schema = $input->{'schema'};
 
-        $obj = new self($_schema_1);
+        $obj = new self($schema);
 
         return $obj;
     }
@@ -94,7 +94,7 @@ class MyClass
     public function toArray(): array
     {
         $output = [];
-        $output['schema'] = $this->_schema_1;
+        $output['schema'] = $this->schema;
 
         return $output;
     }
@@ -107,7 +107,7 @@ class MyClass
     public function toStdClass(): \stdClass
     {
         $output = new \stdClass();
-        $output->{'schema'} = $this->_schema_1;
+        $output->{'schema'} = $this->schema;
 
         return $output;
     }

@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Util;
 
-use Helmich\Schema2Class\Generator\Class\MethodNames;
 use Helmich\Schema2Class\Generator\Class\PropertyNames;
 
 /**
@@ -17,6 +16,11 @@ use Helmich\Schema2Class\Generator\Class\PropertyNames;
  */
 class ReservedNames
 {
+    /**
+     * Names that must not be used for temporary variables inside generated methods.
+     *
+     * This includes PHP superglobals and internal properties used by the generator.
+     */
     static public function getBannedVarNames(/* ?string $phpVersion = null */): array
     {
         return [
@@ -39,6 +43,24 @@ class ReservedNames
         ];
     }
 
+    /**
+     * Names that must not be used for generated class properties.
+     */
+    static public function getBannedPropertyNames(/* ?string $phpVersion = null */): array
+    {
+        return [
+            'this',
+            ...PropertyNames::all(),
+        ];
+    }
+
+    /**
+     * Names that are reserved for PHP internal magic methods and therefore cannot
+     * be used for generated accessor method names. Note that generator specific
+     * method names such as `fromInput` or `toArray` are intentionally omitted
+     * here as accessor methods always carry a prefix (get/set/with/without/unset)
+     * making collisions impossible.
+     */
     static public function getBannedMethodNames(/* ?string $phpVersion = null */): array
     {
         return [
@@ -56,7 +78,6 @@ class ReservedNames
             '__invoke',
             '__debugInfo',
             '__clone',
-            ...MethodNames::all(),
         ];
     }
 }
