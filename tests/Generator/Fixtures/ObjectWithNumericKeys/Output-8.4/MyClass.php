@@ -55,18 +55,9 @@ class MyClass
     /**
      * @param string $_1
      * @return self
-     * @param bool $validate
      */
-    public function with_1(string $_1, bool $validate = true): self
+    public function with_1(string $_1): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($_1, self::$_schema['properties']['1']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->_1 = $_1;
 

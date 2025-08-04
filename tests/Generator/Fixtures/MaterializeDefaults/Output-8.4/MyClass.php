@@ -394,18 +394,9 @@ class MyClass
     /**
      * @param string $foo
      * @return self
-     * @param bool $validate
      */
-    public function withFoo(string $foo, bool $validate = true): self
+    public function withFoo(string $foo): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($foo, self::$_schema['properties']['foo']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->foo = $foo;
 
@@ -423,18 +414,9 @@ class MyClass
     /**
      * @param string $bar
      * @return self
-     * @param bool $validate
      */
-    public function withBar(string $bar, bool $validate = true): self
+    public function withBar(string $bar): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($bar, self::$_schema['properties']['bar']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->bar = $bar;
 

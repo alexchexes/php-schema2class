@@ -13,6 +13,7 @@ use Helmich\Schema2Class\Generator\Property\Type\PrimitiveArrayProperty;
 use Helmich\Schema2Class\Generator\Property\Type\PropertyInterface;
 use Helmich\Schema2Class\Generator\Property\Type\ReferenceArrayProperty;
 use Helmich\Schema2Class\Generator\Property\Type\TypedArrayProperty;
+use Helmich\Schema2Class\Generator\Property\Type\UnionProperty;
 use Laminas\Code\Generator\DocBlock\Tag\GenericTag;
 use Laminas\Code\Generator\DocBlock\Tag\ParamTag;
 use Laminas\Code\Generator\DocBlock\Tag\ReturnTag;
@@ -56,6 +57,8 @@ class SetterFactory
         $propAnnotatedType = $paramProperty->typeAnnotation();
         $propTypeHint = $paramProperty->typeHint();
 
+        $hasConstraints = PropertyQuery::hasConstraints($paramProperty);
+
         // then we fully unwrap any other decorators to be able to see the real type
         $base = $property;
         while ($base instanceof PropertyDecoratorInterface) {
@@ -68,12 +71,16 @@ class SetterFactory
             || $base instanceof ReferenceArrayProperty
             || $base instanceof TypedArrayProperty;
 
-        $addValidation = true;
+        $addValidation = ($propTypeHint === null) || $hasConstraints;
 
-        // If property is complex (except arrays), no validation needed
-        // TODO: this is not right; Validation is not generated in some cases where it should've been
         if ($property->isComplex() && !$isArray) {
-            $addValidation = false;
+            // Complex properties like nested objects or enum classes are
+            // expected to validate themselves. Only validate here when we
+            // cannot enforce the type via a type hint (PHP <7 or union without
+            // native support).
+            if (!($base instanceof UnionProperty)) {
+                $addValidation = $propTypeHint === null;
+            }
         }
 
         $docBlock = $this->buildDocBlock($property, $varName, $propAnnotatedType, $addValidation);
