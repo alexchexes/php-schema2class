@@ -1248,9 +1248,18 @@ class MyClass
     /**
      * @param MyClassTestObj $testObj
      * @return self
+     * @param bool $validate
      */
-    public function withTestObj(MyClassTestObj $testObj)
+    public function withTestObj(MyClassTestObj $testObj, bool $validate = true)
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($testObj, self::$_schema['properties']['testObj']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
         $clone->testObj = $testObj;
 
@@ -2044,9 +2053,18 @@ class MyClass
     /**
      * @param MyClassEnsureArgs1Alternative1|MyClassEnsureArgs1Alternative2|string $ensureArgs1
      * @return self
+     * @param bool $validate
      */
-    public function withEnsureArgs1($ensureArgs1)
+    public function withEnsureArgs1($ensureArgs1, bool $validate = true)
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($ensureArgs1, self::$_schema['properties']['ensureArgs1']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
         $clone->ensureArgs1 = $ensureArgs1;
 
@@ -2075,9 +2093,18 @@ class MyClass
     /**
      * @param MyClassEnsureArgs2 $ensureArgs2
      * @return self
+     * @param bool $validate
      */
-    public function withEnsureArgs2(MyClassEnsureArgs2 $ensureArgs2)
+    public function withEnsureArgs2(MyClassEnsureArgs2 $ensureArgs2, bool $validate = true)
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($ensureArgs2, self::$_schema['properties']['ensureArgs2']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
         $clone->ensureArgs2 = $ensureArgs2;
 

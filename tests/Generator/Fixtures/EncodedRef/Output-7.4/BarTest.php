@@ -36,18 +36,9 @@ class BarTest
     /**
      * @param string $bar
      * @return self
-     * @param bool $validate
      */
-    public function withBar(string $bar, bool $validate = true): self
+    public function withBar(string $bar): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($bar, self::$_schema['properties']['bar']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->bar = $bar;
 

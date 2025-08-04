@@ -50,9 +50,18 @@ class MyClassEnsureArgs1Alternative1
     /**
      * @param MyClassEnsureArgs1Alternative1Type $type
      * @return self
+     * @param bool $validate
      */
-    public function withType(MyClassEnsureArgs1Alternative1Type $type): self
+    public function withType(MyClassEnsureArgs1Alternative1Type $type, bool $validate = true): self
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($type, self::$_schema['properties']['type']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
         $clone->type = $type;
 

@@ -394,18 +394,9 @@ class MyClass
     /**
      * @param string $foo
      * @return self
-     * @param bool $validate
      */
-    public function withFoo(string $foo, bool $validate = true): self
+    public function withFoo(string $foo): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($foo, self::$_schema['properties']['foo']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->foo = $foo;
 
@@ -423,18 +414,9 @@ class MyClass
     /**
      * @param string $bar
      * @return self
-     * @param bool $validate
      */
-    public function withBar(string $bar, bool $validate = true): self
+    public function withBar(string $bar): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($bar, self::$_schema['properties']['bar']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->bar = $bar;
 
@@ -452,9 +434,18 @@ class MyClass
     /**
      * @param MyClassBaz $baz
      * @return self
+     * @param bool $validate
      */
-    public function withBaz(MyClassBaz $baz): self
+    public function withBaz(MyClassBaz $baz, bool $validate = true): self
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($baz, self::$_schema['properties']['baz']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
         $clone->baz = $baz;
 
@@ -485,9 +476,18 @@ class MyClass
     /**
      * @param MyClassQuxObj|null $quxObj
      * @return self
+     * @param bool $validate
      */
-    public function withQuxObj(?MyClassQuxObj $quxObj): self
+    public function withQuxObj(?MyClassQuxObj $quxObj, bool $validate = true): self
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($quxObj, self::$_schema['properties']['quxObj']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
         $clone->quxObj = $quxObj;
         $clone->_providedOptionals['quxObj'] = true;
@@ -520,9 +520,18 @@ class MyClass
     /**
      * @param MyClassQuxObjNest|null $quxObjNest
      * @return self
+     * @param bool $validate
      */
-    public function withQuxObjNest(?MyClassQuxObjNest $quxObjNest): self
+    public function withQuxObjNest(?MyClassQuxObjNest $quxObjNest, bool $validate = true): self
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($quxObjNest, self::$_schema['properties']['quxObjNest']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
         $clone->quxObjNest = $quxObjNest;
         $clone->_providedOptionals['quxObjNest'] = true;
@@ -783,9 +792,18 @@ class MyClass
     /**
      * @param MyClassNumKeysDefaults $numKeysDefaults
      * @return self
+     * @param bool $validate
      */
-    public function withNumKeysDefaults(MyClassNumKeysDefaults $numKeysDefaults): self
+    public function withNumKeysDefaults(MyClassNumKeysDefaults $numKeysDefaults, bool $validate = true): self
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($numKeysDefaults, self::$_schema['properties']['numKeysDefaults']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
         $clone->numKeysDefaults = $numKeysDefaults;
 

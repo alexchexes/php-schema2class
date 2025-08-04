@@ -491,9 +491,18 @@ class MyClass
     /**
      * @param MyClassGrox|null $grox
      * @return self
+     * @param bool $validate
      */
-    public function withGrox(MyClassGrox $grox)
+    public function withGrox(MyClassGrox $grox, bool $validate = true)
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($grox, self::$_schema['properties']['grox']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
         $clone->grox = $grox;
         $clone->_providedOptionals['grox'] = true;
@@ -526,9 +535,18 @@ class MyClass
     /**
      * @param MyClassGooks|null $gooks
      * @return self
+     * @param bool $validate
      */
-    public function withGooks(MyClassGooks $gooks)
+    public function withGooks(MyClassGooks $gooks, bool $validate = true)
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($gooks, self::$_schema['properties']['gooks']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
         $clone->gooks = $gooks;
         $clone->_providedOptionals['gooks'] = true;

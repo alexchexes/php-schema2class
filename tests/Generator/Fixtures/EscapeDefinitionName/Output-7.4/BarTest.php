@@ -72,9 +72,18 @@ class BarTest
     /**
      * @param FooTest|MoiKlass|FooTest_1 $exampleProp
      * @return self
+     * @param bool $validate
      */
-    public function withExampleProp($exampleProp): self
+    public function withExampleProp($exampleProp, bool $validate = true): self
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($exampleProp, self::$_schema['properties']['exampleProp']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
         $clone->exampleProp = $exampleProp;
 

@@ -57,18 +57,9 @@ class MyClass
     /**
      * @param string $_foo_bar
      * @return self
-     * @param bool $validate
      */
-    public function with_FooBar(string $_foo_bar, bool $validate = true): self
+    public function with_FooBar(string $_foo_bar): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($_foo_bar, self::$_schema['properties']['foo-bar']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->_foo_bar = $_foo_bar;
 
@@ -86,18 +77,9 @@ class MyClass
     /**
      * @param string $foo_bar
      * @return self
-     * @param bool $validate
      */
-    public function withFooBar(string $foo_bar, bool $validate = true): self
+    public function withFooBar(string $foo_bar): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($foo_bar, self::$_schema['properties']['foo bar']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->foo_bar = $foo_bar;
 

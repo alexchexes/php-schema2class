@@ -223,9 +223,18 @@ class User
     /**
      * @param \DateTime $createdAt
      * @return self
+     * @param bool $validate
      */
-    public function withCreatedAt(\DateTime $createdAt): self
+    public function withCreatedAt(\DateTime $createdAt, bool $validate = true): self
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($createdAt, self::$_schema['properties']['createdAt']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
         $clone->createdAt = $createdAt;
 
@@ -254,9 +263,18 @@ class User
     /**
      * @param UserGender $gender
      * @return self
+     * @param bool $validate
      */
-    public function withGender(UserGender $gender): self
+    public function withGender(UserGender $gender, bool $validate = true): self
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($gender, self::$_schema['properties']['gender']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
         $clone->gender = $gender;
 
@@ -314,18 +332,9 @@ class User
     /**
      * @param string $lastName
      * @return self
-     * @param bool $validate
      */
-    public function withLastName(string $lastName, bool $validate = true): self
+    public function withLastName(string $lastName): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($lastName, self::$_schema['properties']['lastName']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->lastName = $lastName;
 
@@ -383,9 +392,18 @@ class User
     /**
      * @param UserBilling $billing
      * @return self
+     * @param bool $validate
      */
-    public function withBilling(UserBilling $billing): self
+    public function withBilling(UserBilling $billing, bool $validate = true): self
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($billing, self::$_schema['properties']['billing']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
         $clone->billing = $billing;
 
@@ -414,9 +432,18 @@ class User
     /**
      * @param UserPaymentAlternative1|UserPaymentAlternative2|string $payment
      * @return self
+     * @param bool $validate
      */
-    public function withPayment(UserPaymentAlternative1|UserPaymentAlternative2|string $payment): self
+    public function withPayment(UserPaymentAlternative1|UserPaymentAlternative2|string $payment, bool $validate = true): self
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($payment, self::$_schema['properties']['payment']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
         $clone->payment = $payment;
 
@@ -445,9 +472,18 @@ class User
     /**
      * @param UserAddress $address
      * @return self
+     * @param bool $validate
      */
-    public function withAddress(UserAddress $address): self
+    public function withAddress(UserAddress $address, bool $validate = true): self
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($address, self::$_schema['properties']['address']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
         $clone->address = $address;
 

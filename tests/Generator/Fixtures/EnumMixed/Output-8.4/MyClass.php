@@ -315,9 +315,18 @@ class MyClass
     /**
      * @param MyClassNullable|null $nullable
      * @return self
+     * @param bool $validate
      */
-    public function withNullable(?MyClassNullable $nullable): self
+    public function withNullable(?MyClassNullable $nullable, bool $validate = true): self
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($nullable, self::$_schema['properties']['nullable']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
         $clone->nullable = $nullable;
 
@@ -335,9 +344,18 @@ class MyClass
     /**
      * @param MyClassOptionalNullable|null $optionalNullable
      * @return self
+     * @param bool $validate
      */
-    public function withOptionalNullable(?MyClassOptionalNullable $optionalNullable): self
+    public function withOptionalNullable(?MyClassOptionalNullable $optionalNullable, bool $validate = true): self
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($optionalNullable, self::$_schema['properties']['optionalNullable']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
         $clone->optionalNullable = $optionalNullable;
         $clone->_providedOptionals['optionalNullable'] = true;
