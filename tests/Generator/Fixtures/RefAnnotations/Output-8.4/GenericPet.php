@@ -66,11 +66,11 @@ class GenericPet
     }
 
     /**
-     * @param bool $hasFur
+     * @param bool|null $hasFur
      * @return self
      * @param bool $validate
      */
-    public function withHasFur(bool $hasFur, bool $validate = true): self
+    public function withHasFur(?bool $hasFur, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();

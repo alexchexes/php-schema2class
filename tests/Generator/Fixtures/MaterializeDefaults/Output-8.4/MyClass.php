@@ -483,7 +483,7 @@ class MyClass
     }
 
     /**
-     * @param MyClassQuxObj $quxObj
+     * @param MyClassQuxObj|null $quxObj
      * @return self
      */
     public function withQuxObj(?MyClassQuxObj $quxObj): self
@@ -518,7 +518,7 @@ class MyClass
     }
 
     /**
-     * @param MyClassQuxObjNest $quxObjNest
+     * @param MyClassQuxObjNest|null $quxObjNest
      * @return self
      */
     public function withQuxObjNest(?MyClassQuxObjNest $quxObjNest): self
@@ -553,7 +553,7 @@ class MyClass
     }
 
     /**
-     * @param string[] $thudArray
+     * @param string[]|null $thudArray
      * @return self
      * @param bool $validate
      */

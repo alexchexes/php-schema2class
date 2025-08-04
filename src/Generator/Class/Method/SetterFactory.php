@@ -46,13 +46,19 @@ class SetterFactory
         $propName = $property->propName();
         $varName = $property->varName();
 
-        // We first unwrap only optional property decorator but leave other
-        // decorators in place to get the correct type hint / annotation
-        // TODO: FIXME This logic flawed: sometimes we generate setters with parameter types that are
-        // misaligned with PHPDoc type annotations of those params, and we also sometimes don't allow nulls where we should've.
-        $requiredProperty = ($property instanceof OptionalPropertyDecorator) ? $property->unwrap() : $property;
+        // Optional properties may or may not allow null. We only unwrap the
+        // optional decorator when the schema does not allow `null` so that the
+        // setter parameter type hints match the property's actual
+        // nullability. Previously we always unwrapped, which caused setters for
+        // optional nullable properties to reject `null` values.
+        if ($property instanceof OptionalPropertyDecorator && !$property->isOptionalNullable()) {
+            $requiredProperty = $property->unwrap();
+        } else {
+            $requiredProperty = $property;
+        }
+
         $propAnnotatedType = $requiredProperty->typeAnnotation();
-        $propTypeHint = $requiredProperty->typeHint();
+        $propTypeHint      = $requiredProperty->typeHint();
 
         // then we fully unwrap any other decorators to be able to see the real type
         $base = $property;
@@ -104,8 +110,12 @@ class SetterFactory
         bool $addValidation,
     ): DocBlockGenerator
     {
+        // Use the property's annotation directly so PHPDoc matches the setter's
+        // parameter type hint. Removing `|null` caused mismatches and made the
+        // docblock suggest non-nullable parameters even when `null` was
+        // accepted.
         $tags = [
-            new ParamTag($varName, [str_replace('|null', '', $propAnnotatedType)])
+            new ParamTag($varName, explode('|', $propAnnotatedType))
         ];
 
         if ($this->chainable) {

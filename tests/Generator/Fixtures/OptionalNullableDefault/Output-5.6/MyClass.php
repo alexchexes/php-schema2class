@@ -297,7 +297,7 @@ class MyClass
     }
 
     /**
-     * @param string $baz
+     * @param string|null $baz
      * @return self
      * @param bool $validate
      */
@@ -341,7 +341,7 @@ class MyClass
     }
 
     /**
-     * @param string $qux
+     * @param string|null $qux
      * @return self
      * @param bool $validate
      */
@@ -385,7 +385,7 @@ class MyClass
     }
 
     /**
-     * @param string $quux
+     * @param string|null $quux
      * @return self
      * @param bool $validate
      */
@@ -489,7 +489,7 @@ class MyClass
     }
 
     /**
-     * @param MyClassGrox $grox
+     * @param MyClassGrox|null $grox
      * @return self
      */
     public function withGrox(MyClassGrox $grox)
@@ -524,7 +524,7 @@ class MyClass
     }
 
     /**
-     * @param MyClassGooks $gooks
+     * @param MyClassGooks|null $gooks
      * @return self
      */
     public function withGooks(MyClassGooks $gooks)

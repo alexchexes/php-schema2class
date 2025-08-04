@@ -49,11 +49,11 @@ class MyClass
     }
 
     /**
-     * @param 'red'|'green' $foo
+     * @param 'red'|'green'|null $foo
      * @return self
      * @param bool $validate
      */
-    public function withFoo(string $foo, bool $validate = true): self
+    public function withFoo(?string $foo, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();

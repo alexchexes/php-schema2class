@@ -226,7 +226,7 @@ class MyClass
     }
 
     /**
-     * @param 'red'|'amber'|'green'|'42'|42|42.5|false $baz
+     * @param 'red'|'amber'|'green'|'42'|42|42.5|false|null $baz
      * @return self
      * @param bool $validate
      */
@@ -313,7 +313,7 @@ class MyClass
     }
 
     /**
-     * @param MyClassNullable $nullable
+     * @param MyClassNullable|null $nullable
      * @return self
      */
     public function withNullable(?MyClassNullable $nullable): self
@@ -333,10 +333,10 @@ class MyClass
     }
 
     /**
-     * @param MyClassOptionalNullable $optionalNullable
+     * @param MyClassOptionalNullable|null $optionalNullable
      * @return self
      */
-    public function withOptionalNullable(MyClassOptionalNullable $optionalNullable): self
+    public function withOptionalNullable(?MyClassOptionalNullable $optionalNullable): self
     {
         $clone = clone $this;
         $clone->optionalNullable = $optionalNullable;

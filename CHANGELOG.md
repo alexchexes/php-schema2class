@@ -40,6 +40,7 @@ Now it:
 - Setter methods (`withX()`) now accept an optional `$validate` argument to be able skip validation, mirroring `fromInput()`.
 - Deterministic resolution of class property, accessor method and temporary variable names via a unified resolver, allowing case-sensitive properties and avoiding collisions with reserved names.
 - Option `mutableSetters` allows generating mutable `setX()` methods (optionally chainable).
+- Setter methods now respect property nullability, allowing `null` only when permitted by the schema.
 - Skips emitting empty `__construct` or `__clone` methods.
 - Prints a notice when skipping `definitions` that do not describe an object.
 - Validates written files with `php -l` to ensure generated code is syntactically correct.
