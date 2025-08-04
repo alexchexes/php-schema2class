@@ -68,13 +68,7 @@ class SetterFactory
             || $base instanceof ReferenceArrayProperty
             || $base instanceof TypedArrayProperty;
 
-        $addValidation = true;
-
-        // If property is complex (except arrays), no validation needed
-        // TODO: this is not right; Validation is not generated in some cases where it should've been
-        if ($property->isComplex() && !$isArray) {
-            $addValidation = false;
-        }
+        $addValidation = $this->shouldAddValidation($property, $base, $propTypeHint);
 
         $docBlock = $this->buildDocBlock($property, $varName, $propAnnotatedType, $addValidation);
         $parameters = $this->buildParams($varName, $propTypeHint, $addValidation);
@@ -191,5 +185,59 @@ class SetterFactory
         }
 
         return $body;
+    }
+
+    private function shouldAddValidation(
+        PropertyInterface $property,
+        PropertyInterface $base,
+        ?string $propTypeHint,
+    ): bool {
+        // When PHP cannot enforce the type itself, we must validate
+        if ($propTypeHint === null) {
+            return true;
+        }
+
+        // Detect if schema has additional validation keywords
+        $schema = $property->schema();
+        $hasConstraints = $this->schemaHasValidationKeywords($schema);
+
+        if (!$hasConstraints) {
+            return false;
+        }
+
+        // Some property types are represented as dedicated classes and
+        // do not require additional validation as PHP type checks suffice
+        if ($base instanceof \Helmich\Schema2Class\Generator\Property\Type\ReferenceProperty
+            || $base instanceof \Helmich\Schema2Class\Generator\Property\Type\NestedObjectProperty
+            || $base instanceof \Helmich\Schema2Class\Generator\Property\Type\IntersectProperty
+            || $base instanceof \Helmich\Schema2Class\Generator\Property\Type\DateProperty
+            || ($base instanceof \Helmich\Schema2Class\Generator\Property\Type\StringEnumProperty
+                && $base->isComplex())
+        ) {
+            return false;
+        }
+
+        // Arrays and unions are validated when constraints are present
+        return true;
+    }
+
+    private function schemaHasValidationKeywords(array $schema): bool
+    {
+        $keywords = [
+            'enum', 'const',
+            'multipleOf', 'maximum', 'exclusiveMaximum', 'minimum', 'exclusiveMinimum',
+            'maxLength', 'minLength', 'pattern', 'format',
+            'maxItems', 'minItems', 'uniqueItems', 'items', 'contains', 'minContains', 'maxContains', 'prefixItems',
+            'maxProperties', 'minProperties', 'required', 'properties', 'additionalProperties', 'patternProperties', 'propertyNames', 'dependencies', 'dependentRequired', 'dependentSchemas',
+            'anyOf', 'oneOf', 'allOf', 'not', 'if', 'then', 'else',
+        ];
+
+        foreach ($keywords as $k) {
+            if (array_key_exists($k, $schema)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

@@ -52,18 +52,9 @@ class MyClassGrox
     /**
      * @param string $a
      * @return self
-     * @param bool $validate
      */
-    public function withA(string $a, bool $validate = true): self
+    public function withA(string $a): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($a, self::$_schema['properties']['a']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->a = $a;
 
@@ -92,18 +83,9 @@ class MyClassGrox
     /**
      * @param int|float $b
      * @return self
-     * @param bool $validate
      */
-    public function withB(int|float $b, bool $validate = true): self
+    public function withB(int|float $b): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($b, self::$_schema['properties']['b']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->b = $b;
 

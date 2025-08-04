@@ -96,18 +96,9 @@ class Address
     /**
      * @param string $city
      * @return self
-     * @param bool $validate
      */
-    public function withCity(string $city, bool $validate = true): self
+    public function withCity(string $city): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($city, self::$_schema['properties']['city']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->city = $city;
 

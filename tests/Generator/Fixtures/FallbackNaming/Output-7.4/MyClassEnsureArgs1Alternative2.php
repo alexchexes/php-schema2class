@@ -69,18 +69,9 @@ class MyClassEnsureArgs1Alternative2
     /**
      * @param string $type
      * @return self
-     * @param bool $validate
      */
-    public function withType(string $type, bool $validate = true): self
+    public function withType(string $type): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($type, self::$_schema['properties']['type']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->type = $type;
 
@@ -98,18 +89,9 @@ class MyClassEnsureArgs1Alternative2
     /**
      * @param string $accountNumber
      * @return self
-     * @param bool $validate
      */
-    public function withAccountNumber(string $accountNumber, bool $validate = true): self
+    public function withAccountNumber(string $accountNumber): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($accountNumber, self::$_schema['properties']['accountNumber']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->accountNumber = $accountNumber;
 

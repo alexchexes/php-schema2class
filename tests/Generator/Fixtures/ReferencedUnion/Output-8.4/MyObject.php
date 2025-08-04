@@ -74,9 +74,18 @@ class MyObject
     /**
      * @param A|B $foo
      * @return self
+     * @param bool $validate
      */
-    public function withFoo(A|B $foo): self
+    public function withFoo(A|B $foo, bool $validate = true): self
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($foo, self::$_schema['properties']['foo']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
         $clone->foo = $foo;
 

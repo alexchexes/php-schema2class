@@ -97,4 +97,35 @@ class SetterFactoryTest extends TestCase
         $paramTag = $setter->getDocBlock()->getTags()[0];
         self::assertEquals(['string', 'null'], $paramTag->getTypes());
     }
+
+    public function testSetterOmitsValidationWhenSchemaHasOnlyType(): void
+    {
+        $schema = [
+            'type' => 'object',
+            'properties' => [
+                'foo' => ['type' => 'string'],
+            ],
+        ];
+
+        [$setter] = $this->generateSetter($schema);
+
+        self::assertCount(1, $setter->getParameters());
+        self::assertStringNotContainsString('$validator', (string) $setter->getBody());
+    }
+
+    public function testSetterAddsValidationWhenSchemaHasConstraints(): void
+    {
+        $schema = [
+            'type' => 'object',
+            'properties' => [
+                'foo' => ['type' => 'string', 'minLength' => 1],
+            ],
+        ];
+
+        [$setter, $prop] = $this->generateSetter($schema);
+        $varName = $prop->varName();
+
+        self::assertCount(2, $setter->getParameters());
+        self::assertStringContainsString('validate($'.$varName, (string) $setter->getBody());
+    }
 }
