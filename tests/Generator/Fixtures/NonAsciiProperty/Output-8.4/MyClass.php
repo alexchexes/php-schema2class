@@ -11,7 +11,7 @@ class MyClass
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'required' => [
             'Город',
             'название юр.лица',
@@ -66,22 +66,6 @@ class MyClass
     }
 
     /**
-     * @return string
-     */
-    public function getNazvanieIurLitsa(): string
-    {
-        return $this->nazvanieIurLitsa;
-    }
-
-    /**
-     * @return string
-     */
-    public function getIPAdres(): string
-    {
-        return $this->IPAdres;
-    }
-
-    /**
      * @param string $Gorod
      * @return self
      * @param bool $validate
@@ -90,7 +74,7 @@ class MyClass
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($Gorod, self::$schema['properties']['Город']);
+            $validator->validate($Gorod, self::$_schema['properties']['Город']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -103,6 +87,14 @@ class MyClass
     }
 
     /**
+     * @return string
+     */
+    public function getNazvanieIurLitsa(): string
+    {
+        return $this->nazvanieIurLitsa;
+    }
+
+    /**
      * @param string $nazvanieIurLitsa
      * @return self
      * @param bool $validate
@@ -111,7 +103,7 @@ class MyClass
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($nazvanieIurLitsa, self::$schema['properties']['название юр.лица']);
+            $validator->validate($nazvanieIurLitsa, self::$_schema['properties']['название юр.лица']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -124,6 +116,14 @@ class MyClass
     }
 
     /**
+     * @return string
+     */
+    public function getIPAdres(): string
+    {
+        return $this->IPAdres;
+    }
+
+    /**
      * @param string $IPAdres
      * @return self
      * @param bool $validate
@@ -132,7 +132,7 @@ class MyClass
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($IPAdres, self::$schema['properties']['IP-адрес']);
+            $validator->validate($IPAdres, self::$_schema['properties']['IP-адрес']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -152,7 +152,7 @@ class MyClass
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): MyClass
+    public static function fromInput(array|object $input, bool $validate = true): MyClass
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -184,6 +184,21 @@ class MyClass
     }
 
     /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        $output->{'Город'} = $this->Gorod;
+        $output->{'название юр.лица'} = $this->nazvanieIurLitsa;
+        $output->{'IP-адрес'} = $this->IPAdres;
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data
@@ -195,7 +210,7 @@ class MyClass
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {

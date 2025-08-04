@@ -1,15 +1,14 @@
 <?php
-declare(strict_types = 1);
+declare(strict_types=1);
 
-namespace Helmich\Schema2Class\Generator\Property;
+namespace Helmich\Schema2Class\Generator\Property\Type;
 
 use Helmich\Schema2Class\Generator\GeneratorRequest;
-use Helmich\Schema2Class\Generator\SchemaToClass;
+use Helmich\Schema2Class\Writer\DebugWriter;
+use Symfony\Component\Console\Output\NullOutput;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
 use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
-use Prophecy\PhpUnit\ProphecyTrait;
 use function PHPUnit\Framework\assertFalse;
 use function PHPUnit\Framework\assertNull;
 use function PHPUnit\Framework\assertSame;
@@ -17,7 +16,6 @@ use function PHPUnit\Framework\assertTrue;
 
 class MixedPropertyTest extends TestCase
 {
-    use ProphecyTrait;
 
     private MixedProperty $underTest;
 
@@ -45,10 +43,10 @@ class MixedPropertyTest extends TestCase
 
     public function testConvertInputToType()
     {
-        $result = $this->underTest->convertInputToType('variable');
+        $result = $this->underTest->convertInputToType();
 
         $expected = <<<'EOCODE'
-$myPropertyName = $variable['myPropertyName'];
+$myPropertyName = $input->{'myPropertyName'};
 EOCODE;
 
         assertSame($expected, $result);
@@ -56,10 +54,10 @@ EOCODE;
 
     public function testConvertTypeToArray()
     {
-        $result = $this->underTest->convertTypeToArray('variable');
+        $result = $this->underTest->convertTypeToArray();
 
         $expected = <<<'EOCODE'
-$variable['myPropertyName'] = $this->myPropertyName;
+$output['myPropertyName'] = $this->myPropertyName;
 EOCODE;
 
         assertSame($expected, $result);
@@ -67,23 +65,27 @@ EOCODE;
 
     public function testCloneProperty()
     {
-        assertNull($this->underTest->cloneProperty());
+        assertNull($this->underTest->cloneAssignment());
     }
 
     public function testGetAnnotationAndHintWithSimpleArray()
     {
         assertSame('mixed', $this->underTest->typeAnnotation());
-        assertSame(null, $this->underTest->typeHint("7.2.0"));
-        assertSame(null, $this->underTest->typeHint("5.6.0"));
+        
+        $underTest = new MixedProperty('myPropertyName', [], $this->generatorRequest->withPHPVersion('7.2.0'));
+        assertSame(null, $underTest->typeHint());
+        
+        $underTest = new MixedProperty('myPropertyName', [], $this->generatorRequest->withPHPVersion('5.6.0'));
+        assertSame(null, $underTest->typeHint());
     }
 
     public function testGenerateSubTypesWithSimpleArray()
     {
-        $schemaToClass = $this->prophesize(SchemaToClass::class);
+        $writer = new DebugWriter(new NullOutput());
 
-        $this->underTest->generateSubTypes($schemaToClass->reveal());
+        $this->underTest->generateSubTypes($writer, new NullOutput());
 
-        $schemaToClass->schemaToClass(Argument::any(), Argument::any(), Argument::any())->shouldNotHaveBeenCalled();
+        $this->assertCount(0, $writer->getWrittenFiles());
     }
 
 

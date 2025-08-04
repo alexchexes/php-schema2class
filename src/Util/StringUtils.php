@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Util;
 
@@ -22,11 +23,12 @@ class StringUtils
         // Replace everything that is not a letter, digit or underscore with underscore
         $sanitized = preg_replace('/[^A-Za-z0-9_]+/', '_', $transliterated);
 
+        // if new name got '_' at the end, but original name didn't have it, remove that trailing '_'
         if (str_ends_with($sanitized, '_') && !str_ends_with($input, '_')) {
             $sanitized = rtrim($sanitized, '_');
         }
 
-        // fallback to hash id if empty or underscores-only
+        // fallback to hash id if empty or underscores-only (unless original already was just '_')
         if ($sanitized === '' || ($sanitized === '_' && $input !== '_')) {
             $hash = substr(md5($input), 0, 8);
             $sanitized = '_' . $hash;
@@ -39,18 +41,19 @@ class StringUtils
 
         return $sanitized;
     }
-    public static function capitalizeWord(string $input): string
+
+    public static function capitalize(string $str): string
     {
-        if ($input === '') {
+        if ($str === '') {
             return '';
         }
 
-        return strtoupper($input[0]) . substr($input, 1);
+        return strtoupper($str[0]) . substr($str, 1);
     }
 
-    public static function pascalCase(string $input): string
+    public static function safePascalCase(string $input): string
     {
-        return self::capitalizeWord(self::camelCase($input));
+        return self::capitalize(self::safeCamelCase($input));
     }
 
     /**
@@ -73,12 +76,12 @@ class StringUtils
             $str = substr($str, 0, -1);
         }
 
-        $str = self::pascalCase($str);
+        $str = self::safePascalCase($str);
 
         return $leading . $str . $trailing;
     }
 
-    public static function camelCase(string $input): string
+    public static function safeCamelCase(string $input): string
     {
         $input = self::transliterate($input);
 
@@ -94,13 +97,22 @@ class StringUtils
         $first = $words[0];
         $rest  = array_slice($words, 1);
 
-        $identifier = $first . join('', array_map(fn(string $w) => self::capitalizeWord($w), $rest));
+        $identifier = $first . join('', array_map(fn(string $w) => self::capitalize($w), $rest));
 
         if (preg_match('/^[0-9]/', $identifier)) {
             $identifier = '_' . $identifier;
         }
 
         return $identifier;
+    }
+
+    public static function indentCode(string $code, int $by = 1): string
+    {
+        $indent = str_repeat("    ", $by);
+        $lines = explode("\n", $code);
+        $lines = array_map(fn($l) => $indent . $l, $lines);
+
+        return join("\n", $lines);
     }
 }
 

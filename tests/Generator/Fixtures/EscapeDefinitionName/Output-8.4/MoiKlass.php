@@ -11,7 +11,7 @@ class MoiKlass
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'type' => 'object',
         'properties' => [
             'c' => [
@@ -42,7 +42,7 @@ class MoiKlass
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($c, self::$schema['properties']['c']);
+            $validator->validate($c, self::$_schema['properties']['c']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -73,7 +73,7 @@ class MoiKlass
      * @return MoiKlass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): MoiKlass
+    public static function fromInput(array|object $input, bool $validate = true): MoiKlass
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -103,6 +103,21 @@ class MoiKlass
     }
 
     /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        if (isset($this->c)) {
+            $output->{'c'} = $this->c;
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data
@@ -114,7 +129,7 @@ class MoiKlass
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {

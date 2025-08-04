@@ -11,7 +11,7 @@ class MyClass
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'properties' => [
             'foo' => [
                 '$ref' => '#/definitions/Bar',
@@ -59,14 +59,6 @@ class MyClass
     }
 
     /**
-     * @return array|object|null
-     */
-    public function getEncoded()
-    {
-        return $this->encoded;
-    }
-
-    /**
      * @param array|object $foo
      * @return self
      * @param bool $validate
@@ -75,7 +67,7 @@ class MyClass
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($foo, self::$schema['properties']['foo']);
+            $validator->validate($foo, self::$_schema['properties']['foo']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -99,6 +91,14 @@ class MyClass
     }
 
     /**
+     * @return array|object|null
+     */
+    public function getEncoded()
+    {
+        return $this->encoded;
+    }
+
+    /**
      * @param array|object $encoded
      * @return self
      * @param bool $validate
@@ -107,7 +107,7 @@ class MyClass
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($encoded, self::$schema['properties']['encoded']);
+            $validator->validate($encoded, self::$_schema['properties']['encoded']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -138,11 +138,11 @@ class MyClass
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true): MyClass
+    public static function fromInput($input, bool $validate = true): MyClass
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($input)
+                'Input to fromInput must be array or object, got ' . gettype($input)
             );
         }
 
@@ -179,6 +179,24 @@ class MyClass
     }
 
     /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        if (isset($this->foo)) {
+            $output->{'foo'} = json_decode(json_encode($this->foo));
+        }
+        if (isset($this->encoded)) {
+            $output->{'encoded'} = json_decode(json_encode($this->encoded));
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data
@@ -190,7 +208,7 @@ class MyClass
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {

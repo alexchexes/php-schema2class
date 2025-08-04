@@ -1,10 +1,15 @@
 <?php
+declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Hook;
 
-use Laminas\Code\Generator\ClassGenerator;
-use Laminas\Code\Generator\MethodGenerator;
+use Laminas\Code\Generator\ClassGenerator as LaminasClassGenerator;
 
+/**
+ * Hook that appends an interface to a generated class.
+ * 
+ * Registered via {@see GeneratorRequest::withInterface}.
+ */
 readonly class AddInterfaceHook implements ClassCreatedHook
 {
     /**
@@ -15,7 +20,7 @@ readonly class AddInterfaceHook implements ClassCreatedHook
     {
     }
 
-    function onClassCreated(string $className, ClassGenerator $class): void
+    function onClassCreated(string $className, LaminasClassGenerator $class): void
     {
         $interfaces = [...$class->getImplementedInterfaces(), $this->interface];
         $class->setImplementedInterfaces($interfaces);

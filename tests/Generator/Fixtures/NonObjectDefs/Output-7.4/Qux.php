@@ -11,7 +11,7 @@ class Qux
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'type' => 'object',
         'properties' => [
             'grox' => [
@@ -113,11 +113,11 @@ class Qux
      * @return Qux Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true): Qux
+    public static function fromInput($input, bool $validate = true): Qux
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($input)
+                'Input to fromInput must be array or object, got ' . gettype($input)
             );
         }
 
@@ -126,7 +126,7 @@ class Qux
             static::validateInput($input);
         }
 
-        $grox = isset($input->{'grox'}) ? ((Foo::validateInput($input->{'grox'}, true)) || (Bar::validateInput($input->{'grox'}, true))) ? ((Bar::validateInput($input->{'grox'}, true)) ? (Bar::buildFromInput($input->{'grox'}, $validate)) : ((Foo::validateInput($input->{'grox'}, true)) ? (Foo::buildFromInput($input->{'grox'}, $validate)) : (null))) : ((is_array($input->{'grox'})) ? ($input->{'grox'}) : ((is_string($input->{'grox'})) ? ($input->{'grox'}) : (null))) : null;
+        $grox = isset($input->{'grox'}) ? (((Foo::validateInput($input->{'grox'}, true)) || (Bar::validateInput($input->{'grox'}, true))) ? ((Bar::validateInput($input->{'grox'}, true)) ? Bar::fromInput($input->{'grox'}, $validate) : (((Foo::validateInput($input->{'grox'}, true)) ? Foo::fromInput($input->{'grox'}, $validate) : (null)))) : (((is_array($input->{'grox'})) ? $input->{'grox'} : (((is_string($input->{'grox'})) ? $input->{'grox'} : (null)))))) : null;
 
         $obj = new self();
         $obj->grox = $grox;
@@ -153,6 +153,25 @@ class Qux
     }
 
     /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        if (isset($this->grox)) {
+            if ((is_string($this->grox)) || (is_array($this->grox))) {
+            $output->{'grox'} = $this->grox;
+            } else if (((($this->grox) instanceof Foo) || (($this->grox) instanceof Bar))) {
+            $output->{'grox'} = (($this->grox) instanceof Bar) ? ($this->grox->toStdClass()) : ((($this->grox) instanceof Foo) ? ($this->grox->toStdClass()) : (null));
+            }
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data
@@ -164,7 +183,7 @@ class Qux
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {

@@ -221,78 +221,6 @@ class User
     }
 
     /**
-     * @return UserGender|null
-     */
-    public function getGender(): ?UserGender
-    {
-        return $this->gender ?? null;
-    }
-
-    /**
-     * @return string
-     */
-    public function getFirstName(): string
-    {
-        return $this->firstName;
-    }
-
-    /**
-     * @return string
-     */
-    public function getLastName(): string
-    {
-        return $this->lastName;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getEmail(): ?string
-    {
-        return $this->email ?? null;
-    }
-
-    /**
-     * @return UserBilling|null
-     */
-    public function getBilling(): ?UserBilling
-    {
-        return $this->billing ?? null;
-    }
-
-    /**
-     * @return UserPaymentAlternative1|UserPaymentAlternative2|string|null
-     */
-    public function getPayment(): UserPaymentAlternative1|UserPaymentAlternative2|string|null
-    {
-        return $this->payment;
-    }
-
-    /**
-     * @return UserAddress|null
-     */
-    public function getAddress(): ?UserAddress
-    {
-        return $this->address ?? null;
-    }
-
-    /**
-     * @return string[]|null
-     */
-    public function getTags(): ?array
-    {
-        return $this->tags ?? null;
-    }
-
-    /**
-     * @return UserHobbiesItem[]|null
-     */
-    public function getHobbies(): ?array
-    {
-        return $this->hobbies ?? null;
-    }
-
-    /**
      * @param \DateTime $createdAt
      * @return self
      */
@@ -313,6 +241,14 @@ class User
         unset($clone->createdAt);
 
         return $clone;
+    }
+
+    /**
+     * @return UserGender|null
+     */
+    public function getGender(): ?UserGender
+    {
+        return $this->gender ?? null;
     }
 
     /**
@@ -339,6 +275,14 @@ class User
     }
 
     /**
+     * @return string
+     */
+    public function getFirstName(): string
+    {
+        return $this->firstName;
+    }
+
+    /**
      * @param string $firstName
      * @return self
      * @param bool $validate
@@ -360,6 +304,14 @@ class User
     }
 
     /**
+     * @return string
+     */
+    public function getLastName(): string
+    {
+        return $this->lastName;
+    }
+
+    /**
      * @param string $lastName
      * @return self
      * @param bool $validate
@@ -378,6 +330,14 @@ class User
         $clone->lastName = $lastName;
 
         return $clone;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getEmail(): ?string
+    {
+        return $this->email ?? null;
     }
 
     /**
@@ -413,6 +373,14 @@ class User
     }
 
     /**
+     * @return UserBilling|null
+     */
+    public function getBilling(): ?UserBilling
+    {
+        return $this->billing ?? null;
+    }
+
+    /**
      * @param UserBilling $billing
      * @return self
      */
@@ -433,6 +401,14 @@ class User
         unset($clone->billing);
 
         return $clone;
+    }
+
+    /**
+     * @return UserPaymentAlternative1|UserPaymentAlternative2|string|null
+     */
+    public function getPayment(): UserPaymentAlternative1|UserPaymentAlternative2|string|null
+    {
+        return $this->payment;
     }
 
     /**
@@ -459,6 +435,14 @@ class User
     }
 
     /**
+     * @return UserAddress|null
+     */
+    public function getAddress(): ?UserAddress
+    {
+        return $this->address ?? null;
+    }
+
+    /**
      * @param UserAddress $address
      * @return self
      */
@@ -479,6 +463,14 @@ class User
         unset($clone->address);
 
         return $clone;
+    }
+
+    /**
+     * @return string[]|null
+     */
+    public function getTags(): ?array
+    {
+        return $this->tags ?? null;
     }
 
     /**
@@ -511,6 +503,14 @@ class User
         unset($clone->tags);
 
         return $clone;
+    }
+
+    /**
+     * @return UserHobbiesItem[]|null
+     */
+    public function getHobbies(): ?array
+    {
+        return $this->hobbies ?? null;
     }
 
     /**
@@ -553,7 +553,7 @@ class User
      * @return User Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): User
+    public static function fromInput(array|object $input, bool $validate = true): User
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -565,16 +565,16 @@ class User
         $firstName = $input->{'firstName'};
         $lastName = $input->{'lastName'};
         $email = isset($input->{'email'}) ? $input->{'email'} : null;
-        $billing = isset($input->{'billing'}) ? UserBilling::buildFromInput($input->{'billing'}, $validate) : null;
+        $billing = isset($input->{'billing'}) ? UserBilling::fromInput($input->{'billing'}, $validate) : null;
         $payment = isset($input->{'payment'}) ? match (true) {
-            UserPaymentAlternative1::validateInput($input->{'payment'}, true) => UserPaymentAlternative1::buildFromInput($input->{'payment'}, $validate),
-            UserPaymentAlternative2::validateInput($input->{'payment'}, true) => UserPaymentAlternative2::buildFromInput($input->{'payment'}, $validate),
+            UserPaymentAlternative1::validateInput($input->{'payment'}, true) => UserPaymentAlternative1::fromInput($input->{'payment'}, $validate),
+            UserPaymentAlternative2::validateInput($input->{'payment'}, true) => UserPaymentAlternative2::fromInput($input->{'payment'}, $validate),
             is_string($input->{'payment'}) => $input->{'payment'},
             default => null,
         } : null;
-        $address = isset($input->{'address'}) ? UserAddress::buildFromInput($input->{'address'}, $validate) : null;
+        $address = isset($input->{'address'}) ? UserAddress::fromInput($input->{'address'}, $validate) : null;
         $tags = isset($input->{'tags'}) ? $input->{'tags'} : null;
-        $hobbies = isset($input->{'hobbies'}) ? array_map(fn (array|object $i): UserHobbiesItem => UserHobbiesItem::buildFromInput($i, $validate), $input->{'hobbies'}) : null;
+        $hobbies = isset($input->{'hobbies'}) ? array_map(fn (array|object $i): UserHobbiesItem => UserHobbiesItem::fromInput($i, $validate), $input->{'hobbies'}) : null;
 
         $obj = new self($firstName, $lastName);
         $obj->createdAt = $createdAt;
@@ -625,6 +625,48 @@ class User
         }
         if (isset($this->hobbies)) {
             $output['hobbies'] = array_map(fn (UserHobbiesItem $i) => $i->toArray(), $this->hobbies);
+        }
+
+        return $output;
+    }
+
+    /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        if (isset($this->createdAt)) {
+            $output->{'createdAt'} = $this->createdAt;
+        }
+        if (isset($this->gender)) {
+            $output->{'gender'} = ($this->gender)->value;
+        }
+        $output->{'firstName'} = $this->firstName;
+        $output->{'lastName'} = $this->lastName;
+        if (isset($this->email)) {
+            $output->{'email'} = $this->email;
+        }
+        if (isset($this->billing)) {
+            $output->{'billing'} = ($this->billing)->toStdClass();
+        }
+        if (isset($this->payment)) {
+            $output->{'payment'} = match (true) {
+                $this->payment instanceof UserPaymentAlternative1,
+                $this->payment instanceof UserPaymentAlternative2 => ($this->payment)->toStdClass(),
+                is_string($this->payment) => $this->payment,
+            };
+        }
+        if (isset($this->address)) {
+            $output->{'address'} = ($this->address)->toStdClass();
+        }
+        if (isset($this->tags)) {
+            $output->{'tags'} = $this->tags;
+        }
+        if (isset($this->hobbies)) {
+            $output->{'hobbies'} = array_map(fn (UserHobbiesItem $i) => $i->toStdClass(), $this->hobbies);
         }
 
         return $output;

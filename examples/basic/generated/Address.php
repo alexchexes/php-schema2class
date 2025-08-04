@@ -32,14 +32,6 @@ class Address
     }
 
     /**
-     * @return int|null
-     */
-    public function getHouse(): ?int
-    {
-        return $this->house ?? null;
-    }
-
-    /**
      * @param string $street
      * @return self
      * @param bool $validate
@@ -69,6 +61,14 @@ class Address
         unset($clone->street);
 
         return $clone;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getHouse(): ?int
+    {
+        return $this->house ?? null;
     }
 
     /**
@@ -111,11 +111,11 @@ class Address
      * @return Address Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true): Address
+    public static function fromInput($input, bool $validate = true): Address
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($input)
+                'Input to fromInput must be array or object, got ' . gettype($input)
             );
         }
 
@@ -146,6 +146,24 @@ class Address
         }
         if (isset($this->house)) {
             $output['house'] = $this->house;
+        }
+
+        return $output;
+    }
+
+    /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        if (isset($this->street)) {
+            $output->{'street'} = $this->street;
+        }
+        if (isset($this->house)) {
+            $output->{'house'} = $this->house;
         }
 
         return $output;

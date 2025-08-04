@@ -11,7 +11,7 @@ class MyClass
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'required' => [
             'foo',
             '_foo',
@@ -75,6 +75,9 @@ class MyClass
             '~~tildas~~' => [
                 'type' => 'string',
             ],
+            'it\'s "A"' => [
+                'type' => 'string',
+            ],
         ],
     ];
 
@@ -116,12 +119,12 @@ class MyClass
     /**
      * @var string
      */
-    private string $foo_bar;
+    private string $_foo_bar;
 
     /**
      * @var string
      */
-    private string $_foo_bar;
+    private string $foo_bar;
 
     /**
      * @var string
@@ -154,6 +157,11 @@ class MyClass
     private string $_tildas;
 
     /**
+     * @var string|null
+     */
+    private ?string $it_s_A = null;
+
+    /**
      * @param string $foo
      * @param string $_foo
      * @param string $__foo
@@ -161,8 +169,8 @@ class MyClass
      * @param string $foo__
      * @param string $_foo_
      * @param string $__foo__
-     * @param string $foo_bar
      * @param string $_foo_bar
+     * @param string $foo_bar
      * @param string $baz_qux
      * @param string $_123_qwe
      * @param string $Gorod
@@ -170,7 +178,7 @@ class MyClass
      * @param string $IP_adres
      * @param string $_tildas
      */
-    public function __construct(string $foo, string $_foo, string $__foo, string $foo_, string $foo__, string $_foo_, string $__foo__, string $foo_bar, string $_foo_bar, string $baz_qux, string $_123_qwe, string $Gorod, string $nazvanie_iur_litsa, string $IP_adres, string $_tildas)
+    public function __construct(string $foo, string $_foo, string $__foo, string $foo_, string $foo__, string $_foo_, string $__foo__, string $_foo_bar, string $foo_bar, string $baz_qux, string $_123_qwe, string $Gorod, string $nazvanie_iur_litsa, string $IP_adres, string $_tildas)
     {
         $this->foo = $foo;
         $this->_foo = $_foo;
@@ -179,8 +187,8 @@ class MyClass
         $this->foo__ = $foo__;
         $this->_foo_ = $_foo_;
         $this->__foo__ = $__foo__;
-        $this->foo_bar = $foo_bar;
         $this->_foo_bar = $_foo_bar;
+        $this->foo_bar = $foo_bar;
         $this->baz_qux = $baz_qux;
         $this->_123_qwe = $_123_qwe;
         $this->Gorod = $Gorod;
@@ -198,118 +206,6 @@ class MyClass
     }
 
     /**
-     * @return string
-     */
-    public function get_Foo(): string
-    {
-        return $this->_foo;
-    }
-
-    /**
-     * @return string
-     */
-    public function get__Foo(): string
-    {
-        return $this->__foo;
-    }
-
-    /**
-     * @return string
-     */
-    public function getFoo_(): string
-    {
-        return $this->foo_;
-    }
-
-    /**
-     * @return string
-     */
-    public function getFoo__(): string
-    {
-        return $this->foo__;
-    }
-
-    /**
-     * @return string
-     */
-    public function get_Foo_(): string
-    {
-        return $this->_foo_;
-    }
-
-    /**
-     * @return string
-     */
-    public function get__Foo__(): string
-    {
-        return $this->__foo__;
-    }
-
-    /**
-     * @return string
-     */
-    public function getFooBar(): string
-    {
-        return $this->foo_bar;
-    }
-
-    /**
-     * @return string
-     */
-    public function get_FooBar(): string
-    {
-        return $this->_foo_bar;
-    }
-
-    /**
-     * @return string
-     */
-    public function getBazQux(): string
-    {
-        return $this->baz_qux;
-    }
-
-    /**
-     * @return string
-     */
-    public function get__123Qwe(): string
-    {
-        return $this->_123_qwe;
-    }
-
-    /**
-     * @return string
-     */
-    public function getGorod(): string
-    {
-        return $this->Gorod;
-    }
-
-    /**
-     * @return string
-     */
-    public function getNazvanieIurLitsa(): string
-    {
-        return $this->nazvanie_iur_litsa;
-    }
-
-    /**
-     * @return string
-     */
-    public function getIPAdres(): string
-    {
-        return $this->IP_adres;
-    }
-
-    /**
-     * @return string
-     */
-    public function get_Tildas(): string
-    {
-        return $this->_tildas;
-    }
-
-    /**
      * @param string $foo
      * @return self
      * @param bool $validate
@@ -318,7 +214,7 @@ class MyClass
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($foo, self::$schema['properties']['foo']);
+            $validator->validate($foo, self::$_schema['properties']['foo']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -331,6 +227,14 @@ class MyClass
     }
 
     /**
+     * @return string
+     */
+    public function get_Foo(): string
+    {
+        return $this->_foo;
+    }
+
+    /**
      * @param string $_foo
      * @return self
      * @param bool $validate
@@ -339,7 +243,7 @@ class MyClass
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($_foo, self::$schema['properties']['_foo']);
+            $validator->validate($_foo, self::$_schema['properties']['_foo']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -352,6 +256,14 @@ class MyClass
     }
 
     /**
+     * @return string
+     */
+    public function get__Foo(): string
+    {
+        return $this->__foo;
+    }
+
+    /**
      * @param string $__foo
      * @return self
      * @param bool $validate
@@ -360,7 +272,7 @@ class MyClass
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($__foo, self::$schema['properties']['__foo']);
+            $validator->validate($__foo, self::$_schema['properties']['__foo']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -373,6 +285,14 @@ class MyClass
     }
 
     /**
+     * @return string
+     */
+    public function getFoo_(): string
+    {
+        return $this->foo_;
+    }
+
+    /**
      * @param string $foo_
      * @return self
      * @param bool $validate
@@ -381,7 +301,7 @@ class MyClass
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($foo_, self::$schema['properties']['foo_']);
+            $validator->validate($foo_, self::$_schema['properties']['foo_']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -394,6 +314,14 @@ class MyClass
     }
 
     /**
+     * @return string
+     */
+    public function getFoo__(): string
+    {
+        return $this->foo__;
+    }
+
+    /**
      * @param string $foo__
      * @return self
      * @param bool $validate
@@ -402,7 +330,7 @@ class MyClass
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($foo__, self::$schema['properties']['foo__']);
+            $validator->validate($foo__, self::$_schema['properties']['foo__']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -415,6 +343,14 @@ class MyClass
     }
 
     /**
+     * @return string
+     */
+    public function get_Foo_(): string
+    {
+        return $this->_foo_;
+    }
+
+    /**
      * @param string $_foo_
      * @return self
      * @param bool $validate
@@ -423,7 +359,7 @@ class MyClass
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($_foo_, self::$schema['properties']['_foo_']);
+            $validator->validate($_foo_, self::$_schema['properties']['_foo_']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -436,6 +372,14 @@ class MyClass
     }
 
     /**
+     * @return string
+     */
+    public function get__Foo__(): string
+    {
+        return $this->__foo__;
+    }
+
+    /**
      * @param string $__foo__
      * @return self
      * @param bool $validate
@@ -444,7 +388,7 @@ class MyClass
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($__foo__, self::$schema['properties']['__foo__']);
+            $validator->validate($__foo__, self::$_schema['properties']['__foo__']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -457,24 +401,11 @@ class MyClass
     }
 
     /**
-     * @param string $foo_bar
-     * @return self
-     * @param bool $validate
+     * @return string
      */
-    public function withFooBar(string $foo_bar, bool $validate = true): self
+    public function get_FooBar(): string
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($foo_bar, self::$schema['properties']['foo-bar']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
-        $clone = clone $this;
-        $clone->foo_bar = $foo_bar;
-
-        return $clone;
+        return $this->_foo_bar;
     }
 
     /**
@@ -486,7 +417,7 @@ class MyClass
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($_foo_bar, self::$schema['properties']['foo bar']);
+            $validator->validate($_foo_bar, self::$_schema['properties']['foo-bar']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -499,6 +430,43 @@ class MyClass
     }
 
     /**
+     * @return string
+     */
+    public function getFooBar(): string
+    {
+        return $this->foo_bar;
+    }
+
+    /**
+     * @param string $foo_bar
+     * @return self
+     * @param bool $validate
+     */
+    public function withFooBar(string $foo_bar, bool $validate = true): self
+    {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($foo_bar, self::$_schema['properties']['foo bar']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
+        $clone = clone $this;
+        $clone->foo_bar = $foo_bar;
+
+        return $clone;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBazQux(): string
+    {
+        return $this->baz_qux;
+    }
+
+    /**
      * @param string $baz_qux
      * @return self
      * @param bool $validate
@@ -507,7 +475,7 @@ class MyClass
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($baz_qux, self::$schema['properties']['baz qux']);
+            $validator->validate($baz_qux, self::$_schema['properties']['baz qux']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -520,15 +488,23 @@ class MyClass
     }
 
     /**
+     * @return string
+     */
+    public function get_123Qwe(): string
+    {
+        return $this->_123_qwe;
+    }
+
+    /**
      * @param string $_123_qwe
      * @return self
      * @param bool $validate
      */
-    public function with__123Qwe(string $_123_qwe, bool $validate = true): self
+    public function with_123Qwe(string $_123_qwe, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($_123_qwe, self::$schema['properties']['123 qwe']);
+            $validator->validate($_123_qwe, self::$_schema['properties']['123 qwe']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -541,6 +517,14 @@ class MyClass
     }
 
     /**
+     * @return string
+     */
+    public function getGorod(): string
+    {
+        return $this->Gorod;
+    }
+
+    /**
      * @param string $Gorod
      * @return self
      * @param bool $validate
@@ -549,7 +533,7 @@ class MyClass
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($Gorod, self::$schema['properties']['Город']);
+            $validator->validate($Gorod, self::$_schema['properties']['Город']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -562,6 +546,14 @@ class MyClass
     }
 
     /**
+     * @return string
+     */
+    public function getNazvanieIurLitsa(): string
+    {
+        return $this->nazvanie_iur_litsa;
+    }
+
+    /**
      * @param string $nazvanie_iur_litsa
      * @return self
      * @param bool $validate
@@ -570,7 +562,7 @@ class MyClass
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($nazvanie_iur_litsa, self::$schema['properties']['название юр.лица']);
+            $validator->validate($nazvanie_iur_litsa, self::$_schema['properties']['название юр.лица']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -583,6 +575,14 @@ class MyClass
     }
 
     /**
+     * @return string
+     */
+    public function getIPAdres(): string
+    {
+        return $this->IP_adres;
+    }
+
+    /**
      * @param string $IP_adres
      * @return self
      * @param bool $validate
@@ -591,7 +591,7 @@ class MyClass
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($IP_adres, self::$schema['properties']['IP-адрес']);
+            $validator->validate($IP_adres, self::$_schema['properties']['IP-адрес']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -604,15 +604,23 @@ class MyClass
     }
 
     /**
+     * @return string
+     */
+    public function getTildas(): string
+    {
+        return $this->_tildas;
+    }
+
+    /**
      * @param string $_tildas
      * @return self
      * @param bool $validate
      */
-    public function with_Tildas(string $_tildas, bool $validate = true): self
+    public function withTildas(string $_tildas, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($_tildas, self::$schema['properties']['~~tildas~~']);
+            $validator->validate($_tildas, self::$_schema['properties']['~~tildas~~']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -625,6 +633,46 @@ class MyClass
     }
 
     /**
+     * @return string|null
+     */
+    public function getItSA(): ?string
+    {
+        return $this->it_s_A ?? null;
+    }
+
+    /**
+     * @param string $it_s_A
+     * @return self
+     * @param bool $validate
+     */
+    public function withItSA(string $it_s_A, bool $validate = true): self
+    {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($it_s_A, self::$_schema['properties']['it\'s "A"']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
+        $clone = clone $this;
+        $clone->it_s_A = $it_s_A;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutItSA(): self
+    {
+        $clone = clone $this;
+        unset($clone->it_s_A);
+
+        return $clone;
+    }
+
+    /**
      * Builds a new instance from an input array
      *
      * @param array|object $input Input data
@@ -632,7 +680,7 @@ class MyClass
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): MyClass
+    public static function fromInput(array|object $input, bool $validate = true): MyClass
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -646,17 +694,18 @@ class MyClass
         $foo__ = $input->{'foo__'};
         $_foo_ = $input->{'_foo_'};
         $__foo__ = $input->{'__foo__'};
-        $foo_bar = $input->{'foo-bar'};
-        $_foo_bar = $input->{'foo bar'};
+        $_foo_bar = $input->{'foo-bar'};
+        $foo_bar = $input->{'foo bar'};
         $baz_qux = $input->{'baz qux'};
         $_123_qwe = $input->{'123 qwe'};
         $Gorod = $input->{'Город'};
         $nazvanie_iur_litsa = $input->{'название юр.лица'};
         $IP_adres = $input->{'IP-адрес'};
         $_tildas = $input->{'~~tildas~~'};
+        $it_s_A = isset($input->{'it\'s "A"'}) ? $input->{'it\'s "A"'} : null;
 
-        $obj = new self($foo, $_foo, $__foo, $foo_, $foo__, $_foo_, $__foo__, $foo_bar, $_foo_bar, $baz_qux, $_123_qwe, $Gorod, $nazvanie_iur_litsa, $IP_adres, $_tildas);
-
+        $obj = new self($foo, $_foo, $__foo, $foo_, $foo__, $_foo_, $__foo__, $_foo_bar, $foo_bar, $baz_qux, $_123_qwe, $Gorod, $nazvanie_iur_litsa, $IP_adres, $_tildas);
+        $obj->it_s_A = $it_s_A;
         return $obj;
     }
 
@@ -675,14 +724,47 @@ class MyClass
         $output['foo__'] = $this->foo__;
         $output['_foo_'] = $this->_foo_;
         $output['__foo__'] = $this->__foo__;
-        $output['foo-bar'] = $this->foo_bar;
-        $output['foo bar'] = $this->_foo_bar;
+        $output['foo-bar'] = $this->_foo_bar;
+        $output['foo bar'] = $this->foo_bar;
         $output['baz qux'] = $this->baz_qux;
         $output['123 qwe'] = $this->_123_qwe;
         $output['Город'] = $this->Gorod;
         $output['название юр.лица'] = $this->nazvanie_iur_litsa;
         $output['IP-адрес'] = $this->IP_adres;
         $output['~~tildas~~'] = $this->_tildas;
+        if (isset($this->it_s_A)) {
+            $output['it\'s "A"'] = $this->it_s_A;
+        }
+
+        return $output;
+    }
+
+    /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        $output->{'foo'} = $this->foo;
+        $output->{'_foo'} = $this->_foo;
+        $output->{'__foo'} = $this->__foo;
+        $output->{'foo_'} = $this->foo_;
+        $output->{'foo__'} = $this->foo__;
+        $output->{'_foo_'} = $this->_foo_;
+        $output->{'__foo__'} = $this->__foo__;
+        $output->{'foo-bar'} = $this->_foo_bar;
+        $output->{'foo bar'} = $this->foo_bar;
+        $output->{'baz qux'} = $this->baz_qux;
+        $output->{'123 qwe'} = $this->_123_qwe;
+        $output->{'Город'} = $this->Gorod;
+        $output->{'название юр.лица'} = $this->nazvanie_iur_litsa;
+        $output->{'IP-адрес'} = $this->IP_adres;
+        $output->{'~~tildas~~'} = $this->_tildas;
+        if (isset($this->it_s_A)) {
+            $output->{'it\'s "A"'} = $this->it_s_A;
+        }
 
         return $output;
     }
@@ -699,7 +781,7 @@ class MyClass
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {

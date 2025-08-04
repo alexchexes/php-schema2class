@@ -11,7 +11,7 @@ class Pets
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'type' => 'object',
         'properties' => [
             'pet' => [
@@ -70,14 +70,6 @@ class Pets
     }
 
     /**
-     * @return Cat|null
-     */
-    public function getCat(): ?Cat
-    {
-        return $this->cat ?? null;
-    }
-
-    /**
      * @param GenericPet $pet
      * @return self
      */
@@ -98,6 +90,14 @@ class Pets
         unset($clone->pet);
 
         return $clone;
+    }
+
+    /**
+     * @return Cat|null
+     */
+    public function getCat(): ?Cat
+    {
+        return $this->cat ?? null;
     }
 
     /**
@@ -131,15 +131,15 @@ class Pets
      * @return Pets Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): Pets
+    public static function fromInput(array|object $input, bool $validate = true): Pets
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $pet = isset($input->{'pet'}) ? GenericPet::buildFromInput($input->{'pet'}, $validate) : null;
-        $cat = isset($input->{'cat'}) ? Cat::buildFromInput($input->{'cat'}, $validate) : null;
+        $pet = isset($input->{'pet'}) ? GenericPet::fromInput($input->{'pet'}, $validate) : null;
+        $cat = isset($input->{'cat'}) ? Cat::fromInput($input->{'cat'}, $validate) : null;
 
         $obj = new self();
         $obj->pet = $pet;
@@ -166,6 +166,24 @@ class Pets
     }
 
     /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        if (isset($this->pet)) {
+            $output->{'pet'} = $this->pet->toStdClass();
+        }
+        if (isset($this->cat)) {
+            $output->{'cat'} = $this->cat->toStdClass();
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data
@@ -177,7 +195,7 @@ class Pets
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {

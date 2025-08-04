@@ -17,19 +17,22 @@
     "argv",
 
     "input",
-    "validate",
     "obj",
-    "materializeDefaults",
     "includeDefaults",
 
-    "buildFromInput",
+    "fromInput",
     "toArray",
+    "toStdClass",
     "validateInput",
 
+    "_schema",
     "schema",
     "_defaults",
+    "defaults",
+    "_providedOptionals",
 
     "clone",
+    "__clone",
     "__construct",
     "__destruct",
     "__get",
@@ -42,9 +45,9 @@
     "__toString",
     "__invoke",
     "__debugInfo",
-    "__clone",
 
-    "files"
+    "files",
+    "this"
   ],
   "properties": {
     "_GLOBALS": { "type": "string" },
@@ -65,20 +68,28 @@
 
     "input": { "type": "string" },
     "validate": { "type": "string" },
+    "materializeDefaults": { "type": ["string", "null"] },
     "obj": { "type": "string" },
-    "materializeDefaults": { "type": "string" },
     "includeDefaults": { "type": "string" },
-    "testObj": { "type": "object", "properties": { "a": {"type": "string"} } },
+    "testObj": {
+      "type": "object",
+      "properties": { "a": { "type": "string" } }
+    },
 
-    "buildFromInput": { "type": "string" },
+    "fromInput": { "type": "string" },
     "toArray": { "type": "string" },
+    "toStdClass": { "type": "string" },
     "validateInput": { "type": "string" },
 
+    "_schema": { "type": "string" },
     "schema": { "type": "string" },
     "_defaults": { "type": "string", "default": "foo" },
-
+    "defaults": { "type": "string", "default": "foo" },
+    "_providedOptionals": { "type": "string" },
+    "__providedOptionals": { "type": "string" },
 
     "clone": { "type": "string" },
+    "__clone": { "type": "string" },
     "__construct": { "type": "string" },
     "__destruct": { "type": "string" },
     "__get": { "type": "string" },
@@ -91,8 +102,48 @@
     "__toString": { "type": "string" },
     "__invoke": { "type": "string" },
     "__debugInfo": { "type": "string" },
-    "__clone": { "type": "string" },
 
-    "files": { "type": "string" }    
+    "files": { "type": "string" },
+    "this": { "type": "string" },
+
+    "ensureArgs1": {
+      "oneOf": [
+        {
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["invoice"],
+              "default": "invoice"
+            }
+          }
+        },
+        {
+          "required": ["type", "accountNumber"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "default": "debit"
+            },
+            "accountNumber": { "type": "string" }
+          }
+        },
+        { "type": "string" }
+      ]
+    },
+    "ensureArgs2": {
+      "required": ["city", "street"],
+      "properties": {
+        "city": { "type": "string", "maxLength": 32 },
+        "street": { "type": "string", "default": "-" }
+      }
+    },
+    "ensureArgs3": {
+      "type": "array",
+      "items": {
+        "properties": {
+          "name": { "type": "string", "default": "-" }
+        }
+      }
+    }
   }
 }

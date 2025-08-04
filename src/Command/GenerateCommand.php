@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Command;
@@ -12,7 +11,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class GenerateCommand extends Command
+final class GenerateCommand extends Command
 {
     public function __construct()
     {
@@ -32,9 +31,9 @@ class GenerateCommand extends Command
         $this->addOption("dry-run", null, InputOption::VALUE_NONE, "Print output to console instead of writing to files");
         $this->addOption("class", "c", InputOption::VALUE_REQUIRED, "Target class name");
         $this->addOption("disable-strict-types", null, InputOption::VALUE_NONE, "Do not emit strict_types declaration");
-        $this->addOption("treat-default-as-optional", null, InputOption::VALUE_NONE, "Treat properties with defaults as optional");
         $this->addOption("inline-allof", null, InputOption::VALUE_NONE, "Inline allOf references");
         $this->addOption("validator-expr", null, InputOption::VALUE_REQUIRED, "Expression used to create validator instance");
+        $this->addOption("arr-to-obj-expr", null, InputOption::VALUE_REQUIRED, "Expression used to recursively convert arrays to objects");
         $this->addOption("preserve-property-names", null, InputOption::VALUE_NONE, "Do not convert property names to camelCase");
         $this->addOption("no-getters", null, InputOption::VALUE_NONE, "Do not generate getter methods");
         $this->addOption("no-setters", null, InputOption::VALUE_NONE, "Do not generate withX()/withoutX() methods");
@@ -53,16 +52,16 @@ class GenerateCommand extends Command
             'targetPHPVersion'                  => $input->getOption('target-php'),
             'cleanTargetDirectory'              => $input->getOption('clean-dir'),
             'disableStrictTypes'                => $input->getOption('disable-strict-types'),
-            'treatValuesWithDefaultAsOptional'  => $input->getOption('treat-default-as-optional'),
             'inlineAllofReferences'             => $input->getOption('inline-allof'),
-            'newValidatorClassExpr'             => $input->getOption('validator-expr'),
+            'newValidatorExpr'             => $input->getOption('validator-expr'),
+            'arrayToObjectExpr'                 => $input->getOption('arr-to-obj-expr'),
             'preservePropertyNames'             => $input->getOption('preserve-property-names'),
             'noGetters'                         => $input->getOption('no-getters'),
             'noSetters'                         => $input->getOption('no-setters'),
             'mutableSetters'                    => $input->hasParameterOption('--mutable-setters')
                 ? ($input->getOption('mutable-setters') ?: true)
                 : null,
-            'noSchemaMetadata'            => $input->getOption('no-schema-metadata'),
+            'noSchemaMetadata'                  => $input->getOption('no-schema-metadata'),
             'singleLineSchema'                  => $input->getOption('single-line-schema'),
             'noEnums'                           => $input->getOption('no-enums'),
         ];

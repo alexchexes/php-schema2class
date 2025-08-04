@@ -11,7 +11,7 @@ class Foo
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'type' => 'object',
         'additionalProperties' => false,
         'properties' => [
@@ -70,14 +70,6 @@ class Foo
     }
 
     /**
-     * @return Size|null
-     */
-    public function getSize(): ?Size
-    {
-        return $this->size ?? null;
-    }
-
-    /**
      * @param Color $color
      * @return self
      */
@@ -87,6 +79,14 @@ class Foo
         $clone->color = $color;
 
         return $clone;
+    }
+
+    /**
+     * @return Size|null
+     */
+    public function getSize(): ?Size
+    {
+        return $this->size ?? null;
     }
 
     /**
@@ -120,7 +120,7 @@ class Foo
      * @return Foo Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): Foo
+    public static function fromInput(array|object $input, bool $validate = true): Foo
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -152,6 +152,22 @@ class Foo
     }
 
     /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        $output->{'color'} = $this->color->value;
+        if (isset($this->size)) {
+            $output->{'size'} = $this->size->value;
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data
@@ -163,7 +179,7 @@ class Foo
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {

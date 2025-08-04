@@ -72,7 +72,7 @@ class UserHobbiesItem
      * @return UserHobbiesItem Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): UserHobbiesItem
+    public static function fromInput(array|object $input, bool $validate = true): UserHobbiesItem
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -96,6 +96,21 @@ class UserHobbiesItem
         $output = [];
         if (isset($this->name)) {
             $output['name'] = $this->name;
+        }
+
+        return $output;
+    }
+
+    /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        if (isset($this->name)) {
+            $output->{'name'} = $this->name;
         }
 
         return $output;

@@ -11,7 +11,7 @@ class SpecificationOptions
      *
      * @var array
      */
-    private static array $schema = ['additionalProperties' => false, 'properties' => ['targetDirectory' => ['type' => 'string'], 'targetNamespace' => ['type' => 'string'], 'targetPHPVersion' => ['oneOf' => [['type' => 'integer', 'enum' => [5, 7, 8]], ['type' => 'string']]], 'cleanTargetDirectory' => ['type' => 'boolean'], 'disableStrictTypes' => ['type' => 'boolean'], 'treatValuesWithDefaultAsOptional' => ['type' => 'boolean'], 'inlineAllofReferences' => ['type' => 'boolean'], 'newValidatorClassExpr' => ['type' => 'string'], 'preservePropertyNames' => ['type' => 'boolean'], 'noGetters' => ['type' => 'boolean'], 'noSetters' => ['type' => 'boolean'], 'mutableSetters' => ['oneOf' => [['type' => 'boolean', 'enum' => [true]], ['type' => 'string', 'enum' => ['chainable']]]], 'noSchemaMetadata' => ['type' => 'boolean'], 'singleLineSchema' => ['type' => 'boolean'], 'noEnums' => ['type' => 'boolean']]];
+    private static array $schema = ['additionalProperties' => false, 'properties' => ['targetDirectory' => ['type' => 'string'], 'targetNamespace' => ['type' => 'string'], 'targetPHPVersion' => ['oneOf' => [['type' => 'integer', 'enum' => [5, 7, 8]], ['type' => 'string']]], 'cleanTargetDirectory' => ['type' => 'boolean'], 'disableStrictTypes' => ['type' => 'boolean'], 'inlineAllofReferences' => ['type' => 'boolean'], 'newValidatorExpr' => ['type' => 'string'], 'arrayToObjectExpr' => ['type' => 'string'], 'preservePropertyNames' => ['type' => 'boolean'], 'noGetters' => ['type' => 'boolean'], 'noSetters' => ['type' => 'boolean'], 'mutableSetters' => ['oneOf' => [['type' => 'boolean', 'enum' => [true]], ['type' => 'string', 'enum' => ['chainable']]]], 'noSchemaMetadata' => ['type' => 'boolean'], 'singleLineSchema' => ['type' => 'boolean'], 'noEnums' => ['type' => 'boolean']]];
 
     /**
      * @var string|null
@@ -45,11 +45,6 @@ class SpecificationOptions
     /**
      * @var bool|null
      */
-    private ?bool $treatValuesWithDefaultAsOptional = null;
-
-    /**
-     * @var bool|null
-     */
     private ?bool $inlineAllofReferences = null;
 
     /**
@@ -59,7 +54,15 @@ class SpecificationOptions
      *
      * @var string|null
      */
-    private ?string $newValidatorClassExpr = null;
+    private ?string $newValidatorExpr = null;
+
+    /**
+     * Expression to use to recursively convert arrays to objects (e.g. `Utils::arrayToObjectRecursive` - no call parens!)
+     *
+     *
+     * @var string|null
+     */
+    private ?string $arrayToObjectExpr = null;
 
     /**
      * When true, properties names are not converted to camelCase.
@@ -91,7 +94,7 @@ class SpecificationOptions
      * returns $this.
      *
      *
-     * @var bool|'chainable'|null
+     * @var true|'chainable'|null
      */
     private bool|string|null $mutableSetters = null;
 
@@ -130,151 +133,6 @@ class SpecificationOptions
     }
 
     /**
-     * @return string|null
-     */
-    public function getTargetNamespace(): ?string
-    {
-        return $this->targetNamespace ?? null;
-    }
-
-    /**
-     * @return int|string|null
-     */
-    public function getTargetPHPVersion(): int|string|null
-    {
-        return $this->targetPHPVersion;
-    }
-
-    /**
-     * When true, the generator removes all files from the target directory
-     * before writing new ones.
-     *
-     *
-     * @return bool|null
-     */
-    public function getCleanTargetDirectory(): ?bool
-    {
-        return $this->cleanTargetDirectory ?? null;
-    }
-
-    /**
-     * @return bool|null
-     */
-    public function getDisableStrictTypes(): ?bool
-    {
-        return $this->disableStrictTypes ?? null;
-    }
-
-    /**
-     * @return bool|null
-     */
-    public function getTreatValuesWithDefaultAsOptional(): ?bool
-    {
-        return $this->treatValuesWithDefaultAsOptional ?? null;
-    }
-
-    /**
-     * @return bool|null
-     */
-    public function getInlineAllofReferences(): ?bool
-    {
-        return $this->inlineAllofReferences ?? null;
-    }
-
-    /**
-     * The expression to use to create a new instance of the validator class.
-     * This is useful if you want to use a custom validator class.
-     *
-     *
-     * @return string|null
-     */
-    public function getNewValidatorClassExpr(): ?string
-    {
-        return $this->newValidatorClassExpr ?? null;
-    }
-
-    /**
-     * When true, properties names are not converted to camelCase.
-     *
-     *
-     * @return bool|null
-     */
-    public function getPreservePropertyNames(): ?bool
-    {
-        return $this->preservePropertyNames ?? null;
-    }
-
-    /**
-     * When true, no getters are created and all properties are 'public'.
-     *
-     *
-     * @return bool|null
-     */
-    public function getNoGetters(): ?bool
-    {
-        return $this->noGetters ?? null;
-    }
-
-    /**
-     * When true, no withX() / withoutX() setters/unsetters are created.
-     *
-     *
-     * @return bool|null
-     */
-    public function getNoSetters(): ?bool
-    {
-        return $this->noSetters ?? null;
-    }
-
-    /**
-     * If set, generate classic setX() methods instead of immutable
-     * withX()/withoutX(). When the value is "chainable", the setter
-     * returns $this.
-     *
-     *
-     * @return bool|'chainable'|null
-     */
-    public function getMutableSetters(): bool|string|null
-    {
-        return $this->mutableSetters;
-    }
-
-    /**
-     * When true, the schema used for validation will not include
-     * description, title and other non-validation metadata fields
-     *
-     *
-     * @return bool|null
-     */
-    public function getNoSchemaMetadata(): ?bool
-    {
-        return $this->noSchemaMetadata ?? null;
-    }
-
-    /**
-     * When true, the whole schema used for validation will on a single line in the class property
-     *
-     *
-     * @return bool|null
-     */
-    public function getSingleLineSchema(): ?bool
-    {
-        return $this->singleLineSchema ?? null;
-    }
-
-    /**
-     * Disable generating PHP enum classes even on PHP ≥ 8.1. Enum values will be
-     * handled like in earlier PHP versions.
-     *
-     *
-     * @return bool|null
-     */
-    public function getNoEnums(): ?bool
-    {
-        return $this->noEnums ?? null;
-    }
-
-    /**
      * @param string $targetDirectory
      * @return self
      * @param bool $validate
@@ -304,6 +162,14 @@ class SpecificationOptions
         unset($clone->targetDirectory);
 
         return $clone;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getTargetNamespace(): ?string
+    {
+        return $this->targetNamespace ?? null;
     }
 
     /**
@@ -339,6 +205,14 @@ class SpecificationOptions
     }
 
     /**
+     * @return int|string|null
+     */
+    public function getTargetPHPVersion(): int|string|null
+    {
+        return $this->targetPHPVersion;
+    }
+
+    /**
      * @param int|string $targetPHPVersion
      * @return self
      */
@@ -359,6 +233,18 @@ class SpecificationOptions
         unset($clone->targetPHPVersion);
 
         return $clone;
+    }
+
+    /**
+     * When true, the generator removes all files from the target directory
+     * before writing new ones.
+     *
+     *
+     * @return bool|null
+     */
+    public function getCleanTargetDirectory(): ?bool
+    {
+        return $this->cleanTargetDirectory ?? null;
     }
 
     /**
@@ -394,6 +280,14 @@ class SpecificationOptions
     }
 
     /**
+     * @return bool|null
+     */
+    public function getDisableStrictTypes(): ?bool
+    {
+        return $this->disableStrictTypes ?? null;
+    }
+
+    /**
      * @param bool $disableStrictTypes
      * @return self
      * @param bool $validate
@@ -426,35 +320,11 @@ class SpecificationOptions
     }
 
     /**
-     * @param bool $treatValuesWithDefaultAsOptional
-     * @return self
-     * @param bool $validate
+     * @return bool|null
      */
-    public function withTreatValuesWithDefaultAsOptional(bool $treatValuesWithDefaultAsOptional, bool $validate = true): self
+    public function getInlineAllofReferences(): ?bool
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($treatValuesWithDefaultAsOptional, self::$schema['properties']['treatValuesWithDefaultAsOptional']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
-        $clone = clone $this;
-        $clone->treatValuesWithDefaultAsOptional = $treatValuesWithDefaultAsOptional;
-
-        return $clone;
-    }
-
-    /**
-     * @return self
-     */
-    public function withoutTreatValuesWithDefaultAsOptional(): self
-    {
-        $clone = clone $this;
-        unset($clone->treatValuesWithDefaultAsOptional);
-
-        return $clone;
+        return $this->inlineAllofReferences ?? null;
     }
 
     /**
@@ -490,22 +360,34 @@ class SpecificationOptions
     }
 
     /**
-     * @param string $newValidatorClassExpr
+     * The expression to use to create a new instance of the validator class.
+     * This is useful if you want to use a custom validator class.
+     *
+     *
+     * @return string|null
+     */
+    public function getNewValidatorExpr(): ?string
+    {
+        return $this->newValidatorExpr ?? null;
+    }
+
+    /**
+     * @param string $newValidatorExpr
      * @return self
      * @param bool $validate
      */
-    public function withNewValidatorClassExpr(string $newValidatorClassExpr, bool $validate = true): self
+    public function withNewValidatorExpr(string $newValidatorExpr, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($newValidatorClassExpr, self::$schema['properties']['newValidatorClassExpr']);
+            $validator->validate($newValidatorExpr, self::$schema['properties']['newValidatorExpr']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
         }
 
         $clone = clone $this;
-        $clone->newValidatorClassExpr = $newValidatorClassExpr;
+        $clone->newValidatorExpr = $newValidatorExpr;
 
         return $clone;
     }
@@ -513,12 +395,66 @@ class SpecificationOptions
     /**
      * @return self
      */
-    public function withoutNewValidatorClassExpr(): self
+    public function withoutNewValidatorExpr(): self
     {
         $clone = clone $this;
-        unset($clone->newValidatorClassExpr);
+        unset($clone->newValidatorExpr);
 
         return $clone;
+    }
+
+    /**
+     * Expression to use to recursively convert arrays to objects (e.g. `Utils::arrayToObjectRecursive` - no call parens!)
+     *
+     *
+     * @return string|null
+     */
+    public function getArrayToObjectExpr(): ?string
+    {
+        return $this->arrayToObjectExpr ?? null;
+    }
+
+    /**
+     * @param string $arrayToObjectExpr
+     * @return self
+     * @param bool $validate
+     */
+    public function withArrayToObjectExpr(string $arrayToObjectExpr, bool $validate = true): self
+    {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($arrayToObjectExpr, self::$schema['properties']['arrayToObjectExpr']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
+        $clone = clone $this;
+        $clone->arrayToObjectExpr = $arrayToObjectExpr;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutArrayToObjectExpr(): self
+    {
+        $clone = clone $this;
+        unset($clone->arrayToObjectExpr);
+
+        return $clone;
+    }
+
+    /**
+     * When true, properties names are not converted to camelCase.
+     *
+     *
+     * @return bool|null
+     */
+    public function getPreservePropertyNames(): ?bool
+    {
+        return $this->preservePropertyNames ?? null;
     }
 
     /**
@@ -554,6 +490,17 @@ class SpecificationOptions
     }
 
     /**
+     * When true, no getters are created and all properties are 'public'.
+     *
+     *
+     * @return bool|null
+     */
+    public function getNoGetters(): ?bool
+    {
+        return $this->noGetters ?? null;
+    }
+
+    /**
      * @param bool $noGetters
      * @return self
      * @param bool $validate
@@ -583,6 +530,17 @@ class SpecificationOptions
         unset($clone->noGetters);
 
         return $clone;
+    }
+
+    /**
+     * When true, no withX() / withoutX() setters/unsetters are created.
+     *
+     *
+     * @return bool|null
+     */
+    public function getNoSetters(): ?bool
+    {
+        return $this->noSetters ?? null;
     }
 
     /**
@@ -618,7 +576,20 @@ class SpecificationOptions
     }
 
     /**
-     * @param bool|'chainable' $mutableSetters
+     * If set, generate classic setX() methods instead of immutable
+     * withX()/withoutX(). When the value is "chainable", the setter
+     * returns $this.
+     *
+     *
+     * @return true|'chainable'|null
+     */
+    public function getMutableSetters(): bool|string|null
+    {
+        return $this->mutableSetters;
+    }
+
+    /**
+     * @param true|'chainable' $mutableSetters
      * @return self
      */
     public function withMutableSetters(bool|string $mutableSetters): self
@@ -638,6 +609,18 @@ class SpecificationOptions
         unset($clone->mutableSetters);
 
         return $clone;
+    }
+
+    /**
+     * When true, the schema used for validation will not include
+     * description, title and other non-validation metadata fields
+     *
+     *
+     * @return bool|null
+     */
+    public function getNoSchemaMetadata(): ?bool
+    {
+        return $this->noSchemaMetadata ?? null;
     }
 
     /**
@@ -673,6 +656,17 @@ class SpecificationOptions
     }
 
     /**
+     * When true, the whole schema used for validation will on a single line in the class property
+     *
+     *
+     * @return bool|null
+     */
+    public function getSingleLineSchema(): ?bool
+    {
+        return $this->singleLineSchema ?? null;
+    }
+
+    /**
      * @param bool $singleLineSchema
      * @return self
      * @param bool $validate
@@ -702,6 +696,18 @@ class SpecificationOptions
         unset($clone->singleLineSchema);
 
         return $clone;
+    }
+
+    /**
+     * Disable generating PHP enum classes even on PHP ≥ 8.1. Enum values will be
+     * handled like in earlier PHP versions.
+     *
+     *
+     * @return bool|null
+     */
+    public function getNoEnums(): ?bool
+    {
+        return $this->noEnums ?? null;
     }
 
     /**
@@ -744,7 +750,7 @@ class SpecificationOptions
      * @return SpecificationOptions Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): SpecificationOptions
+    public static function fromInput(array|object $input, bool $validate = true): SpecificationOptions
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -754,20 +760,20 @@ class SpecificationOptions
         $targetDirectory = isset($input->{'targetDirectory'}) ? $input->{'targetDirectory'} : null;
         $targetNamespace = isset($input->{'targetNamespace'}) ? $input->{'targetNamespace'} : null;
         $targetPHPVersion = isset($input->{'targetPHPVersion'}) ? match (true) {
-            is_int($input->{'targetPHPVersion'}) => (int)($input->{'targetPHPVersion'}),
+            is_int($input->{'targetPHPVersion'}) => (int)$input->{'targetPHPVersion'},
             is_string($input->{'targetPHPVersion'}) => $input->{'targetPHPVersion'},
             default => null,
         } : null;
         $cleanTargetDirectory = isset($input->{'cleanTargetDirectory'}) ? $input->{'cleanTargetDirectory'} : null;
         $disableStrictTypes = isset($input->{'disableStrictTypes'}) ? $input->{'disableStrictTypes'} : null;
-        $treatValuesWithDefaultAsOptional = isset($input->{'treatValuesWithDefaultAsOptional'}) ? $input->{'treatValuesWithDefaultAsOptional'} : null;
         $inlineAllofReferences = isset($input->{'inlineAllofReferences'}) ? $input->{'inlineAllofReferences'} : null;
-        $newValidatorClassExpr = isset($input->{'newValidatorClassExpr'}) ? $input->{'newValidatorClassExpr'} : null;
+        $newValidatorExpr = isset($input->{'newValidatorExpr'}) ? $input->{'newValidatorExpr'} : null;
+        $arrayToObjectExpr = isset($input->{'arrayToObjectExpr'}) ? $input->{'arrayToObjectExpr'} : null;
         $preservePropertyNames = isset($input->{'preservePropertyNames'}) ? $input->{'preservePropertyNames'} : null;
         $noGetters = isset($input->{'noGetters'}) ? $input->{'noGetters'} : null;
         $noSetters = isset($input->{'noSetters'}) ? $input->{'noSetters'} : null;
         $mutableSetters = isset($input->{'mutableSetters'}) ? match (true) {
-            is_bool($input->{'mutableSetters'}) => (bool)($input->{'mutableSetters'}),
+            is_bool($input->{'mutableSetters'}) => (bool)$input->{'mutableSetters'},
             in_array($input->{'mutableSetters'}, array (
           0 => 'chainable',
         ), true) => $input->{'mutableSetters'},
@@ -783,9 +789,9 @@ class SpecificationOptions
         $obj->targetPHPVersion = $targetPHPVersion;
         $obj->cleanTargetDirectory = $cleanTargetDirectory;
         $obj->disableStrictTypes = $disableStrictTypes;
-        $obj->treatValuesWithDefaultAsOptional = $treatValuesWithDefaultAsOptional;
         $obj->inlineAllofReferences = $inlineAllofReferences;
-        $obj->newValidatorClassExpr = $newValidatorClassExpr;
+        $obj->newValidatorExpr = $newValidatorExpr;
+        $obj->arrayToObjectExpr = $arrayToObjectExpr;
         $obj->preservePropertyNames = $preservePropertyNames;
         $obj->noGetters = $noGetters;
         $obj->noSetters = $noSetters;
@@ -822,14 +828,14 @@ class SpecificationOptions
         if (isset($this->disableStrictTypes)) {
             $output['disableStrictTypes'] = $this->disableStrictTypes;
         }
-        if (isset($this->treatValuesWithDefaultAsOptional)) {
-            $output['treatValuesWithDefaultAsOptional'] = $this->treatValuesWithDefaultAsOptional;
-        }
         if (isset($this->inlineAllofReferences)) {
             $output['inlineAllofReferences'] = $this->inlineAllofReferences;
         }
-        if (isset($this->newValidatorClassExpr)) {
-            $output['newValidatorClassExpr'] = $this->newValidatorClassExpr;
+        if (isset($this->newValidatorExpr)) {
+            $output['newValidatorExpr'] = $this->newValidatorExpr;
+        }
+        if (isset($this->arrayToObjectExpr)) {
+            $output['arrayToObjectExpr'] = $this->arrayToObjectExpr;
         }
         if (isset($this->preservePropertyNames)) {
             $output['preservePropertyNames'] = $this->preservePropertyNames;
@@ -856,6 +862,71 @@ class SpecificationOptions
         }
         if (isset($this->noEnums)) {
             $output['noEnums'] = $this->noEnums;
+        }
+
+        return $output;
+    }
+
+    /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        if (isset($this->targetDirectory)) {
+            $output->{'targetDirectory'} = $this->targetDirectory;
+        }
+        if (isset($this->targetNamespace)) {
+            $output->{'targetNamespace'} = $this->targetNamespace;
+        }
+        if (isset($this->targetPHPVersion)) {
+            $output->{'targetPHPVersion'} = match (true) {
+                is_int($this->targetPHPVersion),
+                is_string($this->targetPHPVersion) => $this->targetPHPVersion,
+            };
+        }
+        if (isset($this->cleanTargetDirectory)) {
+            $output->{'cleanTargetDirectory'} = $this->cleanTargetDirectory;
+        }
+        if (isset($this->disableStrictTypes)) {
+            $output->{'disableStrictTypes'} = $this->disableStrictTypes;
+        }
+        if (isset($this->inlineAllofReferences)) {
+            $output->{'inlineAllofReferences'} = $this->inlineAllofReferences;
+        }
+        if (isset($this->newValidatorExpr)) {
+            $output->{'newValidatorExpr'} = $this->newValidatorExpr;
+        }
+        if (isset($this->arrayToObjectExpr)) {
+            $output->{'arrayToObjectExpr'} = $this->arrayToObjectExpr;
+        }
+        if (isset($this->preservePropertyNames)) {
+            $output->{'preservePropertyNames'} = $this->preservePropertyNames;
+        }
+        if (isset($this->noGetters)) {
+            $output->{'noGetters'} = $this->noGetters;
+        }
+        if (isset($this->noSetters)) {
+            $output->{'noSetters'} = $this->noSetters;
+        }
+        if (isset($this->mutableSetters)) {
+            $output->{'mutableSetters'} = match (true) {
+                is_bool($this->mutableSetters),
+                is_string($this->mutableSetters) && in_array($this->mutableSetters, array (
+              0 => 'chainable',
+            ), true) => $this->mutableSetters,
+            };
+        }
+        if (isset($this->noSchemaMetadata)) {
+            $output->{'noSchemaMetadata'} = $this->noSchemaMetadata;
+        }
+        if (isset($this->singleLineSchema)) {
+            $output->{'singleLineSchema'} = $this->singleLineSchema;
+        }
+        if (isset($this->noEnums)) {
+            $output->{'noEnums'} = $this->noEnums;
         }
 
         return $output;

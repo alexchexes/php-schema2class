@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Example;
 
@@ -7,7 +8,7 @@ namespace Helmich\Schema2Class\Example;
  * via ReferenceLookup. The test does not execute this class; only the FQN is important.
  */
 final class CustomerAddress {
-  public static function buildFromInput()
+  public static function fromInput()
   {
     return new self();
   }
@@ -15,5 +16,10 @@ final class CustomerAddress {
   public function toArray()
   {
     return [];
+  }
+
+  public function toStdClass()
+  {
+    return new \stdClass;
   }
 }

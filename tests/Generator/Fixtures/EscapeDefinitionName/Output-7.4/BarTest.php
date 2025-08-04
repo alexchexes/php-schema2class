@@ -11,7 +11,7 @@ class BarTest
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'type' => 'object',
         'properties' => [
             'exampleProp' => [
@@ -100,11 +100,11 @@ class BarTest
      * @return BarTest Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true): BarTest
+    public static function fromInput($input, bool $validate = true): BarTest
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($input)
+                'Input to fromInput must be array or object, got ' . gettype($input)
             );
         }
 
@@ -113,7 +113,7 @@ class BarTest
             static::validateInput($input);
         }
 
-        $exampleProp = isset($input->{'exampleProp'}) ? (FooTest_1::validateInput($input->{'exampleProp'}, true)) ? (FooTest_1::buildFromInput($input->{'exampleProp'}, $validate)) : ((MoiKlass::validateInput($input->{'exampleProp'}, true)) ? (MoiKlass::buildFromInput($input->{'exampleProp'}, $validate)) : ((FooTest::validateInput($input->{'exampleProp'}, true)) ? (FooTest::buildFromInput($input->{'exampleProp'}, $validate)) : (null))) : null;
+        $exampleProp = isset($input->{'exampleProp'}) ? ((FooTest_1::validateInput($input->{'exampleProp'}, true)) ? FooTest_1::fromInput($input->{'exampleProp'}, $validate) : (((MoiKlass::validateInput($input->{'exampleProp'}, true)) ? MoiKlass::fromInput($input->{'exampleProp'}, $validate) : (((FooTest::validateInput($input->{'exampleProp'}, true)) ? FooTest::fromInput($input->{'exampleProp'}, $validate) : (null)))))) : null;
 
         $obj = new self();
         $obj->exampleProp = $exampleProp;
@@ -138,6 +138,23 @@ class BarTest
     }
 
     /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        if (isset($this->exampleProp)) {
+            if ((($this->exampleProp) instanceof FooTest) || (($this->exampleProp) instanceof MoiKlass) || (($this->exampleProp) instanceof FooTest_1)) {
+            $output->{'exampleProp'} = $this->exampleProp->toStdClass();
+            }
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data
@@ -149,7 +166,7 @@ class BarTest
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {

@@ -9,7 +9,7 @@ class MyClass
      *
      * @var array
      */
-    private static $schema = [
+    private static $_schema = [
         'required' => [
             'foo-bar',
             'foo bar',
@@ -27,29 +27,21 @@ class MyClass
     /**
      * @var string
      */
-    private $foo_bar;
+    private $_foo_bar;
 
     /**
      * @var string
      */
-    private $_foo_bar;
+    private $foo_bar;
 
     /**
-     * @param string $foo_bar
      * @param string $_foo_bar
+     * @param string $foo_bar
      */
-    public function __construct($foo_bar, $_foo_bar)
+    public function __construct($_foo_bar, $foo_bar)
     {
-        $this->foo_bar = $foo_bar;
         $this->_foo_bar = $_foo_bar;
-    }
-
-    /**
-     * @return string
-     */
-    public function getFooBar()
-    {
-        return $this->foo_bar;
+        $this->foo_bar = $foo_bar;
     }
 
     /**
@@ -61,27 +53,6 @@ class MyClass
     }
 
     /**
-     * @param string $foo_bar
-     * @return self
-     * @param bool $validate
-     */
-    public function withFooBar($foo_bar, bool $validate = true)
-    {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($foo_bar, self::$schema['properties']['foo-bar']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
-        $clone = clone $this;
-        $clone->foo_bar = $foo_bar;
-
-        return $clone;
-    }
-
-    /**
      * @param string $_foo_bar
      * @return self
      * @param bool $validate
@@ -90,7 +61,7 @@ class MyClass
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($_foo_bar, self::$schema['properties']['foo bar']);
+            $validator->validate($_foo_bar, self::$_schema['properties']['foo-bar']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -103,6 +74,35 @@ class MyClass
     }
 
     /**
+     * @return string
+     */
+    public function getFooBar()
+    {
+        return $this->foo_bar;
+    }
+
+    /**
+     * @param string $foo_bar
+     * @return self
+     * @param bool $validate
+     */
+    public function withFooBar($foo_bar, bool $validate = true)
+    {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($foo_bar, self::$_schema['properties']['foo bar']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
+        $clone = clone $this;
+        $clone->foo_bar = $foo_bar;
+
+        return $clone;
+    }
+
+    /**
      * Builds a new instance from an input array
      *
      * @param array|object $input Input data
@@ -110,11 +110,11 @@ class MyClass
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true)
+    public static function fromInput($input, bool $validate = true)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($input)
+                'Input to fromInput must be array or object, got ' . gettype($input)
             );
         }
 
@@ -123,10 +123,10 @@ class MyClass
             static::validateInput($input);
         }
 
-        $foo_bar = $input->{'foo-bar'};
-        $_foo_bar = $input->{'foo bar'};
+        $_foo_bar = $input->{'foo-bar'};
+        $foo_bar = $input->{'foo bar'};
 
-        $obj = new self($foo_bar, $_foo_bar);
+        $obj = new self($_foo_bar, $foo_bar);
 
         return $obj;
     }
@@ -139,8 +139,22 @@ class MyClass
     public function toArray()
     {
         $output = [];
-        $output['foo-bar'] = $this->foo_bar;
-        $output['foo bar'] = $this->_foo_bar;
+        $output['foo-bar'] = $this->_foo_bar;
+        $output['foo bar'] = $this->foo_bar;
+
+        return $output;
+    }
+
+    /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass()
+    {
+        $output = new \stdClass();
+        $output->{'foo-bar'} = $this->_foo_bar;
+        $output->{'foo bar'} = $this->foo_bar;
 
         return $output;
     }
@@ -157,7 +171,7 @@ class MyClass
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function($e) {

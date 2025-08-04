@@ -11,7 +11,7 @@ class MyClass
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'properties' => [
             'bound' => [
                 'type' => 'string',
@@ -49,22 +49,6 @@ class MyClass
     }
 
     /**
-     * @return string|null
-     */
-    public function getOutbound(): ?string
-    {
-        return $this->outbound ?? null;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function get_Outbound(): ?string
-    {
-        return $this->_outbound ?? null;
-    }
-
-    /**
      * @param string $bound
      * @return self
      * @param bool $validate
@@ -73,7 +57,7 @@ class MyClass
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($bound, self::$schema['properties']['bound']);
+            $validator->validate($bound, self::$_schema['properties']['bound']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -97,6 +81,14 @@ class MyClass
     }
 
     /**
+     * @return string|null
+     */
+    public function get_Outbound(): ?string
+    {
+        return $this->outbound ?? null;
+    }
+
+    /**
      * @param string $outbound
      * @return self
      * @param bool $validate
@@ -105,7 +97,7 @@ class MyClass
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($outbound, self::$schema['properties']['outbound']);
+            $validator->validate($outbound, self::$_schema['properties']['outbound']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -120,7 +112,7 @@ class MyClass
     /**
      * @return self
      */
-    public function withoutOutbound(): self
+    public function without_Outbound(): self
     {
         $clone = clone $this;
         unset($clone->outbound);
@@ -129,15 +121,23 @@ class MyClass
     }
 
     /**
+     * @return string|null
+     */
+    public function get_Outbound_1(): ?string
+    {
+        return $this->_outbound ?? null;
+    }
+
+    /**
      * @param string $_outbound
      * @return self
      * @param bool $validate
      */
-    public function with__Outbound(string $_outbound, bool $validate = true): self
+    public function with_Outbound_1(string $_outbound, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($_outbound, self::$schema['properties']['_outbound']);
+            $validator->validate($_outbound, self::$_schema['properties']['_outbound']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -152,7 +152,7 @@ class MyClass
     /**
      * @return self
      */
-    public function without_Outbound(): self
+    public function without_Outbound_1(): self
     {
         $clone = clone $this;
         unset($clone->_outbound);
@@ -168,7 +168,7 @@ class MyClass
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): MyClass
+    public static function fromInput(array|object $input, bool $validate = true): MyClass
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -208,6 +208,27 @@ class MyClass
     }
 
     /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        if (isset($this->bound)) {
+            $output->{'bound'} = $this->bound;
+        }
+        if (isset($this->outbound)) {
+            $output->{'outbound'} = $this->outbound;
+        }
+        if (isset($this->_outbound)) {
+            $output->{'_outbound'} = $this->_outbound;
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data
@@ -219,7 +240,7 @@ class MyClass
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {

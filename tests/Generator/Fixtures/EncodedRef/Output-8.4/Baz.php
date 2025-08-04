@@ -11,7 +11,7 @@ class Baz
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'type' => 'object',
         'properties' => [
             'a' => [
@@ -68,22 +68,6 @@ class Baz
     }
 
     /**
-     * @return FooTest|null
-     */
-    public function getB(): ?FooTest
-    {
-        return $this->b ?? null;
-    }
-
-    /**
-     * @return BarTest|null
-     */
-    public function getC(): ?BarTest
-    {
-        return $this->c ?? null;
-    }
-
-    /**
      * @param FooTest $a
      * @return self
      */
@@ -107,6 +91,14 @@ class Baz
     }
 
     /**
+     * @return FooTest|null
+     */
+    public function getB(): ?FooTest
+    {
+        return $this->b ?? null;
+    }
+
+    /**
      * @param FooTest $b
      * @return self
      */
@@ -127,6 +119,14 @@ class Baz
         unset($clone->b);
 
         return $clone;
+    }
+
+    /**
+     * @return BarTest|null
+     */
+    public function getC(): ?BarTest
+    {
+        return $this->c ?? null;
     }
 
     /**
@@ -160,16 +160,16 @@ class Baz
      * @return Baz Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): Baz
+    public static function fromInput(array|object $input, bool $validate = true): Baz
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $a = isset($input->{'a'}) ? FooTest::buildFromInput($input->{'a'}, $validate) : null;
-        $b = isset($input->{'b'}) ? FooTest::buildFromInput($input->{'b'}, $validate) : null;
-        $c = isset($input->{'c'}) ? BarTest::buildFromInput($input->{'c'}, $validate) : null;
+        $a = isset($input->{'a'}) ? FooTest::fromInput($input->{'a'}, $validate) : null;
+        $b = isset($input->{'b'}) ? FooTest::fromInput($input->{'b'}, $validate) : null;
+        $c = isset($input->{'c'}) ? BarTest::fromInput($input->{'c'}, $validate) : null;
 
         $obj = new self();
         $obj->a = $a;
@@ -200,6 +200,27 @@ class Baz
     }
 
     /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        if (isset($this->a)) {
+            $output->{'a'} = $this->a->toStdClass();
+        }
+        if (isset($this->b)) {
+            $output->{'b'} = $this->b->toStdClass();
+        }
+        if (isset($this->c)) {
+            $output->{'c'} = $this->c->toStdClass();
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data
@@ -211,7 +232,7 @@ class Baz
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {

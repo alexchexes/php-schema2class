@@ -11,7 +11,7 @@ class Cat
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'type' => 'object',
         'properties' => [
             'hasFur' => [
@@ -38,15 +38,17 @@ class Cat
      * @var array
      */
     private static array $_defaults = [
-        'hasFur' => true,
+        'hasFur' => [
+            'default' => true,
+        ],
     ];
 
     /**
-     * Map of optional nullable property names that were explicitly set to `null`
+     * Map of optional nullable property names that were explicitly set
      *
      * @var array<string,true>
      */
-    private array $_explicitNulls = [];
+    private array $_providedOptionals = [];
 
     /**
      * Whether the cat has fur. True by default for most cats
@@ -74,7 +76,7 @@ class Cat
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($hasFur, self::$schema['properties']['hasFur']);
+            $validator->validate($hasFur, self::$_schema['properties']['hasFur']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -82,7 +84,7 @@ class Cat
 
         $clone = clone $this;
         $clone->hasFur = $hasFur;
-        $clone->_explicitNulls['hasFur'] = true;
+        $clone->_providedOptionals['hasFur'] = true;
 
         return $clone;
     }
@@ -94,7 +96,7 @@ class Cat
     {
         $clone = clone $this;
         unset($clone->hasFur);
-        unset($clone->_explicitNulls['hasFur']);
+        unset($clone->_providedOptionals['hasFur']);
 
         return $clone;
     }
@@ -108,7 +110,7 @@ class Cat
      * @return Cat Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true, bool $materializeDefaults = false): Cat
+    public static function fromInput(array|object $input, bool $validate = true, bool $materializeDefaults = false): Cat
     {
         $input = is_array($input)
             ? \JsonSchema\Validator::arrayToObjectRecursive($input)
@@ -116,8 +118,10 @@ class Cat
 
         if ($materializeDefaults) {
             foreach (self::$_defaults as $__k => $__v) {
-                if (!property_exists($input, $__k)) {
-                    $input->{$__k} = is_array($__v) ? \JsonSchema\Validator::arrayToObjectRecursive($__v) : $__v;
+                if (!property_exists($input, (string) $__k)) {
+                    $input->{$__k} = ($__v['type'] ?? null) === 'object'
+                        ? \JsonSchema\Validator::arrayToObjectRecursive($__v['default'])
+                        : $__v['default'];
                 }
             }
         }
@@ -126,15 +130,15 @@ class Cat
             static::validateInput($input);
         }
 
-        $__explicitNulls = [];
-        $hasFur = property_exists($input, 'hasFur') ? $input->{'hasFur'} : null;
+        $__providedOptionals = [];
+        $hasFur = property_exists($input, 'hasFur') ? ($input->{'hasFur'} !== null ? $input->{'hasFur'} : null) : null;
         if (property_exists($input, 'hasFur')) {
-            $__explicitNulls['hasFur'] = true;
+            $__providedOptionals['hasFur'] = true;
         }
 
         $obj = new self();
         $obj->hasFur = $hasFur;
-        $obj->_explicitNulls = $__explicitNulls;
+        $obj->_providedOptionals = $__providedOptionals;
         return $obj;
     }
 
@@ -147,14 +151,40 @@ class Cat
     public function toArray(bool $includeDefaults = false): array
     {
         $output = [];
-        if (isset($this->hasFur) || array_key_exists('hasFur', $this->_explicitNulls)) {
-            $output['hasFur'] = $this->hasFur;
+        if (isset($this->hasFur) || array_key_exists('hasFur', $this->_providedOptionals)) {
+            $output['hasFur'] = ($this->hasFur !== null) ? ($this->hasFur) : null;
         }
 
         if ($includeDefaults) {
             foreach (self::$_defaults as $k => $v) {
                 if (!array_key_exists($k, $output)) {
-                    $output[$k] = $v;
+                    $output[$k] = $v['default'];
+                }
+            }
+        }
+
+        return $output;
+    }
+
+    /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @param bool $includeDefaults Add defaults for missing properties
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(bool $includeDefaults = false): \stdClass
+    {
+        $output = new \stdClass();
+        if (isset($this->hasFur) || array_key_exists('hasFur', $this->_providedOptionals)) {
+            $output->{'hasFur'} = ($this->hasFur !== null) ? ($this->hasFur) : null;
+        }
+
+        if ($includeDefaults) {
+            foreach (self::$_defaults as $k => $v) {
+                if (!property_exists($output, (string) $k)) {
+                    $output->{$k} = (isset($v['type']) && $v['type'] === 'object')
+                       ? \JsonSchema\Validator::arrayToObjectRecursive($v['default'])
+                       : $v['default'];
                 }
             }
         }
@@ -174,7 +204,7 @@ class Cat
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {
@@ -187,13 +217,13 @@ class Cat
     }
 
     /**
-     * Checks if an optional nullable property was explicitly set to `null`
+     * Checks if an optional nullable property was explicitly set
      *
-     * @param string $propertyName property name as appears in the schema
+     * @param string $propertyName Property name to check (exactly as it appears in the schema)
      * @return bool
      */
-    public function isExplicitNull(string $propertyName): bool
+    public function isOptionalProvided(string $propertyName): bool
     {
-        return array_key_exists($propertyName, $this->_explicitNulls);
+        return array_key_exists($propertyName, $this->_providedOptionals);
     }
 }

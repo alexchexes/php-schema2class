@@ -1,15 +1,14 @@
 <?php
-declare(strict_types = 1);
+declare(strict_types=1);
 
-namespace Helmich\Schema2Class\Generator\Property;
+namespace Helmich\Schema2Class\Generator\Property\Type;
 
 use Helmich\Schema2Class\Generator\GeneratorRequest;
-use Helmich\Schema2Class\Generator\SchemaToClass;
+use Helmich\Schema2Class\Writer\DebugWriter;
+use Symfony\Component\Console\Output\NullOutput;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
 use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
-use Prophecy\PhpUnit\ProphecyTrait;
 use function PHPUnit\Framework\assertFalse;
 use function PHPUnit\Framework\assertSame;
 use function PHPUnit\Framework\assertThat;
@@ -18,7 +17,6 @@ use function PHPUnit\Framework\isNull;
 
 class PrimitiveArrayPropertyTest extends TestCase
 {
-    use ProphecyTrait;
 
     private PrimitiveArrayProperty $property;
 
@@ -42,10 +40,10 @@ class PrimitiveArrayPropertyTest extends TestCase
 
         assertFalse($underTest->isComplex());
 
-        $result = $underTest->convertInputToType('variable');
+        $result = $underTest->convertInputToType();
 
         $expected = <<<'EOCODE'
-$myPropertyName = $variable['myPropertyName'];
+$myPropertyName = $input->{'myPropertyName'};
 EOCODE;
 
         assertSame($expected, $result);
@@ -55,10 +53,10 @@ EOCODE;
     {
         $underTest = new PrimitiveArrayProperty('myPropertyName', ['type' => 'array'], $this->generatorRequest);
 
-        $result = $underTest->convertTypeToArray('variable');
+        $result = $underTest->convertTypeToArray();
 
         $expected = <<<'EOCODE'
-$variable['myPropertyName'] = $this->myPropertyName;
+$output['myPropertyName'] = $this->myPropertyName;
 EOCODE;
 
         assertSame($expected, $result);
@@ -68,14 +66,18 @@ EOCODE;
     {
         $underTest = new PrimitiveArrayProperty('myPropertyName', ['type' => 'array'], $this->generatorRequest);
 
-        assertThat($underTest->cloneProperty(), isNull());
+        assertThat($underTest->cloneAssignment(), isNull());
     }
 
     public function testGetAnnotationAndHintWithSimpleArray()
     {
         assertSame('array', $this->property->typeAnnotation());
-        assertSame('array', $this->property->typeHint("7.2.0"));
-        assertSame('array', $this->property->typeHint("5.6.0"));
+        assertSame('array', $this->property->typeHint());
+
+        $property = new PrimitiveArrayProperty(
+            'myPropertyName', ['type' => 'integer'], $this->generatorRequest->withPHPVersion('5.6.0')
+        );
+        assertSame('array', $property->typeHint());
     }
 
     public function testGetAnnotationWithSimpleItemsArray()
@@ -83,18 +85,21 @@ EOCODE;
         $underTest = new PrimitiveArrayProperty('myPropertyName', ['type' => 'array', 'items' => ['type' => 'string']], $this->generatorRequest);
 
         assertSame('string[]', $underTest->typeAnnotation());
-        assertSame('array', $underTest->typeHint("7.2.0"));
-        assertSame('array', $underTest->typeHint("5.6.0"));
+        assertSame('array', $underTest->typeHint());
 
+        $underTest = new PrimitiveArrayProperty(
+            'myPropertyName', ['type' => 'integer'], $this->generatorRequest->withPHPVersion('5.6.0')
+        );
+        assertSame('array', $underTest->typeHint());
     }
 
     public function testGenerateSubTypesWithSimpleArray()
     {
-        $schemaToClass = $this->prophesize(SchemaToClass::class);
+        $writer = new DebugWriter(new NullOutput());
 
-        $this->property->generateSubTypes($schemaToClass->reveal());
+        $this->property->generateSubTypes($writer, new NullOutput());
 
-        $schemaToClass->schemaToClass(Argument::any(), Argument::any(), Argument::any())->shouldNotHaveBeenCalled();
+        $this->assertCount(0, $writer->getWrittenFiles());
     }
 
 }

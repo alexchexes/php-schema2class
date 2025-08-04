@@ -9,7 +9,7 @@ class Fio
      *
      * @var array
      */
-    private static $schema = [
+    private static $_schema = [
         'type' => 'object',
         'properties' => [
             'bar' => [
@@ -22,11 +22,11 @@ class Fio
     ];
 
     /**
-     * Map of optional nullable property names that were explicitly set to `null`
+     * Map of optional nullable property names that were explicitly set
      *
      * @var array<string,true>
      */
-    private $_explicitNulls = [];
+    private $_providedOptionals = [];
 
     /**
      * @var string|null
@@ -50,7 +50,7 @@ class Fio
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($bar, self::$schema['properties']['bar']);
+            $validator->validate($bar, self::$_schema['properties']['bar']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -58,7 +58,7 @@ class Fio
 
         $clone = clone $this;
         $clone->bar = $bar;
-        $clone->_explicitNulls['bar'] = true;
+        $clone->_providedOptionals['bar'] = true;
 
         return $clone;
     }
@@ -70,7 +70,7 @@ class Fio
     {
         $clone = clone $this;
         unset($clone->bar);
-        unset($clone->_explicitNulls['bar']);
+        unset($clone->_providedOptionals['bar']);
 
         return $clone;
     }
@@ -83,11 +83,11 @@ class Fio
      * @return Fio Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true)
+    public static function fromInput($input, bool $validate = true)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($input)
+                'Input to fromInput must be array or object, got ' . gettype($input)
             );
         }
 
@@ -96,15 +96,15 @@ class Fio
             static::validateInput($input);
         }
 
-        $__explicitNulls = [];
-        $bar = property_exists($input, 'bar') ? $input->{'bar'} : null;
+        $__providedOptionals = [];
+        $bar = property_exists($input, 'bar') ? ($input->{'bar'} !== null ? $input->{'bar'} : null) : null;
         if (property_exists($input, 'bar')) {
-            $__explicitNulls['bar'] = true;
+            $__providedOptionals['bar'] = true;
         }
 
         $obj = new self();
         $obj->bar = $bar;
-        $obj->_explicitNulls = $__explicitNulls;
+        $obj->_providedOptionals = $__providedOptionals;
         return $obj;
     }
 
@@ -116,8 +116,23 @@ class Fio
     public function toArray()
     {
         $output = [];
-        if (isset($this->bar) || array_key_exists('bar', $this->_explicitNulls)) {
-            $output['bar'] = $this->bar;
+        if (isset($this->bar) || array_key_exists('bar', $this->_providedOptionals)) {
+            $output['bar'] = ($this->bar !== null) ? ($this->bar) : null;
+        }
+
+        return $output;
+    }
+
+    /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass()
+    {
+        $output = new \stdClass();
+        if (isset($this->bar) || array_key_exists('bar', $this->_providedOptionals)) {
+            $output->{'bar'} = ($this->bar !== null) ? ($this->bar) : null;
         }
 
         return $output;
@@ -135,7 +150,7 @@ class Fio
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function($e) {
@@ -148,13 +163,13 @@ class Fio
     }
 
     /**
-     * Checks if an optional nullable property was explicitly set to `null`
+     * Checks if an optional nullable property was explicitly set
      *
-     * @param string $propertyName property name as appears in the schema
+     * @param string $propertyName Property name to check (exactly as it appears in the schema)
      * @return bool
      */
-    public function isExplicitNull(string $propertyName)
+    public function isOptionalProvided(string $propertyName)
     {
-        return array_key_exists($propertyName, $this->_explicitNulls);
+        return array_key_exists($propertyName, $this->_providedOptionals);
     }
 }

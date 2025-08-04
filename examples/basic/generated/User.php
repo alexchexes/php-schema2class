@@ -57,28 +57,6 @@ class User
     }
 
     /**
-     * Object representing address of the user, field is optional.
-     *
-     * @return Address|null
-     */
-    public function getAddress(): ?Address
-    {
-        return $this->address ?? null;
-    }
-
-    /**
-     * User status. Field is obligatory, but nullable.
-     *
-     * If target PHP is 8.1+ the type will be an `enum` with cases `CUSTOMER = 'customer'` and `MANAGER = 'manager'`
-     *
-     * @return 'customer'|'manager'|null
-     */
-    public function getStatus(): ?string
-    {
-        return $this->status ?? null;
-    }
-
-    /**
      * @param string $name
      * @return self
      * @param bool $validate
@@ -97,6 +75,16 @@ class User
         $clone->name = $name;
 
         return $clone;
+    }
+
+    /**
+     * Object representing address of the user, field is optional.
+     *
+     * @return Address|null
+     */
+    public function getAddress(): ?Address
+    {
+        return $this->address ?? null;
     }
 
     /**
@@ -120,6 +108,18 @@ class User
         unset($clone->address);
 
         return $clone;
+    }
+
+    /**
+     * User status. Field is obligatory, but nullable.
+     *
+     * If target PHP is 8.1+ the type will be an `enum` with cases `CUSTOMER = 'customer'` and `MANAGER = 'manager'`
+     *
+     * @return 'customer'|'manager'|null
+     */
+    public function getStatus(): ?string
+    {
+        return $this->status ?? null;
     }
 
     /**
@@ -151,11 +151,11 @@ class User
      * @return User Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true): User
+    public static function fromInput($input, bool $validate = true): User
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($input)
+                'Input to fromInput must be array or object, got ' . gettype($input)
             );
         }
 
@@ -165,8 +165,8 @@ class User
         }
 
         $name = $input->{'name'};
-        $address = isset($input->{'address'}) ? Address::buildFromInput($input->{'address'}, $validate) : null;
-        $status = ($input->{'status'} !== null) ? ($input->{'status'}) : null;
+        $address = isset($input->{'address'}) ? Address::fromInput($input->{'address'}, $validate) : null;
+        $status = ($input->{'status'} !== null ? $input->{'status'} : null);
 
         $obj = new self($name, $status);
         $obj->address = $address;
@@ -186,6 +186,23 @@ class User
             $output['address'] = $this->address->toArray();
         }
         $output['status'] = $this->status;
+
+        return $output;
+    }
+
+    /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        $output->{'name'} = $this->name;
+        if (isset($this->address)) {
+            $output->{'address'} = $this->address->toStdClass();
+        }
+        $output->{'status'} = $this->status;
 
         return $output;
     }

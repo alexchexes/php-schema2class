@@ -66,7 +66,7 @@ class UserPaymentAlternative1
      * @return UserPaymentAlternative1 Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): UserPaymentAlternative1
+    public static function fromInput(array|object $input, bool $validate = true): UserPaymentAlternative1
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -89,6 +89,19 @@ class UserPaymentAlternative1
     {
         $output = [];
         $output['type'] = ($this->type)->value;
+
+        return $output;
+    }
+
+    /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        $output->{'type'} = ($this->type)->value;
 
         return $output;
     }

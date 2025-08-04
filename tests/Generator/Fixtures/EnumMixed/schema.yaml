@@ -42,6 +42,11 @@ properties:
     enum:
       - "red"
       - "green"
+  optionalNullable:
+    type: [string, null]
+    enum:
+      - "red"
+      - "green"
 required:
   - foo
   - bar

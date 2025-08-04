@@ -1,7 +1,14 @@
 <?php
+declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator;
 
+/**
+ * Helper to build a `match` expression programmatically.
+ * 
+ * Arms are grouped by return expression so that multiple conditions can map to
+ * the same result
+ */
 class MatchGenerator
 {
     private array $arms = [];
@@ -21,7 +28,10 @@ class MatchGenerator
         $code = "match ({$this->subjectExpr}) {\n";
 
         foreach ($this->arms as $returnExpr => $conditionExprs) {
-            $arm  = in_array("default", $conditionExprs) ? "default" : join(",\n    ", $conditionExprs);
+            $arm  = in_array("default", $conditionExprs)
+                ? "default"
+                : join(",\n    ", $conditionExprs);
+                
             $code .= "    {$arm} => {$returnExpr},\n";
         }
 

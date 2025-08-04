@@ -11,7 +11,7 @@ class OptionsObject
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'properties' => [
             'output' => [
                 'type' => 'string',
@@ -33,22 +33,22 @@ class OptionsObject
     }
 
     /**
-     * @param string $output
+     * @param string $_output
      * @return self
      * @param bool $validate
      */
-    public function withOutput(string $output, bool $validate = true): self
+    public function withOutput(string $_output, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($output, self::$schema['properties']['output']);
+            $validator->validate($_output, self::$_schema['properties']['output']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
         }
 
         $clone = clone $this;
-        $clone->output = $output;
+        $clone->output = $_output;
 
         return $clone;
     }
@@ -72,11 +72,11 @@ class OptionsObject
      * @return OptionsObject Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true): OptionsObject
+    public static function fromInput($input, bool $validate = true): OptionsObject
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($input)
+                'Input to fromInput must be array or object, got ' . gettype($input)
             );
         }
 
@@ -85,10 +85,10 @@ class OptionsObject
             static::validateInput($input);
         }
 
-        $output = isset($input->{'output'}) ? $input->{'output'} : null;
+        $_output = isset($input->{'output'}) ? $input->{'output'} : null;
 
         $obj = new self();
-        $obj->output = $output;
+        $obj->output = $_output;
         return $obj;
     }
 
@@ -108,6 +108,21 @@ class OptionsObject
     }
 
     /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        if (isset($this->output)) {
+            $output->{'output'} = $this->output;
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data
@@ -119,7 +134,7 @@ class OptionsObject
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {

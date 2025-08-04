@@ -11,7 +11,7 @@ class Specification
      *
      * @var array
      */
-    private static array $schema = ['properties' => ['options' => ['$ref' => '#/definitions/SpecificationOptions'], 'files' => ['type' => 'array', 'items' => ['properties' => ['input' => ['type' => ['string', 'object']], 'className' => ['type' => 'string'], 'options' => ['$ref' => '#/definitions/SpecificationOptions']], 'additionalProperties' => false, 'required' => ['input']]]], 'additionalProperties' => false, 'required' => ['files'], 'definitions' => ['SpecificationOptions' => ['additionalProperties' => false, 'properties' => ['targetDirectory' => ['type' => 'string'], 'targetNamespace' => ['type' => 'string'], 'targetPHPVersion' => ['oneOf' => [['type' => 'integer', 'enum' => [5, 7, 8]], ['type' => 'string']]], 'cleanTargetDirectory' => ['type' => 'boolean'], 'disableStrictTypes' => ['type' => 'boolean'], 'treatValuesWithDefaultAsOptional' => ['type' => 'boolean'], 'inlineAllofReferences' => ['type' => 'boolean'], 'newValidatorClassExpr' => ['type' => 'string'], 'preservePropertyNames' => ['type' => 'boolean'], 'noGetters' => ['type' => 'boolean'], 'noSetters' => ['type' => 'boolean'], 'mutableSetters' => ['oneOf' => [['type' => 'boolean', 'enum' => [true]], ['type' => 'string', 'enum' => ['chainable']]]], 'noSchemaMetadata' => ['type' => 'boolean'], 'singleLineSchema' => ['type' => 'boolean'], 'noEnums' => ['type' => 'boolean']]]]];
+    private static array $schema = ['properties' => ['options' => ['$ref' => '#/definitions/SpecificationOptions'], 'files' => ['type' => 'array', 'items' => ['properties' => ['input' => ['type' => ['string', 'object']], 'className' => ['type' => 'string'], 'options' => ['$ref' => '#/definitions/SpecificationOptions']], 'additionalProperties' => false, 'required' => ['input']]]], 'additionalProperties' => false, 'required' => ['files'], 'definitions' => ['SpecificationOptions' => ['additionalProperties' => false, 'properties' => ['targetDirectory' => ['type' => 'string'], 'targetNamespace' => ['type' => 'string'], 'targetPHPVersion' => ['oneOf' => [['type' => 'integer', 'enum' => [5, 7, 8]], ['type' => 'string']]], 'cleanTargetDirectory' => ['type' => 'boolean'], 'disableStrictTypes' => ['type' => 'boolean'], 'inlineAllofReferences' => ['type' => 'boolean'], 'newValidatorExpr' => ['type' => 'string'], 'arrayToObjectExpr' => ['type' => 'string'], 'preservePropertyNames' => ['type' => 'boolean'], 'noGetters' => ['type' => 'boolean'], 'noSetters' => ['type' => 'boolean'], 'mutableSetters' => ['oneOf' => [['type' => 'boolean', 'enum' => [true]], ['type' => 'string', 'enum' => ['chainable']]]], 'noSchemaMetadata' => ['type' => 'boolean'], 'singleLineSchema' => ['type' => 'boolean'], 'noEnums' => ['type' => 'boolean']]]]];
 
     /**
      * @var SpecificationOptions|null
@@ -40,14 +40,6 @@ class Specification
     }
 
     /**
-     * @return SpecificationFilesItem[]
-     */
-    public function getFiles(): array
-    {
-        return $this->files;
-    }
-
-    /**
      * @param SpecificationOptions $options
      * @return self
      */
@@ -68,6 +60,14 @@ class Specification
         unset($clone->options);
 
         return $clone;
+    }
+
+    /**
+     * @return SpecificationFilesItem[]
+     */
+    public function getFiles(): array
+    {
+        return $this->files;
     }
 
     /**
@@ -99,15 +99,15 @@ class Specification
      * @return Specification Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): Specification
+    public static function fromInput(array|object $input, bool $validate = true): Specification
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $options = isset($input->{'options'}) ? SpecificationOptions::buildFromInput($input->{'options'}, $validate) : null;
-        $files = array_map(fn (array|object $i): SpecificationFilesItem => SpecificationFilesItem::buildFromInput($i, $validate), $input->{'files'});
+        $options = isset($input->{'options'}) ? SpecificationOptions::fromInput($input->{'options'}, $validate) : null;
+        $files = array_map(fn (array|object $i): SpecificationFilesItem => SpecificationFilesItem::fromInput($i, $validate), $input->{'files'});
 
         $obj = new self($files);
         $obj->options = $options;
@@ -126,6 +126,22 @@ class Specification
             $output['options'] = $this->options->toArray();
         }
         $output['files'] = array_map(fn (SpecificationFilesItem $i) => $i->toArray(), $this->files);
+
+        return $output;
+    }
+
+    /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        if (isset($this->options)) {
+            $output->{'options'} = $this->options->toStdClass();
+        }
+        $output->{'files'} = array_map(fn (SpecificationFilesItem $i) => $i->toStdClass(), $this->files);
 
         return $output;
     }
