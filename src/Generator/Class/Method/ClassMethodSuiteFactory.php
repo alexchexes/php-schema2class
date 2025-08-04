@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Class\Method;
 
-use Helmich\Schema2Class\Generator\Class\MethodNames;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\Collection\PropertyCollection;
 use Helmich\Schema2Class\Util\ReservedNames;
