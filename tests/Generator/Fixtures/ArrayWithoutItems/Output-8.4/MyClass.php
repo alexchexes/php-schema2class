@@ -160,18 +160,9 @@ class MyClass
     /**
      * @param array $a
      * @return self
-     * @param bool $validate
      */
-    public function withA(array $a, bool $validate = true): self
+    public function withA(array $a): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($a, self::$_schema['properties']['a']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->a = $a;
 
@@ -209,18 +200,9 @@ class MyClass
     /**
      * @param array|null $c
      * @return self
-     * @param bool $validate
      */
-    public function withC(?array $c, bool $validate = true): self
+    public function withC(?array $c): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($c, self::$_schema['properties']['c']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->c = $c;
 
@@ -258,18 +240,9 @@ class MyClass
     /**
      * @param array $e
      * @return self
-     * @param bool $validate
      */
-    public function withE(array $e, bool $validate = true): self
+    public function withE(array $e): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($e, self::$_schema['properties']['e']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->e = $e;
 
@@ -329,18 +302,9 @@ class MyClass
     /**
      * @param array|null $g
      * @return self
-     * @param bool $validate
      */
-    public function withG(?array $g, bool $validate = true): self
+    public function withG(?array $g): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($g, self::$_schema['properties']['g']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->g = $g;
         $clone->_providedOptionals['g'] = true;

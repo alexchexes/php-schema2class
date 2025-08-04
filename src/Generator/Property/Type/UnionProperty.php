@@ -51,6 +51,14 @@ class UnionProperty extends AbstractProperty
         return true;
     }
 
+    /**
+     * @return PropertyInterface[]
+     */
+    public function subProperties(): array
+    {
+        return $this->subProperties;
+    }
+
     public function convertInputToTypeMatch(): string
     {
         $inputVarName = FromInputMethodFactory::INPUT_ARG_NAME;

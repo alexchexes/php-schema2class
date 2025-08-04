@@ -143,18 +143,9 @@ class Foo
     /**
      * @param 0|1.5|2.5|3.5 $floatEnumRef
      * @return self
-     * @param bool $validate
      */
-    public function withFloatEnumRef($floatEnumRef, bool $validate = true)
+    public function withFloatEnumRef($floatEnumRef)
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($floatEnumRef, self::$_schema['properties']['floatEnumRef']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->floatEnumRef = $floatEnumRef;
 
@@ -223,18 +214,9 @@ class Foo
     /**
      * @param false $boolEnumRef
      * @return self
-     * @param bool $validate
      */
-    public function withBoolEnumRef(bool $boolEnumRef, bool $validate = true)
+    public function withBoolEnumRef(bool $boolEnumRef)
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($boolEnumRef, self::$_schema['properties']['boolEnumRef']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->boolEnumRef = $boolEnumRef;
 
@@ -263,18 +245,9 @@ class Foo
     /**
      * @param false $requiredBoolEnumRef
      * @return self
-     * @param bool $validate
      */
-    public function withRequiredBoolEnumRef(bool $requiredBoolEnumRef, bool $validate = true)
+    public function withRequiredBoolEnumRef(bool $requiredBoolEnumRef)
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($requiredBoolEnumRef, self::$_schema['properties']['requiredBoolEnumRef']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->requiredBoolEnumRef = $requiredBoolEnumRef;
 

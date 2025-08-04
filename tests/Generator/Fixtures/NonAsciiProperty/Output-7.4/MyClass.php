@@ -68,18 +68,9 @@ class MyClass
     /**
      * @param string $Gorod
      * @return self
-     * @param bool $validate
      */
-    public function withGorod(string $Gorod, bool $validate = true): self
+    public function withGorod(string $Gorod): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($Gorod, self::$_schema['properties']['Город']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->Gorod = $Gorod;
 
@@ -97,18 +88,9 @@ class MyClass
     /**
      * @param string $nazvanieIurLitsa
      * @return self
-     * @param bool $validate
      */
-    public function withNazvanieIurLitsa(string $nazvanieIurLitsa, bool $validate = true): self
+    public function withNazvanieIurLitsa(string $nazvanieIurLitsa): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($nazvanieIurLitsa, self::$_schema['properties']['название юр.лица']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->nazvanieIurLitsa = $nazvanieIurLitsa;
 
@@ -126,18 +108,9 @@ class MyClass
     /**
      * @param string $IPAdres
      * @return self
-     * @param bool $validate
      */
-    public function withIPAdres(string $IPAdres, bool $validate = true): self
+    public function withIPAdres(string $IPAdres): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($IPAdres, self::$_schema['properties']['IP-адрес']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->IPAdres = $IPAdres;
 

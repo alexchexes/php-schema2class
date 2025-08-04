@@ -85,9 +85,18 @@ class Qux
     /**
      * @param string|string[]|Foo|Bar $grox
      * @return self
+     * @param bool $validate
      */
-    public function withGrox(Bar|Foo|string|array $grox): self
+    public function withGrox(Bar|Foo|string|array $grox, bool $validate = true): self
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($grox, self::$_schema['properties']['grox']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
         $clone->grox = $grox;
 

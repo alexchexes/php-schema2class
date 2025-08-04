@@ -60,9 +60,18 @@ class MyClass
     /**
      * @param string|array|object $foo
      * @return self
+     * @param bool $validate
      */
-    public function withFoo($foo): self
+    public function withFoo($foo, bool $validate = true): self
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($foo, self::$_schema['properties']['foo']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
         $clone->foo = $foo;
 
@@ -80,9 +89,18 @@ class MyClass
     /**
      * @param string|array|object $bar
      * @return self
+     * @param bool $validate
      */
-    public function withBar($bar): self
+    public function withBar($bar, bool $validate = true): self
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($bar, self::$_schema['properties']['bar']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
         $clone->bar = $bar;
 

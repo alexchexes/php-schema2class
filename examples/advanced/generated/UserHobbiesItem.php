@@ -35,18 +35,9 @@ class UserHobbiesItem
     /**
      * @param string $name
      * @return self
-     * @param bool $validate
      */
-    public function withName(string $name, bool $validate = true): self
+    public function withName(string $name): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($name, self::$_schema['properties']['name']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->name = $name;
 

@@ -13,6 +13,12 @@ use Helmich\Schema2Class\Generator\Property\Type\PrimitiveArrayProperty;
 use Helmich\Schema2Class\Generator\Property\Type\PropertyInterface;
 use Helmich\Schema2Class\Generator\Property\Type\ReferenceArrayProperty;
 use Helmich\Schema2Class\Generator\Property\Type\TypedArrayProperty;
+use Helmich\Schema2Class\Generator\Property\Type\UnionProperty;
+use Helmich\Schema2Class\Generator\Property\Type\NestedObjectProperty;
+use Helmich\Schema2Class\Generator\Property\Type\ReferenceProperty;
+use Helmich\Schema2Class\Generator\Property\Type\IntersectProperty;
+use Helmich\Schema2Class\Generator\Property\Type\DateProperty;
+use Helmich\Schema2Class\Generator\Property\Type\StringEnumProperty;
 use Laminas\Code\Generator\DocBlock\Tag\GenericTag;
 use Laminas\Code\Generator\DocBlock\Tag\ParamTag;
 use Laminas\Code\Generator\DocBlock\Tag\ReturnTag;
@@ -56,25 +62,7 @@ class SetterFactory
         $propAnnotatedType = $paramProperty->typeAnnotation();
         $propTypeHint = $paramProperty->typeHint();
 
-        // then we fully unwrap any other decorators to be able to see the real type
-        $base = $property;
-        while ($base instanceof PropertyDecoratorInterface) {
-            /** @var PropertyDecoratorInterface $base */
-            $base = $base->unwrap();
-        }
-
-        $isArray = $base instanceof PrimitiveArrayProperty
-            || $base instanceof ObjectArrayProperty
-            || $base instanceof ReferenceArrayProperty
-            || $base instanceof TypedArrayProperty;
-
-        $addValidation = true;
-
-        // If property is complex (except arrays), no validation needed
-        // TODO: this is not right; Validation is not generated in some cases where it should've been
-        if ($property->isComplex() && !$isArray) {
-            $addValidation = false;
-        }
+        $addValidation = $this->needsValidation($property);
 
         $docBlock = $this->buildDocBlock($property, $varName, $propAnnotatedType, $addValidation);
         $parameters = $this->buildParams($varName, $propTypeHint, $addValidation);
@@ -97,6 +85,100 @@ class SetterFactory
         }
 
         return $methodGen;
+    }
+
+    private function needsValidation(PropertyInterface $property): bool
+    {
+        $schema = $property->schema();
+        $base = $property;
+        while ($base instanceof PropertyDecoratorInterface) {
+            /** @var PropertyDecoratorInterface $base */
+            $base = $base->unwrap();
+        }
+
+        if ($base instanceof ObjectArrayProperty
+            || $base instanceof ReferenceArrayProperty
+            || $base instanceof TypedArrayProperty) {
+            return true;
+        }
+
+        if ($base instanceof PrimitiveArrayProperty) {
+            return isset($schema['items'])
+                || isset($schema['additionalProperties'])
+                || isset($schema['minItems'])
+                || isset($schema['maxItems'])
+                || isset($schema['uniqueItems']);
+        }
+
+        if ($base instanceof UnionProperty) {
+            $copy = $schema;
+            unset($copy['oneOf'], $copy['anyOf'], $copy['allOf']);
+            if ($this->schemaHasConstraints($copy)) {
+                return true;
+            }
+
+            foreach ($base->subProperties() as $sub) {
+                if ($this->needsValidation($sub)) {
+                    return true;
+                }
+            }
+
+            $typeHint = ($property instanceof OptionalPropertyDecorator && !$property->allowsNull())
+                ? $property->unwrap()->typeHint()
+                : $property->typeHint();
+
+            return !$this->request->isAtLeastPHP('8.0') || $typeHint === null;
+        }
+
+        if ($base instanceof NestedObjectProperty
+            || $base instanceof ReferenceProperty
+            || $base instanceof IntersectProperty
+            || $base instanceof DateProperty) {
+            return false;
+        }
+
+        if ($base instanceof StringEnumProperty) {
+            if (isset($schema['enum']) || isset($schema['const'])) {
+                if ($this->request->isAtLeastPHP('8.1') && !$this->request->getNoEnums()) {
+                    return false;
+                }
+                return true;
+            }
+        }
+
+        $keywords = [
+            'enum', 'const', 'pattern', 'format', 'minimum', 'maximum',
+            'exclusiveMinimum', 'exclusiveMaximum', 'multipleOf',
+            'minLength', 'maxLength',
+        ];
+        foreach ($keywords as $kw) {
+            if (isset($schema[$kw])) {
+                return true;
+            }
+        }
+
+        $typeHint = ($property instanceof OptionalPropertyDecorator && !$property->allowsNull())
+            ? $property->unwrap()->typeHint()
+            : $property->typeHint();
+
+        return $typeHint === null;
+    }
+
+    private function schemaHasConstraints(array $schema): bool
+    {
+        $keywords = [
+            'enum', 'const', 'pattern', 'format', 'minimum', 'maximum',
+            'exclusiveMinimum', 'exclusiveMaximum', 'multipleOf',
+            'minLength', 'maxLength', 'minItems', 'maxItems',
+            'uniqueItems', 'items', 'additionalProperties', 'contains',
+            'minProperties', 'maxProperties', 'required', 'properties',
+        ];
+        foreach ($keywords as $k) {
+            if (array_key_exists($k, $schema)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private function buildDocBlock(
