@@ -15,6 +15,18 @@ class StringProperty extends AbstractProperty
         return isset($schema["type"]) && $schema["type"] === "string";
     }
 
+    public function needsValidation(): bool
+    {
+        if (parent::needsValidation()) {
+            return true;
+        }
+
+        return \Helmich\Schema2Class\Util\SchemaKeywords::hasAny(
+            $this->schema,
+            \Helmich\Schema2Class\Util\SchemaKeywords::STRING_VALIDATION
+        );
+    }
+
     public function typeAnnotation(): string
     {
         return "string";

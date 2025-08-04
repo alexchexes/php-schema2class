@@ -29,6 +29,11 @@ class PrimitiveUnionEnumProperty extends AbstractProperty
         return true;
     }
 
+    public function needsValidation(): bool
+    {
+        return true;
+    }
+
     /**
      * Generates PHPDoc literal-union of all enum values
      */

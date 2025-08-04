@@ -38,7 +38,7 @@ class PrimitiveArrayPropertyTest extends TestCase
     {
         $underTest = new PrimitiveArrayProperty('myPropertyName', ['type' => 'array'], $this->generatorRequest);
 
-        assertFalse($underTest->isComplex());
+        assertFalse($underTest->needsValidation());
 
         $result = $underTest->convertInputToType();
 
@@ -86,6 +86,7 @@ EOCODE;
 
         assertSame('string[]', $underTest->typeAnnotation());
         assertSame('array', $underTest->typeHint());
+        assertTrue($underTest->needsValidation());
 
         $underTest = new PrimitiveArrayProperty(
             'myPropertyName', ['type' => 'integer'], $this->generatorRequest->withPHPVersion('5.6.0')

@@ -39,18 +39,9 @@ class MyClass
     /**
      * @param \Helmich\Schema2Class\Example\CustomerAddress[] $foo
      * @return self
-     * @param bool $validate
      */
-    public function withFoo(array $foo, bool $validate = true)
+    public function withFoo(array $foo)
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($foo, self::$_schema['properties']['foo']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->foo = $foo;
 

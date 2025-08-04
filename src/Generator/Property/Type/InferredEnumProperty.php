@@ -44,6 +44,11 @@ class InferredEnumProperty extends AbstractProperty
         return isset($schema['enum']) && !isset($schema['type']);
     }
 
+    public function needsValidation(): bool
+    {
+        return true;
+    }
+
     public function typeAnnotation(): string
     {
         $quote = static fn(string $s): string => "'" . str_replace("'", "\\'", $s) . "'";

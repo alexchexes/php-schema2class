@@ -58,7 +58,7 @@ class ObjectArrayPropertyTest extends TestCase
     {
         $underTest = new ObjectArrayProperty('myPropertyName', ['type' => 'array', 'items' => ['properties' => ['foo' => ['type' => 'string']]]], $this->generatorRequest);
 
-        assertTrue($underTest->isComplex());
+        assertFalse($underTest->needsValidation());
 
         $result = $underTest->convertInputToType();
 

@@ -34,8 +34,19 @@ class PrimitiveArrayProperty extends AbstractProperty
         $this->isAssociativeArray = isset($schema["additionalProperties"]) && is_array($schema["additionalProperties"]);
     }
 
-    public function isComplex(): bool
+    public function needsValidation(): bool
     {
+        if (parent::needsValidation()) {
+            return true;
+        }
+
+        if (\Helmich\Schema2Class\Util\SchemaKeywords::hasAny(
+            $this->schema,
+            \Helmich\Schema2Class\Util\SchemaKeywords::ARRAY_VALIDATION
+        )) {
+            return true;
+        }
+
         return false;
     }
 

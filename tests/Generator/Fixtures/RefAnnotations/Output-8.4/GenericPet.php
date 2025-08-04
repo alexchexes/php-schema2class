@@ -68,18 +68,9 @@ class GenericPet
     /**
      * @param bool|null $hasFur
      * @return self
-     * @param bool $validate
      */
-    public function withHasFur(?bool $hasFur, bool $validate = true): self
+    public function withHasFur(?bool $hasFur): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($hasFur, self::$_schema['properties']['hasFur']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->hasFur = $hasFur;
         $clone->_providedOptionals['hasFur'] = true;

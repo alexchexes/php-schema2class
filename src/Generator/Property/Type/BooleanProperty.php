@@ -20,6 +20,18 @@ class BooleanProperty extends AbstractProperty
         ;
     }
 
+    public function needsValidation(): bool
+    {
+        if (parent::needsValidation()) {
+            return true;
+        }
+
+        return \Helmich\Schema2Class\Util\SchemaKeywords::hasAny(
+            $this->schema,
+            \Helmich\Schema2Class\Util\SchemaKeywords::BOOLEAN_VALIDATION
+        );
+    }
+
     public function typeAnnotation(): string
     {
         if (isset($this->schema['enum']) && count($this->schema['enum']) === 1) {

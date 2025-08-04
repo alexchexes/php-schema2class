@@ -51,9 +51,12 @@ abstract class AbstractProperty implements PropertyInterface
         $this->nameForClass = StringUtils::safePascalCase($key);
     }
 
-    public function isComplex(): bool
+    public function needsValidation(): bool
     {
-        return false;
+        // On PHP versions before 7.0 we cannot rely on scalar type hints to
+        // enforce the schema, so validation is required by default. Concrete
+        // property implementations may refine this further.
+        return !$this->request->isAtLeastPHP('7.0');
     }
 
     public function schema(): array

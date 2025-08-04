@@ -19,6 +19,11 @@ class NullProperty extends AbstractProperty
         return ($schema['type'] ?? null) === 'null';
     }
 
+    public function needsValidation(): bool
+    {
+        return true;
+    }
+
     /* ---------------------------------------------------------------------
      * (2)  PHPDoc says simply   null
      * ------------------------------------------------------------------- */

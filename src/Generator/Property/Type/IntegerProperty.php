@@ -22,6 +22,18 @@ class IntegerProperty extends AbstractProperty
         ;
     }
 
+    public function needsValidation(): bool
+    {
+        if (parent::needsValidation()) {
+            return true;
+        }
+
+        return \Helmich\Schema2Class\Util\SchemaKeywords::hasAny(
+            $this->schema,
+            \Helmich\Schema2Class\Util\SchemaKeywords::NUMERIC_VALIDATION
+        );
+    }
+
     public function typeAnnotation(): string
     {
         return "int";

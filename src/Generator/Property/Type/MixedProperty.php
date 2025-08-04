@@ -13,6 +13,11 @@ class MixedProperty extends AbstractProperty
         return true;
     }
 
+    public function needsValidation(): bool
+    {
+        return false;
+    }
+
     public function typeAnnotation(): string
     {
         return "mixed";

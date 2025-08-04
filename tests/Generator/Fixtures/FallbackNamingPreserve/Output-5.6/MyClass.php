@@ -2044,9 +2044,18 @@ class MyClass
     /**
      * @param MyClassEnsureArgs1Alternative1|MyClassEnsureArgs1Alternative2|string $ensureArgs1
      * @return self
+     * @param bool $validate
      */
-    public function withEnsureArgs1($ensureArgs1)
+    public function withEnsureArgs1($ensureArgs1, bool $validate = true)
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($ensureArgs1, self::$_schema['properties']['ensureArgs1']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
         $clone->ensureArgs1 = $ensureArgs1;
 
@@ -2106,18 +2115,9 @@ class MyClass
     /**
      * @param MyClassEnsureArgs3Item[] $ensureArgs3
      * @return self
-     * @param bool $validate
      */
-    public function withEnsureArgs3(array $ensureArgs3, bool $validate = true)
+    public function withEnsureArgs3(array $ensureArgs3)
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($ensureArgs3, self::$_schema['properties']['ensureArgs3']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->ensureArgs3 = $ensureArgs3;
 

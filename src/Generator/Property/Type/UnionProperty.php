@@ -46,9 +46,17 @@ class UnionProperty extends AbstractProperty
         return isset($schema["oneOf"]) || isset($schema["anyOf"]);
     }
 
-    public function isComplex(): bool
+    public function needsValidation(): bool
     {
-        return true;
+        if (!$this->request->isAtLeastPHP('8.0')) {
+            return true;
+        }
+        foreach ($this->subProperties as $prop) {
+            if ($prop->needsValidation()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public function convertInputToTypeMatch(): string

@@ -60,18 +60,9 @@ class MyClass
     /**
      * @param MyClassFilesItem[] $files
      * @return self
-     * @param bool $validate
      */
-    public function withFiles(array $files, bool $validate = true)
+    public function withFiles(array $files)
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($files, self::$_schema['properties']['files']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->files = $files;
 

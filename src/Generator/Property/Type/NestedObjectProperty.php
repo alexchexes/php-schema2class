@@ -32,9 +32,9 @@ class NestedObjectProperty extends AbstractProperty
         return $isObject && $hasProperties && !$hasAdditionalProperties;
     }
 
-    public function isComplex(): bool
+    public function needsValidation(): bool
     {
-        return true;
+        return false;
     }
 
     /**

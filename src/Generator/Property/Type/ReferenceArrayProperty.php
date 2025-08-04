@@ -94,9 +94,13 @@ class ReferenceArrayProperty extends AbstractProperty
         return "array_map(fn({$typeHint} \$i): {$serializedTypeHint} => {$outputMappingExpr}, {$expr})";
     }
 
-    public function isComplex(): bool
+    public function needsValidation(): bool
     {
-        return true;
+        if ($this->refType instanceof \Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeEnum) {
+            return !$this->refType->usesNativeEnum();
+        }
+
+        return false;
     }
 
 }

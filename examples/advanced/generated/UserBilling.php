@@ -70,18 +70,9 @@ class UserBilling
     /**
      * @param string $vatID
      * @return self
-     * @param bool $validate
      */
-    public function withVatID(string $vatID, bool $validate = true): self
+    public function withVatID(string $vatID): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($vatID, self::$_schema['properties']['vatID']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->vatID = $vatID;
 
@@ -99,18 +90,9 @@ class UserBilling
     /**
      * @param int $creditLevel
      * @return self
-     * @param bool $validate
      */
-    public function withCreditLevel(int $creditLevel, bool $validate = true): self
+    public function withCreditLevel(int $creditLevel): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($creditLevel, self::$_schema['properties']['creditLevel']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->creditLevel = $creditLevel;
 
@@ -139,18 +121,9 @@ class UserBilling
     /**
      * @param int $foo
      * @return self
-     * @param bool $validate
      */
-    public function withFoo(int $foo, bool $validate = true): self
+    public function withFoo(int $foo): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($foo, self::$_schema['properties']['foo']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->foo = $foo;
 
@@ -179,18 +152,9 @@ class UserBilling
     /**
      * @param string $bar
      * @return self
-     * @param bool $validate
      */
-    public function withBar(string $bar, bool $validate = true): self
+    public function withBar(string $bar): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($bar, self::$_schema['properties']['bar']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->bar = $bar;
 

@@ -51,9 +51,9 @@ class TypedArrayProperty extends AbstractProperty
         return true;
     }
 
-    public function isComplex(): bool
+    public function needsValidation(): bool
     {
-        return true;
+        return false;
     }
 
     public function generateSubTypes(WriterInterface $writer, OutputInterface $output): void

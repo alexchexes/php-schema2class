@@ -19,6 +19,11 @@ class RawObjectProperty extends AbstractProperty
         return $isObject && !$hasProps && !$hasAdditional;
     }
 
+    public function needsValidation(): bool
+    {
+        return false;
+    }
+
     public function typeAnnotation(): string
     {
         return 'array|object';

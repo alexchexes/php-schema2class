@@ -20,6 +20,18 @@ class NumberProperty extends AbstractProperty
         return $schema["type"] === "number";
     }
 
+    public function needsValidation(): bool
+    {
+        if (!$this->request->isAtLeastPHP('8.0')) {
+            return true;
+        }
+
+        return \Helmich\Schema2Class\Util\SchemaKeywords::hasAny(
+            $this->schema,
+            \Helmich\Schema2Class\Util\SchemaKeywords::NUMERIC_VALIDATION
+        );
+    }
+
     public function typeAnnotation(): string
     {
         if (isset($this->schema['enum'])) {

@@ -81,18 +81,9 @@ class MyClass
 
     /**
      * @param string $foo
-     * @param bool $validate
      */
-    public function setFoo(string $foo, bool $validate = true): void
+    public function setFoo(string $foo): void
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($foo, self::$_schema['properties']['foo']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $this->foo = $foo;
     }
 
@@ -122,18 +113,9 @@ class MyClass
 
     /**
      * @param string|null $opt
-     * @param bool $validate
      */
-    public function setOpt(?string $opt, bool $validate = true): void
+    public function setOpt(?string $opt): void
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($opt, self::$_schema['properties']['opt']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $this->opt = $opt;
         $this->_providedOptionals['opt'] = true;
     }

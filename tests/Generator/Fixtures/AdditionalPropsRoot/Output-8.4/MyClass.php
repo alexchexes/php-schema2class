@@ -47,18 +47,9 @@ class MyClass
     /**
      * @param string $name
      * @return self
-     * @param bool $validate
      */
-    public function withName(string $name, bool $validate = true): self
+    public function withName(string $name): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($name, self::$_schema['properties']['name']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->name = $name;
 
@@ -87,18 +78,9 @@ class MyClass
     /**
      * @param array|object $params
      * @return self
-     * @param bool $validate
      */
-    public function withParams(array|object $params, bool $validate = true): self
+    public function withParams(array|object $params): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($params, self::$_schema['properties']['params']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->params = $params;
 

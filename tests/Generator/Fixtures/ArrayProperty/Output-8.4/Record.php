@@ -51,18 +51,9 @@ class Record
     /**
      * @param Phone[] $dataArray
      * @return self
-     * @param bool $validate
      */
-    public function withDataArray(array $dataArray, bool $validate = true): self
+    public function withDataArray(array $dataArray): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($dataArray, self::$_schema['properties']['dataArray']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->dataArray = $dataArray;
 
