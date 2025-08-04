@@ -579,7 +579,7 @@ class MyClass
     }
 
     /**
-     * @param string $nullFoo
+     * @param string|null $nullFoo
      * @return self
      * @param bool $validate
      */
@@ -608,7 +608,7 @@ class MyClass
     }
 
     /**
-     * @param int|float $nullBar
+     * @param int|float|null $nullBar
      * @return self
      * @param bool $validate
      */
@@ -637,7 +637,7 @@ class MyClass
     }
 
     /**
-     * @param int $nullBaz
+     * @param int|null $nullBaz
      * @return self
      * @param bool $validate
      */
@@ -666,7 +666,7 @@ class MyClass
     }
 
     /**
-     * @param bool $nullQux
+     * @param bool|null $nullQux
      * @return self
      * @param bool $validate
      */
@@ -695,7 +695,7 @@ class MyClass
     }
 
     /**
-     * @param MyClassNullQuux $nullQuux
+     * @param MyClassNullQuux|null $nullQuux
      * @return self
      */
     public function withNullQuux(?MyClassNullQuux $nullQuux): self
@@ -715,7 +715,7 @@ class MyClass
     }
 
     /**
-     * @param string[] $nullThud
+     * @param string[]|null $nullThud
      * @return self
      * @param bool $validate
      */
@@ -1017,11 +1017,11 @@ class MyClass
     }
 
     /**
-     * @param string $optNullFoo
+     * @param string|null $optNullFoo
      * @return self
      * @param bool $validate
      */
-    public function withOptNullFoo(string $optNullFoo, bool $validate = true): self
+    public function withOptNullFoo(?string $optNullFoo, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1059,11 +1059,11 @@ class MyClass
     }
 
     /**
-     * @param int|float $optNullBar
+     * @param int|float|null $optNullBar
      * @return self
      * @param bool $validate
      */
-    public function withOptNullBar(int|float $optNullBar, bool $validate = true): self
+    public function withOptNullBar(int|float|null $optNullBar, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1101,11 +1101,11 @@ class MyClass
     }
 
     /**
-     * @param int $optNullBaz
+     * @param int|null $optNullBaz
      * @return self
      * @param bool $validate
      */
-    public function withOptNullBaz(int $optNullBaz, bool $validate = true): self
+    public function withOptNullBaz(?int $optNullBaz, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1143,11 +1143,11 @@ class MyClass
     }
 
     /**
-     * @param bool $optNullQux
+     * @param bool|null $optNullQux
      * @return self
      * @param bool $validate
      */
-    public function withOptNullQux(bool $optNullQux, bool $validate = true): self
+    public function withOptNullQux(?bool $optNullQux, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -1185,7 +1185,7 @@ class MyClass
     }
 
     /**
-     * @param MyClassOptNullQuux $optNullQuux
+     * @param MyClassOptNullQuux|null $optNullQuux
      * @return self
      */
     public function withOptNullQuux(?MyClassOptNullQuux $optNullQuux): self
@@ -1218,7 +1218,7 @@ class MyClass
     }
 
     /**
-     * @param string[] $optNullThud
+     * @param string[]|null $optNullThud
      * @return self
      * @param bool $validate
      */
@@ -1388,10 +1388,10 @@ class MyClass
             $output['optNullQux'] = ($this->optNullQux !== null) ? ($this->optNullQux) : null;
         }
         if (isset($this->optNullQuux) || array_key_exists('optNullQuux', $this->_providedOptionals)) {
-            $output['optNullQuux'] = ($this->optNullQuux !== null) ? (($this->optNullQuux !== null) ? (($this->optNullQuux)->toArray()) : null) : null;
+            $output['optNullQuux'] = ($this->optNullQuux !== null) ? (($this->optNullQuux)->toArray()) : null;
         }
         if (isset($this->optNullThud) || array_key_exists('optNullThud', $this->_providedOptionals)) {
-            $output['optNullThud'] = ($this->optNullThud !== null) ? (($this->optNullThud !== null) ? ($this->optNullThud) : null) : null;
+            $output['optNullThud'] = ($this->optNullThud !== null) ? ($this->optNullThud) : null;
         }
 
         return $output;
@@ -1452,10 +1452,10 @@ class MyClass
             $output->{'optNullQux'} = ($this->optNullQux !== null) ? ($this->optNullQux) : null;
         }
         if (isset($this->optNullQuux) || array_key_exists('optNullQuux', $this->_providedOptionals)) {
-            $output->{'optNullQuux'} = ($this->optNullQuux !== null) ? (($this->optNullQuux !== null) ? (($this->optNullQuux)->toStdClass()) : null) : null;
+            $output->{'optNullQuux'} = ($this->optNullQuux !== null) ? (($this->optNullQuux)->toStdClass()) : null;
         }
         if (isset($this->optNullThud) || array_key_exists('optNullThud', $this->_providedOptionals)) {
-            $output->{'optNullThud'} = ($this->optNullThud !== null) ? (($this->optNullThud !== null) ? ($this->optNullThud) : null) : null;
+            $output->{'optNullThud'} = ($this->optNullThud !== null) ? ($this->optNullThud) : null;
         }
 
         return $output;

@@ -270,7 +270,7 @@ class MyClass
     }
 
     /**
-     * @param string|int|float|bool|array|object $thud
+     * @param string|int|float|bool|array|object|null $thud
      * @return self
      */
     public function withThud(bool|int|float|string|array|object|null $thud): self
@@ -414,10 +414,10 @@ class MyClass
     }
 
     /**
-     * @param string|int|float|bool|array|object $optThud
+     * @param string|int|float|bool|array|object|null $optThud
      * @return self
      */
-    public function withOptThud(bool|int|float|string|array|object $optThud): self
+    public function withOptThud(bool|int|float|string|array|object|null $optThud): self
     {
         $clone = clone $this;
         $clone->optThud = $optThud;
