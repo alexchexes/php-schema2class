@@ -22,6 +22,8 @@ use Laminas\Code\Generator\ParameterGenerator;
 
 class SetterFactory
 {
+    public const CLONE_VAR_NAME = 'clone';
+
     private bool $mutating;
     private bool $chainable;
 
@@ -173,16 +175,17 @@ class SetterFactory
                 $body .= "\n\nreturn \$this;";
             }
         } else {
+            $CLONE = self::CLONE_VAR_NAME;
             $body =
                 $validationBlock .
-                "\$clone = clone \$this;\n" .
-                "\$clone->$propName = \$$varName;\n";
+                "\${$CLONE} = clone \$this;\n" .
+                "\${$CLONE}->$propName = \$$varName;\n";
 
             if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
-                $body .= "\$clone->{$OPTIONALS}[{$propKey}] = true;\n";
+                $body .= "\${$CLONE}->{$OPTIONALS}[{$propKey}] = true;\n";
             }
 
-            $body .= "\nreturn \$clone;";
+            $body .= "\nreturn \${$CLONE};";
         }
 
         return $body;

@@ -5,9 +5,11 @@ namespace Helmich\Schema2Class\Generator\Class;
 
 use Helmich\Schema2Class\Generator\Class\Method\FromInputMethodFactory;
 use Helmich\Schema2Class\Generator\Class\Method\SerializeMethodFactory;
+use Helmich\Schema2Class\Generator\Class\Method\SetterFactory;
 use Helmich\Schema2Class\Generator\Class\PropertyNames;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\Collection\PropertyCollection;
+use Helmich\Schema2Class\Generator\Property\Type\PropertyInterface;
 use Helmich\Schema2Class\Util\ReservedNames;
 use Helmich\Schema2Class\Util\StringUtils;
 
@@ -39,15 +41,18 @@ class IdentifierResolver
     private function resolvePropertyNames(PropertyCollection $properties): void
     {
         // Seed the set of already taken names with PHP internals and our own helpers
-        $reserved = array_merge(['this'], PropertyNames::all());
+        $reserved = [
+            ...PropertyNames::all(),
+            'this'
+        ];
+
         $used = [];
         foreach ($reserved as $r) {
             $used[$r] = true;
         }
         
-        // Sort for deterministic results when resolving conflicts
-        $props = $properties->toArray();
-        usort($props, fn($a, $b) => [$a->propName(), $a->key()] <=> [$b->propName(), $b->key()]);
+        // Sort to get deterministic results
+        $props = self::sortByKey($properties);
 
         foreach ($props as $prop) {
             // Try to use the original property name
@@ -72,6 +77,11 @@ class IdentifierResolver
             if ($candidate !== $base) {
                 $prop->setName($candidate);
                 $prop->setVarName($prop->propName());
+
+                $methodName = $this->request->getOptions()->getPreservePropertyNames()
+                    ? StringUtils::pascalCasePreserveOuterUnderscores($prop->propName())
+                    : StringUtils::safePascalCase($prop->propName());
+                $prop->setMethodName($methodName);
             }
             $used[$prop->propName()] = true;
         }
@@ -81,22 +91,19 @@ class IdentifierResolver
     {
         // Collect all variable names that must not be used
         $reserved = array_merge(
-            ReservedNames::getBannedVarNames(),
+            ReservedNames::phpPredefined(),
             FromInputMethodFactory::allVarNames(),
-            [
-                'clone',
-                SerializeMethodFactory::DEFAULTS_ARG_NAME,
-                SerializeMethodFactory::OUTPUT_VAR_NAME,
-            ],
+            SerializeMethodFactory::allVarNames(),
+            [SetterFactory::CLONE_VAR_NAME],
         );
+
         $used = [];
         foreach ($reserved as $r) {
             $used[$r] = true;
         }
 
-        // Sort by var name for deterministic results
-        $props = $properties->toArray();
-        usort($props, fn($a, $b) => [$a->varName(), $a->key()] <=> [$b->varName(), $b->key()]);
+        // Sort to get deterministic results
+        $props = self::sortByKey($properties);
 
         foreach ($props as $prop) {
             // Start with the existing varName
@@ -124,34 +131,33 @@ class IdentifierResolver
         }
     }
 
-    private function resolveMethodNames(PropertyCollection $properties): void
+    /**
+     * Compares two property keys with `<=>` after moving leading underscore to the end.
+     * Used for sorting to make underscored properties go after non-underscored
+     */
+    static public function sortByKey(PropertyCollection $properties)
     {
-        // Update method name suffixes according to property names which might be renamed above
-        foreach ($properties as $prop) {
-            $propName = $prop->propName();
-            $methodName = $this->request->getOptions()->getPreservePropertyNames()
-                ? StringUtils::pascalCasePreserveOuterUnderscores($propName)
-                : StringUtils::safePascalCase($propName);
-            $prop->setMethodName($methodName);
-        }
-
-        // Determine what prefixes (get/with/set) are used based on configuration
-        $prefixes = $this->determinePrefixes();
-        // Reserve all banned method names (case-insensitive)
-        $reserved = [];
-        foreach (ReservedNames::getBannedMethodNames() as $n) {
-            $reserved[strtolower($n)] = true;
-        }
-
-        $used = $reserved;
-        // Sort by methodName
+        $move_ = fn(string $str) => preg_replace('/^(_*)(.+)/', '$2$1', $str);
         $props = $properties->toArray();
         usort(
             $props,
-            fn($a, $b) =>
-                [strtolower($a->methodName()), $a->methodName(), $a->key()]
-                <=> [strtolower($b->methodName()), $b->methodName(), $b->key()]
+            fn($propA, $propB) => $move_($propA->key()) <=> $move_($propB->key())
         );
+        return $props;
+    }
+
+    private function resolveMethodNames(PropertyCollection $properties): void
+    {
+        // we don't check for collisions with php magick methods or our build-in methods like toArray(),
+        // because we always prefix schema property names with one of our prefixes, thus collision is impossible
+
+        // Determine what prefixes (get/with/set) are used based on configuration
+        $prefixes = $this->determinePrefixes();
+
+        // Sort to get deterministic results
+        $props = self::sortByKey($properties);
+
+        $used = [];
 
         // Helper to check if any prefix + suffix combination is already taken
         $conflicts = function(string $suffix) use (&$used, $prefixes): bool {

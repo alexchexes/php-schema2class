@@ -488,7 +488,7 @@ class MyClass
     /**
      * @return string
      */
-    public function get__123Qwe()
+    public function get_123Qwe()
     {
         return $this->_123_qwe;
     }
@@ -498,7 +498,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function with__123Qwe($_123_qwe, bool $validate = true)
+    public function with_123Qwe($_123_qwe, bool $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -604,7 +604,7 @@ class MyClass
     /**
      * @return string
      */
-    public function get_Tildas()
+    public function getTildas()
     {
         return $this->_tildas;
     }
@@ -614,7 +614,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function with_Tildas($_tildas, bool $validate = true)
+    public function withTildas($_tildas, bool $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();

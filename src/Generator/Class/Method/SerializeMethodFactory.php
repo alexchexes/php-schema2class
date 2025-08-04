@@ -18,6 +18,14 @@ class SerializeMethodFactory
     public const DEFAULTS_ARG_NAME = 'includeDefaults';
     public const OUTPUT_VAR_NAME = 'output';
 
+    static public function allVarNames()
+    {
+        return [
+            self::DEFAULTS_ARG_NAME,
+            self::OUTPUT_VAR_NAME,
+        ];
+    }
+
     public function __construct(
         private GeneratorRequest $request,
         private PropertyCollection $schemaProperties,

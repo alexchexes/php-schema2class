@@ -81,7 +81,7 @@ class MyClass
     /**
      * @return string|null
      */
-    public function get_Outbound_1()
+    public function get_Outbound()
     {
         return $this->outbound;
     }
@@ -91,7 +91,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function with_Outbound_1($outbound, bool $validate = true)
+    public function with_Outbound($outbound, bool $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -110,7 +110,7 @@ class MyClass
     /**
      * @return self
      */
-    public function without_Outbound_1()
+    public function without_Outbound()
     {
         $clone = clone $this;
         unset($clone->outbound);
@@ -121,7 +121,7 @@ class MyClass
     /**
      * @return string|null
      */
-    public function get_Outbound()
+    public function get_Outbound_1()
     {
         return $this->_outbound;
     }
@@ -131,7 +131,7 @@ class MyClass
      * @return self
      * @param bool $validate
      */
-    public function with_Outbound($_outbound, bool $validate = true)
+    public function with_Outbound_1($_outbound, bool $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -150,7 +150,7 @@ class MyClass
     /**
      * @return self
      */
-    public function without_Outbound()
+    public function without_Outbound_1()
     {
         $clone = clone $this;
         unset($clone->_outbound);

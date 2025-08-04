@@ -32,6 +32,7 @@
     "_providedOptionals",
 
     "clone",
+    "__clone",
     "__construct",
     "__destruct",
     "__get",
@@ -44,7 +45,6 @@
     "__toString",
     "__invoke",
     "__debugInfo",
-    "__clone",
 
     "files",
     "this"
@@ -89,6 +89,7 @@
     "__providedOptionals": { "type": "string" },
 
     "clone": { "type": "string" },
+    "__clone": { "type": "string" },
     "__construct": { "type": "string" },
     "__destruct": { "type": "string" },
     "__get": { "type": "string" },
@@ -101,7 +102,6 @@
     "__toString": { "type": "string" },
     "__invoke": { "type": "string" },
     "__debugInfo": { "type": "string" },
-    "__clone": { "type": "string" },
 
     "files": { "type": "string" },
     "this": { "type": "string" },
