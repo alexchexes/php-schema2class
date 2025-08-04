@@ -44,11 +44,11 @@ class Fio
     }
 
     /**
-     * @param string $bar
+     * @param string|null $bar
      * @return self
      * @param bool $validate
      */
-    public function withBar(string $bar, bool $validate = true): self
+    public function withBar(?string $bar, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();

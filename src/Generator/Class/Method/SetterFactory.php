@@ -46,13 +46,12 @@ class SetterFactory
         $propName = $property->propName();
         $varName = $property->varName();
 
-        // We first unwrap only optional property decorator but leave other
-        // decorators in place to get the correct type hint / annotation
-        // TODO: FIXME This logic flawed: sometimes we generate setters with parameter types that are
-        // misaligned with PHPDoc type annotations of those params, and we also sometimes don't allow nulls where we should've.
-        $requiredProperty = ($property instanceof OptionalPropertyDecorator) ? $property->unwrap() : $property;
-        $propAnnotatedType = $requiredProperty->typeAnnotation();
-        $propTypeHint = $requiredProperty->typeHint();
+        $paramProperty = ($property instanceof OptionalPropertyDecorator && !$property->allowsNull())
+            ? $property->unwrap()
+            : $property;
+
+        $propAnnotatedType = $paramProperty->typeAnnotation();
+        $propTypeHint = $paramProperty->typeHint();
 
         // then we fully unwrap any other decorators to be able to see the real type
         $base = $property;
@@ -105,7 +104,7 @@ class SetterFactory
     ): DocBlockGenerator
     {
         $tags = [
-            new ParamTag($varName, [str_replace('|null', '', $propAnnotatedType)])
+            new ParamTag($varName, [$propAnnotatedType])
         ];
 
         if ($this->chainable) {

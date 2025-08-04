@@ -1148,11 +1148,11 @@ class MyClass
     }
 
     /**
-     * @param string $_materializeDefaults
+     * @param string|null $_materializeDefaults
      * @return self
      * @param bool $validate
      */
-    public function withMaterializeDefaults(string $_materializeDefaults, bool $validate = true): self
+    public function withMaterializeDefaults(?string $_materializeDefaults, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();

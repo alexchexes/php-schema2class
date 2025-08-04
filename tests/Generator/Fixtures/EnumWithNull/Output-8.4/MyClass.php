@@ -49,10 +49,10 @@ class MyClass
     }
 
     /**
-     * @param MyClassFoo $foo
+     * @param MyClassFoo|null $foo
      * @return self
      */
-    public function withFoo(MyClassFoo $foo): self
+    public function withFoo(?MyClassFoo $foo): self
     {
         $clone = clone $this;
         $clone->foo = $foo;

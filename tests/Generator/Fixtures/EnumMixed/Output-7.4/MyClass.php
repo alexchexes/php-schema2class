@@ -226,7 +226,7 @@ class MyClass
     }
 
     /**
-     * @param 'red'|'amber'|'green'|'42'|42|42.5|false $baz
+     * @param 'red'|'amber'|'green'|'42'|42|42.5|false|null $baz
      * @return self
      * @param bool $validate
      */
@@ -313,7 +313,7 @@ class MyClass
     }
 
     /**
-     * @param 'red'|'green' $nullable
+     * @param 'red'|'green'|null $nullable
      * @return self
      * @param bool $validate
      */
@@ -342,11 +342,11 @@ class MyClass
     }
 
     /**
-     * @param 'red'|'green' $optionalNullable
+     * @param 'red'|'green'|null $optionalNullable
      * @return self
      * @param bool $validate
      */
-    public function withOptionalNullable(string $optionalNullable, bool $validate = true): self
+    public function withOptionalNullable(?string $optionalNullable, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
