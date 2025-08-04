@@ -119,7 +119,7 @@ class MyClass
     }
 
     /**
-     * @param string $opt
+     * @param string|null $opt
      * @param bool $validate
      */
     public function setOpt($opt, bool $validate = true)

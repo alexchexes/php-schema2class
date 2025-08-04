@@ -46,6 +46,8 @@ Now it:
 - Handles URL-encoded references
 - Handles definition descriptions and/or top-level schema description and adds it to a class' PHPDoc
 - Generates a `toStdClass()` method returning an object representation of the instance
+- Fixes setters so that nullable properties can be set to `null` and optional
+  but non-nullable properties reject `null` values
 
 ### Better support for older PHP versions:
 

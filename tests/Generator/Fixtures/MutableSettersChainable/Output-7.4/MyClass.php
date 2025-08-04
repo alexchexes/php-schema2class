@@ -127,11 +127,11 @@ class MyClass
     }
 
     /**
-     * @param string $opt
+     * @param string|null $opt
      * @return self
      * @param bool $validate
      */
-    public function setOpt(string $opt, bool $validate = true): self
+    public function setOpt(?string $opt, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();

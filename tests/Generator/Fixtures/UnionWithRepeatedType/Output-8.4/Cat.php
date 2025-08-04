@@ -73,7 +73,7 @@ class Cat
     }
 
     /**
-     * @param bool|string|int|float $hasFur
+     * @param bool|null|string|int|float $hasFur
      * @return self
      */
     public function withHasFur(bool|int|float|string|null $hasFur): self

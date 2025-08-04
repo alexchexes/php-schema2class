@@ -299,11 +299,11 @@ class MyClass
     }
 
     /**
-     * @param string $baz
+     * @param string|null $baz
      * @return self
      * @param bool $validate
      */
-    public function withBaz(string $baz, bool $validate = true): self
+    public function withBaz(?string $baz, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -343,11 +343,11 @@ class MyClass
     }
 
     /**
-     * @param string $qux
+     * @param string|null $qux
      * @return self
      * @param bool $validate
      */
-    public function withQux(string $qux, bool $validate = true): self
+    public function withQux(?string $qux, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -387,7 +387,7 @@ class MyClass
     }
 
     /**
-     * @param string $quux
+     * @param string|null $quux
      * @return self
      * @param bool $validate
      */
@@ -491,7 +491,7 @@ class MyClass
     }
 
     /**
-     * @param MyClassGrox $grox
+     * @param MyClassGrox|null $grox
      * @return self
      */
     public function withGrox(?MyClassGrox $grox): self
@@ -526,7 +526,7 @@ class MyClass
     }
 
     /**
-     * @param MyClassGooks $gooks
+     * @param MyClassGooks|null $gooks
      * @return self
      */
     public function withGooks(?MyClassGooks $gooks): self

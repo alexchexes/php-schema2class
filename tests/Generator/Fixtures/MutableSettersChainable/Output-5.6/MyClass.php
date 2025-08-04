@@ -125,7 +125,7 @@ class MyClass
     }
 
     /**
-     * @param string $opt
+     * @param string|null $opt
      * @return self
      * @param bool $validate
      */
