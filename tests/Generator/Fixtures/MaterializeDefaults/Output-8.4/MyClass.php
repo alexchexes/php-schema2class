@@ -483,7 +483,7 @@ class MyClass
     }
 
     /**
-     * @param MyClassQuxObj $quxObj
+     * @param MyClassQuxObj|null $quxObj
      * @return self
      */
     public function withQuxObj(?MyClassQuxObj $quxObj): self
@@ -518,7 +518,7 @@ class MyClass
     }
 
     /**
-     * @param MyClassQuxObjNest $quxObjNest
+     * @param MyClassQuxObjNest|null $quxObjNest
      * @return self
      */
     public function withQuxObjNest(?MyClassQuxObjNest $quxObjNest): self
@@ -553,7 +553,7 @@ class MyClass
     }
 
     /**
-     * @param string[] $thudArray
+     * @param string[]|null $thudArray
      * @return self
      * @param bool $validate
      */
@@ -914,13 +914,13 @@ class MyClass
             $output['baz'] = ($this->baz)->toArray($includeDefaults);
         }
         if (isset($this->quxObj) || array_key_exists('quxObj', $this->_providedOptionals)) {
-            $output['quxObj'] = ($this->quxObj !== null) ? (($this->quxObj !== null) ? (($this->quxObj)->toArray($includeDefaults)) : null) : null;
+            $output['quxObj'] = ($this->quxObj !== null) ? (($this->quxObj)->toArray($includeDefaults)) : null;
         }
         if (isset($this->quxObjNest) || array_key_exists('quxObjNest', $this->_providedOptionals)) {
-            $output['quxObjNest'] = ($this->quxObjNest !== null) ? (($this->quxObjNest !== null) ? (($this->quxObjNest)->toArray($includeDefaults)) : null) : null;
+            $output['quxObjNest'] = ($this->quxObjNest !== null) ? (($this->quxObjNest)->toArray($includeDefaults)) : null;
         }
         if (isset($this->thudArray) || array_key_exists('thudArray', $this->_providedOptionals)) {
-            $output['thudArray'] = ($this->thudArray !== null) ? (($this->thudArray !== null) ? ($this->thudArray) : null) : null;
+            $output['thudArray'] = ($this->thudArray !== null) ? ($this->thudArray) : null;
         }
         if (isset($this->xyyz)) {
             $output['xyyz'] = match (true) {
@@ -991,13 +991,13 @@ class MyClass
             $output->{'baz'} = ($this->baz)->toStdClass($includeDefaults);
         }
         if (isset($this->quxObj) || array_key_exists('quxObj', $this->_providedOptionals)) {
-            $output->{'quxObj'} = ($this->quxObj !== null) ? (($this->quxObj !== null) ? (($this->quxObj)->toStdClass($includeDefaults)) : null) : null;
+            $output->{'quxObj'} = ($this->quxObj !== null) ? (($this->quxObj)->toStdClass($includeDefaults)) : null;
         }
         if (isset($this->quxObjNest) || array_key_exists('quxObjNest', $this->_providedOptionals)) {
-            $output->{'quxObjNest'} = ($this->quxObjNest !== null) ? (($this->quxObjNest !== null) ? (($this->quxObjNest)->toStdClass($includeDefaults)) : null) : null;
+            $output->{'quxObjNest'} = ($this->quxObjNest !== null) ? (($this->quxObjNest)->toStdClass($includeDefaults)) : null;
         }
         if (isset($this->thudArray) || array_key_exists('thudArray', $this->_providedOptionals)) {
-            $output->{'thudArray'} = ($this->thudArray !== null) ? (($this->thudArray !== null) ? ($this->thudArray) : null) : null;
+            $output->{'thudArray'} = ($this->thudArray !== null) ? ($this->thudArray) : null;
         }
         if (isset($this->xyyz)) {
             $output->{'xyyz'} = match (true) {

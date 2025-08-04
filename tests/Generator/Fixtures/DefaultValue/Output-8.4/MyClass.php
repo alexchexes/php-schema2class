@@ -249,11 +249,11 @@ class MyClass
     }
 
     /**
-     * @param int $baz
+     * @param int|null $baz
      * @return self
      * @param bool $validate
      */
-    public function withBaz(int $baz, bool $validate = true): self
+    public function withBaz(?int $baz, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();

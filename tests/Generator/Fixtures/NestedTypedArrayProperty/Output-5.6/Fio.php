@@ -42,7 +42,7 @@ class Fio
     }
 
     /**
-     * @param string $bar
+     * @param string|null $bar
      * @return self
      * @param bool $validate
      */

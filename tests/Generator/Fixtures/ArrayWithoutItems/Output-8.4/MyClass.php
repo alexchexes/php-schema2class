@@ -207,7 +207,7 @@ class MyClass
     }
 
     /**
-     * @param array $c
+     * @param array|null $c
      * @return self
      * @param bool $validate
      */
@@ -236,7 +236,7 @@ class MyClass
     }
 
     /**
-     * @param array|string $d
+     * @param array|string|null $d
      * @return self
      */
     public function withD(string|array|null $d): self
@@ -327,7 +327,7 @@ class MyClass
     }
 
     /**
-     * @param array $g
+     * @param array|null $g
      * @return self
      * @param bool $validate
      */
@@ -369,10 +369,10 @@ class MyClass
     }
 
     /**
-     * @param array|string $h
+     * @param array|string|null $h
      * @return self
      */
-    public function withH(string|array $h): self
+    public function withH(string|array|null $h): self
     {
         $clone = clone $this;
         $clone->h = $h;
@@ -402,10 +402,10 @@ class MyClass
     }
 
     /**
-     * @param array|string|object $i
+     * @param array|string|object|null $i
      * @return self
      */
-    public function withI(string|array|object $i): self
+    public function withI(string|array|object|null $i): self
     {
         $clone = clone $this;
         $clone->i = $i;
@@ -520,7 +520,7 @@ class MyClass
             };
         }
         if (isset($this->g) || array_key_exists('g', $this->_providedOptionals)) {
-            $output['g'] = ($this->g !== null) ? (($this->g !== null) ? ($this->g) : null) : null;
+            $output['g'] = ($this->g !== null) ? ($this->g) : null;
         }
         if (isset($this->h) || array_key_exists('h', $this->_providedOptionals)) {
             $output['h'] = ($this->h !== null) ? (match (true) {
@@ -569,7 +569,7 @@ class MyClass
             };
         }
         if (isset($this->g) || array_key_exists('g', $this->_providedOptionals)) {
-            $output->{'g'} = ($this->g !== null) ? (($this->g !== null) ? ($this->g) : null) : null;
+            $output->{'g'} = ($this->g !== null) ? ($this->g) : null;
         }
         if (isset($this->h) || array_key_exists('h', $this->_providedOptionals)) {
             $output->{'h'} = ($this->h !== null) ? (match (true) {

@@ -26,6 +26,53 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator
         return $this->isOptionalNullable;
     }
 
+    public function allowsNull(): bool
+    {
+        return $this->isOptionalNullable || $this->inner->allowsNull();
+    }
+
+    public function typeAssertionExpr(string $expr): string
+    {
+        return $this->allowsNull()
+            ? parent::typeAssertionExpr($expr)
+            : $this->inner->typeAssertionExpr($expr);
+    }
+
+    public function inputAssertionExpr(string $expr): string
+    {
+        return $this->allowsNull()
+            ? parent::inputAssertionExpr($expr)
+            : $this->inner->inputAssertionExpr($expr);
+    }
+
+    public function inputMappingExpr(string $expr, bool $asserted = false): string
+    {
+        return $this->allowsNull()
+            ? parent::inputMappingExpr($expr, $asserted)
+            : $this->inner->inputMappingExpr($expr, $asserted);
+    }
+
+    public function outputMappingExpr(string $expr): string
+    {
+        return $this->allowsNull()
+            ? parent::outputMappingExpr($expr)
+            : $this->inner->outputMappingExpr($expr);
+    }
+
+    public function outputMappingExprStdClass(string $expr): string
+    {
+        return $this->allowsNull()
+            ? parent::outputMappingExprStdClass($expr)
+            : $this->inner->outputMappingExprStdClass($expr);
+    }
+
+    public function cloneExpr(string $expr): string
+    {
+        return $this->allowsNull()
+            ? parent::cloneExpr($expr)
+            : $this->inner->cloneExpr($expr);
+    }
+
     public function generateIssetCheckExpr(string $inputVarName): string
     {
         $keyStr = $this->keyStr();
