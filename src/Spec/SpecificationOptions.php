@@ -11,7 +11,7 @@ class SpecificationOptions
      *
      * @var array
      */
-    private static array $schema = ['additionalProperties' => false, 'properties' => ['targetDirectory' => ['type' => 'string'], 'targetNamespace' => ['type' => 'string'], 'targetPHPVersion' => ['oneOf' => [['type' => 'integer', 'enum' => [5, 7, 8]], ['type' => 'string']]], 'cleanTargetDirectory' => ['type' => 'boolean'], 'disableStrictTypes' => ['type' => 'boolean'], 'inlineAllofReferences' => ['type' => 'boolean'], 'newValidatorExpr' => ['type' => 'string'], 'arrayToObjectExpr' => ['type' => 'string'], 'preservePropertyNames' => ['type' => 'boolean'], 'noGetters' => ['type' => 'boolean'], 'noSetters' => ['type' => 'boolean'], 'mutableSetters' => ['oneOf' => [['type' => 'boolean', 'enum' => [true]], ['type' => 'string', 'enum' => ['chainable']]]], 'noSchemaMetadata' => ['type' => 'boolean'], 'singleLineSchema' => ['type' => 'boolean'], 'noEnums' => ['type' => 'boolean']]];
+    private static array $_schema = ['additionalProperties' => false, 'properties' => ['targetDirectory' => ['type' => 'string'], 'targetNamespace' => ['type' => 'string'], 'targetPHPVersion' => ['oneOf' => [['type' => 'integer', 'enum' => [5, 7, 8]], ['type' => 'string']]], 'cleanTargetDirectory' => ['type' => 'boolean'], 'disableStrictTypes' => ['type' => 'boolean'], 'inlineAllofReferences' => ['type' => 'boolean'], 'newValidatorExpr' => ['type' => 'string'], 'arrayToObjectExpr' => ['type' => 'string'], 'preservePropertyNames' => ['type' => 'boolean'], 'noGetters' => ['type' => 'boolean'], 'noSetters' => ['type' => 'boolean'], 'mutableSetters' => ['oneOf' => [['type' => 'boolean', 'enum' => [true]], ['type' => 'string', 'enum' => ['chainable']]]], 'noSchemaMetadata' => ['type' => 'boolean'], 'singleLineSchema' => ['type' => 'boolean'], 'noEnums' => ['type' => 'boolean']]];
 
     /**
      * @var string|null
@@ -141,7 +141,7 @@ class SpecificationOptions
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($targetDirectory, self::$schema['properties']['targetDirectory']);
+            $validator->validate($targetDirectory, self::$_schema['properties']['targetDirectory']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -181,7 +181,7 @@ class SpecificationOptions
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($targetNamespace, self::$schema['properties']['targetNamespace']);
+            $validator->validate($targetNamespace, self::$_schema['properties']['targetNamespace']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -256,7 +256,7 @@ class SpecificationOptions
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($cleanTargetDirectory, self::$schema['properties']['cleanTargetDirectory']);
+            $validator->validate($cleanTargetDirectory, self::$_schema['properties']['cleanTargetDirectory']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -296,7 +296,7 @@ class SpecificationOptions
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($disableStrictTypes, self::$schema['properties']['disableStrictTypes']);
+            $validator->validate($disableStrictTypes, self::$_schema['properties']['disableStrictTypes']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -336,7 +336,7 @@ class SpecificationOptions
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($inlineAllofReferences, self::$schema['properties']['inlineAllofReferences']);
+            $validator->validate($inlineAllofReferences, self::$_schema['properties']['inlineAllofReferences']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -380,7 +380,7 @@ class SpecificationOptions
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($newValidatorExpr, self::$schema['properties']['newValidatorExpr']);
+            $validator->validate($newValidatorExpr, self::$_schema['properties']['newValidatorExpr']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -423,7 +423,7 @@ class SpecificationOptions
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($arrayToObjectExpr, self::$schema['properties']['arrayToObjectExpr']);
+            $validator->validate($arrayToObjectExpr, self::$_schema['properties']['arrayToObjectExpr']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -466,7 +466,7 @@ class SpecificationOptions
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($preservePropertyNames, self::$schema['properties']['preservePropertyNames']);
+            $validator->validate($preservePropertyNames, self::$_schema['properties']['preservePropertyNames']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -509,7 +509,7 @@ class SpecificationOptions
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($noGetters, self::$schema['properties']['noGetters']);
+            $validator->validate($noGetters, self::$_schema['properties']['noGetters']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -552,7 +552,7 @@ class SpecificationOptions
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($noSetters, self::$schema['properties']['noSetters']);
+            $validator->validate($noSetters, self::$_schema['properties']['noSetters']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -632,7 +632,7 @@ class SpecificationOptions
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($noSchemaMetadata, self::$schema['properties']['noSchemaMetadata']);
+            $validator->validate($noSchemaMetadata, self::$_schema['properties']['noSchemaMetadata']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -675,7 +675,7 @@ class SpecificationOptions
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($singleLineSchema, self::$schema['properties']['singleLineSchema']);
+            $validator->validate($singleLineSchema, self::$_schema['properties']['singleLineSchema']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -719,7 +719,7 @@ class SpecificationOptions
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($noEnums, self::$schema['properties']['noEnums']);
+            $validator->validate($noEnums, self::$_schema['properties']['noEnums']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -944,7 +944,7 @@ class SpecificationOptions
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {
