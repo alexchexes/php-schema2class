@@ -11,7 +11,7 @@ class User
      *
      * @var array
      */
-    private static array $schema = ['type' => 'object', 'required' => ['name', 'status'], 'properties' => ['name' => ['type' => 'string'], 'address' => ['$ref' => '#/definitions/Address'], 'status' => ['anyOf' => [['enum' => ['customer', 'manager'], 'type' => 'string'], ['type' => 'null']]]], 'definitions' => ['Address' => ['type' => 'object', 'properties' => ['street' => ['type' => 'string'], 'house' => ['type' => 'integer']]]]];
+    private static array $_schema = ['type' => 'object', 'required' => ['name', 'status'], 'properties' => ['name' => ['type' => 'string'], 'address' => ['$ref' => '#/definitions/Address'], 'status' => ['anyOf' => [['enum' => ['customer', 'manager'], 'type' => 'string'], ['type' => 'null']]]], 'definitions' => ['Address' => ['type' => 'object', 'properties' => ['street' => ['type' => 'string'], 'house' => ['type' => 'integer']]]]];
 
     /**
      * Name of the user - required field.
@@ -65,7 +65,7 @@ class User
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($name, self::$schema['properties']['name']);
+            $validator->validate($name, self::$_schema['properties']['name']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -123,7 +123,7 @@ class User
     }
 
     /**
-     * @param 'customer'|'manager' $status
+     * @param 'customer'|'manager'|null $status
      * @return self
      * @param bool $validate
      */
@@ -131,7 +131,7 @@ class User
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($status, self::$schema['properties']['status']);
+            $validator->validate($status, self::$_schema['properties']['status']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -219,7 +219,7 @@ class User
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {

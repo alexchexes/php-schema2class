@@ -11,7 +11,7 @@ class Address
      *
      * @var array
      */
-    private static array $schema = ['type' => 'object', 'properties' => ['street' => ['type' => 'string'], 'house' => ['type' => 'integer']]];
+    private static array $_schema = ['type' => 'object', 'properties' => ['street' => ['type' => 'string'], 'house' => ['type' => 'integer']]];
 
     /**
      * @var string|null
@@ -40,7 +40,7 @@ class Address
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($street, self::$schema['properties']['street']);
+            $validator->validate($street, self::$_schema['properties']['street']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -80,7 +80,7 @@ class Address
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($house, self::$schema['properties']['house']);
+            $validator->validate($house, self::$_schema['properties']['house']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -181,7 +181,7 @@ class Address
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {
