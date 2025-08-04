@@ -5,7 +5,6 @@ namespace Helmich\Schema2Class\Generator\Class\Method;
 
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\Collection\PropertyCollection;
-use Helmich\Schema2Class\Util\ReservedNames;
 use Laminas\Code\Generator\MethodGenerator;
 
 /**
@@ -47,57 +46,6 @@ class ClassMethodSuiteFactory
 
         $methodGenerators = array_values(array_filter($methodGenerators));
 
-        // check whether each name is unique and rename if necessary
-        $this->ensureUniqueMethodNames($methodGenerators);
-
         return $methodGenerators;
-    }
-
-    /**
-     * Iterates provided `MethodGenerator` objects and changes their names if needed
-     * @param MethodGenerator[] $methodGenerators 
-     */
-    private function ensureUniqueMethodNames(array $methodGenerators): void
-    {
-        $reservedMethodNames = ReservedNames::getBannedMethodNames();
-
-        $reserved = array_map('strtolower', $reservedMethodNames);
-        $used = [];
-
-        foreach ($methodGenerators as $method) {
-            $name   = $method->getName();
-            $lcName = strtolower($name);
-
-            if (!in_array($lcName, $used, true) && in_array($lcName, $reserved, true)) {
-                $used[] = $lcName;
-                continue;
-            }
-
-            $candidate = $name;
-            $prefix    = '';
-            $base      = $name;
-
-            if (preg_match('/^(set|get|without|with)(.+)$/', $name, $m)) {
-                $prefix = $m[1];
-                $base   = $m[2];
-            }
-
-            $i = 1;
-            while (in_array(strtolower($candidate), $used, true) || in_array(strtolower($candidate), $reserved, true)) {
-                if ($prefix !== '') {
-                    $suffix   = $i > 1 ? $base . '_' . ($i - 1) : $base;
-                    $candidate = $prefix . '_' . $suffix;
-                } else {
-                    $candidate = $name . '_' . $i;
-                }
-                $i++;
-            }
-
-            if ($candidate !== $name) {
-                $method->setName($candidate);
-            }
-
-            $used[] = strtolower($candidate);
-        }
     }
 }

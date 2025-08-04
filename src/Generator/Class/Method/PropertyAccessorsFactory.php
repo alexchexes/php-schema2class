@@ -6,8 +6,6 @@ namespace Helmich\Schema2Class\Generator\Class\Method;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\Collection\PropertyCollection;
 use Helmich\Schema2Class\Generator\Property\Collection\PropertyCollectionFilterFactory;
-use Helmich\Schema2Class\Generator\Property\Type\PropertyInterface;
-use Helmich\Schema2Class\Util\StringUtils;
 use Laminas\Code\Generator\MethodGenerator;
 
 /** 
@@ -35,10 +33,9 @@ class PropertyAccessorsFactory
         $getterFactory = new GetterFactory($this->request);
         $setterFactory = new SetterFactory($this->request);
         $unsetterFactory = new UnsetterFactory($this->request);
-        
+
         foreach ($filteredProperties as $property) {
-            // TODO: move pascal-casing logic into a method in PropertyInterface?
-            $pascalName = $this->pascalName($property);
+            $pascalName = $property->methodName();
 
             $methodsGenerators[] = $getterFactory->generateGetter($property, $pascalName);
             $methodsGenerators[] = $setterFactory->generateSetter($property, $pascalName);
@@ -46,13 +43,5 @@ class PropertyAccessorsFactory
         }
 
         return array_values(array_filter($methodsGenerators));
-    }
-
-    private function pascalName(PropertyInterface $property): string
-    {
-        $propName = $property->name();
-        return $this->request->getOptions()->getPreservePropertyNames()
-            ? StringUtils::pascalCasePreserveOuterUnderscores($propName)
-            : StringUtils::safePascalCase($propName);
     }
 }

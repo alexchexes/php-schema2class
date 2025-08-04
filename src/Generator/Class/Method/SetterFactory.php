@@ -42,6 +42,7 @@ class SetterFactory
         $prefix = $this->mutating ? 'set' : 'with';
         $methodName = $prefix . $pascalName;
         $propName = $property->name();
+        $paramName = $property->varName();
 
         // We first unwrap only optional property decorator but leave other
         // decorators in place to get the correct type hint / annotation
@@ -71,9 +72,9 @@ class SetterFactory
             $addValidation = false;
         }
 
-        $docBlock = $this->buildDocBlock($property, $propName, $propAnnotatedType, $addValidation);
-        $parameters = $this->buildParams($propName, $propTypeHint, $addValidation);
-        $body = $this->generateBody($property, $propName, $addValidation);
+        $docBlock = $this->buildDocBlock($property, $paramName, $propAnnotatedType, $addValidation);
+        $parameters = $this->buildParams($paramName, $propTypeHint, $addValidation);
+        $body = $this->generateBody($property, $propName, $paramName, $addValidation);
 
         $methodGen = new MethodGenerator(
             name: $methodName,
@@ -96,13 +97,13 @@ class SetterFactory
 
     private function buildDocBlock(
         PropertyInterface $property,
-        string $propName,
+        string $paramName,
         string $propAnnotatedType,
         bool $addValidation,
     ): DocBlockGenerator
     {
         $tags = [
-            new ParamTag($propName, [str_replace('|null', '', $propAnnotatedType)])
+            new ParamTag($paramName, [str_replace('|null', '', $propAnnotatedType)])
         ];
 
         if ($this->chainable) {
@@ -125,9 +126,9 @@ class SetterFactory
         return $docBlock;
     }
 
-    private function buildParams(string $propName, ?string $propTypeHint, bool $addValidation): array
+    private function buildParams(string $paramName, ?string $propTypeHint, bool $addValidation): array
     {
-        $parameters = [new ParameterGenerator($propName, $propTypeHint)];
+        $parameters = [new ParameterGenerator($paramName, $propTypeHint)];
         if ($addValidation) {
             $validateParam = new ParameterGenerator('validate', 'bool');
             $validateParam->setDefaultValue(true);
@@ -136,7 +137,7 @@ class SetterFactory
         return $parameters;
     }
 
-    private function generateBody(PropertyInterface $property, string $propName, bool $addValidation): string
+    private function generateBody(PropertyInterface $property, string $propName, string $paramName, bool $addValidation): string
     {
         $propKey = var_export($property->key(), true);
         
@@ -149,7 +150,7 @@ class SetterFactory
                 <<<PHP
                 if (\$validate) {
                     \$validator = {$newValidatorExpr};
-                    \$validator->validate(\$$propName, self::\${$SCHEMA}['properties'][{$propKey}]);
+                    \$validator->validate(\$$paramName, self::\${$SCHEMA}['properties'][{$propKey}]);
                     if (!\$validator->isValid()) {
                         throw new \\InvalidArgumentException(\$validator->getErrors()[0]['message']);
                     }
@@ -162,7 +163,7 @@ class SetterFactory
         if ($this->mutating) {
             $body =
                 $validationBlock .
-                "\$this->{$propName} = \$$propName;";
+                "\$this->{$propName} = \$$paramName;";
 
             if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
                 $body .= "\n\$this->{$OPTIONALS}[{$propKey}] = true;";
@@ -175,7 +176,7 @@ class SetterFactory
             $body =
                 $validationBlock .
                 "\$clone = clone \$this;\n" .
-                "\$clone->$propName = \$$propName;\n";
+                "\$clone->$propName = \$$paramName;\n";
 
             if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
                 $body .= "\$clone->{$OPTIONALS}[{$propKey}] = true;\n";

@@ -65,18 +65,18 @@ class ClassGeneratorTest extends TestCase
         $files = $writer->getWrittenFiles();
         $code  = current($files);
 
+        $this->assertStringContainsString('function getFooBar2()', $code);
+        $this->assertStringContainsString('function get_FooBar()', $code);
         $this->assertStringContainsString('function getFooBar()', $code);
         $this->assertStringContainsString('function getFooBar1()', $code);
-        $this->assertStringContainsString('function getFooBar2()', $code);
-        $this->assertStringContainsString('function getFooBar3()', $code);
+        $this->assertStringContainsString('function withFooBar2(', $code);
+        $this->assertStringContainsString('function with_FooBar(', $code);
         $this->assertStringContainsString('function withFooBar(', $code);
         $this->assertStringContainsString('function withFooBar1(', $code);
-        $this->assertStringContainsString('function withFooBar2(', $code);
-        $this->assertStringContainsString('function withFooBar3(', $code);
+        $this->assertStringContainsString('function withoutFooBar2(', $code);
+        $this->assertStringContainsString('function without_FooBar(', $code);
         $this->assertStringContainsString('function withoutFooBar(', $code);
         $this->assertStringContainsString('function withoutFooBar1(', $code);
-        $this->assertStringContainsString('function withoutFooBar2(', $code);
-        $this->assertStringContainsString('function withoutFooBar3(', $code);
     }
 
     public function testGeneratedCodeMatchesFixture(): void

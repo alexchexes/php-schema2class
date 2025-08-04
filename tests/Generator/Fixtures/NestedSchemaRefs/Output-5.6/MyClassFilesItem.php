@@ -48,22 +48,22 @@ class MyClassFilesItem
     }
 
     /**
-     * @param string $input
+     * @param string $_input
      * @return self
      * @param bool $validate
      */
-    public function withInput($input, bool $validate = true)
+    public function withInput($_input, bool $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($input, self::$_schema['properties']['input']);
+            $validator->validate($_input, self::$_schema['properties']['input']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
         }
 
         $clone = clone $this;
-        $clone->input = $input;
+        $clone->input = $_input;
 
         return $clone;
     }
