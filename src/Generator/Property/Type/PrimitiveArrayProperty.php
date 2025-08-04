@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class\Generator\Property\Type;
 
 use Helmich\Schema2Class\Generator\GeneratorRequest;
+use Helmich\Schema2Class\Util\SchemaKeywords;
 use Helmich\Schema2Class\Util\SchemaUtils;
 use Helmich\Schema2Class\Writer\WriterInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -32,11 +33,6 @@ class PrimitiveArrayProperty extends AbstractProperty
         parent::__construct($key, $schema, $generatorRequest);
 
         $this->isAssociativeArray = isset($schema["additionalProperties"]) && is_array($schema["additionalProperties"]);
-    }
-
-    public function isComplex(): bool
-    {
-        return false;
     }
 
     public function generateSubTypes(WriterInterface $writer, OutputInterface $output): void
@@ -76,5 +72,13 @@ class PrimitiveArrayProperty extends AbstractProperty
         return parent::inputMappingExpr($expr, $asserted);
     }
 
-
+    public function needsValidation(): bool
+    {
+        if (SchemaKeywords::has($this->schema, SchemaKeywords::ARRAY_VALIDATION)) {
+            return true;
+        }
+        $hasItems = isset($this->schema['items']) && is_array($this->schema['items']) && count($this->schema['items']) > 0;
+        $hasAdditional = isset($this->schema['additionalProperties']) && is_array($this->schema['additionalProperties']) && count($this->schema['additionalProperties']) > 0;
+        return $hasItems || $hasAdditional;
+    }
 }

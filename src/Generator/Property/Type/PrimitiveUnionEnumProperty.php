@@ -103,4 +103,10 @@ class PrimitiveUnionEnumProperty extends AbstractProperty
 
         return new PropertyValueGenerator($value);   // auto-detect ⇒ `null` stays null
     }
+
+    public function needsValidation(): bool
+    {
+        // Enumeration of literal values cannot be enforced via type hints.
+        return true;
+    }
 }

@@ -35,18 +35,9 @@ class OptionsObject
     /**
      * @param string $_output
      * @return self
-     * @param bool $validate
      */
-    public function withOutput(string $_output, bool $validate = true): self
+    public function withOutput(string $_output): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($_output, self::$_schema['properties']['output']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->output = $_output;
 

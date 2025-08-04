@@ -46,18 +46,9 @@ class MyClass
     /**
      * @param string $schema
      * @return self
-     * @param bool $validate
      */
-    public function withSchema(string $schema, bool $validate = true): self
+    public function withSchema(string $schema): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($schema, self::$_schema['properties']['schema']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->schema = $schema;
 

@@ -16,11 +16,6 @@ class DateProperty extends AbstractProperty
             && $schema["format"] === "date-time";
     }
 
-    public function isComplex(): bool
-    {
-        return true;
-    }
-
     public function typeAnnotation(): string
     {
         return "\\DateTime";
@@ -55,4 +50,9 @@ class DateProperty extends AbstractProperty
         return "clone {$expr}";
     }
 
+    public function needsValidation(): bool
+    {
+        // DateTime objects are validated via their type hint.
+        return false;
+    }
 }

@@ -32,11 +32,6 @@ class NestedObjectProperty extends AbstractProperty
         return $isObject && $hasProperties && !$hasAdditionalProperties;
     }
 
-    public function isComplex(): bool
-    {
-        return true;
-    }
-
     /**
      * @throws GeneratorException
      */
@@ -108,4 +103,9 @@ class NestedObjectProperty extends AbstractProperty
         return $this->request->getTargetClass() . $this->nameForClass;
     }
 
+    public function needsValidation(): bool
+    {
+        // Generated sub type has its own validation and PHP enforces the type.
+        return false;
+    }
 }

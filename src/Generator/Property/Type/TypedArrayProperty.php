@@ -51,11 +51,6 @@ class TypedArrayProperty extends AbstractProperty
         return true;
     }
 
-    public function isComplex(): bool
-    {
-        return true;
-    }
-
     public function generateSubTypes(WriterInterface $writer, OutputInterface $output): void
     {
         $this->itemType->generateSubTypes($writer, $output);
@@ -127,5 +122,11 @@ class TypedArrayProperty extends AbstractProperty
             return "array_map(fn(\$i) => {$map}, {$expr})";
         }
         return "array_map(function(\$i) { return {$map}; }, {$expr})";
+    }
+
+    public function needsValidation(): bool
+    {
+        // Typed arrays rely on run-time checks for each element.
+        return true;
     }
 }

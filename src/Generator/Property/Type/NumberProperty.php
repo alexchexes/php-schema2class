@@ -5,6 +5,7 @@ namespace Helmich\Schema2Class\Generator\Property\Type;
 
 use Composer\Semver\Semver;
 use Helmich\Schema2Class\Util\EnumUtils;
+use Helmich\Schema2Class\Util\SchemaKeywords;
 
 /** 
  * Represents schema property of type "number".
@@ -60,6 +61,14 @@ class NumberProperty extends AbstractProperty
         }
 
         return "(str_contains((string){$expr}, '.') ? (float){$expr} : (int){$expr})";
+    }
+
+    public function needsValidation(): bool
+    {
+        if (!$this->request->isAtLeastPHP('8.0')) {
+            return true;
+        }
+        return SchemaKeywords::has($this->schema, SchemaKeywords::NUMERIC_VALIDATION);
     }
 
 }

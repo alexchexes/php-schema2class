@@ -85,18 +85,9 @@ class MyClass
     /**
      * @param mixed[] $params
      * @return self
-     * @param bool $validate
      */
-    public function withParams(array $params, bool $validate = true)
+    public function withParams(array $params)
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($params, self::$_schema['properties']['params']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->params = $params;
 

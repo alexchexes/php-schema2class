@@ -94,9 +94,10 @@ class ReferenceArrayProperty extends AbstractProperty
         return "array_map(fn({$typeHint} \$i): {$serializedTypeHint} => {$outputMappingExpr}, {$expr})";
     }
 
-    public function isComplex(): bool
+    public function needsValidation(): bool
     {
+        // Arrays with referenced types always require validation since PHP
+        // cannot enforce element types.
         return true;
     }
-
 }

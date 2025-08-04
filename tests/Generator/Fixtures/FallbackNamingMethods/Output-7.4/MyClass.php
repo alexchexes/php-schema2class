@@ -51,18 +51,9 @@ class MyClass
     /**
      * @param string $bound
      * @return self
-     * @param bool $validate
      */
-    public function withBound(string $bound, bool $validate = true): self
+    public function withBound(string $bound): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($bound, self::$_schema['properties']['bound']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->bound = $bound;
 
@@ -91,18 +82,9 @@ class MyClass
     /**
      * @param string $outbound
      * @return self
-     * @param bool $validate
      */
-    public function with_Outbound(string $outbound, bool $validate = true): self
+    public function with_Outbound(string $outbound): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($outbound, self::$_schema['properties']['outbound']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->outbound = $outbound;
 
@@ -131,18 +113,9 @@ class MyClass
     /**
      * @param string $_outbound
      * @return self
-     * @param bool $validate
      */
-    public function with_Outbound_1(string $_outbound, bool $validate = true): self
+    public function with_Outbound_1(string $_outbound): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($_outbound, self::$_schema['properties']['_outbound']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->_outbound = $_outbound;
 
