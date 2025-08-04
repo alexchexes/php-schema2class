@@ -38,15 +38,20 @@ interface PropertyInterface extends TypeExpressionInterface
     public function key(): string;
 
     /**
-     * Returns the PHP property name used in the generated class. This can be
-     * sanitized {@see key()} in camelCase if `preservePropertyNames` generator
-     * option is true, or, if false, it can be identical to `key` except cases when
-     * sanitization changed it.
+     * {@see key} after `var_export` - suitable to use as PHP string
      */
-    public function name(): string;
+    public function keyStr(): string;
+
+    /**
+     * Returns name used for the generated class property name. This can be
+     * sanitized {@see key()} in camelCase if `preservePropertyNames` generator
+     * option is true, or, if false, it can be identical to `key` except when
+     * sanitization or uniqueness check changed it.
+     */
+    public function propName(): string;
 
     /** 
-     * Name used for creating temporary variable names inside `fromInput` method
+     * Name used for creating temporary variable names inside `fromInput` and other methods
      */
     public function varName(): string;
 

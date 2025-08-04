@@ -41,7 +41,7 @@ class SetterFactory
 
         $prefix = $this->mutating ? 'set' : 'with';
         $methodName = $prefix . $property->methodName();
-        $propName = $property->name();
+        $propName = $property->propName();
         $varName = $property->varName();
 
         // We first unwrap only optional property decorator but leave other
@@ -139,7 +139,7 @@ class SetterFactory
 
     private function generateBody(PropertyInterface $property, string $propName, string $varName, bool $addValidation): string
     {
-        $propKey = var_export($property->key(), true);
+        $propKey = $property->keyStr();
 
         $validationBlock = '';
         if ($addValidation) {

@@ -19,11 +19,6 @@ readonly class ReferencedTypeUnknown implements ReferencedTypeInterface
     )
     {}
 
-    public function name(): string
-    {
-        return "unknown";
-    }
-
     public function typeAnnotation(): string
     {
         return "mixed";

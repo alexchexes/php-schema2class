@@ -43,11 +43,11 @@ class IdentifierResolverTest extends TestCase
 
         $names1 = [];
         foreach ($props1 as $p) {
-            $names1[$p->key()] = [$p->name(), $p->methodName(), $p->varName()];
+            $names1[$p->key()] = [$p->propName(), $p->methodName(), $p->varName()];
         }
         $names2 = [];
         foreach ($props2 as $p) {
-            $names2[$p->key()] = [$p->name(), $p->methodName(), $p->varName()];
+            $names2[$p->key()] = [$p->propName(), $p->methodName(), $p->varName()];
         }
         ksort($names1);
         ksort($names2);

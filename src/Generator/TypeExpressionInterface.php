@@ -3,6 +3,11 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator;
 
+/** 
+ * Interface describing common methods contract for
+ * {@see Helmich\Schema2Class\Generator\Property\Type\PropertyInterface} and
+ * {@see Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeInterface}
+ */
 interface TypeExpressionInterface
 {
     /**

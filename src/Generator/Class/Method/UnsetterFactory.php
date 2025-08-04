@@ -52,8 +52,8 @@ class UnsetterFactory
     private function generateNonMutatingUnsetter(PropertyInterface $property): MethodGenerator
     {
         $methodName = 'without' . $property->methodName();
-        $propKey = var_export($property->key(), true);
-        $propName = $property->name();
+        $propKey = $property->keyStr();
+        $propName = $property->propName();
 
         $body = "\$clone = clone \$this;\n";
         $body .= "unset(\$clone->$propName);\n";
@@ -84,12 +84,12 @@ class UnsetterFactory
     private function generateMutatingUnsetter(PropertyInterface $property): MethodGenerator
     {
         $methodName = 'unset' . $property->methodName();
-        $propKey = var_export($property->key(), true);
-        $propName = $property->name();
+        $keyStr = $property->keyStr();
+        $propName = $property->propName();
 
         $body = "\$this->{$propName} = null;\n";
         if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
-            $body .= "unset(\$this->".PropertyNames::OPTIONALS."[{$propKey}]);\n";
+            $body .= "unset(\$this->".PropertyNames::OPTIONALS."[{$keyStr}]);\n";
         }
         if ($this->chainable) {
             $body .= "\nreturn \$this;";

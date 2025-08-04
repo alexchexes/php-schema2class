@@ -33,6 +33,7 @@ class OptionalPropertyDecoratorTest extends TestCase
         $this->innerProperty->allowsNull()->willReturn(false);
         $this->innerProperty->formatValue(Argument::any())->willReturn(new PropertyValueGenerator(null));
         $this->innerProperty->varName()->willReturn('myPropertyName');
+        $this->innerProperty->keyStr()->willReturn('\'myPropertyName\'');
         
         $this->request = new GeneratorRequest(
                 [],
@@ -83,6 +84,7 @@ class OptionalPropertyDecoratorTest extends TestCase
             ->inputMappingExpr('$input->{\'myPropertyName\'}', true)
             ->willReturn('INNER_EXPR');
         $prophecy->formatValue(false)->willReturn(new PropertyValueGenerator(false));
+        $prophecy->keyStr()->willReturn('\'myPropertyName\'');
 
         $decorator = new OptionalPropertyDecorator(
             'myPropertyName',
@@ -102,7 +104,7 @@ class OptionalPropertyDecoratorTest extends TestCase
 
     public function testConvertTypeToArray()
     {
-        $this->innerProperty->name()->shouldBeCalled()->willReturn('myPropertyName');
+        $this->innerProperty->propName()->shouldBeCalled()->willReturn('myPropertyName');
         $this->innerProperty->allowsNull()->shouldBeCalled()->willReturn(false);
         $this->innerProperty->convertTypeToArray()->shouldBeCalled()->willReturn('echo "InnerCode";');
 
@@ -119,7 +121,7 @@ EOCODE;
 
     public function testConvertTypeToStdClass()
     {
-        $this->innerProperty->name()->shouldBeCalled()->willReturn('myPropertyName');
+        $this->innerProperty->propName()->shouldBeCalled()->willReturn('myPropertyName');
         $this->innerProperty->allowsNull()->shouldBeCalled()->willReturn(false);
         $this->innerProperty->convertTypeToStdClass()->shouldBeCalled()->willReturn('echo "InnerCode";');
 
@@ -136,7 +138,7 @@ EOCODE;
 
     public function testClonePropertyWithoutInnerCode()
     {
-        $this->innerProperty->name()->shouldBeCalled()->willReturn('innerPropertyName');
+        $this->innerProperty->propName()->shouldBeCalled()->willReturn('innerPropertyName');
         $this->innerProperty->cloneAssignment()->shouldBeCalled()->willReturn(null);
 
         assertNull($this->decorator->cloneAssignment());
@@ -144,7 +146,7 @@ EOCODE;
 
     public function testClonePropertyWithInnerCode()
     {
-        $this->innerProperty->name()->shouldBeCalled()->willReturn('innerPropertyName');
+        $this->innerProperty->propName()->shouldBeCalled()->willReturn('innerPropertyName');
         $this->innerProperty->cloneAssignment()->shouldBeCalled()->willReturn('echo "InnerCode";');
         $expected = <<<'EOCODE'
 if (isset($this->innerPropertyName)) {

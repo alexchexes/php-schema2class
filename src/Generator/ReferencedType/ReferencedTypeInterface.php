@@ -13,9 +13,7 @@ use Helmich\Schema2Class\Generator\TypeExpressionInterface;
  */
 interface ReferencedTypeInterface extends TypeExpressionInterface
 {
-    function name(): string;
-
-    function serializedInputTypeHint(): ?string;
-    function serializedTypeHint(): ?string;
-    function serializedTypeHintStdClass(): ?string;
+    public function serializedInputTypeHint(): ?string;
+    public function serializedTypeHint(): ?string;
+    public function serializedTypeHintStdClass(): ?string;
 }

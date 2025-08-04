@@ -21,7 +21,7 @@ abstract class AbstractProperty implements PropertyInterface
 {
     protected string $key;
 
-    protected string $name;
+    protected string $propName;
     protected string $varName;
     protected string $methodName;
     protected string $nameForClass;
@@ -33,21 +33,21 @@ abstract class AbstractProperty implements PropertyInterface
 
     public function __construct(string $key, array $schema, GeneratorRequest $request)
     {
-        $this->schema           = $schema;
-        $this->description      = $schema['description'] ?? null;
+        $this->schema = $schema;
+        $this->description = $schema['description'] ?? null;
         $this->request = $request;
 
         $this->key = $key;
 
         if ($request->getOptions()->getPreservePropertyNames()) {
-            $this->name = StringUtils::sanitizeIdentifier($key);
+            $this->propName = StringUtils::sanitizeIdentifier($key);
             $this->methodName = StringUtils::pascalCasePreserveOuterUnderscores($key);
         } else {
-            $this->name = StringUtils::safeCamelCase($key);
+            $this->propName = StringUtils::safeCamelCase($key);
             $this->methodName = StringUtils::safePascalCase($key);
         }
 
-        $this->varName = $this->name;
+        $this->varName = $this->propName();
         $this->nameForClass = StringUtils::safePascalCase($key);
     }
 
@@ -71,9 +71,14 @@ abstract class AbstractProperty implements PropertyInterface
         return $this->key;
     }
 
-    public function name(): string
+    public function keyStr(): string
     {
-        return $this->name;
+        return var_export($this->key, true);
+    }
+
+    public function propName(): string
+    {
+        return $this->propName;
     }
 
     public function varName(): string
@@ -88,7 +93,7 @@ abstract class AbstractProperty implements PropertyInterface
 
     public function setName(string $name): void
     {
-        $this->name = $name;
+        $this->propName = $name;
     }
 
     public function setVarName(string $name): void
@@ -103,9 +108,8 @@ abstract class AbstractProperty implements PropertyInterface
 
     public function convertInputToType(): string
     {
-        $name = $this->varName;
-        $key  = $this->key;
-        $keyStr = var_export($key, true);
+        $name = $this->varName();
+        $keyStr = $this->keyStr();
 
         // build the raw lookup expression (using the JSON key only inside the braces)
         $inputVarName = FromInputMethodFactory::INPUT_ARG_NAME;
@@ -120,18 +124,16 @@ abstract class AbstractProperty implements PropertyInterface
 
     public function convertTypeToArray(): string
     {
-        $key    = $this->key;
-        $keyStr = var_export($key, true);
-        $map    = $this->outputMappingExpr("\$this->{$this->name}");
+        $keyStr = $this->keyStr();
+        $map    = $this->outputMappingExpr("\$this->{$this->propName()}");
         $outputVarName = SerializeMethodFactory::OUTPUT_VAR_NAME;
         return "\${$outputVarName}[{$keyStr}] = {$map};";
     }
 
     public function convertTypeToStdClass(): string
     {
-        $key    = $this->key;
-        $keyStr = var_export($key, true);
-        $map    = $this->outputMappingExprStdClass("\$this->{$this->name}");
+        $keyStr = $this->keyStr();
+        $map    = $this->outputMappingExprStdClass("\$this->{$this->propName()}");
         $outputVarName = SerializeMethodFactory::OUTPUT_VAR_NAME;
         return "\${$outputVarName}->{{$keyStr}} = {$map};";
     }
@@ -166,7 +168,7 @@ abstract class AbstractProperty implements PropertyInterface
      */
     public function cloneAssignment(): ?string
     {
-        $name       = $this->name;
+        $name      = $this->propName();
         $expr      = "\$this->{$name}";
         $exprClone = $this->cloneExpr($expr);
 

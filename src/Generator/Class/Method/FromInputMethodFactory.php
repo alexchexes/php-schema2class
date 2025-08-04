@@ -359,7 +359,7 @@ class FromInputMethodFactory
         $assignments = [];
 
         foreach ($optionalProperties as $optionalProperty) {
-            $propName = $optionalProperty->name();
+            $propName = $optionalProperty->propName();
             $varName = $optionalProperty->varName();
             $assignments[] = "\${$OBJ_VAR_NAME}->{$propName} = \${$varName};";
         }

@@ -40,7 +40,7 @@ class ConstructorFactory
                 [$requiredProperty->typeAnnotation()]
             );
 
-            $assignments[] = "\$this->{$requiredProperty->name()} = \${$paramName};";
+            $assignments[] = "\$this->{$requiredProperty->propName()} = \${$paramName};";
         }
 
         if ($assignments === []) {

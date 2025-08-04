@@ -25,7 +25,7 @@ class SchemaPropertyFactory
         $schema     = $schemaProp->schema();
         $isOptional = false;
         $propertyGenerator    = new PropertyGenerator(
-            name: $schemaProp->name(),
+            name: $schemaProp->propName(),
             defaultValue: $schemaProp->formatValue(null),
             flags: $visibility
         );

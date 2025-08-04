@@ -44,11 +44,6 @@ readonly class ReferencedTypeEnum implements ReferencedTypeInterface
         return '\\' . $this->enumName;
     }
 
-    function name(): string
-    {
-        return $this->enumName;
-    }
-
     public function typeAnnotation(): string
     {
         if ($this->canUseNativeEnum()) {

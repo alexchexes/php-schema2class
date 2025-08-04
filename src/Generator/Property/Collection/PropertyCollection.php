@@ -65,10 +65,10 @@ class PropertyCollection implements \Iterator
         return false;
     }
 
-    public function hasPropertyWithName(string $name): bool
+    public function hasPropertyWithName(string $propName): bool
     {
         foreach ($this->properties as $p) {
-            if ($p->name() === $name) {
+            if ($p->propName() === $propName) {
                 return true;
             }
         }

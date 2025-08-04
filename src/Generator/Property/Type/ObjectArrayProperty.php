@@ -75,9 +75,8 @@ class ObjectArrayProperty extends AbstractProperty
 
     public function convertTypeToArray(): string
     {
-        $name = $this->name;
-        $key  = $this->key;
-        $keyStr = var_export($key, true);
+        $name = $this->propName();
+        $keyStr = $this->keyStr();
         $st   = $this->subTypeName();
         $outputVarName = SerializeMethodFactory::OUTPUT_VAR_NAME;
 
@@ -95,9 +94,8 @@ class ObjectArrayProperty extends AbstractProperty
 
     public function convertTypeToStdClass(): string
     {
-        $name = $this->name;
-        $key  = $this->key;
-        $keyStr = var_export($key, true);
+        $name = $this->propName();
+        $keyStr = $this->keyStr();
         $st   = $this->subTypeName();
         $outputVarName = SerializeMethodFactory::OUTPUT_VAR_NAME;
 

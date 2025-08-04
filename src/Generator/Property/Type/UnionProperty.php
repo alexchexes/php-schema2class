@@ -53,12 +53,8 @@ class UnionProperty extends AbstractProperty
 
     public function convertInputToTypeMatch(): string
     {
-        $name  = $this->varName;
-        $key   = $this->key;
-        $keyStr = var_export($key, true);
-
         $inputVarName = FromInputMethodFactory::INPUT_ARG_NAME;
-        $accessor = "\${$inputVarName}->{{$keyStr}}";
+        $accessor = "\${$inputVarName}->{{$this->keyStr()}}";
 
         $match = new MatchGenerator("true");
 
@@ -70,11 +66,11 @@ class UnionProperty extends AbstractProperty
 
         $match->addArm(
             "default",
-            "throw new \\InvalidArgumentException(\"could not build property '{$key}' from JSON\")"
+            "throw new \\InvalidArgumentException(\"could not build property '{$this->key()}' from JSON\")"
         );
 
         // assign into the camel‑cased local variable
-        return "\${$name} = {$match->generate()};";
+        return "\${$this->varName()} = {$match->generate()};";
     }
 
     public function convertInputToType(): string
@@ -84,9 +80,8 @@ class UnionProperty extends AbstractProperty
             return $this->convertInputToTypeMatch();
         }
     
-        $name   = $this->varName;
-        $key    = $this->key;
-        $keyStr = var_export($key, true);
+        $name   = $this->varName();
+        $keyStr = $this->keyStr();
     
         $inputVarName = FromInputMethodFactory::INPUT_ARG_NAME;
         $accessor = "\${$inputVarName}->{{$keyStr}}";
@@ -150,9 +145,8 @@ class UnionProperty extends AbstractProperty
 
     private function convertTypeToArrayMatch(): string
     {
-        $name   = $this->name;
-        $key    = $this->key;
-        $keyStr = var_export($key, true);
+        $name   = $this->propName();
+        $keyStr = $this->keyStr();
         $match  = new MatchGenerator("true");
 
         foreach ($this->subProperties as $subProperty) {
@@ -167,9 +161,8 @@ class UnionProperty extends AbstractProperty
 
     private function convertTypeToStdClassMatch(): string
     {
-        $name   = $this->name;
-        $key    = $this->key;
-        $keyStr = var_export($key, true);
+        $name   = $this->propName();
+        $keyStr = $this->keyStr();
         $match  = new MatchGenerator("true");
 
         foreach ($this->subProperties as $subProperty) {
@@ -190,9 +183,8 @@ class UnionProperty extends AbstractProperty
             return $this->convertTypeToArrayMatch();
         }
 
-        $name        = $this->name;
-        $key         = $this->key;
-        $keyStr      = var_export($key, true);
+        $name   = $this->propName();
+        $keyStr = $this->keyStr();
         $conversions = [];
 
         foreach ($this->subProperties as $subProperty) {
@@ -224,9 +216,8 @@ class UnionProperty extends AbstractProperty
             return $this->convertTypeToStdClassMatch();
         }
 
-        $name        = $this->name;
-        $key         = $this->key;
-        $keyStr      = var_export($key, true);
+        $name   = $this->propName();
+        $keyStr = $this->keyStr();
         $conversions = [];
 
         foreach ($this->subProperties as $subProperty) {

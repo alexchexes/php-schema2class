@@ -23,7 +23,7 @@ class GetterFactory
             return null;
         }
 
-        $propName = $property->name();
+        $propName = $property->propName();
         $methodName = 'get' . $property->methodName();
 
         $docBlockTags = [new ReturnTag($property->typeAnnotation())];

@@ -53,9 +53,14 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface
         return $this->inner->key();
     }
 
-    public function name(): string
+    public function keyStr(): string
     {
-        return $this->inner->name();
+        return $this->inner->keyStr();
+    }
+
+    public function propName(): string
+    {
+        return $this->inner->propName();
     }
 
     public function varName(): string
@@ -100,13 +105,10 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface
 
     public function convertInputToType(): string
     {
-        // Key name in the JSON object
-        $key   = $this->key;
-        $keyStr  = var_export($key, true);
-        $name  = $this->inner->varName(); // local variable to assign to
+        $varName  = $this->inner->varName();
 
         $inputVarName = FromInputMethodFactory::INPUT_ARG_NAME;
-        $accessor = "\${$inputVarName}->{{$keyStr}}";
+        $accessor = "\${$inputVarName}->{{$this->keyStr()}}";
 
         $mapped = $this->inner->inputMappingExpr($accessor);
 
@@ -117,7 +119,7 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface
             ? "({$accessor} !== null ? {$mapped} : null)"
             : $mapped;               // clean one-liner for strings/nulls
 
-        return "\${$name} = {$expr};";
+        return "\${$varName} = {$expr};";
     }
 
     public function convertTypeToArray(): string

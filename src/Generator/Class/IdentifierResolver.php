@@ -44,14 +44,14 @@ class IdentifierResolver
         foreach ($reserved as $r) {
             $used[$r] = true;
         }
-
+        
         // Sort for deterministic results when resolving conflicts
         $props = $properties->toArray();
-        usort($props, fn($a, $b) => [$a->name(), $a->key()] <=> [$b->name(), $b->key()]);
+        usort($props, fn($a, $b) => [$a->propName(), $a->key()] <=> [$b->propName(), $b->key()]);
 
         foreach ($props as $prop) {
             // Try to use the original property name
-            $base = $prop->name();
+            $base = $prop->propName();
             $candidate = $base;
 
             // If the name is taken, prefix with `_` and check,
@@ -71,9 +71,9 @@ class IdentifierResolver
             // Set the new name and use it as a base for variable names
             if ($candidate !== $base) {
                 $prop->setName($candidate);
-                $prop->setVarName($prop->name());
+                $prop->setVarName($prop->propName());
             }
-            $used[$prop->name()] = true;
+            $used[$prop->propName()] = true;
         }
     }
 
@@ -128,7 +128,7 @@ class IdentifierResolver
     {
         // Update method name suffixes according to property names which might be renamed above
         foreach ($properties as $prop) {
-            $propName = $prop->name();
+            $propName = $prop->propName();
             $methodName = $this->request->getOptions()->getPreservePropertyNames()
                 ? StringUtils::pascalCasePreserveOuterUnderscores($propName)
                 : StringUtils::safePascalCase($propName);

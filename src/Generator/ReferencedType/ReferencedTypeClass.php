@@ -20,11 +20,6 @@ readonly class ReferencedTypeClass implements ReferencedTypeInterface
         private GeneratorRequest $request,
     ) {}
 
-    public function name(): string
-    {
-        return $this->className;
-    }
-
     private function relativeName(): string
     {
         $ns = $this->request->getTargetNamespace();
