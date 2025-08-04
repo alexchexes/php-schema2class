@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\ReferencedType;
 
+use Helmich\Schema2Class\Generator\Class\Method\FromInputMethodFactory;
 use Helmich\Schema2Class\Generator\Class\MethodNames;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 
@@ -12,20 +13,21 @@ use Helmich\Schema2Class\Generator\GeneratorRequest;
  * It resolves type hints and annotations relative to the current namespace
  * so that the generated code can refer to generated classes correctly.
  */
-readonly class ReferencedTypeClass implements ReferencedType
+readonly class ReferencedTypeClass implements ReferencedTypeInterface
 {
-    public function __construct(private string $className)
-    {
-    }
+    public function __construct(
+        private string $className,
+        private GeneratorRequest $request,
+    ) {}
 
     public function name(): string
     {
         return $this->className;
     }
 
-    private function relativeName(GeneratorRequest $req): string
+    private function relativeName(): string
     {
-        $ns = $req->getTargetNamespace();
+        $ns = $this->request->getTargetNamespace();
         if ($ns !== '' && str_starts_with($this->className, $ns . '\\')) {
             return substr($this->className, strlen($ns) + 1);
         }
@@ -33,72 +35,67 @@ readonly class ReferencedTypeClass implements ReferencedType
         return '\\' . $this->className;
     }
 
-    public function typeAnnotation(GeneratorRequest $req): string
+    public function typeAnnotation(): string
     {
-        return $this->relativeName($req);
+        return $this->relativeName();
     }
 
-    public function typeHint(GeneratorRequest $req): ?string
+    public function typeHint(): ?string
     {
-        return $this->relativeName($req);
+        return $this->relativeName();
     }
 
-    public function serializedInputTypeHint(GeneratorRequest $req): ?string
+    public function serializedInputTypeHint(): ?string
     {
         return 'array|object';
     }
 
-    public function serializedTypeHint(GeneratorRequest $req): ?string
+    public function serializedTypeHint(): ?string
     {
         return 'array';
     }
 
-    public function serializedTypeHintStdClass(GeneratorRequest $req): ?string
+    public function serializedTypeHintStdClass(): ?string
     {
         return 'object';
     }
 
-    public function typeAssertionExpr(GeneratorRequest $req, string $expr): string
+    public function typeAssertionExpr(string $expr): string
     {
-        $cls = $this->relativeName($req);
+        $cls = $this->relativeName();
         return "({$expr}) instanceof {$cls}";
     }
 
-    public function inputAssertionExpr(GeneratorRequest $req, string $expr): string
+    public function inputAssertionExpr(string $expr): string
     {
-        $cls = $this->relativeName($req);
+        $cls = $this->relativeName();
         $VALIDATE_INPUT = MethodNames::VALIDATE_INPUT;
         return "{$cls}::{$VALIDATE_INPUT}({$expr}, true)";
     }
 
-    public function inputMappingExpr(GeneratorRequest $req, string $expr): string
+    public function inputMappingExpr(string $expr, bool $asserted = false): string
     {
-        $validateArg = $req->getCurrValidateArgAlias();
-        $materializeArg = $req->getCurrMaterializeArgAlias();
-
-        $args = [$expr, '$' . $validateArg];
-        if ($materializeArg !== null) {
-            $args[] = '$' . $materializeArg;
+        $args = [$expr, '$' . FromInputMethodFactory::VALIDATE_ARG_NAME];
+        if ($this->request->getCurrReqHasDefaults()) {
+            $args[] = '$' . FromInputMethodFactory::DEFAULTS_ARG_NAME;
         }
         $argsStr = implode(', ', $args);
         
-        $cls = $this->relativeName($req);
-
+        $cls = $this->relativeName();
         $FROM_INPUT = MethodNames::FROM_INPUT;
-
         return "{$cls}::{$FROM_INPUT}({$argsStr})";
     }
 
-    public function outputMappingExpr(GeneratorRequest $req, string $expr): string
+    public function outputMappingExpr(string $expr): string
     {
-        $inclDefaultsArg = $req->getCurrReqHasDefaults() ? '$includeDefaults' : '';
+        $inclDefaultsArg = $this->request->getCurrReqHasDefaults() ? '$includeDefaults' : '';
         $TO_ARRAY = MethodNames::TO_ARRAY;
         return "{$expr}->{$TO_ARRAY}({$inclDefaultsArg})";
     }
 
-    public function outputMappingExprStdClass(GeneratorRequest $req, string $expr): string
+    public function outputMappingExprStdClass(string $expr): string
     {
-        $inclDefaultsArg = $req->getCurrReqHasDefaults() ? '$includeDefaults' : '';
+        $inclDefaultsArg = $this->request->getCurrReqHasDefaults() ? '$includeDefaults' : '';
         $TO_STD_CLASS = MethodNames::TO_STD_CLASS;
         return "{$expr}->{$TO_STD_CLASS}({$inclDefaultsArg})";
     }

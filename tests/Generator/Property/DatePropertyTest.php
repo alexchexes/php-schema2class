@@ -20,10 +20,19 @@ class DatePropertyTest extends TestCase
 
     private GeneratorRequest $generatorRequest;
 
+    private array $schema;
+
     protected function setUp(): void
     {
-        $this->generatorRequest = new GeneratorRequest([], new ValidatedSpecificationFilesItem("", "Foo", ""), new SpecificationOptions());
-        $this->property         = new DateProperty('myPropertyName', ['type' => 'string', 'format' => 'date-time'], $this->generatorRequest);
+        $this->generatorRequest = new GeneratorRequest(
+            [],
+            new ValidatedSpecificationFilesItem("", "Foo", ""),
+            new SpecificationOptions()
+        );
+
+        $this->schema = ['type' => 'string', 'format' => 'date-time'];
+
+        $this->property = new DateProperty('myPropertyName', $this->schema, $this->generatorRequest);
     }
 
     public function testCanHandleSchema()
@@ -42,10 +51,10 @@ class DatePropertyTest extends TestCase
 
     public function testConvertInputToType()
     {
-        $result = $this->property->convertInputToType('variable', 'providedOptionals');
+        $result = $this->property->convertInputToType();
 
         $expected = <<<'EOCODE'
-$myPropertyName = new \DateTime($variable->{'myPropertyName'});
+$myPropertyName = new \DateTime($input->{'myPropertyName'});
 EOCODE;
 
         assertSame($expected, $result);
@@ -67,14 +76,17 @@ EOCODE;
         $expected = <<<'EOCODE'
 $this->myPropertyName = clone $this->myPropertyName;
 EOCODE;
-        assertSame($expected, $this->property->cloneProperty());
+        assertSame($expected, $this->property->cloneAssignment());
     }
 
     public function testGetAnnotationAndHintWithSimpleArray()
     {
         assertSame('\\DateTime', $this->property->typeAnnotation());
-        assertSame('\\DateTime', $this->property->typeHint("7.2.0"));
-        assertSame('\\DateTime', $this->property->typeHint("5.6.0"));
+        assertSame('\\DateTime', $this->property->typeHint());
+
+        $property = new DateProperty('myPropertyName', $this->schema, $this->generatorRequest->withPHPVersion('5.6.0'));
+
+        assertSame('\\DateTime', $property->typeHint());
     }
 
     public function testGenerateSubTypesWithSimpleArray()

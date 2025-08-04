@@ -18,12 +18,12 @@ class MixedProperty extends AbstractProperty
         return "mixed";
     }
 
-    public function typeHint(string $phpVersion): ?string
+    public function typeHint(): ?string
     {
         return null;
     }
 
-    public function generateTypeAssertionExpr(string $expr): string
+    public function typeAssertionExpr(string $expr): string
     {
         return "true";
     }

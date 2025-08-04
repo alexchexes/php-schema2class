@@ -35,7 +35,7 @@ class DefinitionsGenerator
         $visited = [];
 
         while ($cur = array_pop($queue)) {
-            $iter = function ($node) use (&$iter, &$needed, &$queue, &$visited, $allDefinitions) {
+            $iter = function (mixed $node) use (&$iter, &$needed, &$queue, &$visited, $allDefinitions) {
                 if (is_array($node)) {
                     foreach ($node as $k => $v) {
                         if ($k === '$ref' && is_string($v) && str_starts_with($v, '#/definitions/')) {
@@ -66,13 +66,17 @@ class DefinitionsGenerator
     public function generate(array $definitions, GeneratorRequest $request): void
     {
         $ns = $request->getTargetNamespace();
-        $generatedClasses = array_map(static function(Definition $d) use ($ns): string {
-            $cls = $d->classFQN;
-            if ($ns !== '' && str_starts_with($cls, $ns . '\\')) {
-                return substr($cls, strlen($ns) + 1);
-            }
-            return ltrim($cls, '\\');
-        }, $definitions);
+        $generatedClasses = array_map(
+            static function(Definition $d) use ($ns): string {
+                $cls = $d->classFQN;
+                if ($ns !== '' && str_starts_with($cls, $ns . '\\')) {
+                    return substr($cls, strlen($ns) + 1);
+                }
+                return ltrim($cls, '\\');
+            },
+            $definitions
+        );
+
         if ($request->getTargetClass() !== null) {
             $generatedClasses[] = $request->getTargetClass();
         }

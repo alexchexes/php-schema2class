@@ -27,21 +27,17 @@ class IntegerProperty extends AbstractProperty
         return "int";
     }
 
-    public function typeHint(string $phpVersion): ?string
+    public function typeHint(): ?string
     {
-        if (Semver::satisfies($phpVersion, "<7.0")) {
-            return null;
-        }
-
-        return "int";
+        return $this->request->isAtLeastPHP('7.0') ? 'int' : null;
     }
 
-    public function generateTypeAssertionExpr(string $expr): string
+    public function typeAssertionExpr(string $expr): string
     {
         return "is_int({$expr})";
     }
 
-    public function generateInputMappingExpr(string $expr, bool $asserted = false): string
+    public function inputMappingExpr(string $expr, bool $asserted = false): string
     {
         if ($asserted) {
             return $expr;

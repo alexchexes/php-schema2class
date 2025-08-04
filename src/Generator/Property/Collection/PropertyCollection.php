@@ -25,14 +25,20 @@ class PropertyCollection implements \Iterator
         return $collection;
     }
 
+    /** @return PropertyInterface[] */
+    public function toArray(): array
+    {
+        return iterator_to_array($this);
+    }
+
     public function add(PropertyInterface $propertyGenerator): void
     {
         $this->properties[] = $propertyGenerator;
     }
 
-    public function generateInputToTypeConversionCode(string $inputVarName, string $optionalsVarName): string
+    public function generateInputToTypeConversionCode(): string
     {
-        $conv = array_map(fn ($p) => $p->convertInputToType($inputVarName, $optionalsVarName), $this->properties);
+        $conv = array_map(fn ($p) => $p->convertInputToType(), $this->properties);
         return join("\n", $conv);
     }
 

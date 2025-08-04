@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\ReferenceLookup;
 
-use Helmich\Schema2Class\Generator\ReferencedType\ReferencedType;
+use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeInterface;
 
 /**
  * Resolves `$ref` pointers encountered during generation.
@@ -21,7 +21,7 @@ interface ReferenceLookup
      *
      * When the reference cannot be resolved a {@link ReferencedTypeUnknown} instance should be returned.
      */
-    public function lookupReference(string $ref): ReferencedType;
+    public function lookupReference(string $ref): ReferencedTypeInterface;
     
     /**
      * Returns the schema array referenced by the given `$ref` pointer.

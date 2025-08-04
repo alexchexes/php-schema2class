@@ -5,30 +5,19 @@ namespace Helmich\Schema2Class\Spec;
 
 class ValidatedSpecificationFilesItem
 {
-    private string $targetNamespace;
-    private ?string $targetClass;
-    private string $targetDirectory;
-    private bool $cleanTargetDirectory;
-
-    /**
-     * ValidatedSpecificationFilesItem constructor.
-     * @param string      $targetNamespace
-     * @param string|null $targetClass
-     * @param string      $targetDirectory
-     */
-    public function __construct(string $targetNamespace, ?string $targetClass, string $targetDirectory, bool $cleanTargetDirectory = false)
-    {
-        $this->targetNamespace = $targetNamespace;
-        $this->targetClass     = $targetClass;
-        $this->targetDirectory = $targetDirectory;
-        $this->cleanTargetDirectory = $cleanTargetDirectory;
-    }
+    public function __construct(
+        private string $targetNamespace,
+        private ?string $targetClass,
+        private string $targetDirectory,
+        private bool $cleanTargetDirectory = false
+    ) {}
 
     public static function fromSpecificationFilesItem(
         SpecificationFilesItem $input,
         SpecificationOptions $options,
         string $fallbackNamespace
-    ): ValidatedSpecificationFilesItem {
+    ): ValidatedSpecificationFilesItem
+    {
         return new ValidatedSpecificationFilesItem(
             $options->getTargetNamespace() ?? $fallbackNamespace,
             $input->getClassName(),

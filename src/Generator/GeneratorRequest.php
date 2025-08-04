@@ -8,7 +8,7 @@ use Helmich\Schema2Class\Generator\Hook\AddInterfaceHook;
 use Helmich\Schema2Class\Generator\Hook\AddMethodHook;
 use Helmich\Schema2Class\Generator\Hook\AddPropertyHook;
 use Helmich\Schema2Class\Generator\Hook\GeneratorHookRunner;
-use Helmich\Schema2Class\Generator\ReferencedType\ReferencedType;
+use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeInterface;
 use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeUnknown;
 use Helmich\Schema2Class\Generator\ReferenceLookup\ReferenceLookup;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
@@ -17,7 +17,7 @@ use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
 use Helmich\Schema2Class\Generator\SchemaToClassFactory;
 use Helmich\Schema2Class\Loader\SchemaLoader;
 use Laminas\Code\Generator\MethodGenerator;
-use Laminas\Code\Generator\PropertyGenerator;
+use Laminas\Code\Generator\PropertyGenerator as LaminasPropertyGenerator;
 
 /** 
  * (Mostly) immutable data object describing what and how to generate.
@@ -28,9 +28,8 @@ use Laminas\Code\Generator\PropertyGenerator;
  * The request also stores runtime information such as registered {@see ReferenceLookup}
  * implementations and is cloned when modifications are needed for nested classes
  * 
- * Mutation is deliberately allowed for `currValidateArgAlias`, `currMaterializeArgAlias`,
- * and `currReqHasDefaults` to simplify passing information to nested contexts.
- * TODO: Rethink this.
+ * Mutation is deliberately allowed for `currReqHasDefaults` to simplify
+ * passing information to nested contexts. TODO: Rethink this.
  */
 class GeneratorRequest
 {
@@ -54,21 +53,9 @@ class GeneratorRequest
     private array $referenceLookup = [];
     
     /**
-     * Name of the $validate argument in the currently generated fromInput method.
-     * This is set from the Generator during generation.
-     */
-    private string $currValidateArgAlias;
-
-    /**
-     * Name of the $materializeDefaults argument in the currently generated fromInput method
-     * (null when the argument is not generated). This is set from the Generator.
-     */
-    private ?string $currMaterializeArgAlias = null;
-
-    /**
      * Whether the object schema from which the class is currently generated has defaults.
      */
-    private bool $currReqHasDefaults;
+    private bool $currReqHasDefaults = false;
 
     private SchemaToClassFactory $factory;
 
@@ -239,11 +226,11 @@ class GeneratorRequest
     /**
      * Adds a property to generated classes.
      *
-     * @param PropertyGenerator $property The property to add to generated classes.
+     * @param LaminasPropertyGenerator $property The property to add to generated classes.
      * @param bool $propagateToSubObjects Controls if the property should be added to sub-objects.
      * @return self
      */
-    public function withAdditionalProperty(PropertyGenerator $property, bool $propagateToSubObjects = false): self
+    public function withAdditionalProperty(LaminasPropertyGenerator $property, bool $propagateToSubObjects = false): self
     {
         return $this->withHook(new AddPropertyHook($property), $propagateToSubObjects);
     }
@@ -342,7 +329,7 @@ class GeneratorRequest
         return $this->opts;
     }
 
-    public function lookupReference(string $ref): ReferencedType
+    public function lookupReference(string $ref): ReferencedTypeInterface
     {
         if (empty($this->referenceLookup)) {
             throw new GeneratorException("unresolvable reference: {$ref}");
@@ -375,42 +362,12 @@ class GeneratorRequest
     }
 
     /**
-     * This method is deliberately mutating (not `with...`) so that the active
-     * argument names can be updated for all property generators during code generation
-     * to ensure consistent variable names in nested contexts
-     */
-    public function setCurrValidateArgAlias(string $currValidateArgAlias): void
-    {
-        $this->currValidateArgAlias = $currValidateArgAlias;
-    }
-
-    /**
-     * This method is deliberately mutating (not `with...`) so that the active
-     * argument names can be updated for all property generators during code generation
-     * to ensure consistent variable names in nested contexts
-     */
-    public function setCurrMaterializeArgAlias(?string $currMaterializeArgAlias): void
-    {
-        $this->currMaterializeArgAlias = $currMaterializeArgAlias;
-    }
-
-    /**
      * This method is deliberately mutating (not `with...`) so that the information about
      * the presence of defaults is available to all property generators in nested contexts.
      */
     public function setCurrReqHasDefaults(bool $currReqHasDefaults): void
     {
         $this->currReqHasDefaults = $currReqHasDefaults;
-    }
-
-    public function getCurrValidateArgAlias(): string
-    {
-        return $this->currValidateArgAlias;
-    }
-
-    public function getCurrMaterializeArgAlias(): ?string
-    {
-        return $this->currMaterializeArgAlias;
     }
 
     public function getCurrReqHasDefaults(): bool

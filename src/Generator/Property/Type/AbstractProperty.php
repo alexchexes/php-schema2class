@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Property\Type;
 
+use Helmich\Schema2Class\Generator\Class\Method\FromInputMethodFactory;
 use Helmich\Schema2Class\Generator\Class\Method\SerializeMethodFactory;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Util\StringUtils;
@@ -21,28 +22,33 @@ abstract class AbstractProperty implements PropertyInterface
     protected string $key;
 
     protected string $name;
+    protected string $varName;
+    protected string $methodName;
+    protected string $nameForClass;
 
     protected array $schema;
-
-    protected string $capitalizedName;
-
     protected ?string $description;
 
-    protected GeneratorRequest $generatorRequest;
+    protected GeneratorRequest $request;
 
-    public function __construct(string $key, array $schema, GeneratorRequest $generatorRequest)
+    public function __construct(string $key, array $schema, GeneratorRequest $request)
     {
-        $this->key              = $key;
         $this->schema           = $schema;
-        $this->capitalizedName  = StringUtils::safePascalCase($this->key);
-        $this->generatorRequest = $generatorRequest;
         $this->description      = $schema['description'] ?? null;
+        $this->request = $request;
 
-        if ($generatorRequest->getOptions()->getPreservePropertyNames()) {
+        $this->key = $key;
+
+        if ($request->getOptions()->getPreservePropertyNames()) {
             $this->name = StringUtils::sanitizeIdentifier($key);
+            $this->methodName = StringUtils::pascalCasePreserveOuterUnderscores($key);
         } else {
             $this->name = StringUtils::safeCamelCase($key);
+            $this->methodName = StringUtils::safePascalCase($key);
         }
+
+        $this->varName = $this->name;
+        $this->nameForClass = StringUtils::safePascalCase($key);
     }
 
     public function isComplex(): bool
@@ -55,6 +61,11 @@ abstract class AbstractProperty implements PropertyInterface
         return $this->schema;
     }
 
+    public function description(): ?string
+    {
+        return $this->description;
+    }
+
     public function key(): string
     {
         return $this->key;
@@ -65,41 +76,44 @@ abstract class AbstractProperty implements PropertyInterface
         return $this->name;
     }
 
+    public function varName(): string
+    {
+        return $this->varName;
+    }
+
+    public function methodName(): string
+    {
+        return $this->methodName;
+    }
+
     public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    public function description(): ?string
+    public function setVarName(string $name): void
     {
-        return $this->description;
+        $this->varName = $name;
     }
 
-    /**
-     * @return string|null
-     */
-    public function cloneProperty(): ?string
+    public function setMethodName(string $name): void
     {
-        $name       = $this->name;
-        $expr      = "\$this->{$name}";
-        $exprClone = $this->generateCloneExpr($expr);
-
-        if ($expr !== $exprClone) {
-            return "\$this->$name = {$exprClone};";
-        }
-
-        return null;
+        $this->methodName = $name;
     }
 
-    public function convertInputToType(string $inputVarName, string $optionalsVarName): string
+    public function convertInputToType(): string
     {
-        $name = $this->name;
+        $name = $this->varName;
         $key  = $this->key;
         $keyStr = var_export($key, true);
+
         // build the raw lookup expression (using the JSON key only inside the braces)
+        $inputVarName = FromInputMethodFactory::INPUT_ARG_NAME;
         $accessor = "\${$inputVarName}->{{$keyStr}}";
+
         // now map from JSON→Type (this will call fromInput, etc.)
-        $map = $this->generateInputMappingExpr($accessor);
+        $map = $this->inputMappingExpr($accessor);
+
         // assign to the *camelCased* local variable name
         return "\${$name} = {$map};";
     }
@@ -108,7 +122,7 @@ abstract class AbstractProperty implements PropertyInterface
     {
         $key    = $this->key;
         $keyStr = var_export($key, true);
-        $map    = $this->generateOutputMappingExpr("\$this->{$this->name}");
+        $map    = $this->outputMappingExpr("\$this->{$this->name}");
         $outputVarName = SerializeMethodFactory::OUTPUT_VAR_NAME;
         return "\${$outputVarName}[{$keyStr}] = {$map};";
     }
@@ -117,34 +131,50 @@ abstract class AbstractProperty implements PropertyInterface
     {
         $key    = $this->key;
         $keyStr = var_export($key, true);
-        $map    = $this->generateOutputMappingExprStdClass("\$this->{$this->name}");
+        $map    = $this->outputMappingExprStdClass("\$this->{$this->name}");
         $outputVarName = SerializeMethodFactory::OUTPUT_VAR_NAME;
         return "\${$outputVarName}->{{$keyStr}} = {$map};";
     }
 
-    public function generateInputAssertionExpr(string $expr): string
+    public function inputAssertionExpr(string $expr): string
     {
-        return $this->generateTypeAssertionExpr($expr);
+        return $this->typeAssertionExpr($expr);
     }
 
-    public function generateInputMappingExpr(string $expr, bool $asserted = false): string
+    public function inputMappingExpr(string $expr, bool $asserted = false): string
     {
         return $expr;
     }
 
-    public function generateOutputMappingExpr(string $expr): string
+    public function outputMappingExpr(string $expr): string
     {
         return $expr;
     }
 
-    public function generateOutputMappingExprStdClass(string $expr): string
+    public function outputMappingExprStdClass(string $expr): string
     {
         return $expr;
     }
 
-    public function generateCloneExpr(string $expr): string
+    public function cloneExpr(string $expr): string
     {
         return $expr;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function cloneAssignment(): ?string
+    {
+        $name       = $this->name;
+        $expr      = "\$this->{$name}";
+        $exprClone = $this->cloneExpr($expr);
+
+        if ($expr !== $exprClone) {
+            return "\$this->$name = {$exprClone};";
+        }
+
+        return null;
     }
 
     /**
@@ -152,9 +182,9 @@ abstract class AbstractProperty implements PropertyInterface
      */
     protected function propagateRootDefinitions(GeneratorRequest $req): GeneratorRequest
     {
-        $defs = $this->generatorRequest->getRootDefinitions();
+        $defs = $this->request->getRootDefinitions();
         if ($defs === null) {
-            $schema = $this->generatorRequest->getSchema();
+            $schema = $this->request->getSchema();
             $defs = array_merge($schema['definitions'] ?? [], $schema['$defs'] ?? []);
         }
 

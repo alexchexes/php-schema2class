@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class\Generator\Hook;
 
 use Laminas\Code\Generator\ClassGenerator as LaminasClassGenerator;
-use Laminas\Code\Generator\PropertyGenerator;
+use Laminas\Code\Generator\PropertyGenerator as LaminasPropertyGenerator;
 
 /**
  * Hook that adds a preconstructed property to the generated class.
@@ -13,7 +13,7 @@ use Laminas\Code\Generator\PropertyGenerator;
  */
 readonly class AddPropertyHook implements ClassCreatedHook
 {
-    public function __construct(private PropertyGenerator $property)
+    public function __construct(private LaminasPropertyGenerator $property)
     {
     }
 

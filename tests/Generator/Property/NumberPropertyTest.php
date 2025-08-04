@@ -49,10 +49,10 @@ class NumberPropertyTest extends TestCase
 
     public function testConvertInputToType()
     {
-        $result = $this->property->convertInputToType('variable', 'providedOptionals');
+        $result = $this->property->convertInputToType();
 
         $expected = <<<'EOCODE'
-$myPropertyName = (str_contains((string)$variable->{'myPropertyName'}, '.') ? (float)$variable->{'myPropertyName'} : (int)$variable->{'myPropertyName'});
+$myPropertyName = (str_contains((string)$input->{'myPropertyName'}, '.') ? (float)$input->{'myPropertyName'} : (int)$input->{'myPropertyName'});
 EOCODE;
 
         assertSame($expected, $result);
@@ -71,14 +71,19 @@ EOCODE;
 
     public function testCloneProperty()
     {
-        assertNull($this->property->cloneProperty());
+        assertNull($this->property->cloneAssignment());
     }
 
     public function testGetAnnotationAndHintWithSimpleArray()
     {
         assertSame('int|float', $this->property->typeAnnotation());
-        assertSame(null, $this->property->typeHint("7.2.0"));
-        assertSame(null, $this->property->typeHint("5.6.0"));
+        
+        $property = new NumberProperty(
+            'myPropertyName',
+            ['type' => 'Number'],
+            $this->generatorRequest->withPHPVersion('7.4')
+        );
+        assertSame(null, $property->typeHint());
     }
 
     public function testGenerateSubTypesWithSimpleArray()

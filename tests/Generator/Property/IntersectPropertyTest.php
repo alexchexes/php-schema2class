@@ -29,7 +29,6 @@ class IntersectPropertyTest extends TestCase
             new ValidatedSpecificationFilesItem("BarNs", "Foo", ""),
             new SpecificationOptions(),
         );
-        $this->generatorRequest->setCurrValidateArgAlias('validate');
         $this->generatorRequest->setCurrReqHasDefaults(false);
         $this->property = new IntersectProperty('myPropertyName', ['allOf' => []], $this->generatorRequest);
     }
@@ -50,10 +49,10 @@ class IntersectPropertyTest extends TestCase
     {
         $underTest = new IntersectProperty('myPropertyName', ['allOf' => []], $this->generatorRequest);
 
-        $result = $underTest->convertInputToType('variable', 'providedOptionals');
+        $result = $underTest->convertInputToType();
 
         $expected = <<<'EOCODE'
-$myPropertyName = FooMyPropertyName::fromInput($variable->{'myPropertyName'}, $validate);
+$myPropertyName = FooMyPropertyName::fromInput($input->{'myPropertyName'}, $validate);
 EOCODE;
 
         assertSame($expected, $result);
@@ -86,7 +85,7 @@ EOCODE;
         $expected = <<<'EOCODE'
 $this->myPropertyName = clone $this->myPropertyName;
 EOCODE;
-        assertSame($expected, $this->property->cloneProperty());
+        assertSame($expected, $this->property->cloneAssignment());
     }
 
     public function testGetAnnotationAndHintWithSimpleArray()
@@ -94,8 +93,10 @@ EOCODE;
         $underTest = new IntersectProperty('myPropertyName', ['allOf' => []], $this->generatorRequest);
 
         assertSame('FooMyPropertyName', $underTest->typeAnnotation());
-        assertSame('\\BarNs\\FooMyPropertyName', $underTest->typeHint("7.2.0"));
-        assertSame('\\BarNs\\FooMyPropertyName', $underTest->typeHint("5.6.0"));
+
+        $underTest = new IntersectProperty('myPropertyName', ['allOf' => []], $this->generatorRequest->withPHPVersion('5.6.0'));
+
+        assertSame('\\BarNs\\FooMyPropertyName', $underTest->typeHint());
     }
 
 

@@ -58,22 +58,22 @@ class PrimitiveArrayProperty extends AbstractProperty
         return "array";
     }
 
-    public function typeHint(string $phpVersion): ?string
+    public function typeHint(): ?string
     {
         return "array";
     }
 
-    public function generateTypeAssertionExpr(string $expr): string
+    public function typeAssertionExpr(string $expr): string
     {
         return "is_array({$expr})";
     }
 
-    public function generateInputMappingExpr(string $expr, bool $asserted = false): string
+    public function inputMappingExpr(string $expr, bool $asserted = false): string
     {
         if ($this->isAssociativeArray) {
             return "(array){$expr}";
         }
-        return parent::generateInputMappingExpr($expr, $asserted);
+        return parent::inputMappingExpr($expr, $asserted);
     }
 
 

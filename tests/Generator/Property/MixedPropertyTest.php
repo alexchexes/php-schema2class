@@ -43,10 +43,10 @@ class MixedPropertyTest extends TestCase
 
     public function testConvertInputToType()
     {
-        $result = $this->underTest->convertInputToType('variable', 'providedOptionals');
+        $result = $this->underTest->convertInputToType();
 
         $expected = <<<'EOCODE'
-$myPropertyName = $variable->{'myPropertyName'};
+$myPropertyName = $input->{'myPropertyName'};
 EOCODE;
 
         assertSame($expected, $result);
@@ -65,14 +65,18 @@ EOCODE;
 
     public function testCloneProperty()
     {
-        assertNull($this->underTest->cloneProperty());
+        assertNull($this->underTest->cloneAssignment());
     }
 
     public function testGetAnnotationAndHintWithSimpleArray()
     {
         assertSame('mixed', $this->underTest->typeAnnotation());
-        assertSame(null, $this->underTest->typeHint("7.2.0"));
-        assertSame(null, $this->underTest->typeHint("5.6.0"));
+        
+        $underTest = new MixedProperty('myPropertyName', [], $this->generatorRequest->withPHPVersion('7.2.0'));
+        assertSame(null, $underTest->typeHint());
+        
+        $underTest = new MixedProperty('myPropertyName', [], $this->generatorRequest->withPHPVersion('5.6.0'));
+        assertSame(null, $underTest->typeHint());
     }
 
     public function testGenerateSubTypesWithSimpleArray()

@@ -5,6 +5,11 @@
          displayDetailsOnTestsThatTriggerWarnings="true"
          colors="true"
          cacheDirectory=".phpunit.cache">
+    <extensions>
+        <bootstrap class="RobinIngelbrecht\PHPUnitPrettyPrint\PhpUnitExtension">
+            <parameter name="enableByDefault" value="false"/>
+        </bootstrap>
+    </extensions>
     <testsuites>
         <testsuite name="unit">
             <directory>tests</directory>

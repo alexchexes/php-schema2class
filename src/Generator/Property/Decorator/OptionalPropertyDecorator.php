@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Property\Decorator;
 
+use Helmich\Schema2Class\Generator\Class\Method\FromInputMethodFactory;
 use Helmich\Schema2Class\Generator\Class\Method\SerializeMethodFactory;
 use Helmich\Schema2Class\Generator\Class\PropertyNames;
 use Helmich\Schema2Class\Util\StringUtils;
@@ -27,8 +28,7 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator
 
     public function generateIssetCheckExpr(string $inputVarName): string
     {
-        $key = $this->key;
-        $keyStr = var_export($key, true);
+        $keyStr = var_export($this->key, true);
         $accessor = "\${$inputVarName}->{{$keyStr}}";
 
         $existsCheck = "isset($accessor)";
@@ -39,12 +39,12 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator
         return $existsCheck;
     }
 
-    public function convertInputToType(string $inputVarName, string $optionalsVarName): string
+    public function convertInputToType(): string
     {
-        $key   = $this->key;
-        $keyStr = var_export($key, true);
-        $name  = $this->inner->name();
+        $keyStr = var_export($this->key, true);
+        $name  = $this->inner->varName();
 
+        $inputVarName = FromInputMethodFactory::INPUT_ARG_NAME;
         // JSON accessor:  $input->{'key'}   or   $input['key']
         $accessor = "\${$inputVarName}->{{$keyStr}}";
 
@@ -52,10 +52,10 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator
         // intact; if the wrapped property already allows null it will handle the
         // guard itself.
         if ($this->isOptionalNullable) {
-            $innerMap = $this->inner->generateInputMappingExpr($accessor, true);
+            $innerMap = $this->inner->inputMappingExpr($accessor, true);
             $mapped   = "({$accessor} !== null ? {$innerMap} : null)";
         } else {
-            $mapped = $this->generateInputMappingExpr($accessor, true);
+            $mapped = $this->inputMappingExpr($accessor, true);
         }
 
         $existsCheck = $this->generateIssetCheckExpr($inputVarName);
@@ -63,7 +63,8 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator
         $code = "\${$name} = {$existsCheck} ? {$mapped} : null;";
 
         if ($this->isOptionalNullable) {
-            $code .= "\nif ({$existsCheck}) {\n    \${$optionalsVarName}['{$this->key}'] = true;\n}";
+            $OPTIONALS_VAR_NAME = FromInputMethodFactory::OPTIONALS_VAR_NAME();
+            $code .= "\nif ({$existsCheck}) {\n    \${$OPTIONALS_VAR_NAME}['{$this->key}'] = true;\n}";
         }
 
         return $code;
@@ -79,7 +80,7 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator
             $check = "isset(\$this->{$name}) || array_key_exists('{$this->key}', \$this->{$OPTIONALS})";
 
             $keyStr = var_export($this->key, true);
-            $map = $this->generateOutputMappingExpr("\$this->{$name}");
+            $map = $this->outputMappingExpr("\$this->{$name}");
             $inner = "\${$outputVarName}[{$keyStr}] = {$map};";
             return "if ({$check}) {\n" . StringUtils::indentCode($inner, 1) . "\n}";
         }
@@ -102,7 +103,7 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator
             $OPTIONALS = PropertyNames::OPTIONALS;
             $check = "isset(\$this->{$name}) || array_key_exists('{$this->key}', \$this->{$OPTIONALS})";
             $keyStr = var_export($this->key, true);
-            $map = $this->generateOutputMappingExprStdClass("\$this->{$name}");
+            $map = $this->outputMappingExprStdClass("\$this->{$name}");
             $inner = "\${$outputVarName}->{{$keyStr}} = {$map};";
             return "if ({$check}) {\n" . StringUtils::indentCode($inner, 1) . "\n}";
         }
@@ -116,10 +117,10 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator
         return "if (isset(\$this->{$name})) {\n" . StringUtils::indentCode($inner, 1) . "\n}";
     }
 
-    public function cloneProperty(): ?string
+    public function cloneAssignment(): ?string
     {
         $name  = $this->name();
-        $inner = $this->inner->cloneProperty();
+        $inner = $this->inner->cloneAssignment();
 
         if ($inner !== null) {
             return "if (isset(\$this->{$name})) {\n" . StringUtils::indentCode($inner, 1) . "\n}";

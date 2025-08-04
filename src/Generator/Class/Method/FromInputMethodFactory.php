@@ -20,8 +20,19 @@ class FromInputMethodFactory
     public const INPUT_ARG_NAME = 'input';
     public const VALIDATE_ARG_NAME = 'validate';
     public const DEFAULTS_ARG_NAME = 'materializeDefaults';
-
     public const OBJ_VAR_NAME = 'obj';
+    static public function OPTIONALS_VAR_NAME() { return '_' . PropertyNames::OPTIONALS; }
+
+    static public function allVarNames()
+    {
+        return [
+            self::INPUT_ARG_NAME,
+            self::VALIDATE_ARG_NAME,
+            self::DEFAULTS_ARG_NAME,
+            self::OBJ_VAR_NAME,
+            self::OPTIONALS_VAR_NAME(),
+        ];
+    }
 
     public function __construct(
         private GeneratorRequest $request,
@@ -100,105 +111,39 @@ class FromInputMethodFactory
         return $docBlock;
     }
 
-    private function ensureUniqueName(string $name): string
-    {
-        $newName = $name;
-        if ($this->schemaProperties->hasPropertyWithName($newName)) {
-            $newName = '_' . $name;
-            $i = 2;
-            while ($this->schemaProperties->hasPropertyWithName($newName)) {
-                $newName = '_' . $name . $i;
-                $i++;
-            }
-        }
-
-        return $newName;
-    }
-
     /**
      * Generates the whole `fromInput` method body and returns it as a string.
      */
     private function generateBody(): string
     {
-        $inputArgAlias = $this->ensureUniqueName(self::INPUT_ARG_NAME);
-        $validateArgAlias = $this->ensureUniqueName(self::VALIDATE_ARG_NAME);
-        $materializeArgAlias = $this->ensureUniqueName(self::DEFAULTS_ARG_NAME);
-
-        $providedOptionalsVarName = $this->ensureUniqueName('_'.PropertyNames::OPTIONALS);
-        $objVarName = $this->ensureUniqueName(self::OBJ_VAR_NAME);
-
-        // TODO: find another way to propagate aliases names instead of mutating GeneratorRequest
-        $this->request->setCurrValidateArgAlias($validateArgAlias);
-        $this->request->setCurrMaterializeArgAlias($this->defaults ? $materializeArgAlias : null);
-
         $arrayToObjectExpr = $this->request->getOptions()->getArrayToObjectExpr();
+        $OBJ_VAR_NAME = self::OBJ_VAR_NAME;
 
         $bodyParts = [
-            // assign arguments to alias vars if there are properties with same names
-            $this->bodyVarAliases($inputArgAlias, $validateArgAlias, $materializeArgAlias),
             // in target PHP<8 we can't input specify $input type as `array|object` so we add a guard
-            $this->bodyInputGuard($inputArgAlias),
+            $this->bodyInputGuard(),
             // convert input to object if needed, optionally cloning it when "defaults" are present
-            $this->bodyInputToObjectConversion($inputArgAlias, $materializeArgAlias, $arrayToObjectExpr),
+            $this->bodyInputToObjectConversion($arrayToObjectExpr),
             // if schema has "defaults", generate "materializeDefaults" block
-            $this->bodyMaterializeDefaultsBlock($inputArgAlias, $materializeArgAlias, $arrayToObjectExpr),
+            $this->bodyMaterializeDefaultsBlock($arrayToObjectExpr),
             // valide input if argument allows
-            $this->bodyInputValidation($inputArgAlias, $validateArgAlias),
+            $this->bodyInputValidation(),
             // create "_providedOptionals" variable to keep track on assigned optional nullables
-            $this->bodyCreateProvidedOptionalsVar($providedOptionalsVarName),
+            $this->bodyCreateProvidedOptionalsVar(),
             // create variables for each property with conversion from JSON value to PHP type
-            $this->bodySchemaPropertyVars($inputArgAlias, $providedOptionalsVarName),
+            $this->bodySchemaPropertyVars(),
             // create an instance of the current class
-            $this->bodyCreateNewInstance($objVarName),
+            $this->bodyCreateNewInstance(),
             // assign variables to that instance properties
-            $this->bodyAssignOptionalsToInstance($objVarName),
+            $this->bodyAssignOptionalsToInstance(),
             // assign the `_providedOptionals` if needed
-            $this->bodyAssignProvidedOptionalsProperty($objVarName, $providedOptionalsVarName),
+            $this->bodyAssignProvidedOptionalsProperty(),
             // return the instance
-            "return \${$objVarName};",
+            "return \${$OBJ_VAR_NAME};",
         ];
 
         $body = implode('', $bodyParts);
         return $body;
-    }
-
-    /**
-     * When there are collisions between internal var names and schema properties,
-     * it generates a block such as:
-     * ```
-     *     $_input = $input;
-     *     unset($input);
-     *     $_validate = $validate;
-     *     unset($validate);
-     *     $_materializeDefaults = $materializeDefaults;
-     *     unset($materializeDefaults);
-     * ```
-     */
-    private function bodyVarAliases(string $inputArgAlias, string $validateArgAlias, string $materializeArgAlias): string
-    {
-        $aliases = '';
-
-        $setAndUnset = static fn(string $set, string $unset): string =>
-            <<<PHP
-            \${$set} = \$$unset;
-            unset(\$$unset);\n
-            PHP;
-
-        if ($inputArgAlias !== self::INPUT_ARG_NAME) {
-            $aliases .= $setAndUnset($inputArgAlias, self::INPUT_ARG_NAME);
-        }
-        if ($validateArgAlias !== self::VALIDATE_ARG_NAME) {
-            $aliases .= $setAndUnset($validateArgAlias, self::VALIDATE_ARG_NAME);
-        }
-        if ($materializeArgAlias !== self::DEFAULTS_ARG_NAME) {
-            $aliases .= $setAndUnset($materializeArgAlias, self::DEFAULTS_ARG_NAME);
-        }
-
-        if ($aliases) {
-            $aliases .= "\n";
-        }
-
-        return $aliases;
     }
 
     /**
@@ -211,8 +156,10 @@ class FromInputMethodFactory
      *     }
      * ```
      */
-    private function bodyInputGuard(string $inputArgAlias): string
+    private function bodyInputGuard(): string
     {
+        $INPUT_ARG_NAME = self::INPUT_ARG_NAME;
+
         if ($this->request->isAtLeastPHP('8.0')) {
             return '';
         }
@@ -221,9 +168,9 @@ class FromInputMethodFactory
 
         $inputGuard =
             <<<PHP
-            if (!is_array(\$$inputArgAlias) && !is_object(\$$inputArgAlias)) {
+            if (!is_array(\$$INPUT_ARG_NAME) && !is_object(\$$INPUT_ARG_NAME)) {
                 throw new \InvalidArgumentException(
-                    'Input to {$FROM_INPUT} must be array or object, got ' . gettype(\$$inputArgAlias)
+                    'Input to {$FROM_INPUT} must be array or object, got ' . gettype(\$$INPUT_ARG_NAME)
                 );
             }\n\n
             PHP;
@@ -243,12 +190,15 @@ class FromInputMethodFactory
      * $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
      * ```
      */
-    private function bodyInputToObjectConversion(string $inputArgAlias, string $materializeArgAlias, string $arrayToObjectExpr): string
+    private function bodyInputToObjectConversion(string $arrayToObjectExpr): string
     {
+        $INPUT_ARG_NAME = self::INPUT_ARG_NAME;
+        $DEFAULTS_ARG_NAME = self::DEFAULTS_ARG_NAME;
+
         $inputToObjectConversion = '';
 
-        $isArrayExpr = "\$$inputArgAlias = is_array(\$$inputArgAlias)";
-        $fullArrToObjectExpr = "{$arrayToObjectExpr}(\$$inputArgAlias)";
+        $isArrayExpr = "\$$INPUT_ARG_NAME = is_array(\$$INPUT_ARG_NAME)";
+        $fullArrToObjectExpr = "{$arrayToObjectExpr}(\$$INPUT_ARG_NAME)";
 
         if ($this->defaults) {
             // In case there are defaults, we will generate the "materializeDefaults" arg,
@@ -259,13 +209,13 @@ class FromInputMethodFactory
                 <<<PHP
                 $isArrayExpr
                     ? {$fullArrToObjectExpr}
-                    : (\$$materializeArgAlias ? clone \$$inputArgAlias : \$$inputArgAlias);\n\n
+                    : (\$$DEFAULTS_ARG_NAME ? clone \$$INPUT_ARG_NAME : \$$INPUT_ARG_NAME);\n\n
                 PHP;
         } else {
             // When no "materializeDefaults", no need to clone. Keep on a single line
             $inputToObjectConversion =
                 <<<PHP
-                $isArrayExpr ? {$fullArrToObjectExpr} : \$$inputArgAlias;\n
+                $isArrayExpr ? {$fullArrToObjectExpr} : \$$INPUT_ARG_NAME;\n
                 PHP;
         }
 
@@ -287,7 +237,7 @@ class FromInputMethodFactory
      *     }
      * ```
      */
-    private function bodyMaterializeDefaultsBlock(string $inputArgAlias, string $materializeArgAlias, string $arrayToObjectExpr): string
+    private function bodyMaterializeDefaultsBlock(string $arrayToObjectExpr): string
     {
         if (!$this->defaults) {
             return '';
@@ -295,13 +245,15 @@ class FromInputMethodFactory
 
         // let's accept https://wiki.php.net/rfc/arbitrary_string_interpolation so we don't do this:
         $DEFAULTS = PropertyNames::DEFAULTS;
+        $INPUT_ARG_NAME = self::INPUT_ARG_NAME;
+        $DEFAULTS_ARG_NAME = self::DEFAULTS_ARG_NAME;
 
         $materializeDefaultsBlock =
             <<<PHP
-            if (\${$materializeArgAlias}) {
+            if (\${$DEFAULTS_ARG_NAME}) {
                 foreach (self::\${$DEFAULTS} as \$__k => \$__v) {
-                    if (!property_exists(\${$inputArgAlias}, (string) \$__k)) {
-                        \${$inputArgAlias}->{\$__k} = (\$__v['type'] ?? null) === 'object'
+                    if (!property_exists(\${$INPUT_ARG_NAME}, (string) \$__k)) {
+                        \${$INPUT_ARG_NAME}->{\$__k} = (\$__v['type'] ?? null) === 'object'
                             ? {$arrayToObjectExpr}(\$__v['default'])
                             : \$__v['default'];
                     }
@@ -320,14 +272,16 @@ class FromInputMethodFactory
      *     }
      * ```
      */
-    private function bodyInputValidation(string $inputArgAlias, string $validateArgAlias): string
+    private function bodyInputValidation(): string
     {
         $VALIDATE_INPUT = MethodNames::VALIDATE_INPUT;
+        $INPUT_ARG_NAME = self::INPUT_ARG_NAME;
+        $VALIDATE_ARG_NAME = self::VALIDATE_ARG_NAME;
 
         $inputValidation =
             <<<PHP
-            if (\${$validateArgAlias}) {
-                static::{$VALIDATE_INPUT}(\${$inputArgAlias});
+            if (\${$VALIDATE_ARG_NAME}) {
+                static::{$VALIDATE_INPUT}(\${$INPUT_ARG_NAME});
             }\n\n
             PHP;
 
@@ -340,10 +294,11 @@ class FromInputMethodFactory
      *     $__providedOptionals = [];
      * ```
      */
-    private function bodyCreateProvidedOptionalsVar(string $providedOptionalsVarName): string
+    private function bodyCreateProvidedOptionalsVar(): string
     {
+        $OPTIONALS_VAR_NAME = self::OPTIONALS_VAR_NAME();
         return $this->hasOptionalNullable
-            ? "\${$providedOptionalsVarName} = [];\n"
+            ? "\${$OPTIONALS_VAR_NAME} = [];\n"
             : '';
     }
 
@@ -359,9 +314,9 @@ class FromInputMethodFactory
      *     //………
      * ```
      */
-    private function bodySchemaPropertyVars(string $inputArgAlias, string $providedOptionalsVarName): string
+    private function bodySchemaPropertyVars(): string
     {
-        return $this->schemaProperties->generateInputToTypeConversionCode($inputArgAlias, $providedOptionalsVarName) . "\n\n";
+        return $this->schemaProperties->generateInputToTypeConversionCode() . "\n\n";
     }
 
     /**
@@ -371,15 +326,18 @@ class FromInputMethodFactory
      *     $obj = new self($city, $street, $country);
      * ```
      */
-    private function bodyCreateNewInstance(string $objVarName): string
+    private function bodyCreateNewInstance(): string
     {
+        $OBJ_VAR_NAME = self::OBJ_VAR_NAME;
         $requiredProperties = $this->schemaProperties->filter(PropertyCollectionFilterFactory::onlyRequired());
         $constructorParams = [];
+
         foreach ($requiredProperties as $requiredProperty) {
-            $constructorParams[] = '$' . $requiredProperty->name();
+            $constructorParams[] = '$' . $requiredProperty->varName();
         }
+
         $paramsStr = join(", ", $constructorParams);
-        $createNewInstance = "\${$objVarName} = new self({$paramsStr});\n";
+        $createNewInstance = "\${$OBJ_VAR_NAME} = new self({$paramsStr});\n";
 
         return $createNewInstance;
     }
@@ -393,15 +351,19 @@ class FromInputMethodFactory
      *     $obj->qux = $qux;
      * ```
      */
-    private function bodyAssignOptionalsToInstance(string $objVarName): string
+    private function bodyAssignOptionalsToInstance(): string
     {
+        $OBJ_VAR_NAME = self::OBJ_VAR_NAME;
 
         $optionalProperties = $this->schemaProperties->filter(PropertyCollectionFilterFactory::onlyOptional());
         $assignments = [];
+
         foreach ($optionalProperties as $optionalProperty) {
-            $name = $optionalProperty->name();
-            $assignments[] = "\${$objVarName}->{$name} = \${$name};";
+            $propName = $optionalProperty->name();
+            $varName = $optionalProperty->varName();
+            $assignments[] = "\${$OBJ_VAR_NAME}->{$propName} = \${$varName};";
         }
+
         $assignOptionalsToInstance = join("\n", $assignments) . "\n";
 
         return $assignOptionalsToInstance;
@@ -414,10 +376,14 @@ class FromInputMethodFactory
      *     $obj->_providedOptionals = $__providedOptionals;
      * ```
      */
-    private function bodyAssignProvidedOptionalsProperty(string $objVarName, string $providedOptionalsVarName): string
+    private function bodyAssignProvidedOptionalsProperty(): string
     {
+        $OPTIONALS = PropertyNames::OPTIONALS;
+        $OBJ_VAR_NAME = self::OBJ_VAR_NAME;
+        $OPTIONALS_VAR_NAME = self::OPTIONALS_VAR_NAME();
+
         return $this->hasOptionalNullable
-            ? "\${$objVarName}->".PropertyNames::OPTIONALS." = \${$providedOptionalsVarName};\n"
+            ? "\${$OBJ_VAR_NAME}->{$OPTIONALS} = \${$OPTIONALS_VAR_NAME};\n"
             : '';
     }
 }

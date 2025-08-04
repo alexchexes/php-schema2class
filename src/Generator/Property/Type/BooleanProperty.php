@@ -32,21 +32,21 @@ class BooleanProperty extends AbstractProperty
         return "bool";
     }
 
-    public function typeHint(string $phpVersion): ?string
+    public function typeHint(): ?string
     {
-        if (Semver::satisfies($phpVersion, "<7.0")) {
+        if (Semver::satisfies($this->request->getTargetPHPVersion(), "<7.0")) {
             return null;
         }
 
         return "bool";
     }
 
-    public function generateTypeAssertionExpr(string $expr): string
+    public function typeAssertionExpr(string $expr): string
     {
         return "is_bool({$expr})";
     }
 
-    public function generateInputMappingExpr(string $expr, bool $asserted = false): string
+    public function inputMappingExpr(string $expr, bool $asserted = false): string
     {
         if ($asserted) {
             return $expr;

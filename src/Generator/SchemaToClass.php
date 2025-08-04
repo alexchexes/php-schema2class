@@ -46,6 +46,7 @@ class SchemaToClass
 
         // dereference schemas that consist only of a reference
         $schema = $this->dereferenceSchema($schema, $req, $rootDefs);
+
         $req = $req->withSchema($schema);
 
         if ($this->handleEnum($schema, $req)) {
@@ -202,7 +203,7 @@ class SchemaToClass
         }
 
         $req = $req
-            ->withAdditionalReferenceLookup(new DefinitionsReferenceLookup($allDefinitions))
+            ->withAdditionalReferenceLookup(new DefinitionsReferenceLookup($allDefinitions, $req))
             ->withGeneratedClassNames($generatedClasses);
 
         $definitionsToGenerate = $allDefinitions;

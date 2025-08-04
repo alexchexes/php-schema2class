@@ -12,71 +12,76 @@ use Helmich\Schema2Class\Generator\GeneratorRequest;
  * conversions. Currently no code outside of type resolution is using this class
  * directly.
  */
-readonly class ReferencedTypeUnknown implements ReferencedType
+readonly class ReferencedTypeUnknown implements ReferencedTypeInterface
 {
+    public function __construct(
+        private GeneratorRequest $request,
+    )
+    {}
+
     public function name(): string
     {
         return "unknown";
     }
 
-    public function typeAnnotation(GeneratorRequest $req): string
+    public function typeAnnotation(): string
     {
         return "mixed";
     }
 
-    public function typeHint(GeneratorRequest $req): ?string
+    public function typeHint(): ?string
     {
-        if ($req->isAtLeastPHP("8.0")) {
+        if ($this->request->isAtLeastPHP("8.0")) {
             return "mixed";
         }
 
         return null;
     }
 
-    public function serializedInputTypeHint(GeneratorRequest $req): ?string
+    public function serializedInputTypeHint(): ?string
     {
-        if ($req->isAtLeastPHP("8.0")) {
+        if ($this->request->isAtLeastPHP("8.0")) {
             return "mixed";
         }
 
         return null;
     }
 
-    public function serializedTypeHint(GeneratorRequest $req): ?string
+    public function serializedTypeHint(): ?string
     {
-        if ($req->isAtLeastPHP("8.0")) {
+        if ($this->request->isAtLeastPHP("8.0")) {
             return "mixed";
         }
 
         return null;
     }
 
-    public function serializedTypeHintStdClass(GeneratorRequest $req): ?string
+    public function serializedTypeHintStdClass(): ?string
     {
-        return $this->serializedTypeHint($req);
+        return $this->serializedTypeHint();
     }
 
-    public function typeAssertionExpr(GeneratorRequest $req, string $expr): string
+    public function typeAssertionExpr(string $expr): string
     {
         return "true";
     }
 
-    public function inputAssertionExpr(GeneratorRequest $req, string $expr): string
+    public function inputAssertionExpr(string $expr): string
     {
         return "true";
     }
 
-    public function inputMappingExpr(GeneratorRequest $req, string $expr): string
+    public function inputMappingExpr(string $expr, bool $asserted = false): string
     {
         return $expr;
     }
 
-    public function outputMappingExpr(GeneratorRequest $req, string $expr): string
+    public function outputMappingExpr(string $expr): string
     {
         return $expr;
     }
 
-    public function outputMappingExprStdClass(GeneratorRequest $req, string $expr): string
+    public function outputMappingExprStdClass(string $expr): string
     {
         return $expr;
     }

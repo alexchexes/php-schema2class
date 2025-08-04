@@ -24,7 +24,6 @@ class ObjectArrayPropertyTest extends TestCase
     protected function setUp(): void
     {
         $this->generatorRequest = new GeneratorRequest([], new ValidatedSpecificationFilesItem("", "Foo", ""), new SpecificationOptions());
-        $this->generatorRequest->setCurrValidateArgAlias('validate');
         $this->generatorRequest->setCurrReqHasDefaults(false);
         $this->property = new ObjectArrayProperty('myPropertyName', ['type' => 'array', 'items' => ['type' => 'object']], $this->generatorRequest);
     }
@@ -62,10 +61,10 @@ class ObjectArrayPropertyTest extends TestCase
 
         assertTrue($underTest->isComplex());
 
-        $result = $underTest->convertInputToType('variable', 'providedOptionals');
+        $result = $underTest->convertInputToType();
 
         $expected = <<<'EOCODE'
-$myPropertyName = array_map(fn (array|object $i): FooMyPropertyNameItem => FooMyPropertyNameItem::fromInput($i, $validate), $variable->{'myPropertyName'});
+$myPropertyName = array_map(fn (array|object $i): FooMyPropertyNameItem => FooMyPropertyNameItem::fromInput($i, $validate), $input->{'myPropertyName'});
 EOCODE;
 
         assertSame($expected, $result);
@@ -104,17 +103,21 @@ EOCODE;
         $expected = <<<'EOCODE'
 $this->myPropertyName = array_map(fn (FooMyPropertyNameItem $i) => clone $i, $this->myPropertyName);
 EOCODE;
-        assertSame($expected, $underTest->cloneProperty());
+        assertSame($expected, $underTest->cloneAssignment());
     }
 
     public function testGetAnnotationAndHintWithComplexArray()
     {
-        $underTest = new ObjectArrayProperty('myPropertyName', ['type' => 'array', 'items' => ['properties' => ['foo' => ['type' => 'string']]]], $this->generatorRequest);
+        $schema = ['type' => 'array', 'items' => ['properties' => ['foo' => ['type' => 'string']]]];
+
+        $underTest = new ObjectArrayProperty('myPropertyName', $schema, $this->generatorRequest);
 
         assertSame('FooMyPropertyNameItem[]', $underTest->typeAnnotation());
-        assertSame('array', $underTest->typeHint("7.2.0"));
-        assertSame('array', $underTest->typeHint("5.6.0"));
+        
+        assertSame('array', $underTest->typeHint());
 
+        $underTest = new ObjectArrayProperty('myPropertyName', $schema, $this->generatorRequest->withPHPVersion('5.6.0'));
+        assertSame('array', $underTest->typeHint());
     }
 
     public function testGenerateSubTypesWithComplexArray()

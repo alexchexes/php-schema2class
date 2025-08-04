@@ -23,7 +23,8 @@
         "composer/semver": "^3.0",
         "laminas/laminas-code": "^4.12",
         "nikic/php-parser": "^5.0",
-        "voku/portable-ascii": "^2.0"
+        "voku/portable-ascii": "^2.0",
+        "symfony/process": "^7.3"
     },
     "autoload": {
         "psr-4": {
@@ -44,7 +45,8 @@
         "phpstan/phpstan": "^2.1.2",
         "phpspec/prophecy": "^1.17",
         "phpspec/prophecy-phpunit": "^2.0",
-        "cweagans/composer-patches": "^1.7"
+        "cweagans/composer-patches": "^1.7",
+        "robiningelbrecht/phpunit-pretty-print": "^1.4"
     },
 	"extra": {
 		"patches": {

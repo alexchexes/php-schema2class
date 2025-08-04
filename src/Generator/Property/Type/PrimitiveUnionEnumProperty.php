@@ -36,15 +36,18 @@ class PrimitiveUnionEnumProperty extends AbstractProperty
     {
         $quote = static fn(string $s): string => "'" . str_replace("'", "\\'", $s) . "'";
 
-        $literals = array_map(static function ($v) use ($quote) {
-            if ($v === null) {
-                return 'null';          // ← lower-case, unquoted
-            }
-            if (is_string($v)) {
-                return $quote($v);
-            }
-            return (string) $v;         // int | float
-        }, $this->schema['enum']);
+        $literals = array_map(
+            static function (int|float|string|bool|null $v) use ($quote) {
+                if ($v === null) {
+                    return 'null';          // ← lower-case, unquoted
+                }
+                if (is_string($v)) {
+                    return $quote($v);
+                }
+                return (string) $v;         // int | float
+            },
+            $this->schema['enum']
+        );
 
         return implode('|', $literals);
     }
@@ -52,14 +55,14 @@ class PrimitiveUnionEnumProperty extends AbstractProperty
     /**
      * Generates real type-hint when PHP ≥ 8.0
      */
-    public function typeHint(string $phpVersion): ?string
+    public function typeHint(): ?string
     {
-        if (!Semver::satisfies($phpVersion, ">=8.0")) {
+        if (!Semver::satisfies($this->request->getTargetPHPVersion(), ">=8.0")) {
             return null;
         }
 
         $primitives = array_unique(array_map(
-            fn($t) => match ($t) {
+            fn(string $t) => match ($t) {
                 'string'   => 'string',
                 'integer',
                 'int',
@@ -76,15 +79,15 @@ class PrimitiveUnionEnumProperty extends AbstractProperty
     /**
      * Runtime checks & mappings (straight-through)
      */
-    public function generateTypeAssertionExpr(string $expr): string
+    public function typeAssertionExpr(string $expr): string
     {
         $values = var_export($this->schema['enum'], true);
         return "in_array({$expr}, {$values}, true)";
     }
 
-    public function generateInputAssertionExpr(string $expr): string
+    public function inputAssertionExpr(string $expr): string
     {
-        return $this->generateTypeAssertionExpr($expr);
+        return $this->typeAssertionExpr($expr);
     }
 
     /**

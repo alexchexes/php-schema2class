@@ -26,7 +26,6 @@ class UnionPropertyTest extends TestCase
     protected function setUp(): void
     {
         $this->generatorRequest = new GeneratorRequest([], new ValidatedSpecificationFilesItem("BarNs", "Foo", ""), new SpecificationOptions());
-        $this->generatorRequest->setCurrValidateArgAlias('validate');
         $this->generatorRequest->setCurrReqHasDefaults(false);
         $this->property = new UnionProperty(
             'myPropertyName',
@@ -50,12 +49,12 @@ class UnionPropertyTest extends TestCase
     {
         $underTest = new UnionProperty('myPropertyName', ['anyOf' => [['properties' => ['subFoo1' => ['type' => 'string']]], ['properties' => ['subFoo2' => ['type' => 'string']]]]], $this->generatorRequest);
 
-        $result = $underTest->convertInputToType('variable', 'providedOptionals');
+        $result = $underTest->convertInputToType();
 
         $expected = <<<'EOCODE'
 $myPropertyName = match (true) {
-    FooMyPropertyNameAlternative1::validateInput($variable->{'myPropertyName'}, true) => FooMyPropertyNameAlternative1::fromInput($variable->{'myPropertyName'}, $validate),
-    FooMyPropertyNameAlternative2::validateInput($variable->{'myPropertyName'}, true) => FooMyPropertyNameAlternative2::fromInput($variable->{'myPropertyName'}, $validate),
+    FooMyPropertyNameAlternative1::validateInput($input->{'myPropertyName'}, true) => FooMyPropertyNameAlternative1::fromInput($input->{'myPropertyName'}, $validate),
+    FooMyPropertyNameAlternative2::validateInput($input->{'myPropertyName'}, true) => FooMyPropertyNameAlternative2::fromInput($input->{'myPropertyName'}, $validate),
     default => throw new \InvalidArgumentException("could not build property 'myPropertyName' from JSON"),
 };
 EOCODE;
@@ -103,7 +102,7 @@ $this->myPropertyName = match (true) {
     $this->myPropertyName instanceof FooMyPropertyNameAlternative2 => clone $this->myPropertyName,
 };
 EOCODE;
-        assertSame($expected, $this->property->cloneProperty());
+        assertSame($expected, $this->property->cloneAssignment());
     }
 
     public function testAllowsNullIfSubPropertyAllowsNull(): void
@@ -113,7 +112,7 @@ EOCODE;
             '#/definitions/bar' => new Definition('Ns', '', 'Ns\\Bar', 'Bar', ['type' => 'string']),
         ];
 
-        $lookup = new DefinitionsReferenceLookup($defs);
+        $lookup = new DefinitionsReferenceLookup($defs, $this->generatorRequest);
         $req    = $this->generatorRequest->withReferenceLookup($lookup);
 
         $prop = new UnionProperty('myPropertyName', [
@@ -130,7 +129,8 @@ EOCODE;
     {
         $php8Ver = GeneratorRequest::DEFAULT_PHP8_VERSION;
         return [
-            "php {$php8Ver}" => [$php8Ver, '\BarNs\FooMyPropertyNameAlternative1|\BarNs\FooMyPropertyNameAlternative2'],
+            "php {$php8Ver}" =>
+                [$php8Ver, '\BarNs\FooMyPropertyNameAlternative1|\BarNs\FooMyPropertyNameAlternative2'],
             'php 7.2' => ['7.2.0', null],
             'php 5.6' => ['5.6.0', null],
         ];
@@ -140,7 +140,11 @@ EOCODE;
     public function testGetAnnotationAndHintWithSimpleArray(string $phpVersion, mixed $expected)
     {
         $request = $this->generatorRequest->withPHPVersion($phpVersion);
-        $underTest = new UnionProperty('myPropertyName', ['anyOf' => [['properties' => ['subFoo1' => ['type' => 'string']]], ['properties' => ['subFoo2' => ['type' => 'string']]]]], $request);
+        $underTest = new UnionProperty(
+            'myPropertyName',
+            ['anyOf' => [['properties' => ['subFoo1' => ['type' => 'string']]], ['properties' => ['subFoo2' => ['type' => 'string']]]]],
+            $request
+        );
 
         assertSame('FooMyPropertyNameAlternative1|FooMyPropertyNameAlternative2', $underTest->typeAnnotation());
         assertSame($expected, $underTest->typeHint("n/a"));

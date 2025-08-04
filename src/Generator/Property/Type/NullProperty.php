@@ -32,7 +32,7 @@ class NullProperty extends AbstractProperty
      *     still requires it to appear in a union), so we return null
      *     to omit the hint for every PHP version.
      * ------------------------------------------------------------------- */
-    public function typeHint(string $phpVersion): ?string
+    public function typeHint(): ?string
     {
         return null;
     }
@@ -40,12 +40,12 @@ class NullProperty extends AbstractProperty
     /* ---------------------------------------------------------------------
      * (4)  Assertions, mappings, cloning – all no-ops for a scalar null
      * ------------------------------------------------------------------- */
-    public function generateTypeAssertionExpr(string $expr): string  { return "{$expr} === null"; }
-    public function generateInputAssertionExpr(string $expr): string { return "{$expr} === null"; }
-    public function generateInputMappingExpr(string $expr, bool $asserted = false): string { return $expr; }
-    public function generateOutputMappingExpr(string $expr): string { return $expr; }
-    public function generateOutputMappingExprStdClass(string $expr): string { return $expr; }
-    public function generateCloneExpr(string $expr): string { return $expr; }
+    public function typeAssertionExpr(string $expr): string  { return "{$expr} === null"; }
+    public function inputAssertionExpr(string $expr): string { return "{$expr} === null"; }
+    public function inputMappingExpr(string $expr, bool $asserted = false): string { return $expr; }
+    public function outputMappingExpr(string $expr): string { return $expr; }
+    public function outputMappingExprStdClass(string $expr): string { return $expr; }
+    public function cloneExpr(string $expr): string { return $expr; }
 
     /* ---------------------------------------------------------------------
      * (5)  `null` is the only possible literal value.

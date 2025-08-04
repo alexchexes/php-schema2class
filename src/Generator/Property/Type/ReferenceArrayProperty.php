@@ -4,19 +4,19 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class\Generator\Property\Type;
 
 use Helmich\Schema2Class\Generator\GeneratorRequest;
-use Helmich\Schema2Class\Generator\ReferencedType\ReferencedType;
+use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeInterface;
 
-/** 
- * Array of references to other generated classes.
+/**
+ * Property that is array where each item refers to a generated PHP artifact (class, Enum) via `$ref`.
  */
 class ReferenceArrayProperty extends AbstractProperty
 {
-    private ReferencedType $type;
+    private ReferencedTypeInterface $refType;
 
-    public function __construct(string $key, array $schema, GeneratorRequest $generatorRequest)
+    public function __construct(string $key, array $schema, GeneratorRequest $request)
     {
-        parent::__construct($key, $schema, $generatorRequest);
-        $this->type = $generatorRequest->lookupReference($schema['items']['$ref']);
+        parent::__construct($key, $schema, $request);
+        $this->refType = $request->lookupReference($schema['items']['$ref']);
     }
 
     public static function canHandleSchema(array $schema): bool
@@ -26,31 +26,35 @@ class ReferenceArrayProperty extends AbstractProperty
 
     public function typeAnnotation(): string
     {
-        $inner = $this->type->typeAnnotation($this->generatorRequest);
+        $inner = $this->refType->typeAnnotation();
         if (str_contains($inner, "|")) {
             return "({$inner})[]";
         }
         return $inner . '[]';
     }
 
-    public function typeHint(string $phpVersion): ?string
+    public function typeHint(): ?string
     {
         return "array";
     }
 
-    public function generateTypeAssertionExpr(string $expr): string
+    public function typeAssertionExpr(string $expr): string
     {
-        $map = "array_map(fn({$this->type->typeHint($this->generatorRequest)} \$i): bool => {$this->type->typeAssertionExpr($this->generatorRequest, '$i')}, {$expr})";
+        $typeHint = $this->refType->typeHint();
+        $assertExpr = $this->refType->typeAssertionExpr('$i');
+
+        $map = "array_map(fn({$typeHint} \$i): bool => {$assertExpr}, {$expr})";
+
         return "array_reduce($map, fn(bool \$carry, bool \$item): bool => \$carry && \$item, true)";
     }
 
-    public function generateInputAssertionExpr(string $expr): string
+    public function inputAssertionExpr(string $expr): string
     {
         // Build the inner assertion closure: use union hint only on PHP ≥8.0;
         // on 7.4+, drop the hint so `fn($i)` stays valid.
-        $innerAssert = $this->type->inputAssertionExpr($this->generatorRequest, '$i');
-        if ($this->generatorRequest->isAtLeastPHP("8.0")) {
-            $hint = $this->type->serializedInputTypeHint($this->generatorRequest);
+        $innerAssert = $this->refType->inputAssertionExpr('$i');
+        if ($this->request->isAtLeastPHP("8.0")) {
+            $hint = $this->refType->serializedInputTypeHint();
             $map  = "array_map(fn({$hint} \$i): bool => {$innerAssert}, {$expr})";
         } else {
             $map  = "array_map(fn(\$i): bool => {$innerAssert}, {$expr})";
@@ -58,16 +62,13 @@ class ReferenceArrayProperty extends AbstractProperty
         return "array_reduce({$map}, fn(bool \$carry, bool \$item): bool => \$carry && \$item, true)";
     }
 
-    public function generateInputMappingExpr(string $expr, bool $asserted = false): string
+    public function inputMappingExpr(string $expr, bool $asserted = false): string
     {
         // Build the mapping closure: drop union type hints for PHP < 8.0
-        $innerMap = $this->type->inputMappingExpr(
-            $this->generatorRequest,
-            expr: '$i',
-        );
-        if ($this->generatorRequest->isAtLeastPHP("8.0")) {
-            $hint = $this->type->serializedInputTypeHint($this->generatorRequest);
-            $returnHint = $this->type->typeHint($this->generatorRequest);
+        $innerMap = $this->refType->inputMappingExpr('$i');
+        if ($this->request->isAtLeastPHP("8.0")) {
+            $hint = $this->refType->serializedInputTypeHint();
+            $returnHint = $this->refType->typeHint();
             $closure = "fn({$hint} \$i): {$returnHint} => {$innerMap}";
         } else {
             $closure = "fn(\$i) => {$innerMap}";
@@ -75,20 +76,20 @@ class ReferenceArrayProperty extends AbstractProperty
         return "array_map(\n    {$closure},\n    {$expr}\n)";
     }
 
-    public function generateOutputMappingExpr(string $expr): string
+    public function outputMappingExpr(string $expr): string
     {
-        $typeHint = $this->type->typeHint($this->generatorRequest);
-        $serializedTypeHint = $this->type->serializedTypeHint($this->generatorRequest);
-        $outputMappingExpr = $this->type->outputMappingExpr($this->generatorRequest, '$i');
+        $typeHint = $this->refType->typeHint();
+        $serializedTypeHint = $this->refType->serializedTypeHint();
+        $outputMappingExpr = $this->refType->outputMappingExpr('$i');
 
         return "array_map(fn({$typeHint} \$i): {$serializedTypeHint} => {$outputMappingExpr}, {$expr})";
     }
 
-    public function generateOutputMappingExprStdClass(string $expr): string
+    public function outputMappingExprStdClass(string $expr): string
     {
-        $typeHint = $this->type->typeHint($this->generatorRequest);
-        $serializedTypeHint = $this->type->serializedTypeHintStdClass($this->generatorRequest);
-        $outputMappingExpr = $this->type->outputMappingExprStdClass($this->generatorRequest, '$i');
+        $typeHint = $this->refType->typeHint();
+        $serializedTypeHint = $this->refType->serializedTypeHintStdClass();
+        $outputMappingExpr = $this->refType->outputMappingExprStdClass('$i');
 
         return "array_map(fn({$typeHint} \$i): {$serializedTypeHint} => {$outputMappingExpr}, {$expr})";
     }

@@ -29,8 +29,10 @@ class NumberProperty extends AbstractProperty
         return 'int|float';
     }
 
-    public function typeHint(string $phpVersion): ?string
+    public function typeHint(): ?string
     {
+        $phpVersion = $this->request->getTargetPHPVersion();
+        
         if (isset($this->schema['enum'])) {
             return EnumUtils::typeHint($this->schema['enum'], $phpVersion);
         }
@@ -42,7 +44,7 @@ class NumberProperty extends AbstractProperty
         return 'int|float';
     }
 
-    public function generateTypeAssertionExpr(string $expr): string
+    public function typeAssertionExpr(string $expr): string
     {
         if (isset($this->schema['enum'])) {
             return EnumUtils::assertionExpr($this->schema['enum'], $expr);
@@ -51,7 +53,7 @@ class NumberProperty extends AbstractProperty
         return "is_int({$expr}) || is_float({$expr})";
     }
 
-    public function generateInputMappingExpr(string $expr, bool $asserted = false): string
+    public function inputMappingExpr(string $expr, bool $asserted = false): string
     {
         if ($asserted) {
             return $expr;

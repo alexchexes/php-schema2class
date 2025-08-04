@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Helmich\Schema2Class\Generator;
+namespace Helmich\Schema2Class\Generator\Class\Property;
 
 use Laminas\Code\Generator\DocBlockGenerator;
 use Laminas\Code\Generator\Exception;

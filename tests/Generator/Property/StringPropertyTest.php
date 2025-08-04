@@ -41,10 +41,10 @@ class StringPropertyTest extends TestCase
 
     public function testConvertInputToType()
     {
-        $result = $this->property->convertInputToType('variable', 'providedOptionals');
+        $result = $this->property->convertInputToType();
 
         $expected = <<<'EOCODE'
-$myString = $variable->{'myString'};
+$myString = $input->{'myString'};
 EOCODE;
 
         assertSame($expected, $result);
@@ -63,14 +63,17 @@ EOCODE;
 
     public function testCloneProperty()
     {
-        assertNull($this->property->cloneProperty());
+        assertNull($this->property->cloneAssignment());
     }
 
     public function testGetAnnotationAndHint()
     {
         assertSame('string', $this->property->typeAnnotation());
-        assertSame('string', $this->property->typeHint("7.2.0"));
-        assertSame(null, $this->property->typeHint("5.6.0"));
+
+        assertSame('string', $this->property->typeHint());
+
+        $property = new StringProperty('myString', ['type' => 'string'], $this->generatorRequest->withPHPVersion('5.6.0'));
+        assertSame(null, $property->typeHint());
     }
 
     public function testGenerateSubTypesWithSimpleArray()

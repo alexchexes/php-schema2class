@@ -24,25 +24,25 @@ class RawObjectProperty extends AbstractProperty
         return 'array|object';
     }
 
-    public function typeHint(string $phpVersion): ?string
+    public function typeHint(): ?string
     {
-        if (Semver::satisfies($phpVersion, '>=8.0')) {
+        if (Semver::satisfies($this->request->getTargetPHPVersion(), '>=8.0')) {
             return 'array|object';
         }
         return null;
     }
 
-    public function generateTypeAssertionExpr(string $expr): string
+    public function typeAssertionExpr(string $expr): string
     {
         return 'is_array(' . $expr . ') || is_object(' . $expr . ')';
     }
 
-    public function generateOutputMappingExpr(string $expr): string
+    public function outputMappingExpr(string $expr): string
     {
         return 'json_decode(json_encode(' . $expr . '), true)';
     }
 
-    public function generateOutputMappingExprStdClass(string $expr): string
+    public function outputMappingExprStdClass(string $expr): string
     {
         return 'json_decode(json_encode(' . $expr . '))';
     }

@@ -7,9 +7,7 @@ use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\Collection\PropertyCollection;
 use Helmich\Schema2Class\Generator\Property\PropertyBuilder;
 use Helmich\Schema2Class\Generator\Property\Decorator\OptionalPropertyDecorator;
-use Helmich\Schema2Class\Util\ReservedNames;
 use Helmich\Schema2Class\Util\SchemaUtils;
-use Helmich\Schema2Class\Util\StringUtils;
 
 /**
  * Collects property information from a JSON schema and applies name sanitisation
@@ -30,11 +28,6 @@ class SchemaPropertyCollector
                 $properties->add($property);
             }
         }
-
-        $this->ensureUniquePropertyNames(
-            $properties,
-            $req->getOptions()->getPreservePropertyNames(),
-        );
 
         return $properties;
     }
@@ -131,59 +124,5 @@ class SchemaPropertyCollector
 
         $found = false;
         return ['default' => null, 'type' => null];
-    }
-    
-    private function ensureUniquePropertyNames(PropertyCollection $schemaProperties, bool $preservePropertyNames): void
-    {
-        $reservedPropertyNames = ReservedNames::getBannedVarNames();
-        $reservedMethodNames = ReservedNames::getBannedMethodNames();
-
-        $used = [];
-        foreach (array_merge($reservedPropertyNames, $reservedMethodNames) as $n) {
-            $used[] = StringUtils::safeCamelCase($n);
-            $used[] = StringUtils::sanitizeIdentifier($n);
-        }
-        $used = array_values(array_unique($used));
-
-        $usedMethods = [];
-        foreach ($reservedMethodNames as $n) {
-            $usedMethods[] = strtolower(StringUtils::safePascalCase(StringUtils::safeCamelCase($n)));
-            $usedMethods[] = strtolower(StringUtils::safePascalCase(StringUtils::sanitizeIdentifier($n)));
-        }
-        $usedMethods = array_values(array_unique($usedMethods));
-
-        foreach ($schemaProperties as $schemaProp) {
-            $base    = $schemaProp->name();
-            $unique  = $base;
-            $pascal  = strtolower(StringUtils::safePascalCase($unique));
-
-            $needsChange = in_array($unique, $used, true)
-                || (!$preservePropertyNames && in_array($pascal, $usedMethods, true));
-
-            if ($needsChange) {
-                if ($base[0] !== '_') {
-                    $unique = '_' . $base;
-                    $pascal = strtolower(StringUtils::safePascalCase($unique));
-                }
-
-                $i = 1;
-                $baseUnique = $unique;
-                while (
-                    in_array($unique, $used, true)
-                    || (!$preservePropertyNames && in_array($pascal, $usedMethods, true))
-                ) {
-                    $unique = $baseUnique . '_' . $i;
-                    $pascal = strtolower(StringUtils::safePascalCase($unique));
-                    $i++;
-                }
-            }
-
-            if ($unique !== $base) {
-                $schemaProp->setName($unique);
-            }
-
-            $used[]       = $unique;
-            $usedMethods[] = $pascal;
-        }
     }
 }

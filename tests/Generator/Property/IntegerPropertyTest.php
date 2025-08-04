@@ -51,10 +51,10 @@ class IntegerPropertyTest extends TestCase
 
     public function testConvertInputToType()
     {
-        $result = $this->property->convertInputToType('variable', 'providedOptionals');
+        $result = $this->property->convertInputToType();
 
         $expected = <<<'EOCODE'
-$myPropertyName = (int)$variable->{'myPropertyName'};
+$myPropertyName = (int)$input->{'myPropertyName'};
 EOCODE;
 
         assertSame($expected, $result);
@@ -84,14 +84,16 @@ EOCODE;
 
     public function testCloneProperty()
     {
-        assertNull($this->property->cloneProperty());
+        assertNull($this->property->cloneAssignment());
     }
 
     public function testGetAnnotationAndHintWithSimpleArray()
     {
         assertSame('int', $this->property->typeAnnotation());
-        assertSame('int', $this->property->typeHint("7.2.0"));
-        assertSame(null, $this->property->typeHint("5.6.0"));
+        assertSame('int', $this->property->typeHint());
+
+        $property = new IntegerProperty('myPropertyName', ['type' => 'integer'], $this->generatorRequest->withPHPVersion('5.6.0'));
+        assertSame(null, $property->typeHint());
     }
 
     public function testGenerateSubTypesWithSimpleArray()
