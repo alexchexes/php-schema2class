@@ -9,7 +9,6 @@ use Helmich\Schema2Class\Generator\Class\Method\SetterFactory;
 use Helmich\Schema2Class\Generator\Class\PropertyNames;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\Collection\PropertyCollection;
-use Helmich\Schema2Class\Generator\Property\Type\PropertyInterface;
 use Helmich\Schema2Class\Util\ReservedNames;
 use Helmich\Schema2Class\Util\StringUtils;
 
@@ -157,6 +156,7 @@ class IdentifierResolver
         // Sort to get deterministic results
         $props = self::sortByKey($properties);
 
+        /** @var array<string,bool> $used */
         $used = [];
 
         // Helper to check if any prefix + suffix combination is already taken
