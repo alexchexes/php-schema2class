@@ -36,18 +36,9 @@ class MoiKlass
     /**
      * @param string $c
      * @return self
-     * @param bool $validate
      */
-    public function withC(string $c, bool $validate = true): self
+    public function withC(string $c): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($c, self::$_schema['properties']['c']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->c = $c;
 

@@ -266,6 +266,19 @@ class UnionProperty extends AbstractProperty
         }
     }
 
+    public function needsValidation(): bool
+    {
+        if ($this->typeHint() === null) {
+            return true;
+        }
+        foreach ($this->subProperties as $p) {
+            if ($p->needsValidation()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public function typeAnnotation(): string
     {
         $types = [];

@@ -6,6 +6,7 @@ namespace Helmich\Schema2Class\Generator\Property\Type;
 use Helmich\Schema2Class\Generator\Class\Method\FromInputMethodFactory;
 use Helmich\Schema2Class\Generator\Class\Method\SerializeMethodFactory;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
+use Helmich\Schema2Class\Util\SchemaKeywords;
 use Helmich\Schema2Class\Util\StringUtils;
 use Helmich\Schema2Class\Writer\WriterInterface;
 use Laminas\Code\Generator\PropertyValueGenerator;
@@ -51,9 +52,9 @@ abstract class AbstractProperty implements PropertyInterface
         $this->nameForClass = StringUtils::safePascalCase($key);
     }
 
-    public function isComplex(): bool
+    public function needsValidation(): bool
     {
-        return false;
+        return SchemaKeywords::hasValidationKeywords($this->schema);
     }
 
     public function schema(): array

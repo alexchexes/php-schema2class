@@ -46,4 +46,12 @@ class IntegerProperty extends AbstractProperty
         return "(int){$expr}";
     }
 
+    public function needsValidation(): bool
+    {
+        if (!$this->request->isAtLeastPHP('7.0')) {
+            return true;
+        }
+        return parent::needsValidation();
+    }
 }
+

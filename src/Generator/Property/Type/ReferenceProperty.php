@@ -69,4 +69,12 @@ class ReferenceProperty extends AbstractProperty
         return true;
     }
 
+    public function needsValidation(): bool
+    {
+        if ($this->refType instanceof ReferencedTypeEnum) {
+            return !$this->refType->usesNativeEnum();
+        }
+        return false;
+    }
+
 }

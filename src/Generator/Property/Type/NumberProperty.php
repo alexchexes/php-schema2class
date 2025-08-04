@@ -62,4 +62,11 @@ class NumberProperty extends AbstractProperty
         return "(str_contains((string){$expr}, '.') ? (float){$expr} : (int){$expr})";
     }
 
+    public function needsValidation(): bool
+    {
+        if (!$this->request->isAtLeastPHP('8.0')) {
+            return true;
+        }
+        return parent::needsValidation();
+    }
 }

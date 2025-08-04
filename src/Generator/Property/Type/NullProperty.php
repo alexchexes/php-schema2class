@@ -37,6 +37,12 @@ class NullProperty extends AbstractProperty
         return null;
     }
 
+    public function needsValidation(): bool
+    {
+        // Without a type-hint we must always validate values assigned to this property
+        return true;
+    }
+
     /* ---------------------------------------------------------------------
      * (4)  Assertions, mappings, cloning – all no-ops for a scalar null
      * ------------------------------------------------------------------- */

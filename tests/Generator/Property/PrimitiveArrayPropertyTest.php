@@ -38,7 +38,7 @@ class PrimitiveArrayPropertyTest extends TestCase
     {
         $underTest = new PrimitiveArrayProperty('myPropertyName', ['type' => 'array'], $this->generatorRequest);
 
-        assertFalse($underTest->isComplex());
+        assertFalse($underTest->needsValidation());
 
         $result = $underTest->convertInputToType();
 

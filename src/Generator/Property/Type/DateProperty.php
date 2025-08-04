@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Property\Type;
 
+use Helmich\Schema2Class\Util\SchemaKeywords;
+
 /**
  * Represents schema property of type `"string"` with `"date-time"` format as `\DateTime` objects in PHP.
  */
@@ -55,4 +57,10 @@ class DateProperty extends AbstractProperty
         return "clone {$expr}";
     }
 
+    public function needsValidation(): bool
+    {
+        $schema = $this->schema;
+        unset($schema['format'], $schema['type']);
+        return SchemaKeywords::hasValidationKeywords($schema);
+    }
 }

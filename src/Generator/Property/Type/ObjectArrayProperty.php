@@ -246,4 +246,9 @@ class ObjectArrayProperty extends AbstractProperty
     {
         return $this->request->getTargetClass() . $this->nameForClass . 'Item';
     }
+
+    public function needsValidation(): bool
+    {
+        return true;
+    }
 }

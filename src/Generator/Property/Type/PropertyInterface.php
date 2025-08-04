@@ -88,11 +88,14 @@ interface PropertyInterface extends TypeExpressionInterface
     public function description(): ?string;
 
     /**
-     * Indicates whether the property maps to a complex value (object, collection, enum)
-     * rather than a simple scalar. Complex properties may trigger generation
-     * of additional classes and require deep cloning.
+     * Indicates whether the property requires runtime validation in setter methods.
+     *
+     * Scalar properties without additional schema constraints usually return `false`
+     * when the target PHP version provides an appropriate type hint. Properties that
+     * cannot be fully validated by PHP's type system or that contain additional
+     * validation keywords (like `enum`, `minItems`, …) should return `true`.
      */
-    public function isComplex(): bool;
+    public function needsValidation(): bool;
 
     /**
      * Generates a code snippet that reads the value for this property from the

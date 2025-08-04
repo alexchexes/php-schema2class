@@ -168,4 +168,8 @@ class IntersectProperty extends AbstractProperty
         return $combined;
     }
 
+    public function needsValidation(): bool
+    {
+        return false;
+    }
 }

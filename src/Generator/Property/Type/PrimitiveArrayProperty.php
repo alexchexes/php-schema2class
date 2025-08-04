@@ -75,6 +75,22 @@ class PrimitiveArrayProperty extends AbstractProperty
         }
         return parent::inputMappingExpr($expr, $asserted);
     }
-
-
+    public function needsValidation(): bool
+    {
+        if (!$this->request->isAtLeastPHP('7.0')) {
+            return true;
+        }
+        if (isset($this->schema['items']) && is_array($this->schema['items'])) {
+            return true;
+        }
+        if (isset($this->schema['additionalProperties']) && is_array($this->schema['additionalProperties'])) {
+            return true;
+        }
+        foreach (['minItems','maxItems','uniqueItems'] as $kw) {
+            if (isset($this->schema[$kw])) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

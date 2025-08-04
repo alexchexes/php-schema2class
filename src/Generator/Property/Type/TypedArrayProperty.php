@@ -128,4 +128,9 @@ class TypedArrayProperty extends AbstractProperty
         }
         return "array_map(function(\$i) { return {$map}; }, {$expr})";
     }
+
+    public function needsValidation(): bool
+    {
+        return true;
+    }
 }

@@ -88,14 +88,14 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface
         $this->inner->setMethodName($name);
     }
 
-    public function isComplex(): bool
-    {
-        return $this->inner->isComplex();
-    }
-
     public function unwrap(): PropertyInterface
     {
         return $this->inner;
+    }
+
+    public function needsValidation(): bool
+    {
+        return $this->inner->needsValidation();
     }
 
     public function allowsNull(): bool

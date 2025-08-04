@@ -128,6 +128,17 @@ class StringEnumProperty extends AbstractProperty
         return $expr;
     }
 
+    public function needsValidation(): bool
+    {
+        if ($this->request->isAtLeastPHP("8.1") && !$this->request->getNoEnums()) {
+            return false;
+        }
+        if (!$this->request->isAtLeastPHP('7.0')) {
+            return true;
+        }
+        return true; // schema contains enum constraint
+    }
+
     public function formatValue(mixed $value): PropertyValueGenerator
     {
         if ($value === null) {

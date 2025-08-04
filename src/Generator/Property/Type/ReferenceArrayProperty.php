@@ -99,4 +99,9 @@ class ReferenceArrayProperty extends AbstractProperty
         return true;
     }
 
+    public function needsValidation(): bool
+    {
+        return true;
+    }
+
 }

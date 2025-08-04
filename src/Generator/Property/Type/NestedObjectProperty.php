@@ -108,4 +108,8 @@ class NestedObjectProperty extends AbstractProperty
         return $this->request->getTargetClass() . $this->nameForClass;
     }
 
+    public function needsValidation(): bool
+    {
+        return false;
+    }
 }
