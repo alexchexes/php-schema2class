@@ -17,14 +17,14 @@ class GetterFactory
         private GeneratorRequest $request,
     ) {}
 
-    public function generateGetter(PropertyInterface $property, string $pascalName): ?MethodGenerator
+    public function generateGetter(PropertyInterface $property): ?MethodGenerator
     {
         if ($this->request->getNoGetters()) {
             return null;
         }
 
         $propName = $property->name();
-        $methodName = 'get' . $pascalName;
+        $methodName = 'get' . $property->methodName();
 
         $docBlockTags = [new ReturnTag($property->typeAnnotation())];
 

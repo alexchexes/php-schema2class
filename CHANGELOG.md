@@ -45,6 +45,7 @@ Now it:
 - Handles URL-encoded references
 - Handles definition descriptions and/or top-level schema description and adds it to a class' PHPDoc
 - Generates a `toStdClass()` method returning an object representation of the instance
+- Resolves class property, accessor method and temporary variable names in a single deterministic pass allowing properties like `GLOBALS` while avoiding collisions
 
 ### Better support for older PHP versions:
 

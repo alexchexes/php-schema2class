@@ -7,10 +7,7 @@ use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\Collection\PropertyCollection;
 use Helmich\Schema2Class\Generator\Property\PropertyBuilder;
 use Helmich\Schema2Class\Generator\Property\Decorator\OptionalPropertyDecorator;
-use Helmich\Schema2Class\Generator\Class\Method\FromInputMethodFactory;
-use Helmich\Schema2Class\Util\ReservedNames;
 use Helmich\Schema2Class\Util\SchemaUtils;
-use Helmich\Schema2Class\Util\StringUtils;
 
 /**
  * Collects property information from a JSON schema and applies name sanitisation
@@ -31,11 +28,6 @@ class SchemaPropertyCollector
                 $properties->add($property);
             }
         }
-
-        $this->ensureUniquePropertyNames(
-            $properties,
-            $req->getOptions()->getPreservePropertyNames(),
-        );
 
         return $properties;
     }
@@ -132,84 +124,5 @@ class SchemaPropertyCollector
 
         $found = false;
         return ['default' => null, 'type' => null];
-    }
-    
-    private function ensureUniquePropertyNames(PropertyCollection $schemaProperties, bool $preservePropertyNames): void
-    {
-        $reservedPropertyNames = ReservedNames::getBannedVarNames();
-        $reservedMethodNames = ReservedNames::getBannedMethodNames();
-
-        $used = [];
-        foreach (array_merge($reservedPropertyNames, $reservedMethodNames) as $n) {
-            $used[] = StringUtils::safeCamelCase($n);
-            $used[] = StringUtils::sanitizeIdentifier($n);
-        }
-        $used = array_values(array_unique($used));
-
-        $usedMethods = [];
-        foreach ($reservedMethodNames as $n) {
-            $usedMethods[] = strtolower(StringUtils::safePascalCase(StringUtils::safeCamelCase($n)));
-            $usedMethods[] = strtolower(StringUtils::safePascalCase(StringUtils::sanitizeIdentifier($n)));
-        }
-        $usedMethods = array_values(array_unique($usedMethods));
-
-        foreach ($schemaProperties as $schemaProp) {
-            $base    = $schemaProp->name();
-            $newName = $base;
-            $newPascal  = strtolower(StringUtils::safePascalCase($newName));
-
-            // Of collides with "used",
-            // OR if "preserve" option disabled and pascal-variant collides with "usedMethods" – change
-            $needsChange = fn(string $_newName, string $_newPascal) => in_array($_newName, $used, true)
-                || (!$preservePropertyNames && in_array($_newPascal, $usedMethods, true));
-
-            if ($needsChange($newName, $newPascal)) {
-                if ($base[0] !== '_') {
-                    $newName = '_' . $base;
-                    $newPascal = strtolower(StringUtils::safePascalCase($newName));
-                }
-
-                $i = 1;
-                $baseUnique = $newName;
-
-                while ($needsChange($newName, $newPascal)) {
-                    $newName = $baseUnique . '_' . $i;
-                    $newPascal = strtolower(StringUtils::safePascalCase($newName));
-                    $i++;
-                }
-            }
-
-            // rename the property
-            if ($newName !== $base) {
-                $schemaProp->setName($newName);
-            }
-            $schemaProp->setVarName($schemaProp->name());
-
-            $used[]       = $newName;
-            $usedMethods[] = $newPascal;
-        }
-
-        $usedVarNames = FromInputMethodFactory::allVarNames();
-
-        foreach ($schemaProperties as $schemaProp) {
-            $baseVar = $schemaProp->varName();
-            $newVar = $baseVar;
-
-            if (in_array($newVar, $usedVarNames, true)) {
-                if ($baseVar[0] !== '_') {
-                    $newVar = '_' . $baseVar;
-                }
-                $i = 1;
-                $baseUnique = $newVar;
-                while (in_array($newVar, $usedVarNames, true)) {
-                    $newVar = $baseUnique . '_' . $i;
-                    $i++;
-                }
-            }
-            if ($newVar !== $baseVar) {
-                $schemaProp->setVarName($newVar);
-            }
-            $usedVarNames[] = $newVar;
-        }
     }
 }

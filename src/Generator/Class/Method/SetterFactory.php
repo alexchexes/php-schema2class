@@ -33,14 +33,14 @@ class SetterFactory
         $this->chainable = $mutableConfig === 'chainable' || $this->mutating === false;
     }
 
-    public function generateSetter(PropertyInterface $property, string $pascalName): ?MethodGenerator
+    public function generateSetter(PropertyInterface $property): ?MethodGenerator
     {
         if ($this->request->getNoSetters()) {
             return null;
         }
 
         $prefix = $this->mutating ? 'set' : 'with';
-        $methodName = $prefix . $pascalName;
+        $methodName = $prefix . $property->methodName();
         $propName = $property->name();
 
         // We first unwrap only optional property decorator but leave other
