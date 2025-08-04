@@ -36,9 +36,9 @@ class MixedPropertyTest extends TestCase
         assertTrue(MixedProperty::canHandleSchema([]));
     }
 
-    public function testIsComplex()
+    public function testNeedsValidation()
     {
-        assertFalse($this->underTest->isComplex());
+        assertFalse($this->underTest->needsValidation());
     }
 
     public function testConvertInputToType()

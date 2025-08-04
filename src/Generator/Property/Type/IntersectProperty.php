@@ -20,11 +20,6 @@ class IntersectProperty extends AbstractProperty
         return isset($schema["allOf"]);
     }
 
-    public function isComplex(): bool
-    {
-        return true;
-    }
-
     /**
      * @throws GeneratorException
      */
@@ -168,4 +163,9 @@ class IntersectProperty extends AbstractProperty
         return $combined;
     }
 
+    public function needsValidation(): bool
+    {
+        // Resulting class is type hinted and validated separately.
+        return false;
+    }
 }

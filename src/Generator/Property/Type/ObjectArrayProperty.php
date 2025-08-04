@@ -68,11 +68,6 @@ class ObjectArrayProperty extends AbstractProperty
         );
     }
 
-    public function isComplex(): bool
-    {
-        return true;
-    }
-
     public function convertTypeToArray(): string
     {
         $name = $this->propName();
@@ -245,5 +240,12 @@ class ObjectArrayProperty extends AbstractProperty
     private function subTypeName(): string
     {
         return $this->request->getTargetClass() . $this->nameForClass . 'Item';
+    }
+
+    public function needsValidation(): bool
+    {
+        // Arrays of objects always require validation to ensure each element
+        // is of the expected type.
+        return !($this->itemType instanceof MixedProperty);
     }
 }

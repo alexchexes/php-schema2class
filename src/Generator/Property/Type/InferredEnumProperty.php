@@ -84,4 +84,9 @@ class InferredEnumProperty extends AbstractProperty
     {
         return new PropertyValueGenerator($value);
     }
+
+    public function needsValidation(): bool
+    {
+        return true;
+    }
 }

@@ -28,4 +28,9 @@ class MixedProperty extends AbstractProperty
         return "true";
     }
 
+    public function needsValidation(): bool
+    {
+        return false;
+    }
+
 }

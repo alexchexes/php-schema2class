@@ -46,6 +46,14 @@ class BooleanProperty extends AbstractProperty
         return "is_bool({$expr})";
     }
 
+    public function needsValidation(): bool
+    {
+        if (!$this->request->isAtLeastPHP('7.0')) {
+            return true;
+        }
+        return isset($this->schema['enum']);
+    }
+
     public function inputMappingExpr(string $expr, bool $asserted = false): string
     {
         if ($asserted) {
