@@ -103,18 +103,9 @@ class MyClassQuxObjNest
     /**
      * @param array|object $a
      * @return self
-     * @param bool $validate
      */
-    public function withA(array|object $a, bool $validate = true): self
+    public function withA(array|object $a): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($a, self::$_schema['properties']['a']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->a = $a;
 

@@ -314,18 +314,9 @@ class User
     /**
      * @param string $lastName
      * @return self
-     * @param bool $validate
      */
-    public function withLastName(string $lastName, bool $validate = true): self
+    public function withLastName(string $lastName): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($lastName, self::$_schema['properties']['lastName']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->lastName = $lastName;
 
@@ -414,9 +405,18 @@ class User
     /**
      * @param UserPaymentAlternative1|UserPaymentAlternative2|string $payment
      * @return self
+     * @param bool $validate
      */
-    public function withPayment(UserPaymentAlternative1|UserPaymentAlternative2|string $payment): self
+    public function withPayment(UserPaymentAlternative1|UserPaymentAlternative2|string $payment, bool $validate = true): self
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($payment, self::$_schema['properties']['payment']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
         $clone->payment = $payment;
 

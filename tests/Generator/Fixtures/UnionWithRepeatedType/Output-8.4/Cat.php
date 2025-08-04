@@ -75,9 +75,18 @@ class Cat
     /**
      * @param bool|null|string|int|float $hasFur
      * @return self
+     * @param bool $validate
      */
-    public function withHasFur(bool|int|float|string|null $hasFur): self
+    public function withHasFur(bool|int|float|string|null $hasFur, bool $validate = true): self
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($hasFur, self::$_schema['properties']['hasFur']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
         $clone->hasFur = $hasFur;
         $clone->_providedOptionals['hasFur'] = true;
