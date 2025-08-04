@@ -103,7 +103,7 @@ class ObjectArrayProperty extends AbstractProperty
             return "\${$outputVarName}->{{$keyStr}} = array_map(fn (\$i) => \$i, \$this->{$name});";
         }
 
-        $inclDefaultsArg = $this->request->getCurrReqHasDefaults() ? '$includeDefaults' : '';
+        $inclDefaultsArg = $this->request->getClassHasDefaults() ? '$includeDefaults' : '';
 
         $TO_STD_CLASS = MethodNames::TO_STD_CLASS;
 
@@ -164,7 +164,7 @@ class ObjectArrayProperty extends AbstractProperty
     private function buildUseClause(): string
     {
         $vars = ['$' . FromInputMethodFactory::VALIDATE_ARG_NAME];
-        if ($this->request->getCurrReqHasDefaults()) {
+        if ($this->request->getClassHasDefaults()) {
             $vars[] = '$' . FromInputMethodFactory::DEFAULTS_ARG_NAME;
         }
         return implode(', ', $vars);

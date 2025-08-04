@@ -37,13 +37,14 @@ class ClassGenerator
     public function generateClass(): void
     {
         $collector = new SchemaPropertyCollector();
-        $schemaProperties = $collector->collectPropertiesFromSchema($this->schema, $this->request);
-        $hasOptionalNullable = $collector->hasOptionalNullable($schemaProperties);
+
         $defaults = $collector->collectDefaults($this->schema, $this->request);
-        
+        $this->request = $this->request->withClassHasDefaults(!empty($defaults));
+
+        $schemaProperties = $collector->collectPropertiesFromSchema($this->schema, $this->request);    
         (new IdentifierResolver($this->request))->resolve($schemaProperties);
 
-        $this->request->setCurrReqHasDefaults(!empty($defaults));
+        $hasOptionalNullable = $collector->hasOptionalNullable($schemaProperties);
 
         foreach ($schemaProperties as $schemaProp) {
             $schemaProp->generateSubTypes($this->writer, $this->output);

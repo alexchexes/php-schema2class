@@ -71,7 +71,7 @@ readonly class ReferencedTypeClass implements ReferencedTypeInterface
     public function inputMappingExpr(string $expr, bool $asserted = false): string
     {
         $args = [$expr, '$' . FromInputMethodFactory::VALIDATE_ARG_NAME];
-        if ($this->request->getCurrReqHasDefaults()) {
+        if ($this->request->getClassHasDefaults()) {
             $args[] = '$' . FromInputMethodFactory::DEFAULTS_ARG_NAME;
         }
         $argsStr = implode(', ', $args);
@@ -83,14 +83,14 @@ readonly class ReferencedTypeClass implements ReferencedTypeInterface
 
     public function outputMappingExpr(string $expr): string
     {
-        $inclDefaultsArg = $this->request->getCurrReqHasDefaults() ? '$includeDefaults' : '';
+        $inclDefaultsArg = $this->request->getClassHasDefaults() ? '$includeDefaults' : '';
         $TO_ARRAY = MethodNames::TO_ARRAY;
         return "{$expr}->{$TO_ARRAY}({$inclDefaultsArg})";
     }
 
     public function outputMappingExprStdClass(string $expr): string
     {
-        $inclDefaultsArg = $this->request->getCurrReqHasDefaults() ? '$includeDefaults' : '';
+        $inclDefaultsArg = $this->request->getClassHasDefaults() ? '$includeDefaults' : '';
         $TO_STD_CLASS = MethodNames::TO_STD_CLASS;
         return "{$expr}->{$TO_STD_CLASS}({$inclDefaultsArg})";
     }

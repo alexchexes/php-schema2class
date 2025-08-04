@@ -55,7 +55,7 @@ class GeneratorRequest
     /**
      * Whether the object schema from which the class is currently generated has defaults.
      */
-    private bool $currReqHasDefaults = false;
+    private bool $classHasDefaults = false;
 
     private SchemaToClassFactory $factory;
 
@@ -361,17 +361,15 @@ class GeneratorRequest
         throw new GeneratorException("unresolvable reference: {$ref}");
     }
 
-    /**
-     * This method is deliberately mutating (not `with...`) so that the information about
-     * the presence of defaults is available to all property generators in nested contexts.
-     */
-    public function setCurrReqHasDefaults(bool $currReqHasDefaults): void
+    public function getClassHasDefaults(): bool
     {
-        $this->currReqHasDefaults = $currReqHasDefaults;
+        return $this->classHasDefaults;
     }
 
-    public function getCurrReqHasDefaults(): bool
+    public function withClassHasDefaults(bool $classHasDefaults): self
     {
-        return $this->currReqHasDefaults;
+        $clone = clone $this;
+        $clone->classHasDefaults = $classHasDefaults;
+        return $clone;
     }
 }

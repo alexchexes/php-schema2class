@@ -95,7 +95,7 @@ class TypedArrayProperty extends AbstractProperty
         }
 
         $use = ['$' . FromInputMethodFactory::VALIDATE_ARG_NAME];
-        if ($this->request->getCurrReqHasDefaults()) {
+        if ($this->request->getClassHasDefaults()) {
             $use[] = '$' . FromInputMethodFactory::DEFAULTS_ARG_NAME;
         }
         $useExpr = implode(', ', $use);

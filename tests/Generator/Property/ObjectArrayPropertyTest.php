@@ -24,7 +24,6 @@ class ObjectArrayPropertyTest extends TestCase
     protected function setUp(): void
     {
         $this->generatorRequest = new GeneratorRequest([], new ValidatedSpecificationFilesItem("", "Foo", ""), new SpecificationOptions());
-        $this->generatorRequest->setCurrReqHasDefaults(false);
         $this->property = new ObjectArrayProperty('myPropertyName', ['type' => 'array', 'items' => ['type' => 'object']], $this->generatorRequest);
     }
 

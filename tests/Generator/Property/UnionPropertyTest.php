@@ -26,7 +26,6 @@ class UnionPropertyTest extends TestCase
     protected function setUp(): void
     {
         $this->generatorRequest = new GeneratorRequest([], new ValidatedSpecificationFilesItem("BarNs", "Foo", ""), new SpecificationOptions());
-        $this->generatorRequest->setCurrReqHasDefaults(false);
         $this->property = new UnionProperty(
             'myPropertyName',
             ['anyOf' => [['properties' => ['subFoo1' => ['type' => 'string']]], ['properties' => ['subFoo2' => ['type' => 'string']]]]],
