@@ -56,23 +56,13 @@ class BarTest
         ],
     ];
 
-    /**
-     * @var FooTest|MoiKlass|FooTest_1|null
-     */
     private FooTest|MoiKlass|FooTest_1|null $exampleProp = null;
 
-    /**
-     * @return FooTest|MoiKlass|FooTest_1|null
-     */
     public function getExampleProp(): FooTest|FooTest_1|MoiKlass|null
     {
         return $this->exampleProp;
     }
 
-    /**
-     * @param FooTest|MoiKlass|FooTest_1 $exampleProp
-     * @return self
-     */
     public function withExampleProp(FooTest|FooTest_1|MoiKlass $exampleProp): self
     {
         $clone = clone $this;
@@ -81,9 +71,6 @@ class BarTest
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutExampleProp(): self
     {
         $clone = clone $this;

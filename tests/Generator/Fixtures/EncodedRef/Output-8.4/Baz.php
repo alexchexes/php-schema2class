@@ -44,33 +44,17 @@ class Baz
         ],
     ];
 
-    /**
-     * @var FooTest|null
-     */
     private ?FooTest $a = null;
 
-    /**
-     * @var FooTest|null
-     */
     private ?FooTest $b = null;
 
-    /**
-     * @var BarTest|null
-     */
     private ?BarTest $c = null;
 
-    /**
-     * @return FooTest|null
-     */
     public function getA(): ?FooTest
     {
         return $this->a ?? null;
     }
 
-    /**
-     * @param FooTest $a
-     * @return self
-     */
     public function withA(FooTest $a): self
     {
         $clone = clone $this;
@@ -79,9 +63,6 @@ class Baz
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutA(): self
     {
         $clone = clone $this;
@@ -90,18 +71,11 @@ class Baz
         return $clone;
     }
 
-    /**
-     * @return FooTest|null
-     */
     public function getB(): ?FooTest
     {
         return $this->b ?? null;
     }
 
-    /**
-     * @param FooTest $b
-     * @return self
-     */
     public function withB(FooTest $b): self
     {
         $clone = clone $this;
@@ -110,9 +84,6 @@ class Baz
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutB(): self
     {
         $clone = clone $this;
@@ -121,18 +92,11 @@ class Baz
         return $clone;
     }
 
-    /**
-     * @return BarTest|null
-     */
     public function getC(): ?BarTest
     {
         return $this->c ?? null;
     }
 
-    /**
-     * @param BarTest $c
-     * @return self
-     */
     public function withC(BarTest $c): self
     {
         $clone = clone $this;
@@ -141,9 +105,6 @@ class Baz
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutC(): self
     {
         $clone = clone $this;

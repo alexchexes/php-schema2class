@@ -50,7 +50,6 @@ class MyClass
 
     /**
      * @param MyClassFoo|null $foo
-     * @return self
      */
     public function withFoo(?MyClassFoo $foo): self
     {
@@ -61,9 +60,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutFoo(): self
     {
         $clone = clone $this;

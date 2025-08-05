@@ -20,23 +20,13 @@ class Phone
         ],
     ];
 
-    /**
-     * @var string|null
-     */
     private ?string $foo = null;
 
-    /**
-     * @return string|null
-     */
     public function getFoo(): ?string
     {
         return $this->foo ?? null;
     }
 
-    /**
-     * @param string $foo
-     * @return self
-     */
     public function withFoo(string $foo): self
     {
         $clone = clone $this;
@@ -45,9 +35,6 @@ class Phone
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutFoo(): self
     {
         $clone = clone $this;

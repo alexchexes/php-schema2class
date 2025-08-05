@@ -34,9 +34,6 @@ class MyClass
      */
     private ?array $a = null;
 
-    /**
-     * @var array|object|null
-     */
     private array|object|null $b = null;
 
     /**
@@ -49,8 +46,6 @@ class MyClass
 
     /**
      * @param string[] $a
-     * @return self
-     * @param bool $validate
      */
     public function withA(array $a, bool $validate = true): self
     {
@@ -68,9 +63,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutA(): self
     {
         $clone = clone $this;
@@ -79,18 +71,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return array|object|null
-     */
     public function getB(): array|object|null
     {
         return $this->b;
     }
 
-    /**
-     * @param array|object $b
-     * @return self
-     */
     public function withB(array|object $b): self
     {
         $clone = clone $this;
@@ -99,9 +84,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutB(): self
     {
         $clone = clone $this;

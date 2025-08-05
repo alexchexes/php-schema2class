@@ -47,10 +47,10 @@ class MyClassEnsureArgs1Alternative1
 
     /**
      * @param 'invoice' $type
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withType(string $type, bool $validate = true)
+    public function withType(string $type, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -86,7 +86,7 @@ class MyClassEnsureArgs1Alternative1
      * @return MyClassEnsureArgs1Alternative1 Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput($input, bool $validate = true, bool $materializeDefaults = false)
+    public static function fromInput($input, $validate = true, $materializeDefaults = false)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(

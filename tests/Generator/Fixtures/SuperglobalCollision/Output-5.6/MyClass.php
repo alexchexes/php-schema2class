@@ -43,10 +43,10 @@ class MyClass
 
     /**
      * @param string $files
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withFiles($files, bool $validate = true)
+    public function withFiles($files, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -70,7 +70,7 @@ class MyClass
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput($input, bool $validate = true)
+    public static function fromInput($input, $validate = true)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(

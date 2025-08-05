@@ -8,6 +8,7 @@ use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\Decorator\OptionalPropertyDecorator;
 use Helmich\Schema2Class\Generator\Property\PropertyQuery;
 use Helmich\Schema2Class\Generator\Property\Type\PropertyInterface;
+use Helmich\Schema2Class\Util\StringUtils;
 use Laminas\Code\Generator\DocBlock\Tag\GenericTag;
 use Laminas\Code\Generator\DocBlock\Tag\ParamTag;
 use Laminas\Code\Generator\DocBlock\Tag\ReturnTag;
@@ -54,7 +55,7 @@ class SetterFactory
         // Determine whether setter needs runtime validation.
         $addValidation = $property->needsValidation();
 
-        $docBlock = $this->buildDocBlock($property, $varName, $propAnnotatedType, $addValidation);
+        $docBlock = $this->buildDocBlock($property, $varName, $propAnnotatedType, $propTypeHint, $addValidation);
         $parameters = $this->buildParams($varName, $propTypeHint, $addValidation);
         $body = $this->generateBody($property, $propName, $varName, $addValidation);
 
@@ -81,14 +82,26 @@ class SetterFactory
         PropertyInterface $property,
         string $varName,
         string $propAnnotatedType,
+        ?string $propTypeHint,
         bool $addValidation,
-    ): DocBlockGenerator
+    ): ?DocBlockGenerator
     {
-        $tags = [
-            new ParamTag($varName, explode('|', $propAnnotatedType))
-        ];
+        $tags = [];
+        if ($propAnnotatedType === '') {
+            $propAnnotatedType = null;
+        } elseif ($propTypeHint !== null && StringUtils::isAnnotationSameAsTypeHint($propAnnotatedType, $propTypeHint)) {
+            $propAnnotatedType = null;
+        }
 
-        if ($this->chainable) {
+        if ($propAnnotatedType) {
+            $tags[] = new ParamTag($varName, explode('|', $propAnnotatedType));
+        }
+
+        if ($addValidation && !$this->request->isAtLeastPHP('7.0')) {
+            $tags[] = new ParamTag('validate', ['bool']);
+        }
+
+        if ($this->chainable && !$this->request->isAtLeastPHP('7.0')) {
             $tags[] = new ReturnTag('self');
         }
 
@@ -96,12 +109,13 @@ class SetterFactory
             $tags[] = new GenericTag('deprecated');
         }
 
-        $docBlock = new DocBlockGenerator(null, null, $tags);
-        $docBlock->setWordWrap(false);
-
-        if ($addValidation) {
-            $tags[] = new ParamTag('validate', ['bool']);
-            $docBlock = new DocBlockGenerator(null, null, $tags);
+        $description = $property->description();
+        if ($description === '') {
+            $description = null;
+        }
+        $docBlock = null;
+        if ($tags || $description) {
+            $docBlock = new DocBlockGenerator(null, $description, $tags);
             $docBlock->setWordWrap(false);
         }
 
@@ -112,7 +126,8 @@ class SetterFactory
     {
         $parameters = [new ParameterGenerator($varName, $propTypeHint)];
         if ($addValidation) {
-            $validateParam = new ParameterGenerator('validate', 'bool');
+            $type = $this->request->isAtLeastPHP('7.0') ? 'bool' : null;
+            $validateParam = new ParameterGenerator('validate', $type);
             $validateParam->setDefaultValue(true);
             $parameters[] = $validateParam;
         }

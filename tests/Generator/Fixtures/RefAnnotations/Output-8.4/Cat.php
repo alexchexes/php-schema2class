@@ -50,17 +50,10 @@ class Cat
      */
     private array $_providedOptionals = [];
 
-    /**
-     * Whether the cat has fur. True by default for most cats
-     *
-     * @var bool|null
-     */
     private ?bool $hasFur = null;
 
     /**
      * Whether the cat has fur. True by default for most cats
-     *
-     * @return bool|null
      */
     public function getHasFur(): ?bool
     {
@@ -68,8 +61,7 @@ class Cat
     }
 
     /**
-     * @param bool|null $hasFur
-     * @return self
+     * Whether the cat has fur. True by default for most cats
      */
     public function withHasFur(?bool $hasFur): self
     {
@@ -80,9 +72,6 @@ class Cat
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutHasFur(): self
     {
         $clone = clone $this;

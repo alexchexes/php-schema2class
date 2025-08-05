@@ -24,15 +24,11 @@ class MyClass
     ];
 
     /**
-     * Foo description
-     *
      * @var string
      */
     private $foo;
 
     /**
-     * Bar description
-     *
      * @var int|null
      * @deprecated
      */
@@ -57,11 +53,13 @@ class MyClass
     }
 
     /**
+     * Foo description
+     *
      * @param string $foo
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withFoo($foo, bool $validate = true)
+    public function withFoo($foo, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -89,12 +87,14 @@ class MyClass
     }
 
     /**
+     * Bar description
+     *
      * @param int $bar
+     * @param bool $validate
      * @return self
      * @deprecated
-     * @param bool $validate
      */
-    public function withBar($bar, bool $validate = true)
+    public function withBar($bar, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -129,7 +129,7 @@ class MyClass
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput($input, bool $validate = true)
+    public static function fromInput($input, $validate = true)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(

@@ -6,6 +6,7 @@ namespace Helmich\Schema2Class\Generator\Class\Method;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\PropertyQuery;
 use Helmich\Schema2Class\Generator\Property\Type\PropertyInterface;
+use Helmich\Schema2Class\Util\StringUtils;
 use Laminas\Code\Generator\DocBlock\Tag\GenericTag;
 use Laminas\Code\Generator\DocBlock\Tag\ReturnTag;
 use Laminas\Code\Generator\DocBlockGenerator;
@@ -26,14 +27,34 @@ class GetterFactory
         $propName = $property->propName();
         $methodName = 'get' . $property->methodName();
 
-        $docBlockTags = [new ReturnTag($property->typeAnnotation())];
+        $typeHint = $property->typeHint();
+        $annotType = $property->typeAnnotation();
+        if ($annotType === '') {
+            $annotType = null;
+        } elseif ($typeHint !== null && StringUtils::isAnnotationSameAsTypeHint($annotType, $typeHint)) {
+            $annotType = null;
+        }
+
+        $docBlockTags = [];
+
+        if ($annotType) {
+            $docBlockTags[] = new ReturnTag($annotType);
+        }
 
         if (PropertyQuery::isDeprecated($property)) {
             $docBlockTags[] = new GenericTag('deprecated');
         }
+        
+        $description = $property->description();
+        if ($description === '') {
+            $description = null;
+        }
 
-        $docBlock = new DocBlockGenerator(null, $property->description(), $docBlockTags);
-        $docBlock->setWordWrap(false);
+        $docBlock = null;
+        if ($description || $docBlockTags) {
+            $docBlock = new DocBlockGenerator(null, $description, $docBlockTags);
+            $docBlock->setWordWrap(false);
+        }
 
         $methodGen = new MethodGenerator(
             name: $methodName,
@@ -46,8 +67,6 @@ class GetterFactory
         $body = "return \$this->{$propName};";
 
         if ($this->request->isAtLeastPHP('7.0')) {
-            $typeHint = $property->typeHint();
-
             if ($typeHint !== null) {
                 $methodGen->setReturnType($typeHint);
 

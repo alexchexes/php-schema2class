@@ -7,6 +7,7 @@ use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\Decorator\OptionalPropertyDecorator;
 use Helmich\Schema2Class\Generator\Property\PropertyQuery;
 use Helmich\Schema2Class\Generator\Property\Type\PropertyInterface;
+use Helmich\Schema2Class\Util\StringUtils;
 use Laminas\Code\Generator\DocBlock\Tag\GenericTag;
 use Laminas\Code\Generator\DocBlockGenerator;
 
@@ -22,41 +23,68 @@ class SchemaPropertyFactory
             ? PropertyGenerator::FLAG_PUBLIC
             : PropertyGenerator::FLAG_PRIVATE;
 
-        $schema     = $schemaProp->schema();
-        $isOptional = false;
-        
         $propertyGenerator = new PropertyGenerator(
             name: $schemaProp->propName(),
             defaultValue: $schemaProp->formatValue(null),
             flags: $visibility
         );
 
-        if ($schemaProp instanceof OptionalPropertyDecorator) {
-            $isOptional = true;
-        }
-
-        $docBlockTags = [new GenericTag("var", trim($schemaProp->typeAnnotation()))];
-        if (PropertyQuery::isDeprecated($schemaProp)) {
-            $docBlockTags[] = new GenericTag("deprecated");
-        }
-
-        $docBlock = new DocBlockGenerator(
-            $schema["description"] ?? null,
-            null,
-            $docBlockTags
-        );
-        $docBlock->setWordWrap(false);
-
-        $propertyGenerator->setDocBlock($docBlock);
-
         $typeHint = $schemaProp->typeHint();
         if ($this->request->isAtLeastPHP("7.4") && $typeHint !== null) {
             $propertyGenerator->setTypeHint($typeHint);
         }
 
+        $docBlock = $this->buildDockBlock($schemaProp);
+        if ($docBlock) {
+            $propertyGenerator->setDocBlock($docBlock);
+        }
+
+        $isOptional = false;
+        if ($schemaProp instanceof OptionalPropertyDecorator) {
+            $isOptional = true;
+        }
         // omit default `null` for every required field, unsless default is specified in the schema
         $propertyGenerator->omitDefaultValue(!$isOptional);
 
         return $propertyGenerator;
+    }
+
+    private function buildDockBlock($property): ?DocBlockGenerator
+    {
+        $docBlock = null;
+
+        $typeHint = $property->typeHint();
+        $annotType = $property->typeAnnotation();
+        if ($annotType === '') {
+            $annotType = null;
+        } elseif ($typeHint !== null && StringUtils::isAnnotationSameAsTypeHint($annotType, $typeHint)) {
+            $annotType = null;
+        }
+
+        $tags = [];
+
+        if ($annotType) {
+            $tags[] = new GenericTag("var", $annotType);
+        }
+
+        if (PropertyQuery::isDeprecated($property)) {
+            $tags[] = new GenericTag("deprecated");
+        }
+
+        $description = null;
+        if ($this->request->getNoGetters()) {
+            $description = $property->description();
+        }
+
+        if ($tags || $description) {
+            $docBlock = new DocBlockGenerator(
+                shortDescription: $description,
+                longDescription: null,
+                tags: $tags,
+            );
+            $docBlock->setWordWrap(false);
+        }
+
+        return $docBlock;
     }
 }

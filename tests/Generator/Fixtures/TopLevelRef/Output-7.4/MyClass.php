@@ -38,8 +38,6 @@ class MyClass
 
     /**
      * @param string|int|float $foo
-     * @return self
-     * @param bool $validate
      */
     public function withFoo($foo, bool $validate = true): self
     {
@@ -57,9 +55,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutFoo(): self
     {
         $clone = clone $this;

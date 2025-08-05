@@ -115,63 +115,26 @@ class MyClass
      */
     private array $_providedOptionals = [];
 
-    /**
-     * @var string|int|float|bool
-     */
     private string|int|float|bool $foo;
 
-    /**
-     * @var string|int|float|bool|array
-     */
     private string|int|float|bool|array $bar;
 
-    /**
-     * @var string|int|float|bool|array|object
-     */
     private string|int|float|bool|array|object $baz;
 
-    /**
-     * @var string|int|float|bool|array|object
-     */
     private string|int|float|bool|array|object $qux;
 
-    /**
-     * @var string|int|float|bool|array|object|null
-     */
     private string|int|float|bool|array|object|null $thud;
 
-    /**
-     * @var string|int|float|bool|null
-     */
     private string|int|float|bool|null $optFoo = null;
 
-    /**
-     * @var string|int|float|bool|array|null
-     */
     private string|int|float|bool|array|null $optBar = null;
 
-    /**
-     * @var string|int|float|bool|array|object|null
-     */
     private string|int|float|bool|array|object|null $optBaz = null;
 
-    /**
-     * @var string|int|float|bool|array|object|null
-     */
     private string|int|float|bool|array|object|null $optQux = null;
 
-    /**
-     * @var string|int|float|bool|array|object|null
-     */
     private string|int|float|bool|array|object|null $optThud = null;
 
-    /**
-     * @param string|int|float|bool $foo
-     * @param string|int|float|bool|array $bar
-     * @param string|int|float|bool|array|object $baz
-     * @param string|int|float|bool|array|object $qux
-     * @param string|int|float|bool|array|object|null $thud
-     */
     public function __construct(bool|int|float|string $foo, bool|int|float|string|array $bar, bool|int|float|string|array|object $baz, bool|int|float|string|array|object $qux, bool|int|float|string|array|object|null $thud)
     {
         $this->foo = $foo;
@@ -181,18 +144,11 @@ class MyClass
         $this->thud = $thud;
     }
 
-    /**
-     * @return string|int|float|bool
-     */
     public function getFoo(): bool|int|float|string
     {
         return $this->foo;
     }
 
-    /**
-     * @param string|int|float|bool $foo
-     * @return self
-     */
     public function withFoo(bool|int|float|string $foo): self
     {
         $clone = clone $this;
@@ -201,18 +157,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string|int|float|bool|array
-     */
     public function getBar(): bool|int|float|string|array
     {
         return $this->bar;
     }
 
-    /**
-     * @param string|int|float|bool|array $bar
-     * @return self
-     */
     public function withBar(bool|int|float|string|array $bar): self
     {
         $clone = clone $this;
@@ -221,18 +170,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string|int|float|bool|array|object
-     */
     public function getBaz(): bool|int|float|string|array|object
     {
         return $this->baz;
     }
 
-    /**
-     * @param string|int|float|bool|array|object $baz
-     * @return self
-     */
     public function withBaz(bool|int|float|string|array|object $baz): self
     {
         $clone = clone $this;
@@ -241,18 +183,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string|int|float|bool|array|object
-     */
     public function getQux(): bool|int|float|string|array|object
     {
         return $this->qux;
     }
 
-    /**
-     * @param string|int|float|bool|array|object $qux
-     * @return self
-     */
     public function withQux(bool|int|float|string|array|object $qux): self
     {
         $clone = clone $this;
@@ -261,18 +196,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string|int|float|bool|array|object|null
-     */
     public function getThud(): bool|int|float|string|array|object|null
     {
         return $this->thud;
     }
 
-    /**
-     * @param string|int|float|bool|array|object|null $thud
-     * @return self
-     */
     public function withThud(bool|int|float|string|array|object|null $thud): self
     {
         $clone = clone $this;
@@ -281,18 +209,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string|int|float|bool|null
-     */
     public function getOptFoo(): bool|int|float|string|null
     {
         return $this->optFoo;
     }
 
-    /**
-     * @param string|int|float|bool $optFoo
-     * @return self
-     */
     public function withOptFoo(bool|int|float|string $optFoo): self
     {
         $clone = clone $this;
@@ -301,9 +222,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutOptFoo(): self
     {
         $clone = clone $this;
@@ -312,18 +230,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string|int|float|bool|array|null
-     */
     public function getOptBar(): bool|int|float|string|array|null
     {
         return $this->optBar;
     }
 
-    /**
-     * @param string|int|float|bool|array $optBar
-     * @return self
-     */
     public function withOptBar(bool|int|float|string|array $optBar): self
     {
         $clone = clone $this;
@@ -332,9 +243,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutOptBar(): self
     {
         $clone = clone $this;
@@ -343,18 +251,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string|int|float|bool|array|object|null
-     */
     public function getOptBaz(): bool|int|float|string|array|object|null
     {
         return $this->optBaz;
     }
 
-    /**
-     * @param string|int|float|bool|array|object $optBaz
-     * @return self
-     */
     public function withOptBaz(bool|int|float|string|array|object $optBaz): self
     {
         $clone = clone $this;
@@ -363,9 +264,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutOptBaz(): self
     {
         $clone = clone $this;
@@ -374,18 +272,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string|int|float|bool|array|object|null
-     */
     public function getOptQux(): bool|int|float|string|array|object|null
     {
         return $this->optQux;
     }
 
-    /**
-     * @param string|int|float|bool|array|object $optQux
-     * @return self
-     */
     public function withOptQux(bool|int|float|string|array|object $optQux): self
     {
         $clone = clone $this;
@@ -394,9 +285,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutOptQux(): self
     {
         $clone = clone $this;
@@ -405,18 +293,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string|int|float|bool|array|object|null
-     */
     public function getOptThud(): bool|int|float|string|array|object|null
     {
         return $this->optThud;
     }
 
-    /**
-     * @param string|int|float|bool|array|object|null $optThud
-     * @return self
-     */
     public function withOptThud(bool|int|float|string|array|object|null $optThud): self
     {
         $clone = clone $this;
@@ -426,9 +307,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutOptThud(): self
     {
         $clone = clone $this;

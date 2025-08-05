@@ -51,9 +51,7 @@ class SetterFactoryTest extends TestCase
         $param = $setter->getParameters()[$varName];
         self::assertSame('?string $' . $varName, $param->generate());
 
-        /** @var ParamTag */
-        $paramTag = $setter->getDocBlock()->getTags()[0];
-        self::assertEquals(['string', 'null'], $paramTag->getTypes());
+        self::assertNull($setter->getDocBlock());
     }
 
     public function testSetterDisallowsNullForOptionalNonNullableProperty(): void
@@ -71,9 +69,7 @@ class SetterFactoryTest extends TestCase
         $param = $setter->getParameters()[$varName];
         self::assertSame('string $' . $varName, $param->generate());
 
-        /** @var ParamTag */
-        $paramTag = $setter->getDocBlock()->getTags()[0];
-        self::assertEquals(['string'], $paramTag->getTypes());
+        self::assertNull($setter->getDocBlock());
     }
 
     public function testSetterAllowsNullForRequiredNullableProperty(): void
@@ -92,8 +88,6 @@ class SetterFactoryTest extends TestCase
         $param = $setter->getParameters()[$varName];
         self::assertSame('?string $' . $varName, $param->generate());
 
-        /** @var ParamTag */
-        $paramTag = $setter->getDocBlock()->getTags()[0];
-        self::assertEquals(['string', 'null'], $paramTag->getTypes());
+        self::assertNull($setter->getDocBlock());
     }
 }

@@ -1,8 +1,0 @@
-{
-  "required": [
-    "schema"
-  ],
-  "properties": {
-    "schema": { "type": "string" }
-  }
-}

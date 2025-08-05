@@ -205,10 +205,10 @@ class MyClass
 
     /**
      * @param string $foo
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withFoo($foo, bool $validate = true)
+    public function withFoo($foo, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -234,10 +234,10 @@ class MyClass
 
     /**
      * @param string $_foo
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function with_Foo($_foo, bool $validate = true)
+    public function with_Foo($_foo, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -263,10 +263,10 @@ class MyClass
 
     /**
      * @param string $__foo
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function with__Foo($__foo, bool $validate = true)
+    public function with__Foo($__foo, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -292,10 +292,10 @@ class MyClass
 
     /**
      * @param string $foo_
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withFoo_($foo_, bool $validate = true)
+    public function withFoo_($foo_, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -321,10 +321,10 @@ class MyClass
 
     /**
      * @param string $foo__
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withFoo__($foo__, bool $validate = true)
+    public function withFoo__($foo__, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -350,10 +350,10 @@ class MyClass
 
     /**
      * @param string $_foo_
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function with_Foo_($_foo_, bool $validate = true)
+    public function with_Foo_($_foo_, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -379,10 +379,10 @@ class MyClass
 
     /**
      * @param string $__foo__
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function with__Foo__($__foo__, bool $validate = true)
+    public function with__Foo__($__foo__, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -408,10 +408,10 @@ class MyClass
 
     /**
      * @param string $_foo_bar
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function with_FooBar($_foo_bar, bool $validate = true)
+    public function with_FooBar($_foo_bar, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -437,10 +437,10 @@ class MyClass
 
     /**
      * @param string $foo_bar
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withFooBar($foo_bar, bool $validate = true)
+    public function withFooBar($foo_bar, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -466,10 +466,10 @@ class MyClass
 
     /**
      * @param string $baz_qux
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withBazQux($baz_qux, bool $validate = true)
+    public function withBazQux($baz_qux, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -495,10 +495,10 @@ class MyClass
 
     /**
      * @param string $_123_qwe
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function with_123Qwe($_123_qwe, bool $validate = true)
+    public function with_123Qwe($_123_qwe, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -524,10 +524,10 @@ class MyClass
 
     /**
      * @param string $Gorod
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withGorod($Gorod, bool $validate = true)
+    public function withGorod($Gorod, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -553,10 +553,10 @@ class MyClass
 
     /**
      * @param string $nazvanie_iur_litsa
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withNazvanieIurLitsa($nazvanie_iur_litsa, bool $validate = true)
+    public function withNazvanieIurLitsa($nazvanie_iur_litsa, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -582,10 +582,10 @@ class MyClass
 
     /**
      * @param string $IP_adres
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withIPAdres($IP_adres, bool $validate = true)
+    public function withIPAdres($IP_adres, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -611,10 +611,10 @@ class MyClass
 
     /**
      * @param string $_tildas
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withTildas($_tildas, bool $validate = true)
+    public function withTildas($_tildas, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -640,10 +640,10 @@ class MyClass
 
     /**
      * @param string $it_s_A
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withItSA($it_s_A, bool $validate = true)
+    public function withItSA($it_s_A, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -678,7 +678,7 @@ class MyClass
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput($input, bool $validate = true)
+    public static function fromInput($input, $validate = true)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(

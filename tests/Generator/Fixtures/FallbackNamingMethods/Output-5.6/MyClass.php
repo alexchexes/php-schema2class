@@ -48,10 +48,10 @@ class MyClass
 
     /**
      * @param string $bound
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withBound($bound, bool $validate = true)
+    public function withBound($bound, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -88,10 +88,10 @@ class MyClass
 
     /**
      * @param string $outbound
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function with_Outbound($outbound, bool $validate = true)
+    public function with_Outbound($outbound, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -128,10 +128,10 @@ class MyClass
 
     /**
      * @param string $_outbound
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function with_Outbound_1($_outbound, bool $validate = true)
+    public function with_Outbound_1($_outbound, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -166,7 +166,7 @@ class MyClass
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput($input, bool $validate = true)
+    public static function fromInput($input, $validate = true)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(

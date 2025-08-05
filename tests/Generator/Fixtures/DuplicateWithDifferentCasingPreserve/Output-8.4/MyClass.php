@@ -31,42 +31,27 @@ class MyClass
     ];
 
     /**
-     * @var string|null
      * @deprecated
      */
     private ?string $foobar = null;
 
-    /**
-     * @var string
-     */
     private string $fooBar;
 
     /**
-     * @var string|null
      * @deprecated
      */
     private ?string $bar = null;
 
-    /**
-     * @param string $fooBar
-     */
     public function __construct(string $fooBar)
     {
         $this->fooBar = $fooBar;
     }
 
-    /**
-     * @return string
-     */
     public function getFooBar(): string
     {
         return $this->fooBar;
     }
 
-    /**
-     * @param string $fooBar
-     * @return self
-     */
     public function withFooBar(string $fooBar): self
     {
         $clone = clone $this;
@@ -76,7 +61,6 @@ class MyClass
     }
 
     /**
-     * @return string|null
      * @deprecated
      */
     public function getBar(): ?string
@@ -85,8 +69,6 @@ class MyClass
     }
 
     /**
-     * @param string $bar
-     * @return self
      * @deprecated
      */
     public function withBar(string $bar): self
@@ -97,9 +79,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutBar(): self
     {
         $clone = clone $this;

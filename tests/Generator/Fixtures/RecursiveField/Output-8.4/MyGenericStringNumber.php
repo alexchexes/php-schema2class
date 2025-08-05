@@ -73,7 +73,6 @@ class MyGenericStringNumber
 
     /**
      * @param MyGenericStringNumberField $field
-     * @return self
      */
     public function withField(MyGenericStringNumberField $field): self
     {

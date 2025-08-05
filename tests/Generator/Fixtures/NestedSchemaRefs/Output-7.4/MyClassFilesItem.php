@@ -31,28 +31,15 @@ class MyClassFilesItem
         ],
     ];
 
-    /**
-     * @var string|null
-     */
     private ?string $input = null;
 
-    /**
-     * @var OptionsObject|null
-     */
     private ?OptionsObject $options = null;
 
-    /**
-     * @return string|null
-     */
     public function getInput(): ?string
     {
         return $this->input ?? null;
     }
 
-    /**
-     * @param string $_input
-     * @return self
-     */
     public function withInput(string $_input): self
     {
         $clone = clone $this;
@@ -61,9 +48,6 @@ class MyClassFilesItem
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutInput(): self
     {
         $clone = clone $this;
@@ -72,18 +56,11 @@ class MyClassFilesItem
         return $clone;
     }
 
-    /**
-     * @return OptionsObject|null
-     */
     public function getOptions(): ?OptionsObject
     {
         return $this->options ?? null;
     }
 
-    /**
-     * @param OptionsObject $options
-     * @return self
-     */
     public function withOptions(OptionsObject $options): self
     {
         $clone = clone $this;
@@ -92,9 +69,6 @@ class MyClassFilesItem
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutOptions(): self
     {
         $clone = clone $this;

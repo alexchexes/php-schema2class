@@ -43,10 +43,10 @@ class Fio
 
     /**
      * @param string|null $bar
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withBar($bar, bool $validate = true)
+    public function withBar($bar, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -83,7 +83,7 @@ class Fio
      * @return Fio Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput($input, bool $validate = true)
+    public static function fromInput($input, $validate = true)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(

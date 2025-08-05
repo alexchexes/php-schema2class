@@ -30,23 +30,13 @@ class Bar
         ],
     ];
 
-    /**
-     * @var Foo|null
-     */
     private ?Foo $a = null;
 
-    /**
-     * @return Foo|null
-     */
     public function getA(): ?Foo
     {
         return $this->a ?? null;
     }
 
-    /**
-     * @param Foo $a
-     * @return self
-     */
     public function withA(Foo $a): self
     {
         $clone = clone $this;
@@ -55,9 +45,6 @@ class Bar
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutA(): self
     {
         $clone = clone $this;

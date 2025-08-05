@@ -40,28 +40,15 @@ class MyClass
         ],
     ];
 
-    /**
-     * @var array|object|null
-     */
     private array|object|null $foo = null;
 
-    /**
-     * @var array|object|null
-     */
     private array|object|null $encoded = null;
 
-    /**
-     * @return array|object|null
-     */
     public function getFoo(): array|object|null
     {
         return $this->foo;
     }
 
-    /**
-     * @param array|object $foo
-     * @return self
-     */
     public function withFoo(array|object $foo): self
     {
         $clone = clone $this;
@@ -70,9 +57,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutFoo(): self
     {
         $clone = clone $this;
@@ -81,18 +65,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return array|object|null
-     */
     public function getEncoded(): array|object|null
     {
         return $this->encoded;
     }
 
-    /**
-     * @param array|object $encoded
-     * @return self
-     */
     public function withEncoded(array|object $encoded): self
     {
         $clone = clone $this;
@@ -101,9 +78,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutEncoded(): self
     {
         $clone = clone $this;

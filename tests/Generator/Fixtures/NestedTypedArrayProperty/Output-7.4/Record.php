@@ -120,8 +120,6 @@ class Record
 
     /**
      * @param Phone[] $dataArray
-     * @return self
-     * @param bool $validate
      */
     public function withDataArray(array $dataArray, bool $validate = true): self
     {
@@ -139,9 +137,6 @@ class Record
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutDataArray(): self
     {
         $clone = clone $this;
@@ -160,8 +155,6 @@ class Record
 
     /**
      * @param Phone[][] $dataArrayNested
-     * @return self
-     * @param bool $validate
      */
     public function withDataArrayNested(array $dataArrayNested, bool $validate = true): self
     {
@@ -179,9 +172,6 @@ class Record
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutDataArrayNested(): self
     {
         $clone = clone $this;
@@ -200,8 +190,6 @@ class Record
 
     /**
      * @param (Phone|Fio)[] $dataArrayAnyOf
-     * @return self
-     * @param bool $validate
      */
     public function withDataArrayAnyOf(array $dataArrayAnyOf, bool $validate = true): self
     {
@@ -219,9 +207,6 @@ class Record
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutDataArrayAnyOf(): self
     {
         $clone = clone $this;
@@ -240,8 +225,6 @@ class Record
 
     /**
      * @param ((Phone|Fio)[])[] $dataArrayNestedAnyOf
-     * @return self
-     * @param bool $validate
      */
     public function withDataArrayNestedAnyOf(array $dataArrayNestedAnyOf, bool $validate = true): self
     {
@@ -259,9 +242,6 @@ class Record
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutDataArrayNestedAnyOf(): self
     {
         $clone = clone $this;

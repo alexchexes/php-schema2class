@@ -20,23 +20,13 @@ class MyClassOptNullQuux
         ],
     ];
 
-    /**
-     * @var string|null
-     */
     private ?string $a = null;
 
-    /**
-     * @return string|null
-     */
     public function getA(): ?string
     {
         return $this->a ?? null;
     }
 
-    /**
-     * @param string $a
-     * @return self
-     */
     public function withA(string $a): self
     {
         $clone = clone $this;
@@ -45,9 +35,6 @@ class MyClassOptNullQuux
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutA(): self
     {
         $clone = clone $this;

@@ -20,23 +20,13 @@ class Name
         ],
     ];
 
-    /**
-     * @var string|null
-     */
     private ?string $first = null;
 
-    /**
-     * @return string|null
-     */
     public function getFirst(): ?string
     {
         return $this->first ?? null;
     }
 
-    /**
-     * @param string $first
-     * @return self
-     */
     public function withFirst(string $first): self
     {
         $clone = clone $this;
@@ -45,9 +35,6 @@ class Name
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutFirst(): self
     {
         $clone = clone $this;

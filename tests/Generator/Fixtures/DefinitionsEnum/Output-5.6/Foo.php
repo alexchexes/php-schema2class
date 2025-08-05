@@ -69,10 +69,10 @@ class Foo
 
     /**
      * @param 'red'|'green' $color
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withColor(string $color, bool $validate = true)
+    public function withColor(string $color, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -98,10 +98,10 @@ class Foo
 
     /**
      * @param 'small'|'big' $size
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withSize(string $size, bool $validate = true)
+    public function withSize(string $size, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -136,7 +136,7 @@ class Foo
      * @return Foo Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput($input, bool $validate = true)
+    public static function fromInput($input, $validate = true)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(

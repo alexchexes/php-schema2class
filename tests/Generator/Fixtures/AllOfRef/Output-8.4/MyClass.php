@@ -31,26 +31,12 @@ class MyClass
         ],
     ];
 
-    /**
-     * @var string
-     */
     private string $city;
 
-    /**
-     * @var string
-     */
     private string $street;
 
-    /**
-     * @var string
-     */
     private string $country;
 
-    /**
-     * @param string $city
-     * @param string $street
-     * @param string $country
-     */
     public function __construct(string $city, string $street, string $country)
     {
         $this->city = $city;
@@ -58,19 +44,11 @@ class MyClass
         $this->country = $country;
     }
 
-    /**
-     * @return string
-     */
     public function getCity(): string
     {
         return $this->city;
     }
 
-    /**
-     * @param string $city
-     * @return self
-     * @param bool $validate
-     */
     public function withCity(string $city, bool $validate = true): self
     {
         if ($validate) {
@@ -87,18 +65,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function getStreet(): string
     {
         return $this->street;
     }
 
-    /**
-     * @param string $street
-     * @return self
-     */
     public function withStreet(string $street): self
     {
         $clone = clone $this;
@@ -107,18 +78,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function getCountry(): string
     {
         return $this->country;
     }
 
-    /**
-     * @param string $country
-     * @return self
-     */
     public function withCountry(string $country): self
     {
         $clone = clone $this;

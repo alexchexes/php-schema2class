@@ -56,7 +56,6 @@ class MyClass
 
     /**
      * @param string|MyClassFooAlternative2 $foo
-     * @return self
      */
     public function withFoo(MyClassFooAlternative2|string $foo): self
     {

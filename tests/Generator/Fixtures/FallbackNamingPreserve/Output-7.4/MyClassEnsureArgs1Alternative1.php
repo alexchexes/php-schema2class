@@ -49,8 +49,6 @@ class MyClassEnsureArgs1Alternative1
 
     /**
      * @param 'invoice' $type
-     * @return self
-     * @param bool $validate
      */
     public function withType(string $type, bool $validate = true): self
     {
@@ -68,9 +66,6 @@ class MyClassEnsureArgs1Alternative1
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutType(): self
     {
         $clone = clone $this;

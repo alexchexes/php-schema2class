@@ -42,8 +42,6 @@ class Bar
 
     /**
      * @param string[] $b
-     * @return self
-     * @param bool $validate
      */
     public function withB(array $b, bool $validate = true): self
     {
@@ -61,9 +59,6 @@ class Bar
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutB(): self
     {
         $clone = clone $this;

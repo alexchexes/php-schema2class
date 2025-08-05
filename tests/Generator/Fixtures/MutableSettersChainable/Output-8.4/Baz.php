@@ -20,26 +20,23 @@ class Baz
         ],
     ];
 
-    /**
-     * @var string|null
-     */
     private ?string $name = null;
 
-    /**
-     * @return string|null
-     */
     public function getName(): ?string
     {
         return $this->name ?? null;
     }
 
-    /**
-     * @param string $name
-     * @return self
-     */
     public function setName(string $name): self
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function unsetName(): self
+    {
+        $this->name = null;
 
         return $this;
     }

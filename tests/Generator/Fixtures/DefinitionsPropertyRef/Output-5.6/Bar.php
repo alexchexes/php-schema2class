@@ -42,7 +42,6 @@ class Bar
     }
 
     /**
-     * @param Foo $a
      * @return self
      */
     public function withA(Foo $a)
@@ -72,7 +71,7 @@ class Bar
      * @return Bar Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput($input, bool $validate = true)
+    public static function fromInput($input, $validate = true)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(

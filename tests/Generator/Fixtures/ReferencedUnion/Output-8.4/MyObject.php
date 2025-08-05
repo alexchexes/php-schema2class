@@ -50,31 +50,18 @@ class MyObject
         ],
     ];
 
-    /**
-     * @var A|B
-     */
     private A|B $foo;
 
-    /**
-     * @param A|B $foo
-     */
     public function __construct(A|B $foo)
     {
         $this->foo = $foo;
     }
 
-    /**
-     * @return A|B
-     */
     public function getFoo(): A|B
     {
         return $this->foo;
     }
 
-    /**
-     * @param A|B $foo
-     * @return self
-     */
     public function withFoo(A|B $foo): self
     {
         $clone = clone $this;

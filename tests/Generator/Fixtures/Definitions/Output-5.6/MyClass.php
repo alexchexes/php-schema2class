@@ -82,10 +82,10 @@ class MyClass
 
     /**
      * @param int $id
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withId($id, bool $validate = true)
+    public function withId($id, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -110,7 +110,6 @@ class MyClass
     }
 
     /**
-     * @param Address $address
      * @return self
      */
     public function withAddress(Address $address)
@@ -140,7 +139,7 @@ class MyClass
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput($input, bool $validate = true)
+    public static function fromInput($input, $validate = true)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(

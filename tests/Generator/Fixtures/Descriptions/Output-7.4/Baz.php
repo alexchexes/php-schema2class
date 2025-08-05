@@ -25,17 +25,10 @@ class Baz
         'description' => 'Description  of the `Baz` definition',
     ];
 
-    /**
-     * Description of the `name` property in `Baz` definition
-     *
-     * @var string|null
-     */
     private ?string $name = null;
 
     /**
      * Description of the `name` property in `Baz` definition
-     *
-     * @return string|null
      */
     public function getName(): ?string
     {
@@ -43,8 +36,7 @@ class Baz
     }
 
     /**
-     * @param string $name
-     * @return self
+     * Description of the `name` property in `Baz` definition
      */
     public function withName(string $name): self
     {
@@ -54,9 +46,6 @@ class Baz
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutName(): self
     {
         $clone = clone $this;

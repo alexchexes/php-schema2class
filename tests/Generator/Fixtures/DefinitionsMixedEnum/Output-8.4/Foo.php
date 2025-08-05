@@ -61,8 +61,6 @@ class Foo
 
     /**
      * @param 5|6|'5'|'6' $val
-     * @return self
-     * @param bool $validate
      */
     public function withVal(int|string $val, bool $validate = true): self
     {

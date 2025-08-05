@@ -118,10 +118,10 @@ class Record
 
     /**
      * @param Phone[] $dataArray
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withDataArray(array $dataArray, bool $validate = true)
+    public function withDataArray(array $dataArray, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -158,10 +158,10 @@ class Record
 
     /**
      * @param Phone[][] $dataArrayNested
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withDataArrayNested(array $dataArrayNested, bool $validate = true)
+    public function withDataArrayNested(array $dataArrayNested, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -198,10 +198,10 @@ class Record
 
     /**
      * @param (Phone|Fio)[] $dataArrayAnyOf
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withDataArrayAnyOf(array $dataArrayAnyOf, bool $validate = true)
+    public function withDataArrayAnyOf(array $dataArrayAnyOf, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -238,10 +238,10 @@ class Record
 
     /**
      * @param ((Phone|Fio)[])[] $dataArrayNestedAnyOf
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withDataArrayNestedAnyOf(array $dataArrayNestedAnyOf, bool $validate = true)
+    public function withDataArrayNestedAnyOf(array $dataArrayNestedAnyOf, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -276,7 +276,7 @@ class Record
      * @return Record Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput($input, bool $validate = true)
+    public static function fromInput($input, $validate = true)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(

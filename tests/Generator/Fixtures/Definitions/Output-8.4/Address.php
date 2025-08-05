@@ -36,36 +36,20 @@ class Address
         ],
     ];
 
-    /**
-     * @var Address\Defs\Name|null
-     */
     private ?Address\Defs\Name $name = null;
 
-    /**
-     * @var string
-     */
     private string $city;
 
-    /**
-     * @param string $city
-     */
     public function __construct(string $city)
     {
         $this->city = $city;
     }
 
-    /**
-     * @return Address\Defs\Name|null
-     */
     public function getName(): ?Address\Defs\Name
     {
         return $this->name ?? null;
     }
 
-    /**
-     * @param Address\Defs\Name $name
-     * @return self
-     */
     public function withName(Address\Defs\Name $name): self
     {
         $clone = clone $this;
@@ -74,9 +58,6 @@ class Address
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutName(): self
     {
         $clone = clone $this;
@@ -85,18 +66,11 @@ class Address
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function getCity(): string
     {
         return $this->city;
     }
 
-    /**
-     * @param string $city
-     * @return self
-     */
     public function withCity(string $city): self
     {
         $clone = clone $this;

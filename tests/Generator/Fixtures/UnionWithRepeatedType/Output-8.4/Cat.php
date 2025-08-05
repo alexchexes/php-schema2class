@@ -59,23 +59,13 @@ class Cat
      */
     private array $_providedOptionals = [];
 
-    /**
-     * @var bool|null|string|int|float
-     */
     private null|bool|string|int|float $hasFur = null;
 
-    /**
-     * @return bool|null|string|int|float
-     */
     public function getHasFur(): bool|int|float|string|null
     {
         return $this->hasFur;
     }
 
-    /**
-     * @param bool|null|string|int|float $hasFur
-     * @return self
-     */
     public function withHasFur(bool|int|float|string|null $hasFur): self
     {
         $clone = clone $this;
@@ -85,9 +75,6 @@ class Cat
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutHasFur(): self
     {
         $clone = clone $this;

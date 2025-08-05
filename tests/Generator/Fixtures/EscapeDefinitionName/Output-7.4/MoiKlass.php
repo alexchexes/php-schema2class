@@ -20,23 +20,13 @@ class MoiKlass
         ],
     ];
 
-    /**
-     * @var string|null
-     */
     private ?string $c = null;
 
-    /**
-     * @return string|null
-     */
     public function getC(): ?string
     {
         return $this->c ?? null;
     }
 
-    /**
-     * @param string $c
-     * @return self
-     */
     public function withC(string $c): self
     {
         $clone = clone $this;
@@ -45,9 +35,6 @@ class MoiKlass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutC(): self
     {
         $clone = clone $this;

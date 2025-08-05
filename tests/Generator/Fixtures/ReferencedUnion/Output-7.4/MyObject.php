@@ -73,8 +73,6 @@ class MyObject
 
     /**
      * @param 'foo'|'bar'|'baz'|'quz' $foo
-     * @return self
-     * @param bool $validate
      */
     public function withFoo($foo, bool $validate = true): self
     {

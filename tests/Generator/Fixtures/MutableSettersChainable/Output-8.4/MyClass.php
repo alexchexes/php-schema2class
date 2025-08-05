@@ -48,41 +48,22 @@ class MyClass
      */
     private array $_providedOptionals = [];
 
-    /**
-     * @var string|null
-     */
     private ?string $foo = null;
 
-    /**
-     * @var Baz
-     */
     private Baz $bar;
 
-    /**
-     * @var string|null
-     */
     private ?string $opt = null;
 
-    /**
-     * @param Baz $bar
-     */
     public function __construct(Baz $bar)
     {
         $this->bar = $bar;
     }
 
-    /**
-     * @return string|null
-     */
     public function getFoo(): ?string
     {
         return $this->foo ?? null;
     }
 
-    /**
-     * @param string $foo
-     * @return self
-     */
     public function setFoo(string $foo): self
     {
         $this->foo = $foo;
@@ -90,18 +71,18 @@ class MyClass
         return $this;
     }
 
-    /**
-     * @return Baz
-     */
+    public function unsetFoo(): self
+    {
+        $this->foo = null;
+
+        return $this;
+    }
+
     public function getBar(): Baz
     {
         return $this->bar;
     }
 
-    /**
-     * @param Baz $bar
-     * @return self
-     */
     public function setBar(Baz $bar): self
     {
         $this->bar = $bar;
@@ -109,18 +90,11 @@ class MyClass
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getOpt(): ?string
     {
         return $this->opt ?? null;
     }
 
-    /**
-     * @param string|null $opt
-     * @return self
-     */
     public function setOpt(?string $opt): self
     {
         $this->opt = $opt;
@@ -129,9 +103,6 @@ class MyClass
         return $this;
     }
 
-    /**
-     * @return self
-     */
     public function unsetOpt(): self
     {
         $this->opt = null;

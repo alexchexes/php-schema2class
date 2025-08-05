@@ -67,10 +67,10 @@ class MyClassEnsureArgs2
 
     /**
      * @param string $city
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withCity($city, bool $validate = true)
+    public function withCity($city, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -96,10 +96,10 @@ class MyClassEnsureArgs2
 
     /**
      * @param string $street
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withStreet($street, bool $validate = true)
+    public function withStreet($street, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -124,7 +124,7 @@ class MyClassEnsureArgs2
      * @return MyClassEnsureArgs2 Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput($input, bool $validate = true, bool $materializeDefaults = false)
+    public static function fromInput($input, $validate = true, $materializeDefaults = false)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(

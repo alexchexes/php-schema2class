@@ -50,8 +50,6 @@ class Record
 
     /**
      * @param Phone[] $dataArray
-     * @return self
-     * @param bool $validate
      */
     public function withDataArray(array $dataArray, bool $validate = true): self
     {
@@ -69,9 +67,6 @@ class Record
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutDataArray(): self
     {
         $clone = clone $this;

@@ -30,28 +30,15 @@ class MyClassGooks
         ],
     ];
 
-    /**
-     * @var string|null
-     */
     private ?string $a = null;
 
-    /**
-     * @var int|float|null
-     */
     private int|float|null $b = null;
 
-    /**
-     * @return string|null
-     */
     public function getA(): ?string
     {
         return $this->a ?? null;
     }
 
-    /**
-     * @param string $a
-     * @return self
-     */
     public function withA(string $a): self
     {
         $clone = clone $this;
@@ -60,9 +47,6 @@ class MyClassGooks
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutA(): self
     {
         $clone = clone $this;
@@ -71,18 +55,11 @@ class MyClassGooks
         return $clone;
     }
 
-    /**
-     * @return int|float|null
-     */
     public function getB(): int|float|null
     {
         return $this->b;
     }
 
-    /**
-     * @param int|float $b
-     * @return self
-     */
     public function withB(int|float $b): self
     {
         $clone = clone $this;
@@ -91,9 +68,6 @@ class MyClassGooks
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutB(): self
     {
         $clone = clone $this;

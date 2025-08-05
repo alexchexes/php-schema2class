@@ -60,7 +60,6 @@ class MyClass
 
     /**
      * @param array|object $foo
-     * @return self
      */
     public function withFoo($foo): self
     {
@@ -70,9 +69,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutFoo(): self
     {
         $clone = clone $this;
@@ -91,7 +87,6 @@ class MyClass
 
     /**
      * @param array|object $encoded
-     * @return self
      */
     public function withEncoded($encoded): self
     {
@@ -101,9 +96,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutEncoded(): self
     {
         $clone = clone $this;

@@ -53,7 +53,6 @@ class MyGenericStringNumberField
     }
 
     /**
-     * @param MyGenericStringNumber $field
      * @return self
      */
     public function withField(MyGenericStringNumber $field)
@@ -83,7 +82,7 @@ class MyGenericStringNumberField
      * @return MyGenericStringNumberField Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput($input, bool $validate = true)
+    public static function fromInput($input, $validate = true)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(

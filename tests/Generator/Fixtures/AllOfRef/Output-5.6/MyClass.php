@@ -66,10 +66,10 @@ class MyClass
 
     /**
      * @param string $city
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withCity($city, bool $validate = true)
+    public function withCity($city, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -95,10 +95,10 @@ class MyClass
 
     /**
      * @param string $street
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withStreet($street, bool $validate = true)
+    public function withStreet($street, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -124,10 +124,10 @@ class MyClass
 
     /**
      * @param string $country
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withCountry($country, bool $validate = true)
+    public function withCountry($country, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -151,7 +151,7 @@ class MyClass
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput($input, bool $validate = true)
+    public static function fromInput($input, $validate = true)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(

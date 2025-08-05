@@ -50,8 +50,6 @@ class MyClass
 
     /**
      * @param 'red'|'green'|null $foo
-     * @return self
-     * @param bool $validate
      */
     public function withFoo(?string $foo, bool $validate = true): self
     {
@@ -70,9 +68,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutFoo(): self
     {
         $clone = clone $this;

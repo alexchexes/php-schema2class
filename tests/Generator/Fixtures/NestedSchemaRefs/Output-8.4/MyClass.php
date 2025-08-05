@@ -46,9 +46,6 @@ class MyClass
      */
     private ?array $files = null;
 
-    /**
-     * @var OptionsObject|null
-     */
     private ?OptionsObject $options = null;
 
     /**
@@ -61,8 +58,6 @@ class MyClass
 
     /**
      * @param MyClassFilesItem[] $files
-     * @return self
-     * @param bool $validate
      */
     public function withFiles(array $files, bool $validate = true): self
     {
@@ -80,9 +75,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutFiles(): self
     {
         $clone = clone $this;
@@ -91,18 +83,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return OptionsObject|null
-     */
     public function getOptions(): ?OptionsObject
     {
         return $this->options ?? null;
     }
 
-    /**
-     * @param OptionsObject $options
-     * @return self
-     */
     public function withOptions(OptionsObject $options): self
     {
         $clone = clone $this;
@@ -111,9 +96,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutOptions(): self
     {
         $clone = clone $this;

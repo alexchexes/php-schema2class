@@ -23,31 +23,18 @@ class MyClassFooAlternative2
         ],
     ];
 
-    /**
-     * @var string
-     */
     private string $bar;
 
-    /**
-     * @param string $bar
-     */
     public function __construct(string $bar)
     {
         $this->bar = $bar;
     }
 
-    /**
-     * @return string
-     */
     public function getBar(): string
     {
         return $this->bar;
     }
 
-    /**
-     * @param string $bar
-     * @return self
-     */
     public function withBar(string $bar): self
     {
         $clone = clone $this;

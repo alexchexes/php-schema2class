@@ -20,23 +20,13 @@ class BarTest
         ],
     ];
 
-    /**
-     * @var string|null
-     */
     private ?string $bar = null;
 
-    /**
-     * @return string|null
-     */
     public function getBar(): ?string
     {
         return $this->bar ?? null;
     }
 
-    /**
-     * @param string $bar
-     * @return self
-     */
     public function withBar(string $bar): self
     {
         $clone = clone $this;
@@ -45,9 +35,6 @@ class BarTest
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutBar(): self
     {
         $clone = clone $this;

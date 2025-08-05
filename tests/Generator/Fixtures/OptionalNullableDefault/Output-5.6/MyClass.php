@@ -139,64 +139,46 @@ class MyClass
     private $_providedOptionals = [];
 
     /**
-     * required, not nullable, no default
-     *
      * @var string
      */
     private $foo;
 
     /**
-     * optional, not nullable, no default
-     *
      * @var string|null
      */
     private $bar = null;
 
     /**
-     * optional, nullable, no default
-     *
      * @var string|null
      */
     private $baz = null;
 
     /**
-     * optional, nullable, with default
-     *
      * @var string|null
      */
     private $qux = null;
 
     /**
-     * required, nullable, with default
-     *
      * @var string|null
      */
     private $quux;
 
     /**
-     * optional, not nullable, with default
-     *
      * @var string|null
      */
     private $xyyz = null;
 
     /**
-     * required, not nullable, with default
-     *
      * @var string
      */
     private $thud;
 
     /**
-     * optional, nullable, with default, object
-     *
      * @var MyClassGrox|null
      */
     private $grox = null;
 
     /**
-     * optional, nullable, with default, object, and default is empty object
-     *
      * @var MyClassGooks|null
      */
     private $gooks = null;
@@ -224,11 +206,13 @@ class MyClass
     }
 
     /**
+     * required, not nullable, no default
+     *
      * @param string $foo
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withFoo($foo, bool $validate = true)
+    public function withFoo($foo, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -255,11 +239,13 @@ class MyClass
     }
 
     /**
+     * optional, not nullable, no default
+     *
      * @param string $bar
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withBar($bar, bool $validate = true)
+    public function withBar($bar, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -297,11 +283,13 @@ class MyClass
     }
 
     /**
+     * optional, nullable, no default
+     *
      * @param string|null $baz
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withBaz($baz, bool $validate = true)
+    public function withBaz($baz, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -341,11 +329,13 @@ class MyClass
     }
 
     /**
+     * optional, nullable, with default
+     *
      * @param string|null $qux
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withQux($qux, bool $validate = true)
+    public function withQux($qux, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -385,11 +375,13 @@ class MyClass
     }
 
     /**
+     * required, nullable, with default
+     *
      * @param string|null $quux
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withQuux($quux, bool $validate = true)
+    public function withQuux($quux, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -416,11 +408,13 @@ class MyClass
     }
 
     /**
+     * optional, not nullable, with default
+     *
      * @param string $xyyz
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withXyyz($xyyz, bool $validate = true)
+    public function withXyyz($xyyz, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -458,11 +452,13 @@ class MyClass
     }
 
     /**
+     * required, not nullable, with default
+     *
      * @param string $thud
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withThud($thud, bool $validate = true)
+    public function withThud($thud, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -489,6 +485,8 @@ class MyClass
     }
 
     /**
+     * optional, nullable, with default, object
+     *
      * @param MyClassGrox|null $grox
      * @return self
      */
@@ -524,6 +522,8 @@ class MyClass
     }
 
     /**
+     * optional, nullable, with default, object, and default is empty object
+     *
      * @param MyClassGooks|null $gooks
      * @return self
      */
@@ -557,7 +557,7 @@ class MyClass
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput($input, bool $validate = true, bool $materializeDefaults = false)
+    public static function fromInput($input, $validate = true, $materializeDefaults = false)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(

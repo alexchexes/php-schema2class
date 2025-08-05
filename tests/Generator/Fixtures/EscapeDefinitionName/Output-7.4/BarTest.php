@@ -71,8 +71,6 @@ class BarTest
 
     /**
      * @param FooTest|MoiKlass|FooTest_1 $exampleProp
-     * @return self
-     * @param bool $validate
      */
     public function withExampleProp($exampleProp, bool $validate = true): self
     {
@@ -90,9 +88,6 @@ class BarTest
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutExampleProp(): self
     {
         $clone = clone $this;

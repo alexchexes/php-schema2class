@@ -44,10 +44,10 @@ class MyClassEnsureArgs3Item
 
     /**
      * @param string $name
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withName($name, bool $validate = true)
+    public function withName($name, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -83,7 +83,7 @@ class MyClassEnsureArgs3Item
      * @return MyClassEnsureArgs3Item Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput($input, bool $validate = true, bool $materializeDefaults = false)
+    public static function fromInput($input, $validate = true, $materializeDefaults = false)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(

@@ -56,8 +56,6 @@ class MyClass
 
     /**
      * @param string|MyClassFooAlternative2 $foo
-     * @return self
-     * @param bool $validate
      */
     public function withFoo($foo, bool $validate = true): self
     {

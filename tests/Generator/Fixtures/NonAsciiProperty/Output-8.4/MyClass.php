@@ -30,26 +30,12 @@ class MyClass
         ],
     ];
 
-    /**
-     * @var string
-     */
     private string $Gorod;
 
-    /**
-     * @var string
-     */
     private string $nazvanieIurLitsa;
 
-    /**
-     * @var string
-     */
     private string $IPAdres;
 
-    /**
-     * @param string $Gorod
-     * @param string $nazvanieIurLitsa
-     * @param string $IPAdres
-     */
     public function __construct(string $Gorod, string $nazvanieIurLitsa, string $IPAdres)
     {
         $this->Gorod = $Gorod;
@@ -57,18 +43,11 @@ class MyClass
         $this->IPAdres = $IPAdres;
     }
 
-    /**
-     * @return string
-     */
     public function getGorod(): string
     {
         return $this->Gorod;
     }
 
-    /**
-     * @param string $Gorod
-     * @return self
-     */
     public function withGorod(string $Gorod): self
     {
         $clone = clone $this;
@@ -77,18 +56,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function getNazvanieIurLitsa(): string
     {
         return $this->nazvanieIurLitsa;
     }
 
-    /**
-     * @param string $nazvanieIurLitsa
-     * @return self
-     */
     public function withNazvanieIurLitsa(string $nazvanieIurLitsa): self
     {
         $clone = clone $this;
@@ -97,18 +69,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function getIPAdres(): string
     {
         return $this->IPAdres;
     }
 
-    /**
-     * @param string $IPAdres
-     * @return self
-     */
     public function withIPAdres(string $IPAdres): self
     {
         $clone = clone $this;

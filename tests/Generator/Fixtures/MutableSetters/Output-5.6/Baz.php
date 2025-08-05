@@ -35,7 +35,7 @@ class Baz
      * @param string $name
      * @param bool $validate
      */
-    public function setName($name, bool $validate = true)
+    public function setName($name, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -48,6 +48,11 @@ class Baz
         $this->name = $name;
     }
 
+    public function unsetName()
+    {
+        $this->name = null;
+    }
+
     /**
      * Builds a new instance from an input array
      *
@@ -56,7 +61,7 @@ class Baz
      * @return Baz Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput($input, bool $validate = true)
+    public static function fromInput($input, $validate = true)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(

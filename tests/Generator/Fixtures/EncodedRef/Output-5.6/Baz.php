@@ -66,7 +66,6 @@ class Baz
     }
 
     /**
-     * @param FooTest $a
      * @return self
      */
     public function withA(FooTest $a)
@@ -97,7 +96,6 @@ class Baz
     }
 
     /**
-     * @param FooTest $b
      * @return self
      */
     public function withB(FooTest $b)
@@ -128,7 +126,6 @@ class Baz
     }
 
     /**
-     * @param BarTest $c
      * @return self
      */
     public function withC(BarTest $c)
@@ -158,7 +155,7 @@ class Baz
      * @return Baz Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput($input, bool $validate = true)
+    public static function fromInput($input, $validate = true)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(

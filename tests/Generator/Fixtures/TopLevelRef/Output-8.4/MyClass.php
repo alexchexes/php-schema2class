@@ -23,23 +23,13 @@ class MyClass
         'type' => 'object',
     ];
 
-    /**
-     * @var string|int|float|null
-     */
     private string|int|float|null $foo = null;
 
-    /**
-     * @return string|int|float|null
-     */
     public function getFoo(): int|float|string|null
     {
         return $this->foo;
     }
 
-    /**
-     * @param string|int|float $foo
-     * @return self
-     */
     public function withFoo(int|float|string $foo): self
     {
         $clone = clone $this;
@@ -48,9 +38,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutFoo(): self
     {
         $clone = clone $this;

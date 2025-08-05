@@ -26,33 +26,17 @@ class MyClass_2
         ],
     ];
 
-    /**
-     * @var string|null
-     */
     private ?string $_1 = null;
 
-    /**
-     * @var string|null
-     */
     private ?string $_2 = null;
 
-    /**
-     * @var string|null
-     */
     private ?string $_3 = null;
 
-    /**
-     * @return string|null
-     */
     public function get_1(): ?string
     {
         return $this->_1 ?? null;
     }
 
-    /**
-     * @param string $_1
-     * @return self
-     */
     public function with_1(string $_1): self
     {
         $clone = clone $this;
@@ -61,9 +45,6 @@ class MyClass_2
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function without_1(): self
     {
         $clone = clone $this;
@@ -72,18 +53,11 @@ class MyClass_2
         return $clone;
     }
 
-    /**
-     * @return string|null
-     */
     public function get_2(): ?string
     {
         return $this->_2 ?? null;
     }
 
-    /**
-     * @param string $_2
-     * @return self
-     */
     public function with_2(string $_2): self
     {
         $clone = clone $this;
@@ -92,9 +66,6 @@ class MyClass_2
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function without_2(): self
     {
         $clone = clone $this;
@@ -103,18 +74,11 @@ class MyClass_2
         return $clone;
     }
 
-    /**
-     * @return string|null
-     */
     public function get_3(): ?string
     {
         return $this->_3 ?? null;
     }
 
-    /**
-     * @param string $_3
-     * @return self
-     */
     public function with_3(string $_3): self
     {
         $clone = clone $this;
@@ -123,9 +87,6 @@ class MyClass_2
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function without_3(): self
     {
         $clone = clone $this;

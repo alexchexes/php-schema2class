@@ -56,31 +56,18 @@ class MyClass
         ],
     ];
 
-    /**
-     * @var MyGenericStringNumber
-     */
     private MyGenericStringNumber $value;
 
-    /**
-     * @param MyGenericStringNumber $value
-     */
     public function __construct(MyGenericStringNumber $value)
     {
         $this->value = $value;
     }
 
-    /**
-     * @return MyGenericStringNumber
-     */
     public function getValue(): MyGenericStringNumber
     {
         return $this->value;
     }
 
-    /**
-     * @param MyGenericStringNumber $value
-     * @return self
-     */
     public function withValue(MyGenericStringNumber $value): self
     {
         $clone = clone $this;

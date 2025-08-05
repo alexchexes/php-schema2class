@@ -13,31 +13,18 @@ class MyClass
      */
     private static array $_schema = ['required' => ['foo'], 'properties' => ['foo' => ['type' => 'string']]];
 
-    /**
-     * @var string
-     */
     private string $foo;
 
-    /**
-     * @param string $foo
-     */
     public function __construct(string $foo)
     {
         $this->foo = $foo;
     }
 
-    /**
-     * @return string
-     */
     public function getFoo(): string
     {
         return $this->foo;
     }
 
-    /**
-     * @param string $foo
-     * @return self
-     */
     public function withFoo(string $foo): self
     {
         $clone = clone $this;

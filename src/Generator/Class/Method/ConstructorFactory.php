@@ -6,6 +6,7 @@ namespace Helmich\Schema2Class\Generator\Class\Method;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\Collection\PropertyCollection;
 use Helmich\Schema2Class\Generator\Property\Collection\PropertyCollectionFilterFactory;
+use Helmich\Schema2Class\Util\StringUtils;
 use Laminas\Code\Generator\DocBlock\Tag\ParamTag;
 use Laminas\Code\Generator\DocBlockGenerator;
 use Laminas\Code\Generator\MethodGenerator;
@@ -29,16 +30,20 @@ class ConstructorFactory
         $requiredProperties = $this->schemaProperties->filter(PropertyCollectionFilterFactory::onlyRequired());
 
         foreach ($requiredProperties as $requiredProperty) {
-            $paramName = $requiredProperty->varName();
-            $params[]  = new ParameterGenerator(
-                $paramName,
-                $requiredProperty->typeHint()
-            );
+            $typeHint = $requiredProperty->typeHint();
+            $annotType = $requiredProperty->typeAnnotation();
+            if ($annotType === '') {
+                $annotType = null;
+            } elseif ($typeHint !== null && StringUtils::isAnnotationSameAsTypeHint($annotType, $typeHint)) {
+                $annotType = null;
+            }
 
-            $tags[] = new ParamTag(
-                $paramName,
-                [$requiredProperty->typeAnnotation()]
-            );
+            $paramName = $requiredProperty->varName();
+            $params[] = new ParameterGenerator($paramName, $typeHint);
+
+            if ($annotType) {
+                $tags[] = new ParamTag($paramName, [$annotType]);
+            }
 
             $assignments[] = "\$this->{$requiredProperty->propName()} = \${$paramName};";
         }
@@ -48,17 +53,22 @@ class ConstructorFactory
             return null;
         }
 
-        $docBlock = new DocBlockGenerator(null, null, $tags);
-        $docBlock->setWordWrap(false);
 
         $body = join("\n", $assignments);
 
-        return new MethodGenerator(
+        $methodGen = new MethodGenerator(
             name: '__construct',
             parameters: $params,
             flags: MethodGenerator::FLAG_PUBLIC,
             body: $body,
-            docBlock: $docBlock
         );
+
+        if ($tags) {
+            $docBlock = new DocBlockGenerator(null, null, $tags);
+            $docBlock->setWordWrap(false);
+            $methodGen->setDocBlock($docBlock);
+        }
+
+        return $methodGen;
     }
 }

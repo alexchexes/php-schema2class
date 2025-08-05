@@ -40,8 +40,6 @@ class MyClass
 
     /**
      * @param \Helmich\Schema2Class\Example\CustomerAddress[] $foo
-     * @return self
-     * @param bool $validate
      */
     public function withFoo(array $foo, bool $validate = true): self
     {
@@ -59,9 +57,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutFoo(): self
     {
         $clone = clone $this;

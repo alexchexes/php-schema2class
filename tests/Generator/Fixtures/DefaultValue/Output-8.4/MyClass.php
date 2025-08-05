@@ -114,65 +114,27 @@ class MyClass
      */
     private array $_providedOptionals = [];
 
-    /**
-     * @var int|null
-     */
     private ?int $foo = null;
 
-    /**
-     * @var string|null
-     */
     private ?string $bar = null;
 
-    /**
-     * @var int|null
-     */
     private ?int $baz = null;
 
-    /**
-     * Description of Def1 (string) which has default value
-     *
-     * @var string|null
-     */
     private ?string $qux = null;
 
-    /**
-     * Description of Def1 (string) which has default value
-     *
-     * @var string|null
-     */
     private ?string $thud = null;
 
-    /**
-     * Description of Def2 (string) which doesn't have default value
-     *
-     * @var string|null
-     */
     private ?string $grox = null;
 
-    /**
-     * @var string|int|float|null
-     */
     private string|int|float|null $qwert = null;
 
-    /**
-     * @var string|null
-     */
     private ?string $zyx = null;
 
-    /**
-     * @return int|null
-     */
     public function getFoo(): ?int
     {
         return $this->foo ?? null;
     }
 
-    /**
-     * @param int $foo
-     * @return self
-     * @param bool $validate
-     */
     public function withFoo(int $foo, bool $validate = true): self
     {
         if ($validate) {
@@ -189,9 +151,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutFoo(): self
     {
         $clone = clone $this;
@@ -200,18 +159,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string|null
-     */
     public function getBar(): ?string
     {
         return $this->bar ?? null;
     }
 
-    /**
-     * @param string $bar
-     * @return self
-     */
     public function withBar(string $bar): self
     {
         $clone = clone $this;
@@ -220,9 +172,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutBar(): self
     {
         $clone = clone $this;
@@ -231,18 +180,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return int|null
-     */
     public function getBaz(): ?int
     {
         return $this->baz ?? null;
     }
 
-    /**
-     * @param int|null $baz
-     * @return self
-     */
     public function withBaz(?int $baz): self
     {
         $clone = clone $this;
@@ -252,9 +194,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutBaz(): self
     {
         $clone = clone $this;
@@ -266,8 +205,6 @@ class MyClass
 
     /**
      * Description of Def1 (string) which has default value
-     *
-     * @return string|null
      */
     public function getQux(): ?string
     {
@@ -275,8 +212,7 @@ class MyClass
     }
 
     /**
-     * @param string $qux
-     * @return self
+     * Description of Def1 (string) which has default value
      */
     public function withQux(string $qux): self
     {
@@ -286,9 +222,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutQux(): self
     {
         $clone = clone $this;
@@ -299,8 +232,6 @@ class MyClass
 
     /**
      * Description of Def1 (string) which has default value
-     *
-     * @return string|null
      */
     public function getThud(): ?string
     {
@@ -308,8 +239,7 @@ class MyClass
     }
 
     /**
-     * @param string $thud
-     * @return self
+     * Description of Def1 (string) which has default value
      */
     public function withThud(string $thud): self
     {
@@ -319,9 +249,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutThud(): self
     {
         $clone = clone $this;
@@ -332,8 +259,6 @@ class MyClass
 
     /**
      * Description of Def2 (string) which doesn't have default value
-     *
-     * @return string|null
      */
     public function getGrox(): ?string
     {
@@ -341,8 +266,7 @@ class MyClass
     }
 
     /**
-     * @param string $grox
-     * @return self
+     * Description of Def2 (string) which doesn't have default value
      */
     public function withGrox(string $grox): self
     {
@@ -352,9 +276,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutGrox(): self
     {
         $clone = clone $this;
@@ -363,18 +284,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string|int|float|null
-     */
     public function getQwert(): int|float|string|null
     {
         return $this->qwert;
     }
 
-    /**
-     * @param string|int|float $qwert
-     * @return self
-     */
     public function withQwert(int|float|string $qwert): self
     {
         $clone = clone $this;
@@ -383,9 +297,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutQwert(): self
     {
         $clone = clone $this;
@@ -394,18 +305,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string|null
-     */
     public function getZyx(): ?string
     {
         return $this->zyx ?? null;
     }
 
-    /**
-     * @param string $zyx
-     * @return self
-     */
     public function withZyx(string $zyx): self
     {
         $clone = clone $this;
@@ -414,9 +318,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutZyx(): self
     {
         $clone = clone $this;

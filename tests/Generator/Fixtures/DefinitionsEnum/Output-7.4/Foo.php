@@ -71,8 +71,6 @@ class Foo
 
     /**
      * @param 'red'|'green' $color
-     * @return self
-     * @param bool $validate
      */
     public function withColor(string $color, bool $validate = true): self
     {
@@ -100,8 +98,6 @@ class Foo
 
     /**
      * @param 'small'|'big' $size
-     * @return self
-     * @param bool $validate
      */
     public function withSize(string $size, bool $validate = true): self
     {
@@ -119,9 +115,6 @@ class Foo
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutSize(): self
     {
         $clone = clone $this;

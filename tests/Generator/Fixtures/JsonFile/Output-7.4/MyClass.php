@@ -27,31 +27,18 @@ class MyClass
         ],
     ];
 
-    /**
-     * @var int
-     */
     private int $id;
 
-    /**
-     * @param int $id
-     */
     public function __construct(int $id)
     {
         $this->id = $id;
     }
 
-    /**
-     * @return int
-     */
     public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * @param int $id
-     * @return self
-     */
     public function withId(int $id): self
     {
         $clone = clone $this;

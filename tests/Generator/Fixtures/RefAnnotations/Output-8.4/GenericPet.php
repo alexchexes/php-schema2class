@@ -48,17 +48,10 @@ class GenericPet
      */
     private array $_providedOptionals = [];
 
-    /**
-     * Whether the animal has fur (true), doesn't (false), or it's unknown or varies (null)
-     *
-     * @var bool|null
-     */
     private ?bool $hasFur = null;
 
     /**
      * Whether the animal has fur (true), doesn't (false), or it's unknown or varies (null)
-     *
-     * @return bool|null
      */
     public function getHasFur(): ?bool
     {
@@ -66,8 +59,7 @@ class GenericPet
     }
 
     /**
-     * @param bool|null $hasFur
-     * @return self
+     * Whether the animal has fur (true), doesn't (false), or it's unknown or varies (null)
      */
     public function withHasFur(?bool $hasFur): self
     {
@@ -78,9 +70,6 @@ class GenericPet
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutHasFur(): self
     {
         $clone = clone $this;

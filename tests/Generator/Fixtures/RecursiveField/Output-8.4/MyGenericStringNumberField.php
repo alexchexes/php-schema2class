@@ -41,23 +41,13 @@ class MyGenericStringNumberField
         ],
     ];
 
-    /**
-     * @var MyGenericStringNumber|null
-     */
     private ?MyGenericStringNumber $field = null;
 
-    /**
-     * @return MyGenericStringNumber|null
-     */
     public function getField(): ?MyGenericStringNumber
     {
         return $this->field ?? null;
     }
 
-    /**
-     * @param MyGenericStringNumber $field
-     * @return self
-     */
     public function withField(MyGenericStringNumber $field): self
     {
         $clone = clone $this;
@@ -66,9 +56,6 @@ class MyGenericStringNumberField
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutField(): self
     {
         $clone = clone $this;

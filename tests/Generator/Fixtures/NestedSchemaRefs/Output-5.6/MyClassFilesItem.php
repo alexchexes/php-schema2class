@@ -49,10 +49,10 @@ class MyClassFilesItem
 
     /**
      * @param string $_input
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withInput($_input, bool $validate = true)
+    public function withInput($_input, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -88,7 +88,6 @@ class MyClassFilesItem
     }
 
     /**
-     * @param OptionsObject $options
      * @return self
      */
     public function withOptions(OptionsObject $options)
@@ -118,7 +117,7 @@ class MyClassFilesItem
      * @return MyClassFilesItem Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput($input, bool $validate = true)
+    public static function fromInput($input, $validate = true)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(

@@ -43,36 +43,20 @@ class Foo
         ],
     ];
 
-    /**
-     * @var Color
-     */
     private Color $color;
 
-    /**
-     * @var Size|null
-     */
     private ?Size $size = null;
 
-    /**
-     * @param Color $color
-     */
     public function __construct(Color $color)
     {
         $this->color = $color;
     }
 
-    /**
-     * @return Color
-     */
     public function getColor(): Color
     {
         return $this->color;
     }
 
-    /**
-     * @param Color $color
-     * @return self
-     */
     public function withColor(Color $color): self
     {
         $clone = clone $this;
@@ -81,18 +65,11 @@ class Foo
         return $clone;
     }
 
-    /**
-     * @return Size|null
-     */
     public function getSize(): ?Size
     {
         return $this->size ?? null;
     }
 
-    /**
-     * @param Size $size
-     * @return self
-     */
     public function withSize(Size $size): self
     {
         $clone = clone $this;
@@ -101,9 +78,6 @@ class Foo
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutSize(): self
     {
         $clone = clone $this;

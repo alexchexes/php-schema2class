@@ -26,9 +26,6 @@ class MyClass
         ],
     ];
 
-    /**
-     * @var string|null
-     */
     private ?string $name = null;
 
     /**
@@ -36,18 +33,11 @@ class MyClass
      */
     private $params = null;
 
-    /**
-     * @return string|null
-     */
     public function getName(): ?string
     {
         return $this->name ?? null;
     }
 
-    /**
-     * @param string $name
-     * @return self
-     */
     public function withName(string $name): self
     {
         $clone = clone $this;
@@ -56,9 +46,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutName(): self
     {
         $clone = clone $this;
@@ -77,7 +64,6 @@ class MyClass
 
     /**
      * @param array|object $params
-     * @return self
      */
     public function withParams($params): self
     {
@@ -87,9 +73,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutParams(): self
     {
         $clone = clone $this;

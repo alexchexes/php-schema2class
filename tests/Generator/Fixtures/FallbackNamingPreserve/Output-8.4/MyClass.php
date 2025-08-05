@@ -293,104 +293,44 @@ class MyClass
      */
     private array $_providedOptionals = [];
 
-    /**
-     * @var string
-     */
     private string $_GLOBALS;
 
-    /**
-     * @var string
-     */
     private string $GLOBALS;
 
-    /**
-     * @var string
-     */
     private string $GLOBALS_1;
 
-    /**
-     * @var string
-     */
     private string $_SERVER;
 
-    /**
-     * @var string
-     */
     private string $_GET;
 
-    /**
-     * @var string
-     */
     private string $_POST;
 
-    /**
-     * @var string
-     */
     private string $_FILES;
 
-    /**
-     * @var string
-     */
     private string $_REQUEST;
 
-    /**
-     * @var string
-     */
     private string $_SESSION;
 
-    /**
-     * @var string
-     */
     private string $_ENV;
 
-    /**
-     * @var string
-     */
     private string $_COOKIE;
 
-    /**
-     * @var string
-     */
     private string $php_errormsg;
 
-    /**
-     * @var string
-     */
     private string $http_response_header;
 
-    /**
-     * @var string
-     */
     private string $argc;
 
-    /**
-     * @var string
-     */
     private string $argv;
 
-    /**
-     * @var string
-     */
     private string $input;
 
-    /**
-     * @var string|null
-     */
     private ?string $validate = null;
 
-    /**
-     * @var string|null
-     */
     private ?string $materializeDefaults = null;
 
-    /**
-     * @var string
-     */
     private string $obj;
 
-    /**
-     * @var string
-     */
     private string $includeDefaults;
 
     /**
@@ -398,134 +338,56 @@ class MyClass
      */
     private ?MyClassTestObj $testObj = null;
 
-    /**
-     * @var string
-     */
     private string $fromInput;
 
-    /**
-     * @var string
-     */
     private string $toArray;
 
-    /**
-     * @var string
-     */
     private string $toStdClass;
 
-    /**
-     * @var string
-     */
     private string $validateInput;
 
-    /**
-     * @var string
-     */
     private string $_schema_1;
 
-    /**
-     * @var string
-     */
     private string $schema;
 
-    /**
-     * @var string
-     */
     private string $_defaults_1;
 
-    /**
-     * @var string
-     */
     private string $defaults;
 
-    /**
-     * @var string
-     */
     private string $_providedOptionals_1;
 
-    /**
-     * @var string|null
-     */
     private ?string $__providedOptionals = null;
 
-    /**
-     * @var string
-     */
     private string $clone;
 
-    /**
-     * @var string
-     */
     private string $__clone;
 
-    /**
-     * @var string
-     */
     private string $__construct;
 
-    /**
-     * @var string
-     */
     private string $__destruct;
 
-    /**
-     * @var string
-     */
     private string $__get;
 
-    /**
-     * @var string
-     */
     private string $__set;
 
-    /**
-     * @var string
-     */
     private string $__call;
 
-    /**
-     * @var string
-     */
     private string $__isset;
 
-    /**
-     * @var string
-     */
     private string $__unset;
 
-    /**
-     * @var string
-     */
     private string $__sleep;
 
-    /**
-     * @var string
-     */
     private string $__wakeup;
 
-    /**
-     * @var string
-     */
     private string $__toString;
 
-    /**
-     * @var string
-     */
     private string $__invoke;
 
-    /**
-     * @var string
-     */
     private string $__debugInfo;
 
-    /**
-     * @var string
-     */
     private string $files;
 
-    /**
-     * @var string
-     */
     private string $_this;
 
     /**
@@ -543,51 +405,6 @@ class MyClass
      */
     private ?array $ensureArgs3 = null;
 
-    /**
-     * @param string $_GLOBALS_1
-     * @param string $_GLOBALS
-     * @param string $GLOBALS_1
-     * @param string $_SERVER_1
-     * @param string $_GET_1
-     * @param string $_POST_1
-     * @param string $_FILES_1
-     * @param string $_REQUEST_1
-     * @param string $_SESSION_1
-     * @param string $_ENV_1
-     * @param string $_COOKIE_1
-     * @param string $_php_errormsg
-     * @param string $_http_response_header
-     * @param string $_argc
-     * @param string $_argv
-     * @param string $_input
-     * @param string $_obj
-     * @param string $_includeDefaults
-     * @param string $fromInput
-     * @param string $toArray
-     * @param string $toStdClass
-     * @param string $validateInput
-     * @param string $_schema_1
-     * @param string $schema
-     * @param string $_defaults_1
-     * @param string $defaults
-     * @param string $_providedOptionals_1
-     * @param string $_clone
-     * @param string $__clone
-     * @param string $__construct
-     * @param string $__destruct
-     * @param string $__get
-     * @param string $__set
-     * @param string $__call
-     * @param string $__isset
-     * @param string $__unset
-     * @param string $__sleep
-     * @param string $__wakeup
-     * @param string $__toString
-     * @param string $__invoke
-     * @param string $__debugInfo
-     * @param string $files
-     * @param string $_this
-     */
     public function __construct(string $_GLOBALS_1, string $_GLOBALS, string $GLOBALS_1, string $_SERVER_1, string $_GET_1, string $_POST_1, string $_FILES_1, string $_REQUEST_1, string $_SESSION_1, string $_ENV_1, string $_COOKIE_1, string $_php_errormsg, string $_http_response_header, string $_argc, string $_argv, string $_input, string $_obj, string $_includeDefaults, string $fromInput, string $toArray, string $toStdClass, string $validateInput, string $_schema_1, string $schema, string $_defaults_1, string $defaults, string $_providedOptionals_1, string $_clone, string $__clone, string $__construct, string $__destruct, string $__get, string $__set, string $__call, string $__isset, string $__unset, string $__sleep, string $__wakeup, string $__toString, string $__invoke, string $__debugInfo, string $files, string $_this)
     {
         $this->_GLOBALS = $_GLOBALS_1;
@@ -635,18 +452,11 @@ class MyClass
         $this->_this = $_this;
     }
 
-    /**
-     * @return string
-     */
     public function get_GLOBALS(): string
     {
         return $this->_GLOBALS;
     }
 
-    /**
-     * @param string $_GLOBALS_1
-     * @return self
-     */
     public function with_GLOBALS(string $_GLOBALS_1): self
     {
         $clone = clone $this;
@@ -655,18 +465,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function getGLOBALS(): string
     {
         return $this->GLOBALS;
     }
 
-    /**
-     * @param string $_GLOBALS
-     * @return self
-     */
     public function withGLOBALS(string $_GLOBALS): self
     {
         $clone = clone $this;
@@ -675,18 +478,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function getGLOBALS1(): string
     {
         return $this->GLOBALS_1;
     }
 
-    /**
-     * @param string $GLOBALS_1
-     * @return self
-     */
     public function withGLOBALS1(string $GLOBALS_1): self
     {
         $clone = clone $this;
@@ -695,18 +491,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function get_SERVER(): string
     {
         return $this->_SERVER;
     }
 
-    /**
-     * @param string $_SERVER_1
-     * @return self
-     */
     public function with_SERVER(string $_SERVER_1): self
     {
         $clone = clone $this;
@@ -715,18 +504,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function get_GET(): string
     {
         return $this->_GET;
     }
 
-    /**
-     * @param string $_GET_1
-     * @return self
-     */
     public function with_GET(string $_GET_1): self
     {
         $clone = clone $this;
@@ -735,18 +517,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function get_POST(): string
     {
         return $this->_POST;
     }
 
-    /**
-     * @param string $_POST_1
-     * @return self
-     */
     public function with_POST(string $_POST_1): self
     {
         $clone = clone $this;
@@ -755,18 +530,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function get_FILES(): string
     {
         return $this->_FILES;
     }
 
-    /**
-     * @param string $_FILES_1
-     * @return self
-     */
     public function with_FILES(string $_FILES_1): self
     {
         $clone = clone $this;
@@ -775,18 +543,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function get_REQUEST(): string
     {
         return $this->_REQUEST;
     }
 
-    /**
-     * @param string $_REQUEST_1
-     * @return self
-     */
     public function with_REQUEST(string $_REQUEST_1): self
     {
         $clone = clone $this;
@@ -795,18 +556,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function get_SESSION(): string
     {
         return $this->_SESSION;
     }
 
-    /**
-     * @param string $_SESSION_1
-     * @return self
-     */
     public function with_SESSION(string $_SESSION_1): self
     {
         $clone = clone $this;
@@ -815,18 +569,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function get_ENV(): string
     {
         return $this->_ENV;
     }
 
-    /**
-     * @param string $_ENV_1
-     * @return self
-     */
     public function with_ENV(string $_ENV_1): self
     {
         $clone = clone $this;
@@ -835,18 +582,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function get_COOKIE(): string
     {
         return $this->_COOKIE;
     }
 
-    /**
-     * @param string $_COOKIE_1
-     * @return self
-     */
     public function with_COOKIE(string $_COOKIE_1): self
     {
         $clone = clone $this;
@@ -855,18 +595,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function getPhpErrormsg(): string
     {
         return $this->php_errormsg;
     }
 
-    /**
-     * @param string $_php_errormsg
-     * @return self
-     */
     public function withPhpErrormsg(string $_php_errormsg): self
     {
         $clone = clone $this;
@@ -875,18 +608,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function getHttpResponseHeader(): string
     {
         return $this->http_response_header;
     }
 
-    /**
-     * @param string $_http_response_header
-     * @return self
-     */
     public function withHttpResponseHeader(string $_http_response_header): self
     {
         $clone = clone $this;
@@ -895,18 +621,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function getArgc(): string
     {
         return $this->argc;
     }
 
-    /**
-     * @param string $_argc
-     * @return self
-     */
     public function withArgc(string $_argc): self
     {
         $clone = clone $this;
@@ -915,18 +634,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function getArgv(): string
     {
         return $this->argv;
     }
 
-    /**
-     * @param string $_argv
-     * @return self
-     */
     public function withArgv(string $_argv): self
     {
         $clone = clone $this;
@@ -935,18 +647,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function getInput(): string
     {
         return $this->input;
     }
 
-    /**
-     * @param string $_input
-     * @return self
-     */
     public function withInput(string $_input): self
     {
         $clone = clone $this;
@@ -955,18 +660,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string|null
-     */
     public function getValidate(): ?string
     {
         return $this->validate ?? null;
     }
 
-    /**
-     * @param string $_validate
-     * @return self
-     */
     public function withValidate(string $_validate): self
     {
         $clone = clone $this;
@@ -975,9 +673,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutValidate(): self
     {
         $clone = clone $this;
@@ -986,18 +681,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string|null
-     */
     public function getMaterializeDefaults(): ?string
     {
         return $this->materializeDefaults ?? null;
     }
 
-    /**
-     * @param string|null $_materializeDefaults
-     * @return self
-     */
     public function withMaterializeDefaults(?string $_materializeDefaults): self
     {
         $clone = clone $this;
@@ -1007,9 +695,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutMaterializeDefaults(): self
     {
         $clone = clone $this;
@@ -1019,18 +704,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function getObj(): string
     {
         return $this->obj;
     }
 
-    /**
-     * @param string $_obj
-     * @return self
-     */
     public function withObj(string $_obj): self
     {
         $clone = clone $this;
@@ -1039,18 +717,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function getIncludeDefaults(): string
     {
         return $this->includeDefaults;
     }
 
-    /**
-     * @param string $_includeDefaults
-     * @return self
-     */
     public function withIncludeDefaults(string $_includeDefaults): self
     {
         $clone = clone $this;
@@ -1069,7 +740,6 @@ class MyClass
 
     /**
      * @param MyClassTestObj $testObj
-     * @return self
      */
     public function withTestObj(MyClassTestObj $testObj): self
     {
@@ -1079,9 +749,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutTestObj(): self
     {
         $clone = clone $this;
@@ -1090,18 +757,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function getFromInput(): string
     {
         return $this->fromInput;
     }
 
-    /**
-     * @param string $fromInput
-     * @return self
-     */
     public function withFromInput(string $fromInput): self
     {
         $clone = clone $this;
@@ -1110,18 +770,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function getToArray(): string
     {
         return $this->toArray;
     }
 
-    /**
-     * @param string $toArray
-     * @return self
-     */
     public function withToArray(string $toArray): self
     {
         $clone = clone $this;
@@ -1130,18 +783,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function getToStdClass(): string
     {
         return $this->toStdClass;
     }
 
-    /**
-     * @param string $toStdClass
-     * @return self
-     */
     public function withToStdClass(string $toStdClass): self
     {
         $clone = clone $this;
@@ -1150,18 +796,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function getValidateInput(): string
     {
         return $this->validateInput;
     }
 
-    /**
-     * @param string $validateInput
-     * @return self
-     */
     public function withValidateInput(string $validateInput): self
     {
         $clone = clone $this;
@@ -1170,18 +809,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function get_Schema1(): string
     {
         return $this->_schema_1;
     }
 
-    /**
-     * @param string $_schema_1
-     * @return self
-     */
     public function with_Schema1(string $_schema_1): self
     {
         $clone = clone $this;
@@ -1190,18 +822,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function getSchema(): string
     {
         return $this->schema;
     }
 
-    /**
-     * @param string $schema
-     * @return self
-     */
     public function withSchema(string $schema): self
     {
         $clone = clone $this;
@@ -1210,18 +835,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function get_Defaults1(): string
     {
         return $this->_defaults_1;
     }
 
-    /**
-     * @param string $_defaults_1
-     * @return self
-     */
     public function with_Defaults1(string $_defaults_1): self
     {
         $clone = clone $this;
@@ -1230,18 +848,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function getDefaults(): string
     {
         return $this->defaults;
     }
 
-    /**
-     * @param string $defaults
-     * @return self
-     */
     public function withDefaults(string $defaults): self
     {
         $clone = clone $this;
@@ -1250,18 +861,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function get_ProvidedOptionals1(): string
     {
         return $this->_providedOptionals_1;
     }
 
-    /**
-     * @param string $_providedOptionals_1
-     * @return self
-     */
     public function with_ProvidedOptionals1(string $_providedOptionals_1): self
     {
         $clone = clone $this;
@@ -1270,18 +874,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string|null
-     */
     public function get__ProvidedOptionals(): ?string
     {
         return $this->__providedOptionals ?? null;
     }
 
-    /**
-     * @param string $__providedOptionals_1
-     * @return self
-     */
     public function with__ProvidedOptionals(string $__providedOptionals_1): self
     {
         $clone = clone $this;
@@ -1290,9 +887,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function without__ProvidedOptionals(): self
     {
         $clone = clone $this;
@@ -1301,18 +895,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function getClone(): string
     {
         return $this->clone;
     }
 
-    /**
-     * @param string $_clone
-     * @return self
-     */
     public function withClone(string $_clone): self
     {
         $clone = clone $this;
@@ -1321,18 +908,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function get__Clone(): string
     {
         return $this->__clone;
     }
 
-    /**
-     * @param string $__clone
-     * @return self
-     */
     public function with__Clone(string $__clone): self
     {
         $clone = clone $this;
@@ -1341,18 +921,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function get__Construct(): string
     {
         return $this->__construct;
     }
 
-    /**
-     * @param string $__construct
-     * @return self
-     */
     public function with__Construct(string $__construct): self
     {
         $clone = clone $this;
@@ -1361,18 +934,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function get__Destruct(): string
     {
         return $this->__destruct;
     }
 
-    /**
-     * @param string $__destruct
-     * @return self
-     */
     public function with__Destruct(string $__destruct): self
     {
         $clone = clone $this;
@@ -1381,18 +947,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function get__Get(): string
     {
         return $this->__get;
     }
 
-    /**
-     * @param string $__get
-     * @return self
-     */
     public function with__Get(string $__get): self
     {
         $clone = clone $this;
@@ -1401,18 +960,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function get__Set(): string
     {
         return $this->__set;
     }
 
-    /**
-     * @param string $__set
-     * @return self
-     */
     public function with__Set(string $__set): self
     {
         $clone = clone $this;
@@ -1421,18 +973,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function get__Call(): string
     {
         return $this->__call;
     }
 
-    /**
-     * @param string $__call
-     * @return self
-     */
     public function with__Call(string $__call): self
     {
         $clone = clone $this;
@@ -1441,18 +986,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function get__Isset(): string
     {
         return $this->__isset;
     }
 
-    /**
-     * @param string $__isset
-     * @return self
-     */
     public function with__Isset(string $__isset): self
     {
         $clone = clone $this;
@@ -1461,18 +999,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function get__Unset(): string
     {
         return $this->__unset;
     }
 
-    /**
-     * @param string $__unset
-     * @return self
-     */
     public function with__Unset(string $__unset): self
     {
         $clone = clone $this;
@@ -1481,18 +1012,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function get__Sleep(): string
     {
         return $this->__sleep;
     }
 
-    /**
-     * @param string $__sleep
-     * @return self
-     */
     public function with__Sleep(string $__sleep): self
     {
         $clone = clone $this;
@@ -1501,18 +1025,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function get__Wakeup(): string
     {
         return $this->__wakeup;
     }
 
-    /**
-     * @param string $__wakeup
-     * @return self
-     */
     public function with__Wakeup(string $__wakeup): self
     {
         $clone = clone $this;
@@ -1521,18 +1038,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function get__ToString(): string
     {
         return $this->__toString;
     }
 
-    /**
-     * @param string $__toString
-     * @return self
-     */
     public function with__ToString(string $__toString): self
     {
         $clone = clone $this;
@@ -1541,18 +1051,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function get__Invoke(): string
     {
         return $this->__invoke;
     }
 
-    /**
-     * @param string $__invoke
-     * @return self
-     */
     public function with__Invoke(string $__invoke): self
     {
         $clone = clone $this;
@@ -1561,18 +1064,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function get__DebugInfo(): string
     {
         return $this->__debugInfo;
     }
 
-    /**
-     * @param string $__debugInfo
-     * @return self
-     */
     public function with__DebugInfo(string $__debugInfo): self
     {
         $clone = clone $this;
@@ -1581,18 +1077,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function getFiles(): string
     {
         return $this->files;
     }
 
-    /**
-     * @param string $files
-     * @return self
-     */
     public function withFiles(string $files): self
     {
         $clone = clone $this;
@@ -1601,18 +1090,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function get_This(): string
     {
         return $this->_this;
     }
 
-    /**
-     * @param string $_this
-     * @return self
-     */
     public function with_This(string $_this): self
     {
         $clone = clone $this;
@@ -1631,7 +1113,6 @@ class MyClass
 
     /**
      * @param MyClassEnsureArgs1Alternative1|MyClassEnsureArgs1Alternative2|string $ensureArgs1
-     * @return self
      */
     public function withEnsureArgs1(MyClassEnsureArgs1Alternative1|MyClassEnsureArgs1Alternative2|string $ensureArgs1): self
     {
@@ -1641,9 +1122,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutEnsureArgs1(): self
     {
         $clone = clone $this;
@@ -1662,7 +1140,6 @@ class MyClass
 
     /**
      * @param MyClassEnsureArgs2 $ensureArgs2
-     * @return self
      */
     public function withEnsureArgs2(MyClassEnsureArgs2 $ensureArgs2): self
     {
@@ -1672,9 +1149,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutEnsureArgs2(): self
     {
         $clone = clone $this;
@@ -1693,8 +1167,6 @@ class MyClass
 
     /**
      * @param MyClassEnsureArgs3Item[] $ensureArgs3
-     * @return self
-     * @param bool $validate
      */
     public function withEnsureArgs3(array $ensureArgs3, bool $validate = true): self
     {
@@ -1712,9 +1184,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutEnsureArgs3(): self
     {
         $clone = clone $this;

@@ -167,10 +167,10 @@ class MyClass
 
     /**
      * @param 1|2|'1'|'2' $foo
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withFoo($foo, bool $validate = true)
+    public function withFoo($foo, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -196,10 +196,10 @@ class MyClass
 
     /**
      * @param 3|4|'3'|'4' $bar
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withBar($bar, bool $validate = true)
+    public function withBar($bar, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -225,10 +225,10 @@ class MyClass
 
     /**
      * @param 'red'|'amber'|'green'|'42'|42|42.5|false|null $baz
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withBaz($baz, bool $validate = true)
+    public function withBaz($baz, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -254,10 +254,10 @@ class MyClass
 
     /**
      * @param int $contradiction
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withContradiction($contradiction, bool $validate = true)
+    public function withContradiction($contradiction, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -283,10 +283,10 @@ class MyClass
 
     /**
      * @param 1|2|'one' $contradiction2
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withContradiction2($contradiction2, bool $validate = true)
+    public function withContradiction2($contradiction2, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -312,10 +312,10 @@ class MyClass
 
     /**
      * @param 'red'|'green'|null $nullable
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withNullable(string $nullable, bool $validate = true)
+    public function withNullable(string $nullable, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -341,10 +341,10 @@ class MyClass
 
     /**
      * @param 'red'|'green'|null $optionalNullable
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withOptionalNullable(string $optionalNullable, bool $validate = true)
+    public function withOptionalNullable(string $optionalNullable, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -381,7 +381,7 @@ class MyClass
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput($input, bool $validate = true)
+    public static function fromInput($input, $validate = true)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(

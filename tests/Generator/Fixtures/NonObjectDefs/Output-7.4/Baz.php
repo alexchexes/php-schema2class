@@ -71,8 +71,6 @@ class Baz
 
     /**
      * @param Foo|Bar $grox
-     * @return self
-     * @param bool $validate
      */
     public function withGrox($grox, bool $validate = true): self
     {
@@ -90,9 +88,6 @@ class Baz
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutGrox(): self
     {
         $clone = clone $this;

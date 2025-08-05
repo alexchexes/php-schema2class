@@ -33,10 +33,10 @@ class Name
 
     /**
      * @param string $first
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withFirst($first, bool $validate = true)
+    public function withFirst($first, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -71,7 +71,7 @@ class Name
      * @return Name Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput($input, bool $validate = true)
+    public static function fromInput($input, $validate = true)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(

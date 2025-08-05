@@ -81,103 +81,38 @@ class MyClass
         ],
     ];
 
-    /**
-     * @var string
-     */
     private string $foo;
 
-    /**
-     * @var string
-     */
     private string $_foo;
 
-    /**
-     * @var string
-     */
     private string $__foo;
 
-    /**
-     * @var string
-     */
     private string $foo_;
 
-    /**
-     * @var string
-     */
     private string $foo__;
 
-    /**
-     * @var string
-     */
     private string $_foo_;
 
-    /**
-     * @var string
-     */
     private string $__foo__;
 
-    /**
-     * @var string
-     */
     private string $_foo_bar;
 
-    /**
-     * @var string
-     */
     private string $foo_bar;
 
-    /**
-     * @var string
-     */
     private string $baz_qux;
 
-    /**
-     * @var string
-     */
     private string $_123_qwe;
 
-    /**
-     * @var string
-     */
     private string $Gorod;
 
-    /**
-     * @var string
-     */
     private string $nazvanie_iur_litsa;
 
-    /**
-     * @var string
-     */
     private string $IP_adres;
 
-    /**
-     * @var string
-     */
     private string $_tildas;
 
-    /**
-     * @var string|null
-     */
     private ?string $it_s_A = null;
 
-    /**
-     * @param string $foo
-     * @param string $_foo
-     * @param string $__foo
-     * @param string $foo_
-     * @param string $foo__
-     * @param string $_foo_
-     * @param string $__foo__
-     * @param string $_foo_bar
-     * @param string $foo_bar
-     * @param string $baz_qux
-     * @param string $_123_qwe
-     * @param string $Gorod
-     * @param string $nazvanie_iur_litsa
-     * @param string $IP_adres
-     * @param string $_tildas
-     */
     public function __construct(string $foo, string $_foo, string $__foo, string $foo_, string $foo__, string $_foo_, string $__foo__, string $_foo_bar, string $foo_bar, string $baz_qux, string $_123_qwe, string $Gorod, string $nazvanie_iur_litsa, string $IP_adres, string $_tildas)
     {
         $this->foo = $foo;
@@ -197,18 +132,11 @@ class MyClass
         $this->_tildas = $_tildas;
     }
 
-    /**
-     * @return string
-     */
     public function getFoo(): string
     {
         return $this->foo;
     }
 
-    /**
-     * @param string $foo
-     * @return self
-     */
     public function withFoo(string $foo): self
     {
         $clone = clone $this;
@@ -217,18 +145,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function get_Foo(): string
     {
         return $this->_foo;
     }
 
-    /**
-     * @param string $_foo
-     * @return self
-     */
     public function with_Foo(string $_foo): self
     {
         $clone = clone $this;
@@ -237,18 +158,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function get__Foo(): string
     {
         return $this->__foo;
     }
 
-    /**
-     * @param string $__foo
-     * @return self
-     */
     public function with__Foo(string $__foo): self
     {
         $clone = clone $this;
@@ -257,18 +171,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function getFoo_(): string
     {
         return $this->foo_;
     }
 
-    /**
-     * @param string $foo_
-     * @return self
-     */
     public function withFoo_(string $foo_): self
     {
         $clone = clone $this;
@@ -277,18 +184,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function getFoo__(): string
     {
         return $this->foo__;
     }
 
-    /**
-     * @param string $foo__
-     * @return self
-     */
     public function withFoo__(string $foo__): self
     {
         $clone = clone $this;
@@ -297,18 +197,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function get_Foo_(): string
     {
         return $this->_foo_;
     }
 
-    /**
-     * @param string $_foo_
-     * @return self
-     */
     public function with_Foo_(string $_foo_): self
     {
         $clone = clone $this;
@@ -317,18 +210,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function get__Foo__(): string
     {
         return $this->__foo__;
     }
 
-    /**
-     * @param string $__foo__
-     * @return self
-     */
     public function with__Foo__(string $__foo__): self
     {
         $clone = clone $this;
@@ -337,18 +223,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function get_FooBar(): string
     {
         return $this->_foo_bar;
     }
 
-    /**
-     * @param string $_foo_bar
-     * @return self
-     */
     public function with_FooBar(string $_foo_bar): self
     {
         $clone = clone $this;
@@ -357,18 +236,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function getFooBar(): string
     {
         return $this->foo_bar;
     }
 
-    /**
-     * @param string $foo_bar
-     * @return self
-     */
     public function withFooBar(string $foo_bar): self
     {
         $clone = clone $this;
@@ -377,18 +249,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function getBazQux(): string
     {
         return $this->baz_qux;
     }
 
-    /**
-     * @param string $baz_qux
-     * @return self
-     */
     public function withBazQux(string $baz_qux): self
     {
         $clone = clone $this;
@@ -397,18 +262,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function get_123Qwe(): string
     {
         return $this->_123_qwe;
     }
 
-    /**
-     * @param string $_123_qwe
-     * @return self
-     */
     public function with_123Qwe(string $_123_qwe): self
     {
         $clone = clone $this;
@@ -417,18 +275,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function getGorod(): string
     {
         return $this->Gorod;
     }
 
-    /**
-     * @param string $Gorod
-     * @return self
-     */
     public function withGorod(string $Gorod): self
     {
         $clone = clone $this;
@@ -437,18 +288,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function getNazvanieIurLitsa(): string
     {
         return $this->nazvanie_iur_litsa;
     }
 
-    /**
-     * @param string $nazvanie_iur_litsa
-     * @return self
-     */
     public function withNazvanieIurLitsa(string $nazvanie_iur_litsa): self
     {
         $clone = clone $this;
@@ -457,18 +301,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function getIPAdres(): string
     {
         return $this->IP_adres;
     }
 
-    /**
-     * @param string $IP_adres
-     * @return self
-     */
     public function withIPAdres(string $IP_adres): self
     {
         $clone = clone $this;
@@ -477,18 +314,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function getTildas(): string
     {
         return $this->_tildas;
     }
 
-    /**
-     * @param string $_tildas
-     * @return self
-     */
     public function withTildas(string $_tildas): self
     {
         $clone = clone $this;
@@ -497,18 +327,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string|null
-     */
     public function getItSA(): ?string
     {
         return $this->it_s_A ?? null;
     }
 
-    /**
-     * @param string $it_s_A
-     * @return self
-     */
     public function withItSA(string $it_s_A): self
     {
         $clone = clone $this;
@@ -517,9 +340,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutItSA(): self
     {
         $clone = clone $this;

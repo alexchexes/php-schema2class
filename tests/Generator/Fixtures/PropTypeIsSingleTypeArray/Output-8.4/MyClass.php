@@ -214,24 +214,12 @@ class MyClass
      */
     private array $_providedOptionals = [];
 
-    /**
-     * @var string
-     */
     private string $foo;
 
-    /**
-     * @var int|float
-     */
     private int|float $bar;
 
-    /**
-     * @var int
-     */
     private int $baz;
 
-    /**
-     * @var bool
-     */
     private bool $qux;
 
     /**
@@ -249,24 +237,12 @@ class MyClass
      */
     private $grox;
 
-    /**
-     * @var string|null
-     */
     private ?string $nullFoo;
 
-    /**
-     * @var int|float|null
-     */
     private int|float|null $nullBar;
 
-    /**
-     * @var int|null
-     */
     private ?int $nullBaz;
 
-    /**
-     * @var bool|null
-     */
     private ?bool $nullQux;
 
     /**
@@ -279,24 +255,12 @@ class MyClass
      */
     private ?array $nullThud;
 
-    /**
-     * @var string|null
-     */
     private ?string $optFoo = null;
 
-    /**
-     * @var int|float|null
-     */
     private int|float|null $optBar = null;
 
-    /**
-     * @var int|null
-     */
     private ?int $optBaz = null;
 
-    /**
-     * @var bool|null
-     */
     private ?bool $optQux = null;
 
     /**
@@ -314,24 +278,12 @@ class MyClass
      */
     private $optGrox = null;
 
-    /**
-     * @var string|null
-     */
     private ?string $optNullFoo = null;
 
-    /**
-     * @var int|float|null
-     */
     private int|float|null $optNullBar = null;
 
-    /**
-     * @var int|null
-     */
     private ?int $optNullBaz = null;
 
-    /**
-     * @var bool|null
-     */
     private ?bool $optNullQux = null;
 
     /**
@@ -345,17 +297,9 @@ class MyClass
     private ?array $optNullThud = null;
 
     /**
-     * @param string $foo
-     * @param int|float $bar
-     * @param int $baz
-     * @param bool $qux
      * @param MyClassQuux $quux
      * @param string[] $thud
      * @param null $grox
-     * @param string|null $nullFoo
-     * @param int|float|null $nullBar
-     * @param int|null $nullBaz
-     * @param bool|null $nullQux
      * @param MyClassNullQuux|null $nullQuux
      * @param string[]|null $nullThud
      */
@@ -376,18 +320,11 @@ class MyClass
         $this->nullThud = $nullThud;
     }
 
-    /**
-     * @return string
-     */
     public function getFoo(): string
     {
         return $this->foo;
     }
 
-    /**
-     * @param string $foo
-     * @return self
-     */
     public function withFoo(string $foo): self
     {
         $clone = clone $this;
@@ -396,18 +333,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return int|float
-     */
     public function getBar(): int|float
     {
         return $this->bar;
     }
 
-    /**
-     * @param int|float $bar
-     * @return self
-     */
     public function withBar(int|float $bar): self
     {
         $clone = clone $this;
@@ -416,18 +346,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return int
-     */
     public function getBaz(): int
     {
         return $this->baz;
     }
 
-    /**
-     * @param int $baz
-     * @return self
-     */
     public function withBaz(int $baz): self
     {
         $clone = clone $this;
@@ -436,18 +359,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return bool
-     */
     public function getQux(): bool
     {
         return $this->qux;
     }
 
-    /**
-     * @param bool $qux
-     * @return self
-     */
     public function withQux(bool $qux): self
     {
         $clone = clone $this;
@@ -466,7 +382,6 @@ class MyClass
 
     /**
      * @param MyClassQuux $quux
-     * @return self
      */
     public function withQuux(MyClassQuux $quux): self
     {
@@ -486,8 +401,6 @@ class MyClass
 
     /**
      * @param string[] $thud
-     * @return self
-     * @param bool $validate
      */
     public function withThud(array $thud, bool $validate = true): self
     {
@@ -515,8 +428,6 @@ class MyClass
 
     /**
      * @param null $grox
-     * @return self
-     * @param bool $validate
      */
     public function withGrox($grox, bool $validate = true): self
     {
@@ -534,18 +445,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string|null
-     */
     public function getNullFoo(): ?string
     {
         return $this->nullFoo ?? null;
     }
 
-    /**
-     * @param string|null $nullFoo
-     * @return self
-     */
     public function withNullFoo(?string $nullFoo): self
     {
         $clone = clone $this;
@@ -554,18 +458,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return int|float|null
-     */
     public function getNullBar(): int|float|null
     {
         return $this->nullBar;
     }
 
-    /**
-     * @param int|float|null $nullBar
-     * @return self
-     */
     public function withNullBar(int|float|null $nullBar): self
     {
         $clone = clone $this;
@@ -574,18 +471,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return int|null
-     */
     public function getNullBaz(): ?int
     {
         return $this->nullBaz ?? null;
     }
 
-    /**
-     * @param int|null $nullBaz
-     * @return self
-     */
     public function withNullBaz(?int $nullBaz): self
     {
         $clone = clone $this;
@@ -594,18 +484,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return bool|null
-     */
     public function getNullQux(): ?bool
     {
         return $this->nullQux ?? null;
     }
 
-    /**
-     * @param bool|null $nullQux
-     * @return self
-     */
     public function withNullQux(?bool $nullQux): self
     {
         $clone = clone $this;
@@ -624,7 +507,6 @@ class MyClass
 
     /**
      * @param MyClassNullQuux|null $nullQuux
-     * @return self
      */
     public function withNullQuux(?MyClassNullQuux $nullQuux): self
     {
@@ -644,8 +526,6 @@ class MyClass
 
     /**
      * @param string[]|null $nullThud
-     * @return self
-     * @param bool $validate
      */
     public function withNullThud(?array $nullThud, bool $validate = true): self
     {
@@ -663,18 +543,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string|null
-     */
     public function getOptFoo(): ?string
     {
         return $this->optFoo ?? null;
     }
 
-    /**
-     * @param string $optFoo
-     * @return self
-     */
     public function withOptFoo(string $optFoo): self
     {
         $clone = clone $this;
@@ -683,9 +556,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutOptFoo(): self
     {
         $clone = clone $this;
@@ -694,18 +564,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return int|float|null
-     */
     public function getOptBar(): int|float|null
     {
         return $this->optBar;
     }
 
-    /**
-     * @param int|float $optBar
-     * @return self
-     */
     public function withOptBar(int|float $optBar): self
     {
         $clone = clone $this;
@@ -714,9 +577,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutOptBar(): self
     {
         $clone = clone $this;
@@ -725,18 +585,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return int|null
-     */
     public function getOptBaz(): ?int
     {
         return $this->optBaz ?? null;
     }
 
-    /**
-     * @param int $optBaz
-     * @return self
-     */
     public function withOptBaz(int $optBaz): self
     {
         $clone = clone $this;
@@ -745,9 +598,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutOptBaz(): self
     {
         $clone = clone $this;
@@ -756,18 +606,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return bool|null
-     */
     public function getOptQux(): ?bool
     {
         return $this->optQux ?? null;
     }
 
-    /**
-     * @param bool $optQux
-     * @return self
-     */
     public function withOptQux(bool $optQux): self
     {
         $clone = clone $this;
@@ -776,9 +619,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutOptQux(): self
     {
         $clone = clone $this;
@@ -797,7 +637,6 @@ class MyClass
 
     /**
      * @param MyClassOptQuux $optQuux
-     * @return self
      */
     public function withOptQuux(MyClassOptQuux $optQuux): self
     {
@@ -807,9 +646,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutOptQuux(): self
     {
         $clone = clone $this;
@@ -828,8 +664,6 @@ class MyClass
 
     /**
      * @param string[] $optThud
-     * @return self
-     * @param bool $validate
      */
     public function withOptThud(array $optThud, bool $validate = true): self
     {
@@ -847,9 +681,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutOptThud(): self
     {
         $clone = clone $this;
@@ -868,8 +699,6 @@ class MyClass
 
     /**
      * @param null $optGrox
-     * @return self
-     * @param bool $validate
      */
     public function withOptGrox($optGrox, bool $validate = true): self
     {
@@ -888,9 +717,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutOptGrox(): self
     {
         $clone = clone $this;
@@ -900,18 +726,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string|null
-     */
     public function getOptNullFoo(): ?string
     {
         return $this->optNullFoo ?? null;
     }
 
-    /**
-     * @param string|null $optNullFoo
-     * @return self
-     */
     public function withOptNullFoo(?string $optNullFoo): self
     {
         $clone = clone $this;
@@ -921,9 +740,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutOptNullFoo(): self
     {
         $clone = clone $this;
@@ -933,18 +749,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return int|float|null
-     */
     public function getOptNullBar(): int|float|null
     {
         return $this->optNullBar;
     }
 
-    /**
-     * @param int|float|null $optNullBar
-     * @return self
-     */
     public function withOptNullBar(int|float|null $optNullBar): self
     {
         $clone = clone $this;
@@ -954,9 +763,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutOptNullBar(): self
     {
         $clone = clone $this;
@@ -966,18 +772,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return int|null
-     */
     public function getOptNullBaz(): ?int
     {
         return $this->optNullBaz ?? null;
     }
 
-    /**
-     * @param int|null $optNullBaz
-     * @return self
-     */
     public function withOptNullBaz(?int $optNullBaz): self
     {
         $clone = clone $this;
@@ -987,9 +786,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutOptNullBaz(): self
     {
         $clone = clone $this;
@@ -999,18 +795,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return bool|null
-     */
     public function getOptNullQux(): ?bool
     {
         return $this->optNullQux ?? null;
     }
 
-    /**
-     * @param bool|null $optNullQux
-     * @return self
-     */
     public function withOptNullQux(?bool $optNullQux): self
     {
         $clone = clone $this;
@@ -1020,9 +809,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutOptNullQux(): self
     {
         $clone = clone $this;
@@ -1042,7 +828,6 @@ class MyClass
 
     /**
      * @param MyClassOptNullQuux|null $optNullQuux
-     * @return self
      */
     public function withOptNullQuux(?MyClassOptNullQuux $optNullQuux): self
     {
@@ -1053,9 +838,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutOptNullQuux(): self
     {
         $clone = clone $this;
@@ -1075,8 +857,6 @@ class MyClass
 
     /**
      * @param string[]|null $optNullThud
-     * @return self
-     * @param bool $validate
      */
     public function withOptNullThud(?array $optNullThud, bool $validate = true): self
     {
@@ -1095,9 +875,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutOptNullThud(): self
     {
         $clone = clone $this;

@@ -63,10 +63,10 @@ class MyClass
 
     /**
      * @param string $fooBar
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withFooBar($fooBar, bool $validate = true)
+    public function withFooBar($fooBar, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -93,11 +93,11 @@ class MyClass
 
     /**
      * @param string $bar
+     * @param bool $validate
      * @return self
      * @deprecated
-     * @param bool $validate
      */
-    public function withBar($bar, bool $validate = true)
+    public function withBar($bar, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -132,7 +132,7 @@ class MyClass
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput($input, bool $validate = true)
+    public static function fromInput($input, $validate = true)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(

@@ -18,7 +18,7 @@ interface TypeExpressionInterface
 
     /**
      * Returns the PHP type hint that should be used for this property for a given target PHP version.
-     * Returned `null` means no type hint should be emitted.
+     * Returned `null` (literal, not `'null'`) means no type hint should be emitted.
      */
     public function typeHint(): ?string;
 

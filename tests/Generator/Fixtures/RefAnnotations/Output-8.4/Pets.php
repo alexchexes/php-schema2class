@@ -51,28 +51,15 @@ class Pets
         ],
     ];
 
-    /**
-     * @var GenericPet|null
-     */
     private ?GenericPet $pet = null;
 
-    /**
-     * @var Cat|null
-     */
     private ?Cat $cat = null;
 
-    /**
-     * @return GenericPet|null
-     */
     public function getPet(): ?GenericPet
     {
         return $this->pet ?? null;
     }
 
-    /**
-     * @param GenericPet $pet
-     * @return self
-     */
     public function withPet(GenericPet $pet): self
     {
         $clone = clone $this;
@@ -81,9 +68,6 @@ class Pets
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutPet(): self
     {
         $clone = clone $this;
@@ -92,18 +76,11 @@ class Pets
         return $clone;
     }
 
-    /**
-     * @return Cat|null
-     */
     public function getCat(): ?Cat
     {
         return $this->cat ?? null;
     }
 
-    /**
-     * @param Cat $cat
-     * @return self
-     */
     public function withCat(Cat $cat): self
     {
         $clone = clone $this;
@@ -112,9 +89,6 @@ class Pets
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutCat(): self
     {
         $clone = clone $this;

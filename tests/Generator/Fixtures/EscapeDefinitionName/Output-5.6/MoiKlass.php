@@ -33,10 +33,10 @@ class MoiKlass
 
     /**
      * @param string $c
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withC($c, bool $validate = true)
+    public function withC($c, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -71,7 +71,7 @@ class MoiKlass
      * @return MoiKlass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput($input, bool $validate = true)
+    public static function fromInput($input, $validate = true)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(

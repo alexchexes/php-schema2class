@@ -59,10 +59,10 @@ class Foo
 
     /**
      * @param 5|6|'5'|'6' $val
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withVal($val, bool $validate = true)
+    public function withVal($val, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -86,7 +86,7 @@ class Foo
      * @return Foo Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput($input, bool $validate = true)
+    public static function fromInput($input, $validate = true)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(

@@ -49,8 +49,6 @@ class MyClass
 
     /**
      * @param 'red'|'green' $color
-     * @return self
-     * @param bool $validate
      */
     public function withColor(string $color, bool $validate = true): self
     {

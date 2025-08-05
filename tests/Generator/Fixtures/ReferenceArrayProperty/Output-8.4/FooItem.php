@@ -31,23 +31,13 @@ class FooItem
         ],
     ];
 
-    /**
-     * @var string|null
-     */
     private ?string $name = null;
 
-    /**
-     * @return string|null
-     */
     public function getName(): ?string
     {
         return $this->name ?? null;
     }
 
-    /**
-     * @param string $name
-     * @return self
-     */
     public function withName(string $name): self
     {
         $clone = clone $this;
@@ -56,9 +46,6 @@ class FooItem
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutName(): self
     {
         $clone = clone $this;

@@ -30,23 +30,13 @@ class Fio
      */
     private array $_providedOptionals = [];
 
-    /**
-     * @var string|null
-     */
     private ?string $bar = null;
 
-    /**
-     * @return string|null
-     */
     public function getBar(): ?string
     {
         return $this->bar ?? null;
     }
 
-    /**
-     * @param string|null $bar
-     * @return self
-     */
     public function withBar(?string $bar): self
     {
         $clone = clone $this;
@@ -56,9 +46,6 @@ class Fio
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutBar(): self
     {
         $clone = clone $this;

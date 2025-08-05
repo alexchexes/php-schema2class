@@ -61,7 +61,6 @@ class Address
     }
 
     /**
-     * @param Address\Defs\Name $name
      * @return self
      */
     public function withName(Address\Defs\Name $name)
@@ -93,10 +92,10 @@ class Address
 
     /**
      * @param string $city
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withCity($city, bool $validate = true)
+    public function withCity($city, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -120,7 +119,7 @@ class Address
      * @return Address Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput($input, bool $validate = true)
+    public static function fromInput($input, $validate = true)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(

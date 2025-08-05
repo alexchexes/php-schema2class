@@ -32,10 +32,10 @@ class OptionsObject
 
     /**
      * @param string $_output
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withOutput($_output, bool $validate = true)
+    public function withOutput($_output, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -70,7 +70,7 @@ class OptionsObject
      * @return OptionsObject Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput($input, bool $validate = true)
+    public static function fromInput($input, $validate = true)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(

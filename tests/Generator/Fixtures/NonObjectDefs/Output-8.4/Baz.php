@@ -56,23 +56,13 @@ class Baz
         ],
     ];
 
-    /**
-     * @var Foo|Bar|null
-     */
     private Foo|Bar|null $grox = null;
 
-    /**
-     * @return Foo|Bar|null
-     */
     public function getGrox(): Bar|Foo|null
     {
         return $this->grox;
     }
 
-    /**
-     * @param Foo|Bar $grox
-     * @return self
-     */
     public function withGrox(Bar|Foo $grox): self
     {
         $clone = clone $this;
@@ -81,9 +71,6 @@ class Baz
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutGrox(): self
     {
         $clone = clone $this;

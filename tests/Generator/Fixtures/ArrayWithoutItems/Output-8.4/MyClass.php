@@ -90,57 +90,24 @@ class MyClass
      */
     private array $_providedOptionals = [];
 
-    /**
-     * @var array
-     */
     private array $a;
 
-    /**
-     * @var array|string
-     */
     private array|string $b;
 
-    /**
-     * @var array|null
-     */
     private ?array $c;
 
-    /**
-     * @var array|string|null
-     */
     private array|string|null $d;
 
-    /**
-     * @var array|null
-     */
     private ?array $e = null;
 
-    /**
-     * @var array|string|null
-     */
     private array|string|null $f = null;
 
-    /**
-     * @var array|null
-     */
     private ?array $g = null;
 
-    /**
-     * @var array|string|null
-     */
     private array|string|null $h = null;
 
-    /**
-     * @var array|string|object|null
-     */
     private array|string|object|null $i = null;
 
-    /**
-     * @param array $a
-     * @param array|string $b
-     * @param array|null $c
-     * @param array|string|null $d
-     */
     public function __construct(array $a, string|array $b, ?array $c, string|array|null $d)
     {
         $this->a = $a;
@@ -149,18 +116,11 @@ class MyClass
         $this->d = $d;
     }
 
-    /**
-     * @return array
-     */
     public function getA(): array
     {
         return $this->a;
     }
 
-    /**
-     * @param array $a
-     * @return self
-     */
     public function withA(array $a): self
     {
         $clone = clone $this;
@@ -169,18 +129,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return array|string
-     */
     public function getB(): string|array
     {
         return $this->b;
     }
 
-    /**
-     * @param array|string $b
-     * @return self
-     */
     public function withB(string|array $b): self
     {
         $clone = clone $this;
@@ -189,18 +142,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return array|null
-     */
     public function getC(): ?array
     {
         return $this->c ?? null;
     }
 
-    /**
-     * @param array|null $c
-     * @return self
-     */
     public function withC(?array $c): self
     {
         $clone = clone $this;
@@ -209,18 +155,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return array|string|null
-     */
     public function getD(): string|array|null
     {
         return $this->d;
     }
 
-    /**
-     * @param array|string|null $d
-     * @return self
-     */
     public function withD(string|array|null $d): self
     {
         $clone = clone $this;
@@ -229,18 +168,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return array|null
-     */
     public function getE(): ?array
     {
         return $this->e ?? null;
     }
 
-    /**
-     * @param array $e
-     * @return self
-     */
     public function withE(array $e): self
     {
         $clone = clone $this;
@@ -249,9 +181,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutE(): self
     {
         $clone = clone $this;
@@ -260,18 +189,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return array|string|null
-     */
     public function getF(): string|array|null
     {
         return $this->f;
     }
 
-    /**
-     * @param array|string $f
-     * @return self
-     */
     public function withF(string|array $f): self
     {
         $clone = clone $this;
@@ -280,9 +202,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutF(): self
     {
         $clone = clone $this;
@@ -291,18 +210,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return array|null
-     */
     public function getG(): ?array
     {
         return $this->g ?? null;
     }
 
-    /**
-     * @param array|null $g
-     * @return self
-     */
     public function withG(?array $g): self
     {
         $clone = clone $this;
@@ -312,9 +224,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutG(): self
     {
         $clone = clone $this;
@@ -324,18 +233,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return array|string|null
-     */
     public function getH(): string|array|null
     {
         return $this->h;
     }
 
-    /**
-     * @param array|string|null $h
-     * @return self
-     */
     public function withH(string|array|null $h): self
     {
         $clone = clone $this;
@@ -345,9 +247,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutH(): self
     {
         $clone = clone $this;
@@ -357,18 +256,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return array|string|object|null
-     */
     public function getI(): string|array|object|null
     {
         return $this->i;
     }
 
-    /**
-     * @param array|string|object|null $i
-     * @return self
-     */
     public function withI(string|array|object|null $i): self
     {
         $clone = clone $this;
@@ -378,9 +270,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutI(): self
     {
         $clone = clone $this;

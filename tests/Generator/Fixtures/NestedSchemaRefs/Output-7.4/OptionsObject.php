@@ -19,23 +19,13 @@ class OptionsObject
         ],
     ];
 
-    /**
-     * @var string|null
-     */
     private ?string $output = null;
 
-    /**
-     * @return string|null
-     */
     public function getOutput(): ?string
     {
         return $this->output ?? null;
     }
 
-    /**
-     * @param string $_output
-     * @return self
-     */
     public function withOutput(string $_output): self
     {
         $clone = clone $this;
@@ -44,9 +34,6 @@ class OptionsObject
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutOutput(): self
     {
         $clone = clone $this;

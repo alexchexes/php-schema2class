@@ -37,7 +37,7 @@ class UnsetterFactory
 
         if ($this->mutating) {
             // TODO: check why for "mutable" style we generate unsetter only when property is not just optional, but also nullable. Is this necessary?
-            if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
+            if ($property instanceof OptionalPropertyDecorator) {
                 return $this->generateMutatingUnsetter($property);
             }
         } else {
@@ -64,18 +64,18 @@ class UnsetterFactory
 
         $body .= "\nreturn \$clone;";
 
-        $dockBlock = new DocBlockGenerator(null, null, [new ReturnTag('self')]);
-
         $unsetMethod = new MethodGenerator(
             name: $methodName,
             parameters: [],
             flags: MethodGenerator::FLAG_PUBLIC,
             body: $body,
-            docBlock: $dockBlock,
         );
 
         if ($this->request->isAtLeastPHP('7.0')) {
             $unsetMethod->setReturnType('self');
+        } else {
+            $dockBlock = new DocBlockGenerator(null, null, [new ReturnTag('self')]);
+            $unsetMethod->setDocBlock($dockBlock);
         }
 
         return $unsetMethod;
@@ -95,21 +95,21 @@ class UnsetterFactory
             $body .= "\nreturn \$this;";
         }
 
-        $returnTag = $this->chainable ? [new ReturnTag('self')] : [];
-
-        $dockBlock = new DocBlockGenerator(null, null, $returnTag);
-
         $unsetMethod = new MethodGenerator(
             name: $methodName,
             parameters: [],
             flags: MethodGenerator::FLAG_PUBLIC,
             body: $body,
-            docBlock: $dockBlock,
         );
 
-        if ($this->chainable && $this->request->isAtLeastPHP('7.0')) {
-            $unsetMethod->setReturnType('self');
-        } elseif (!$this->chainable && $this->request->isAtLeastPHP('7.1')) {
+        if ($this->chainable) {
+            if ($this->request->isAtLeastPHP('7.0')) {
+                $unsetMethod->setReturnType('self');
+            } else {
+                $dockBlock = new DocBlockGenerator(null, null, [new ReturnTag('self')]);
+                $unsetMethod->setDocBlock($dockBlock);
+            }
+        } elseif ($this->request->isAtLeastPHP('7.1')) {
             $unsetMethod->setReturnType('void');
         }
 

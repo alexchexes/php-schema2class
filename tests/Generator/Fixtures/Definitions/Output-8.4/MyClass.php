@@ -56,36 +56,20 @@ class MyClass
         ],
     ];
 
-    /**
-     * @var int
-     */
     private int $id;
 
-    /**
-     * @var Address|null
-     */
     private ?Address $address = null;
 
-    /**
-     * @param int $id
-     */
     public function __construct(int $id)
     {
         $this->id = $id;
     }
 
-    /**
-     * @return int
-     */
     public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * @param int $id
-     * @return self
-     */
     public function withId(int $id): self
     {
         $clone = clone $this;
@@ -94,18 +78,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return Address|null
-     */
     public function getAddress(): ?Address
     {
         return $this->address ?? null;
     }
 
-    /**
-     * @param Address $address
-     * @return self
-     */
     public function withAddress(Address $address): self
     {
         $clone = clone $this;
@@ -114,9 +91,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutAddress(): self
     {
         $clone = clone $this;

@@ -48,10 +48,10 @@ class MyClassGooks
 
     /**
      * @param string $a
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withA($a, bool $validate = true)
+    public function withA($a, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -88,10 +88,10 @@ class MyClassGooks
 
     /**
      * @param int|float $b
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withB($b, bool $validate = true)
+    public function withB($b, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -126,7 +126,7 @@ class MyClassGooks
      * @return MyClassGooks Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput($input, bool $validate = true)
+    public static function fromInput($input, $validate = true)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(

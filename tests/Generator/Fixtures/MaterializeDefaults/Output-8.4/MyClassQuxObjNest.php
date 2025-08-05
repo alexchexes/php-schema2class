@@ -87,23 +87,13 @@ class MyClassQuxObjNest
         ],
     ];
 
-    /**
-     * @var array|object|null
-     */
     private array|object|null $a = null;
 
-    /**
-     * @return array|object|null
-     */
     public function getA(): array|object|null
     {
         return $this->a;
     }
 
-    /**
-     * @param array|object $a
-     * @return self
-     */
     public function withA(array|object $a): self
     {
         $clone = clone $this;
@@ -112,9 +102,6 @@ class MyClassQuxObjNest
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutA(): self
     {
         $clone = clone $this;

@@ -39,39 +39,21 @@ class MyClassEnsureArgs2
         ],
     ];
 
-    /**
-     * @var string
-     */
     private string $city;
 
-    /**
-     * @var string
-     */
     private string $street;
 
-    /**
-     * @param string $city
-     * @param string $street
-     */
     public function __construct(string $city, string $street)
     {
         $this->city = $city;
         $this->street = $street;
     }
 
-    /**
-     * @return string
-     */
     public function getCity(): string
     {
         return $this->city;
     }
 
-    /**
-     * @param string $city
-     * @return self
-     * @param bool $validate
-     */
     public function withCity(string $city, bool $validate = true): self
     {
         if ($validate) {
@@ -88,18 +70,11 @@ class MyClassEnsureArgs2
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function getStreet(): string
     {
         return $this->street;
     }
 
-    /**
-     * @param string $street
-     * @return self
-     */
     public function withStreet(string $street): self
     {
         $clone = clone $this;

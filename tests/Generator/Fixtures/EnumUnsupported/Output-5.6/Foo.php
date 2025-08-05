@@ -102,10 +102,10 @@ class Foo
 
     /**
      * @param 0|1.5|2.5|3.5 $floatEnum
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withFloatEnum($floatEnum, bool $validate = true)
+    public function withFloatEnum($floatEnum, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -142,10 +142,10 @@ class Foo
 
     /**
      * @param 0|1.5|2.5|3.5 $floatEnumRef
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withFloatEnumRef($floatEnumRef, bool $validate = true)
+    public function withFloatEnumRef($floatEnumRef, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -182,10 +182,10 @@ class Foo
 
     /**
      * @param false $boolEnum
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withBoolEnum($boolEnum, bool $validate = true)
+    public function withBoolEnum($boolEnum, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -222,10 +222,10 @@ class Foo
 
     /**
      * @param false $boolEnumRef
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withBoolEnumRef(bool $boolEnumRef, bool $validate = true)
+    public function withBoolEnumRef(bool $boolEnumRef, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -262,10 +262,10 @@ class Foo
 
     /**
      * @param false $requiredBoolEnumRef
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withRequiredBoolEnumRef(bool $requiredBoolEnumRef, bool $validate = true)
+    public function withRequiredBoolEnumRef(bool $requiredBoolEnumRef, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -289,7 +289,7 @@ class Foo
      * @return Foo Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput($input, bool $validate = true)
+    public static function fromInput($input, $validate = true)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(

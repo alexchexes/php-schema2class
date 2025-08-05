@@ -25,33 +25,17 @@ class MyClass
         ],
     ];
 
-    /**
-     * @var string|null
-     */
     private ?string $bound = null;
 
-    /**
-     * @var string|null
-     */
     private ?string $outbound = null;
 
-    /**
-     * @var string|null
-     */
     private ?string $_outbound = null;
 
-    /**
-     * @return string|null
-     */
     public function getBound(): ?string
     {
         return $this->bound ?? null;
     }
 
-    /**
-     * @param string $bound
-     * @return self
-     */
     public function withBound(string $bound): self
     {
         $clone = clone $this;
@@ -60,9 +44,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutBound(): self
     {
         $clone = clone $this;
@@ -71,18 +52,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string|null
-     */
     public function get_Outbound(): ?string
     {
         return $this->outbound ?? null;
     }
 
-    /**
-     * @param string $outbound
-     * @return self
-     */
     public function with_Outbound(string $outbound): self
     {
         $clone = clone $this;
@@ -91,9 +65,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function without_Outbound(): self
     {
         $clone = clone $this;
@@ -102,18 +73,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string|null
-     */
     public function get_Outbound_1(): ?string
     {
         return $this->_outbound ?? null;
     }
 
-    /**
-     * @param string $_outbound
-     * @return self
-     */
     public function with_Outbound_1(string $_outbound): self
     {
         $clone = clone $this;
@@ -122,9 +86,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function without_Outbound_1(): self
     {
         $clone = clone $this;

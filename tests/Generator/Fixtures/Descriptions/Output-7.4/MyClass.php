@@ -40,22 +40,12 @@ class MyClass
         ],
     ];
 
-    /**
-     * Description for the `foo` property
-     *
-     * @var string|null
-     */
     private ?string $foo = null;
 
-    /**
-     * @var Baz|null
-     */
     private ?Baz $bar = null;
 
     /**
      * Description for the `foo` property
-     *
-     * @return string|null
      */
     public function getFoo(): ?string
     {
@@ -63,8 +53,7 @@ class MyClass
     }
 
     /**
-     * @param string $foo
-     * @return self
+     * Description for the `foo` property
      */
     public function withFoo(string $foo): self
     {
@@ -74,9 +63,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutFoo(): self
     {
         $clone = clone $this;
@@ -85,18 +71,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return Baz|null
-     */
     public function getBar(): ?Baz
     {
         return $this->bar ?? null;
     }
 
-    /**
-     * @param Baz $bar
-     * @return self
-     */
     public function withBar(Baz $bar): self
     {
         $clone = clone $this;
@@ -105,9 +84,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutBar(): self
     {
         $clone = clone $this;

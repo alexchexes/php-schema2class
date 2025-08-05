@@ -51,9 +51,6 @@ class MyClass
      */
     private $foo = null;
 
-    /**
-     * @var Baz
-     */
     private $bar;
 
     /**
@@ -61,9 +58,6 @@ class MyClass
      */
     private $opt = null;
 
-    /**
-     * @param Baz $bar
-     */
     public function __construct(Baz $bar)
     {
         $this->bar = $bar;
@@ -79,10 +73,10 @@ class MyClass
 
     /**
      * @param string $foo
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function setFoo($foo, bool $validate = true)
+    public function setFoo($foo, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -98,15 +92,21 @@ class MyClass
     }
 
     /**
-     * @return Baz
+     * @return self
      */
+    public function unsetFoo()
+    {
+        $this->foo = null;
+
+        return $this;
+    }
+
     public function getBar()
     {
         return $this->bar;
     }
 
     /**
-     * @param Baz $bar
      * @return self
      */
     public function setBar(Baz $bar)
@@ -126,10 +126,10 @@ class MyClass
 
     /**
      * @param string|null $opt
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function setOpt($opt, bool $validate = true)
+    public function setOpt($opt, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -164,7 +164,7 @@ class MyClass
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput($input, bool $validate = true)
+    public static function fromInput($input, $validate = true)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(

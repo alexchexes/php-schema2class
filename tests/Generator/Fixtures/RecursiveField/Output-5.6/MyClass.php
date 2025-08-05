@@ -54,29 +54,19 @@ class MyClass
         ],
     ];
 
-    /**
-     * @var MyGenericStringNumber
-     */
     private $value;
 
-    /**
-     * @param MyGenericStringNumber $value
-     */
     public function __construct(MyGenericStringNumber $value)
     {
         $this->value = $value;
     }
 
-    /**
-     * @return MyGenericStringNumber
-     */
     public function getValue()
     {
         return $this->value;
     }
 
     /**
-     * @param MyGenericStringNumber $value
      * @return self
      */
     public function withValue(MyGenericStringNumber $value)
@@ -95,7 +85,7 @@ class MyClass
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput($input, bool $validate = true)
+    public static function fromInput($input, $validate = true)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(

@@ -121,9 +121,6 @@ class MyClass
      */
     private $baz;
 
-    /**
-     * @var int
-     */
     private int $contradiction;
 
     /**
@@ -145,7 +142,6 @@ class MyClass
      * @param 1|2|'1'|'2' $foo
      * @param 3|4|'3'|'4' $bar
      * @param 'red'|'amber'|'green'|'42'|42|42.5|false|null $baz
-     * @param int $contradiction
      * @param 1|2|'one' $contradiction2
      * @param 'red'|'green'|null $nullable
      */
@@ -169,8 +165,6 @@ class MyClass
 
     /**
      * @param 1|2|'1'|'2' $foo
-     * @return self
-     * @param bool $validate
      */
     public function withFoo($foo, bool $validate = true): self
     {
@@ -198,8 +192,6 @@ class MyClass
 
     /**
      * @param 3|4|'3'|'4' $bar
-     * @return self
-     * @param bool $validate
      */
     public function withBar($bar, bool $validate = true): self
     {
@@ -227,8 +219,6 @@ class MyClass
 
     /**
      * @param 'red'|'amber'|'green'|'42'|42|42.5|false|null $baz
-     * @return self
-     * @param bool $validate
      */
     public function withBaz($baz, bool $validate = true): self
     {
@@ -246,19 +236,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return int
-     */
     public function getContradiction(): int
     {
         return $this->contradiction;
     }
 
-    /**
-     * @param int $contradiction
-     * @return self
-     * @param bool $validate
-     */
     public function withContradiction(int $contradiction, bool $validate = true): self
     {
         if ($validate) {
@@ -285,8 +267,6 @@ class MyClass
 
     /**
      * @param 1|2|'one' $contradiction2
-     * @return self
-     * @param bool $validate
      */
     public function withContradiction2($contradiction2, bool $validate = true): self
     {
@@ -314,8 +294,6 @@ class MyClass
 
     /**
      * @param 'red'|'green'|null $nullable
-     * @return self
-     * @param bool $validate
      */
     public function withNullable(?string $nullable, bool $validate = true): self
     {
@@ -343,8 +321,6 @@ class MyClass
 
     /**
      * @param 'red'|'green'|null $optionalNullable
-     * @return self
-     * @param bool $validate
      */
     public function withOptionalNullable(?string $optionalNullable, bool $validate = true): self
     {
@@ -363,9 +339,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutOptionalNullable(): self
     {
         $clone = clone $this;

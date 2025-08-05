@@ -49,7 +49,6 @@ class MyClassEnsureArgs1Alternative1
 
     /**
      * @param MyClassEnsureArgs1Alternative1Type $type
-     * @return self
      */
     public function withType(MyClassEnsureArgs1Alternative1Type $type): self
     {
@@ -59,9 +58,6 @@ class MyClassEnsureArgs1Alternative1
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutType(): self
     {
         $clone = clone $this;

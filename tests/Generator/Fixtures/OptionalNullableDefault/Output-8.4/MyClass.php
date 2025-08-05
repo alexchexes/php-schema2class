@@ -140,74 +140,30 @@ class MyClass
      */
     private array $_providedOptionals = [];
 
-    /**
-     * required, not nullable, no default
-     *
-     * @var string
-     */
     private string $foo;
 
-    /**
-     * optional, not nullable, no default
-     *
-     * @var string|null
-     */
     private ?string $bar = null;
 
-    /**
-     * optional, nullable, no default
-     *
-     * @var string|null
-     */
     private ?string $baz = null;
 
-    /**
-     * optional, nullable, with default
-     *
-     * @var string|null
-     */
     private ?string $qux = null;
 
-    /**
-     * required, nullable, with default
-     *
-     * @var string|null
-     */
     private ?string $quux;
 
-    /**
-     * optional, not nullable, with default
-     *
-     * @var string|null
-     */
     private ?string $xyyz = null;
 
-    /**
-     * required, not nullable, with default
-     *
-     * @var string
-     */
     private string $thud;
 
     /**
-     * optional, nullable, with default, object
-     *
      * @var MyClassGrox|null
      */
     private ?MyClassGrox $grox = null;
 
     /**
-     * optional, nullable, with default, object, and default is empty object
-     *
      * @var MyClassGooks|null
      */
     private ?MyClassGooks $gooks = null;
 
-    /**
-     * @param string $foo
-     * @param string|null $quux
-     * @param string $thud
-     */
     public function __construct(string $foo, ?string $quux, string $thud)
     {
         $this->foo = $foo;
@@ -217,8 +173,6 @@ class MyClass
 
     /**
      * required, not nullable, no default
-     *
-     * @return string
      */
     public function getFoo(): string
     {
@@ -226,8 +180,7 @@ class MyClass
     }
 
     /**
-     * @param string $foo
-     * @return self
+     * required, not nullable, no default
      */
     public function withFoo(string $foo): self
     {
@@ -239,8 +192,6 @@ class MyClass
 
     /**
      * optional, not nullable, no default
-     *
-     * @return string|null
      */
     public function getBar(): ?string
     {
@@ -248,8 +199,7 @@ class MyClass
     }
 
     /**
-     * @param string $bar
-     * @return self
+     * optional, not nullable, no default
      */
     public function withBar(string $bar): self
     {
@@ -259,9 +209,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutBar(): self
     {
         $clone = clone $this;
@@ -272,8 +219,6 @@ class MyClass
 
     /**
      * optional, nullable, no default
-     *
-     * @return string|null
      */
     public function getBaz(): ?string
     {
@@ -281,8 +226,7 @@ class MyClass
     }
 
     /**
-     * @param string|null $baz
-     * @return self
+     * optional, nullable, no default
      */
     public function withBaz(?string $baz): self
     {
@@ -293,9 +237,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutBaz(): self
     {
         $clone = clone $this;
@@ -307,8 +248,6 @@ class MyClass
 
     /**
      * optional, nullable, with default
-     *
-     * @return string|null
      */
     public function getQux(): ?string
     {
@@ -316,8 +255,7 @@ class MyClass
     }
 
     /**
-     * @param string|null $qux
-     * @return self
+     * optional, nullable, with default
      */
     public function withQux(?string $qux): self
     {
@@ -328,9 +266,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutQux(): self
     {
         $clone = clone $this;
@@ -342,8 +277,6 @@ class MyClass
 
     /**
      * required, nullable, with default
-     *
-     * @return string|null
      */
     public function getQuux(): ?string
     {
@@ -351,8 +284,7 @@ class MyClass
     }
 
     /**
-     * @param string|null $quux
-     * @return self
+     * required, nullable, with default
      */
     public function withQuux(?string $quux): self
     {
@@ -364,8 +296,6 @@ class MyClass
 
     /**
      * optional, not nullable, with default
-     *
-     * @return string|null
      */
     public function getXyyz(): ?string
     {
@@ -373,8 +303,7 @@ class MyClass
     }
 
     /**
-     * @param string $xyyz
-     * @return self
+     * optional, not nullable, with default
      */
     public function withXyyz(string $xyyz): self
     {
@@ -384,9 +313,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutXyyz(): self
     {
         $clone = clone $this;
@@ -397,8 +323,6 @@ class MyClass
 
     /**
      * required, not nullable, with default
-     *
-     * @return string
      */
     public function getThud(): string
     {
@@ -406,8 +330,7 @@ class MyClass
     }
 
     /**
-     * @param string $thud
-     * @return self
+     * required, not nullable, with default
      */
     public function withThud(string $thud): self
     {
@@ -428,8 +351,9 @@ class MyClass
     }
 
     /**
+     * optional, nullable, with default, object
+     *
      * @param MyClassGrox|null $grox
-     * @return self
      */
     public function withGrox(?MyClassGrox $grox): self
     {
@@ -440,9 +364,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutGrox(): self
     {
         $clone = clone $this;
@@ -463,8 +384,9 @@ class MyClass
     }
 
     /**
+     * optional, nullable, with default, object, and default is empty object
+     *
      * @param MyClassGooks|null $gooks
-     * @return self
      */
     public function withGooks(?MyClassGooks $gooks): self
     {
@@ -475,9 +397,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutGooks(): self
     {
         $clone = clone $this;

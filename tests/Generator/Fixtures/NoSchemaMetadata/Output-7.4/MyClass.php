@@ -25,24 +25,13 @@ class MyClass
         ],
     ];
 
-    /**
-     * Foo description
-     *
-     * @var string
-     */
     private string $foo;
 
     /**
-     * Bar description
-     *
-     * @var int|null
      * @deprecated
      */
     private ?int $bar = null;
 
-    /**
-     * @param string $foo
-     */
     public function __construct(string $foo)
     {
         $this->foo = $foo;
@@ -50,8 +39,6 @@ class MyClass
 
     /**
      * Foo description
-     *
-     * @return string
      */
     public function getFoo(): string
     {
@@ -59,8 +46,7 @@ class MyClass
     }
 
     /**
-     * @param string $foo
-     * @return self
+     * Foo description
      */
     public function withFoo(string $foo): self
     {
@@ -73,7 +59,6 @@ class MyClass
     /**
      * Bar description
      *
-     * @return int|null
      * @deprecated
      */
     public function getBar(): ?int
@@ -82,8 +67,8 @@ class MyClass
     }
 
     /**
-     * @param int $bar
-     * @return self
+     * Bar description
+     *
      * @deprecated
      */
     public function withBar(int $bar): self
@@ -94,9 +79,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutBar(): self
     {
         $clone = clone $this;

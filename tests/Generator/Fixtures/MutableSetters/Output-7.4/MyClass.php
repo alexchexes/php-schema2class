@@ -48,81 +48,53 @@ class MyClass
      */
     private array $_providedOptionals = [];
 
-    /**
-     * @var string|null
-     */
     private ?string $foo = null;
 
-    /**
-     * @var Baz
-     */
     private Baz $bar;
 
-    /**
-     * @var string|null
-     */
     private ?string $opt = null;
 
-    /**
-     * @param Baz $bar
-     */
     public function __construct(Baz $bar)
     {
         $this->bar = $bar;
     }
 
-    /**
-     * @return string|null
-     */
     public function getFoo(): ?string
     {
         return $this->foo ?? null;
     }
 
-    /**
-     * @param string $foo
-     */
     public function setFoo(string $foo): void
     {
         $this->foo = $foo;
     }
 
-    /**
-     * @return Baz
-     */
+    public function unsetFoo(): void
+    {
+        $this->foo = null;
+    }
+
     public function getBar(): Baz
     {
         return $this->bar;
     }
 
-    /**
-     * @param Baz $bar
-     */
     public function setBar(Baz $bar): void
     {
         $this->bar = $bar;
     }
 
-    /**
-     * @return string|null
-     */
     public function getOpt(): ?string
     {
         return $this->opt ?? null;
     }
 
-    /**
-     * @param string|null $opt
-     */
     public function setOpt(?string $opt): void
     {
         $this->opt = $opt;
         $this->_providedOptionals['opt'] = true;
     }
 
-    /**
-     *
-     */
     public function unsetOpt(): void
     {
         $this->opt = null;

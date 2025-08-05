@@ -24,8 +24,6 @@ class Baz
     ];
 
     /**
-     * Description of the `name` property in `Baz` definition
-     *
      * @var string|null
      */
     private $name = null;
@@ -41,11 +39,13 @@ class Baz
     }
 
     /**
+     * Description of the `name` property in `Baz` definition
+     *
      * @param string $name
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withName($name, bool $validate = true)
+    public function withName($name, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -80,7 +80,7 @@ class Baz
      * @return Baz Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput($input, bool $validate = true)
+    public static function fromInput($input, $validate = true)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(

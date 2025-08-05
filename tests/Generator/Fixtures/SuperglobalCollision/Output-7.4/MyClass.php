@@ -22,31 +22,18 @@ class MyClass
         ],
     ];
 
-    /**
-     * @var string
-     */
     private string $files;
 
-    /**
-     * @param string $files
-     */
     public function __construct(string $files)
     {
         $this->files = $files;
     }
 
-    /**
-     * @return string
-     */
     public function getFiles(): string
     {
         return $this->files;
     }
 
-    /**
-     * @param string $files
-     * @return self
-     */
     public function withFiles(string $files): self
     {
         $clone = clone $this;

@@ -25,36 +25,20 @@ class MyClass
         ],
     ];
 
-    /**
-     * @var array|object|null
-     */
     private array|object|null $foo = null;
 
-    /**
-     * @var array|object
-     */
     private array|object $bar;
 
-    /**
-     * @param array|object $bar
-     */
     public function __construct(array|object $bar)
     {
         $this->bar = $bar;
     }
 
-    /**
-     * @return array|object|null
-     */
     public function getFoo(): array|object|null
     {
         return $this->foo;
     }
 
-    /**
-     * @param array|object $foo
-     * @return self
-     */
     public function withFoo(array|object $foo): self
     {
         $clone = clone $this;
@@ -63,9 +47,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutFoo(): self
     {
         $clone = clone $this;
@@ -74,18 +55,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return array|object
-     */
     public function getBar(): array|object
     {
         return $this->bar;
     }
 
-    /**
-     * @param array|object $bar
-     * @return self
-     */
     public function withBar(array|object $bar): self
     {
         $clone = clone $this;

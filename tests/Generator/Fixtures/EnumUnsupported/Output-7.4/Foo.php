@@ -104,8 +104,6 @@ class Foo
 
     /**
      * @param 0|1.5|2.5|3.5 $floatEnum
-     * @return self
-     * @param bool $validate
      */
     public function withFloatEnum($floatEnum, bool $validate = true): self
     {
@@ -123,9 +121,6 @@ class Foo
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutFloatEnum(): self
     {
         $clone = clone $this;
@@ -144,8 +139,6 @@ class Foo
 
     /**
      * @param 0|1.5|2.5|3.5 $floatEnumRef
-     * @return self
-     * @param bool $validate
      */
     public function withFloatEnumRef($floatEnumRef, bool $validate = true): self
     {
@@ -163,9 +156,6 @@ class Foo
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutFloatEnumRef(): self
     {
         $clone = clone $this;
@@ -184,8 +174,6 @@ class Foo
 
     /**
      * @param false $boolEnum
-     * @return self
-     * @param bool $validate
      */
     public function withBoolEnum(bool $boolEnum, bool $validate = true): self
     {
@@ -203,9 +191,6 @@ class Foo
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutBoolEnum(): self
     {
         $clone = clone $this;
@@ -224,8 +209,6 @@ class Foo
 
     /**
      * @param false $boolEnumRef
-     * @return self
-     * @param bool $validate
      */
     public function withBoolEnumRef(bool $boolEnumRef, bool $validate = true): self
     {
@@ -243,9 +226,6 @@ class Foo
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutBoolEnumRef(): self
     {
         $clone = clone $this;
@@ -264,8 +244,6 @@ class Foo
 
     /**
      * @param false $requiredBoolEnumRef
-     * @return self
-     * @param bool $validate
      */
     public function withRequiredBoolEnumRef(bool $requiredBoolEnumRef, bool $validate = true): self
     {

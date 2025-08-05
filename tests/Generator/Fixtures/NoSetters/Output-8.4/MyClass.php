@@ -26,37 +26,21 @@ class MyClass
         ],
     ];
 
-    /**
-     * @var string
-     */
     private string $foo;
 
-    /**
-     * @var int
-     */
     private int $bar;
 
-    /**
-     * @param string $foo
-     * @param int $bar
-     */
     public function __construct(string $foo, int $bar)
     {
         $this->foo = $foo;
         $this->bar = $bar;
     }
 
-    /**
-     * @return string
-     */
     public function getFoo(): string
     {
         return $this->foo;
     }
 
-    /**
-     * @return int
-     */
     public function getBar(): int
     {
         return $this->bar;

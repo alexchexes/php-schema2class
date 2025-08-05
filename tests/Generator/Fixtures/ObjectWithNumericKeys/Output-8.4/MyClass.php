@@ -34,9 +34,6 @@ class MyClass
         ],
     ];
 
-    /**
-     * @var string|null
-     */
     private ?string $_1 = null;
 
     /**
@@ -44,18 +41,11 @@ class MyClass
      */
     private ?MyClass_2 $_2 = null;
 
-    /**
-     * @return string|null
-     */
     public function get_1(): ?string
     {
         return $this->_1 ?? null;
     }
 
-    /**
-     * @param string $_1
-     * @return self
-     */
     public function with_1(string $_1): self
     {
         $clone = clone $this;
@@ -64,9 +54,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function without_1(): self
     {
         $clone = clone $this;
@@ -85,7 +72,6 @@ class MyClass
 
     /**
      * @param MyClass_2 $_2
-     * @return self
      */
     public function with_2(MyClass_2 $_2): self
     {
@@ -95,9 +81,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function without_2(): self
     {
         $clone = clone $this;

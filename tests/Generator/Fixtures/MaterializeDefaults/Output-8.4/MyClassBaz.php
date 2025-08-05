@@ -69,31 +69,18 @@ class MyClassBaz
         ],
     ];
 
-    /**
-     * @var string
-     */
     private string $nestedFoo;
 
-    /**
-     * @param string $nestedFoo
-     */
     public function __construct(string $nestedFoo)
     {
         $this->nestedFoo = $nestedFoo;
     }
 
-    /**
-     * @return string
-     */
     public function getNestedFoo(): string
     {
         return $this->nestedFoo;
     }
 
-    /**
-     * @param string $nestedFoo
-     * @return self
-     */
     public function withNestedFoo(string $nestedFoo): self
     {
         $clone = clone $this;

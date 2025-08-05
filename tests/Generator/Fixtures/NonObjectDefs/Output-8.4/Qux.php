@@ -84,8 +84,6 @@ class Qux
 
     /**
      * @param string|string[]|Foo|Bar $grox
-     * @return self
-     * @param bool $validate
      */
     public function withGrox(Bar|Foo|string|array $grox, bool $validate = true): self
     {
@@ -103,9 +101,6 @@ class Qux
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutGrox(): self
     {
         $clone = clone $this;

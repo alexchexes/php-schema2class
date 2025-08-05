@@ -50,8 +50,6 @@ class Cat
 
     /**
      * @param 'a'|'b'|string[] $hasFur
-     * @return self
-     * @param bool $validate
      */
     public function withHasFur(string|array $hasFur, bool $validate = true): self
     {
@@ -69,9 +67,6 @@ class Cat
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutHasFur(): self
     {
         $clone = clone $this;

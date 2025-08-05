@@ -114,5 +114,19 @@ class StringUtils
 
         return join("\n", $lines);
     }
+    
+    /**
+     * A simple check that the PHPDoc type annotation and the PHP type hint convey exactly the same
+     * information, ignoring the `?type` vs `type|null` style difference and the order of union types.
+     */
+    static public function isAnnotationSameAsTypeHint(string $annotType, string $typeHint): bool
+    {
+        $typeHint = preg_replace('/^\?/', 'null|', $typeHint);
+        $annotType = preg_replace('/^\?/', 'null|', $annotType);
+        // 'array<string|int>' will mangle but it doesn't matter here
+        $typeParts = explode('|', $typeHint);
+        $annotParts = explode('|', $annotType);
+        return empty(array_diff($typeParts, $annotParts)) && empty(array_diff($annotParts, $typeParts));
+    }
 }
 

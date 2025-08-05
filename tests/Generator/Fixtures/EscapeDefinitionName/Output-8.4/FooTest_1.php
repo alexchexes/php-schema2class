@@ -20,23 +20,13 @@ class FooTest_1
         ],
     ];
 
-    /**
-     * @var string|null
-     */
     private ?string $b = null;
 
-    /**
-     * @return string|null
-     */
     public function getB(): ?string
     {
         return $this->b ?? null;
     }
 
-    /**
-     * @param string $b
-     * @return self
-     */
     public function withB(string $b): self
     {
         $clone = clone $this;
@@ -45,9 +35,6 @@ class FooTest_1
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutB(): self
     {
         $clone = clone $this;

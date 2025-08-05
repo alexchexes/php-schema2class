@@ -18,26 +18,23 @@ class MyClass
         'properties' => [
             'foo' => [
                 'type' => 'string',
+                'description' => 'this descriptions will be added to property when generating with "no-getters" option',
             ],
         ],
     ];
 
     /**
-     * @var string
+     * this descriptions will be added to property when generating with "no-getters" option
      */
     public string $foo;
 
-    /**
-     * @param string $foo
-     */
     public function __construct(string $foo)
     {
         $this->foo = $foo;
     }
 
     /**
-     * @param string $foo
-     * @return self
+     * this descriptions will be added to property when generating with "no-getters" option
      */
     public function withFoo(string $foo): self
     {

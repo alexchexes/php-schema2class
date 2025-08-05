@@ -92,33 +92,17 @@ class MyClassNumKeysDefaults
         ],
     ];
 
-    /**
-     * @var string|null
-     */
     private ?string $_0 = null;
 
-    /**
-     * @var string|null
-     */
     private ?string $_1 = null;
 
-    /**
-     * @var string|null
-     */
     private ?string $_2 = null;
 
-    /**
-     * @return string|null
-     */
     public function get_0(): ?string
     {
         return $this->_0 ?? null;
     }
 
-    /**
-     * @param string $_0
-     * @return self
-     */
     public function with_0(string $_0): self
     {
         $clone = clone $this;
@@ -127,9 +111,6 @@ class MyClassNumKeysDefaults
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function without_0(): self
     {
         $clone = clone $this;
@@ -138,18 +119,11 @@ class MyClassNumKeysDefaults
         return $clone;
     }
 
-    /**
-     * @return string|null
-     */
     public function get_1(): ?string
     {
         return $this->_1 ?? null;
     }
 
-    /**
-     * @param string $_1
-     * @return self
-     */
     public function with_1(string $_1): self
     {
         $clone = clone $this;
@@ -158,9 +132,6 @@ class MyClassNumKeysDefaults
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function without_1(): self
     {
         $clone = clone $this;
@@ -169,18 +140,11 @@ class MyClassNumKeysDefaults
         return $clone;
     }
 
-    /**
-     * @return string|null
-     */
     public function get_2(): ?string
     {
         return $this->_2 ?? null;
     }
 
-    /**
-     * @param string $_2
-     * @return self
-     */
     public function with_2(string $_2): self
     {
         $clone = clone $this;
@@ -189,9 +153,6 @@ class MyClassNumKeysDefaults
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function without_2(): self
     {
         $clone = clone $this;

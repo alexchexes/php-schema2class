@@ -302,14 +302,8 @@ class MyClass
      */
     private array $_providedOptionals = [];
 
-    /**
-     * @var string
-     */
     private string $foo;
 
-    /**
-     * @var string
-     */
     private string $bar;
 
     /**
@@ -318,22 +312,16 @@ class MyClass
     private ?MyClassBaz $baz = null;
 
     /**
-     * optional nullable object with default value that is empty object
-     *
      * @var MyClassQuxObj|null
      */
     private ?MyClassQuxObj $quxObj = null;
 
     /**
-     * optional nullable object with default empty object value, and with nested default for its property
-     *
      * @var MyClassQuxObjNest|null
      */
     private ?MyClassQuxObjNest $quxObjNest = null;
 
     /**
-     * optional nullable array with default value that is empty array
-     *
      * @var string[]|null
      */
     private ?array $thudArray = null;
@@ -353,19 +341,10 @@ class MyClass
      */
     private string|array|ObjDef|null $boic = null;
 
-    /**
-     * @var string|NumericKeysObj|null
-     */
     private string|NumericKeysObj|null $poox = null;
 
-    /**
-     * @var array|object|null
-     */
     private array|object|null $arrObjUnion = null;
 
-    /**
-     * @var array|object|null
-     */
     private array|object|null $objArrUnion = null;
 
     /**
@@ -373,28 +352,17 @@ class MyClass
      */
     private ?MyClassNumKeysDefaults $numKeysDefaults = null;
 
-    /**
-     * @param string $foo
-     * @param string $bar
-     */
     public function __construct(string $foo, string $bar)
     {
         $this->foo = $foo;
         $this->bar = $bar;
     }
 
-    /**
-     * @return string
-     */
     public function getFoo(): string
     {
         return $this->foo;
     }
 
-    /**
-     * @param string $foo
-     * @return self
-     */
     public function withFoo(string $foo): self
     {
         $clone = clone $this;
@@ -403,18 +371,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function getBar(): string
     {
         return $this->bar;
     }
 
-    /**
-     * @param string $bar
-     * @return self
-     */
     public function withBar(string $bar): self
     {
         $clone = clone $this;
@@ -433,7 +394,6 @@ class MyClass
 
     /**
      * @param MyClassBaz $baz
-     * @return self
      */
     public function withBaz(MyClassBaz $baz): self
     {
@@ -443,9 +403,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutBaz(): self
     {
         $clone = clone $this;
@@ -465,8 +422,9 @@ class MyClass
     }
 
     /**
+     * optional nullable object with default value that is empty object
+     *
      * @param MyClassQuxObj|null $quxObj
-     * @return self
      */
     public function withQuxObj(?MyClassQuxObj $quxObj): self
     {
@@ -477,9 +435,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutQuxObj(): self
     {
         $clone = clone $this;
@@ -500,8 +455,9 @@ class MyClass
     }
 
     /**
+     * optional nullable object with default empty object value, and with nested default for its property
+     *
      * @param MyClassQuxObjNest|null $quxObjNest
-     * @return self
      */
     public function withQuxObjNest(?MyClassQuxObjNest $quxObjNest): self
     {
@@ -512,9 +468,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutQuxObjNest(): self
     {
         $clone = clone $this;
@@ -535,9 +488,9 @@ class MyClass
     }
 
     /**
+     * optional nullable array with default value that is empty array
+     *
      * @param string[]|null $thudArray
-     * @return self
-     * @param bool $validate
      */
     public function withThudArray(?array $thudArray, bool $validate = true): self
     {
@@ -556,9 +509,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutThudArray(): self
     {
         $clone = clone $this;
@@ -578,8 +528,6 @@ class MyClass
 
     /**
      * @param string|ObjDef|string[] $xyyz
-     * @return self
-     * @param bool $validate
      */
     public function withXyyz(ObjDef|string|array $xyyz, bool $validate = true): self
     {
@@ -597,9 +545,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutXyyz(): self
     {
         $clone = clone $this;
@@ -618,8 +563,6 @@ class MyClass
 
     /**
      * @param string|string[]|ObjDef $buux
-     * @return self
-     * @param bool $validate
      */
     public function withBuux(ObjDef|string|array $buux, bool $validate = true): self
     {
@@ -637,9 +580,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutBuux(): self
     {
         $clone = clone $this;
@@ -658,8 +598,6 @@ class MyClass
 
     /**
      * @param string|string[]|ObjDef $boic
-     * @return self
-     * @param bool $validate
      */
     public function withBoic(ObjDef|string|array $boic, bool $validate = true): self
     {
@@ -677,9 +615,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutBoic(): self
     {
         $clone = clone $this;
@@ -688,18 +623,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string|NumericKeysObj|null
-     */
     public function getPoox(): NumericKeysObj|string|null
     {
         return $this->poox;
     }
 
-    /**
-     * @param string|NumericKeysObj $poox
-     * @return self
-     */
     public function withPoox(NumericKeysObj|string $poox): self
     {
         $clone = clone $this;
@@ -708,9 +636,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutPoox(): self
     {
         $clone = clone $this;
@@ -719,18 +644,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return array|object|null
-     */
     public function getArrObjUnion(): array|object|null
     {
         return $this->arrObjUnion;
     }
 
-    /**
-     * @param array|object $arrObjUnion
-     * @return self
-     */
     public function withArrObjUnion(array|object $arrObjUnion): self
     {
         $clone = clone $this;
@@ -739,9 +657,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutArrObjUnion(): self
     {
         $clone = clone $this;
@@ -750,18 +665,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return array|object|null
-     */
     public function getObjArrUnion(): array|object|null
     {
         return $this->objArrUnion;
     }
 
-    /**
-     * @param array|object $objArrUnion
-     * @return self
-     */
     public function withObjArrUnion(array|object $objArrUnion): self
     {
         $clone = clone $this;
@@ -770,9 +678,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutObjArrUnion(): self
     {
         $clone = clone $this;
@@ -791,7 +696,6 @@ class MyClass
 
     /**
      * @param MyClassNumKeysDefaults $numKeysDefaults
-     * @return self
      */
     public function withNumKeysDefaults(MyClassNumKeysDefaults $numKeysDefaults): self
     {
@@ -801,9 +705,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutNumKeysDefaults(): self
     {
         $clone = clone $this;

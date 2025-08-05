@@ -53,7 +53,6 @@ class MyClass
 
     /**
      * @param array|object $foo
-     * @return self
      */
     public function withFoo($foo): self
     {
@@ -63,9 +62,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutFoo(): self
     {
         $clone = clone $this;
@@ -84,7 +80,6 @@ class MyClass
 
     /**
      * @param array|object $bar
-     * @return self
      */
     public function withBar($bar): self
     {

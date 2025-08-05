@@ -40,23 +40,13 @@ class MyClass
         ],
     ];
 
-    /**
-     * @var string|int|null
-     */
     private string|int|null $foo = null;
 
-    /**
-     * @return string|int|null
-     */
     public function getFoo(): int|string|null
     {
         return $this->foo;
     }
 
-    /**
-     * @param string|int $foo
-     * @return self
-     */
     public function withFoo(int|string $foo): self
     {
         $clone = clone $this;
@@ -65,9 +55,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutFoo(): self
     {
         $clone = clone $this;

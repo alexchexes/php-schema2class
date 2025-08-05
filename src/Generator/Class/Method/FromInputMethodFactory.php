@@ -56,9 +56,8 @@ class FromInputMethodFactory
         );
 
         if ($this->request->isAtLeastPHP('7.0')) {
-            $methodGenerator->setReturnType(
-                $this->request->getTargetNamespace() . '\\' . $this->request->getTargetClass()
-            );
+            $fqcn = $this->request->getTargetNamespace() . '\\' . $this->request->getTargetClass();
+            $methodGenerator->setReturnType($fqcn);
         }
 
         return $methodGenerator;
@@ -76,11 +75,19 @@ class FromInputMethodFactory
 
         $parameterGenerators = [
             new ParameterGenerator(self::INPUT_ARG_NAME, $paramType),
-            new ParameterGenerator(self::VALIDATE_ARG_NAME, 'bool', true),
+            new ParameterGenerator(
+                name: self::VALIDATE_ARG_NAME,
+                type: $this->request->isAtLeastPHP('7.0') ? 'bool' : null,
+                defaultValue: true
+            ),
         ];
 
         if ($this->defaults) {
-            $parameterGenerators[] = new ParameterGenerator(self::DEFAULTS_ARG_NAME, 'bool', false);
+            $parameterGenerators[] = new ParameterGenerator(
+                name: self::DEFAULTS_ARG_NAME,
+                type: $this->request->isAtLeastPHP('7.0') ? 'bool' : null,
+                defaultValue: false,
+            );
         }
 
         return $parameterGenerators;

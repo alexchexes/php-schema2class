@@ -20,23 +20,13 @@ class Bar
         ],
     ];
 
-    /**
-     * @var int|null
-     */
     private ?int $b = null;
 
-    /**
-     * @return int|null
-     */
     public function getB(): ?int
     {
         return $this->b ?? null;
     }
 
-    /**
-     * @param int $b
-     * @return self
-     */
     public function withB(int $b): self
     {
         $clone = clone $this;
@@ -45,9 +35,6 @@ class Bar
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutB(): self
     {
         $clone = clone $this;

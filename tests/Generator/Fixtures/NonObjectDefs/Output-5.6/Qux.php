@@ -82,10 +82,10 @@ class Qux
 
     /**
      * @param string|string[]|Foo|Bar $grox
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withGrox($grox, bool $validate = true)
+    public function withGrox($grox, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -120,7 +120,7 @@ class Qux
      * @return Qux Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput($input, bool $validate = true)
+    public static function fromInput($input, $validate = true)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(

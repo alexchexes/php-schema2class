@@ -31,32 +31,18 @@ class MyClass
         ],
     ];
 
-    /**
-     * @var string
-     */
     private string $foo;
 
-    /**
-     * @param string $foo
-     */
     public function __construct(string $foo)
     {
         $this->foo = $foo;
     }
 
-    /**
-     * @return string
-     */
     public function getFoo(): string
     {
         return $this->foo;
     }
 
-    /**
-     * @param string $foo
-     * @return self
-     * @param bool $validate
-     */
     public function withFoo(string $foo, bool $validate = true): self
     {
         if ($validate) {

@@ -59,8 +59,6 @@ class MyClass
 
     /**
      * @param string|array|object $foo
-     * @return self
-     * @param bool $validate
      */
     public function withFoo($foo, bool $validate = true): self
     {
@@ -88,8 +86,6 @@ class MyClass
 
     /**
      * @param string|array|object $bar
-     * @return self
-     * @param bool $validate
      */
     public function withBar($bar, bool $validate = true): self
     {
@@ -107,9 +103,6 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutBar(): self
     {
         $clone = clone $this;
