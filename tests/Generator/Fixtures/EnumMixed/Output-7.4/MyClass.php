@@ -143,6 +143,9 @@ class MyClass
      */
     private ?int $inferInt = null;
 
+    /**
+     * @var 1
+     */
     private int $contradiction;
 
     /**
@@ -164,6 +167,7 @@ class MyClass
      * @param 1|2|'1'|'2' $foo
      * @param 3|4|'3'|'4' $bar
      * @param 'red'|'amber'|'green'|'42'|42|42.5|false|null $baz
+     * @param 1 $contradiction
      * @param 1|2|'one' $contradiction2
      * @param 'red'|'green'|null $nullable
      * @param '3'|'4'|null $inferString
@@ -334,11 +338,17 @@ class MyClass
         return $clone;
     }
 
+    /**
+     * @return 1
+     */
     public function getContradiction(): int
     {
         return $this->contradiction;
     }
 
+    /**
+     * @param 1 $contradiction
+     */
     public function withContradiction(int $contradiction, bool $validate = true): self
     {
         if ($validate) {
@@ -473,7 +483,7 @@ class MyClass
         $baz = ($input->{'baz'} !== null ? $input->{'baz'} : null);
         $inferString = isset($input->{'inferString'}) ? $input->{'inferString'} : null;
         $inferInt = isset($input->{'inferInt'}) ? $input->{'inferInt'} : null;
-        $contradiction = (int)$input->{'contradiction'};
+        $contradiction = $input->{'contradiction'};
         $contradiction2 = $input->{'contradiction2'};
         $nullable = ($input->{'nullable'} !== null ? $input->{'nullable'} : null);
         $optionalNullable = null;

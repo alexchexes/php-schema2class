@@ -7,7 +7,6 @@ use Helmich\Schema2Class\Generator\GeneratorException;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\Type\BooleanProperty;
 use Helmich\Schema2Class\Generator\Property\Type\DateProperty;
-use Helmich\Schema2Class\Generator\Property\Type\InferredEnumProperty;
 use Helmich\Schema2Class\Generator\Property\Type\IntegerProperty;
 use Helmich\Schema2Class\Generator\Property\Type\IntersectProperty;
 use Helmich\Schema2Class\Generator\Property\Type\MixedProperty;
@@ -48,7 +47,6 @@ class PropertyBuilder
         DateProperty::class,
         StringEnumProperty::class,
         PrimitiveUnionEnumProperty::class,
-        InferredEnumProperty::class,
         NullProperty::class,
         StringProperty::class,
         IntegerProperty::class,
@@ -94,11 +92,6 @@ class PropertyBuilder
 
         if (PrimitiveUnionEnumProperty::canHandleSchema($definition)) {
             $property = new PrimitiveUnionEnumProperty($name, $definition, $req);
-            return self::wrapProperty($req, $property, $definition, $name, $isRequired);
-        }
-
-        if (InferredEnumProperty::canHandleSchema($definition)) {
-            $property = new InferredEnumProperty($name, $definition, $req);
             return self::wrapProperty($req, $property, $definition, $name, $isRequired);
         }
 
@@ -344,7 +337,45 @@ class PropertyBuilder
      */
     private static function sanitizeEnum(array $definition): array
     {
-        if (!isset($definition['enum']) || !isset($definition['type'])) {
+        if (!isset($definition['enum'])) {
+            return $definition;
+        }
+
+        // Normalize numeric values: 5.0 → 5
+        $definition['enum'] = array_map(
+            static function ($v) {
+                if (is_float($v) && fmod($v, 1.0) === 0.0) {
+                    return (int)$v;
+                }
+                return $v;
+            },
+            $definition['enum']
+        );
+
+        // If no explicit type is given, try to infer it from enum values
+        if (!isset($definition['type']) && !isset($definition['anyOf']) && !isset($definition['oneOf'])) {
+            $types = [];
+            foreach ($definition['enum'] as $v) {
+                $t = match (true) {
+                    $v === null     => 'null',
+                    is_string($v)   => 'string',
+                    is_int($v)      => 'integer',
+                    is_float($v)    => 'number',
+                    is_bool($v)     => 'boolean',
+                    default         => null,
+                };
+                if ($t === null) {
+                    // contains unsupported value (array/object) – give up
+                    return $definition;
+                }
+                $types[$t] = true;
+            }
+
+            $definition['type'] = array_keys($types);
+            if (count($definition['type']) === 1) {
+                $definition['type'] = $definition['type'][0];
+            }
+
             return $definition;
         }
 
