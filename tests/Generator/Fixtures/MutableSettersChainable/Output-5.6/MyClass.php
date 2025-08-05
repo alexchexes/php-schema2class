@@ -180,8 +180,9 @@ class MyClass
         $__providedOptionals = [];
         $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
         $bar = Baz::fromInput($input->{'bar'}, $validate);
-        $opt = property_exists($input, 'opt') ? ($input->{'opt'} !== null ? $input->{'opt'} : null) : null;
+        $opt = null;
         if (property_exists($input, 'opt')) {
+            $opt = ($input->{'opt'} !== null ? $input->{'opt'} : null);
             $__providedOptionals['opt'] = true;
         }
 

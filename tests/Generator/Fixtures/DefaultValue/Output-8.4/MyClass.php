@@ -358,8 +358,9 @@ class MyClass
         $__providedOptionals = [];
         $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
         $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
-        $baz = property_exists($input, 'baz') ? ($input->{'baz'} !== null ? $input->{'baz'} : null) : null;
+        $baz = null;
         if (property_exists($input, 'baz')) {
+            $baz = ($input->{'baz'} !== null ? $input->{'baz'} : null);
             $__providedOptionals['baz'] = true;
         }
         $qux = isset($input->{'qux'}) ? $input->{'qux'} : null;

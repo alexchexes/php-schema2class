@@ -100,7 +100,9 @@ class Cat
         }
 
         $__providedOptionals = [];
-        $hasFur = property_exists($input, 'hasFur') ? ($input->{'hasFur'} !== null ? match (true) {
+        $hasFur = null;
+        if (property_exists($input, 'hasFur')) {
+            $hasFur = ($input->{'hasFur'} !== null ? match (true) {
             (($input->{'hasFur'}) === null) || (is_bool($input->{'hasFur'})) => ($input->{'hasFur'} !== null ? (bool)$input->{'hasFur'} : null),
             (($input->{'hasFur'}) === null) || ((is_string($input->{'hasFur'})) || (is_int($input->{'hasFur'}) || is_float($input->{'hasFur'}))) => ($input->{'hasFur'} !== null ? match (true) {
             is_string($input->{'hasFur'}) => $input->{'hasFur'},
@@ -114,8 +116,7 @@ class Cat
             default => null,
         },
             default => null,
-        } : null) : null;
-        if (property_exists($input, 'hasFur')) {
+        } : null);
             $__providedOptionals['hasFur'] = true;
         }
 

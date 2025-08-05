@@ -1253,8 +1253,9 @@ class MyClass
         $_argv = $input->{'argv'};
         $_input = $input->{'input'};
         $_validate = isset($input->{'validate'}) ? $input->{'validate'} : null;
-        $_materializeDefaults = property_exists($input, 'materializeDefaults') ? ($input->{'materializeDefaults'} !== null ? $input->{'materializeDefaults'} : null) : null;
+        $_materializeDefaults = null;
         if (property_exists($input, 'materializeDefaults')) {
+            $_materializeDefaults = ($input->{'materializeDefaults'} !== null ? $input->{'materializeDefaults'} : null);
             $__providedOptionals['materializeDefaults'] = true;
         }
         $_obj = $input->{'obj'};

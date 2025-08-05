@@ -396,15 +396,16 @@ class MyClass
             is_bool($input->{'optQux'}) => (bool)$input->{'optQux'},
             default => null,
         } : null;
-        $optThud = property_exists($input, 'optThud') ? ($input->{'optThud'} !== null ? match (true) {
+        $optThud = null;
+        if (property_exists($input, 'optThud')) {
+            $optThud = ($input->{'optThud'} !== null ? match (true) {
             is_string($input->{'optThud'}),
             is_array($input->{'optThud'}),
             is_array($input->{'optThud'}) || is_object($input->{'optThud'}) => $input->{'optThud'},
             is_int($input->{'optThud'}) || is_float($input->{'optThud'}) => (str_contains((string)$input->{'optThud'}, '.') ? (float)$input->{'optThud'} : (int)$input->{'optThud'}),
             is_bool($input->{'optThud'}) => (bool)$input->{'optThud'},
             default => null,
-        } : null) : null;
-        if (property_exists($input, 'optThud')) {
+        } : null);
             $__providedOptionals['optThud'] = true;
         }
 

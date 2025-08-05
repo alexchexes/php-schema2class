@@ -313,25 +313,28 @@ class MyClass
             is_string($input->{'f'}) => $input->{'f'},
             default => null,
         } : null;
-        $g = property_exists($input, 'g') ? ($input->{'g'} !== null ? $input->{'g'} : null) : null;
+        $g = null;
         if (property_exists($input, 'g')) {
+            $g = ($input->{'g'} !== null ? $input->{'g'} : null);
             $__providedOptionals['g'] = true;
         }
-        $h = property_exists($input, 'h') ? ($input->{'h'} !== null ? match (true) {
+        $h = null;
+        if (property_exists($input, 'h')) {
+            $h = ($input->{'h'} !== null ? match (true) {
             is_array($input->{'h'}),
             is_string($input->{'h'}) => $input->{'h'},
             default => null,
-        } : null) : null;
-        if (property_exists($input, 'h')) {
+        } : null);
             $__providedOptionals['h'] = true;
         }
-        $i = property_exists($input, 'i') ? ($input->{'i'} !== null ? match (true) {
+        $i = null;
+        if (property_exists($input, 'i')) {
+            $i = ($input->{'i'} !== null ? match (true) {
             is_array($input->{'i'}),
             is_string($input->{'i'}),
             is_array($input->{'i'}) || is_object($input->{'i'}) => $input->{'i'},
             default => null,
-        } : null) : null;
-        if (property_exists($input, 'i')) {
+        } : null);
             $__providedOptionals['i'] = true;
         }
 

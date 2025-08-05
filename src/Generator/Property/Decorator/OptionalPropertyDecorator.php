@@ -78,9 +78,10 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator
         $keyStr = $this->keyStr();
         $accessor = "\${$inputVarName}->{{$keyStr}}";
 
-        $existsCheck = "isset($accessor)";
         if ($this->inner->allowsNull() || $this->isOptionalNullable) {
             $existsCheck = "property_exists(\${$inputVarName}, {$keyStr})";
+        } else {
+            $existsCheck = "isset($accessor)";
         }
 
         return $existsCheck;
@@ -94,9 +95,8 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator
         // JSON accessor:  $input->{'key'}   or   $input['key']
         $accessor = "\${$inputVarName}->{{$this->keyStr()}}";
 
-        // Build mapping expression. Nullable optionals must keep null values
-        // intact; if the wrapped property already allows null it will handle the
-        // guard itself.
+        // Build mapping expression. Nullable optionals must keep null values intact;
+        // if the wrapped property already allows null it will handle the guard itself.
         if ($this->isOptionalNullable) {
             $innerMap = $this->inner->inputMappingExpr($accessor, true);
             $mapped   = "({$accessor} !== null ? {$innerMap} : null)";
@@ -106,11 +106,18 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator
 
         $existsCheck = $this->generateIssetCheckExpr($inputVarName);
 
-        $code = "\${$varName} = {$existsCheck} ? {$mapped} : null;";
-
         if ($this->isOptionalNullable) {
             $OPTIONALS_VAR_NAME = FromInputMethodFactory::OPTIONALS_VAR_NAME();
-            $code .= "\nif ({$existsCheck}) {\n    \${$OPTIONALS_VAR_NAME}['{$this->key}'] = true;\n}";
+            $code =
+                <<<PHP
+                \${$varName} = null;
+                if ({$existsCheck}) {
+                    \${$varName} = {$mapped};
+                    \${$OPTIONALS_VAR_NAME}['{$this->key}'] = true;
+                }
+                PHP;
+        } else {
+            $code = "\${$varName} = {$existsCheck} ? {$mapped} : null;";
         }
 
         return $code;

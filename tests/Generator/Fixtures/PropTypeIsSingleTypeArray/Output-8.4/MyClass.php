@@ -919,32 +919,39 @@ class MyClass
         $optQux = isset($input->{'optQux'}) ? $input->{'optQux'} : null;
         $optQuux = isset($input->{'optQuux'}) ? MyClassOptQuux::fromInput($input->{'optQuux'}, $validate) : null;
         $optThud = isset($input->{'optThud'}) ? $input->{'optThud'} : null;
-        $optGrox = property_exists($input, 'optGrox') ? ($input->{'optGrox'} !== null ? $input->{'optGrox'} : null) : null;
+        $optGrox = null;
         if (property_exists($input, 'optGrox')) {
+            $optGrox = ($input->{'optGrox'} !== null ? $input->{'optGrox'} : null);
             $__providedOptionals['optGrox'] = true;
         }
-        $optNullFoo = property_exists($input, 'optNullFoo') ? ($input->{'optNullFoo'} !== null ? $input->{'optNullFoo'} : null) : null;
+        $optNullFoo = null;
         if (property_exists($input, 'optNullFoo')) {
+            $optNullFoo = ($input->{'optNullFoo'} !== null ? $input->{'optNullFoo'} : null);
             $__providedOptionals['optNullFoo'] = true;
         }
-        $optNullBar = property_exists($input, 'optNullBar') ? ($input->{'optNullBar'} !== null ? $input->{'optNullBar'} : null) : null;
+        $optNullBar = null;
         if (property_exists($input, 'optNullBar')) {
+            $optNullBar = ($input->{'optNullBar'} !== null ? $input->{'optNullBar'} : null);
             $__providedOptionals['optNullBar'] = true;
         }
-        $optNullBaz = property_exists($input, 'optNullBaz') ? ($input->{'optNullBaz'} !== null ? $input->{'optNullBaz'} : null) : null;
+        $optNullBaz = null;
         if (property_exists($input, 'optNullBaz')) {
+            $optNullBaz = ($input->{'optNullBaz'} !== null ? $input->{'optNullBaz'} : null);
             $__providedOptionals['optNullBaz'] = true;
         }
-        $optNullQux = property_exists($input, 'optNullQux') ? ($input->{'optNullQux'} !== null ? $input->{'optNullQux'} : null) : null;
+        $optNullQux = null;
         if (property_exists($input, 'optNullQux')) {
+            $optNullQux = ($input->{'optNullQux'} !== null ? $input->{'optNullQux'} : null);
             $__providedOptionals['optNullQux'] = true;
         }
-        $optNullQuux = property_exists($input, 'optNullQuux') ? ($input->{'optNullQuux'} !== null ? MyClassOptNullQuux::fromInput($input->{'optNullQuux'}, $validate) : null) : null;
+        $optNullQuux = null;
         if (property_exists($input, 'optNullQuux')) {
+            $optNullQuux = ($input->{'optNullQuux'} !== null ? MyClassOptNullQuux::fromInput($input->{'optNullQuux'}, $validate) : null);
             $__providedOptionals['optNullQuux'] = true;
         }
-        $optNullThud = property_exists($input, 'optNullThud') ? ($input->{'optNullThud'} !== null ? $input->{'optNullThud'} : null) : null;
+        $optNullThud = null;
         if (property_exists($input, 'optNullThud')) {
+            $optNullThud = ($input->{'optNullThud'} !== null ? $input->{'optNullThud'} : null);
             $__providedOptionals['optNullThud'] = true;
         }
 

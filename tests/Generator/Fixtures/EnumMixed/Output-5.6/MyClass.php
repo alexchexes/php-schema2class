@@ -401,8 +401,9 @@ class MyClass
         $contradiction = (int)$input->{'contradiction'};
         $contradiction2 = $input->{'contradiction2'};
         $nullable = ($input->{'nullable'} !== null ? $input->{'nullable'} : null);
-        $optionalNullable = property_exists($input, 'optionalNullable') ? ($input->{'optionalNullable'} !== null ? $input->{'optionalNullable'} : null) : null;
+        $optionalNullable = null;
         if (property_exists($input, 'optionalNullable')) {
+            $optionalNullable = ($input->{'optionalNullable'} !== null ? $input->{'optionalNullable'} : null);
             $__providedOptionals['optionalNullable'] = true;
         }
 

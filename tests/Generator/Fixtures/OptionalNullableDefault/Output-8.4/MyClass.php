@@ -438,23 +438,27 @@ class MyClass
         $__providedOptionals = [];
         $foo = $input->{'foo'};
         $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
-        $baz = property_exists($input, 'baz') ? ($input->{'baz'} !== null ? $input->{'baz'} : null) : null;
+        $baz = null;
         if (property_exists($input, 'baz')) {
+            $baz = ($input->{'baz'} !== null ? $input->{'baz'} : null);
             $__providedOptionals['baz'] = true;
         }
-        $qux = property_exists($input, 'qux') ? ($input->{'qux'} !== null ? $input->{'qux'} : null) : null;
+        $qux = null;
         if (property_exists($input, 'qux')) {
+            $qux = ($input->{'qux'} !== null ? $input->{'qux'} : null);
             $__providedOptionals['qux'] = true;
         }
         $quux = $input->{'quux'};
         $xyyz = isset($input->{'xyyz'}) ? $input->{'xyyz'} : null;
         $thud = $input->{'thud'};
-        $grox = property_exists($input, 'grox') ? ($input->{'grox'} !== null ? MyClassGrox::fromInput($input->{'grox'}, $validate, $materializeDefaults) : null) : null;
+        $grox = null;
         if (property_exists($input, 'grox')) {
+            $grox = ($input->{'grox'} !== null ? MyClassGrox::fromInput($input->{'grox'}, $validate, $materializeDefaults) : null);
             $__providedOptionals['grox'] = true;
         }
-        $gooks = property_exists($input, 'gooks') ? ($input->{'gooks'} !== null ? MyClassGooks::fromInput($input->{'gooks'}, $validate, $materializeDefaults) : null) : null;
+        $gooks = null;
         if (property_exists($input, 'gooks')) {
+            $gooks = ($input->{'gooks'} !== null ? MyClassGooks::fromInput($input->{'gooks'}, $validate, $materializeDefaults) : null);
             $__providedOptionals['gooks'] = true;
         }
 

@@ -109,8 +109,9 @@ class GenericPet
         }
 
         $__providedOptionals = [];
-        $hasFur = property_exists($input, 'hasFur') ? ($input->{'hasFur'} !== null ? $input->{'hasFur'} : null) : null;
+        $hasFur = null;
         if (property_exists($input, 'hasFur')) {
+            $hasFur = ($input->{'hasFur'} !== null ? $input->{'hasFur'} : null);
             $__providedOptionals['hasFur'] = true;
         }
 
