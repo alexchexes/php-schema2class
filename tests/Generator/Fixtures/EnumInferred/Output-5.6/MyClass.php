@@ -352,7 +352,7 @@ class MyClass
 
         $__providedOptionals = [];
         $inferString = $input->{'inferString'};
-        $inferInt = $input->{'inferInt'};
+        $inferInt = (int)$input->{'inferInt'};
         $inferMixed = ($input->{'inferMixed'} !== null ? $input->{'inferMixed'} : null);
         $inferStringOpt = isset($input->{'inferStringOpt'}) ? $input->{'inferStringOpt'} : null;
         $inferIntOpt = isset($input->{'inferIntOpt'}) ? $input->{'inferIntOpt'} : null;

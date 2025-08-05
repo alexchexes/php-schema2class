@@ -122,7 +122,7 @@ class Cat
         $output = [];
         if (isset($this->hasFur)) {
             $output['hasFur'] = match (true) {
-                is_string($this->hasFur) && in_array($this->hasFur, array (
+                in_array($this->hasFur, array (
               0 => 'a',
               1 => 'b',
             ), true),
@@ -143,7 +143,7 @@ class Cat
         $output = new \stdClass();
         if (isset($this->hasFur)) {
             $output->{'hasFur'} = match (true) {
-                is_string($this->hasFur) && in_array($this->hasFur, array (
+                in_array($this->hasFur, array (
               0 => 'a',
               1 => 'b',
             ), true),
@@ -182,7 +182,7 @@ class Cat
     {
         if (isset($this->hasFur)) {
             $this->hasFur = match (true) {
-                is_string($this->hasFur) && in_array($this->hasFur, array (
+                in_array($this->hasFur, array (
               0 => 'a',
               1 => 'b',
             ), true),
