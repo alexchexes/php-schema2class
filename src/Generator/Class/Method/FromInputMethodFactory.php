@@ -37,8 +37,7 @@ class FromInputMethodFactory
     public function __construct(
         private GeneratorRequest $request,
         private PropertyCollection $schemaProperties,
-        private array $defaults = [],
-        private bool $hasOptionalNullable = false,
+        private array $defaults,
     ) {
     }
 
@@ -297,7 +296,7 @@ class FromInputMethodFactory
     private function bodyCreateProvidedOptionalsVar(): string
     {
         $OPTIONALS_VAR_NAME = self::OPTIONALS_VAR_NAME();
-        return $this->hasOptionalNullable
+        return $this->schemaProperties->hasOptionalNullable()
             ? "\${$OPTIONALS_VAR_NAME} = [];\n"
             : '';
     }
@@ -382,7 +381,7 @@ class FromInputMethodFactory
         $OBJ_VAR_NAME = self::OBJ_VAR_NAME;
         $OPTIONALS_VAR_NAME = self::OPTIONALS_VAR_NAME();
 
-        return $this->hasOptionalNullable
+        return $this->schemaProperties->hasOptionalNullable()
             ? "\${$OBJ_VAR_NAME}->{$OPTIONALS} = \${$OPTIONALS_VAR_NAME};\n"
             : '';
     }

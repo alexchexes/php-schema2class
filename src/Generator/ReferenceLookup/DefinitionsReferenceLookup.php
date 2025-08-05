@@ -21,7 +21,7 @@ use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeEnum;
 class DefinitionsReferenceLookup implements ReferenceLookup
 {
     /**
-     * @param array<string, Definition> $definitions
+     * @param array<string,Definition> $definitions
      */
     public function __construct(
         private array $definitions,

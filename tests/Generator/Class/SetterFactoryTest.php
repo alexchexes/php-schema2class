@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class\Generator\Class;
 
 use Helmich\Schema2Class\Generator\Class\Method\SetterFactory;
-use Helmich\Schema2Class\Generator\Class\SchemaPropertyCollector;
+use Helmich\Schema2Class\Generator\SchemaPropertyCollector;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
 use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
@@ -26,8 +26,7 @@ class SetterFactoryTest extends TestCase
             new SpecificationOptions(),
         );
 
-        $collector = new SchemaPropertyCollector();
-        $props = $collector->collectPropertiesFromSchema($schema, $req)->toArray();
+        $props = SchemaPropertyCollector::collectPropertiesFromSchema($schema, $req)->toArray();
         $prop = $props[0];
 
         $factory = new SetterFactory($req);

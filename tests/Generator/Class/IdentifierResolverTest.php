@@ -7,7 +7,7 @@ use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
 use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
 use PHPUnit\Framework\TestCase;
-use Helmich\Schema2Class\Generator\Class\SchemaPropertyCollector;
+use Helmich\Schema2Class\Generator\SchemaPropertyCollector;
 
 class IdentifierResolverTest extends TestCase
 {
@@ -32,11 +32,10 @@ class IdentifierResolverTest extends TestCase
             'foo-bar' => ['type' => 'string'],
         ]];
 
-        $collector = new SchemaPropertyCollector();
         $req1 = $this->createRequest($schema1, preserve: true);
         $req2 = $this->createRequest($schema2, preserve: true);
-        $props1 = $collector->collectPropertiesFromSchema($schema1, $req1);
-        $props2 = $collector->collectPropertiesFromSchema($schema2, $req2);
+        $props1 = SchemaPropertyCollector::collectPropertiesFromSchema($schema1, $req1);
+        $props2 = SchemaPropertyCollector::collectPropertiesFromSchema($schema2, $req2);
 
         (new IdentifierResolver($req1))->resolve($props1);
         (new IdentifierResolver($req2))->resolve($props2);
@@ -61,9 +60,8 @@ class IdentifierResolverTest extends TestCase
             'bar' => ['type' => 'string'],
             'Bar' => ['type' => 'string'],
         ]];
-        $collector = new SchemaPropertyCollector();
         $req = $this->createRequest($schema, preserve: true);
-        $props = $collector->collectPropertiesFromSchema($schema, $req);
+        $props = SchemaPropertyCollector::collectPropertiesFromSchema($schema, $req);
         (new IdentifierResolver($req))->resolve($props);
 
         $methods = [];
@@ -83,9 +81,8 @@ class IdentifierResolverTest extends TestCase
             'input' => ['type' => 'string'],
             'GLOBALS' => ['type' => 'string'],
         ]];
-        $collector = new SchemaPropertyCollector();
         $req = $this->createRequest($schema, preserve: true);
-        $props = $collector->collectPropertiesFromSchema($schema, $req);
+        $props = SchemaPropertyCollector::collectPropertiesFromSchema($schema, $req);
         (new IdentifierResolver($req))->resolve($props);
 
         $vars = [];

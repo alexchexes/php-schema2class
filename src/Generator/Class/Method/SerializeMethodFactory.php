@@ -29,7 +29,7 @@ class SerializeMethodFactory
     public function __construct(
         private GeneratorRequest $request,
         private PropertyCollection $schemaProperties,
-        private array $defaults = [],
+        private array $defaults,
     ) {}
 
     /** 

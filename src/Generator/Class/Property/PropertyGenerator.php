@@ -263,7 +263,6 @@ class PropertyGenerator extends LaminasPropertyGenerator
     public function omitDefaultValue(bool $omit = true): self
     {
         $this->omitDefaultValue = $omit;
-
         return $this;
     }
 }
