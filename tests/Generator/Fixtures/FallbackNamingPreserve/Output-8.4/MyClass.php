@@ -1899,7 +1899,7 @@ class MyClass
             $output['ensureArgs2'] = ($this->ensureArgs2)->toArray($includeDefaults);
         }
         if (isset($this->ensureArgs3)) {
-            $output['ensureArgs3'] = array_map(fn (MyClassEnsureArgs3Item $i) => $i->toArray(), $this->ensureArgs3);
+            $output['ensureArgs3'] = array_map(fn (MyClassEnsureArgs3Item $i) => $i->toArray($includeDefaults), $this->ensureArgs3);
         }
 
         if ($includeDefaults) {

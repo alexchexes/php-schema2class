@@ -159,7 +159,12 @@ class MyClass
     {
         $output = [];
         if (isset($this->files)) {
-            $output['files'] = array_map(function(MyClassFilesItem $i) { return $i->toArray(); }, $this->files);
+            $output['files'] = array_map(
+                function(MyClassFilesItem $i) {
+                    return $i->toArray();
+                },
+                $this->files
+            );
         }
         if (isset($this->options)) {
             $output['options'] = $this->options->toArray();
@@ -177,7 +182,12 @@ class MyClass
     {
         $output = new \stdClass();
         if (isset($this->files)) {
-            $output->{'files'} = array_map(function(MyClassFilesItem $i) { return $i->toStdClass(); }, $this->files);
+            $output->{'files'} = array_map(
+                function(MyClassFilesItem $i) {
+                    return $i->toStdClass();
+                },
+                $this->files
+            );
         }
         if (isset($this->options)) {
             $output->{'options'} = $this->options->toStdClass();

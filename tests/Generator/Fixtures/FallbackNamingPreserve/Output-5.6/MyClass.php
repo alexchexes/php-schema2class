@@ -2321,7 +2321,12 @@ class MyClass
             $output['ensureArgs2'] = ($this->ensureArgs2)->toArray($includeDefaults);
         }
         if (isset($this->ensureArgs3)) {
-            $output['ensureArgs3'] = array_map(function(MyClassEnsureArgs3Item $i) { return $i->toArray(); }, $this->ensureArgs3);
+            $output['ensureArgs3'] = array_map(
+                function(MyClassEnsureArgs3Item $i) use ($includeDefaults) {
+                    return $i->toArray($includeDefaults);
+                },
+                $this->ensureArgs3
+            );
         }
 
         if ($includeDefaults) {
@@ -2410,7 +2415,12 @@ class MyClass
             $output->{'ensureArgs2'} = ($this->ensureArgs2)->toStdClass($includeDefaults);
         }
         if (isset($this->ensureArgs3)) {
-            $output->{'ensureArgs3'} = array_map(function(MyClassEnsureArgs3Item $i) { return $i->toStdClass($includeDefaults); }, $this->ensureArgs3);
+            $output->{'ensureArgs3'} = array_map(
+                function(MyClassEnsureArgs3Item $i) use ($includeDefaults) {
+                    return $i->toStdClass($includeDefaults);
+                },
+                $this->ensureArgs3
+            );
         }
 
         if ($includeDefaults) {

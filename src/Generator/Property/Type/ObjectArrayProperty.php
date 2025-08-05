@@ -80,11 +80,22 @@ class ObjectArrayProperty extends AbstractProperty
         }
 
         $TO_ARRAY = MethodNames::TO_ARRAY;
-
+        $inclDefaultsArg = $this->request->getClassHasDefaults() ? '$includeDefaults' : '';
+        
         if ($this->request->isAtLeastPHP('7.4')) {
-            return "\${$outputVarName}[{$keyStr}] = array_map(fn ($st \$i) => \$i->{$TO_ARRAY}(), \$this->{$name});";
+            return "\${$outputVarName}[{$keyStr}] = array_map(fn ($st \$i) => \$i->{$TO_ARRAY}({$inclDefaultsArg}), \$this->{$name});";
         }
-        return "\${$outputVarName}[{$keyStr}] = array_map(function($st \$i) { return \$i->{$TO_ARRAY}(); }, \$this->{$name});";
+
+        $useExpr = $inclDefaultsArg ? "use ({$inclDefaultsArg}) " : '';
+        return
+            <<<PHP
+            \${$outputVarName}[{$keyStr}] = array_map(
+                function($st \$i) $useExpr{
+                    return \$i->{$TO_ARRAY}({$inclDefaultsArg});
+                },
+                \$this->{$name}
+            );
+            PHP;
     }
 
     public function convertTypeToStdClass(): string
@@ -98,14 +109,24 @@ class ObjectArrayProperty extends AbstractProperty
             return "\${$outputVarName}->{{$keyStr}} = array_map(fn (\$i) => \$i, \$this->{$name});";
         }
 
-        $inclDefaultsArg = $this->request->getClassHasDefaults() ? '$includeDefaults' : '';
-
         $TO_STD_CLASS = MethodNames::TO_STD_CLASS;
+        $inclDefaultsArg = $this->request->getClassHasDefaults() ? '$includeDefaults' : '';
 
         if ($this->request->isAtLeastPHP('7.4')) {
             return "\${$outputVarName}->{{$keyStr}} = array_map(fn ($st \$i) => \$i->{$TO_STD_CLASS}({$inclDefaultsArg}), \$this->{$name});";
         }
-        return "\${$outputVarName}->{{$keyStr}} = array_map(function($st \$i) { return \$i->{$TO_STD_CLASS}({$inclDefaultsArg}); }, \$this->{$name});";
+
+        $useExpr = $inclDefaultsArg ? "use ({$inclDefaultsArg}) " : '';
+        
+        return
+            <<<PHP
+            \${$outputVarName}->{{$keyStr}} = array_map(
+                function($st \$i) $useExpr{
+                    return \$i->{$TO_STD_CLASS}({$inclDefaultsArg});
+                },
+                \$this->{$name}
+            );
+            PHP;
     }
 
     /**
