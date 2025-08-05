@@ -5,6 +5,7 @@ namespace Helmich\Schema2Class\Generator\Property\Type;
 
 use Helmich\Schema2Class\Generator\GeneratorException;
 use Helmich\Schema2Class\Generator\Enum\SchemaToEnum;
+use Helmich\Schema2Class\Util\EnumUtils;
 use Helmich\Schema2Class\Writer\WriterInterface;
 use Laminas\Code\Generator\PropertyValueGenerator;
 use Laminas\Code\Generator\ValueGenerator;
@@ -59,13 +60,8 @@ class StringEnumProperty extends AbstractProperty
             $this->schema['enum'],
             static fn(string|null $v) => $v !== null
         );
-        
-        $literals = array_map(
-            static fn(string $v) => var_export($v, true),
-            $values
-        );
 
-        return implode('|', $literals);
+        return EnumUtils::typeAnnotation($values);
     }
 
     public function typeHint(): ?string
@@ -73,13 +69,12 @@ class StringEnumProperty extends AbstractProperty
         if ($this->request->isAtLeastPHP("8.1") && !$this->request->getNoEnums()) {
             return "\\" . $this->request->getTargetNamespace() . "\\" . $this->subTypeName();
         }
+        $values = array_filter(
+            $this->schema['enum'],
+            static fn(string|null $v) => $v !== null
+        );
 
-        if ($this->request->isAtLeastPHP('7.0')) {
-            // fallback to plain string
-            return 'string';
-        }
-
-        return null;
+        return EnumUtils::typeHint($values, $this->request->getTargetPHPVersion());
     }
 
     public function typeAssertionExpr(string $expr): string
@@ -88,9 +83,8 @@ class StringEnumProperty extends AbstractProperty
             return "{$expr} instanceof {$this->subTypeName()}";
         }
 
-        // fallback: check it's a string and one of the allowed values
-        $values = var_export($this->schema["enum"], true);
-        return "is_string({$expr}) && in_array({$expr}, {$values}, true)";
+        // fallback: check the value is one of the allowed ones
+        return EnumUtils::assertionExpr($this->schema["enum"], $expr);
     }
 
     public function inputAssertionExpr(string $expr): string
@@ -99,8 +93,7 @@ class StringEnumProperty extends AbstractProperty
             return "{$this->subTypeName()}::tryFrom({$expr}) !== null";
         }
 
-        $values = var_export($this->schema["enum"], true);
-        return "in_array({$expr}, {$values}, true)";
+        return EnumUtils::assertionExpr($this->schema["enum"], $expr);
     }
 
     public function inputMappingExpr(string $expr, bool $asserted = false): string
