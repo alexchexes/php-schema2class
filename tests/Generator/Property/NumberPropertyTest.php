@@ -42,9 +42,9 @@ class NumberPropertyTest extends TestCase
         assertFalse($this->property::canHandleSchema(['type' => 'foo']));
     }
 
-    public function testIsComplex()
+    public function testNeedsValidation()
     {
-        assertFalse($this->property->isComplex());
+        assertFalse($this->property->needsValidation());
     }
 
     public function testConvertInputToType()

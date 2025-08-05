@@ -36,18 +36,9 @@ class Baz
     /**
      * @param string $name
      * @return self
-     * @param bool $validate
      */
-    public function setName(string $name, bool $validate = true): self
+    public function setName(string $name): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($name, self::$_schema['properties']['name']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $this->name = $name;
 
         return $this;

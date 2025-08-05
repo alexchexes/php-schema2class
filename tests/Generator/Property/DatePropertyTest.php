@@ -44,9 +44,9 @@ class DatePropertyTest extends TestCase
 
     }
 
-    public function testIsComplex()
+    public function testNeedsValidation()
     {
-        assertTrue($this->property->isComplex());
+        assertFalse($this->property->needsValidation());
     }
 
     public function testConvertInputToType()

@@ -46,11 +46,6 @@ class UnionProperty extends AbstractProperty
         return isset($schema["oneOf"]) || isset($schema["anyOf"]);
     }
 
-    public function isComplex(): bool
-    {
-        return true;
-    }
-
     public function convertInputToTypeMatch(): string
     {
         $inputVarName = FromInputMethodFactory::INPUT_ARG_NAME;
@@ -454,4 +449,18 @@ class UnionProperty extends AbstractProperty
         return $this->request->getTargetClass() . $this->nameForClass . "Alternative" . ($idx + 1);
     }
 
+    public function needsValidation(): bool
+    {
+        if (!$this->request->isAtLeastPHP('8.0')) {
+            return true;
+        }
+
+        foreach ($this->subProperties as $prop) {
+            if ($prop->needsValidation()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

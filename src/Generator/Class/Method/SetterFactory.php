@@ -6,13 +6,8 @@ namespace Helmich\Schema2Class\Generator\Class\Method;
 use Helmich\Schema2Class\Generator\Class\PropertyNames;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\Decorator\OptionalPropertyDecorator;
-use Helmich\Schema2Class\Generator\Property\Decorator\PropertyDecoratorInterface;
 use Helmich\Schema2Class\Generator\Property\PropertyQuery;
-use Helmich\Schema2Class\Generator\Property\Type\ObjectArrayProperty;
-use Helmich\Schema2Class\Generator\Property\Type\PrimitiveArrayProperty;
 use Helmich\Schema2Class\Generator\Property\Type\PropertyInterface;
-use Helmich\Schema2Class\Generator\Property\Type\ReferenceArrayProperty;
-use Helmich\Schema2Class\Generator\Property\Type\TypedArrayProperty;
 use Laminas\Code\Generator\DocBlock\Tag\GenericTag;
 use Laminas\Code\Generator\DocBlock\Tag\ParamTag;
 use Laminas\Code\Generator\DocBlock\Tag\ReturnTag;
@@ -56,25 +51,8 @@ class SetterFactory
         $propAnnotatedType = $paramProperty->typeAnnotation();
         $propTypeHint = $paramProperty->typeHint();
 
-        // then we fully unwrap any other decorators to be able to see the real type
-        $base = $property;
-        while ($base instanceof PropertyDecoratorInterface) {
-            /** @var PropertyDecoratorInterface $base */
-            $base = $base->unwrap();
-        }
-
-        $isArray = $base instanceof PrimitiveArrayProperty
-            || $base instanceof ObjectArrayProperty
-            || $base instanceof ReferenceArrayProperty
-            || $base instanceof TypedArrayProperty;
-
-        $addValidation = true;
-
-        // If property is complex (except arrays), no validation needed
-        // TODO: this is not right; Validation is not generated in some cases where it should've been
-        if ($property->isComplex() && !$isArray) {
-            $addValidation = false;
-        }
+        // Determine whether setter needs runtime validation.
+        $addValidation = $property->needsValidation();
 
         $docBlock = $this->buildDocBlock($property, $varName, $propAnnotatedType, $addValidation);
         $parameters = $this->buildParams($varName, $propTypeHint, $addValidation);

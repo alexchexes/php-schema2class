@@ -51,11 +51,6 @@ abstract class AbstractProperty implements PropertyInterface
         $this->nameForClass = StringUtils::safePascalCase($key);
     }
 
-    public function isComplex(): bool
-    {
-        return false;
-    }
-
     public function schema(): array
     {
         return $this->schema;

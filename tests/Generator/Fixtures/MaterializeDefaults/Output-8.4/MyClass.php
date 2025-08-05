@@ -394,18 +394,9 @@ class MyClass
     /**
      * @param string $foo
      * @return self
-     * @param bool $validate
      */
-    public function withFoo(string $foo, bool $validate = true): self
+    public function withFoo(string $foo): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($foo, self::$_schema['properties']['foo']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->foo = $foo;
 
@@ -423,18 +414,9 @@ class MyClass
     /**
      * @param string $bar
      * @return self
-     * @param bool $validate
      */
-    public function withBar(string $bar, bool $validate = true): self
+    public function withBar(string $bar): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($bar, self::$_schema['properties']['bar']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->bar = $bar;
 
@@ -597,9 +579,18 @@ class MyClass
     /**
      * @param string|ObjDef|string[] $xyyz
      * @return self
+     * @param bool $validate
      */
-    public function withXyyz(ObjDef|string|array $xyyz): self
+    public function withXyyz(ObjDef|string|array $xyyz, bool $validate = true): self
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($xyyz, self::$_schema['properties']['xyyz']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
         $clone->xyyz = $xyyz;
 
@@ -628,9 +619,18 @@ class MyClass
     /**
      * @param string|string[]|ObjDef $buux
      * @return self
+     * @param bool $validate
      */
-    public function withBuux(ObjDef|string|array $buux): self
+    public function withBuux(ObjDef|string|array $buux, bool $validate = true): self
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($buux, self::$_schema['properties']['buux']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
         $clone->buux = $buux;
 
@@ -659,9 +659,18 @@ class MyClass
     /**
      * @param string|string[]|ObjDef $boic
      * @return self
+     * @param bool $validate
      */
-    public function withBoic(ObjDef|string|array $boic): self
+    public function withBoic(ObjDef|string|array $boic, bool $validate = true): self
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($boic, self::$_schema['properties']['boic']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
         $clone->boic = $boic;
 

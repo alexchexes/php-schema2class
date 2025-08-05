@@ -53,10 +53,10 @@ class OptionalPropertyDecoratorTest extends TestCase
         assertFalse(OptionalPropertyDecorator::canHandleSchema([]));
     }
 
-    public function testIsComplex()
+    public function testNeedsValidation()
     {
-        $this->innerProperty->isComplex()->shouldBeCalled()->willReturn(false);
-        assertFalse($this->decorator->isComplex());
+        $this->innerProperty->needsValidation()->shouldBeCalled()->willReturn(false);
+        assertFalse($this->decorator->needsValidation());
     }
 
     public function testConvertInputToType()

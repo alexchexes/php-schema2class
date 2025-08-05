@@ -13,6 +13,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use function PHPUnit\Framework\assertSame;
 use function PHPUnit\Framework\assertTrue;
+use function PHPUnit\Framework\assertFalse;
 use Helmich\Schema2Class\Generator\Definition\Definition;
 use Helmich\Schema2Class\Generator\ReferenceLookup\DefinitionsReferenceLookup;
 
@@ -39,9 +40,9 @@ class UnionPropertyTest extends TestCase
         assertTrue(UnionProperty::canHandleSchema(['oneOf' => []]));
     }
 
-    public function testIsComplex()
+    public function testNeedsValidation()
     {
-        assertTrue($this->property->isComplex());
+        assertFalse($this->property->needsValidation());
     }
 
     public function testConvertInputToType()

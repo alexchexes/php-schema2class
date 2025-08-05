@@ -21,12 +21,13 @@ class StringEnumProperty extends AbstractProperty
             && $schema["type"] === "string";
     }
 
-    public function isComplex(): bool
+    public function needsValidation(): bool
     {
-        // Only 'complex' if we will generate a PHP 8.1+ enum class
-        return $this->request->isAtLeastPHP("8.1")
-            && !$this->request->getNoEnums()
-            && isset($this->schema["enum"]);
+        // Validation required only when no native enum class will be emitted
+        if ($this->request->isAtLeastPHP("8.1") && !$this->request->getNoEnums()) {
+            return false;
+        }
+        return true;
     }
 
     /**

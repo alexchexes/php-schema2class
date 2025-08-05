@@ -79,7 +79,7 @@ class PropertyBuilder
         bool $isRequired
     ): PropertyInterface
     {
-        self::testInvariants($definition);
+        self::assertNoPropertiesWithAdditional($definition);
 
         $definition = self::sanitizeEnum($definition);
         $definition = self::collapseSingleTypeArray($definition);
@@ -321,7 +321,7 @@ class PropertyBuilder
         return $property->allowsNull() ? new NullablePropertyDecorator($name, $property, $req) : $property;
     }
 
-    private static function testInvariants(array $definition): void
+    private static function assertNoPropertiesWithAdditional(array $definition): void
     {
         $hasAdditionalProperties =
             isset($definition["additionalProperties"])
