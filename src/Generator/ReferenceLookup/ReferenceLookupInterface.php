@@ -15,7 +15,7 @@ use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeInterface;
  * To customize resolution behavior, user can implement this interface
  * and register the instance on a {@link GeneratorRequest}.
  */
-interface ReferenceLookup
+interface ReferenceLookupInterface
 {
     /**
      * Returns information about the PHP type referenced by the given `$ref` pointer.

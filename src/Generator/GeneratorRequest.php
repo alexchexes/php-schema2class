@@ -10,7 +10,7 @@ use Helmich\Schema2Class\Generator\Hook\AddPropertyHook;
 use Helmich\Schema2Class\Generator\Hook\GeneratorHookRunner;
 use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeInterface;
 use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeUnknown;
-use Helmich\Schema2Class\Generator\ReferenceLookup\ReferenceLookup;
+use Helmich\Schema2Class\Generator\ReferenceLookup\ReferenceLookupInterface;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
 use Helmich\Schema2Class\Spec\OptionsDefaults;
 use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
@@ -49,7 +49,7 @@ class GeneratorRequest
     private ValidatedSpecificationFilesItem $spec;
     private SpecificationOptions $opts;
 
-    /** @var array<class-string, ReferenceLookup> */
+    /** @var array<class-string, ReferenceLookupInterface> */
     private array $referenceLookup = [];
     
     /**
@@ -138,7 +138,7 @@ class GeneratorRequest
         };
     }
 
-    public function withReferenceLookup(ReferenceLookup $referenceLookup): self
+    public function withReferenceLookup(ReferenceLookupInterface $referenceLookup): self
     {
         $clone                  = clone $this;
         $clone->referenceLookup = [];
@@ -147,7 +147,7 @@ class GeneratorRequest
         return $clone;
     }
 
-    public function withAdditionalReferenceLookup(ReferenceLookup $referenceLookup): self
+    public function withAdditionalReferenceLookup(ReferenceLookupInterface $referenceLookup): self
     {
         $clone                  = clone $this;
         $clone->referenceLookup[$referenceLookup::class] = $referenceLookup;

@@ -18,7 +18,7 @@ use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeEnum;
  * returns {@see ReferencedType} objects describing the target class or enum so that
  * property builders can correctly embed object and enum definitions while building nested classes.
  */
-class DefinitionsReferenceLookup implements ReferenceLookup
+class DefinitionsReferenceLookup implements ReferenceLookupInterface
 {
     /**
      * @param array<string,Definition> $definitions

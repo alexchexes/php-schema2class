@@ -12,7 +12,7 @@ use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeInterface;
 use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeClass;
 use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeUnknown;
 use Helmich\Schema2Class\Generator\ReferenceLookup\DefinitionsReferenceLookup;
-use Helmich\Schema2Class\Generator\ReferenceLookup\ReferenceLookup;
+use Helmich\Schema2Class\Generator\ReferenceLookup\ReferenceLookupInterface;
 use Helmich\Schema2Class\Generator\SchemaToClassFactory;
 use Helmich\Schema2Class\Loader\SchemaLoader;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
@@ -273,7 +273,7 @@ class SchemaToClassTest extends TestCase
         $definitionsLookup = new DefinitionsReferenceLookup($definitions);
 
         $req = $req->withReferenceLookup(
-            new class ($definitionsLookup) implements ReferenceLookup {
+            new class ($definitionsLookup) implements ReferenceLookupInterface {
                 public function __construct(private DefinitionsReferenceLookup $lookup) {}
 
                 public function lookupReference(string $ref, GeneratorRequest $currentRequest): ReferencedTypeInterface
