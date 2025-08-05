@@ -45,6 +45,18 @@ class MyClass
                     null,
                 ],
             ],
+            'inferString' => [
+                'enum' => [
+                    '3',
+                    '4',
+                ],
+            ],
+            'inferInt' => [
+                'enum' => [
+                    3,
+                    4,
+                ],
+            ],
             'contradiction' => [
                 'type' => 'integer',
                 'enum' => [
@@ -121,12 +133,25 @@ class MyClass
      */
     private string|int|float|bool|null $baz;
 
-    private int $contradiction;
+    /**
+     * @var MyClassInferString|null
+     */
+    private ?MyClassInferString $inferString = null;
+
+    /**
+     * @var MyClassInferInt|null
+     */
+    private ?MyClassInferInt $inferInt = null;
+
+    /**
+     * @var MyClassContradiction
+     */
+    private MyClassContradiction $contradiction;
 
     /**
      * @var 1|2|'one'
      */
-    private string|int $contradiction2;
+    private int|string $contradiction2;
 
     /**
      * @var MyClassNullable|null
@@ -142,11 +167,14 @@ class MyClass
      * @param 1|2|'1'|'2' $foo
      * @param 3|4|'3'|'4' $bar
      * @param 'red'|'amber'|'green'|'42'|42|42.5|false|null $baz
+     * @param MyClassContradiction $contradiction
      * @param 1|2|'one' $contradiction2
      * @param MyClassNullable|null $nullable
+     * @param MyClassInferString|null $inferString
+     * @param MyClassInferInt|null $inferInt
      * @param MyClassOptionalNullable|null $optionalNullable
      */
-    public function __construct(int|string $foo, int|string $bar, bool|int|float|string|null $baz, int $contradiction, int|string $contradiction2, ?MyClassNullable $nullable, ?MyClassOptionalNullable $optionalNullable = null)
+    public function __construct(int|string $foo, int|string $bar, bool|int|float|string|null $baz, MyClassContradiction $contradiction, int|string $contradiction2, ?MyClassNullable $nullable, ?MyClassInferString $inferString = null, ?MyClassInferInt $inferInt = null, ?MyClassOptionalNullable $optionalNullable = null)
     {
         $this->foo = $foo;
         $this->bar = $bar;
@@ -154,6 +182,8 @@ class MyClass
         $this->contradiction = $contradiction;
         $this->contradiction2 = $contradiction2;
         $this->nullable = $nullable;
+        $this->inferString = $inferString;
+        $this->inferInt = $inferInt;
         $this->optionalNullable = $optionalNullable;
     }
 
@@ -238,21 +268,73 @@ class MyClass
         return $clone;
     }
 
-    public function getContradiction(): int
+    /**
+     * @return MyClassInferString|null
+     */
+    public function getInferString(): ?MyClassInferString
+    {
+        return $this->inferString ?? null;
+    }
+
+    /**
+     * @param MyClassInferString $inferString
+     */
+    public function withInferString(MyClassInferString $inferString): self
+    {
+        $clone = clone $this;
+        $clone->inferString = $inferString;
+
+        return $clone;
+    }
+
+    public function withoutInferString(): self
+    {
+        $clone = clone $this;
+        unset($clone->inferString);
+
+        return $clone;
+    }
+
+    /**
+     * @return MyClassInferInt|null
+     */
+    public function getInferInt(): ?MyClassInferInt
+    {
+        return $this->inferInt ?? null;
+    }
+
+    /**
+     * @param MyClassInferInt $inferInt
+     */
+    public function withInferInt(MyClassInferInt $inferInt): self
+    {
+        $clone = clone $this;
+        $clone->inferInt = $inferInt;
+
+        return $clone;
+    }
+
+    public function withoutInferInt(): self
+    {
+        $clone = clone $this;
+        unset($clone->inferInt);
+
+        return $clone;
+    }
+
+    /**
+     * @return MyClassContradiction
+     */
+    public function getContradiction(): MyClassContradiction
     {
         return $this->contradiction;
     }
 
-    public function withContradiction(int $contradiction, bool $validate = true): self
+    /**
+     * @param MyClassContradiction $contradiction
+     */
+    public function withContradiction(MyClassContradiction $contradiction): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($contradiction, self::$_schema['properties']['contradiction']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->contradiction = $contradiction;
 
@@ -353,9 +435,11 @@ class MyClass
         $foo = $input->{'foo'};
         $bar = $input->{'bar'};
         $baz = ($input->{'baz'} !== null ? $input->{'baz'} : null);
-        $contradiction = (int)$input->{'contradiction'};
+        $contradiction = MyClassContradiction::from($input->{'contradiction'});
         $contradiction2 = $input->{'contradiction2'};
         $nullable = ($input->{'nullable'} !== null ? MyClassNullable::from($input->{'nullable'}) : null);
+        $inferString = isset($input->{'inferString'}) ? MyClassInferString::from($input->{'inferString'}) : null;
+        $inferInt = isset($input->{'inferInt'}) ? MyClassInferInt::from($input->{'inferInt'}) : null;
         $optionalNullable = null;
         if (property_exists($input, 'optionalNullable')) {
             $optionalNullable = ($input->{'optionalNullable'} !== null ? MyClassOptionalNullable::from($input->{'optionalNullable'}) : null);
@@ -369,6 +453,8 @@ class MyClass
             $contradiction,
             $contradiction2,
             $nullable,
+            $inferString,
+            $inferInt,
             $optionalNullable
         );
         $obj->_providedOptionals = $__providedOptionals;
@@ -386,7 +472,13 @@ class MyClass
         $output['foo'] = $this->foo;
         $output['bar'] = $this->bar;
         $output['baz'] = $this->baz;
-        $output['contradiction'] = $this->contradiction;
+        if (isset($this->inferString)) {
+            $output['inferString'] = ($this->inferString)->value;
+        }
+        if (isset($this->inferInt)) {
+            $output['inferInt'] = $this->inferInt->value;
+        }
+        $output['contradiction'] = $this->contradiction->value;
         $output['contradiction2'] = $this->contradiction2;
         $output['nullable'] = ($this->nullable)->value;
         if (isset($this->optionalNullable) || array_key_exists('optionalNullable', $this->_providedOptionals)) {
@@ -407,7 +499,13 @@ class MyClass
         $output->{'foo'} = $this->foo;
         $output->{'bar'} = $this->bar;
         $output->{'baz'} = $this->baz;
-        $output->{'contradiction'} = $this->contradiction;
+        if (isset($this->inferString)) {
+            $output->{'inferString'} = ($this->inferString)->value;
+        }
+        if (isset($this->inferInt)) {
+            $output->{'inferInt'} = $this->inferInt->value;
+        }
+        $output->{'contradiction'} = $this->contradiction->value;
         $output->{'contradiction2'} = $this->contradiction2;
         $output->{'nullable'} = ($this->nullable)->value;
         if (isset($this->optionalNullable) || array_key_exists('optionalNullable', $this->_providedOptionals)) {

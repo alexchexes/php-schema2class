@@ -32,7 +32,7 @@ class MyClass
     /**
      * @param 'red'|'green' $color
      */
-    public function __construct(string $color)
+    public function __construct($color)
     {
         $this->color = $color;
     }
@@ -50,7 +50,7 @@ class MyClass
      * @param bool $validate
      * @return self
      */
-    public function withColor(string $color, $validate = true)
+    public function withColor($color, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();

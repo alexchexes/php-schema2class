@@ -40,7 +40,7 @@ class MyClassEnsureArgs1Alternative1
     /**
      * @param 'invoice'|null $type
      */
-    public function __construct(string $type = null)
+    public function __construct($type = null)
     {
         $this->type = $type;
     }
@@ -58,7 +58,7 @@ class MyClassEnsureArgs1Alternative1
      * @param bool $validate
      * @return self
      */
-    public function withType(string $type, $validate = true)
+    public function withType($type, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();

@@ -7,22 +7,52 @@ use Composer\Semver\Semver;
 
 final class EnumUtils
 {
-    /**
-     * @param array<int|string|null|float|bool> $values
-     */
-    public static function typeAnnotation(array $values): string
+    private static function normalizeValue(mixed $v): mixed
     {
-        $literals = array_map(static fn($v): string => var_export($v, true), $values);
-        return implode('|', $literals);
+        if (is_float($v) && fmod($v, 1.0) === 0.0) {
+            return (int)$v;
+        }
+
+        return $v;
     }
 
     /**
      * @param array<int|string|null|float|bool> $values
      */
-    public static function typeHint(array $values, string $phpVersion): ?string
+    public static function typeAnnotation(array $values): string
     {
+        $normalized = array_map([self::class, 'normalizeValue'], $values);
+        $literals   = array_map(
+            static function ($v): string {
+                if ($v === null) {
+                    return 'null';
+                }
+                return var_export($v, true);
+            },
+            $normalized
+        );
+        return implode('|', $literals);
+    }
+
+    /**
+     * @param array<int|string|null|float|bool> $enumValues
+     * 
+     * TODO: we now don't handle case when enum value is array or object, for example:
+     * ```
+     * "enum": [42, true, "hello", null, [1, 2, 3]]
+     * ```
+     * 
+     * TODO: check what happens when the only enum value is `null`. Do we get illegal `null` type hint?
+     */
+    public static function typeHint(array $enumValues, string $phpVersion): ?string
+    {
+        if (!Semver::satisfies($phpVersion, '>=7.0')) {
+            return null; // PHP before 7.0 doesn't support scalar types
+        }
+
         $types = [];
-        foreach ($values as $v) {
+        foreach ($enumValues as $v) {
+            $v = self::normalizeValue($v);
             if ($v === null) {
                 $types['null'] = 'null';
             } elseif (is_string($v)) {
@@ -36,13 +66,12 @@ final class EnumUtils
             }
         }
 
-        if (!Semver::satisfies($phpVersion, '>=8.0') && count($types) !== 1) {
+        if (count($types) === 1 && isset($types['null'])) {
             return null;
         }
 
-        if (isset($types['int']) && isset($types['float'])) {
-            $types['int'] = 'int';
-            $types['float'] = 'float';
+        if (!Semver::satisfies($phpVersion, '>=8.0') && count($types) !== 1) {
+            return null;
         }
 
         return implode('|', array_values($types));
@@ -53,7 +82,7 @@ final class EnumUtils
      */
     public static function assertionExpr(array $values, string $expr): string
     {
-        $export = var_export($values, true);
+        $export = var_export(array_map([self::class, 'normalizeValue'], $values), true);
         return "in_array({$expr}, {$export}, true)";
     }
 }

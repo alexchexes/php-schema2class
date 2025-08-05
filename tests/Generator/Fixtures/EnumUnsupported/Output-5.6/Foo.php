@@ -91,7 +91,7 @@ class Foo
      * @param false|null $boolEnum
      * @param false|null $boolEnumRef
      */
-    public function __construct(bool $requiredBoolEnumRef, $floatEnum = null, $floatEnumRef = null, $boolEnum = null, bool $boolEnumRef = null)
+    public function __construct($requiredBoolEnumRef, $floatEnum = null, $floatEnumRef = null, $boolEnum = null, $boolEnumRef = null)
     {
         $this->requiredBoolEnumRef = $requiredBoolEnumRef;
         $this->floatEnum = $floatEnum;
@@ -233,7 +233,7 @@ class Foo
      * @param bool $validate
      * @return self
      */
-    public function withBoolEnumRef(bool $boolEnumRef, $validate = true)
+    public function withBoolEnumRef($boolEnumRef, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -273,7 +273,7 @@ class Foo
      * @param bool $validate
      * @return self
      */
-    public function withRequiredBoolEnumRef(bool $requiredBoolEnumRef, $validate = true)
+    public function withRequiredBoolEnumRef($requiredBoolEnumRef, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
