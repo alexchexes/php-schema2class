@@ -860,24 +860,24 @@ class MyClass
         $xyyz = isset($input->{'xyyz'}) ? match (true) {
             is_string($input->{'xyyz'}),
             is_array($input->{'xyyz'}) => $input->{'xyyz'},
-            ObjDef::validateInput($input->{'xyyz'}, true) => ObjDef::fromInput($input->{'xyyz'}, $validate),
+            ObjDef::validateInput($input->{'xyyz'}, true) => ObjDef::fromInput($input->{'xyyz'}, $validate, $materializeDefaults),
             default => null,
         } : null;
         $buux = isset($input->{'buux'}) ? match (true) {
             is_string($input->{'buux'}),
             is_array($input->{'buux'}) => $input->{'buux'},
-            ObjDef::validateInput($input->{'buux'}, true) => ObjDef::fromInput($input->{'buux'}, $validate),
+            ObjDef::validateInput($input->{'buux'}, true) => ObjDef::fromInput($input->{'buux'}, $validate, $materializeDefaults),
             default => null,
         } : null;
         $boic = isset($input->{'boic'}) ? match (true) {
             is_string($input->{'boic'}),
             is_array($input->{'boic'}) => $input->{'boic'},
-            ObjDef::validateInput($input->{'boic'}, true) => ObjDef::fromInput($input->{'boic'}, $validate),
+            ObjDef::validateInput($input->{'boic'}, true) => ObjDef::fromInput($input->{'boic'}, $validate, $materializeDefaults),
             default => null,
         } : null;
         $poox = isset($input->{'poox'}) ? match (true) {
             is_string($input->{'poox'}) => $input->{'poox'},
-            NumericKeysObj::validateInput($input->{'poox'}, true) => NumericKeysObj::fromInput($input->{'poox'}, $validate),
+            NumericKeysObj::validateInput($input->{'poox'}, true) => NumericKeysObj::fromInput($input->{'poox'}, $validate, $materializeDefaults),
             default => null,
         } : null;
         $arrObjUnion = isset($input->{'arrObjUnion'}) ? match (true) {
@@ -935,27 +935,27 @@ class MyClass
             $output['xyyz'] = match (true) {
                 is_string($this->xyyz),
                 is_array($this->xyyz) => $this->xyyz,
-                ($this->xyyz) instanceof ObjDef => $this->xyyz->toArray(),
+                ($this->xyyz) instanceof ObjDef => $this->xyyz->toArray($includeDefaults),
             };
         }
         if (isset($this->buux)) {
             $output['buux'] = match (true) {
                 is_string($this->buux),
                 is_array($this->buux) => $this->buux,
-                ($this->buux) instanceof ObjDef => $this->buux->toArray(),
+                ($this->buux) instanceof ObjDef => $this->buux->toArray($includeDefaults),
             };
         }
         if (isset($this->boic)) {
             $output['boic'] = match (true) {
                 is_string($this->boic),
                 is_array($this->boic) => $this->boic,
-                ($this->boic) instanceof ObjDef => $this->boic->toArray(),
+                ($this->boic) instanceof ObjDef => $this->boic->toArray($includeDefaults),
             };
         }
         if (isset($this->poox)) {
             $output['poox'] = match (true) {
                 is_string($this->poox) => $this->poox,
-                ($this->poox) instanceof NumericKeysObj => $this->poox->toArray(),
+                ($this->poox) instanceof NumericKeysObj => $this->poox->toArray($includeDefaults),
             };
         }
         if (isset($this->arrObjUnion)) {
@@ -1012,27 +1012,27 @@ class MyClass
             $output->{'xyyz'} = match (true) {
                 is_string($this->xyyz),
                 is_array($this->xyyz) => $this->xyyz,
-                ($this->xyyz) instanceof ObjDef => $this->xyyz->toStdClass(),
+                ($this->xyyz) instanceof ObjDef => $this->xyyz->toStdClass($includeDefaults),
             };
         }
         if (isset($this->buux)) {
             $output->{'buux'} = match (true) {
                 is_string($this->buux),
                 is_array($this->buux) => $this->buux,
-                ($this->buux) instanceof ObjDef => $this->buux->toStdClass(),
+                ($this->buux) instanceof ObjDef => $this->buux->toStdClass($includeDefaults),
             };
         }
         if (isset($this->boic)) {
             $output->{'boic'} = match (true) {
                 is_string($this->boic),
                 is_array($this->boic) => $this->boic,
-                ($this->boic) instanceof ObjDef => $this->boic->toStdClass(),
+                ($this->boic) instanceof ObjDef => $this->boic->toStdClass($includeDefaults),
             };
         }
         if (isset($this->poox)) {
             $output->{'poox'} = match (true) {
                 is_string($this->poox) => $this->poox,
-                ($this->poox) instanceof NumericKeysObj => $this->poox->toStdClass(),
+                ($this->poox) instanceof NumericKeysObj => $this->poox->toStdClass($includeDefaults),
             };
         }
         if (isset($this->arrObjUnion)) {

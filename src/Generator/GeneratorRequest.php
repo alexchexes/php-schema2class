@@ -336,7 +336,7 @@ class GeneratorRequest
         }
 
         foreach ($this->referenceLookup as $lookup) {
-            $reference = $lookup->lookupReference($ref);
+            $reference = $lookup->lookupReference($ref, $this);
             if (!$reference instanceof ReferencedTypeUnknown) {
                 return $reference;
             }

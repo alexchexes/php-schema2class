@@ -332,7 +332,8 @@ you can resolve such references as desired by implementing the `ReferenceLookup`
 and registering your lookup on a `GeneratorRequest`.
 
 ```php
-use Helmich\Schema2Class\Generator\ReferencedType\ReferencedType;
+use Helmich\Schema2Class\Generator\GeneratorRequest;
+use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeInterface;
 use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeClass;
 use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeUnknown;
 use Helmich\Schema2Class\Generator\ReferenceLookup\DefinitionsReferenceLookup;
@@ -342,23 +343,24 @@ class MyReferenceLookup implements ReferenceLookup
 {
     public function __construct(private DefinitionsReferenceLookup $defaultLookup) {}
 
-    // Must return instance of a class implementing `ReferencedType` interface,
+    // Must return instance of a class implementing `ReferencedTypeInterface`,
     // including the `ReferencedTypeUnknown` when reference cannot be resolved
-    public function lookupReference(string $ref): ReferencedType
+    public function lookupReference(string $ref, GeneratorRequest $currentRequest): ReferencedTypeInterface
     {
         if ($ref === "#/properties/address") {
-            return new ReferencedTypeClass(CustomerAddress::class); // Point '#/properties/address' ref to existing class
+            // Point '#/properties/address' ref to existing class
+            return new ReferencedTypeClass(CustomerAddress::class, $currentRequest);
         }
 
         // resolve other refs by built-in Schema2Class lookup mechanism
-        $result = $this->defaultLookup->lookupReference($ref);
+        $result = $this->defaultLookup->lookupReference($ref, $currentRequest);
         if ($result instanceof ReferencedTypeUnknown) {
-            return new ReferencedTypeUnknown();
+            return new ReferencedTypeUnknown($currentRequest);
         }
         return $result;
     }
 
-    // Must returns the schema array referenced by the given `$ref` pointer,
+    // Must return the schema array referenced by the given `$ref` pointer,
     // or empty array if no schema available
     public function lookupSchema(string $ref): array
     {

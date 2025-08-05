@@ -128,7 +128,7 @@ class MyClass
         }
 
         $foo = isset($input->{'foo'}) ? array_map(
-            fn(array|object $i): FooItem => FooItem::fromInput($i, $validate),
+            fn(array|object $i): FooItem => FooItem::fromInput($i, $validate, $materializeDefaults),
             $input->{'foo'}
         ) : null;
 
@@ -147,7 +147,7 @@ class MyClass
     {
         $output = [];
         if (isset($this->foo)) {
-            $output['foo'] = array_map(fn(FooItem $i): array => $i->toArray(), $this->foo);
+            $output['foo'] = array_map(fn(FooItem $i): array => $i->toArray($includeDefaults), $this->foo);
         }
 
         if ($includeDefaults) {
@@ -171,7 +171,7 @@ class MyClass
     {
         $output = new \stdClass();
         if (isset($this->foo)) {
-            $output->{'foo'} = array_map(fn(FooItem $i): object => $i->toStdClass(), $this->foo);
+            $output->{'foo'} = array_map(fn(FooItem $i): object => $i->toStdClass($includeDefaults), $this->foo);
         }
 
         if ($includeDefaults) {

@@ -203,7 +203,7 @@ class SchemaToClass
         }
 
         $req = $req
-            ->withAdditionalReferenceLookup(new DefinitionsReferenceLookup($allDefinitions, $req))
+            ->withAdditionalReferenceLookup(new DefinitionsReferenceLookup($allDefinitions))
             ->withGeneratedClassNames($generatedClasses);
 
         $definitionsToGenerate = $allDefinitions;

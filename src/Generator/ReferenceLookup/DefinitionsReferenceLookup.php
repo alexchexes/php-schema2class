@@ -25,7 +25,6 @@ class DefinitionsReferenceLookup implements ReferenceLookup
      */
     public function __construct(
         private array $definitions,
-        private GeneratorRequest $request,
     ) {}
 
     private function canonicalize(string $ref): string
@@ -51,21 +50,21 @@ class DefinitionsReferenceLookup implements ReferenceLookup
         return $ref;
     }
 
-    public function lookupReference(string $ref): ReferencedTypeInterface
+    public function lookupReference(string $ref, GeneratorRequest $currentRequest): ReferencedTypeInterface
     {
         $ref = $this->canonicalize($ref);
 
         if (!isset($this->definitions[$ref])) {
-            return new ReferencedTypeUnknown($this->request);
+            return new ReferencedTypeUnknown($currentRequest);
         }
 
         $def = $this->definitions[$ref];
 
         if (isset($def->schema['enum'])) {
-            return new ReferencedTypeEnum($def->classFQN, $def->schema, $this->request);
+            return new ReferencedTypeEnum($def->classFQN, $def->schema, $currentRequest);
         }
 
-        return new ReferencedTypeClass($def->classFQN, $this->request);
+        return new ReferencedTypeClass($def->classFQN, $currentRequest);
     }
 
     public function lookupSchema(string $ref): array

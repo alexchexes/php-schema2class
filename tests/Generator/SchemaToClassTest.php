@@ -270,24 +270,21 @@ class SchemaToClassTest extends TestCase
         );
 
         $definitions = $schema['definitions'] ?? [];
-        $definitionsLookup = new DefinitionsReferenceLookup($definitions, $req);
+        $definitionsLookup = new DefinitionsReferenceLookup($definitions);
 
         $req = $req->withReferenceLookup(
-            new class ($definitionsLookup, $req) implements ReferenceLookup {
-                public function __construct(
-                    private DefinitionsReferenceLookup $lookup,
-                    private GeneratorRequest $request,
-                ) {}
+            new class ($definitionsLookup) implements ReferenceLookup {
+                public function __construct(private DefinitionsReferenceLookup $lookup) {}
 
-                public function lookupReference(string $ref): ReferencedTypeInterface
+                public function lookupReference(string $ref, GeneratorRequest $currentRequest): ReferencedTypeInterface
                 {
                     if ($ref === "#/properties/address") {
-                        return new ReferencedTypeClass(CustomerAddress::class, $this->request);
+                        return new ReferencedTypeClass(CustomerAddress::class, $currentRequest);
                     }
 
-                    $result = $this->lookup->lookupReference($ref);
+                    $result = $this->lookup->lookupReference($ref, $currentRequest);
                     if ($result instanceof ReferencedTypeUnknown) {
-                        return new ReferencedTypeUnknown($this->request);
+                        return new ReferencedTypeUnknown($currentRequest);
                     }
                     return $result;
                 }
