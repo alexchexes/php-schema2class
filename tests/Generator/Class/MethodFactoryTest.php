@@ -5,6 +5,7 @@ namespace Helmich\Schema2Class\Generator\Class;
 
 use Helmich\Schema2Class\Generator\Class\Method\ClassMethodSuiteFactory;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
+use Helmich\Schema2Class\Generator\SchemaPropertyCollector;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
 use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
 use PHPUnit\Framework\TestCase;
@@ -26,7 +27,7 @@ class MethodFactoryTest extends TestCase
             new SpecificationOptions(),
         );
 
-        $schemaProperties = (new SchemaPropertyCollector())->collectPropertiesFromSchema($schema, $req);
+        $schemaProperties = SchemaPropertyCollector::collectPropertiesFromSchema($schema, $req);
         $classMethods = (new ClassMethodSuiteFactory(
             $req,
             $schemaProperties,

@@ -16,7 +16,6 @@ class ClassPropertySuiteFactory
       private array $schema,
       private PropertyCollection $schemaProperties,
       private array $defaults,
-      private bool $hasOptionalNullable,
     ) {}
 
     /**
@@ -36,7 +35,7 @@ class ClassPropertySuiteFactory
             $propertyGenerators[] = $defaultsFactory->generateDefaultsProperty();
         }
 
-        if ($this->hasOptionalNullable) {
+        if ($this->schemaProperties->hasOptionalNullable()) {
             $propertyGenerators[] = $providedOptionalsFactory->generateProvidedOptionalsProperty();
         }
         

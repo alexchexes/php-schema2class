@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\ReferenceLookup;
 
+use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeInterface;
 
 /**
@@ -14,14 +15,17 @@ use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeInterface;
  * To customize resolution behavior, user can implement this interface
  * and register the instance on a {@link GeneratorRequest}.
  */
-interface ReferenceLookup
+interface ReferenceLookupInterface
 {
     /**
      * Returns information about the PHP type referenced by the given `$ref` pointer.
      *
-     * When the reference cannot be resolved a {@link ReferencedTypeUnknown} instance should be returned.
+     * The current {@see GeneratorRequest} is provided so implementations can
+     * respect options such as the target namespace or PHP version. When the
+     * reference cannot be resolved a {@link ReferencedTypeUnknown} instance
+     * should be returned.
      */
-    public function lookupReference(string $ref): ReferencedTypeInterface;
+    public function lookupReference(string $ref, GeneratorRequest $currentRequest): ReferencedTypeInterface;
     
     /**
      * Returns the schema array referenced by the given `$ref` pointer.

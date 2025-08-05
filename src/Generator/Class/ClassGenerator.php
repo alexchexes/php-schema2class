@@ -8,6 +8,8 @@ use Helmich\Schema2Class\Generator\Class\Property\ClassPropertySuiteFactory;
 use Helmich\Schema2Class\Generator\Class\Property\PropertyGenerator;
 use Helmich\Schema2Class\Generator\Class\IdentifierResolver;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
+use Helmich\Schema2Class\Generator\SchemaDefaultsCollector;
+use Helmich\Schema2Class\Generator\SchemaPropertyCollector;
 use Helmich\Schema2Class\Writer\WriterInterface;
 use Laminas\Code\DeclareStatement;
 use Laminas\Code\Generator\ClassGenerator as LaminasClassGenerator;
@@ -36,15 +38,11 @@ class ClassGenerator
     
     public function generateClass(): void
     {
-        $collector = new SchemaPropertyCollector();
-
-        $defaults = $collector->collectDefaults($this->schema, $this->request);
+        $defaults = SchemaDefaultsCollector::collectDefaults($this->schema, $this->request);
         $this->request = $this->request->withClassHasDefaults(!empty($defaults));
-
-        $schemaProperties = $collector->collectPropertiesFromSchema($this->schema, $this->request);    
+        
+        $schemaProperties = SchemaPropertyCollector::collectPropertiesFromSchema($this->schema, $this->request);    
         (new IdentifierResolver($this->request))->resolve($schemaProperties);
-
-        $hasOptionalNullable = $collector->hasOptionalNullable($schemaProperties);
 
         foreach ($schemaProperties as $schemaProp) {
             $schemaProp->generateSubTypes($this->writer, $this->output);
@@ -55,14 +53,12 @@ class ClassGenerator
             $this->schema,
             $schemaProperties,
             $defaults,
-            $hasOptionalNullable,
         ))->generateProperties();
 
         $methodGenerators = (new ClassMethodSuiteFactory(
             $this->request,
             $schemaProperties,
             $defaults,
-            $hasOptionalNullable,
         ))->generateMethods();
 
         $classFileGenerator = $this->prepareFileGenerator($propertyGenerators, $methodGenerators);

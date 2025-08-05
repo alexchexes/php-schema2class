@@ -16,7 +16,6 @@ class ClassMethodSuiteFactory
         private GeneratorRequest $request,
         private PropertyCollection $schemaProperties,
         private array $defaults,
-        private bool $hasOptionalNullable,
     ) {}
 
     /**
@@ -28,11 +27,11 @@ class ClassMethodSuiteFactory
     {
         $constructorFactory = new ConstructorFactory($this->schemaProperties);
         $accessorsFactory = new PropertyAccessorsFactory($this->request, $this->schemaProperties);
-        $buildMethodFactory = new FromInputMethodFactory($this->request, $this->schemaProperties, $this->defaults, $this->hasOptionalNullable);
+        $buildMethodFactory = new FromInputMethodFactory($this->request, $this->schemaProperties, $this->defaults);
         $serializeMethodFactory = new SerializeMethodFactory($this->request, $this->schemaProperties, $this->defaults);
         $validateMethodFactory = new ValidateMethodFactory($this->request);
         $cloneMethodFactory = new CloneMethodFactory($this->schemaProperties);
-        $isProvidedMethodFactory = new IsProvidedMethodFactory($this->request, $this->hasOptionalNullable);
+        $isProvidedMethodFactory = new IsProvidedMethodFactory($this->request, $this->schemaProperties->hasOptionalNullable());
 
         $methodGenerators = [
             $constructorFactory->generateConstructor(),

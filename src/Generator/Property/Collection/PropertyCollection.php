@@ -76,6 +76,16 @@ class PropertyCollection implements \Iterator
         return false;
     }
 
+    public function hasOptionalNullable(): bool
+    {
+        foreach ($this->properties as $p) {
+            if ($p instanceof OptionalPropertyDecorator && $p->isOptionalNullable()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public function filter(PropertyCollectionFilter $filter): PropertyCollection
     {
         $matching = [];
@@ -87,11 +97,6 @@ class PropertyCollection implements \Iterator
         }
 
         return PropertyCollection::fromArray($matching);
-    }
-
-    public function isOptional(PropertyInterface $prop): bool
-    {
-        return $prop instanceof OptionalPropertyDecorator;
     }
 
     public function current(): PropertyInterface
@@ -118,6 +123,4 @@ class PropertyCollection implements \Iterator
     {
         $this->current = 0;
     }
-
-
 }

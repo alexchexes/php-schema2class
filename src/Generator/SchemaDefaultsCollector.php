@@ -1,38 +1,21 @@
 <?php
 declare(strict_types=1);
 
-namespace Helmich\Schema2Class\Generator\Class;
+namespace Helmich\Schema2Class\Generator;
 
+use Helmich\Schema2Class\Generator\GeneratorException;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
-use Helmich\Schema2Class\Generator\Property\Collection\PropertyCollection;
-use Helmich\Schema2Class\Generator\Property\PropertyBuilder;
-use Helmich\Schema2Class\Generator\Property\Decorator\OptionalPropertyDecorator;
 use Helmich\Schema2Class\Util\SchemaUtils;
 
 /**
- * Collects property information from a JSON schema and applies name sanitisation
- * and default value extraction.
+ * Collects default values from schema to use it in the generated class
  */
-class SchemaPropertyCollector
+class SchemaDefaultsCollector
 {
-    public function collectPropertiesFromSchema(array $schema, GeneratorRequest $req): PropertyCollection
-    {
-        $properties = new PropertyCollection();
-
-        if (isset($schema['properties'])) {
-            foreach ($schema['properties'] as $key => $definition) {
-                $key = (string) $key;
-                $isRequired = isset($schema['required']) && in_array($key, $schema['required']);
-
-                $property = PropertyBuilder::buildPropertyFromSchema($req, $key, $definition, $isRequired);
-                $properties->add($property);
-            }
-        }
-
-        return $properties;
-    }
-
-    public function collectDefaults(array $schema, GeneratorRequest $req): array
+    /** 
+     * @return array<array-key,mixed>
+     */
+    public static function collectDefaults(array $schema, GeneratorRequest $req): array
     {
         $defaults = [];
         if (!isset($schema['properties']) || !is_array($schema['properties'])) {
@@ -58,18 +41,15 @@ class SchemaPropertyCollector
         return $defaults;
     }
 
-    public function hasOptionalNullable(PropertyCollection $properties): bool
-    {
-        foreach ($properties as $p) {
-            if ($p instanceof OptionalPropertyDecorator && $p->isOptionalNullable()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-
-    private static function extractDefault(array $def, GeneratorRequest $req, bool &$found = false, object|null $rawDef = null): array
+    /** 
+     * @throws GeneratorException When some "$ref" cannot be resolved
+     */
+    private static function extractDefault(
+        array $def,
+        GeneratorRequest $req,
+        bool &$found = false,
+        object|null $rawDef = null
+    ): array
     {
         if (array_key_exists('default', $def)) {
             $found = true;

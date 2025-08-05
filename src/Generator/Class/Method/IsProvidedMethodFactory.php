@@ -16,7 +16,7 @@ class IsProvidedMethodFactory
 {
     public function __construct(
         private GeneratorRequest $request,
-        private bool $hasOptionalNullable = false,
+        private bool $hasOptionalNullable,
     )
     {}
 

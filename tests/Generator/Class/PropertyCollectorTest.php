@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class\Generator\Class;
 
 use Helmich\Schema2Class\Generator\GeneratorRequest;
+use Helmich\Schema2Class\Generator\SchemaDefaultsCollector;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
 use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
 use PHPUnit\Framework\TestCase;
@@ -24,8 +25,7 @@ class PropertyCollectorTest extends TestCase
             new SpecificationOptions(),
         );
 
-        $collector = new SchemaPropertyCollector();
-        $defaults = $collector->collectDefaults($schema, $req);
+        $defaults = SchemaDefaultsCollector::collectDefaults($schema, $req);
 
         $this->assertSame(['a' => ['default' => 'x']], $defaults);
     }

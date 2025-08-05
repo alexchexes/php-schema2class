@@ -36,7 +36,7 @@ use Helmich\Schema2Class\Generator\Property\Decorator\OptionalPropertyDecorator;
  * 
  * Optional and nullable semantics are handled here as well.
  * 
- * Used by {@see Helmich\Schema2Class\Generator\Class\SchemaPropertyCollector}
+ * Used by {@see Helmich\Schema2Class\Generator\SchemaPropertyCollector}
  * when turning a schema object `"properties"` section into a {@see Property\PropertyCollection}.
  */
 class PropertyBuilder

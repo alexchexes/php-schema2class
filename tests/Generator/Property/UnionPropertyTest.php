@@ -112,7 +112,7 @@ EOCODE;
             '#/definitions/bar' => new Definition('Ns', '', 'Ns\\Bar', 'Bar', ['type' => 'string']),
         ];
 
-        $lookup = new DefinitionsReferenceLookup($defs, $this->generatorRequest);
+        $lookup = new DefinitionsReferenceLookup($defs);
         $req    = $this->generatorRequest->withReferenceLookup($lookup);
 
         $prop = new UnionProperty('myPropertyName', [
