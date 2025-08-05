@@ -134,21 +134,24 @@ class MyClass
     private string|int|float|bool|null $baz;
 
     /**
-     * @var '3'|'4'|null
+     * @var MyClassInferString|null
      */
-    private ?string $inferString = null;
+    private ?MyClassInferString $inferString = null;
 
     /**
      * @var 3|4|null
      */
     private ?int $inferInt = null;
 
+    /**
+     * @var 1
+     */
     private int $contradiction;
 
     /**
      * @var 1|2|'one'
      */
-    private string|int $contradiction2;
+    private int|string $contradiction2;
 
     /**
      * @var MyClassNullable|null
@@ -164,13 +167,14 @@ class MyClass
      * @param 1|2|'1'|'2' $foo
      * @param 3|4|'3'|'4' $bar
      * @param 'red'|'amber'|'green'|'42'|42|42.5|false|null $baz
+     * @param 1 $contradiction
      * @param 1|2|'one' $contradiction2
      * @param MyClassNullable|null $nullable
-     * @param '3'|'4'|null $inferString
+     * @param MyClassInferString|null $inferString
      * @param 3|4|null $inferInt
      * @param MyClassOptionalNullable|null $optionalNullable
      */
-    public function __construct(int|string $foo, int|string $bar, bool|int|float|string|null $baz, int $contradiction, int|string $contradiction2, ?MyClassNullable $nullable, ?string $inferString = null, ?int $inferInt = null, ?MyClassOptionalNullable $optionalNullable = null)
+    public function __construct(int|string $foo, int|string $bar, bool|int|float|string|null $baz, int $contradiction, int|string $contradiction2, ?MyClassNullable $nullable, ?MyClassInferString $inferString = null, ?int $inferInt = null, ?MyClassOptionalNullable $optionalNullable = null)
     {
         $this->foo = $foo;
         $this->bar = $bar;
@@ -265,26 +269,18 @@ class MyClass
     }
 
     /**
-     * @return '3'|'4'|null
+     * @return MyClassInferString|null
      */
-    public function getInferString(): ?string
+    public function getInferString(): ?MyClassInferString
     {
         return $this->inferString ?? null;
     }
 
     /**
-     * @param '3'|'4' $inferString
+     * @param MyClassInferString $inferString
      */
-    public function withInferString(string $inferString, bool $validate = true): self
+    public function withInferString(MyClassInferString $inferString): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($inferString, self::$_schema['properties']['inferString']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->inferString = $inferString;
 
@@ -334,11 +330,17 @@ class MyClass
         return $clone;
     }
 
+    /**
+     * @return 1
+     */
     public function getContradiction(): int
     {
         return $this->contradiction;
     }
 
+    /**
+     * @param 1 $contradiction
+     */
     public function withContradiction(int $contradiction, bool $validate = true): self
     {
         if ($validate) {
@@ -449,7 +451,7 @@ class MyClass
         $foo = $input->{'foo'};
         $bar = $input->{'bar'};
         $baz = ($input->{'baz'} !== null ? $input->{'baz'} : null);
-        $inferString = isset($input->{'inferString'}) ? $input->{'inferString'} : null;
+        $inferString = isset($input->{'inferString'}) ? MyClassInferString::from($input->{'inferString'}) : null;
         $inferInt = isset($input->{'inferInt'}) ? $input->{'inferInt'} : null;
         $contradiction = (int)$input->{'contradiction'};
         $contradiction2 = $input->{'contradiction2'};
@@ -480,7 +482,7 @@ class MyClass
         $output['bar'] = $this->bar;
         $output['baz'] = $this->baz;
         if (isset($this->inferString)) {
-            $output['inferString'] = $this->inferString;
+            $output['inferString'] = ($this->inferString)->value;
         }
         if (isset($this->inferInt)) {
             $output['inferInt'] = $this->inferInt;
@@ -507,7 +509,7 @@ class MyClass
         $output->{'bar'} = $this->bar;
         $output->{'baz'} = $this->baz;
         if (isset($this->inferString)) {
-            $output->{'inferString'} = $this->inferString;
+            $output->{'inferString'} = ($this->inferString)->value;
         }
         if (isset($this->inferInt)) {
             $output->{'inferInt'} = $this->inferInt;
