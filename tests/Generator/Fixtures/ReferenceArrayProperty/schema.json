@@ -1,0 +1,20 @@
+{
+  "properties": {
+    "foo": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/FooItem" },
+      "default": [
+        {
+          "name": "foo"
+        }
+      ]
+    }
+  },
+  "definitions": {
+    "FooItem": {
+      "properties": {
+        "name": { "type": "string", "default": "a string" }
+      }
+    }
+  }
+}
