@@ -302,8 +302,13 @@ class MyClass
      * @param null $grox
      * @param MyClassNullQuux|null $nullQuux
      * @param string[]|null $nullThud
+     * @param MyClassOptQuux|null $optQuux
+     * @param string[]|null $optThud
+     * @param null $optGrox
+     * @param MyClassOptNullQuux|null $optNullQuux
+     * @param string[]|null $optNullThud
      */
-    public function __construct(string $foo, int|float $bar, int $baz, bool $qux, MyClassQuux $quux, array $thud, $grox, ?string $nullFoo, int|float|null $nullBar, ?int $nullBaz, ?bool $nullQux, ?MyClassNullQuux $nullQuux, ?array $nullThud)
+    public function __construct(string $foo, int|float $bar, int $baz, bool $qux, MyClassQuux $quux, array $thud, $grox, ?string $nullFoo, int|float|null $nullBar, ?int $nullBaz, ?bool $nullQux, ?MyClassNullQuux $nullQuux, ?array $nullThud, ?string $optFoo = null, int|float|null $optBar = null, ?int $optBaz = null, ?bool $optQux = null, ?MyClassOptQuux $optQuux = null, ?array $optThud = null, $optGrox = null, ?string $optNullFoo = null, int|float|null $optNullBar = null, ?int $optNullBaz = null, ?bool $optNullQux = null, ?MyClassOptNullQuux $optNullQuux = null, ?array $optNullThud = null)
     {
         $this->foo = $foo;
         $this->bar = $bar;
@@ -318,6 +323,19 @@ class MyClass
         $this->nullQux = $nullQux;
         $this->nullQuux = $nullQuux;
         $this->nullThud = $nullThud;
+        $this->optFoo = $optFoo;
+        $this->optBar = $optBar;
+        $this->optBaz = $optBaz;
+        $this->optQux = $optQux;
+        $this->optQuux = $optQuux;
+        $this->optThud = $optThud;
+        $this->optGrox = $optGrox;
+        $this->optNullFoo = $optNullFoo;
+        $this->optNullBar = $optNullBar;
+        $this->optNullBaz = $optNullBaz;
+        $this->optNullQux = $optNullQux;
+        $this->optNullQuux = $optNullQuux;
+        $this->optNullThud = $optNullThud;
     }
 
     public function getFoo(): string
@@ -955,20 +973,34 @@ class MyClass
             $__providedOptionals['optNullThud'] = true;
         }
 
-        $obj = new self($foo, $bar, $baz, $qux, $quux, $thud, $grox, $nullFoo, $nullBar, $nullBaz, $nullQux, $nullQuux, $nullThud);
-        $obj->optFoo = $optFoo;
-        $obj->optBar = $optBar;
-        $obj->optBaz = $optBaz;
-        $obj->optQux = $optQux;
-        $obj->optQuux = $optQuux;
-        $obj->optThud = $optThud;
-        $obj->optGrox = $optGrox;
-        $obj->optNullFoo = $optNullFoo;
-        $obj->optNullBar = $optNullBar;
-        $obj->optNullBaz = $optNullBaz;
-        $obj->optNullQux = $optNullQux;
-        $obj->optNullQuux = $optNullQuux;
-        $obj->optNullThud = $optNullThud;
+        $obj = new self(
+            $foo,
+            $bar,
+            $baz,
+            $qux,
+            $quux,
+            $thud,
+            $grox,
+            $nullFoo,
+            $nullBar,
+            $nullBaz,
+            $nullQux,
+            $nullQuux,
+            $nullThud,
+            $optFoo,
+            $optBar,
+            $optBaz,
+            $optQux,
+            $optQuux,
+            $optThud,
+            $optGrox,
+            $optNullFoo,
+            $optNullBar,
+            $optNullBaz,
+            $optNullQux,
+            $optNullQuux,
+            $optNullThud
+        );
         $obj->_providedOptionals = $__providedOptionals;
         return $obj;
     }

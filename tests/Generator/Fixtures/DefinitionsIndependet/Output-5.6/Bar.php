@@ -24,6 +24,14 @@ class Bar
     private $b = null;
 
     /**
+     * @param int|null $b
+     */
+    public function __construct($b = null)
+    {
+        $this->b = $b;
+    }
+
+    /**
      * @return int|null
      */
     public function getB()
@@ -84,10 +92,10 @@ class Bar
             static::validateInput($input);
         }
 
+
         $b = isset($input->{'b'}) ? $input->{'b'} : null;
 
-        $obj = new self();
-        $obj->b = $b;
+        $obj = new self($b);
         return $obj;
     }
 

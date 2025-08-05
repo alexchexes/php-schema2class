@@ -111,6 +111,20 @@ class Record
     private ?array $dataArrayNestedAnyOf = null;
 
     /**
+     * @param Phone[]|null $dataArray
+     * @param Phone[][]|null $dataArrayNested
+     * @param (Phone|Fio)[]|null $dataArrayAnyOf
+     * @param ((Phone|Fio)[])[]|null $dataArrayNestedAnyOf
+     */
+    public function __construct(?array $dataArray = null, ?array $dataArrayNested = null, ?array $dataArrayAnyOf = null, ?array $dataArrayNestedAnyOf = null)
+    {
+        $this->dataArray = $dataArray;
+        $this->dataArrayNested = $dataArrayNested;
+        $this->dataArrayAnyOf = $dataArrayAnyOf;
+        $this->dataArrayNestedAnyOf = $dataArrayNestedAnyOf;
+    }
+
+    /**
      * @return Phone[]|null
      */
     public function getDataArray(): ?array
@@ -265,6 +279,7 @@ class Record
             static::validateInput($input);
         }
 
+
         $dataArray = isset($input->{'dataArray'}) ? array_map(
             fn(array|object $i): Phone => Phone::fromInput($i, $validate),
             $input->{'dataArray'}
@@ -284,11 +299,7 @@ class Record
             default => null,
         }, $i), $input->{'dataArrayNestedAnyOf'}) : null;
 
-        $obj = new self();
-        $obj->dataArray = $dataArray;
-        $obj->dataArrayNested = $dataArrayNested;
-        $obj->dataArrayAnyOf = $dataArrayAnyOf;
-        $obj->dataArrayNestedAnyOf = $dataArrayNestedAnyOf;
+        $obj = new self($dataArray, $dataArrayNested, $dataArrayAnyOf, $dataArrayNestedAnyOf);
         return $obj;
     }
 

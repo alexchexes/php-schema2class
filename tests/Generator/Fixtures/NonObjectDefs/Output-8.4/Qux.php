@@ -75,6 +75,14 @@ class Qux
     private string|array|Foo|Bar|null $grox = null;
 
     /**
+     * @param string|string[]|Foo|Bar|null $grox
+     */
+    public function __construct(Bar|Foo|string|array|null $grox = null)
+    {
+        $this->grox = $grox;
+    }
+
+    /**
      * @return string|string[]|Foo|Bar|null
      */
     public function getGrox(): Bar|Foo|string|array|null
@@ -124,6 +132,7 @@ class Qux
             static::validateInput($input);
         }
 
+
         $grox = isset($input->{'grox'}) ? match (true) {
             is_string($input->{'grox'}),
             is_array($input->{'grox'}) => $input->{'grox'},
@@ -135,8 +144,7 @@ class Qux
             default => null,
         } : null;
 
-        $obj = new self();
-        $obj->grox = $grox;
+        $obj = new self($grox);
         return $obj;
     }
 

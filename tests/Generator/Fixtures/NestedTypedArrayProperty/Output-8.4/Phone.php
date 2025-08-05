@@ -22,6 +22,11 @@ class Phone
 
     private ?string $foo = null;
 
+    public function __construct(?string $foo = null)
+    {
+        $this->foo = $foo;
+    }
+
     public function getFoo(): ?string
     {
         return $this->foo ?? null;
@@ -58,10 +63,10 @@ class Phone
             static::validateInput($input);
         }
 
+
         $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
 
-        $obj = new self();
-        $obj->foo = $foo;
+        $obj = new self($foo);
         return $obj;
     }
 

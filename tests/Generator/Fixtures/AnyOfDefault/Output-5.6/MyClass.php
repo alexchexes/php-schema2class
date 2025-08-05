@@ -44,6 +44,14 @@ class MyClass
     private $foo = null;
 
     /**
+     * @param string|int|null $foo
+     */
+    public function __construct($foo = null)
+    {
+        $this->foo = $foo;
+    }
+
+    /**
      * @return string|int|null
      */
     public function getFoo()
@@ -118,10 +126,10 @@ class MyClass
             static::validateInput($input);
         }
 
+
         $foo = isset($input->{'foo'}) ? ((is_int($input->{'foo'})) ? (int)$input->{'foo'} : (((is_string($input->{'foo'})) ? $input->{'foo'} : (null)))) : null;
 
-        $obj = new self();
-        $obj->foo = $foo;
+        $obj = new self($foo);
         return $obj;
     }
 

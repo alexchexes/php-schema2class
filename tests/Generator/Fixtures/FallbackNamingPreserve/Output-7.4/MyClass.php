@@ -405,7 +405,13 @@ class MyClass
      */
     private ?array $ensureArgs3 = null;
 
-    public function __construct(string $_GLOBALS_1, string $_GLOBALS, string $GLOBALS_1, string $_SERVER_1, string $_GET_1, string $_POST_1, string $_FILES_1, string $_REQUEST_1, string $_SESSION_1, string $_ENV_1, string $_COOKIE_1, string $_php_errormsg, string $_http_response_header, string $_argc, string $_argv, string $_input, string $_obj, string $_includeDefaults, string $fromInput, string $toArray, string $toStdClass, string $validateInput, string $_schema_1, string $schema, string $_defaults_1, string $defaults, string $_providedOptionals_1, string $_clone, string $__clone, string $__construct, string $__destruct, string $__get, string $__set, string $__call, string $__isset, string $__unset, string $__sleep, string $__wakeup, string $__toString, string $__invoke, string $__debugInfo, string $files, string $_this)
+    /**
+     * @param MyClassTestObj|null $testObj
+     * @param MyClassEnsureArgs1Alternative1|MyClassEnsureArgs1Alternative2|string|null $ensureArgs1
+     * @param MyClassEnsureArgs2|null $ensureArgs2
+     * @param MyClassEnsureArgs3Item[]|null $ensureArgs3
+     */
+    public function __construct(string $_GLOBALS_1, string $_GLOBALS, string $GLOBALS_1, string $_SERVER_1, string $_GET_1, string $_POST_1, string $_FILES_1, string $_REQUEST_1, string $_SESSION_1, string $_ENV_1, string $_COOKIE_1, string $_php_errormsg, string $_http_response_header, string $_argc, string $_argv, string $_input, string $_obj, string $_includeDefaults, string $fromInput, string $toArray, string $toStdClass, string $validateInput, string $_schema_1, string $schema, string $_defaults_1, string $defaults, string $_providedOptionals_1, string $_clone, string $__clone, string $__construct, string $__destruct, string $__get, string $__set, string $__call, string $__isset, string $__unset, string $__sleep, string $__wakeup, string $__toString, string $__invoke, string $__debugInfo, string $files, string $_this, ?string $_validate = null, ?string $_materializeDefaults = null, ?MyClassTestObj $testObj = null, ?string $__providedOptionals_1 = null, $ensureArgs1 = null, ?MyClassEnsureArgs2 $ensureArgs2 = null, ?array $ensureArgs3 = null)
     {
         $this->_GLOBALS = $_GLOBALS_1;
         $this->GLOBALS = $_GLOBALS;
@@ -450,6 +456,13 @@ class MyClass
         $this->__debugInfo = $__debugInfo;
         $this->files = $files;
         $this->_this = $_this;
+        $this->validate = $_validate;
+        $this->materializeDefaults = $_materializeDefaults;
+        $this->testObj = $testObj;
+        $this->__providedOptionals = $__providedOptionals_1;
+        $this->ensureArgs1 = $ensureArgs1;
+        $this->ensureArgs2 = $ensureArgs2;
+        $this->ensureArgs3 = $ensureArgs3;
     }
 
     public function get_GLOBALS(): string
@@ -1252,15 +1265,8 @@ class MyClass
         $_argc = $input->{'argc'};
         $_argv = $input->{'argv'};
         $_input = $input->{'input'};
-        $_validate = isset($input->{'validate'}) ? $input->{'validate'} : null;
-        $_materializeDefaults = null;
-        if (property_exists($input, 'materializeDefaults')) {
-            $_materializeDefaults = ($input->{'materializeDefaults'} !== null ? $input->{'materializeDefaults'} : null);
-            $__providedOptionals['materializeDefaults'] = true;
-        }
         $_obj = $input->{'obj'};
         $_includeDefaults = $input->{'includeDefaults'};
-        $testObj = isset($input->{'testObj'}) ? MyClassTestObj::fromInput($input->{'testObj'}, $validate, $materializeDefaults) : null;
         $fromInput = $input->{'fromInput'};
         $toArray = $input->{'toArray'};
         $toStdClass = $input->{'toStdClass'};
@@ -1270,7 +1276,6 @@ class MyClass
         $_defaults_1 = $input->{'_defaults'};
         $defaults = $input->{'defaults'};
         $_providedOptionals_1 = $input->{'_providedOptionals'};
-        $__providedOptionals_1 = isset($input->{'__providedOptionals'}) ? $input->{'__providedOptionals'} : null;
         $_clone = $input->{'clone'};
         $__clone = $input->{'__clone'};
         $__construct = $input->{'__construct'};
@@ -1287,18 +1292,70 @@ class MyClass
         $__debugInfo = $input->{'__debugInfo'};
         $files = $input->{'files'};
         $_this = $input->{'this'};
+        $_validate = isset($input->{'validate'}) ? $input->{'validate'} : null;
+        $_materializeDefaults = null;
+        if (property_exists($input, 'materializeDefaults')) {
+            $_materializeDefaults = ($input->{'materializeDefaults'} !== null ? $input->{'materializeDefaults'} : null);
+            $__providedOptionals['materializeDefaults'] = true;
+        }
+        $testObj = isset($input->{'testObj'}) ? MyClassTestObj::fromInput($input->{'testObj'}, $validate, $materializeDefaults) : null;
+        $__providedOptionals_1 = isset($input->{'__providedOptionals'}) ? $input->{'__providedOptionals'} : null;
         $ensureArgs1 = isset($input->{'ensureArgs1'}) ? ((is_string($input->{'ensureArgs1'})) ? $input->{'ensureArgs1'} : (((MyClassEnsureArgs1Alternative2::validateInput($input->{'ensureArgs1'}, true)) ? MyClassEnsureArgs1Alternative2::fromInput($input->{'ensureArgs1'}, $validate, $materializeDefaults) : (((MyClassEnsureArgs1Alternative1::validateInput($input->{'ensureArgs1'}, true)) ? MyClassEnsureArgs1Alternative1::fromInput($input->{'ensureArgs1'}, $validate, $materializeDefaults) : (null)))))) : null;
         $ensureArgs2 = isset($input->{'ensureArgs2'}) ? MyClassEnsureArgs2::fromInput($input->{'ensureArgs2'}, $validate, $materializeDefaults) : null;
         $ensureArgs3 = isset($input->{'ensureArgs3'}) ? array_map(fn ($i): MyClassEnsureArgs3Item => MyClassEnsureArgs3Item::fromInput($i, $validate, $materializeDefaults), $input->{'ensureArgs3'}) : null;
 
-        $obj = new self($_GLOBALS_1, $_GLOBALS, $GLOBALS_1, $_SERVER_1, $_GET_1, $_POST_1, $_FILES_1, $_REQUEST_1, $_SESSION_1, $_ENV_1, $_COOKIE_1, $_php_errormsg, $_http_response_header, $_argc, $_argv, $_input, $_obj, $_includeDefaults, $fromInput, $toArray, $toStdClass, $validateInput, $_schema_1, $schema, $_defaults_1, $defaults, $_providedOptionals_1, $_clone, $__clone, $__construct, $__destruct, $__get, $__set, $__call, $__isset, $__unset, $__sleep, $__wakeup, $__toString, $__invoke, $__debugInfo, $files, $_this);
-        $obj->validate = $_validate;
-        $obj->materializeDefaults = $_materializeDefaults;
-        $obj->testObj = $testObj;
-        $obj->__providedOptionals = $__providedOptionals_1;
-        $obj->ensureArgs1 = $ensureArgs1;
-        $obj->ensureArgs2 = $ensureArgs2;
-        $obj->ensureArgs3 = $ensureArgs3;
+        $obj = new self(
+            $_GLOBALS_1,
+            $_GLOBALS,
+            $GLOBALS_1,
+            $_SERVER_1,
+            $_GET_1,
+            $_POST_1,
+            $_FILES_1,
+            $_REQUEST_1,
+            $_SESSION_1,
+            $_ENV_1,
+            $_COOKIE_1,
+            $_php_errormsg,
+            $_http_response_header,
+            $_argc,
+            $_argv,
+            $_input,
+            $_obj,
+            $_includeDefaults,
+            $fromInput,
+            $toArray,
+            $toStdClass,
+            $validateInput,
+            $_schema_1,
+            $schema,
+            $_defaults_1,
+            $defaults,
+            $_providedOptionals_1,
+            $_clone,
+            $__clone,
+            $__construct,
+            $__destruct,
+            $__get,
+            $__set,
+            $__call,
+            $__isset,
+            $__unset,
+            $__sleep,
+            $__wakeup,
+            $__toString,
+            $__invoke,
+            $__debugInfo,
+            $files,
+            $_this,
+            $_validate,
+            $_materializeDefaults,
+            $testObj,
+            $__providedOptionals_1,
+            $ensureArgs1,
+            $ensureArgs2,
+            $ensureArgs3
+        );
         $obj->_providedOptionals = $__providedOptionals;
         return $obj;
     }

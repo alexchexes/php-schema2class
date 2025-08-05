@@ -30,6 +30,12 @@ class MyClass
 
     private array|object|null $params = null;
 
+    public function __construct(?string $name = null, array|object|null $params = null)
+    {
+        $this->name = $name;
+        $this->params = $params;
+    }
+
     public function getName(): ?string
     {
         return $this->name ?? null;
@@ -87,12 +93,11 @@ class MyClass
             static::validateInput($input);
         }
 
+
         $name = isset($input->{'name'}) ? $input->{'name'} : null;
         $params = isset($input->{'params'}) ? $input->{'params'} : null;
 
-        $obj = new self();
-        $obj->name = $name;
-        $obj->params = $params;
+        $obj = new self($name, $params);
         return $obj;
     }
 

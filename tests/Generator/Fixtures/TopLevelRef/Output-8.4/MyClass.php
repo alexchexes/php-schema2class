@@ -25,6 +25,11 @@ class MyClass
 
     private string|int|float|null $foo = null;
 
+    public function __construct(int|float|string|null $foo = null)
+    {
+        $this->foo = $foo;
+    }
+
     public function getFoo(): int|float|string|null
     {
         return $this->foo;
@@ -61,14 +66,14 @@ class MyClass
             static::validateInput($input);
         }
 
+
         $foo = isset($input->{'foo'}) ? match (true) {
             is_string($input->{'foo'}) => $input->{'foo'},
             is_int($input->{'foo'}) || is_float($input->{'foo'}) => (str_contains((string)$input->{'foo'}, '.') ? (float)$input->{'foo'} : (int)$input->{'foo'}),
             default => null,
         } : null;
 
-        $obj = new self();
-        $obj->foo = $foo;
+        $obj = new self($foo);
         return $obj;
     }
 

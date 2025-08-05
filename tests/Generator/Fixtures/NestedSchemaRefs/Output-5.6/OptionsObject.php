@@ -23,6 +23,14 @@ class OptionsObject
     private $output = null;
 
     /**
+     * @param string|null $_output
+     */
+    public function __construct($_output = null)
+    {
+        $this->output = $_output;
+    }
+
+    /**
      * @return string|null
      */
     public function getOutput()
@@ -83,10 +91,10 @@ class OptionsObject
             static::validateInput($input);
         }
 
+
         $_output = isset($input->{'output'}) ? $input->{'output'} : null;
 
-        $obj = new self();
-        $obj->output = $_output;
+        $obj = new self($_output);
         return $obj;
     }
 

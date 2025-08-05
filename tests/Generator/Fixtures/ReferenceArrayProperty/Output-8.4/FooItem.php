@@ -33,6 +33,11 @@ class FooItem
 
     private ?string $name = null;
 
+    public function __construct(?string $name = null)
+    {
+        $this->name = $name;
+    }
+
     public function getName(): ?string
     {
         return $this->name ?? null;
@@ -83,10 +88,10 @@ class FooItem
             static::validateInput($input);
         }
 
+
         $name = isset($input->{'name'}) ? $input->{'name'} : null;
 
-        $obj = new self();
-        $obj->name = $name;
+        $obj = new self($name);
         return $obj;
     }
 

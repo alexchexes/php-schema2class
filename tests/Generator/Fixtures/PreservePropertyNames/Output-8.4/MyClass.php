@@ -113,7 +113,7 @@ class MyClass
 
     private ?string $it_s_A = null;
 
-    public function __construct(string $foo, string $_foo, string $__foo, string $foo_, string $foo__, string $_foo_, string $__foo__, string $_foo_bar, string $foo_bar, string $baz_qux, string $_123_qwe, string $Gorod, string $nazvanie_iur_litsa, string $IP_adres, string $_tildas)
+    public function __construct(string $foo, string $_foo, string $__foo, string $foo_, string $foo__, string $_foo_, string $__foo__, string $_foo_bar, string $foo_bar, string $baz_qux, string $_123_qwe, string $Gorod, string $nazvanie_iur_litsa, string $IP_adres, string $_tildas, ?string $it_s_A = null)
     {
         $this->foo = $foo;
         $this->_foo = $_foo;
@@ -130,6 +130,7 @@ class MyClass
         $this->nazvanie_iur_litsa = $nazvanie_iur_litsa;
         $this->IP_adres = $IP_adres;
         $this->_tildas = $_tildas;
+        $this->it_s_A = $it_s_A;
     }
 
     public function getFoo(): string
@@ -380,8 +381,24 @@ class MyClass
         $_tildas = $input->{'~~tildas~~'};
         $it_s_A = isset($input->{'it\'s "A"'}) ? $input->{'it\'s "A"'} : null;
 
-        $obj = new self($foo, $_foo, $__foo, $foo_, $foo__, $_foo_, $__foo__, $_foo_bar, $foo_bar, $baz_qux, $_123_qwe, $Gorod, $nazvanie_iur_litsa, $IP_adres, $_tildas);
-        $obj->it_s_A = $it_s_A;
+        $obj = new self(
+            $foo,
+            $_foo,
+            $__foo,
+            $foo_,
+            $foo__,
+            $_foo_,
+            $__foo__,
+            $_foo_bar,
+            $foo_bar,
+            $baz_qux,
+            $_123_qwe,
+            $Gorod,
+            $nazvanie_iur_litsa,
+            $IP_adres,
+            $_tildas,
+            $it_s_A
+        );
         return $obj;
     }
 

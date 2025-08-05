@@ -66,10 +66,12 @@ class MyClass
 
     /**
      * @param int $id
+     * @param Address|null $address
      */
-    public function __construct($id)
+    public function __construct($id, Address $address = null)
     {
         $this->id = $id;
+        $this->address = $address;
     }
 
     /**
@@ -155,8 +157,7 @@ class MyClass
         $id = (int)$input->{'id'};
         $address = isset($input->{'address'}) ? Address::fromInput($input->{'address'}, $validate) : null;
 
-        $obj = new self($id);
-        $obj->address = $address;
+        $obj = new self($id, $address);
         return $obj;
     }
 

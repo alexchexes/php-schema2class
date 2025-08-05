@@ -52,6 +52,11 @@ class Cat
 
     private ?bool $hasFur = null;
 
+    public function __construct(?bool $hasFur = null)
+    {
+        $this->hasFur = $hasFur;
+    }
+
     /**
      * Whether the cat has fur. True by default for most cats
      */
@@ -111,14 +116,14 @@ class Cat
         }
 
         $__providedOptionals = [];
+
         $hasFur = null;
         if (property_exists($input, 'hasFur')) {
             $hasFur = ($input->{'hasFur'} !== null ? $input->{'hasFur'} : null);
             $__providedOptionals['hasFur'] = true;
         }
 
-        $obj = new self();
-        $obj->hasFur = $hasFur;
+        $obj = new self($hasFur);
         $obj->_providedOptionals = $__providedOptionals;
         return $obj;
     }

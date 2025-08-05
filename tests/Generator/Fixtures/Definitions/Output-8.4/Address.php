@@ -40,9 +40,10 @@ class Address
 
     private string $city;
 
-    public function __construct(string $city)
+    public function __construct(string $city, ?Address\Defs\Name $name = null)
     {
         $this->city = $city;
+        $this->name = $name;
     }
 
     public function getName(): ?Address\Defs\Name
@@ -94,11 +95,10 @@ class Address
             static::validateInput($input);
         }
 
-        $name = isset($input->{'name'}) ? Address\Defs\Name::fromInput($input->{'name'}, $validate) : null;
         $city = $input->{'city'};
+        $name = isset($input->{'name'}) ? Address\Defs\Name::fromInput($input->{'name'}, $validate) : null;
 
-        $obj = new self($city);
-        $obj->name = $name;
+        $obj = new self($city, $name);
         return $obj;
     }
 

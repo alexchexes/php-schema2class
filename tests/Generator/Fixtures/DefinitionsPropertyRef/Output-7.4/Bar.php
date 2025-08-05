@@ -32,6 +32,11 @@ class Bar
 
     private ?Foo $a = null;
 
+    public function __construct(?Foo $a = null)
+    {
+        $this->a = $a;
+    }
+
     public function getA(): ?Foo
     {
         return $this->a ?? null;
@@ -74,10 +79,10 @@ class Bar
             static::validateInput($input);
         }
 
+
         $a = isset($input->{'a'}) ? Foo::fromInput($input->{'a'}, $validate) : null;
 
-        $obj = new self();
-        $obj->a = $a;
+        $obj = new self($a);
         return $obj;
     }
 

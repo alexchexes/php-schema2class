@@ -41,6 +41,14 @@ class Cat
     private string|array|null $hasFur = null;
 
     /**
+     * @param 'a'|'b'|string[]|null $hasFur
+     */
+    public function __construct(string|array|null $hasFur = null)
+    {
+        $this->hasFur = $hasFur;
+    }
+
+    /**
      * @return 'a'|'b'|string[]|null
      */
     public function getHasFur(): string|array|null
@@ -90,6 +98,7 @@ class Cat
             static::validateInput($input);
         }
 
+
         $hasFur = isset($input->{'hasFur'}) ? match (true) {
             in_array($input->{'hasFur'}, array (
           0 => 'a',
@@ -99,8 +108,7 @@ class Cat
             default => null,
         } : null;
 
-        $obj = new self();
-        $obj->hasFur = $hasFur;
+        $obj = new self($hasFur);
         return $obj;
     }
 

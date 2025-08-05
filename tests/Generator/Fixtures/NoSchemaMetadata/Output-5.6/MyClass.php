@@ -36,10 +36,12 @@ class MyClass
 
     /**
      * @param string $foo
+     * @param int|null $bar
      */
-    public function __construct($foo)
+    public function __construct($foo, $bar = null)
     {
         $this->foo = $foo;
+        $this->bar = $bar;
     }
 
     /**
@@ -145,8 +147,7 @@ class MyClass
         $foo = $input->{'foo'};
         $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
 
-        $obj = new self($foo);
-        $obj->bar = $bar;
+        $obj = new self($foo, $bar);
         return $obj;
     }
 

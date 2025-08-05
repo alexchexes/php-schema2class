@@ -43,6 +43,11 @@ class MyGenericStringNumberField
 
     private ?MyGenericStringNumber $field = null;
 
+    public function __construct(?MyGenericStringNumber $field = null)
+    {
+        $this->field = $field;
+    }
+
     public function getField(): ?MyGenericStringNumber
     {
         return $this->field ?? null;
@@ -79,10 +84,10 @@ class MyGenericStringNumberField
             static::validateInput($input);
         }
 
+
         $field = isset($input->{'field'}) ? MyGenericStringNumber::fromInput($input->{'field'}, $validate) : null;
 
-        $obj = new self();
-        $obj->field = $field;
+        $obj = new self($field);
         return $obj;
     }
 

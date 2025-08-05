@@ -29,9 +29,10 @@ class MyClass
 
     private string $fooBar;
 
-    public function __construct(string $fooBar)
+    public function __construct(string $fooBar, ?string $foo = null)
     {
         $this->fooBar = $fooBar;
+        $this->foo = $foo;
     }
 
     public function getFoo(): ?string
@@ -89,11 +90,10 @@ class MyClass
             static::validateInput($input);
         }
 
-        $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
         $fooBar = $input->{'foo_bar'};
+        $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
 
-        $obj = new self($fooBar);
-        $obj->foo = $foo;
+        $obj = new self($fooBar, $foo);
         return $obj;
     }
 

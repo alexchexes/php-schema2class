@@ -41,6 +41,14 @@ class MyClass
     private ?string $foo = null;
 
     /**
+     * @param 'red'|'green'|null $foo
+     */
+    public function __construct(?string $foo = null)
+    {
+        $this->foo = $foo;
+    }
+
+    /**
      * @return 'red'|'green'|null
      */
     public function getFoo(): ?string
@@ -99,14 +107,14 @@ class MyClass
         }
 
         $__providedOptionals = [];
+
         $foo = null;
         if (property_exists($input, 'foo')) {
             $foo = ($input->{'foo'} !== null ? $input->{'foo'} : null);
             $__providedOptionals['foo'] = true;
         }
 
-        $obj = new self();
-        $obj->foo = $foo;
+        $obj = new self($foo);
         $obj->_providedOptionals = $__providedOptionals;
         return $obj;
     }

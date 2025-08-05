@@ -50,6 +50,16 @@ class MyClass
     private $options = null;
 
     /**
+     * @param MyClassFilesItem[]|null $files
+     * @param OptionsObject|null $options
+     */
+    public function __construct(array $files = null, OptionsObject $options = null)
+    {
+        $this->files = $files;
+        $this->options = $options;
+    }
+
+    /**
      * @return MyClassFilesItem[]|null
      */
     public function getFiles()
@@ -140,12 +150,11 @@ class MyClass
             static::validateInput($input);
         }
 
+
         $files = isset($input->{'files'}) ? array_map(function($i) use ($validate) { return MyClassFilesItem::fromInput($i, $validate); }, $input->{'files'}) : null;
         $options = isset($input->{'options'}) ? OptionsObject::fromInput($input->{'options'}, $validate) : null;
 
-        $obj = new self();
-        $obj->files = $files;
-        $obj->options = $options;
+        $obj = new self($files, $options);
         return $obj;
     }
 

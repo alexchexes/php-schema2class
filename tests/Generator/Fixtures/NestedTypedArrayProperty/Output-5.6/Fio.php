@@ -34,6 +34,14 @@ class Fio
     private $bar = null;
 
     /**
+     * @param string|null $bar
+     */
+    public function __construct($bar = null)
+    {
+        $this->bar = $bar;
+    }
+
+    /**
      * @return string|null
      */
     public function getBar()
@@ -97,14 +105,14 @@ class Fio
         }
 
         $__providedOptionals = [];
+
         $bar = null;
         if (property_exists($input, 'bar')) {
             $bar = ($input->{'bar'} !== null ? $input->{'bar'} : null);
             $__providedOptionals['bar'] = true;
         }
 
-        $obj = new self();
-        $obj->bar = $bar;
+        $obj = new self($bar);
         $obj->_providedOptionals = $__providedOptionals;
         return $obj;
     }

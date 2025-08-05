@@ -54,9 +54,11 @@ class MyClass
 
     private ?string $opt = null;
 
-    public function __construct(Baz $bar)
+    public function __construct(Baz $bar, ?string $foo = null, ?string $opt = null)
     {
         $this->bar = $bar;
+        $this->foo = $foo;
+        $this->opt = $opt;
     }
 
     public function getFoo(): ?string
@@ -133,17 +135,15 @@ class MyClass
         }
 
         $__providedOptionals = [];
-        $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
         $bar = Baz::fromInput($input->{'bar'}, $validate);
+        $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
         $opt = null;
         if (property_exists($input, 'opt')) {
             $opt = ($input->{'opt'} !== null ? $input->{'opt'} : null);
             $__providedOptionals['opt'] = true;
         }
 
-        $obj = new self($bar);
-        $obj->foo = $foo;
-        $obj->opt = $opt;
+        $obj = new self($bar, $foo, $opt);
         $obj->_providedOptionals = $__providedOptionals;
         return $obj;
     }

@@ -40,6 +40,16 @@ class MyClassGrox
     private $b = null;
 
     /**
+     * @param string|null $a
+     * @param int|float|null $b
+     */
+    public function __construct($a = null, $b = null)
+    {
+        $this->a = $a;
+        $this->b = $b;
+    }
+
+    /**
      * @return string|null
      */
     public function getA()
@@ -140,12 +150,11 @@ class MyClassGrox
             static::validateInput($input);
         }
 
+
         $a = isset($input->{'a'}) ? $input->{'a'} : null;
         $b = isset($input->{'b'}) ? $input->{'b'} : null;
 
-        $obj = new self();
-        $obj->a = $a;
-        $obj->b = $b;
+        $obj = new self($a, $b);
         return $obj;
     }
 

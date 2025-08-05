@@ -41,10 +41,12 @@ class MyClass
 
     /**
      * @param string|array|object $foo
+     * @param string|array|object|null $bar
      */
-    public function __construct($foo)
+    public function __construct($foo, $bar = null)
     {
         $this->foo = $foo;
+        $this->bar = $bar;
     }
 
     /**
@@ -140,8 +142,7 @@ class MyClass
         $foo = $input->{'foo'};
         $bar = isset($input->{'bar'}) ? ((is_array($input->{'bar'}) || is_object($input->{'bar'})) ? $input->{'bar'} : (((is_string($input->{'bar'})) ? $input->{'bar'} : (null)))) : null;
 
-        $obj = new self($foo);
-        $obj->bar = $bar;
+        $obj = new self($foo, $bar);
         return $obj;
     }
 

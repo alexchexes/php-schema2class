@@ -66,8 +66,8 @@ class MyClassFooAlternative2
 
         $bar = $input->{'bar'};
 
-        $obj = new self($bar);
 
+        $obj = new self($bar);
         return $obj;
     }
 

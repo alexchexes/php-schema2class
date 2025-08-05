@@ -41,6 +41,14 @@ class Record
     private ?array $dataArray = null;
 
     /**
+     * @param Phone[]|null $dataArray
+     */
+    public function __construct(?array $dataArray = null)
+    {
+        $this->dataArray = $dataArray;
+    }
+
+    /**
      * @return Phone[]|null
      */
     public function getDataArray(): ?array
@@ -90,13 +98,13 @@ class Record
             static::validateInput($input);
         }
 
+
         $dataArray = isset($input->{'dataArray'}) ? array_map(
             fn(array|object $i): Phone => Phone::fromInput($i, $validate),
             $input->{'dataArray'}
         ) : null;
 
-        $obj = new self();
-        $obj->dataArray = $dataArray;
+        $obj = new self($dataArray);
         return $obj;
     }
 

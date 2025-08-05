@@ -37,6 +37,15 @@ class MyClass
     private array|object|null $b = null;
 
     /**
+     * @param string[]|null $a
+     */
+    public function __construct(?array $a = null, array|object|null $b = null)
+    {
+        $this->a = $a;
+        $this->b = $b;
+    }
+
+    /**
      * @return string[]|null
      */
     public function getA(): ?array
@@ -107,12 +116,11 @@ class MyClass
             static::validateInput($input);
         }
 
+
         $a = isset($input->{'a'}) ? $input->{'a'} : null;
         $b = isset($input->{'b'}) ? $input->{'b'} : null;
 
-        $obj = new self();
-        $obj->a = $a;
-        $obj->b = $b;
+        $obj = new self($a, $b);
         return $obj;
     }
 

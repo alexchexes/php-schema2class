@@ -50,6 +50,11 @@ class GenericPet
 
     private ?bool $hasFur = null;
 
+    public function __construct(?bool $hasFur = null)
+    {
+        $this->hasFur = $hasFur;
+    }
+
     /**
      * Whether the animal has fur (true), doesn't (false), or it's unknown or varies (null)
      */
@@ -109,14 +114,14 @@ class GenericPet
         }
 
         $__providedOptionals = [];
+
         $hasFur = null;
         if (property_exists($input, 'hasFur')) {
             $hasFur = ($input->{'hasFur'} !== null ? $input->{'hasFur'} : null);
             $__providedOptionals['hasFur'] = true;
         }
 
-        $obj = new self();
-        $obj->hasFur = $hasFur;
+        $obj = new self($hasFur);
         $obj->_providedOptionals = $__providedOptionals;
         return $obj;
     }

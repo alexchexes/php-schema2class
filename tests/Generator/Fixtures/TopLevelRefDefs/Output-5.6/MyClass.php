@@ -49,6 +49,16 @@ class MyClass
     private $encoded = null;
 
     /**
+     * @param array|object|null $foo
+     * @param array|object|null $encoded
+     */
+    public function __construct($foo = null, $encoded = null)
+    {
+        $this->foo = $foo;
+        $this->encoded = $encoded;
+    }
+
+    /**
      * @return array|object|null
      */
     public function getFoo()
@@ -131,12 +141,11 @@ class MyClass
             static::validateInput($input);
         }
 
+
         $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
         $encoded = isset($input->{'encoded'}) ? $input->{'encoded'} : null;
 
-        $obj = new self();
-        $obj->foo = $foo;
-        $obj->encoded = $encoded;
+        $obj = new self($foo, $encoded);
         return $obj;
     }
 

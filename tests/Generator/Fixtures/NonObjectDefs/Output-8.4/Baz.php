@@ -58,6 +58,11 @@ class Baz
 
     private Foo|Bar|null $grox = null;
 
+    public function __construct(Bar|Foo|null $grox = null)
+    {
+        $this->grox = $grox;
+    }
+
     public function getGrox(): Bar|Foo|null
     {
         return $this->grox;
@@ -94,14 +99,14 @@ class Baz
             static::validateInput($input);
         }
 
+
         $grox = isset($input->{'grox'}) ? match (true) {
             Foo::validateInput($input->{'grox'}, true) => Foo::fromInput($input->{'grox'}, $validate),
             Bar::validateInput($input->{'grox'}, true) => Bar::fromInput($input->{'grox'}, $validate),
             default => null,
         } : null;
 
-        $obj = new self();
-        $obj->grox = $grox;
+        $obj = new self($grox);
         return $obj;
     }
 

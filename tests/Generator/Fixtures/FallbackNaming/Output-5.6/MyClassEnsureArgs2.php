@@ -153,8 +153,8 @@ class MyClassEnsureArgs2
         $city = $input->{'city'};
         $street = $input->{'street'};
 
-        $obj = new self($city, $street);
 
+        $obj = new self($city, $street);
         return $obj;
     }
 

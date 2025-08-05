@@ -32,9 +32,10 @@ class MyClass
      */
     private ?int $bar = null;
 
-    public function __construct(string $foo)
+    public function __construct(string $foo, ?int $bar = null)
     {
         $this->foo = $foo;
+        $this->bar = $bar;
     }
 
     /**
@@ -111,8 +112,7 @@ class MyClass
         $foo = $input->{'foo'};
         $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
 
-        $obj = new self($foo);
-        $obj->bar = $bar;
+        $obj = new self($foo, $bar);
         return $obj;
     }
 

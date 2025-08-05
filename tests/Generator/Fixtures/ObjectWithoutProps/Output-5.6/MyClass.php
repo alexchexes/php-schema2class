@@ -35,10 +35,12 @@ class MyClass
 
     /**
      * @param array|object $bar
+     * @param array|object|null $foo
      */
-    public function __construct($bar)
+    public function __construct($bar, $foo = null)
     {
         $this->bar = $bar;
+        $this->foo = $foo;
     }
 
     /**
@@ -113,11 +115,10 @@ class MyClass
             static::validateInput($input);
         }
 
-        $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
         $bar = $input->{'bar'};
+        $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
 
-        $obj = new self($bar);
-        $obj->foo = $foo;
+        $obj = new self($bar, $foo);
         return $obj;
     }
 

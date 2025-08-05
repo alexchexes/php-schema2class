@@ -58,6 +58,11 @@ class BarTest
 
     private FooTest|MoiKlass|FooTest_1|null $exampleProp = null;
 
+    public function __construct(FooTest|FooTest_1|MoiKlass|null $exampleProp = null)
+    {
+        $this->exampleProp = $exampleProp;
+    }
+
     public function getExampleProp(): FooTest|FooTest_1|MoiKlass|null
     {
         return $this->exampleProp;
@@ -94,6 +99,7 @@ class BarTest
             static::validateInput($input);
         }
 
+
         $exampleProp = isset($input->{'exampleProp'}) ? match (true) {
             FooTest::validateInput($input->{'exampleProp'}, true) => FooTest::fromInput($input->{'exampleProp'}, $validate),
             MoiKlass::validateInput($input->{'exampleProp'}, true) => MoiKlass::fromInput($input->{'exampleProp'}, $validate),
@@ -101,8 +107,7 @@ class BarTest
             default => null,
         } : null;
 
-        $obj = new self();
-        $obj->exampleProp = $exampleProp;
+        $obj = new self($exampleProp);
         return $obj;
     }
 

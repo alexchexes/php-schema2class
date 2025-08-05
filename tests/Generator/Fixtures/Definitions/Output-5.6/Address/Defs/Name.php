@@ -24,6 +24,14 @@ class Name
     private $first = null;
 
     /**
+     * @param string|null $first
+     */
+    public function __construct($first = null)
+    {
+        $this->first = $first;
+    }
+
+    /**
      * @return string|null
      */
     public function getFirst()
@@ -84,10 +92,10 @@ class Name
             static::validateInput($input);
         }
 
+
         $first = isset($input->{'first'}) ? $input->{'first'} : null;
 
-        $obj = new self();
-        $obj->first = $first;
+        $obj = new self($first);
         return $obj;
     }
 

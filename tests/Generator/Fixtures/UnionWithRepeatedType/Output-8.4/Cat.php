@@ -61,6 +61,11 @@ class Cat
 
     private null|bool|string|int|float $hasFur = null;
 
+    public function __construct(bool|int|float|string|null $hasFur = null)
+    {
+        $this->hasFur = $hasFur;
+    }
+
     public function getHasFur(): bool|int|float|string|null
     {
         return $this->hasFur;
@@ -100,6 +105,7 @@ class Cat
         }
 
         $__providedOptionals = [];
+
         $hasFur = null;
         if (property_exists($input, 'hasFur')) {
             $hasFur = ($input->{'hasFur'} !== null ? match (true) {
@@ -120,8 +126,7 @@ class Cat
             $__providedOptionals['hasFur'] = true;
         }
 
-        $obj = new self();
-        $obj->hasFur = $hasFur;
+        $obj = new self($hasFur);
         $obj->_providedOptionals = $__providedOptionals;
         return $obj;
     }

@@ -22,6 +22,11 @@ class MoiKlass
 
     private ?string $c = null;
 
+    public function __construct(?string $c = null)
+    {
+        $this->c = $c;
+    }
+
     public function getC(): ?string
     {
         return $this->c ?? null;
@@ -58,10 +63,10 @@ class MoiKlass
             static::validateInput($input);
         }
 
+
         $c = isset($input->{'c'}) ? $input->{'c'} : null;
 
-        $obj = new self();
-        $obj->c = $c;
+        $obj = new self($c);
         return $obj;
     }
 

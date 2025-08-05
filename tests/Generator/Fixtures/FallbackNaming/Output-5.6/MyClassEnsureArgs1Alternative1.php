@@ -38,6 +38,14 @@ class MyClassEnsureArgs1Alternative1
     private $type = null;
 
     /**
+     * @param 'invoice'|null $type
+     */
+    public function __construct(string $type = null)
+    {
+        $this->type = $type;
+    }
+
+    /**
      * @return 'invoice'|null
      */
     public function getType()
@@ -112,10 +120,10 @@ class MyClassEnsureArgs1Alternative1
             static::validateInput($input);
         }
 
+
         $type = isset($input->{'type'}) ? $input->{'type'} : null;
 
-        $obj = new self();
-        $obj->type = $type;
+        $obj = new self($type);
         return $obj;
     }
 

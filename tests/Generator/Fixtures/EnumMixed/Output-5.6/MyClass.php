@@ -146,8 +146,9 @@ class MyClass
      * @param int $contradiction
      * @param 1|2|'one' $contradiction2
      * @param 'red'|'green'|null $nullable
+     * @param 'red'|'green'|null $optionalNullable
      */
-    public function __construct($foo, $bar, $baz, $contradiction, $contradiction2, string $nullable)
+    public function __construct($foo, $bar, $baz, $contradiction, $contradiction2, string $nullable, string $optionalNullable = null)
     {
         $this->foo = $foo;
         $this->bar = $bar;
@@ -155,6 +156,7 @@ class MyClass
         $this->contradiction = $contradiction;
         $this->contradiction2 = $contradiction2;
         $this->nullable = $nullable;
+        $this->optionalNullable = $optionalNullable;
     }
 
     /**
@@ -407,8 +409,15 @@ class MyClass
             $__providedOptionals['optionalNullable'] = true;
         }
 
-        $obj = new self($foo, $bar, $baz, $contradiction, $contradiction2, $nullable);
-        $obj->optionalNullable = $optionalNullable;
+        $obj = new self(
+            $foo,
+            $bar,
+            $baz,
+            $contradiction,
+            $contradiction2,
+            $nullable,
+            $optionalNullable
+        );
         $obj->_providedOptionals = $__providedOptionals;
         return $obj;
     }

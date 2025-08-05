@@ -22,6 +22,11 @@ class MyClassTestObj
 
     private ?string $a = null;
 
+    public function __construct(?string $a = null)
+    {
+        $this->a = $a;
+    }
+
     public function getA(): ?string
     {
         return $this->a ?? null;
@@ -64,10 +69,10 @@ class MyClassTestObj
             static::validateInput($input);
         }
 
+
         $a = isset($input->{'a'}) ? $input->{'a'} : null;
 
-        $obj = new self();
-        $obj->a = $a;
+        $obj = new self($a);
         return $obj;
     }
 

@@ -140,8 +140,6 @@ class FromInputMethodFactory
             $this->bodySchemaPropertyVars(),
             // create an instance of the current class
             $this->bodyCreateNewInstance(),
-            // assign variables to that instance properties
-            $this->bodyAssignOptionalsToInstance(),
             // assign the `_providedOptionals` if needed
             $this->bodyAssignProvidedOptionalsProperty(),
             // return the instance
@@ -322,12 +320,17 @@ class FromInputMethodFactory
      */
     private function bodySchemaPropertyVars(): string
     {
-        return $this->schemaProperties->generateInputToTypeConversionCode() . "\n\n";
+        $requiredProperties = $this->schemaProperties->filter(PropertyCollectionFilterFactory::onlyRequired());
+        $optionalProperties = $this->schemaProperties->filter(PropertyCollectionFilterFactory::onlyOptional());
+        $requiredBlock = $requiredProperties->generateInputToTypeConversionCode();
+        $optionalBlock = $optionalProperties->generateInputToTypeConversionCode();
+
+        return $requiredBlock . "\n" . $optionalBlock . "\n\n";
     }
 
     /**
      * Generates an expression that creates a new instance of the current class,
-     * passing all necessary arguments to the constructor in the correct order:
+     * passing all arguments to the constructor in the correct order:
      * ```
      *     $obj = new self($city, $street, $country);
      * ```
@@ -336,43 +339,21 @@ class FromInputMethodFactory
     {
         $OBJ_VAR_NAME = self::OBJ_VAR_NAME;
         $requiredProperties = $this->schemaProperties->filter(PropertyCollectionFilterFactory::onlyRequired());
+        $optionalProperties = $this->schemaProperties->filter(PropertyCollectionFilterFactory::onlyOptional());
         $constructorParams = [];
 
-        foreach ($requiredProperties as $requiredProperty) {
+        foreach ([...$requiredProperties, ...$optionalProperties] as $requiredProperty) {
             $constructorParams[] = '$' . $requiredProperty->varName();
         }
 
         $paramsStr = join(", ", $constructorParams);
+        if (mb_strlen($paramsStr) > 70) {
+            $paramsStr = "\n    " . join(",\n    ", $constructorParams) . "\n";
+        }
+
         $createNewInstance = "\${$OBJ_VAR_NAME} = new self({$paramsStr});\n";
 
         return $createNewInstance;
-    }
-
-    /**
-     * Generates set of assignments of local variables holding schema property values
-     * to according properties of the created instance of the class:
-     * ```
-     *     $obj->bar = $bar;
-     *     $obj->baz = $baz;
-     *     $obj->qux = $qux;
-     * ```
-     */
-    private function bodyAssignOptionalsToInstance(): string
-    {
-        $OBJ_VAR_NAME = self::OBJ_VAR_NAME;
-
-        $optionalProperties = $this->schemaProperties->filter(PropertyCollectionFilterFactory::onlyOptional());
-        $assignments = [];
-
-        foreach ($optionalProperties as $optionalProperty) {
-            $propName = $optionalProperty->propName();
-            $varName = $optionalProperty->varName();
-            $assignments[] = "\${$OBJ_VAR_NAME}->{$propName} = \${$varName};";
-        }
-
-        $assignOptionalsToInstance = join("\n", $assignments) . "\n";
-
-        return $assignOptionalsToInstance;
     }
 
     /**

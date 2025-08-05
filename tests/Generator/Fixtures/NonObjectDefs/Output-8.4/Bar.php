@@ -33,6 +33,14 @@ class Bar
     private ?array $b = null;
 
     /**
+     * @param string[]|null $b
+     */
+    public function __construct(?array $b = null)
+    {
+        $this->b = $b;
+    }
+
+    /**
      * @return string[]|null
      */
     public function getB(): ?array
@@ -82,10 +90,10 @@ class Bar
             static::validateInput($input);
         }
 
+
         $b = isset($input->{'b'}) ? $input->{'b'} : null;
 
-        $obj = new self();
-        $obj->b = $b;
+        $obj = new self($b);
         return $obj;
     }
 

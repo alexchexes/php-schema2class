@@ -29,9 +29,10 @@ class MyClass
 
     private array|object $bar;
 
-    public function __construct(array|object $bar)
+    public function __construct(array|object $bar, array|object|null $foo = null)
     {
         $this->bar = $bar;
+        $this->foo = $foo;
     }
 
     public function getFoo(): array|object|null
@@ -83,11 +84,10 @@ class MyClass
             static::validateInput($input);
         }
 
-        $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
         $bar = $input->{'bar'};
+        $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
 
-        $obj = new self($bar);
-        $obj->foo = $foo;
+        $obj = new self($bar, $foo);
         return $obj;
     }
 

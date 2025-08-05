@@ -53,10 +53,12 @@ class Foo
 
     /**
      * @param 'red'|'green' $color
+     * @param 'small'|'big'|null $size
      */
-    public function __construct(string $color)
+    public function __construct(string $color, string $size = null)
     {
         $this->color = $color;
+        $this->size = $size;
     }
 
     /**
@@ -152,8 +154,7 @@ class Foo
         $color = $input->{'color'};
         $size = isset($input->{'size'}) ? $input->{'size'} : null;
 
-        $obj = new self($color);
-        $obj->size = $size;
+        $obj = new self($color, $size);
         return $obj;
     }
 

@@ -24,6 +24,14 @@ class Baz
     private $name = null;
 
     /**
+     * @param string|null $name
+     */
+    public function __construct($name = null)
+    {
+        $this->name = $name;
+    }
+
+    /**
      * @return string|null
      */
     public function getName()
@@ -82,10 +90,10 @@ class Baz
             static::validateInput($input);
         }
 
+
         $name = isset($input->{'name'}) ? $input->{'name'} : null;
 
-        $obj = new self();
-        $obj->name = $name;
+        $obj = new self($name);
         return $obj;
     }
 

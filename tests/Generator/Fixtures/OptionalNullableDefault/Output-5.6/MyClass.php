@@ -187,12 +187,24 @@ class MyClass
      * @param string $foo
      * @param string|null $quux
      * @param string $thud
+     * @param string|null $bar
+     * @param string|null $baz
+     * @param string|null $qux
+     * @param string|null $xyyz
+     * @param MyClassGrox|null $grox
+     * @param MyClassGooks|null $gooks
      */
-    public function __construct($foo, $quux, $thud)
+    public function __construct($foo, $quux, $thud, $bar = null, $baz = null, $qux = null, $xyyz = null, MyClassGrox $grox = null, MyClassGooks $gooks = null)
     {
         $this->foo = $foo;
         $this->quux = $quux;
         $this->thud = $thud;
+        $this->bar = $bar;
+        $this->baz = $baz;
+        $this->qux = $qux;
+        $this->xyyz = $xyyz;
+        $this->grox = $grox;
+        $this->gooks = $gooks;
     }
 
     /**
@@ -585,6 +597,8 @@ class MyClass
 
         $__providedOptionals = [];
         $foo = $input->{'foo'};
+        $quux = $input->{'quux'};
+        $thud = $input->{'thud'};
         $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
         $baz = null;
         if (property_exists($input, 'baz')) {
@@ -596,9 +610,7 @@ class MyClass
             $qux = ($input->{'qux'} !== null ? $input->{'qux'} : null);
             $__providedOptionals['qux'] = true;
         }
-        $quux = $input->{'quux'};
         $xyyz = isset($input->{'xyyz'}) ? $input->{'xyyz'} : null;
-        $thud = $input->{'thud'};
         $grox = null;
         if (property_exists($input, 'grox')) {
             $grox = ($input->{'grox'} !== null ? MyClassGrox::fromInput($input->{'grox'}, $validate, $materializeDefaults) : null);
@@ -610,13 +622,7 @@ class MyClass
             $__providedOptionals['gooks'] = true;
         }
 
-        $obj = new self($foo, $quux, $thud);
-        $obj->bar = $bar;
-        $obj->baz = $baz;
-        $obj->qux = $qux;
-        $obj->xyyz = $xyyz;
-        $obj->grox = $grox;
-        $obj->gooks = $gooks;
+        $obj = new self($foo, $quux, $thud, $bar, $baz, $qux, $xyyz, $grox, $gooks);
         $obj->_providedOptionals = $__providedOptionals;
         return $obj;
     }

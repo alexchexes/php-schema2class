@@ -55,6 +55,12 @@ class Pets
 
     private ?Cat $cat = null;
 
+    public function __construct(?GenericPet $pet = null, ?Cat $cat = null)
+    {
+        $this->pet = $pet;
+        $this->cat = $cat;
+    }
+
     public function getPet(): ?GenericPet
     {
         return $this->pet ?? null;
@@ -112,12 +118,11 @@ class Pets
             static::validateInput($input);
         }
 
+
         $pet = isset($input->{'pet'}) ? GenericPet::fromInput($input->{'pet'}, $validate) : null;
         $cat = isset($input->{'cat'}) ? Cat::fromInput($input->{'cat'}, $validate) : null;
 
-        $obj = new self();
-        $obj->pet = $pet;
-        $obj->cat = $cat;
+        $obj = new self($pet, $cat);
         return $obj;
     }
 

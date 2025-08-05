@@ -41,6 +41,15 @@ class MyClass
      */
     private ?MyClass_2 $_2 = null;
 
+    /**
+     * @param MyClass_2|null $_2
+     */
+    public function __construct(?string $_1 = null, ?MyClass_2 $_2 = null)
+    {
+        $this->_1 = $_1;
+        $this->_2 = $_2;
+    }
+
     public function get_1(): ?string
     {
         return $this->_1 ?? null;
@@ -104,12 +113,11 @@ class MyClass
             static::validateInput($input);
         }
 
+
         $_1 = isset($input->{'1'}) ? $input->{'1'} : null;
         $_2 = isset($input->{'2'}) ? MyClass_2::fromInput($input->{'2'}, $validate) : null;
 
-        $obj = new self();
-        $obj->_1 = $_1;
-        $obj->_2 = $_2;
+        $obj = new self($_1, $_2);
         return $obj;
     }
 

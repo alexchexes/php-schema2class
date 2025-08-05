@@ -89,6 +89,11 @@ class MyClassQuxObjNest
 
     private array|object|null $a = null;
 
+    public function __construct(array|object|null $a = null)
+    {
+        $this->a = $a;
+    }
+
     public function getA(): array|object|null
     {
         return $this->a;
@@ -139,10 +144,10 @@ class MyClassQuxObjNest
             static::validateInput($input);
         }
 
+
         $a = isset($input->{'a'}) ? $input->{'a'} : null;
 
-        $obj = new self();
-        $obj->a = $a;
+        $obj = new self($a);
         return $obj;
     }
 

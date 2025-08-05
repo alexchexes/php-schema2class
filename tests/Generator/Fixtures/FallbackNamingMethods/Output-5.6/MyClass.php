@@ -39,6 +39,18 @@ class MyClass
     private $_outbound = null;
 
     /**
+     * @param string|null $bound
+     * @param string|null $outbound
+     * @param string|null $_outbound
+     */
+    public function __construct($bound = null, $outbound = null, $_outbound = null)
+    {
+        $this->bound = $bound;
+        $this->outbound = $outbound;
+        $this->_outbound = $_outbound;
+    }
+
+    /**
      * @return string|null
      */
     public function getBound()
@@ -179,14 +191,12 @@ class MyClass
             static::validateInput($input);
         }
 
+
         $bound = isset($input->{'bound'}) ? $input->{'bound'} : null;
         $outbound = isset($input->{'outbound'}) ? $input->{'outbound'} : null;
         $_outbound = isset($input->{'_outbound'}) ? $input->{'_outbound'} : null;
 
-        $obj = new self();
-        $obj->bound = $bound;
-        $obj->outbound = $outbound;
-        $obj->_outbound = $_outbound;
+        $obj = new self($bound, $outbound, $_outbound);
         return $obj;
     }
 

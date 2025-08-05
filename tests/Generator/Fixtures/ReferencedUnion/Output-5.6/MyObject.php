@@ -113,8 +113,8 @@ class MyObject
 
         $foo = $input->{'foo'};
 
-        $obj = new self($foo);
 
+        $obj = new self($foo);
         return $obj;
     }
 

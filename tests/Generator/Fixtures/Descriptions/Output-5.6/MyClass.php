@@ -49,6 +49,16 @@ class MyClass
     private $bar = null;
 
     /**
+     * @param string|null $foo
+     * @param Baz|null $bar
+     */
+    public function __construct($foo = null, Baz $bar = null)
+    {
+        $this->foo = $foo;
+        $this->bar = $bar;
+    }
+
+    /**
      * Description for the `foo` property
      *
      * @return string|null
@@ -143,12 +153,11 @@ class MyClass
             static::validateInput($input);
         }
 
+
         $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
         $bar = isset($input->{'bar'}) ? Baz::fromInput($input->{'bar'}, $validate) : null;
 
-        $obj = new self();
-        $obj->foo = $foo;
-        $obj->bar = $bar;
+        $obj = new self($foo, $bar);
         return $obj;
     }
 

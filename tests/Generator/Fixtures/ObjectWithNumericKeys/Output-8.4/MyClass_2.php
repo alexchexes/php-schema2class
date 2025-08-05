@@ -32,6 +32,13 @@ class MyClass_2
 
     private ?string $_3 = null;
 
+    public function __construct(?string $_1 = null, ?string $_2 = null, ?string $_3 = null)
+    {
+        $this->_1 = $_1;
+        $this->_2 = $_2;
+        $this->_3 = $_3;
+    }
+
     public function get_1(): ?string
     {
         return $this->_1 ?? null;
@@ -110,14 +117,12 @@ class MyClass_2
             static::validateInput($input);
         }
 
+
         $_1 = isset($input->{'1'}) ? $input->{'1'} : null;
         $_2 = isset($input->{'2'}) ? $input->{'2'} : null;
         $_3 = isset($input->{'3'}) ? $input->{'3'} : null;
 
-        $obj = new self();
-        $obj->_1 = $_1;
-        $obj->_2 = $_2;
-        $obj->_3 = $_3;
+        $obj = new self($_1, $_2, $_3);
         return $obj;
     }
 

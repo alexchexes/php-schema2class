@@ -40,6 +40,14 @@ class MyClassEnsureArgs1Alternative1
     private ?MyClassEnsureArgs1Alternative1Type $type = null;
 
     /**
+     * @param MyClassEnsureArgs1Alternative1Type|null $type
+     */
+    public function __construct(?MyClassEnsureArgs1Alternative1Type $type = null)
+    {
+        $this->type = $type;
+    }
+
+    /**
      * @return MyClassEnsureArgs1Alternative1Type|null
      */
     public function getType(): ?MyClassEnsureArgs1Alternative1Type
@@ -95,10 +103,10 @@ class MyClassEnsureArgs1Alternative1
             static::validateInput($input);
         }
 
+
         $type = isset($input->{'type'}) ? MyClassEnsureArgs1Alternative1Type::from($input->{'type'}) : null;
 
-        $obj = new self();
-        $obj->type = $type;
+        $obj = new self($type);
         return $obj;
     }
 

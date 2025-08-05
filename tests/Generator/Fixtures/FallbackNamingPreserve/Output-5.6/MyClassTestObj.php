@@ -24,6 +24,14 @@ class MyClassTestObj
     private $a = null;
 
     /**
+     * @param string|null $a
+     */
+    public function __construct($a = null)
+    {
+        $this->a = $a;
+    }
+
+    /**
      * @return string|null
      */
     public function getA()
@@ -84,10 +92,10 @@ class MyClassTestObj
             static::validateInput($input);
         }
 
+
         $a = isset($input->{'a'}) ? $input->{'a'} : null;
 
-        $obj = new self();
-        $obj->a = $a;
+        $obj = new self($a);
         return $obj;
     }
 

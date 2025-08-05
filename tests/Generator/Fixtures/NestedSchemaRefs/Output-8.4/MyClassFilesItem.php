@@ -35,6 +35,12 @@ class MyClassFilesItem
 
     private ?OptionsObject $options = null;
 
+    public function __construct(?string $_input = null, ?OptionsObject $options = null)
+    {
+        $this->input = $_input;
+        $this->options = $options;
+    }
+
     public function getInput(): ?string
     {
         return $this->input ?? null;
@@ -92,12 +98,11 @@ class MyClassFilesItem
             static::validateInput($input);
         }
 
+
         $_input = isset($input->{'input'}) ? $input->{'input'} : null;
         $options = isset($input->{'options'}) ? OptionsObject::fromInput($input->{'options'}, $validate) : null;
 
-        $obj = new self();
-        $obj->input = $_input;
-        $obj->options = $options;
+        $obj = new self($_input, $options);
         return $obj;
     }
 

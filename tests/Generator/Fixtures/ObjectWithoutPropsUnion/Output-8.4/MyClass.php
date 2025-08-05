@@ -35,9 +35,10 @@ class MyClass
 
     private string|array|object|null $bar = null;
 
-    public function __construct(string|array|object $foo)
+    public function __construct(string|array|object $foo, string|array|object|null $bar = null)
     {
         $this->foo = $foo;
+        $this->bar = $bar;
     }
 
     public function getFoo(): string|array|object
@@ -100,8 +101,7 @@ class MyClass
             default => null,
         } : null;
 
-        $obj = new self($foo);
-        $obj->bar = $bar;
+        $obj = new self($foo, $bar);
         return $obj;
     }
 

@@ -57,6 +57,14 @@ class MyClass
     private $foo = null;
 
     /**
+     * @param FooItem[]|null $foo
+     */
+    public function __construct(array $foo = null)
+    {
+        $this->foo = $foo;
+    }
+
+    /**
      * @return FooItem[]|null
      */
     public function getFoo()
@@ -131,13 +139,13 @@ class MyClass
             static::validateInput($input);
         }
 
+
         $foo = isset($input->{'foo'}) ? array_map(
             fn($i) => FooItem::fromInput($i, $validate, $materializeDefaults),
             $input->{'foo'}
         ) : null;
 
-        $obj = new self();
-        $obj->foo = $foo;
+        $obj = new self($foo);
         return $obj;
     }
 

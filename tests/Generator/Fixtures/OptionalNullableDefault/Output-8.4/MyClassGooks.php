@@ -34,6 +34,12 @@ class MyClassGooks
 
     private int|float|null $b = null;
 
+    public function __construct(?string $a = null, int|float|null $b = null)
+    {
+        $this->a = $a;
+        $this->b = $b;
+    }
+
     public function getA(): ?string
     {
         return $this->a ?? null;
@@ -91,12 +97,11 @@ class MyClassGooks
             static::validateInput($input);
         }
 
+
         $a = isset($input->{'a'}) ? $input->{'a'} : null;
         $b = isset($input->{'b'}) ? $input->{'b'} : null;
 
-        $obj = new self();
-        $obj->a = $a;
-        $obj->b = $b;
+        $obj = new self($a, $b);
         return $obj;
     }
 

@@ -50,6 +50,13 @@ class Baz
 
     private ?BarTest $c = null;
 
+    public function __construct(?FooTest $a = null, ?FooTest $b = null, ?BarTest $c = null)
+    {
+        $this->a = $a;
+        $this->b = $b;
+        $this->c = $c;
+    }
+
     public function getA(): ?FooTest
     {
         return $this->a ?? null;
@@ -128,14 +135,12 @@ class Baz
             static::validateInput($input);
         }
 
+
         $a = isset($input->{'a'}) ? FooTest::fromInput($input->{'a'}, $validate) : null;
         $b = isset($input->{'b'}) ? FooTest::fromInput($input->{'b'}, $validate) : null;
         $c = isset($input->{'c'}) ? BarTest::fromInput($input->{'c'}, $validate) : null;
 
-        $obj = new self();
-        $obj->a = $a;
-        $obj->b = $b;
-        $obj->c = $c;
+        $obj = new self($a, $b, $c);
         return $obj;
     }
 

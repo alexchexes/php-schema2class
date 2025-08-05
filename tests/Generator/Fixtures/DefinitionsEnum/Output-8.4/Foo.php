@@ -47,9 +47,10 @@ class Foo
 
     private ?Size $size = null;
 
-    public function __construct(Color $color)
+    public function __construct(Color $color, ?Size $size = null)
     {
         $this->color = $color;
+        $this->size = $size;
     }
 
     public function getColor(): Color
@@ -104,8 +105,7 @@ class Foo
         $color = Color::from($input->{'color'});
         $size = isset($input->{'size'}) ? Size::from($input->{'size'}) : null;
 
-        $obj = new self($color);
-        $obj->size = $size;
+        $obj = new self($color, $size);
         return $obj;
     }
 

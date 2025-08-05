@@ -24,6 +24,14 @@ class MoiKlass
     private $c = null;
 
     /**
+     * @param string|null $c
+     */
+    public function __construct($c = null)
+    {
+        $this->c = $c;
+    }
+
+    /**
      * @return string|null
      */
     public function getC()
@@ -84,10 +92,10 @@ class MoiKlass
             static::validateInput($input);
         }
 
+
         $c = isset($input->{'c'}) ? $input->{'c'} : null;
 
-        $obj = new self();
-        $obj->c = $c;
+        $obj = new self($c);
         return $obj;
     }
 

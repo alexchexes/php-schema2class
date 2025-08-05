@@ -29,6 +29,14 @@ class MyClass
     private $foo = null;
 
     /**
+     * @param \Helmich\Schema2Class\Example\CustomerAddress[]|null $foo
+     */
+    public function __construct(array $foo = null)
+    {
+        $this->foo = $foo;
+    }
+
+    /**
      * @return \Helmich\Schema2Class\Example\CustomerAddress[]|null
      */
     public function getFoo()
@@ -89,13 +97,13 @@ class MyClass
             static::validateInput($input);
         }
 
+
         $foo = isset($input->{'foo'}) ? array_map(
             fn($i) => \Helmich\Schema2Class\Example\CustomerAddress::fromInput($i, $validate),
             $input->{'foo'}
         ) : null;
 
-        $obj = new self();
-        $obj->foo = $foo;
+        $obj = new self($foo);
         return $obj;
     }
 

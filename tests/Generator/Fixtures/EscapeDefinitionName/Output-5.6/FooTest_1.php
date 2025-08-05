@@ -24,6 +24,14 @@ class FooTest_1
     private $b = null;
 
     /**
+     * @param string|null $b
+     */
+    public function __construct($b = null)
+    {
+        $this->b = $b;
+    }
+
+    /**
      * @return string|null
      */
     public function getB()
@@ -84,10 +92,10 @@ class FooTest_1
             static::validateInput($input);
         }
 
+
         $b = isset($input->{'b'}) ? $input->{'b'} : null;
 
-        $obj = new self();
-        $obj->b = $b;
+        $obj = new self($b);
         return $obj;
     }
 

@@ -130,6 +130,18 @@ class MyClass
 
     private ?string $zyx = null;
 
+    public function __construct(?int $foo = null, ?string $bar = null, ?int $baz = null, ?string $qux = null, ?string $thud = null, ?string $grox = null, int|float|string|null $qwert = null, ?string $zyx = null)
+    {
+        $this->foo = $foo;
+        $this->bar = $bar;
+        $this->baz = $baz;
+        $this->qux = $qux;
+        $this->thud = $thud;
+        $this->grox = $grox;
+        $this->qwert = $qwert;
+        $this->zyx = $zyx;
+    }
+
     public function getFoo(): ?int
     {
         return $this->foo ?? null;
@@ -356,6 +368,7 @@ class MyClass
         }
 
         $__providedOptionals = [];
+
         $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
         $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
         $baz = null;
@@ -373,15 +386,7 @@ class MyClass
         } : null;
         $zyx = isset($input->{'zyx'}) ? $input->{'zyx'} : null;
 
-        $obj = new self();
-        $obj->foo = $foo;
-        $obj->bar = $bar;
-        $obj->baz = $baz;
-        $obj->qux = $qux;
-        $obj->thud = $thud;
-        $obj->grox = $grox;
-        $obj->qwert = $qwert;
-        $obj->zyx = $zyx;
+        $obj = new self($foo, $bar, $baz, $qux, $thud, $grox, $qwert, $zyx);
         $obj->_providedOptionals = $__providedOptionals;
         return $obj;
     }

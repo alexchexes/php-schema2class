@@ -105,8 +105,8 @@ class MyGenericStringNumber
 
         $field = MyGenericStringNumberField::fromInput($input->{'field'}, $validate);
 
-        $obj = new self($field);
 
+        $obj = new self($field);
         return $obj;
     }
 

@@ -24,6 +24,14 @@ class BarTest
     private $bar = null;
 
     /**
+     * @param string|null $bar
+     */
+    public function __construct($bar = null)
+    {
+        $this->bar = $bar;
+    }
+
+    /**
      * @return string|null
      */
     public function getBar()
@@ -84,10 +92,10 @@ class BarTest
             static::validateInput($input);
         }
 
+
         $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
 
-        $obj = new self();
-        $obj->bar = $bar;
+        $obj = new self($bar);
         return $obj;
     }
 

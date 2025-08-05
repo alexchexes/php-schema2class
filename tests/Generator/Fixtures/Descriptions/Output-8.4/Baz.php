@@ -27,6 +27,11 @@ class Baz
 
     private ?string $name = null;
 
+    public function __construct(?string $name = null)
+    {
+        $this->name = $name;
+    }
+
     /**
      * Description of the `name` property in `Baz` definition
      */
@@ -69,10 +74,10 @@ class Baz
             static::validateInput($input);
         }
 
+
         $name = isset($input->{'name'}) ? $input->{'name'} : null;
 
-        $obj = new self();
-        $obj->name = $name;
+        $obj = new self($name);
         return $obj;
     }
 

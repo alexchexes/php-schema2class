@@ -35,6 +35,16 @@ class MyClass
     private $params = null;
 
     /**
+     * @param string|null $name
+     * @param mixed[]|null $params
+     */
+    public function __construct($name = null, array $params = null)
+    {
+        $this->name = $name;
+        $this->params = $params;
+    }
+
+    /**
      * @return string|null
      */
     public function getName()
@@ -126,12 +136,11 @@ class MyClass
             static::validateInput($input);
         }
 
+
         $name = isset($input->{'name'}) ? $input->{'name'} : null;
         $params = isset($input->{'params'}) ? (array)$input->{'params'} : null;
 
-        $obj = new self();
-        $obj->name = $name;
-        $obj->params = $params;
+        $obj = new self($name, $params);
         return $obj;
     }
 

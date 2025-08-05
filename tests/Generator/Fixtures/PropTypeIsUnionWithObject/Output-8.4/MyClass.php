@@ -86,8 +86,8 @@ class MyClass
             default => throw new \InvalidArgumentException("could not build property 'foo' from JSON"),
         };
 
-        $obj = new self($foo);
 
+        $obj = new self($foo);
         return $obj;
     }
 

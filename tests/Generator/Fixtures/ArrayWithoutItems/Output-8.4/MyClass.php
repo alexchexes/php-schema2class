@@ -108,12 +108,17 @@ class MyClass
 
     private array|string|object|null $i = null;
 
-    public function __construct(array $a, string|array $b, ?array $c, string|array|null $d)
+    public function __construct(array $a, string|array $b, ?array $c, string|array|null $d, ?array $e = null, string|array|null $f = null, ?array $g = null, string|array|null $h = null, string|array|object|null $i = null)
     {
         $this->a = $a;
         $this->b = $b;
         $this->c = $c;
         $this->d = $d;
+        $this->e = $e;
+        $this->f = $f;
+        $this->g = $g;
+        $this->h = $h;
+        $this->i = $i;
     }
 
     public function getA(): array
@@ -338,12 +343,7 @@ class MyClass
             $__providedOptionals['i'] = true;
         }
 
-        $obj = new self($a, $b, $c, $d);
-        $obj->e = $e;
-        $obj->f = $f;
-        $obj->g = $g;
-        $obj->h = $h;
-        $obj->i = $i;
+        $obj = new self($a, $b, $c, $d, $e, $f, $g, $h, $i);
         $obj->_providedOptionals = $__providedOptionals;
         return $obj;
     }
