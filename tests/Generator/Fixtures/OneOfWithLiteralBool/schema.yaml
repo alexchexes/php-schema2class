@@ -1,0 +1,7 @@
+properties:
+  foo:
+    oneOf:
+      - type: boolean
+        enum: [true]
+      - type: string
+        enum: ['red']
