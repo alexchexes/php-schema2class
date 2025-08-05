@@ -75,14 +75,14 @@ class MyClass
     private array $_providedOptionals = [];
 
     /**
-     * @var '3'|'4'|''
+     * @var MyClassInferString
      */
-    private string $inferString;
+    private MyClassInferString $inferString;
 
     /**
      * @var 3|4|5
      */
-    private int|float $inferInt;
+    private int $inferInt;
 
     /**
      * @var '42'|42|42.5|false|null
@@ -90,14 +90,14 @@ class MyClass
     private string|int|float|bool|null $inferMixed;
 
     /**
-     * @var '3'|'4'|''|null
+     * @var MyClassInferStringOpt|null
      */
-    private ?string $inferStringOpt = null;
+    private ?MyClassInferStringOpt $inferStringOpt = null;
 
     /**
      * @var 3|4|5|null
      */
-    private int|float|null $inferIntOpt = null;
+    private ?int $inferIntOpt = null;
 
     /**
      * @var '42'|42|42.5|false|null
@@ -105,14 +105,14 @@ class MyClass
     private string|int|float|bool|null $inferMixedOpt = null;
 
     /**
-     * @param '3'|'4'|'' $inferString
+     * @param MyClassInferString $inferString
      * @param 3|4|5 $inferInt
      * @param '42'|42|42.5|false|null $inferMixed
-     * @param '3'|'4'|''|null $inferStringOpt
+     * @param MyClassInferStringOpt|null $inferStringOpt
      * @param 3|4|5|null $inferIntOpt
      * @param '42'|42|42.5|false|null $inferMixedOpt
      */
-    public function __construct(string $inferString, int|float $inferInt, bool|int|float|string|null $inferMixed, ?string $inferStringOpt = null, int|float|null $inferIntOpt = null, bool|int|float|string|null $inferMixedOpt = null)
+    public function __construct(MyClassInferString $inferString, int $inferInt, bool|int|float|string|null $inferMixed, ?MyClassInferStringOpt $inferStringOpt = null, ?int $inferIntOpt = null, bool|int|float|string|null $inferMixedOpt = null)
     {
         $this->inferString = $inferString;
         $this->inferInt = $inferInt;
@@ -123,26 +123,18 @@ class MyClass
     }
 
     /**
-     * @return '3'|'4'|''
+     * @return MyClassInferString
      */
-    public function getInferString(): string
+    public function getInferString(): MyClassInferString
     {
         return $this->inferString;
     }
 
     /**
-     * @param '3'|'4'|'' $inferString
+     * @param MyClassInferString $inferString
      */
-    public function withInferString(string $inferString, bool $validate = true): self
+    public function withInferString(MyClassInferString $inferString): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($inferString, self::$_schema['properties']['inferString']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->inferString = $inferString;
 
@@ -152,7 +144,7 @@ class MyClass
     /**
      * @return 3|4|5
      */
-    public function getInferInt(): int|float
+    public function getInferInt(): int
     {
         return $this->inferInt;
     }
@@ -160,7 +152,7 @@ class MyClass
     /**
      * @param 3|4|5 $inferInt
      */
-    public function withInferInt(int|float $inferInt, bool $validate = true): self
+    public function withInferInt(int $inferInt, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -204,26 +196,18 @@ class MyClass
     }
 
     /**
-     * @return '3'|'4'|''|null
+     * @return MyClassInferStringOpt|null
      */
-    public function getInferStringOpt(): ?string
+    public function getInferStringOpt(): ?MyClassInferStringOpt
     {
         return $this->inferStringOpt ?? null;
     }
 
     /**
-     * @param '3'|'4'|'' $inferStringOpt
+     * @param MyClassInferStringOpt $inferStringOpt
      */
-    public function withInferStringOpt(string $inferStringOpt, bool $validate = true): self
+    public function withInferStringOpt(MyClassInferStringOpt $inferStringOpt): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($inferStringOpt, self::$_schema['properties']['inferStringOpt']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->inferStringOpt = $inferStringOpt;
 
@@ -241,15 +225,15 @@ class MyClass
     /**
      * @return 3|4|5|null
      */
-    public function getInferIntOpt(): int|float|null
+    public function getInferIntOpt(): ?int
     {
-        return $this->inferIntOpt;
+        return $this->inferIntOpt ?? null;
     }
 
     /**
      * @param 3|4|5 $inferIntOpt
      */
-    public function withInferIntOpt(int|float $inferIntOpt, bool $validate = true): self
+    public function withInferIntOpt(int $inferIntOpt, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -326,10 +310,10 @@ class MyClass
         }
 
         $__providedOptionals = [];
-        $inferString = $input->{'inferString'};
-        $inferInt = $input->{'inferInt'};
+        $inferString = MyClassInferString::from($input->{'inferString'});
+        $inferInt = (int)$input->{'inferInt'};
         $inferMixed = ($input->{'inferMixed'} !== null ? $input->{'inferMixed'} : null);
-        $inferStringOpt = isset($input->{'inferStringOpt'}) ? $input->{'inferStringOpt'} : null;
+        $inferStringOpt = isset($input->{'inferStringOpt'}) ? MyClassInferStringOpt::from($input->{'inferStringOpt'}) : null;
         $inferIntOpt = isset($input->{'inferIntOpt'}) ? $input->{'inferIntOpt'} : null;
         $inferMixedOpt = null;
         if (property_exists($input, 'inferMixedOpt')) {
@@ -353,11 +337,11 @@ class MyClass
     public function toArray(): array
     {
         $output = [];
-        $output['inferString'] = $this->inferString;
+        $output['inferString'] = ($this->inferString)->value;
         $output['inferInt'] = $this->inferInt;
         $output['inferMixed'] = $this->inferMixed;
         if (isset($this->inferStringOpt)) {
-            $output['inferStringOpt'] = $this->inferStringOpt;
+            $output['inferStringOpt'] = ($this->inferStringOpt)->value;
         }
         if (isset($this->inferIntOpt)) {
             $output['inferIntOpt'] = $this->inferIntOpt;
@@ -377,11 +361,11 @@ class MyClass
     public function toStdClass(): \stdClass
     {
         $output = new \stdClass();
-        $output->{'inferString'} = $this->inferString;
+        $output->{'inferString'} = ($this->inferString)->value;
         $output->{'inferInt'} = $this->inferInt;
         $output->{'inferMixed'} = $this->inferMixed;
         if (isset($this->inferStringOpt)) {
-            $output->{'inferStringOpt'} = $this->inferStringOpt;
+            $output->{'inferStringOpt'} = ($this->inferStringOpt)->value;
         }
         if (isset($this->inferIntOpt)) {
             $output->{'inferIntOpt'} = $this->inferIntOpt;

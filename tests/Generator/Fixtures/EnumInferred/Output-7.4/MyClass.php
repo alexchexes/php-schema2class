@@ -82,7 +82,7 @@ class MyClass
     /**
      * @var 3|4|5
      */
-    private $inferInt;
+    private int $inferInt;
 
     /**
      * @var '42'|42|42.5|false|null
@@ -97,7 +97,7 @@ class MyClass
     /**
      * @var 3|4|5|null
      */
-    private $inferIntOpt = null;
+    private ?int $inferIntOpt = null;
 
     /**
      * @var '42'|42|42.5|false|null
@@ -112,7 +112,7 @@ class MyClass
      * @param 3|4|5|null $inferIntOpt
      * @param '42'|42|42.5|false|null $inferMixedOpt
      */
-    public function __construct(string $inferString, $inferInt, $inferMixed, ?string $inferStringOpt = null, $inferIntOpt = null, $inferMixedOpt = null)
+    public function __construct(string $inferString, int $inferInt, $inferMixed, ?string $inferStringOpt = null, ?int $inferIntOpt = null, $inferMixedOpt = null)
     {
         $this->inferString = $inferString;
         $this->inferInt = $inferInt;
@@ -152,7 +152,7 @@ class MyClass
     /**
      * @return 3|4|5
      */
-    public function getInferInt()
+    public function getInferInt(): int
     {
         return $this->inferInt;
     }
@@ -160,7 +160,7 @@ class MyClass
     /**
      * @param 3|4|5 $inferInt
      */
-    public function withInferInt($inferInt, bool $validate = true): self
+    public function withInferInt(int $inferInt, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -241,15 +241,15 @@ class MyClass
     /**
      * @return 3|4|5|null
      */
-    public function getInferIntOpt()
+    public function getInferIntOpt(): ?int
     {
-        return $this->inferIntOpt;
+        return $this->inferIntOpt ?? null;
     }
 
     /**
      * @param 3|4|5 $inferIntOpt
      */
-    public function withInferIntOpt($inferIntOpt, bool $validate = true): self
+    public function withInferIntOpt(int $inferIntOpt, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -333,7 +333,7 @@ class MyClass
 
         $__providedOptionals = [];
         $inferString = $input->{'inferString'};
-        $inferInt = $input->{'inferInt'};
+        $inferInt = (int)$input->{'inferInt'};
         $inferMixed = ($input->{'inferMixed'} !== null ? $input->{'inferMixed'} : null);
         $inferStringOpt = isset($input->{'inferStringOpt'}) ? $input->{'inferStringOpt'} : null;
         $inferIntOpt = isset($input->{'inferIntOpt'}) ? $input->{'inferIntOpt'} : null;

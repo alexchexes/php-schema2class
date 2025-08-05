@@ -7,7 +7,6 @@ use Helmich\Schema2Class\Generator\GeneratorException;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\Type\BooleanProperty;
 use Helmich\Schema2Class\Generator\Property\Type\DateProperty;
-use Helmich\Schema2Class\Generator\Property\Type\InferredEnumProperty;
 use Helmich\Schema2Class\Generator\Property\Type\IntegerProperty;
 use Helmich\Schema2Class\Generator\Property\Type\IntersectProperty;
 use Helmich\Schema2Class\Generator\Property\Type\MixedProperty;
@@ -27,6 +26,7 @@ use Helmich\Schema2Class\Generator\Property\Type\TypedArrayProperty;
 use Helmich\Schema2Class\Generator\Property\Type\UnionProperty;
 use Helmich\Schema2Class\Generator\Property\Decorator\NullablePropertyDecorator;
 use Helmich\Schema2Class\Generator\Property\Decorator\OptionalPropertyDecorator;
+use Helmich\Schema2Class\Util\EnumUtils;
 
 /**
  * Factory that creates the correct {@see PropertyInterface} implementation
@@ -48,7 +48,6 @@ class PropertyBuilder
         DateProperty::class,
         StringEnumProperty::class,
         PrimitiveUnionEnumProperty::class,
-        InferredEnumProperty::class,
         NullProperty::class,
         StringProperty::class,
         IntegerProperty::class,
@@ -81,6 +80,16 @@ class PropertyBuilder
     {
         self::assertNoPropertiesWithAdditional($definition);
 
+        if (isset($definition['enum'])) {
+            $definition['enum'] = EnumUtils::normalizeEnumValues($definition['enum']);
+            if (!isset($definition['type'])) {
+                $inferred = EnumUtils::inferType($definition['enum']);
+                if ($inferred !== null) {
+                    $definition['type'] = $inferred;
+                }
+            }
+        }
+
         $definition = self::sanitizeEnum($definition);
         $definition = self::collapseSingleTypeArray($definition);
 
@@ -94,11 +103,6 @@ class PropertyBuilder
 
         if (PrimitiveUnionEnumProperty::canHandleSchema($definition)) {
             $property = new PrimitiveUnionEnumProperty($name, $definition, $req);
-            return self::wrapProperty($req, $property, $definition, $name, $isRequired);
-        }
-
-        if (InferredEnumProperty::canHandleSchema($definition)) {
-            $property = new InferredEnumProperty($name, $definition, $req);
             return self::wrapProperty($req, $property, $definition, $name, $isRequired);
         }
 
@@ -351,19 +355,26 @@ class PropertyBuilder
         $originalIsArray = is_array($definition['type']);
         $types = $originalIsArray ? $definition['type'] : [$definition['type']];
         $types = array_map(
-            static fn (?string $t) => $t === 'int' ? 'integer' : ($t === null ? 'null' : $t),
+            static fn (?string $t) => match ($t) {
+                'int'  => 'integer',
+                'bool' => 'boolean',
+                null   => 'null',
+                default => $t,
+            },
             $types
         );
 
         $allowed = [];
         foreach ($definition['enum'] as $v) {
-            /** @var  'null'|'string'|'integer'|'number'|'boolean'|null */
+            /** @var  'null'|'string'|'integer'|'number'|'boolean'|'array'|'object'|null */
             $t = match (true) {
                 $v === null      => 'null',
                 is_string($v)    => 'string',
                 is_int($v)       => 'integer',
                 is_float($v)     => 'number',
                 is_bool($v)      => 'boolean',
+                is_array($v)     => 'array',
+                is_object($v)    => 'object',
                 default          => null,
             };
             if ($t === null) {
@@ -384,6 +395,8 @@ class PropertyBuilder
                 is_int($v)       => 'integer',
                 is_float($v)     => 'number',
                 is_bool($v)      => 'boolean',
+                is_array($v)     => 'array',
+                is_object($v)    => 'object',
                 default          => null,
             };
             if ($t !== null) {
