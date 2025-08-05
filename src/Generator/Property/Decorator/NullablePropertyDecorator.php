@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Property\Decorator;
 
-use Composer\Semver\Semver;
 use Helmich\Schema2Class\Generator\Class\Method\FromInputMethodFactory;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\Type\NullProperty;
@@ -144,11 +143,6 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface
         return $ann;
     }
 
-    public function cloneAssignment(): ?string
-    {
-        return $this->inner->cloneAssignment();
-    }
-
     /**
      * @param $phpVersion
      * @return string|null
@@ -158,7 +152,9 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface
         $phpVersion = $this->request->getTargetPHPVersion();
         $hint = $this->inner->typeHint();
 
-        if (Semver::satisfies($phpVersion, "<7.0")) {
+        if (!$this->request->isAtLeastPHP('7.1')) {
+            // `?` prefix was introduced in PHP 7.1, before that version to declare typed
+            // parameter as nullable we used `(array $foo = null)`, so return inner type hint as is
             return $hint;
         }
 
@@ -166,14 +162,14 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface
             return null;
         }
 
-        if (Semver::satisfies($phpVersion, ">=8.0") && str_contains($hint, "|")) {
+        if ($this->request->isAtLeastPHP('8.0') && str_contains($hint, "|")) {
             if (!preg_match('/(^|\\|)null(\\||$)/', $hint)) {
                 return "{$hint}|null";
             }
             return $hint;
         }
 
-        if (Semver::satisfies($phpVersion, ">=7.1.0") && strpos($hint, "?") !== 0) {
+        if ($this->request->isAtLeastPHP('7.1') && strpos($hint, "?") !== 0) { // @phpstan-ignore-line
             if ($hint === "mixed" || $hint === "null") {
                 return $hint;
             }
@@ -182,6 +178,11 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface
         }
 
         return $hint;
+    }
+
+    public function cloneAssignment(): ?string
+    {
+        return $this->inner->cloneAssignment();
     }
 
     public function typeAssertionExpr(string $expr): string
