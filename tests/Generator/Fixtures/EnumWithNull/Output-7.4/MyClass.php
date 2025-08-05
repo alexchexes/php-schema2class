@@ -36,12 +36,12 @@ class MyClass
     private array $_providedOptionals = [];
 
     /**
-     * @var 'red'|'green'|null
+     * @var null|'red'|'green'
      */
     private ?string $foo = null;
 
     /**
-     * @param 'red'|'green'|null $foo
+     * @param null|'red'|'green' $foo
      */
     public function __construct(?string $foo = null)
     {
@@ -49,7 +49,7 @@ class MyClass
     }
 
     /**
-     * @return 'red'|'green'|null
+     * @return null|'red'|'green'
      */
     public function getFoo(): ?string
     {
@@ -57,7 +57,7 @@ class MyClass
     }
 
     /**
-     * @param 'red'|'green'|null $foo
+     * @param null|'red'|'green' $foo
      */
     public function withFoo(?string $foo, bool $validate = true): self
     {

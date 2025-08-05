@@ -8,29 +8,63 @@ use Composer\Semver\Semver;
 final class EnumUtils
 {
     /**
-     * @param array<int|string|null|float|bool> $values
+     * Normalize enum values:
+     *  - remove duplicate entries
+     *  - convert floats that are equivalent to integers to int
+     *
+     * @param array<int|string|null|float|bool|array|object> $values
+     * @return array<int|string|null|float|bool|array|object>
+     */
+    private static function normalize(array $values): array
+    {
+        $normalized = [];
+        foreach ($values as $v) {
+            if (is_float($v) && floor($v) == $v) {
+                $v = (int)$v;
+            }
+            $normalized[] = $v;
+        }
+
+        // remove duplicates while preserving order
+        $result   = [];
+        $seenKeys = [];
+        foreach ($normalized as $v) {
+            $key = serialize($v);
+            if (!isset($seenKeys[$key])) {
+                $result[]        = $v;
+                $seenKeys[$key] = true;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param array<int|string|null|float|bool|array|object> $values
      */
     public static function typeAnnotation(array $values): string
     {
-        $literals = array_map(static fn($v): string => var_export($v, true), $values);
+        $values   = self::normalize($values);
+        $literals = array_map(
+            static function ($v): string {
+                return $v === null ? 'null' : var_export($v, true);
+            },
+            $values
+        );
         return implode('|', $literals);
     }
 
     /**
-     * @param array<int|string|null|float|bool> $enumValues
-     * 
-     * TODO: we now don't handle case when enum value is array or object, for example:
-     * ```
-     * "enum": [42, true, "hello", null, [1, 2, 3]]
-     * ```
-     * 
-     * TODO: check what happens when the only enum value is `null`. Do we get illegal `null` type hint?
+     * @param array<int|string|null|float|bool|array|object> $enumValues
+     * TODO: currently we don't provide type hints when enum contains arrays or objects.
      */
     public static function typeHint(array $enumValues, string $phpVersion): ?string
     {
         if (!Semver::satisfies($phpVersion, '>=7.0')) {
             return null; // PHP before 7.0 doesn't support scalar types
         }
+
+        $enumValues = self::normalize($enumValues);
 
         $types = [];
         foreach ($enumValues as $v) {
@@ -44,21 +78,43 @@ final class EnumUtils
                 $types['float'] = 'float';
             } elseif (is_bool($v)) {
                 $types['bool'] = 'bool';
+            } else {
+                // arrays/objects ⇒ cannot build a type hint
+                return null;
             }
         }
 
-        if (!Semver::satisfies($phpVersion, '>=8.0') && count($types) !== 1) {
-            return null;
+        $nullable = array_key_exists('null', $types);
+        if ($nullable) {
+            unset($types['null']);
         }
 
-        return implode('|', array_values($types));
+        if (!Semver::satisfies($phpVersion, '>=8.0')) {
+            if (count($types) !== 1) {
+                return null;
+            }
+
+            $type = array_key_first($types);
+            return $nullable && Semver::satisfies($phpVersion, '>=7.1')
+                ? '?' . $type
+                : $type;
+        }
+
+        $ordered = array_values($types);
+        sort($ordered);
+        if ($nullable) {
+            $ordered[] = 'null';
+        }
+
+        return implode('|', $ordered);
     }
 
     /**
-     * @param array<int|string|null|float|bool> $values
+     * @param array<int|string|null|float|bool|array|object> $values
      */
     public static function assertionExpr(array $values, string $expr): string
     {
+        $values = self::normalize($values);
         $export = var_export($values, true);
         return "in_array({$expr}, {$export}, true)";
     }

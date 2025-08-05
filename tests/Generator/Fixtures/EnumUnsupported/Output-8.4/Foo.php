@@ -64,12 +64,12 @@ class Foo
     /**
      * @var 0|1.5|2.5|3.5|null
      */
-    private int|float|null $floatEnum = null;
+    private float|int|null $floatEnum = null;
 
     /**
      * @var 0|1.5|2.5|3.5|null
      */
-    private int|float|null $floatEnumRef = null;
+    private float|int|null $floatEnumRef = null;
 
     /**
      * @var false|null

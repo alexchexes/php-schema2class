@@ -7,7 +7,6 @@ use Helmich\Schema2Class\Generator\GeneratorException;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\Type\BooleanProperty;
 use Helmich\Schema2Class\Generator\Property\Type\DateProperty;
-use Helmich\Schema2Class\Generator\Property\Type\InferredEnumProperty;
 use Helmich\Schema2Class\Generator\Property\Type\IntegerProperty;
 use Helmich\Schema2Class\Generator\Property\Type\IntersectProperty;
 use Helmich\Schema2Class\Generator\Property\Type\MixedProperty;
@@ -48,7 +47,6 @@ class PropertyBuilder
         DateProperty::class,
         StringEnumProperty::class,
         PrimitiveUnionEnumProperty::class,
-        InferredEnumProperty::class,
         NullProperty::class,
         StringProperty::class,
         IntegerProperty::class,
@@ -81,6 +79,7 @@ class PropertyBuilder
     {
         self::assertNoPropertiesWithAdditional($definition);
 
+        $definition = self::inferTypeFromEnum($definition);
         $definition = self::sanitizeEnum($definition);
         $definition = self::collapseSingleTypeArray($definition);
 
@@ -92,13 +91,9 @@ class PropertyBuilder
             return $property;
         }
 
-        if (PrimitiveUnionEnumProperty::canHandleSchema($definition)) {
+        if (!StringEnumProperty::canHandleSchema($definition)
+            && PrimitiveUnionEnumProperty::canHandleSchema($definition)) {
             $property = new PrimitiveUnionEnumProperty($name, $definition, $req);
-            return self::wrapProperty($req, $property, $definition, $name, $isRequired);
-        }
-
-        if (InferredEnumProperty::canHandleSchema($definition)) {
-            $property = new InferredEnumProperty($name, $definition, $req);
             return self::wrapProperty($req, $property, $definition, $name, $isRequired);
         }
 
@@ -128,6 +123,40 @@ class PropertyBuilder
         if (is_array($defType) && count($defType) === 1) {
             $definition['type'] = $defType[0];
         }
+
+        return $definition;
+    }
+
+    /** Infer the "type" keyword from enum values when it is not provided */
+    private static function inferTypeFromEnum(array $definition): array
+    {
+        if (!isset($definition['enum']) || isset($definition['type'])) {
+            return $definition;
+        }
+
+        $types = [];
+        foreach ($definition['enum'] as $k => $v) {
+            if (is_array($v) || is_object($v)) {
+                // complex values – do not attempt to infer type
+                return $definition;
+            }
+            if (is_float($v) && floor($v) == $v) {
+                $v = (int)$v;
+                $definition['enum'][$k] = $v;
+            }
+            $t = match (true) {
+                $v === null      => 'null',
+                is_string($v)    => 'string',
+                is_int($v)       => 'integer',
+                is_float($v)     => 'number',
+                is_bool($v)      => 'boolean',
+                default          => 'mixed',
+            };
+            $types[$t] = true;
+        }
+
+        $types = array_keys($types);
+        $definition['type'] = count($types) === 1 ? $types[0] : $types;
 
         return $definition;
     }
@@ -348,6 +377,19 @@ class PropertyBuilder
             return $definition;
         }
 
+        foreach ($definition['enum'] as $v) {
+            if (is_array($v) || is_object($v)) {
+                return $definition; // cannot sanitize complex values reliably
+            }
+        }
+
+        $definition['enum'] = array_map(static function ($v) {
+            if (is_float($v) && floor($v) == $v) {
+                return (int)$v;
+            }
+            return $v;
+        }, $definition['enum']);
+
         $originalIsArray = is_array($definition['type']);
         $types = $originalIsArray ? $definition['type'] : [$definition['type']];
         $types = array_map(
@@ -370,6 +412,9 @@ class PropertyBuilder
                 continue;
             }
             if (in_array($t, $types, true) || ($t === 'integer' && in_array('number', $types, true))) {
+                if (is_float($v) && floor($v) == $v) {
+                    $v = (int)$v;
+                }
                 $allowed[] = $v;
             }
         }
