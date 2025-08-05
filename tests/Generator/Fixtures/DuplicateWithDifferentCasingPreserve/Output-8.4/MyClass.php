@@ -42,9 +42,11 @@ class MyClass
      */
     private ?string $bar = null;
 
-    public function __construct(string $fooBar)
+    public function __construct(string $fooBar, ?string $foobar = null, ?string $bar = null)
     {
         $this->fooBar = $fooBar;
+        $this->foobar = $foobar;
+        $this->bar = $bar;
     }
 
     public function getFooBar(): string

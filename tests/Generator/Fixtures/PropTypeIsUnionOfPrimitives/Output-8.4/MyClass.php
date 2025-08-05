@@ -135,13 +135,18 @@ class MyClass
 
     private string|int|float|bool|array|object|null $optThud = null;
 
-    public function __construct(bool|int|float|string $foo, bool|int|float|string|array $bar, bool|int|float|string|array|object $baz, bool|int|float|string|array|object $qux, bool|int|float|string|array|object|null $thud)
+    public function __construct(bool|int|float|string $foo, bool|int|float|string|array $bar, bool|int|float|string|array|object $baz, bool|int|float|string|array|object $qux, bool|int|float|string|array|object|null $thud, bool|int|float|string|null $optFoo = null, bool|int|float|string|array|null $optBar = null, bool|int|float|string|array|object|null $optBaz = null, bool|int|float|string|array|object|null $optQux = null, bool|int|float|string|array|object|null $optThud = null)
     {
         $this->foo = $foo;
         $this->bar = $bar;
         $this->baz = $baz;
         $this->qux = $qux;
         $this->thud = $thud;
+        $this->optFoo = $optFoo;
+        $this->optBar = $optBar;
+        $this->optBaz = $optBaz;
+        $this->optQux = $optQux;
+        $this->optThud = $optThud;
     }
 
     public function getFoo(): bool|int|float|string

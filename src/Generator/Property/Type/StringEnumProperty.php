@@ -74,8 +74,12 @@ class StringEnumProperty extends AbstractProperty
             return "\\" . $this->request->getTargetNamespace() . "\\" . $this->subTypeName();
         }
 
-        // fallback to plain string
-        return 'string';
+        if ($this->request->isAtLeastPHP('7.0')) {
+            // fallback to plain string
+            return 'string';
+        }
+
+        return null;
     }
 
     public function typeAssertionExpr(string $expr): string

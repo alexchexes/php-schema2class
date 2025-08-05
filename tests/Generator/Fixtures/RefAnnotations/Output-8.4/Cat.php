@@ -52,6 +52,11 @@ class Cat
 
     private ?bool $hasFur = null;
 
+    public function __construct(?bool $hasFur = null)
+    {
+        $this->hasFur = $hasFur;
+    }
+
     /**
      * Whether the cat has fur. True by default for most cats
      */

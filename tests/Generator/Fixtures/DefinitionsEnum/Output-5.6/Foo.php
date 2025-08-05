@@ -53,10 +53,12 @@ class Foo
 
     /**
      * @param 'red'|'green' $color
+     * @param 'small'|'big'|null $size
      */
-    public function __construct(string $color)
+    public function __construct($color, $size = null)
     {
         $this->color = $color;
+        $this->size = $size;
     }
 
     /**
@@ -72,7 +74,7 @@ class Foo
      * @param bool $validate
      * @return self
      */
-    public function withColor(string $color, $validate = true)
+    public function withColor($color, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -101,7 +103,7 @@ class Foo
      * @param bool $validate
      * @return self
      */
-    public function withSize(string $size, $validate = true)
+    public function withSize($size, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();

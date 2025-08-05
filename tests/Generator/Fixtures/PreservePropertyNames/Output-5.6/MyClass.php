@@ -175,8 +175,9 @@ class MyClass
      * @param string $nazvanie_iur_litsa
      * @param string $IP_adres
      * @param string $_tildas
+     * @param string|null $it_s_A
      */
-    public function __construct($foo, $_foo, $__foo, $foo_, $foo__, $_foo_, $__foo__, $_foo_bar, $foo_bar, $baz_qux, $_123_qwe, $Gorod, $nazvanie_iur_litsa, $IP_adres, $_tildas)
+    public function __construct($foo, $_foo, $__foo, $foo_, $foo__, $_foo_, $__foo__, $_foo_bar, $foo_bar, $baz_qux, $_123_qwe, $Gorod, $nazvanie_iur_litsa, $IP_adres, $_tildas, $it_s_A = null)
     {
         $this->foo = $foo;
         $this->_foo = $_foo;
@@ -193,6 +194,7 @@ class MyClass
         $this->nazvanie_iur_litsa = $nazvanie_iur_litsa;
         $this->IP_adres = $IP_adres;
         $this->_tildas = $_tildas;
+        $this->it_s_A = $it_s_A;
     }
 
     /**

@@ -75,6 +75,14 @@ class Qux
     private $grox = null;
 
     /**
+     * @param string|string[]|Foo|Bar|null $grox
+     */
+    public function __construct($grox = null)
+    {
+        $this->grox = $grox;
+    }
+
+    /**
      * @return string|string[]|Foo|Bar|null
      */
     public function getGrox()

@@ -17,12 +17,23 @@ final class EnumUtils
     }
 
     /**
-     * @param array<int|string|null|float|bool> $values
+     * @param array<int|string|null|float|bool> $enumValues
+     * 
+     * TODO: we now don't handle case when enum value is array or object, for example:
+     * ```
+     * "enum": [42, true, "hello", null, [1, 2, 3]]
+     * ```
+     * 
+     * TODO: check what happens when the only enum value is `null`. Do we get illegal `null` type hint?
      */
-    public static function typeHint(array $values, string $phpVersion): ?string
+    public static function typeHint(array $enumValues, string $phpVersion): ?string
     {
+        if (!Semver::satisfies($phpVersion, '>=7.0')) {
+            return null; // PHP before 7.0 doesn't support scalar types
+        }
+
         $types = [];
-        foreach ($values as $v) {
+        foreach ($enumValues as $v) {
             if ($v === null) {
                 $types['null'] = 'null';
             } elseif (is_string($v)) {
@@ -38,11 +49,6 @@ final class EnumUtils
 
         if (!Semver::satisfies($phpVersion, '>=8.0') && count($types) !== 1) {
             return null;
-        }
-
-        if (isset($types['int']) && isset($types['float'])) {
-            $types['int'] = 'int';
-            $types['float'] = 'float';
         }
 
         return implode('|', array_values($types));

@@ -55,6 +55,12 @@ class Pets
 
     private ?Cat $cat = null;
 
+    public function __construct(?GenericPet $pet = null, ?Cat $cat = null)
+    {
+        $this->pet = $pet;
+        $this->cat = $cat;
+    }
+
     public function getPet(): ?GenericPet
     {
         return $this->pet ?? null;

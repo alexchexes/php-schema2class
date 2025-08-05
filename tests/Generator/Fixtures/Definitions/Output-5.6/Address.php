@@ -46,10 +46,12 @@ class Address
 
     /**
      * @param string $city
+     * @param Address\Defs\Name|null $name
      */
-    public function __construct($city)
+    public function __construct($city, Address\Defs\Name $name = null)
     {
         $this->city = $city;
+        $this->name = $name;
     }
 
     /**

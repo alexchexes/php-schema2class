@@ -62,6 +62,14 @@ class BarTest
     private $exampleProp = null;
 
     /**
+     * @param FooTest|MoiKlass|FooTest_1|null $exampleProp
+     */
+    public function __construct($exampleProp = null)
+    {
+        $this->exampleProp = $exampleProp;
+    }
+
+    /**
      * @return FooTest|MoiKlass|FooTest_1|null
      */
     public function getExampleProp()

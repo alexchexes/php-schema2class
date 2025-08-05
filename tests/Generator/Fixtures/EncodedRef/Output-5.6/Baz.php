@@ -58,6 +58,18 @@ class Baz
     private $c = null;
 
     /**
+     * @param FooTest|null $a
+     * @param FooTest|null $b
+     * @param BarTest|null $c
+     */
+    public function __construct(FooTest $a = null, FooTest $b = null, BarTest $c = null)
+    {
+        $this->a = $a;
+        $this->b = $b;
+        $this->c = $c;
+    }
+
+    /**
      * @return FooTest|null
      */
     public function getA()

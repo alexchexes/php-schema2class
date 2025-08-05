@@ -62,6 +62,14 @@ class Baz
     private $grox = null;
 
     /**
+     * @param Foo|Bar|null $grox
+     */
+    public function __construct($grox = null)
+    {
+        $this->grox = $grox;
+    }
+
+    /**
      * @return Foo|Bar|null
      */
     public function getGrox()

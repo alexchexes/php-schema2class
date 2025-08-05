@@ -24,6 +24,14 @@ class FooTest_1
     private $b = null;
 
     /**
+     * @param string|null $b
+     */
+    public function __construct($b = null)
+    {
+        $this->b = $b;
+    }
+
+    /**
      * @return string|null
      */
     public function getB()

@@ -352,10 +352,31 @@ class MyClass
      */
     private ?MyClassNumKeysDefaults $numKeysDefaults = null;
 
-    public function __construct(string $foo, string $bar)
+    /**
+     * @param MyClassBaz|null $baz
+     * @param MyClassQuxObj|null $quxObj
+     * @param MyClassQuxObjNest|null $quxObjNest
+     * @param string[]|null $thudArray
+     * @param string|ObjDef|string[]|null $xyyz
+     * @param string|string[]|ObjDef|null $buux
+     * @param string|string[]|ObjDef|null $boic
+     * @param MyClassNumKeysDefaults|null $numKeysDefaults
+     */
+    public function __construct(string $foo, string $bar, ?MyClassBaz $baz = null, ?MyClassQuxObj $quxObj = null, ?MyClassQuxObjNest $quxObjNest = null, ?array $thudArray = null, ObjDef|string|array|null $xyyz = null, ObjDef|string|array|null $buux = null, ObjDef|string|array|null $boic = null, NumericKeysObj|string|null $poox = null, array|object|null $arrObjUnion = null, array|object|null $objArrUnion = null, ?MyClassNumKeysDefaults $numKeysDefaults = null)
     {
         $this->foo = $foo;
         $this->bar = $bar;
+        $this->baz = $baz;
+        $this->quxObj = $quxObj;
+        $this->quxObjNest = $quxObjNest;
+        $this->thudArray = $thudArray;
+        $this->xyyz = $xyyz;
+        $this->buux = $buux;
+        $this->boic = $boic;
+        $this->poox = $poox;
+        $this->arrObjUnion = $arrObjUnion;
+        $this->objArrUnion = $objArrUnion;
+        $this->numKeysDefaults = $numKeysDefaults;
     }
 
     public function getFoo(): string

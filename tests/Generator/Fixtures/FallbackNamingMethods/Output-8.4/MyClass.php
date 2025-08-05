@@ -31,6 +31,13 @@ class MyClass
 
     private ?string $_outbound = null;
 
+    public function __construct(?string $bound = null, ?string $outbound = null, ?string $_outbound = null)
+    {
+        $this->bound = $bound;
+        $this->outbound = $outbound;
+        $this->_outbound = $_outbound;
+    }
+
     public function getBound(): ?string
     {
         return $this->bound ?? null;

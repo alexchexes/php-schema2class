@@ -24,6 +24,14 @@ class BarTest
     private $bar = null;
 
     /**
+     * @param string|null $bar
+     */
+    public function __construct($bar = null)
+    {
+        $this->bar = $bar;
+    }
+
+    /**
      * @return string|null
      */
     public function getBar()

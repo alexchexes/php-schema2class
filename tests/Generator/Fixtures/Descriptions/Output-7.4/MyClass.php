@@ -44,6 +44,12 @@ class MyClass
 
     private ?Baz $bar = null;
 
+    public function __construct(?string $foo = null, ?Baz $bar = null)
+    {
+        $this->foo = $foo;
+        $this->bar = $bar;
+    }
+
     /**
      * Description for the `foo` property
      */

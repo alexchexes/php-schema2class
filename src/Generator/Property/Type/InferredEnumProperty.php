@@ -46,13 +46,11 @@ class InferredEnumProperty extends AbstractProperty
 
     public function typeAnnotation(): string
     {
-        $quote = static fn(string $s): string => "'" . str_replace("'", "\\'", $s) . "'";
-
         $values = array_map(
             static fn (mixed $v) => match (true) {
                 $v === null     => 'null',
                 is_bool($v)     => $v ? 'true' : 'false',
-                is_string($v)   => $quote($v),
+                is_string($v)   => var_export($v, true),
                 is_int($v),
                 is_float($v)    => (string) $v,
                 default         => 'null',
@@ -65,13 +63,29 @@ class InferredEnumProperty extends AbstractProperty
 
     public function typeHint(): ?string
     {
-        if (!Semver::satisfies($this->request->getTargetPHPVersion(), '>=8.0')) {
-            return null;
+        if (!$this->request->isAtLeastPHP('7.0')) {
+            return null; // since here we handle only scalars, nothing left for type hint in PHP < 7
         }
         if (isset($this->valueTypes['mixed'])) {
             return null;
         }
-        return implode('|', array_keys($this->valueTypes));
+        $valueTypes = $this->valueTypes;
+        $nullable = false;
+        if (array_key_exists('null', $valueTypes)) {
+            $nullable = true;
+            unset($valueTypes['null']);
+        }
+        if (count($valueTypes) > 1 && !$this->request->isAtLeastPHP('8.0')) {
+            return null;
+        }
+        if (count($valueTypes) === 1 && $nullable && $this->request->isAtLeastPHP('7.1')) {
+            return '?' . array_key_first($valueTypes);
+        }
+        $typesForHint = array_keys($valueTypes);
+        if ($nullable) {
+            $typesForHint[] = 'null';
+        }        
+        return implode('|', $typesForHint);
     }
 
     public function typeAssertionExpr(string $expr): string

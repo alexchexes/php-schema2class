@@ -22,6 +22,11 @@ class FooTest_1
 
     private ?string $b = null;
 
+    public function __construct(?string $b = null)
+    {
+        $this->b = $b;
+    }
+
     public function getB(): ?string
     {
         return $this->b ?? null;

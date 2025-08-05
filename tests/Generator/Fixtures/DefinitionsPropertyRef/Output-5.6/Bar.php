@@ -34,6 +34,14 @@ class Bar
     private $a = null;
 
     /**
+     * @param Foo|null $a
+     */
+    public function __construct(Foo $a = null)
+    {
+        $this->a = $a;
+    }
+
+    /**
      * @return Foo|null
      */
     public function getA()

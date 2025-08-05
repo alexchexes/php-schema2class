@@ -33,6 +33,15 @@ class MyClass
      */
     private ?array $params = null;
 
+    /**
+     * @param mixed[]|null $params
+     */
+    public function __construct(?string $name = null, ?array $params = null)
+    {
+        $this->name = $name;
+        $this->params = $params;
+    }
+
     public function getName(): ?string
     {
         return $this->name ?? null;

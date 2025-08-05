@@ -54,9 +54,11 @@ class MyClass
 
     private ?string $opt = null;
 
-    public function __construct(Baz $bar)
+    public function __construct(Baz $bar, ?string $foo = null, ?string $opt = null)
     {
         $this->bar = $bar;
+        $this->foo = $foo;
+        $this->opt = $opt;
     }
 
     public function getFoo(): ?string

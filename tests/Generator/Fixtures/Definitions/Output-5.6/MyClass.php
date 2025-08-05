@@ -66,10 +66,12 @@ class MyClass
 
     /**
      * @param int $id
+     * @param Address|null $address
      */
-    public function __construct($id)
+    public function __construct($id, Address $address = null)
     {
         $this->id = $id;
+        $this->address = $address;
     }
 
     /**

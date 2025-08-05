@@ -58,9 +58,15 @@ class MyClass
      */
     private $opt = null;
 
-    public function __construct(Baz $bar)
+    /**
+     * @param string|null $foo
+     * @param string|null $opt
+     */
+    public function __construct(Baz $bar, $foo = null, $opt = null)
     {
         $this->bar = $bar;
+        $this->foo = $foo;
+        $this->opt = $opt;
     }
 
     /**

@@ -29,9 +29,10 @@ class MyClass
 
     private ?string $foo_bar = null;
 
-    public function __construct(string $_foo_bar)
+    public function __construct(string $_foo_bar, ?string $foo_bar = null)
     {
         $this->_foo_bar = $_foo_bar;
+        $this->foo_bar = $foo_bar;
     }
 
     public function get_FooBar(): string

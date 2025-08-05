@@ -33,6 +33,14 @@ class Bar
     private ?array $b = null;
 
     /**
+     * @param string[]|null $b
+     */
+    public function __construct(?array $b = null)
+    {
+        $this->b = $b;
+    }
+
+    /**
      * @return string[]|null
      */
     public function getB(): ?array

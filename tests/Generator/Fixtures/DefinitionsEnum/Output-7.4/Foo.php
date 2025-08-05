@@ -55,10 +55,12 @@ class Foo
 
     /**
      * @param 'red'|'green' $color
+     * @param 'small'|'big'|null $size
      */
-    public function __construct(string $color)
+    public function __construct(string $color, ?string $size = null)
     {
         $this->color = $color;
+        $this->size = $size;
     }
 
     /**

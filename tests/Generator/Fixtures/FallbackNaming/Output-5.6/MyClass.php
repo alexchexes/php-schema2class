@@ -585,8 +585,15 @@ class MyClass
      * @param string $debugInfo
      * @param string $files
      * @param string $_this
+     * @param string|null $_validate
+     * @param string|null $_materializeDefaults
+     * @param MyClassTestObj|null $testObj
+     * @param string|null $_providedOptionals_1
+     * @param MyClassEnsureArgs1Alternative1|MyClassEnsureArgs1Alternative2|string|null $ensureArgs1
+     * @param MyClassEnsureArgs2|null $ensureArgs2
+     * @param MyClassEnsureArgs3Item[]|null $ensureArgs3
      */
-    public function __construct($_GLOBALS_1, $_GLOBALS, $GLOBALS1, $SERVER, $GET, $POST, $FILES, $REQUEST, $SESSION, $ENV, $COOKIE, $phpErrormsg, $httpResponseHeader, $_argc, $_argv, $_input, $_obj, $_includeDefaults, $fromInput, $toArray, $toStdClass, $validateInput, $_schema_1, $schema, $_defaults_1, $defaults, $providedOptionals, $_clone, $_clone_1, $construct, $destruct, $get, $set, $call, $isset, $unset, $sleep, $wakeup, $toString, $invoke, $debugInfo, $files, $_this)
+    public function __construct($_GLOBALS_1, $_GLOBALS, $GLOBALS1, $SERVER, $GET, $POST, $FILES, $REQUEST, $SESSION, $ENV, $COOKIE, $phpErrormsg, $httpResponseHeader, $_argc, $_argv, $_input, $_obj, $_includeDefaults, $fromInput, $toArray, $toStdClass, $validateInput, $_schema_1, $schema, $_defaults_1, $defaults, $providedOptionals, $_clone, $_clone_1, $construct, $destruct, $get, $set, $call, $isset, $unset, $sleep, $wakeup, $toString, $invoke, $debugInfo, $files, $_this, $_validate = null, $_materializeDefaults = null, MyClassTestObj $testObj = null, $_providedOptionals_1 = null, $ensureArgs1 = null, MyClassEnsureArgs2 $ensureArgs2 = null, array $ensureArgs3 = null)
     {
         $this->_GLOBALS = $_GLOBALS_1;
         $this->GLOBALS = $_GLOBALS;
@@ -631,6 +638,13 @@ class MyClass
         $this->debugInfo = $debugInfo;
         $this->files = $files;
         $this->_this = $_this;
+        $this->validate = $_validate;
+        $this->materializeDefaults = $_materializeDefaults;
+        $this->testObj = $testObj;
+        $this->_providedOptionals_1 = $_providedOptionals_1;
+        $this->ensureArgs1 = $ensureArgs1;
+        $this->ensureArgs2 = $ensureArgs2;
+        $this->ensureArgs3 = $ensureArgs3;
     }
 
     /**

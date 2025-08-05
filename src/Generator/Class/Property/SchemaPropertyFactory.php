@@ -49,12 +49,13 @@ class SchemaPropertyFactory
         return $propertyGenerator;
     }
 
-    private function buildDockBlock($property): ?DocBlockGenerator
+    private function buildDockBlock(PropertyInterface $property): ?DocBlockGenerator
     {
         $docBlock = null;
 
         $typeHint = $property->typeHint();
         $annotType = $property->typeAnnotation();
+
         if ($annotType === '') {
             $annotType = null;
         } elseif ($typeHint !== null && StringUtils::isAnnotationSameAsTypeHint($annotType, $typeHint)) {

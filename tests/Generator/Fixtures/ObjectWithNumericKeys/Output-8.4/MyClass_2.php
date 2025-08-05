@@ -32,6 +32,13 @@ class MyClass_2
 
     private ?string $_3 = null;
 
+    public function __construct(?string $_1 = null, ?string $_2 = null, ?string $_3 = null)
+    {
+        $this->_1 = $_1;
+        $this->_2 = $_2;
+        $this->_3 = $_3;
+    }
+
     public function get_1(): ?string
     {
         return $this->_1 ?? null;

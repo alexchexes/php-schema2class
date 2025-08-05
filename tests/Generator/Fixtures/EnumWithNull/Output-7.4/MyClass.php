@@ -41,6 +41,14 @@ class MyClass
     private ?string $foo = null;
 
     /**
+     * @param 'red'|'green'|null $foo
+     */
+    public function __construct(?string $foo = null)
+    {
+        $this->foo = $foo;
+    }
+
+    /**
      * @return 'red'|'green'|null
      */
     public function getFoo(): ?string

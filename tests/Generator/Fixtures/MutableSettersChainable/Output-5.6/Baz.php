@@ -24,6 +24,14 @@ class Baz
     private $name = null;
 
     /**
+     * @param string|null $name
+     */
+    public function __construct($name = null)
+    {
+        $this->name = $name;
+    }
+
+    /**
      * @return string|null
      */
     public function getName()

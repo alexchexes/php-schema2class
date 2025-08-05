@@ -27,6 +27,14 @@ class MyClass
     private $foo = null;
 
     /**
+     * @param string|int|float|null $foo
+     */
+    public function __construct($foo = null)
+    {
+        $this->foo = $foo;
+    }
+
+    /**
      * @return string|int|float|null
      */
     public function getFoo()

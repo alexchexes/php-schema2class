@@ -37,6 +37,15 @@ class MyClass
     private array|object|null $b = null;
 
     /**
+     * @param string[]|null $a
+     */
+    public function __construct(?array $a = null, array|object|null $b = null)
+    {
+        $this->a = $a;
+        $this->b = $b;
+    }
+
+    /**
      * @return string[]|null
      */
     public function getA(): ?array

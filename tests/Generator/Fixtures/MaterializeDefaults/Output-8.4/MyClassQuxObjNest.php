@@ -89,6 +89,11 @@ class MyClassQuxObjNest
 
     private array|object|null $a = null;
 
+    public function __construct(array|object|null $a = null)
+    {
+        $this->a = $a;
+    }
+
     public function getA(): array|object|null
     {
         return $this->a;

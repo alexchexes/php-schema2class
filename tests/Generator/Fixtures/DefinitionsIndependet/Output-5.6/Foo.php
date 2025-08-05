@@ -24,6 +24,14 @@ class Foo
     private $a = null;
 
     /**
+     * @param string|null $a
+     */
+    public function __construct($a = null)
+    {
+        $this->a = $a;
+    }
+
+    /**
      * @return string|null
      */
     public function getA()

@@ -57,6 +57,14 @@ class MyClass
     private $foo = null;
 
     /**
+     * @param FooItem[]|null $foo
+     */
+    public function __construct(array $foo = null)
+    {
+        $this->foo = $foo;
+    }
+
+    /**
      * @return FooItem[]|null
      */
     public function getFoo()

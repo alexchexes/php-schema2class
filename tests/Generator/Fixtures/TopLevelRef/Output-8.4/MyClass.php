@@ -25,6 +25,11 @@ class MyClass
 
     private string|int|float|null $foo = null;
 
+    public function __construct(int|float|string|null $foo = null)
+    {
+        $this->foo = $foo;
+    }
+
     public function getFoo(): int|float|string|null
     {
         return $this->foo;

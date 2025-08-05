@@ -98,6 +98,13 @@ class MyClassNumKeysDefaults
 
     private ?string $_2 = null;
 
+    public function __construct(?string $_0 = null, ?string $_1 = null, ?string $_2 = null)
+    {
+        $this->_0 = $_0;
+        $this->_1 = $_1;
+        $this->_2 = $_2;
+    }
+
     public function get_0(): ?string
     {
         return $this->_0 ?? null;

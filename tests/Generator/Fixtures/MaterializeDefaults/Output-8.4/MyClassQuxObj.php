@@ -72,6 +72,11 @@ class MyClassQuxObj
 
     private ?string $a = null;
 
+    public function __construct(?string $a = null)
+    {
+        $this->a = $a;
+    }
+
     public function getA(): ?string
     {
         return $this->a ?? null;

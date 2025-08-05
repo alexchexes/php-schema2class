@@ -22,6 +22,11 @@ class Bar
 
     private ?int $b = null;
 
+    public function __construct(?int $b = null)
+    {
+        $this->b = $b;
+    }
+
     public function getB(): ?int
     {
         return $this->b ?? null;

@@ -164,11 +164,21 @@ class MyClass
      */
     private ?MyClassGooks $gooks = null;
 
-    public function __construct(string $foo, ?string $quux, string $thud)
+    /**
+     * @param MyClassGrox|null $grox
+     * @param MyClassGooks|null $gooks
+     */
+    public function __construct(string $foo, ?string $quux, string $thud, ?string $bar = null, ?string $baz = null, ?string $qux = null, ?string $xyyz = null, ?MyClassGrox $grox = null, ?MyClassGooks $gooks = null)
     {
         $this->foo = $foo;
         $this->quux = $quux;
         $this->thud = $thud;
+        $this->bar = $bar;
+        $this->baz = $baz;
+        $this->qux = $qux;
+        $this->xyyz = $xyyz;
+        $this->grox = $grox;
+        $this->gooks = $gooks;
     }
 
     /**

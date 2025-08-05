@@ -45,6 +45,14 @@ class MyGenericStringNumberField
     private $field = null;
 
     /**
+     * @param MyGenericStringNumber|null $field
+     */
+    public function __construct(MyGenericStringNumber $field = null)
+    {
+        $this->field = $field;
+    }
+
+    /**
      * @return MyGenericStringNumber|null
      */
     public function getField()

@@ -32,6 +32,11 @@ class Fio
 
     private ?string $bar = null;
 
+    public function __construct(?string $bar = null)
+    {
+        $this->bar = $bar;
+    }
+
     public function getBar(): ?string
     {
         return $this->bar ?? null;

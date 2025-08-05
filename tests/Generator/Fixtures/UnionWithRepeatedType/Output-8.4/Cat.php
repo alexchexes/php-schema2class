@@ -61,6 +61,11 @@ class Cat
 
     private null|bool|string|int|float $hasFur = null;
 
+    public function __construct(bool|int|float|string|null $hasFur = null)
+    {
+        $this->hasFur = $hasFur;
+    }
+
     public function getHasFur(): bool|int|float|string|null
     {
         return $this->hasFur;

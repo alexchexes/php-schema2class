@@ -23,6 +23,14 @@ class OptionsObject
     private $output = null;
 
     /**
+     * @param string|null $_output
+     */
+    public function __construct($_output = null)
+    {
+        $this->output = $_output;
+    }
+
+    /**
      * @return string|null
      */
     public function getOutput()

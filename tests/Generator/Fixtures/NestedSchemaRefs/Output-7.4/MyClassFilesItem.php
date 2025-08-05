@@ -35,6 +35,12 @@ class MyClassFilesItem
 
     private ?OptionsObject $options = null;
 
+    public function __construct(?string $_input = null, ?OptionsObject $options = null)
+    {
+        $this->input = $_input;
+        $this->options = $options;
+    }
+
     public function getInput(): ?string
     {
         return $this->input ?? null;

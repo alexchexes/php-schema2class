@@ -49,6 +49,15 @@ class MyClass
     private ?OptionsObject $options = null;
 
     /**
+     * @param MyClassFilesItem[]|null $files
+     */
+    public function __construct(?array $files = null, ?OptionsObject $options = null)
+    {
+        $this->files = $files;
+        $this->options = $options;
+    }
+
+    /**
      * @return MyClassFilesItem[]|null
      */
     public function getFiles(): ?array

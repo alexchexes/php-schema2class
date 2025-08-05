@@ -41,6 +41,14 @@ class Record
     private ?array $dataArray = null;
 
     /**
+     * @param Phone[]|null $dataArray
+     */
+    public function __construct(?array $dataArray = null)
+    {
+        $this->dataArray = $dataArray;
+    }
+
+    /**
      * @return Phone[]|null
      */
     public function getDataArray(): ?array

@@ -47,9 +47,10 @@ class Foo
 
     private ?Size $size = null;
 
-    public function __construct(Color $color)
+    public function __construct(Color $color, ?Size $size = null)
     {
         $this->color = $color;
+        $this->size = $size;
     }
 
     public function getColor(): Color

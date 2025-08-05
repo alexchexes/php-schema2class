@@ -22,6 +22,11 @@ class Phone
 
     private ?string $foo = null;
 
+    public function __construct(?string $foo = null)
+    {
+        $this->foo = $foo;
+    }
+
     public function getFoo(): ?string
     {
         return $this->foo ?? null;

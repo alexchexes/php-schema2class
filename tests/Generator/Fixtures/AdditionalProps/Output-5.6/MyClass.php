@@ -35,6 +35,16 @@ class MyClass
     private $params = null;
 
     /**
+     * @param string|null $name
+     * @param mixed[]|null $params
+     */
+    public function __construct($name = null, array $params = null)
+    {
+        $this->name = $name;
+        $this->params = $params;
+    }
+
+    /**
      * @return string|null
      */
     public function getName()

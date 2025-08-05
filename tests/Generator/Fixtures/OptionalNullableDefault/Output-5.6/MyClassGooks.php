@@ -39,6 +39,16 @@ class MyClassGooks
     private $b = null;
 
     /**
+     * @param string|null $a
+     * @param int|float|null $b
+     */
+    public function __construct($a = null, $b = null)
+    {
+        $this->a = $a;
+        $this->b = $b;
+    }
+
+    /**
      * @return string|null
      */
     public function getA()

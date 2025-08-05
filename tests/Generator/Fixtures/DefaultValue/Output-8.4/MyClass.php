@@ -130,6 +130,18 @@ class MyClass
 
     private ?string $zyx = null;
 
+    public function __construct(?int $foo = null, ?string $bar = null, ?int $baz = null, ?string $qux = null, ?string $thud = null, ?string $grox = null, int|float|string|null $qwert = null, ?string $zyx = null)
+    {
+        $this->foo = $foo;
+        $this->bar = $bar;
+        $this->baz = $baz;
+        $this->qux = $qux;
+        $this->thud = $thud;
+        $this->grox = $grox;
+        $this->qwert = $qwert;
+        $this->zyx = $zyx;
+    }
+
     public function getFoo(): ?int
     {
         return $this->foo ?? null;

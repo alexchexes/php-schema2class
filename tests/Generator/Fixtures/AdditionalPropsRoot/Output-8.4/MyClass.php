@@ -30,6 +30,12 @@ class MyClass
 
     private array|object|null $params = null;
 
+    public function __construct(?string $name = null, array|object|null $params = null)
+    {
+        $this->name = $name;
+        $this->params = $params;
+    }
+
     public function getName(): ?string
     {
         return $this->name ?? null;

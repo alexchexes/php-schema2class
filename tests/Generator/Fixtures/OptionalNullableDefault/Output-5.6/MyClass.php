@@ -187,12 +187,24 @@ class MyClass
      * @param string $foo
      * @param string|null $quux
      * @param string $thud
+     * @param string|null $bar
+     * @param string|null $baz
+     * @param string|null $qux
+     * @param string|null $xyyz
+     * @param MyClassGrox|null $grox
+     * @param MyClassGooks|null $gooks
      */
-    public function __construct($foo, $quux, $thud)
+    public function __construct($foo, $quux, $thud, $bar = null, $baz = null, $qux = null, $xyyz = null, MyClassGrox $grox = null, MyClassGooks $gooks = null)
     {
         $this->foo = $foo;
         $this->quux = $quux;
         $this->thud = $thud;
+        $this->bar = $bar;
+        $this->baz = $baz;
+        $this->qux = $qux;
+        $this->xyyz = $xyyz;
+        $this->grox = $grox;
+        $this->gooks = $gooks;
     }
 
     /**

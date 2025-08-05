@@ -49,6 +49,16 @@ class MyClass
     private $bar = null;
 
     /**
+     * @param string|null $foo
+     * @param Baz|null $bar
+     */
+    public function __construct($foo = null, Baz $bar = null)
+    {
+        $this->foo = $foo;
+        $this->bar = $bar;
+    }
+
+    /**
      * Description for the `foo` property
      *
      * @return string|null

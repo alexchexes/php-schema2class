@@ -44,6 +44,12 @@ class MyClass
 
     private array|object|null $encoded = null;
 
+    public function __construct(array|object|null $foo = null, array|object|null $encoded = null)
+    {
+        $this->foo = $foo;
+        $this->encoded = $encoded;
+    }
+
     public function getFoo(): array|object|null
     {
         return $this->foo;

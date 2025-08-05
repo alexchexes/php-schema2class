@@ -40,6 +40,14 @@ class MyClassEnsureArgs1Alternative1
     private ?MyClassEnsureArgs1Alternative1Type $type = null;
 
     /**
+     * @param MyClassEnsureArgs1Alternative1Type|null $type
+     */
+    public function __construct(?MyClassEnsureArgs1Alternative1Type $type = null)
+    {
+        $this->type = $type;
+    }
+
+    /**
      * @return MyClassEnsureArgs1Alternative1Type|null
      */
     public function getType(): ?MyClassEnsureArgs1Alternative1Type

@@ -40,9 +40,10 @@ class Address
 
     private string $city;
 
-    public function __construct(string $city)
+    public function __construct(string $city, ?Address\Defs\Name $name = null)
     {
         $this->city = $city;
+        $this->name = $name;
     }
 
     public function getName(): ?Address\Defs\Name

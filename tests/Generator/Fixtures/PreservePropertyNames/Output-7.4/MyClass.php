@@ -113,7 +113,7 @@ class MyClass
 
     private ?string $it_s_A = null;
 
-    public function __construct(string $foo, string $_foo, string $__foo, string $foo_, string $foo__, string $_foo_, string $__foo__, string $_foo_bar, string $foo_bar, string $baz_qux, string $_123_qwe, string $Gorod, string $nazvanie_iur_litsa, string $IP_adres, string $_tildas)
+    public function __construct(string $foo, string $_foo, string $__foo, string $foo_, string $foo__, string $_foo_, string $__foo__, string $_foo_bar, string $foo_bar, string $baz_qux, string $_123_qwe, string $Gorod, string $nazvanie_iur_litsa, string $IP_adres, string $_tildas, ?string $it_s_A = null)
     {
         $this->foo = $foo;
         $this->_foo = $_foo;
@@ -130,6 +130,7 @@ class MyClass
         $this->nazvanie_iur_litsa = $nazvanie_iur_litsa;
         $this->IP_adres = $IP_adres;
         $this->_tildas = $_tildas;
+        $this->it_s_A = $it_s_A;
     }
 
     public function getFoo(): string

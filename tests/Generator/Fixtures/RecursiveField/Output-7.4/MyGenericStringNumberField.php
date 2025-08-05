@@ -43,6 +43,11 @@ class MyGenericStringNumberField
 
     private ?MyGenericStringNumber $field = null;
 
+    public function __construct(?MyGenericStringNumber $field = null)
+    {
+        $this->field = $field;
+    }
+
     public function getField(): ?MyGenericStringNumber
     {
         return $this->field ?? null;

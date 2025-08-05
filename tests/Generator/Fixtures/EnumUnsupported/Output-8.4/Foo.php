@@ -88,10 +88,18 @@ class Foo
 
     /**
      * @param false $requiredBoolEnumRef
+     * @param 0|1.5|2.5|3.5|null $floatEnum
+     * @param 0|1.5|2.5|3.5|null $floatEnumRef
+     * @param false|null $boolEnum
+     * @param false|null $boolEnumRef
      */
-    public function __construct(bool $requiredBoolEnumRef)
+    public function __construct(bool $requiredBoolEnumRef, int|float|null $floatEnum = null, int|float|null $floatEnumRef = null, ?bool $boolEnum = null, ?bool $boolEnumRef = null)
     {
         $this->requiredBoolEnumRef = $requiredBoolEnumRef;
+        $this->floatEnum = $floatEnum;
+        $this->floatEnumRef = $floatEnumRef;
+        $this->boolEnum = $boolEnum;
+        $this->boolEnumRef = $boolEnumRef;
     }
 
     /**

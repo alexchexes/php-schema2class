@@ -60,9 +60,10 @@ class MyClass
 
     private ?Address $address = null;
 
-    public function __construct(int $id)
+    public function __construct(int $id, ?Address $address = null)
     {
         $this->id = $id;
+        $this->address = $address;
     }
 
     public function getId(): int

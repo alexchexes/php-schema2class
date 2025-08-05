@@ -27,6 +27,11 @@ class Baz
 
     private ?string $name = null;
 
+    public function __construct(?string $name = null)
+    {
+        $this->name = $name;
+    }
+
     /**
      * Description of the `name` property in `Baz` definition
      */

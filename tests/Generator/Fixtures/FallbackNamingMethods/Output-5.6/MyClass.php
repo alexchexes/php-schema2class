@@ -39,6 +39,18 @@ class MyClass
     private $_outbound = null;
 
     /**
+     * @param string|null $bound
+     * @param string|null $outbound
+     * @param string|null $_outbound
+     */
+    public function __construct($bound = null, $outbound = null, $_outbound = null)
+    {
+        $this->bound = $bound;
+        $this->outbound = $outbound;
+        $this->_outbound = $_outbound;
+    }
+
+    /**
      * @return string|null
      */
     public function getBound()

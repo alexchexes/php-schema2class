@@ -21,6 +21,11 @@ class OptionsObject
 
     private ?string $output = null;
 
+    public function __construct(?string $_output = null)
+    {
+        $this->output = $_output;
+    }
+
     public function getOutput(): ?string
     {
         return $this->output ?? null;

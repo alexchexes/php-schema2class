@@ -50,6 +50,11 @@ class GenericPet
 
     private ?bool $hasFur = null;
 
+    public function __construct(?bool $hasFur = null)
+    {
+        $this->hasFur = $hasFur;
+    }
+
     /**
      * Whether the animal has fur (true), doesn't (false), or it's unknown or varies (null)
      */

@@ -36,10 +36,12 @@ class MyClass
 
     /**
      * @param string $foo
+     * @param int|null $bar
      */
-    public function __construct($foo)
+    public function __construct($foo, $bar = null)
     {
         $this->foo = $foo;
+        $this->bar = $bar;
     }
 
     /**

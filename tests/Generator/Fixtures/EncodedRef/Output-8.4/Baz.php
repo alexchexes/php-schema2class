@@ -50,6 +50,13 @@ class Baz
 
     private ?BarTest $c = null;
 
+    public function __construct(?FooTest $a = null, ?FooTest $b = null, ?BarTest $c = null)
+    {
+        $this->a = $a;
+        $this->b = $b;
+        $this->c = $c;
+    }
+
     public function getA(): ?FooTest
     {
         return $this->a ?? null;

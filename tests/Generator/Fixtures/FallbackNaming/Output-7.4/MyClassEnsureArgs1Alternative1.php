@@ -40,6 +40,14 @@ class MyClassEnsureArgs1Alternative1
     private ?string $type = null;
 
     /**
+     * @param 'invoice'|null $type
+     */
+    public function __construct(?string $type = null)
+    {
+        $this->type = $type;
+    }
+
+    /**
      * @return 'invoice'|null
      */
     public function getType(): ?string

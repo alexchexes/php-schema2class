@@ -41,6 +41,14 @@ class Cat
     private string|array|null $hasFur = null;
 
     /**
+     * @param 'a'|'b'|string[]|null $hasFur
+     */
+    public function __construct(string|array|null $hasFur = null)
+    {
+        $this->hasFur = $hasFur;
+    }
+
+    /**
      * @return 'a'|'b'|string[]|null
      */
     public function getHasFur(): string|array|null

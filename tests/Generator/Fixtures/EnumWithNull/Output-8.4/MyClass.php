@@ -41,6 +41,14 @@ class MyClass
     private ?MyClassFoo $foo = null;
 
     /**
+     * @param MyClassFoo|null $foo
+     */
+    public function __construct(?MyClassFoo $foo = null)
+    {
+        $this->foo = $foo;
+    }
+
+    /**
      * @return MyClassFoo|null
      */
     public function getFoo(): ?MyClassFoo

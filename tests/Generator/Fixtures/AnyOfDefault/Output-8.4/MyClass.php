@@ -42,6 +42,11 @@ class MyClass
 
     private string|int|null $foo = null;
 
+    public function __construct(int|string|null $foo = null)
+    {
+        $this->foo = $foo;
+    }
+
     public function getFoo(): int|string|null
     {
         return $this->foo;

@@ -41,10 +41,12 @@ class MyClass
 
     /**
      * @param string|array|object $foo
+     * @param string|array|object|null $bar
      */
-    public function __construct($foo)
+    public function __construct($foo, $bar = null)
     {
         $this->foo = $foo;
+        $this->bar = $bar;
     }
 
     /**

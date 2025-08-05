@@ -29,9 +29,10 @@ class MyClass
 
     private array|object $bar;
 
-    public function __construct(array|object $bar)
+    public function __construct(array|object $bar, array|object|null $foo = null)
     {
         $this->bar = $bar;
+        $this->foo = $foo;
     }
 
     public function getFoo(): array|object|null

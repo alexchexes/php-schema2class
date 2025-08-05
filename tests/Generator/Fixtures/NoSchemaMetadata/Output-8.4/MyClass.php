@@ -32,9 +32,10 @@ class MyClass
      */
     private ?int $bar = null;
 
-    public function __construct(string $foo)
+    public function __construct(string $foo, ?int $bar = null)
     {
         $this->foo = $foo;
+        $this->bar = $bar;
     }
 
     /**

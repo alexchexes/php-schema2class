@@ -22,6 +22,11 @@ class Name
 
     private ?string $first = null;
 
+    public function __construct(?string $first = null)
+    {
+        $this->first = $first;
+    }
+
     public function getFirst(): ?string
     {
         return $this->first ?? null;

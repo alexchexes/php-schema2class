@@ -24,6 +24,14 @@ class Name
     private $first = null;
 
     /**
+     * @param string|null $first
+     */
+    public function __construct($first = null)
+    {
+        $this->first = $first;
+    }
+
+    /**
      * @return string|null
      */
     public function getFirst()

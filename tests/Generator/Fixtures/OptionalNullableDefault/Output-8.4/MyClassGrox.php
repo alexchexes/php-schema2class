@@ -35,6 +35,12 @@ class MyClassGrox
 
     private int|float|null $b = null;
 
+    public function __construct(?string $a = null, int|float|null $b = null)
+    {
+        $this->a = $a;
+        $this->b = $b;
+    }
+
     public function getA(): ?string
     {
         return $this->a ?? null;

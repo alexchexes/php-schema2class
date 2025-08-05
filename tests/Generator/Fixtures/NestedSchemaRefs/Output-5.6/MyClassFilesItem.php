@@ -40,6 +40,16 @@ class MyClassFilesItem
     private $options = null;
 
     /**
+     * @param string|null $_input
+     * @param OptionsObject|null $options
+     */
+    public function __construct($_input = null, OptionsObject $options = null)
+    {
+        $this->input = $_input;
+        $this->options = $options;
+    }
+
+    /**
      * @return string|null
      */
     public function getInput()

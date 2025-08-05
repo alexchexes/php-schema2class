@@ -29,6 +29,14 @@ class Baz
     private $name = null;
 
     /**
+     * @param string|null $name
+     */
+    public function __construct($name = null)
+    {
+        $this->name = $name;
+    }
+
+    /**
      * Description of the `name` property in `Baz` definition
      *
      * @return string|null

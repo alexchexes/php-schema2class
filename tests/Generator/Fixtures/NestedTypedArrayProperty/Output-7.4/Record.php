@@ -111,6 +111,20 @@ class Record
     private ?array $dataArrayNestedAnyOf = null;
 
     /**
+     * @param Phone[]|null $dataArray
+     * @param Phone[][]|null $dataArrayNested
+     * @param (Phone|Fio)[]|null $dataArrayAnyOf
+     * @param ((Phone|Fio)[])[]|null $dataArrayNestedAnyOf
+     */
+    public function __construct(?array $dataArray = null, ?array $dataArrayNested = null, ?array $dataArrayAnyOf = null, ?array $dataArrayNestedAnyOf = null)
+    {
+        $this->dataArray = $dataArray;
+        $this->dataArrayNested = $dataArrayNested;
+        $this->dataArrayAnyOf = $dataArrayAnyOf;
+        $this->dataArrayNestedAnyOf = $dataArrayNestedAnyOf;
+    }
+
+    /**
      * @return Phone[]|null
      */
     public function getDataArray(): ?array

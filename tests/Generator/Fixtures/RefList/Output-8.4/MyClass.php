@@ -31,6 +31,14 @@ class MyClass
     private ?array $foo = null;
 
     /**
+     * @param \Helmich\Schema2Class\Example\CustomerAddress[]|null $foo
+     */
+    public function __construct(?array $foo = null)
+    {
+        $this->foo = $foo;
+    }
+
+    /**
      * @return \Helmich\Schema2Class\Example\CustomerAddress[]|null
      */
     public function getFoo(): ?array

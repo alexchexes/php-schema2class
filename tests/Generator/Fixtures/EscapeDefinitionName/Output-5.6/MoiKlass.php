@@ -24,6 +24,14 @@ class MoiKlass
     private $c = null;
 
     /**
+     * @param string|null $c
+     */
+    public function __construct($c = null)
+    {
+        $this->c = $c;
+    }
+
+    /**
      * @return string|null
      */
     public function getC()
