@@ -353,12 +353,26 @@ class MyClass
         $__providedOptionals = [];
         $inferString = $input->{'inferString'};
         $inferInt = $input->{'inferInt'};
-        $inferMixed = ($input->{'inferMixed'} !== null ? $input->{'inferMixed'} : null);
+        $inferMixed = ($input->{'inferMixed'} !== null ? ((is_bool($input->{'inferMixed'})) ? (bool)$input->{'inferMixed'} : (((in_array($input->{'inferMixed'}, array (
+          0 => 42,
+          1 => 42.5,
+        ), true)) ? (str_contains((string)$input->{'inferMixed'}, '.') ? (float)$input->{'inferMixed'} : (int)$input->{'inferMixed'}) : (((in_array($input->{'inferMixed'}, array (
+          0 => 42,
+        ), true)) ? $input->{'inferMixed'} : (((in_array($input->{'inferMixed'}, array (
+          0 => '42',
+        ), true)) ? $input->{'inferMixed'} : (null)))))))) : null);
         $inferStringOpt = isset($input->{'inferStringOpt'}) ? $input->{'inferStringOpt'} : null;
         $inferIntOpt = isset($input->{'inferIntOpt'}) ? $input->{'inferIntOpt'} : null;
         $inferMixedOpt = null;
         if (property_exists($input, 'inferMixedOpt')) {
-            $inferMixedOpt = ($input->{'inferMixedOpt'} !== null ? $input->{'inferMixedOpt'} : null);
+            $inferMixedOpt = ($input->{'inferMixedOpt'} !== null ? ((is_bool($input->{'inferMixedOpt'})) ? (bool)$input->{'inferMixedOpt'} : (((in_array($input->{'inferMixedOpt'}, array (
+          0 => 42,
+          1 => 42.5,
+        ), true)) ? (str_contains((string)$input->{'inferMixedOpt'}, '.') ? (float)$input->{'inferMixedOpt'} : (int)$input->{'inferMixedOpt'}) : (((in_array($input->{'inferMixedOpt'}, array (
+          0 => 42,
+        ), true)) ? $input->{'inferMixedOpt'} : (((in_array($input->{'inferMixedOpt'}, array (
+          0 => '42',
+        ), true)) ? $input->{'inferMixedOpt'} : (null)))))))) : null);
             $__providedOptionals['inferMixedOpt'] = true;
         }
 
@@ -380,7 +394,16 @@ class MyClass
         $output = [];
         $output['inferString'] = $this->inferString;
         $output['inferInt'] = $this->inferInt;
-        $output['inferMixed'] = $this->inferMixed;
+        if ((in_array($this->inferMixed, array (
+          0 => '42',
+        ), true)) || (in_array($this->inferMixed, array (
+          0 => 42,
+        ), true)) || (in_array($this->inferMixed, array (
+          0 => 42,
+          1 => 42.5,
+        ), true)) || (is_bool($this->inferMixed))) {
+            $output['inferMixed'] = $this->inferMixed;
+        }
         if (isset($this->inferStringOpt)) {
             $output['inferStringOpt'] = $this->inferStringOpt;
         }
@@ -388,7 +411,14 @@ class MyClass
             $output['inferIntOpt'] = $this->inferIntOpt;
         }
         if (isset($this->inferMixedOpt) || array_key_exists('inferMixedOpt', $this->_providedOptionals)) {
-            $output['inferMixedOpt'] = ($this->inferMixedOpt !== null) ? ($this->inferMixedOpt) : null;
+            $output['inferMixedOpt'] = ($this->inferMixedOpt !== null) ? ((is_bool($this->inferMixedOpt)) ? ($this->inferMixedOpt) : ((in_array($this->inferMixedOpt, array (
+              0 => 42,
+              1 => 42.5,
+            ), true)) ? ($this->inferMixedOpt) : ((in_array($this->inferMixedOpt, array (
+              0 => 42,
+            ), true)) ? ($this->inferMixedOpt) : ((in_array($this->inferMixedOpt, array (
+              0 => '42',
+            ), true)) ? ($this->inferMixedOpt) : (null))))) : null;
         }
 
         return $output;
@@ -404,7 +434,16 @@ class MyClass
         $output = new \stdClass();
         $output->{'inferString'} = $this->inferString;
         $output->{'inferInt'} = $this->inferInt;
+        if ((in_array($this->inferMixed, array (
+          0 => '42',
+        ), true)) || (in_array($this->inferMixed, array (
+          0 => 42,
+        ), true)) || (in_array($this->inferMixed, array (
+          0 => 42,
+          1 => 42.5,
+        ), true)) || (is_bool($this->inferMixed))) {
         $output->{'inferMixed'} = $this->inferMixed;
+        }
         if (isset($this->inferStringOpt)) {
             $output->{'inferStringOpt'} = $this->inferStringOpt;
         }
@@ -412,7 +451,14 @@ class MyClass
             $output->{'inferIntOpt'} = $this->inferIntOpt;
         }
         if (isset($this->inferMixedOpt) || array_key_exists('inferMixedOpt', $this->_providedOptionals)) {
-            $output->{'inferMixedOpt'} = ($this->inferMixedOpt !== null) ? ($this->inferMixedOpt) : null;
+            $output->{'inferMixedOpt'} = ($this->inferMixedOpt !== null) ? ((is_bool($this->inferMixedOpt)) ? ($this->inferMixedOpt) : ((in_array($this->inferMixedOpt, array (
+              0 => 42,
+              1 => 42.5,
+            ), true)) ? ($this->inferMixedOpt) : ((in_array($this->inferMixedOpt, array (
+              0 => 42,
+            ), true)) ? ($this->inferMixedOpt) : ((in_array($this->inferMixedOpt, array (
+              0 => '42',
+            ), true)) ? ($this->inferMixedOpt) : (null))))) : null;
         }
 
         return $output;
@@ -440,6 +486,28 @@ class MyClass
         }
 
         return $validator->isValid();
+    }
+
+    public function __clone()
+    {
+        $this->inferMixed = (is_bool($this->inferMixed)) ? ($this->inferMixed) : ((in_array($this->inferMixed, array (
+          0 => 42,
+          1 => 42.5,
+        ), true)) ? ($this->inferMixed) : ((in_array($this->inferMixed, array (
+          0 => 42,
+        ), true)) ? ($this->inferMixed) : ((in_array($this->inferMixed, array (
+          0 => '42',
+        ), true)) ? ($this->inferMixed) : ($this->inferMixed))));
+        if (isset($this->inferMixedOpt)) {
+            $this->inferMixedOpt = (is_bool($this->inferMixedOpt)) ? ($this->inferMixedOpt) : ((in_array($this->inferMixedOpt, array (
+              0 => 42,
+              1 => 42.5,
+            ), true)) ? ($this->inferMixedOpt) : ((in_array($this->inferMixedOpt, array (
+              0 => 42,
+            ), true)) ? ($this->inferMixedOpt) : ((in_array($this->inferMixedOpt, array (
+              0 => '42',
+            ), true)) ? ($this->inferMixedOpt) : ($this->inferMixedOpt))));
+        }
     }
 
     /**

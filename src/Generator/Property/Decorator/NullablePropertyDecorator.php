@@ -169,7 +169,7 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface
             return $hint;
         }
 
-        if ($this->request->isAtLeastPHP('7.1') && strpos($hint, "?") !== 0) {
+        if (strpos($hint, "?") !== 0) {
             if ($hint === "mixed" || $hint === "null") {
                 return $hint;
             }

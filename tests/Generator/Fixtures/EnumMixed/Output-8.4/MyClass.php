@@ -129,26 +129,29 @@ class MyClass
     private int|string $bar;
 
     /**
-     * @var 'red'|'amber'|'green'|'42'|42|42.5|false|null
+     * @var MyClassBazAlternative1|MyClassBazAlternative2|42|42.5|false|null
      */
-    private string|int|float|bool|null $baz;
+    private MyClassBazAlternative1|MyClassBazAlternative2|int|float|bool|null $baz;
 
     /**
-     * @var '3'|'4'|null
+     * @var MyClassInferString|null
      */
-    private ?string $inferString = null;
+    private ?MyClassInferString $inferString = null;
 
     /**
-     * @var 3|4|null
+     * @var MyClassInferInt|null
      */
-    private ?int $inferInt = null;
+    private ?MyClassInferInt $inferInt = null;
 
-    private int $contradiction;
+    /**
+     * @var MyClassContradiction
+     */
+    private MyClassContradiction $contradiction;
 
     /**
      * @var 1|2|'one'
      */
-    private string|int $contradiction2;
+    private int|string $contradiction2;
 
     /**
      * @var MyClassNullable|null
@@ -163,14 +166,15 @@ class MyClass
     /**
      * @param 1|2|'1'|'2' $foo
      * @param 3|4|'3'|'4' $bar
-     * @param 'red'|'amber'|'green'|'42'|42|42.5|false|null $baz
+     * @param MyClassBazAlternative1|MyClassBazAlternative2|42|42.5|false|null $baz
+     * @param MyClassContradiction $contradiction
      * @param 1|2|'one' $contradiction2
      * @param MyClassNullable|null $nullable
-     * @param '3'|'4'|null $inferString
-     * @param 3|4|null $inferInt
+     * @param MyClassInferString|null $inferString
+     * @param MyClassInferInt|null $inferInt
      * @param MyClassOptionalNullable|null $optionalNullable
      */
-    public function __construct(int|string $foo, int|string $bar, bool|int|float|string|null $baz, int $contradiction, int|string $contradiction2, ?MyClassNullable $nullable, ?string $inferString = null, ?int $inferInt = null, ?MyClassOptionalNullable $optionalNullable = null)
+    public function __construct(int|string $foo, int|string $bar, MyClassBazAlternative1|MyClassBazAlternative2|bool|int|float|null $baz, MyClassContradiction $contradiction, int|string $contradiction2, ?MyClassNullable $nullable, ?MyClassInferString $inferString = null, ?MyClassInferInt $inferInt = null, ?MyClassOptionalNullable $optionalNullable = null)
     {
         $this->foo = $foo;
         $this->bar = $bar;
@@ -238,17 +242,17 @@ class MyClass
     }
 
     /**
-     * @return 'red'|'amber'|'green'|'42'|42|42.5|false|null
+     * @return MyClassBazAlternative1|MyClassBazAlternative2|42|42.5|false|null
      */
-    public function getBaz(): bool|int|float|string|null
+    public function getBaz(): MyClassBazAlternative1|MyClassBazAlternative2|bool|int|float|null
     {
         return $this->baz;
     }
 
     /**
-     * @param 'red'|'amber'|'green'|'42'|42|42.5|false|null $baz
+     * @param MyClassBazAlternative1|MyClassBazAlternative2|42|42.5|false|null $baz
      */
-    public function withBaz(bool|int|float|string|null $baz, bool $validate = true): self
+    public function withBaz(MyClassBazAlternative1|MyClassBazAlternative2|bool|int|float|null $baz, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -265,26 +269,18 @@ class MyClass
     }
 
     /**
-     * @return '3'|'4'|null
+     * @return MyClassInferString|null
      */
-    public function getInferString(): ?string
+    public function getInferString(): ?MyClassInferString
     {
         return $this->inferString ?? null;
     }
 
     /**
-     * @param '3'|'4' $inferString
+     * @param MyClassInferString $inferString
      */
-    public function withInferString(string $inferString, bool $validate = true): self
+    public function withInferString(MyClassInferString $inferString): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($inferString, self::$_schema['properties']['inferString']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->inferString = $inferString;
 
@@ -300,26 +296,18 @@ class MyClass
     }
 
     /**
-     * @return 3|4|null
+     * @return MyClassInferInt|null
      */
-    public function getInferInt(): ?int
+    public function getInferInt(): ?MyClassInferInt
     {
         return $this->inferInt ?? null;
     }
 
     /**
-     * @param 3|4 $inferInt
+     * @param MyClassInferInt $inferInt
      */
-    public function withInferInt(int $inferInt, bool $validate = true): self
+    public function withInferInt(MyClassInferInt $inferInt): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($inferInt, self::$_schema['properties']['inferInt']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->inferInt = $inferInt;
 
@@ -334,21 +322,19 @@ class MyClass
         return $clone;
     }
 
-    public function getContradiction(): int
+    /**
+     * @return MyClassContradiction
+     */
+    public function getContradiction(): MyClassContradiction
     {
         return $this->contradiction;
     }
 
-    public function withContradiction(int $contradiction, bool $validate = true): self
+    /**
+     * @param MyClassContradiction $contradiction
+     */
+    public function withContradiction(MyClassContradiction $contradiction): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($contradiction, self::$_schema['properties']['contradiction']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->contradiction = $contradiction;
 
@@ -448,10 +434,19 @@ class MyClass
         $__providedOptionals = [];
         $foo = $input->{'foo'};
         $bar = $input->{'bar'};
-        $baz = ($input->{'baz'} !== null ? $input->{'baz'} : null);
-        $inferString = isset($input->{'inferString'}) ? $input->{'inferString'} : null;
-        $inferInt = isset($input->{'inferInt'}) ? $input->{'inferInt'} : null;
-        $contradiction = (int)$input->{'contradiction'};
+        $baz = ($input->{'baz'} !== null ? match (true) {
+            MyClassBazAlternative1::tryFrom($input->{'baz'}) !== null => MyClassBazAlternative1::from($input->{'baz'}),
+            MyClassBazAlternative2::tryFrom($input->{'baz'}) !== null => MyClassBazAlternative2::from($input->{'baz'}),
+            in_array($input->{'baz'}, array (
+          0 => 42,
+          1 => 42.5,
+        ), true) => (str_contains((string)$input->{'baz'}, '.') ? (float)$input->{'baz'} : (int)$input->{'baz'}),
+            is_bool($input->{'baz'}) => (bool)$input->{'baz'},
+            default => null,
+        } : null);
+        $inferString = isset($input->{'inferString'}) ? MyClassInferString::from($input->{'inferString'}) : null;
+        $inferInt = isset($input->{'inferInt'}) ? MyClassInferInt::from($input->{'inferInt'}) : null;
+        $contradiction = MyClassContradiction::from($input->{'contradiction'});
         $contradiction2 = $input->{'contradiction2'};
         $nullable = ($input->{'nullable'} !== null ? MyClassNullable::from($input->{'nullable'}) : null);
         $optionalNullable = null;
@@ -478,14 +473,22 @@ class MyClass
         $output = [];
         $output['foo'] = $this->foo;
         $output['bar'] = $this->bar;
-        $output['baz'] = $this->baz;
+        $output['baz'] = match (true) {
+            $this->baz instanceof MyClassBazAlternative1,
+            $this->baz instanceof MyClassBazAlternative2 => ($this->baz)->value,
+            in_array($this->baz, array (
+          0 => 42,
+          1 => 42.5,
+        ), true),
+            is_bool($this->baz) => $this->baz,
+        };
         if (isset($this->inferString)) {
-            $output['inferString'] = $this->inferString;
+            $output['inferString'] = ($this->inferString)->value;
         }
         if (isset($this->inferInt)) {
-            $output['inferInt'] = $this->inferInt;
+            $output['inferInt'] = ($this->inferInt)->value;
         }
-        $output['contradiction'] = $this->contradiction;
+        $output['contradiction'] = ($this->contradiction)->value;
         $output['contradiction2'] = $this->contradiction2;
         $output['nullable'] = ($this->nullable)->value;
         if (isset($this->optionalNullable) || array_key_exists('optionalNullable', $this->_providedOptionals)) {
@@ -505,14 +508,22 @@ class MyClass
         $output = new \stdClass();
         $output->{'foo'} = $this->foo;
         $output->{'bar'} = $this->bar;
-        $output->{'baz'} = $this->baz;
+        $output->{'baz'} = match (true) {
+            $this->baz instanceof MyClassBazAlternative1,
+            $this->baz instanceof MyClassBazAlternative2 => ($this->baz)->value,
+            in_array($this->baz, array (
+          0 => 42,
+          1 => 42.5,
+        ), true),
+            is_bool($this->baz) => $this->baz,
+        };
         if (isset($this->inferString)) {
-            $output->{'inferString'} = $this->inferString;
+            $output->{'inferString'} = ($this->inferString)->value;
         }
         if (isset($this->inferInt)) {
-            $output->{'inferInt'} = $this->inferInt;
+            $output->{'inferInt'} = ($this->inferInt)->value;
         }
-        $output->{'contradiction'} = $this->contradiction;
+        $output->{'contradiction'} = ($this->contradiction)->value;
         $output->{'contradiction2'} = $this->contradiction2;
         $output->{'nullable'} = ($this->nullable)->value;
         if (isset($this->optionalNullable) || array_key_exists('optionalNullable', $this->_providedOptionals)) {
@@ -544,6 +555,19 @@ class MyClass
         }
 
         return $validator->isValid();
+    }
+
+    public function __clone()
+    {
+        $this->baz = match (true) {
+            $this->baz instanceof MyClassBazAlternative1,
+            $this->baz instanceof MyClassBazAlternative2,
+            in_array($this->baz, array (
+          0 => 42,
+          1 => 42.5,
+        ), true),
+            is_bool($this->baz) => $this->baz,
+        };
     }
 
     /**

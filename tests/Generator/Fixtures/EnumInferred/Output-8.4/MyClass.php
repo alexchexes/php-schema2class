@@ -75,44 +75,44 @@ class MyClass
     private array $_providedOptionals = [];
 
     /**
-     * @var '3'|'4'|''
+     * @var MyClassInferString
      */
-    private string $inferString;
+    private MyClassInferString $inferString;
 
     /**
-     * @var 3|4|5
+     * @var MyClassInferInt
      */
-    private int|float $inferInt;
+    private MyClassInferInt $inferInt;
 
     /**
-     * @var '42'|42|42.5|false|null
+     * @var MyClassInferMixedAlternative1|MyClassInferMixedAlternative2|42|42.5|false|null
      */
-    private string|int|float|bool|null $inferMixed;
+    private MyClassInferMixedAlternative1|MyClassInferMixedAlternative2|int|float|bool|null $inferMixed;
 
     /**
-     * @var '3'|'4'|''|null
+     * @var MyClassInferStringOpt|null
      */
-    private ?string $inferStringOpt = null;
+    private ?MyClassInferStringOpt $inferStringOpt = null;
 
     /**
-     * @var 3|4|5|null
+     * @var MyClassInferIntOpt|null
      */
-    private int|float|null $inferIntOpt = null;
+    private ?MyClassInferIntOpt $inferIntOpt = null;
 
     /**
-     * @var '42'|42|42.5|false|null
+     * @var MyClassInferMixedOptAlternative1|MyClassInferMixedOptAlternative2|42|42.5|false|null
      */
-    private string|int|float|bool|null $inferMixedOpt = null;
+    private MyClassInferMixedOptAlternative1|MyClassInferMixedOptAlternative2|int|float|bool|null $inferMixedOpt = null;
 
     /**
-     * @param '3'|'4'|'' $inferString
-     * @param 3|4|5 $inferInt
-     * @param '42'|42|42.5|false|null $inferMixed
-     * @param '3'|'4'|''|null $inferStringOpt
-     * @param 3|4|5|null $inferIntOpt
-     * @param '42'|42|42.5|false|null $inferMixedOpt
+     * @param MyClassInferString $inferString
+     * @param MyClassInferInt $inferInt
+     * @param MyClassInferMixedAlternative1|MyClassInferMixedAlternative2|42|42.5|false|null $inferMixed
+     * @param MyClassInferStringOpt|null $inferStringOpt
+     * @param MyClassInferIntOpt|null $inferIntOpt
+     * @param MyClassInferMixedOptAlternative1|MyClassInferMixedOptAlternative2|42|42.5|false|null $inferMixedOpt
      */
-    public function __construct(string $inferString, int|float $inferInt, bool|int|float|string|null $inferMixed, ?string $inferStringOpt = null, int|float|null $inferIntOpt = null, bool|int|float|string|null $inferMixedOpt = null)
+    public function __construct(MyClassInferString $inferString, MyClassInferInt $inferInt, MyClassInferMixedAlternative1|MyClassInferMixedAlternative2|bool|int|float|null $inferMixed, ?MyClassInferStringOpt $inferStringOpt = null, ?MyClassInferIntOpt $inferIntOpt = null, MyClassInferMixedOptAlternative1|MyClassInferMixedOptAlternative2|bool|int|float|null $inferMixedOpt = null)
     {
         $this->inferString = $inferString;
         $this->inferInt = $inferInt;
@@ -123,26 +123,18 @@ class MyClass
     }
 
     /**
-     * @return '3'|'4'|''
+     * @return MyClassInferString
      */
-    public function getInferString(): string
+    public function getInferString(): MyClassInferString
     {
         return $this->inferString;
     }
 
     /**
-     * @param '3'|'4'|'' $inferString
+     * @param MyClassInferString $inferString
      */
-    public function withInferString(string $inferString, bool $validate = true): self
+    public function withInferString(MyClassInferString $inferString): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($inferString, self::$_schema['properties']['inferString']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->inferString = $inferString;
 
@@ -150,26 +142,18 @@ class MyClass
     }
 
     /**
-     * @return 3|4|5
+     * @return MyClassInferInt
      */
-    public function getInferInt(): int|float
+    public function getInferInt(): MyClassInferInt
     {
         return $this->inferInt;
     }
 
     /**
-     * @param 3|4|5 $inferInt
+     * @param MyClassInferInt $inferInt
      */
-    public function withInferInt(int|float $inferInt, bool $validate = true): self
+    public function withInferInt(MyClassInferInt $inferInt): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($inferInt, self::$_schema['properties']['inferInt']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->inferInt = $inferInt;
 
@@ -177,17 +161,17 @@ class MyClass
     }
 
     /**
-     * @return '42'|42|42.5|false|null
+     * @return MyClassInferMixedAlternative1|MyClassInferMixedAlternative2|42|42.5|false|null
      */
-    public function getInferMixed(): bool|int|float|string|null
+    public function getInferMixed(): MyClassInferMixedAlternative1|MyClassInferMixedAlternative2|bool|int|float|null
     {
         return $this->inferMixed;
     }
 
     /**
-     * @param '42'|42|42.5|false|null $inferMixed
+     * @param MyClassInferMixedAlternative1|MyClassInferMixedAlternative2|42|42.5|false|null $inferMixed
      */
-    public function withInferMixed(bool|int|float|string|null $inferMixed, bool $validate = true): self
+    public function withInferMixed(MyClassInferMixedAlternative1|MyClassInferMixedAlternative2|bool|int|float|null $inferMixed, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -204,26 +188,18 @@ class MyClass
     }
 
     /**
-     * @return '3'|'4'|''|null
+     * @return MyClassInferStringOpt|null
      */
-    public function getInferStringOpt(): ?string
+    public function getInferStringOpt(): ?MyClassInferStringOpt
     {
         return $this->inferStringOpt ?? null;
     }
 
     /**
-     * @param '3'|'4'|'' $inferStringOpt
+     * @param MyClassInferStringOpt $inferStringOpt
      */
-    public function withInferStringOpt(string $inferStringOpt, bool $validate = true): self
+    public function withInferStringOpt(MyClassInferStringOpt $inferStringOpt): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($inferStringOpt, self::$_schema['properties']['inferStringOpt']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->inferStringOpt = $inferStringOpt;
 
@@ -239,26 +215,18 @@ class MyClass
     }
 
     /**
-     * @return 3|4|5|null
+     * @return MyClassInferIntOpt|null
      */
-    public function getInferIntOpt(): int|float|null
+    public function getInferIntOpt(): ?MyClassInferIntOpt
     {
-        return $this->inferIntOpt;
+        return $this->inferIntOpt ?? null;
     }
 
     /**
-     * @param 3|4|5 $inferIntOpt
+     * @param MyClassInferIntOpt $inferIntOpt
      */
-    public function withInferIntOpt(int|float $inferIntOpt, bool $validate = true): self
+    public function withInferIntOpt(MyClassInferIntOpt $inferIntOpt): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($inferIntOpt, self::$_schema['properties']['inferIntOpt']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->inferIntOpt = $inferIntOpt;
 
@@ -274,17 +242,17 @@ class MyClass
     }
 
     /**
-     * @return '42'|42|42.5|false|null
+     * @return MyClassInferMixedOptAlternative1|MyClassInferMixedOptAlternative2|42|42.5|false|null
      */
-    public function getInferMixedOpt(): bool|int|float|string|null
+    public function getInferMixedOpt(): MyClassInferMixedOptAlternative1|MyClassInferMixedOptAlternative2|bool|int|float|null
     {
         return $this->inferMixedOpt;
     }
 
     /**
-     * @param '42'|42|42.5|false|null $inferMixedOpt
+     * @param MyClassInferMixedOptAlternative1|MyClassInferMixedOptAlternative2|42|42.5|false|null $inferMixedOpt
      */
-    public function withInferMixedOpt(bool|int|float|string|null $inferMixedOpt, bool $validate = true): self
+    public function withInferMixedOpt(MyClassInferMixedOptAlternative1|MyClassInferMixedOptAlternative2|bool|int|float|null $inferMixedOpt, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -326,14 +294,32 @@ class MyClass
         }
 
         $__providedOptionals = [];
-        $inferString = $input->{'inferString'};
-        $inferInt = $input->{'inferInt'};
-        $inferMixed = ($input->{'inferMixed'} !== null ? $input->{'inferMixed'} : null);
-        $inferStringOpt = isset($input->{'inferStringOpt'}) ? $input->{'inferStringOpt'} : null;
-        $inferIntOpt = isset($input->{'inferIntOpt'}) ? $input->{'inferIntOpt'} : null;
+        $inferString = MyClassInferString::from($input->{'inferString'});
+        $inferInt = MyClassInferInt::from($input->{'inferInt'});
+        $inferMixed = ($input->{'inferMixed'} !== null ? match (true) {
+            MyClassInferMixedAlternative1::tryFrom($input->{'inferMixed'}) !== null => MyClassInferMixedAlternative1::from($input->{'inferMixed'}),
+            MyClassInferMixedAlternative2::tryFrom($input->{'inferMixed'}) !== null => MyClassInferMixedAlternative2::from($input->{'inferMixed'}),
+            in_array($input->{'inferMixed'}, array (
+          0 => 42,
+          1 => 42.5,
+        ), true) => (str_contains((string)$input->{'inferMixed'}, '.') ? (float)$input->{'inferMixed'} : (int)$input->{'inferMixed'}),
+            is_bool($input->{'inferMixed'}) => (bool)$input->{'inferMixed'},
+            default => null,
+        } : null);
+        $inferStringOpt = isset($input->{'inferStringOpt'}) ? MyClassInferStringOpt::from($input->{'inferStringOpt'}) : null;
+        $inferIntOpt = isset($input->{'inferIntOpt'}) ? MyClassInferIntOpt::from($input->{'inferIntOpt'}) : null;
         $inferMixedOpt = null;
         if (property_exists($input, 'inferMixedOpt')) {
-            $inferMixedOpt = ($input->{'inferMixedOpt'} !== null ? $input->{'inferMixedOpt'} : null);
+            $inferMixedOpt = ($input->{'inferMixedOpt'} !== null ? match (true) {
+            MyClassInferMixedOptAlternative1::tryFrom($input->{'inferMixedOpt'}) !== null => MyClassInferMixedOptAlternative1::from($input->{'inferMixedOpt'}),
+            MyClassInferMixedOptAlternative2::tryFrom($input->{'inferMixedOpt'}) !== null => MyClassInferMixedOptAlternative2::from($input->{'inferMixedOpt'}),
+            in_array($input->{'inferMixedOpt'}, array (
+          0 => 42,
+          1 => 42.5,
+        ), true) => (str_contains((string)$input->{'inferMixedOpt'}, '.') ? (float)$input->{'inferMixedOpt'} : (int)$input->{'inferMixedOpt'}),
+            is_bool($input->{'inferMixedOpt'}) => (bool)$input->{'inferMixedOpt'},
+            default => null,
+        } : null);
             $__providedOptionals['inferMixedOpt'] = true;
         }
 
@@ -353,17 +339,34 @@ class MyClass
     public function toArray(): array
     {
         $output = [];
-        $output['inferString'] = $this->inferString;
-        $output['inferInt'] = $this->inferInt;
-        $output['inferMixed'] = $this->inferMixed;
+        $output['inferString'] = ($this->inferString)->value;
+        $output['inferInt'] = ($this->inferInt)->value;
+        $output['inferMixed'] = match (true) {
+            $this->inferMixed instanceof MyClassInferMixedAlternative1,
+            $this->inferMixed instanceof MyClassInferMixedAlternative2 => ($this->inferMixed)->value,
+            in_array($this->inferMixed, array (
+          0 => 42,
+          1 => 42.5,
+        ), true),
+            is_bool($this->inferMixed) => $this->inferMixed,
+        };
         if (isset($this->inferStringOpt)) {
-            $output['inferStringOpt'] = $this->inferStringOpt;
+            $output['inferStringOpt'] = ($this->inferStringOpt)->value;
         }
         if (isset($this->inferIntOpt)) {
-            $output['inferIntOpt'] = $this->inferIntOpt;
+            $output['inferIntOpt'] = ($this->inferIntOpt)->value;
         }
         if (isset($this->inferMixedOpt) || array_key_exists('inferMixedOpt', $this->_providedOptionals)) {
-            $output['inferMixedOpt'] = ($this->inferMixedOpt !== null) ? ($this->inferMixedOpt) : null;
+            $output['inferMixedOpt'] = ($this->inferMixedOpt !== null) ? (match (true) {
+                default => null,
+                $this->inferMixedOpt instanceof MyClassInferMixedOptAlternative1,
+                $this->inferMixedOpt instanceof MyClassInferMixedOptAlternative2 => ($this->inferMixedOpt)->value,
+                in_array($this->inferMixedOpt, array (
+              0 => 42,
+              1 => 42.5,
+            ), true),
+                is_bool($this->inferMixedOpt) => $this->inferMixedOpt,
+            }) : null;
         }
 
         return $output;
@@ -377,17 +380,34 @@ class MyClass
     public function toStdClass(): \stdClass
     {
         $output = new \stdClass();
-        $output->{'inferString'} = $this->inferString;
-        $output->{'inferInt'} = $this->inferInt;
-        $output->{'inferMixed'} = $this->inferMixed;
+        $output->{'inferString'} = ($this->inferString)->value;
+        $output->{'inferInt'} = ($this->inferInt)->value;
+        $output->{'inferMixed'} = match (true) {
+            $this->inferMixed instanceof MyClassInferMixedAlternative1,
+            $this->inferMixed instanceof MyClassInferMixedAlternative2 => ($this->inferMixed)->value,
+            in_array($this->inferMixed, array (
+          0 => 42,
+          1 => 42.5,
+        ), true),
+            is_bool($this->inferMixed) => $this->inferMixed,
+        };
         if (isset($this->inferStringOpt)) {
-            $output->{'inferStringOpt'} = $this->inferStringOpt;
+            $output->{'inferStringOpt'} = ($this->inferStringOpt)->value;
         }
         if (isset($this->inferIntOpt)) {
-            $output->{'inferIntOpt'} = $this->inferIntOpt;
+            $output->{'inferIntOpt'} = ($this->inferIntOpt)->value;
         }
         if (isset($this->inferMixedOpt) || array_key_exists('inferMixedOpt', $this->_providedOptionals)) {
-            $output->{'inferMixedOpt'} = ($this->inferMixedOpt !== null) ? ($this->inferMixedOpt) : null;
+            $output->{'inferMixedOpt'} = ($this->inferMixedOpt !== null) ? (match (true) {
+                default => null,
+                $this->inferMixedOpt instanceof MyClassInferMixedOptAlternative1,
+                $this->inferMixedOpt instanceof MyClassInferMixedOptAlternative2 => ($this->inferMixedOpt)->value,
+                in_array($this->inferMixedOpt, array (
+              0 => 42,
+              1 => 42.5,
+            ), true),
+                is_bool($this->inferMixedOpt) => $this->inferMixedOpt,
+            }) : null;
         }
 
         return $output;
@@ -415,6 +435,30 @@ class MyClass
         }
 
         return $validator->isValid();
+    }
+
+    public function __clone()
+    {
+        $this->inferMixed = match (true) {
+            $this->inferMixed instanceof MyClassInferMixedAlternative1,
+            $this->inferMixed instanceof MyClassInferMixedAlternative2,
+            in_array($this->inferMixed, array (
+          0 => 42,
+          1 => 42.5,
+        ), true),
+            is_bool($this->inferMixed) => $this->inferMixed,
+        };
+        if (isset($this->inferMixedOpt)) {
+            $this->inferMixedOpt = match (true) {
+                $this->inferMixedOpt instanceof MyClassInferMixedOptAlternative1,
+                $this->inferMixedOpt instanceof MyClassInferMixedOptAlternative2,
+                in_array($this->inferMixedOpt, array (
+              0 => 42,
+              1 => 42.5,
+            ), true),
+                is_bool($this->inferMixedOpt) => $this->inferMixedOpt,
+            };
+        }
     }
 
     /**

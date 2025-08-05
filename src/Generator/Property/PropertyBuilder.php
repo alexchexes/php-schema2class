@@ -7,7 +7,6 @@ use Helmich\Schema2Class\Generator\GeneratorException;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\Type\BooleanProperty;
 use Helmich\Schema2Class\Generator\Property\Type\DateProperty;
-use Helmich\Schema2Class\Generator\Property\Type\InferredEnumProperty;
 use Helmich\Schema2Class\Generator\Property\Type\IntegerProperty;
 use Helmich\Schema2Class\Generator\Property\Type\IntersectProperty;
 use Helmich\Schema2Class\Generator\Property\Type\MixedProperty;
@@ -21,12 +20,13 @@ use Helmich\Schema2Class\Generator\Property\Type\PropertyInterface;
 use Helmich\Schema2Class\Generator\Property\Type\RawObjectProperty;
 use Helmich\Schema2Class\Generator\Property\Type\ReferenceArrayProperty;
 use Helmich\Schema2Class\Generator\Property\Type\ReferenceProperty;
-use Helmich\Schema2Class\Generator\Property\Type\StringEnumProperty;
+use Helmich\Schema2Class\Generator\Property\Type\ScalarEnumProperty;
 use Helmich\Schema2Class\Generator\Property\Type\StringProperty;
 use Helmich\Schema2Class\Generator\Property\Type\TypedArrayProperty;
 use Helmich\Schema2Class\Generator\Property\Type\UnionProperty;
 use Helmich\Schema2Class\Generator\Property\Decorator\NullablePropertyDecorator;
 use Helmich\Schema2Class\Generator\Property\Decorator\OptionalPropertyDecorator;
+use Helmich\Schema2Class\Util\EnumUtils;
 
 /**
  * Factory that creates the correct {@see PropertyInterface} implementation
@@ -46,9 +46,8 @@ class PropertyBuilder
         IntersectProperty::class,
         UnionProperty::class,
         DateProperty::class,
-        StringEnumProperty::class,
+        ScalarEnumProperty::class,
         PrimitiveUnionEnumProperty::class,
-        InferredEnumProperty::class,
         NullProperty::class,
         StringProperty::class,
         IntegerProperty::class,
@@ -81,6 +80,7 @@ class PropertyBuilder
     {
         self::assertNoPropertiesWithAdditional($definition);
 
+        $definition = self::inferEnumTypes($definition);
         $definition = self::sanitizeEnum($definition);
         $definition = self::collapseSingleTypeArray($definition);
 
@@ -94,11 +94,6 @@ class PropertyBuilder
 
         if (PrimitiveUnionEnumProperty::canHandleSchema($definition)) {
             $property = new PrimitiveUnionEnumProperty($name, $definition, $req);
-            return self::wrapProperty($req, $property, $definition, $name, $isRequired);
-        }
-
-        if (InferredEnumProperty::canHandleSchema($definition)) {
-            $property = new InferredEnumProperty($name, $definition, $req);
             return self::wrapProperty($req, $property, $definition, $name, $isRequired);
         }
 
@@ -197,9 +192,11 @@ class PropertyBuilder
         $prim = $a === 'null' ? $b : $a;
         $prop = match ($prim) {
             'string'  => isset($definition['enum'])
-                ? new StringEnumProperty($name, $definition, $req)
+                ? new ScalarEnumProperty($name, $definition, $req)
                 : new StringProperty($name, $definition, $req),
-            'integer' => new IntegerProperty($name, $definition, $req),
+            'integer', 'int' => isset($definition['enum'])
+                ? new ScalarEnumProperty($name, $definition, $req)
+                : new IntegerProperty($name, $definition, $req),
             'number'  => new NumberProperty($name, $definition, $req),
             'boolean' => new BooleanProperty($name, $definition, $req),
             default   => null,
@@ -336,6 +333,28 @@ class PropertyBuilder
         if ($hasProperties && $hasAdditionalProperties) {
             throw new GeneratorException("using 'properties' and 'additionalProperties' in the same schema is currently not supported.");
         }
+    }
+
+    /**
+     * Infer the schema "type" from enum values when it is missing.
+     */
+    private static function inferEnumTypes(array $definition): array
+    {
+        if (
+            !isset($definition['enum'])
+            || isset($definition['type'])
+            || isset($definition['anyOf'])
+            || isset($definition['oneOf'])
+            || isset($definition['allOf'])
+        ) {
+            return $definition;
+        }
+
+        $definition['enum'] = EnumUtils::normalize($definition['enum']);
+        $types = EnumUtils::schemaTypes($definition['enum']);
+        $definition['type'] = count($types) === 1 ? $types[0] : $types;
+
+        return $definition;
     }
 
     /**

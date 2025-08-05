@@ -9,17 +9,17 @@ use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
 use PHPUnit\Framework\TestCase;
 use function PHPUnit\Framework\assertSame;
 
-class StringEnumPropertyTest extends TestCase
+class ScalarEnumPropertyTest extends TestCase
 {
 
-    private StringEnumProperty $property;
+    private ScalarEnumProperty $property;
     private GeneratorRequest $generatorRequest;
 
     protected function setUp(): void
     {
         $options = (new SpecificationOptions())->withNoEnums(true);
         $this->generatorRequest = new GeneratorRequest([], new ValidatedSpecificationFilesItem('Ns', 'Foo', ''), $options);
-        $this->property = new StringEnumProperty('color', ['type' => 'string', 'enum' => ['foo', "bar's"]], $this->generatorRequest);
+        $this->property = new ScalarEnumProperty('color', ['type' => 'string', 'enum' => ['foo', "bar's"]], $this->generatorRequest);
     }
 
     public function testTypeAnnotationEscapesQuotes(): void

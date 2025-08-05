@@ -3,22 +3,37 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Property\Type;
 
-use Helmich\Schema2Class\Generator\GeneratorException;
 use Helmich\Schema2Class\Generator\Enum\SchemaToEnum;
+use Helmich\Schema2Class\Generator\GeneratorException;
+use Helmich\Schema2Class\Util\EnumUtils;
 use Helmich\Schema2Class\Writer\WriterInterface;
 use Laminas\Code\Generator\PropertyValueGenerator;
 use Laminas\Code\Generator\ValueGenerator;
 use Symfony\Component\Console\Output\OutputInterface;
 
-/** 
- * Represents string property that may be emitted as PHP enums when supported.
+/**
+ * Represents scalar (string or int) property that may be emitted as PHP enums when supported.
  */
-class StringEnumProperty extends AbstractProperty
+class ScalarEnumProperty extends AbstractProperty
 {
     public static function canHandleSchema(array $schema): bool
     {
-        return isset($schema["type"], $schema["enum"])
-            && $schema["type"] === "string";
+        if (!isset($schema['type'], $schema['enum'])) {
+            return false;
+        }
+
+        $type = $schema['type'];
+        if (is_array($type)) {
+            $nonNull = array_filter($type, static fn($t) => $t !== 'null');
+            if (count($nonNull) !== 1) {
+                return false;
+            }
+            $type = array_values($nonNull)[0];
+        }
+
+        $type = $type === 'int' ? 'integer' : $type;
+
+        return in_array($type, ['string', 'integer'], true);
     }
 
     public function needsValidation(): bool
@@ -49,34 +64,24 @@ class StringEnumProperty extends AbstractProperty
 
     public function typeAnnotation(): string
     {
-        if ($this->request->isAtLeastPHP("8.1") && !$this->request->getNoEnums()) {
+        if ($this->request->isAtLeastPHP('8.1') && !$this->request->getNoEnums()) {
             // will be a real enum class name
             return $this->subTypeName();
         }
 
         // fallback: a literal‑union of all enum values
-        $values = array_filter(
-            $this->schema['enum'],
-            static fn(string|null $v) => $v !== null
-        );
-        
-        $literals = array_map(
-            static fn(string $v) => var_export($v, true),
-            $values
-        );
-
-        return implode('|', $literals);
+        return EnumUtils::typeAnnotation($this->schema['enum']);
     }
 
     public function typeHint(): ?string
     {
-        if ($this->request->isAtLeastPHP("8.1") && !$this->request->getNoEnums()) {
-            return "\\" . $this->request->getTargetNamespace() . "\\" . $this->subTypeName();
+        if ($this->request->isAtLeastPHP('8.1') && !$this->request->getNoEnums()) {
+            return '\\' . $this->request->getTargetNamespace() . '\\' . $this->subTypeName();
         }
 
         if ($this->request->isAtLeastPHP('7.0')) {
-            // fallback to plain string
-            return 'string';
+            // fallback to plain scalar type
+            return $this->isIntEnum() ? 'int' : 'string';
         }
 
         return null;
@@ -84,38 +89,35 @@ class StringEnumProperty extends AbstractProperty
 
     public function typeAssertionExpr(string $expr): string
     {
-        if ($this->request->isAtLeastPHP("8.1") && !$this->request->getNoEnums()) {
+        if ($this->request->isAtLeastPHP('8.1') && !$this->request->getNoEnums()) {
             return "{$expr} instanceof {$this->subTypeName()}";
         }
 
-        // fallback: check it's a string and one of the allowed values
-        $values = var_export($this->schema["enum"], true);
-        return "is_string({$expr}) && in_array({$expr}, {$values}, true)";
+        return EnumUtils::assertionExpr($this->schema['enum'], $expr);
     }
 
     public function inputAssertionExpr(string $expr): string
     {
-        if ($this->request->isAtLeastPHP("8.1") && !$this->request->getNoEnums()) {
+        if ($this->request->isAtLeastPHP('8.1') && !$this->request->getNoEnums()) {
             return "{$this->subTypeName()}::tryFrom({$expr}) !== null";
         }
 
-        $values = var_export($this->schema["enum"], true);
-        return "in_array({$expr}, {$values}, true)";
+        return EnumUtils::assertionExpr($this->schema['enum'], $expr);
     }
 
     public function inputMappingExpr(string $expr, bool $asserted = false): string
     {
-        if ($this->request->isAtLeastPHP("8.1") && !$this->request->getNoEnums()) {
+        if ($this->request->isAtLeastPHP('8.1') && !$this->request->getNoEnums()) {
             return "{$this->subTypeName()}::from({$expr})";
         }
 
-        // fallback: accept raw string
+        // fallback: accept raw scalar
         return $expr;
     }
 
     public function outputMappingExpr(string $expr): string
     {
-        if ($this->request->isAtLeastPHP("8.1") && !$this->request->getNoEnums()) {
+        if ($this->request->isAtLeastPHP('8.1') && !$this->request->getNoEnums()) {
             return "({$expr})->value";
         }
 
@@ -139,12 +141,16 @@ class StringEnumProperty extends AbstractProperty
             return new PropertyValueGenerator(null);
         }
 
-        if ($this->request->isAtLeastPHP("8.1") && !$this->request->getNoEnums()) {
+        if ($this->request->isAtLeastPHP('8.1') && !$this->request->getNoEnums()) {
             // Use TYPE_CONSTANT for enum-backed constant
             return new PropertyValueGenerator(
-                $this->subTypeName() . "::" . SchemaToEnum::enumCaseName($value),
+                $this->subTypeName() . '::' . SchemaToEnum::enumCaseName($value),
                 ValueGenerator::TYPE_CONSTANT
             );
+        }
+
+        if (is_int($value)) {
+            return new PropertyValueGenerator($value, ValueGenerator::TYPE_CONSTANT);
         }
 
         // fallback: literal string
@@ -154,5 +160,14 @@ class StringEnumProperty extends AbstractProperty
     private function subTypeName(): string
     {
         return $this->request->getTargetClass() . $this->nameForClass;
+    }
+
+    private function isIntEnum(): bool
+    {
+        $type = $this->schema['type'];
+        if (is_array($type)) {
+            return in_array('integer', $type, true) || in_array('int', $type, true);
+        }
+        return $type === 'integer' || $type === 'int';
     }
 }

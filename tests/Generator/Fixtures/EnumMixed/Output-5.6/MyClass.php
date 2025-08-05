@@ -142,7 +142,7 @@ class MyClass
     private $inferInt = null;
 
     /**
-     * @var int
+     * @var 1
      */
     private $contradiction;
 
@@ -165,7 +165,7 @@ class MyClass
      * @param 1|2|'1'|'2' $foo
      * @param 3|4|'3'|'4' $bar
      * @param 'red'|'amber'|'green'|'42'|42|42.5|false|null $baz
-     * @param int $contradiction
+     * @param 1 $contradiction
      * @param 1|2|'one' $contradiction2
      * @param 'red'|'green'|null $nullable
      * @param '3'|'4'|null $inferString
@@ -353,7 +353,7 @@ class MyClass
     }
 
     /**
-     * @return int
+     * @return 1
      */
     public function getContradiction()
     {
@@ -361,7 +361,7 @@ class MyClass
     }
 
     /**
-     * @param int $contradiction
+     * @param 1 $contradiction
      * @param bool $validate
      * @return self
      */
@@ -505,10 +505,20 @@ class MyClass
         $__providedOptionals = [];
         $foo = $input->{'foo'};
         $bar = $input->{'bar'};
-        $baz = ($input->{'baz'} !== null ? $input->{'baz'} : null);
+        $baz = ($input->{'baz'} !== null ? ((is_bool($input->{'baz'})) ? (bool)$input->{'baz'} : (((in_array($input->{'baz'}, array (
+          0 => 42,
+          1 => 42.5,
+        ), true)) ? (str_contains((string)$input->{'baz'}, '.') ? (float)$input->{'baz'} : (int)$input->{'baz'}) : (((in_array($input->{'baz'}, array (
+          0 => 42,
+        ), true)) ? $input->{'baz'} : (((in_array($input->{'baz'}, array (
+          0 => 'red',
+          1 => 'amber',
+          2 => 'green',
+          3 => '42',
+        ), true)) ? $input->{'baz'} : (null)))))))) : null);
         $inferString = isset($input->{'inferString'}) ? $input->{'inferString'} : null;
         $inferInt = isset($input->{'inferInt'}) ? $input->{'inferInt'} : null;
-        $contradiction = (int)$input->{'contradiction'};
+        $contradiction = $input->{'contradiction'};
         $contradiction2 = $input->{'contradiction2'};
         $nullable = ($input->{'nullable'} !== null ? $input->{'nullable'} : null);
         $optionalNullable = null;
@@ -535,7 +545,19 @@ class MyClass
         $output = [];
         $output['foo'] = $this->foo;
         $output['bar'] = $this->bar;
-        $output['baz'] = $this->baz;
+        if ((in_array($this->baz, array (
+          0 => 'red',
+          1 => 'amber',
+          2 => 'green',
+          3 => '42',
+        ), true)) || (in_array($this->baz, array (
+          0 => 42,
+        ), true)) || (in_array($this->baz, array (
+          0 => 42,
+          1 => 42.5,
+        ), true)) || (is_bool($this->baz))) {
+            $output['baz'] = $this->baz;
+        }
         if (isset($this->inferString)) {
             $output['inferString'] = $this->inferString;
         }
@@ -562,7 +584,19 @@ class MyClass
         $output = new \stdClass();
         $output->{'foo'} = $this->foo;
         $output->{'bar'} = $this->bar;
+        if ((in_array($this->baz, array (
+          0 => 'red',
+          1 => 'amber',
+          2 => 'green',
+          3 => '42',
+        ), true)) || (in_array($this->baz, array (
+          0 => 42,
+        ), true)) || (in_array($this->baz, array (
+          0 => 42,
+          1 => 42.5,
+        ), true)) || (is_bool($this->baz))) {
         $output->{'baz'} = $this->baz;
+        }
         if (isset($this->inferString)) {
             $output->{'inferString'} = $this->inferString;
         }
@@ -601,6 +635,21 @@ class MyClass
         }
 
         return $validator->isValid();
+    }
+
+    public function __clone()
+    {
+        $this->baz = (is_bool($this->baz)) ? ($this->baz) : ((in_array($this->baz, array (
+          0 => 42,
+          1 => 42.5,
+        ), true)) ? ($this->baz) : ((in_array($this->baz, array (
+          0 => 42,
+        ), true)) ? ($this->baz) : ((in_array($this->baz, array (
+          0 => 'red',
+          1 => 'amber',
+          2 => 'green',
+          3 => '42',
+        ), true)) ? ($this->baz) : ($this->baz))));
     }
 
     /**

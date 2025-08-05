@@ -82,7 +82,7 @@ class MyClass
     /**
      * @var 3|4|5
      */
-    private $inferInt;
+    private int $inferInt;
 
     /**
      * @var '42'|42|42.5|false|null
@@ -97,7 +97,7 @@ class MyClass
     /**
      * @var 3|4|5|null
      */
-    private $inferIntOpt = null;
+    private ?int $inferIntOpt = null;
 
     /**
      * @var '42'|42|42.5|false|null
@@ -112,7 +112,7 @@ class MyClass
      * @param 3|4|5|null $inferIntOpt
      * @param '42'|42|42.5|false|null $inferMixedOpt
      */
-    public function __construct(string $inferString, $inferInt, $inferMixed, ?string $inferStringOpt = null, $inferIntOpt = null, $inferMixedOpt = null)
+    public function __construct(string $inferString, int $inferInt, $inferMixed, ?string $inferStringOpt = null, ?int $inferIntOpt = null, $inferMixedOpt = null)
     {
         $this->inferString = $inferString;
         $this->inferInt = $inferInt;
@@ -152,7 +152,7 @@ class MyClass
     /**
      * @return 3|4|5
      */
-    public function getInferInt()
+    public function getInferInt(): int
     {
         return $this->inferInt;
     }
@@ -160,7 +160,7 @@ class MyClass
     /**
      * @param 3|4|5 $inferInt
      */
-    public function withInferInt($inferInt, bool $validate = true): self
+    public function withInferInt(int $inferInt, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -241,15 +241,15 @@ class MyClass
     /**
      * @return 3|4|5|null
      */
-    public function getInferIntOpt()
+    public function getInferIntOpt(): ?int
     {
-        return $this->inferIntOpt;
+        return $this->inferIntOpt ?? null;
     }
 
     /**
      * @param 3|4|5 $inferIntOpt
      */
-    public function withInferIntOpt($inferIntOpt, bool $validate = true): self
+    public function withInferIntOpt(int $inferIntOpt, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -334,12 +334,26 @@ class MyClass
         $__providedOptionals = [];
         $inferString = $input->{'inferString'};
         $inferInt = $input->{'inferInt'};
-        $inferMixed = ($input->{'inferMixed'} !== null ? $input->{'inferMixed'} : null);
+        $inferMixed = ($input->{'inferMixed'} !== null ? ((is_bool($input->{'inferMixed'})) ? (bool)$input->{'inferMixed'} : (((in_array($input->{'inferMixed'}, array (
+          0 => 42,
+          1 => 42.5,
+        ), true)) ? (str_contains((string)$input->{'inferMixed'}, '.') ? (float)$input->{'inferMixed'} : (int)$input->{'inferMixed'}) : (((in_array($input->{'inferMixed'}, array (
+          0 => 42,
+        ), true)) ? $input->{'inferMixed'} : (((in_array($input->{'inferMixed'}, array (
+          0 => '42',
+        ), true)) ? $input->{'inferMixed'} : (null)))))))) : null);
         $inferStringOpt = isset($input->{'inferStringOpt'}) ? $input->{'inferStringOpt'} : null;
         $inferIntOpt = isset($input->{'inferIntOpt'}) ? $input->{'inferIntOpt'} : null;
         $inferMixedOpt = null;
         if (property_exists($input, 'inferMixedOpt')) {
-            $inferMixedOpt = ($input->{'inferMixedOpt'} !== null ? $input->{'inferMixedOpt'} : null);
+            $inferMixedOpt = ($input->{'inferMixedOpt'} !== null ? ((is_bool($input->{'inferMixedOpt'})) ? (bool)$input->{'inferMixedOpt'} : (((in_array($input->{'inferMixedOpt'}, array (
+          0 => 42,
+          1 => 42.5,
+        ), true)) ? (str_contains((string)$input->{'inferMixedOpt'}, '.') ? (float)$input->{'inferMixedOpt'} : (int)$input->{'inferMixedOpt'}) : (((in_array($input->{'inferMixedOpt'}, array (
+          0 => 42,
+        ), true)) ? $input->{'inferMixedOpt'} : (((in_array($input->{'inferMixedOpt'}, array (
+          0 => '42',
+        ), true)) ? $input->{'inferMixedOpt'} : (null)))))))) : null);
             $__providedOptionals['inferMixedOpt'] = true;
         }
 
@@ -361,7 +375,16 @@ class MyClass
         $output = [];
         $output['inferString'] = $this->inferString;
         $output['inferInt'] = $this->inferInt;
-        $output['inferMixed'] = $this->inferMixed;
+        if ((in_array($this->inferMixed, array (
+          0 => '42',
+        ), true)) || (in_array($this->inferMixed, array (
+          0 => 42,
+        ), true)) || (in_array($this->inferMixed, array (
+          0 => 42,
+          1 => 42.5,
+        ), true)) || (is_bool($this->inferMixed))) {
+            $output['inferMixed'] = $this->inferMixed;
+        }
         if (isset($this->inferStringOpt)) {
             $output['inferStringOpt'] = $this->inferStringOpt;
         }
@@ -369,7 +392,14 @@ class MyClass
             $output['inferIntOpt'] = $this->inferIntOpt;
         }
         if (isset($this->inferMixedOpt) || array_key_exists('inferMixedOpt', $this->_providedOptionals)) {
-            $output['inferMixedOpt'] = ($this->inferMixedOpt !== null) ? ($this->inferMixedOpt) : null;
+            $output['inferMixedOpt'] = ($this->inferMixedOpt !== null) ? ((is_bool($this->inferMixedOpt)) ? ($this->inferMixedOpt) : ((in_array($this->inferMixedOpt, array (
+              0 => 42,
+              1 => 42.5,
+            ), true)) ? ($this->inferMixedOpt) : ((in_array($this->inferMixedOpt, array (
+              0 => 42,
+            ), true)) ? ($this->inferMixedOpt) : ((in_array($this->inferMixedOpt, array (
+              0 => '42',
+            ), true)) ? ($this->inferMixedOpt) : (null))))) : null;
         }
 
         return $output;
@@ -385,7 +415,16 @@ class MyClass
         $output = new \stdClass();
         $output->{'inferString'} = $this->inferString;
         $output->{'inferInt'} = $this->inferInt;
+        if ((in_array($this->inferMixed, array (
+          0 => '42',
+        ), true)) || (in_array($this->inferMixed, array (
+          0 => 42,
+        ), true)) || (in_array($this->inferMixed, array (
+          0 => 42,
+          1 => 42.5,
+        ), true)) || (is_bool($this->inferMixed))) {
         $output->{'inferMixed'} = $this->inferMixed;
+        }
         if (isset($this->inferStringOpt)) {
             $output->{'inferStringOpt'} = $this->inferStringOpt;
         }
@@ -393,7 +432,14 @@ class MyClass
             $output->{'inferIntOpt'} = $this->inferIntOpt;
         }
         if (isset($this->inferMixedOpt) || array_key_exists('inferMixedOpt', $this->_providedOptionals)) {
-            $output->{'inferMixedOpt'} = ($this->inferMixedOpt !== null) ? ($this->inferMixedOpt) : null;
+            $output->{'inferMixedOpt'} = ($this->inferMixedOpt !== null) ? ((is_bool($this->inferMixedOpt)) ? ($this->inferMixedOpt) : ((in_array($this->inferMixedOpt, array (
+              0 => 42,
+              1 => 42.5,
+            ), true)) ? ($this->inferMixedOpt) : ((in_array($this->inferMixedOpt, array (
+              0 => 42,
+            ), true)) ? ($this->inferMixedOpt) : ((in_array($this->inferMixedOpt, array (
+              0 => '42',
+            ), true)) ? ($this->inferMixedOpt) : (null))))) : null;
         }
 
         return $output;
@@ -421,6 +467,28 @@ class MyClass
         }
 
         return $validator->isValid();
+    }
+
+    public function __clone()
+    {
+        $this->inferMixed = (is_bool($this->inferMixed)) ? ($this->inferMixed) : ((in_array($this->inferMixed, array (
+          0 => 42,
+          1 => 42.5,
+        ), true)) ? ($this->inferMixed) : ((in_array($this->inferMixed, array (
+          0 => 42,
+        ), true)) ? ($this->inferMixed) : ((in_array($this->inferMixed, array (
+          0 => '42',
+        ), true)) ? ($this->inferMixed) : ($this->inferMixed))));
+        if (isset($this->inferMixedOpt)) {
+            $this->inferMixedOpt = (is_bool($this->inferMixedOpt)) ? ($this->inferMixedOpt) : ((in_array($this->inferMixedOpt, array (
+              0 => 42,
+              1 => 42.5,
+            ), true)) ? ($this->inferMixedOpt) : ((in_array($this->inferMixedOpt, array (
+              0 => 42,
+            ), true)) ? ($this->inferMixedOpt) : ((in_array($this->inferMixedOpt, array (
+              0 => '42',
+            ), true)) ? ($this->inferMixedOpt) : ($this->inferMixedOpt))));
+        }
     }
 
     /**

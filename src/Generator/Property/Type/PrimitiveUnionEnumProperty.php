@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Property\Type;
 
-use Composer\Semver\Semver;
+use Helmich\Schema2Class\Util\EnumUtils;
 use Laminas\Code\Generator\PropertyValueGenerator;
 use Laminas\Code\Generator\ValueGenerator;
 
@@ -34,22 +34,7 @@ class PrimitiveUnionEnumProperty extends AbstractProperty
      */
     public function typeAnnotation(): string
     {
-        $quote = static fn(string $s): string => "'" . str_replace("'", "\\'", $s) . "'";
-
-        $literals = array_map(
-            static function (int|float|string|bool|null $v) use ($quote) {
-                if ($v === null) {
-                    return 'null';          // ← lower-case, unquoted
-                }
-                if (is_string($v)) {
-                    return $quote($v);
-                }
-                return (string) $v;         // int | float
-            },
-            $this->schema['enum']
-        );
-
-        return implode('|', $literals);
+        return EnumUtils::typeAnnotation($this->schema['enum']);
     }
 
     /**
@@ -57,23 +42,7 @@ class PrimitiveUnionEnumProperty extends AbstractProperty
      */
     public function typeHint(): ?string
     {
-        if (!Semver::satisfies($this->request->getTargetPHPVersion(), ">=8.0")) {
-            return null;
-        }
-
-        $primitives = array_unique(array_map(
-            fn(string $t) => match ($t) {
-                'string'   => 'string',
-                'integer',
-                'int',
-                'number'   => 'int',     // enum values are integral here
-                'null'     => 'null',
-                default    => 'mixed',   // should never happen
-            },
-            $this->schema['type']
-        ));
-
-        return implode('|', $primitives);
+        return EnumUtils::typeHint($this->schema['enum'], $this->request->getTargetPHPVersion());
     }
 
     /**
@@ -81,8 +50,7 @@ class PrimitiveUnionEnumProperty extends AbstractProperty
      */
     public function typeAssertionExpr(string $expr): string
     {
-        $values = var_export($this->schema['enum'], true);
-        return "in_array({$expr}, {$values}, true)";
+        return EnumUtils::assertionExpr($this->schema['enum'], $expr);
     }
 
     public function inputAssertionExpr(string $expr): string
