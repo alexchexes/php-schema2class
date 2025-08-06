@@ -21,12 +21,6 @@ class ObjectArrayProperty extends AbstractProperty
     private PropertyInterface $itemType;
     private array $itemSchema;
 
-    /**
-     * ObjectArrayProperty constructor.
-     * @param string $key
-     * @param array $schema
-     * @param GeneratorRequest $generatorRequest
-     */
     public function __construct(string $key, array $schema, GeneratorRequest $generatorRequest)
     {
         $this->itemSchema = $schema["additionalProperties"] ?? $schema["items"];
