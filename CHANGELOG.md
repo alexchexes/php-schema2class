@@ -36,6 +36,7 @@ Now it:
 - Improves camelCase/PascalCase handling when generating identifier names.
 - Omits the default `null` value for properties listed in the `required` schema block.
 - Improves type hints and PHPDoc type generation for complex types like unions, nested arrays, etc.
+- Flattens one-arm `anyOf`/`oneOf` unions early and collapses nullable unions allowing `?T` shorthand when appropriate.
 - Adds a guard against passing anything other than an array/object to `fromInput`, building multi-line validation error messages.
 - Setter methods (`withX()`) now accept an optional `$validate` argument to be able skip validation, mirroring `fromInput()`.
 - Deterministic resolution of class property, accessor method and temporary variable names via a unified resolver, allowing case-sensitive properties and avoiding collisions with reserved names.

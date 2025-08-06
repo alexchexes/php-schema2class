@@ -100,9 +100,9 @@ class MyClass
 
     private string $baz;
 
-    private string|null $qux;
+    private ?string $qux;
 
-    public function __construct(string $foo, string $bar, string $baz, string|null $qux)
+    public function __construct(string $foo, string $bar, string $baz, ?string $qux)
     {
         $this->foo = $foo;
         $this->bar = $bar;
@@ -173,12 +173,12 @@ class MyClass
         return $clone;
     }
 
-    public function getQux(): string|null
+    public function getQux(): ?string
     {
         return $this->qux;
     }
 
-    public function withQux(string|null $qux, bool $validate = true): self
+    public function withQux(?string $qux, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -223,7 +223,6 @@ class MyClass
         };
         $qux = ($input->{'qux'} !== null ? match (true) {
             is_string($input->{'qux'}) => $input->{'qux'},
-            (($input->{'qux'}) === null) || (is_string($input->{'qux'})) => ($input->{'qux'} !== null ? $input->{'qux'} : null),
             default => null,
         } : null);
 
@@ -250,7 +249,6 @@ class MyClass
         };
         $output['qux'] = match (true) {
             is_string($this->qux) => $this->qux,
-            (($this->qux) === null) || (is_string($this->qux)) => ($this->qux !== null) ? ($this->qux) : null,
         };
 
         return $output;
@@ -275,7 +273,6 @@ class MyClass
         };
         $output->{'qux'} = match (true) {
             is_string($this->qux) => $this->qux,
-            (($this->qux) === null) || (is_string($this->qux)) => ($this->qux !== null) ? ($this->qux) : null,
         };
 
         return $output;
@@ -318,7 +315,6 @@ class MyClass
         };
         $this->qux = match (true) {
             is_string($this->qux) => $this->qux,
-            (($this->qux) === null) || (is_string($this->qux)) => isset($this->qux) ? (clone $this->qux) : null,
         };
     }
 }

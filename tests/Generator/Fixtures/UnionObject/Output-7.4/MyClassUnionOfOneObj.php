@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ns\UnionObject_8_4;
+namespace Ns\UnionObject_7_4;
 
-class MyClassUnionOfOneObjAlternative1
+class MyClassUnionOfOneObj
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -68,11 +68,17 @@ class MyClassUnionOfOneObjAlternative1
      *
      * @param array|object $input Input data
      * @param bool $validate If `false`, validation against the schema will be skipped.
-     * @return MyClassUnionOfOneObjAlternative1 Created instance
+     * @return MyClassUnionOfOneObj Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput(array|object $input, bool $validate = true): MyClassUnionOfOneObjAlternative1
+    public static function fromInput($input, bool $validate = true): MyClassUnionOfOneObj
     {
+        if (!is_array($input) && !is_object($input)) {
+            throw new \InvalidArgumentException(
+                'Input to fromInput must be array or object, got ' . gettype($input)
+            );
+        }
+
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
@@ -122,7 +128,7 @@ class MyClassUnionOfOneObjAlternative1
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput(array|object $input, bool $return = false): bool
+    public static function validateInput($input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
