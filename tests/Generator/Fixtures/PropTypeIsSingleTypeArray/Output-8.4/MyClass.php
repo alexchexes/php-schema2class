@@ -222,9 +222,6 @@ class MyClass
 
     private bool $qux;
 
-    /**
-     * @var MyClassQuux
-     */
     private MyClassQuux $quux;
 
     /**
@@ -245,9 +242,6 @@ class MyClass
 
     private ?bool $nullQux;
 
-    /**
-     * @var MyClassNullQuux|null
-     */
     private ?MyClassNullQuux $nullQuux;
 
     /**
@@ -263,9 +257,6 @@ class MyClass
 
     private ?bool $optQux = null;
 
-    /**
-     * @var MyClassOptQuux|null
-     */
     private ?MyClassOptQuux $optQuux = null;
 
     /**
@@ -286,9 +277,6 @@ class MyClass
 
     private ?bool $optNullQux = null;
 
-    /**
-     * @var MyClassOptNullQuux|null
-     */
     private ?MyClassOptNullQuux $optNullQuux = null;
 
     /**
@@ -297,15 +285,11 @@ class MyClass
     private ?array $optNullThud = null;
 
     /**
-     * @param MyClassQuux $quux
      * @param string[] $thud
      * @param null $grox
-     * @param MyClassNullQuux|null $nullQuux
      * @param string[]|null $nullThud
-     * @param MyClassOptQuux|null $optQuux
      * @param string[]|null $optThud
      * @param null $optGrox
-     * @param MyClassOptNullQuux|null $optNullQuux
      * @param string[]|null $optNullThud
      */
     public function __construct(string $foo, int|float $bar, int $baz, bool $qux, MyClassQuux $quux, array $thud, $grox, ?string $nullFoo, int|float|null $nullBar, ?int $nullBaz, ?bool $nullQux, ?MyClassNullQuux $nullQuux, ?array $nullThud, ?string $optFoo = null, int|float|null $optBar = null, ?int $optBaz = null, ?bool $optQux = null, ?MyClassOptQuux $optQuux = null, ?array $optThud = null, $optGrox = null, ?string $optNullFoo = null, int|float|null $optNullBar = null, ?int $optNullBaz = null, ?bool $optNullQux = null, ?MyClassOptNullQuux $optNullQuux = null, ?array $optNullThud = null)
@@ -390,17 +374,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return MyClassQuux
-     */
     public function getQuux(): MyClassQuux
     {
         return $this->quux;
     }
 
-    /**
-     * @param MyClassQuux $quux
-     */
     public function withQuux(MyClassQuux $quux): self
     {
         $clone = clone $this;
@@ -515,17 +493,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return MyClassNullQuux|null
-     */
     public function getNullQuux(): ?MyClassNullQuux
     {
         return $this->nullQuux;
     }
 
-    /**
-     * @param MyClassNullQuux|null $nullQuux
-     */
     public function withNullQuux(?MyClassNullQuux $nullQuux): self
     {
         $clone = clone $this;
@@ -645,17 +617,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return MyClassOptQuux|null
-     */
     public function getOptQuux(): ?MyClassOptQuux
     {
         return $this->optQuux;
     }
 
-    /**
-     * @param MyClassOptQuux $optQuux
-     */
     public function withOptQuux(MyClassOptQuux $optQuux): self
     {
         $clone = clone $this;
@@ -836,17 +802,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return MyClassOptNullQuux|null
-     */
     public function getOptNullQuux(): ?MyClassOptNullQuux
     {
         return $this->optNullQuux;
     }
 
-    /**
-     * @param MyClassOptNullQuux|null $optNullQuux
-     */
     public function withOptNullQuux(?MyClassOptNullQuux $optNullQuux): self
     {
         $clone = clone $this;

@@ -34,30 +34,18 @@ class MyClassEnsureArgs1Alternative1
         ],
     ];
 
-    /**
-     * @var MyClassEnsureArgs1Alternative1Type|null
-     */
     private ?MyClassEnsureArgs1Alternative1Type $type = null;
 
-    /**
-     * @param MyClassEnsureArgs1Alternative1Type|null $type
-     */
     public function __construct(?MyClassEnsureArgs1Alternative1Type $type = null)
     {
         $this->type = $type;
     }
 
-    /**
-     * @return MyClassEnsureArgs1Alternative1Type|null
-     */
     public function getType(): ?MyClassEnsureArgs1Alternative1Type
     {
         return $this->type;
     }
 
-    /**
-     * @param MyClassEnsureArgs1Alternative1Type $type
-     */
     public function withType(MyClassEnsureArgs1Alternative1Type $type): self
     {
         $clone = clone $this;

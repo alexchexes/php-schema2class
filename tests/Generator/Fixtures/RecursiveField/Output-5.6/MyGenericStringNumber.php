@@ -48,29 +48,19 @@ class MyGenericStringNumber
         ],
     ];
 
-    /**
-     * @var MyGenericStringNumberField
-     */
     private $field;
 
-    /**
-     * @param MyGenericStringNumberField $field
-     */
     public function __construct(MyGenericStringNumberField $field)
     {
         $this->field = $field;
     }
 
-    /**
-     * @return MyGenericStringNumberField
-     */
     public function getField()
     {
         return $this->field;
     }
 
     /**
-     * @param MyGenericStringNumberField $field
      * @return self
      */
     public function withField(MyGenericStringNumberField $field)

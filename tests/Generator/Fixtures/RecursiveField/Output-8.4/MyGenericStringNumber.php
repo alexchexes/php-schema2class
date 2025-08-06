@@ -50,30 +50,18 @@ class MyGenericStringNumber
         ],
     ];
 
-    /**
-     * @var MyGenericStringNumberField
-     */
     private MyGenericStringNumberField $field;
 
-    /**
-     * @param MyGenericStringNumberField $field
-     */
     public function __construct(MyGenericStringNumberField $field)
     {
         $this->field = $field;
     }
 
-    /**
-     * @return MyGenericStringNumberField
-     */
     public function getField(): MyGenericStringNumberField
     {
         return $this->field;
     }
 
-    /**
-     * @param MyGenericStringNumberField $field
-     */
     public function withField(MyGenericStringNumberField $field): self
     {
         $clone = clone $this;

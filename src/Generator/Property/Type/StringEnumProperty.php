@@ -51,8 +51,7 @@ class StringEnumProperty extends AbstractProperty
     public function typeAnnotation(): string
     {
         if ($this->request->isAtLeastPHP("8.1") && !$this->request->getNoEnums()) {
-            // will be a real enum class name
-            return $this->subTypeName();
+            return "\\" . $this->request->getTargetNamespace() . "\\" . $this->subTypeName();
         }
 
         // fallback: a literal‑union of all enum values

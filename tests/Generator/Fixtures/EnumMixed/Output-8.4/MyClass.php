@@ -133,19 +133,10 @@ class MyClass
      */
     private string|int|float|bool|null $baz;
 
-    /**
-     * @var MyClassInferString|null
-     */
     private ?MyClassInferString $inferString = null;
 
-    /**
-     * @var MyClassInferInt|null
-     */
     private ?MyClassInferInt $inferInt = null;
 
-    /**
-     * @var MyClassContradiction
-     */
     private MyClassContradiction $contradiction;
 
     /**
@@ -153,26 +144,15 @@ class MyClass
      */
     private int|string $contradiction2;
 
-    /**
-     * @var MyClassNullable|null
-     */
     private ?MyClassNullable $nullable;
 
-    /**
-     * @var MyClassOptionalNullable|null
-     */
     private ?MyClassOptionalNullable $optionalNullable = null;
 
     /**
      * @param 1|2|'1'|'2' $foo
      * @param 3|4|'3'|'4' $bar
      * @param 'red'|'amber'|'green'|'42'|42|42.5|false|null $baz
-     * @param MyClassContradiction $contradiction
      * @param 1|2|'one' $contradiction2
-     * @param MyClassNullable|null $nullable
-     * @param MyClassInferString|null $inferString
-     * @param MyClassInferInt|null $inferInt
-     * @param MyClassOptionalNullable|null $optionalNullable
      */
     public function __construct(int|string $foo, int|string $bar, bool|int|float|string|null $baz, MyClassContradiction $contradiction, int|string $contradiction2, ?MyClassNullable $nullable, ?MyClassInferString $inferString = null, ?MyClassInferInt $inferInt = null, ?MyClassOptionalNullable $optionalNullable = null)
     {
@@ -268,17 +248,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return MyClassInferString|null
-     */
     public function getInferString(): ?MyClassInferString
     {
         return $this->inferString;
     }
 
-    /**
-     * @param MyClassInferString $inferString
-     */
     public function withInferString(MyClassInferString $inferString): self
     {
         $clone = clone $this;
@@ -295,17 +269,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return MyClassInferInt|null
-     */
     public function getInferInt(): ?MyClassInferInt
     {
         return $this->inferInt;
     }
 
-    /**
-     * @param MyClassInferInt $inferInt
-     */
     public function withInferInt(MyClassInferInt $inferInt): self
     {
         $clone = clone $this;
@@ -322,17 +290,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return MyClassContradiction
-     */
     public function getContradiction(): MyClassContradiction
     {
         return $this->contradiction;
     }
 
-    /**
-     * @param MyClassContradiction $contradiction
-     */
     public function withContradiction(MyClassContradiction $contradiction): self
     {
         $clone = clone $this;
@@ -368,17 +330,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return MyClassNullable|null
-     */
     public function getNullable(): ?MyClassNullable
     {
         return $this->nullable;
     }
 
-    /**
-     * @param MyClassNullable|null $nullable
-     */
     public function withNullable(?MyClassNullable $nullable): self
     {
         $clone = clone $this;
@@ -387,17 +343,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return MyClassOptionalNullable|null
-     */
     public function getOptionalNullable(): ?MyClassOptionalNullable
     {
         return $this->optionalNullable;
     }
 
-    /**
-     * @param MyClassOptionalNullable|null $optionalNullable
-     */
     public function withOptionalNullable(?MyClassOptionalNullable $optionalNullable): self
     {
         $clone = clone $this;

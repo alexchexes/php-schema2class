@@ -33,30 +33,18 @@ class MyClass
         ],
     ];
 
-    /**
-     * @var string|MyClassFooAlternative2
-     */
     private string|MyClassFooAlternative2 $foo;
 
-    /**
-     * @param string|MyClassFooAlternative2 $foo
-     */
     public function __construct(MyClassFooAlternative2|string $foo)
     {
         $this->foo = $foo;
     }
 
-    /**
-     * @return string|MyClassFooAlternative2
-     */
     public function getFoo(): MyClassFooAlternative2|string
     {
         return $this->foo;
     }
 
-    /**
-     * @param string|MyClassFooAlternative2 $foo
-     */
     public function withFoo(MyClassFooAlternative2|string $foo): self
     {
         $clone = clone $this;

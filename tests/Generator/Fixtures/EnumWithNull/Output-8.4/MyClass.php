@@ -35,30 +35,18 @@ class MyClass
      */
     private array $_providedOptionals = [];
 
-    /**
-     * @var MyClassFoo|null
-     */
     private ?MyClassFoo $foo = null;
 
-    /**
-     * @param MyClassFoo|null $foo
-     */
     public function __construct(?MyClassFoo $foo = null)
     {
         $this->foo = $foo;
     }
 
-    /**
-     * @return MyClassFoo|null
-     */
     public function getFoo(): ?MyClassFoo
     {
         return $this->foo;
     }
 
-    /**
-     * @param MyClassFoo|null $foo
-     */
     public function withFoo(?MyClassFoo $foo): self
     {
         $clone = clone $this;

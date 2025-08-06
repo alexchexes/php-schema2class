@@ -91,11 +91,11 @@ EOCODE;
     {
         $underTest = new IntersectProperty('myPropertyName', ['allOf' => []], $this->generatorRequest);
 
-        assertSame('FooMyPropertyName', $underTest->typeAnnotation());
+        assertSame('\BarNs\FooMyPropertyName', $underTest->typeAnnotation());
 
         $underTest = new IntersectProperty('myPropertyName', ['allOf' => []], $this->generatorRequest->withPHPVersion('5.6.0'));
 
-        assertSame('\\BarNs\\FooMyPropertyName', $underTest->typeHint());
+        assertSame('\BarNs\FooMyPropertyName', $underTest->typeHint());
     }
 
 

@@ -146,7 +146,7 @@ EOCODE;
             $request
         );
 
-        assertSame('FooMyPropertyNameAlternative1|FooMyPropertyNameAlternative2', $underTest->typeAnnotation());
+        assertSame('\BarNs\FooMyPropertyNameAlternative1|\BarNs\FooMyPropertyNameAlternative2', $underTest->typeAnnotation());
         assertSame($expected, $underTest->typeHint("n/a"));
     }
 

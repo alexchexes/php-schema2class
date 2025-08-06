@@ -74,14 +74,8 @@ class MyClass
      */
     private array $_providedOptionals = [];
 
-    /**
-     * @var MyClassInferString
-     */
     private MyClassInferString $inferString;
 
-    /**
-     * @var MyClassInferInt
-     */
     private MyClassInferInt $inferInt;
 
     /**
@@ -89,14 +83,8 @@ class MyClass
      */
     private string|int|float|bool|null $inferMixed;
 
-    /**
-     * @var MyClassInferStringOpt|null
-     */
     private ?MyClassInferStringOpt $inferStringOpt = null;
 
-    /**
-     * @var MyClassInferIntOpt|null
-     */
     private ?MyClassInferIntOpt $inferIntOpt = null;
 
     /**
@@ -105,11 +93,7 @@ class MyClass
     private string|int|float|bool|null $inferMixedOpt = null;
 
     /**
-     * @param MyClassInferString $inferString
-     * @param MyClassInferInt $inferInt
      * @param '42'|42|42.5|false|null $inferMixed
-     * @param MyClassInferStringOpt|null $inferStringOpt
-     * @param MyClassInferIntOpt|null $inferIntOpt
      * @param '42'|42|42.5|false|null $inferMixedOpt
      */
     public function __construct(MyClassInferString $inferString, MyClassInferInt $inferInt, bool|int|float|string|null $inferMixed, ?MyClassInferStringOpt $inferStringOpt = null, ?MyClassInferIntOpt $inferIntOpt = null, bool|int|float|string|null $inferMixedOpt = null)
@@ -122,17 +106,11 @@ class MyClass
         $this->inferMixedOpt = $inferMixedOpt;
     }
 
-    /**
-     * @return MyClassInferString
-     */
     public function getInferString(): MyClassInferString
     {
         return $this->inferString;
     }
 
-    /**
-     * @param MyClassInferString $inferString
-     */
     public function withInferString(MyClassInferString $inferString): self
     {
         $clone = clone $this;
@@ -141,17 +119,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return MyClassInferInt
-     */
     public function getInferInt(): MyClassInferInt
     {
         return $this->inferInt;
     }
 
-    /**
-     * @param MyClassInferInt $inferInt
-     */
     public function withInferInt(MyClassInferInt $inferInt): self
     {
         $clone = clone $this;
@@ -187,17 +159,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return MyClassInferStringOpt|null
-     */
     public function getInferStringOpt(): ?MyClassInferStringOpt
     {
         return $this->inferStringOpt;
     }
 
-    /**
-     * @param MyClassInferStringOpt $inferStringOpt
-     */
     public function withInferStringOpt(MyClassInferStringOpt $inferStringOpt): self
     {
         $clone = clone $this;
@@ -214,17 +180,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return MyClassInferIntOpt|null
-     */
     public function getInferIntOpt(): ?MyClassInferIntOpt
     {
         return $this->inferIntOpt;
     }
 
-    /**
-     * @param MyClassInferIntOpt $inferIntOpt
-     */
     public function withInferIntOpt(MyClassInferIntOpt $inferIntOpt): self
     {
         $clone = clone $this;

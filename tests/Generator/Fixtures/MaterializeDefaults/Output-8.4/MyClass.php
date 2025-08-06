@@ -306,19 +306,10 @@ class MyClass
 
     private string $bar;
 
-    /**
-     * @var MyClassBaz|null
-     */
     private ?MyClassBaz $baz = null;
 
-    /**
-     * @var MyClassQuxObj|null
-     */
     private ?MyClassQuxObj $quxObj = null;
 
-    /**
-     * @var MyClassQuxObjNest|null
-     */
     private ?MyClassQuxObjNest $quxObjNest = null;
 
     /**
@@ -347,20 +338,13 @@ class MyClass
 
     private array|object|null $objArrUnion = null;
 
-    /**
-     * @var MyClassNumKeysDefaults|null
-     */
     private ?MyClassNumKeysDefaults $numKeysDefaults = null;
 
     /**
-     * @param MyClassBaz|null $baz
-     * @param MyClassQuxObj|null $quxObj
-     * @param MyClassQuxObjNest|null $quxObjNest
      * @param string[]|null $thudArray
      * @param string|ObjDef|string[]|null $xyyz
      * @param string|string[]|ObjDef|null $buux
      * @param string|string[]|ObjDef|null $boic
-     * @param MyClassNumKeysDefaults|null $numKeysDefaults
      */
     public function __construct(string $foo, string $bar, ?MyClassBaz $baz = null, ?MyClassQuxObj $quxObj = null, ?MyClassQuxObjNest $quxObjNest = null, ?array $thudArray = null, ObjDef|string|array|null $xyyz = null, ObjDef|string|array|null $buux = null, ObjDef|string|array|null $boic = null, NumericKeysObj|string|null $poox = null, array|object|null $arrObjUnion = null, array|object|null $objArrUnion = null, ?MyClassNumKeysDefaults $numKeysDefaults = null)
     {
@@ -405,17 +389,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return MyClassBaz|null
-     */
     public function getBaz(): ?MyClassBaz
     {
         return $this->baz;
     }
 
-    /**
-     * @param MyClassBaz $baz
-     */
     public function withBaz(MyClassBaz $baz): self
     {
         $clone = clone $this;
@@ -434,8 +412,6 @@ class MyClass
 
     /**
      * optional nullable object with default value that is empty object
-     *
-     * @return MyClassQuxObj|null
      */
     public function getQuxObj(): ?MyClassQuxObj
     {
@@ -444,8 +420,6 @@ class MyClass
 
     /**
      * optional nullable object with default value that is empty object
-     *
-     * @param MyClassQuxObj|null $quxObj
      */
     public function withQuxObj(?MyClassQuxObj $quxObj): self
     {
@@ -467,8 +441,6 @@ class MyClass
 
     /**
      * optional nullable object with default empty object value, and with nested default for its property
-     *
-     * @return MyClassQuxObjNest|null
      */
     public function getQuxObjNest(): ?MyClassQuxObjNest
     {
@@ -477,8 +449,6 @@ class MyClass
 
     /**
      * optional nullable object with default empty object value, and with nested default for its property
-     *
-     * @param MyClassQuxObjNest|null $quxObjNest
      */
     public function withQuxObjNest(?MyClassQuxObjNest $quxObjNest): self
     {
@@ -707,17 +677,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return MyClassNumKeysDefaults|null
-     */
     public function getNumKeysDefaults(): ?MyClassNumKeysDefaults
     {
         return $this->numKeysDefaults;
     }
 
-    /**
-     * @param MyClassNumKeysDefaults $numKeysDefaults
-     */
     public function withNumKeysDefaults(MyClassNumKeysDefaults $numKeysDefaults): self
     {
         $clone = clone $this;

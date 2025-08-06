@@ -50,7 +50,7 @@ class IntegerEnumProperty extends AbstractProperty
     public function typeAnnotation(): string
     {
         if ($this->request->isAtLeastPHP('8.1') && !$this->request->getNoEnums()) {
-            return $this->subTypeName();
+            return '\\' . $this->request->getTargetNamespace() . '\\' . $this->subTypeName();
         }
         $values = array_filter(
             $this->schema['enum'],

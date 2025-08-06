@@ -38,7 +38,7 @@ class IntersectProperty extends AbstractProperty
 
     public function typeAnnotation(): string
     {
-        return $this->subTypeName();
+        return "\\" . $this->request->getTargetNamespace() . "\\" . $this->subTypeName();
     }
 
     public function typeHint(): ?string

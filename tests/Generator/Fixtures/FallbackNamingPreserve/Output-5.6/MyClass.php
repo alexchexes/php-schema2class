@@ -1260,7 +1260,6 @@ class MyClass
     }
 
     /**
-     * @param MyClassTestObj $testObj
      * @return self
      */
     public function withTestObj(MyClassTestObj $testObj)
@@ -2096,7 +2095,6 @@ class MyClass
     }
 
     /**
-     * @param MyClassEnsureArgs2 $ensureArgs2
      * @return self
      */
     public function withEnsureArgs2(MyClassEnsureArgs2 $ensureArgs2)

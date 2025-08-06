@@ -333,9 +333,6 @@ class MyClass
 
     private string $includeDefaults;
 
-    /**
-     * @var MyClassTestObj|null
-     */
     private ?MyClassTestObj $testObj = null;
 
     private string $fromInput;
@@ -395,9 +392,6 @@ class MyClass
      */
     private $ensureArgs1 = null;
 
-    /**
-     * @var MyClassEnsureArgs2|null
-     */
     private ?MyClassEnsureArgs2 $ensureArgs2 = null;
 
     /**
@@ -406,9 +400,7 @@ class MyClass
     private ?array $ensureArgs3 = null;
 
     /**
-     * @param MyClassTestObj|null $testObj
      * @param MyClassEnsureArgs1Alternative1|MyClassEnsureArgs1Alternative2|string|null $ensureArgs1
-     * @param MyClassEnsureArgs2|null $ensureArgs2
      * @param MyClassEnsureArgs3Item[]|null $ensureArgs3
      */
     public function __construct(string $_GLOBALS_1, string $_GLOBALS, string $GLOBALS_1, string $_SERVER_1, string $_GET_1, string $_POST_1, string $_FILES_1, string $_REQUEST_1, string $_SESSION_1, string $_ENV_1, string $_COOKIE_1, string $_php_errormsg, string $_http_response_header, string $_argc, string $_argv, string $_input, string $_obj, string $_includeDefaults, string $fromInput, string $toArray, string $toStdClass, string $validateInput, string $_schema_1, string $schema, string $_defaults_1, string $defaults, string $_providedOptionals_1, string $_clone, string $__clone, string $__construct, string $__destruct, string $__get, string $__set, string $__call, string $__isset, string $__unset, string $__sleep, string $__wakeup, string $__toString, string $__invoke, string $__debugInfo, string $files, string $_this, ?string $_validate = null, ?string $_materializeDefaults = null, ?MyClassTestObj $testObj = null, ?string $__providedOptionals_1 = null, $ensureArgs1 = null, ?MyClassEnsureArgs2 $ensureArgs2 = null, ?array $ensureArgs3 = null)
@@ -743,17 +735,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return MyClassTestObj|null
-     */
     public function getTestObj(): ?MyClassTestObj
     {
         return $this->testObj;
     }
 
-    /**
-     * @param MyClassTestObj $testObj
-     */
     public function withTestObj(MyClassTestObj $testObj): self
     {
         $clone = clone $this;
@@ -1151,17 +1137,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return MyClassEnsureArgs2|null
-     */
     public function getEnsureArgs2(): ?MyClassEnsureArgs2
     {
         return $this->ensureArgs2;
     }
 
-    /**
-     * @param MyClassEnsureArgs2 $ensureArgs2
-     */
     public function withEnsureArgs2(MyClassEnsureArgs2 $ensureArgs2): self
     {
         $clone = clone $this;

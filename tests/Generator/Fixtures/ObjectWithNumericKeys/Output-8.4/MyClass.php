@@ -36,14 +36,8 @@ class MyClass
 
     private ?string $_1 = null;
 
-    /**
-     * @var MyClass_2|null
-     */
     private ?MyClass_2 $_2 = null;
 
-    /**
-     * @param MyClass_2|null $_2
-     */
     public function __construct(?string $_1 = null, ?MyClass_2 $_2 = null)
     {
         $this->_1 = $_1;
@@ -71,17 +65,11 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return MyClass_2|null
-     */
     public function get_2(): ?MyClass_2
     {
         return $this->_2;
     }
 
-    /**
-     * @param MyClass_2 $_2
-     */
     public function with_2(MyClass_2 $_2): self
     {
         $clone = clone $this;

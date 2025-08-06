@@ -154,20 +154,10 @@ class MyClass
 
     private string $thud;
 
-    /**
-     * @var MyClassGrox|null
-     */
     private ?MyClassGrox $grox = null;
 
-    /**
-     * @var MyClassGooks|null
-     */
     private ?MyClassGooks $gooks = null;
 
-    /**
-     * @param MyClassGrox|null $grox
-     * @param MyClassGooks|null $gooks
-     */
     public function __construct(string $foo, ?string $quux, string $thud, ?string $bar = null, ?string $baz = null, ?string $qux = null, ?string $xyyz = null, ?MyClassGrox $grox = null, ?MyClassGooks $gooks = null)
     {
         $this->foo = $foo;
@@ -352,8 +342,6 @@ class MyClass
 
     /**
      * optional, nullable, with default, object
-     *
-     * @return MyClassGrox|null
      */
     public function getGrox(): ?MyClassGrox
     {
@@ -362,8 +350,6 @@ class MyClass
 
     /**
      * optional, nullable, with default, object
-     *
-     * @param MyClassGrox|null $grox
      */
     public function withGrox(?MyClassGrox $grox): self
     {
@@ -385,8 +371,6 @@ class MyClass
 
     /**
      * optional, nullable, with default, object, and default is empty object
-     *
-     * @return MyClassGooks|null
      */
     public function getGooks(): ?MyClassGooks
     {
@@ -395,8 +379,6 @@ class MyClass
 
     /**
      * optional, nullable, with default, object, and default is empty object
-     *
-     * @param MyClassGooks|null $gooks
      */
     public function withGooks(?MyClassGooks $gooks): self
     {
