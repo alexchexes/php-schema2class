@@ -127,7 +127,7 @@ class MyClass
 
     private SomeObj1|SomeObj2|null $refObjectsUnion = null;
 
-    private SomeObj1|MyClassRefAndNotRefObjectsUnionAlternative2|SomeObj2|MyClassRefAndNotRefObjectsUnionAlternative4|null $refAndNotRefObjectsUnion = null;
+    private MyClassRefAndNotRefObjectsUnionAlternative2|MyClassRefAndNotRefObjectsUnionAlternative4|SomeObj1|SomeObj2|null $refAndNotRefObjectsUnion = null;
 
     private MyClassObjAndStringUnionAlternative1|string|null $objAndStringUnion = null;
 

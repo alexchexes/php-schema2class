@@ -56,7 +56,7 @@ class BarTest
         ],
     ];
 
-    private FooTest|MoiKlass|FooTest_1|null $exampleProp = null;
+    private FooTest|FooTest_1|MoiKlass|null $exampleProp = null;
 
     public function __construct(FooTest|FooTest_1|MoiKlass|null $exampleProp = null)
     {
