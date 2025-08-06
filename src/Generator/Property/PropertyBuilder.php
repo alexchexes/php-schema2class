@@ -83,6 +83,7 @@ class PropertyBuilder
 
         $definition = self::sanitizeEnum($definition);
         $definition = self::collapseSingleTypeArray($definition);
+        $definition = self::collapseSingleUnion($definition);
 
         if ($property = self::tryInlineReference($req, $name, $definition, $isRequired)) {
             return $property;
@@ -122,6 +123,32 @@ class PropertyBuilder
         $defType = $definition['type'] ?? null;
         if (is_array($defType) && count($defType) === 1) {
             $definition['type'] = $defType[0];
+        }
+
+        return $definition;
+    }
+
+    /** Collapse single-arm anyOf/oneOf schemas */
+    private static function collapseSingleUnion(array $definition): array
+    {
+        foreach (['anyOf', 'oneOf'] as $k) {
+            if (isset($definition[$k]) && is_array($definition[$k])) {
+                if (count($definition[$k]) === 1) {
+                    $single = $definition[$k][0];
+                    foreach (['description', 'title', 'default', 'deprecated'] as $meta) {
+                        if (isset($definition[$meta]) && !isset($single[$meta])) {
+                            $single[$meta] = $definition[$meta];
+                        }
+                    }
+
+                    return self::collapseSingleUnion($single);
+                }
+
+                $definition[$k] = array_map(
+                    fn ($sub) => self::collapseSingleUnion($sub),
+                    $definition[$k]
+                );
+            }
         }
 
         return $definition;
