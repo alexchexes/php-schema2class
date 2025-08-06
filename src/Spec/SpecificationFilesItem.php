@@ -13,41 +13,24 @@ class SpecificationFilesItem
      */
     private static array $_schema = ['properties' => ['input' => ['type' => ['string', 'object']], 'className' => ['type' => 'string'], 'options' => ['$ref' => '#/definitions/SpecificationOptions']], 'additionalProperties' => false, 'required' => ['input'], 'definitions' => ['SpecificationOptions' => ['additionalProperties' => false, 'properties' => ['targetDirectory' => ['type' => 'string'], 'targetNamespace' => ['type' => 'string'], 'targetPHPVersion' => ['oneOf' => [['type' => 'integer', 'enum' => [5, 7, 8]], ['type' => 'string']]], 'cleanTargetDirectory' => ['type' => 'boolean'], 'disableStrictTypes' => ['type' => 'boolean'], 'inlineAllofReferences' => ['type' => 'boolean'], 'newValidatorExpr' => ['type' => 'string'], 'arrayToObjectExpr' => ['type' => 'string'], 'preservePropertyNames' => ['type' => 'boolean'], 'noGetters' => ['type' => 'boolean'], 'noSetters' => ['type' => 'boolean'], 'mutableSetters' => ['oneOf' => [['type' => 'boolean', 'enum' => [true]], ['type' => 'string', 'enum' => ['chainable']]]], 'noSchemaMetadata' => ['type' => 'boolean'], 'singleLineSchema' => ['type' => 'boolean'], 'noEnums' => ['type' => 'boolean']]]]];
 
-    /**
-     * @var string|array|object
-     */
     private string|array|object $input;
 
-    /**
-     * @var string|null
-     */
     private ?string $className = null;
 
-    /**
-     * @var SpecificationOptions|null
-     */
     private ?SpecificationOptions $options = null;
 
-    /**
-     * @param string|array|object $_input
-     */
-    public function __construct(string|array|object $_input)
+    public function __construct(string|array|object $_input, ?string $className = null, ?SpecificationOptions $options = null)
     {
         $this->input = $_input;
+        $this->className = $className;
+        $this->options = $options;
     }
 
-    /**
-     * @return string|array|object
-     */
     public function getInput(): string|array|object
     {
         return $this->input;
     }
 
-    /**
-     * @param string|array|object $_input
-     * @return self
-     */
     public function withInput(string|array|object $_input): self
     {
         $clone = clone $this;
@@ -56,38 +39,19 @@ class SpecificationFilesItem
         return $clone;
     }
 
-    /**
-     * @return string|null
-     */
     public function getClassName(): ?string
     {
         return $this->className ?? null;
     }
 
-    /**
-     * @param string $className
-     * @return self
-     * @param bool $validate
-     */
-    public function withClassName(string $className, bool $validate = true): self
+    public function withClassName(string $className): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($className, self::$_schema['properties']['className']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->className = $className;
 
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutClassName(): self
     {
         $clone = clone $this;
@@ -96,18 +60,11 @@ class SpecificationFilesItem
         return $clone;
     }
 
-    /**
-     * @return SpecificationOptions|null
-     */
     public function getOptions(): ?SpecificationOptions
     {
         return $this->options ?? null;
     }
 
-    /**
-     * @param SpecificationOptions $options
-     * @return self
-     */
     public function withOptions(SpecificationOptions $options): self
     {
         $clone = clone $this;
@@ -116,9 +73,6 @@ class SpecificationFilesItem
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutOptions(): self
     {
         $clone = clone $this;
@@ -128,10 +82,10 @@ class SpecificationFilesItem
     }
 
     /**
-     * Builds a new instance from an input array
+     * Builds a new instance from an input array or object
      *
      * @param array|object $input Input data
-     * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param bool $validate If `false`, validation against the schema will be skipped.
      * @return SpecificationFilesItem Created instance
      * @throws \InvalidArgumentException
      */
@@ -150,9 +104,7 @@ class SpecificationFilesItem
         $className = isset($input->{'className'}) ? $input->{'className'} : null;
         $options = isset($input->{'options'}) ? SpecificationOptions::fromInput($input->{'options'}, $validate) : null;
 
-        $obj = new self($_input);
-        $obj->className = $className;
-        $obj->options = $options;
+        $obj = new self($_input, $className, $options);
         return $obj;
     }
 

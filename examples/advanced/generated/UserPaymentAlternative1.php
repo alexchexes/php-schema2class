@@ -48,7 +48,6 @@ class UserPaymentAlternative1
 
     /**
      * @param UserPaymentAlternative1Type $type
-     * @return self
      */
     public function withType(UserPaymentAlternative1Type $type): self
     {
@@ -59,10 +58,10 @@ class UserPaymentAlternative1
     }
 
     /**
-     * Builds a new instance from an input array
+     * Builds a new instance from an input array or object
      *
      * @param array|object $input Input data
-     * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param bool $validate If `false`, validation against the schema will be skipped.
      * @return UserPaymentAlternative1 Created instance
      * @throws \InvalidArgumentException
      */
@@ -75,8 +74,8 @@ class UserPaymentAlternative1
 
         $type = UserPaymentAlternative1Type::from($input->{'type'});
 
-        $obj = new self($type);
 
+        $obj = new self($type);
         return $obj;
     }
 

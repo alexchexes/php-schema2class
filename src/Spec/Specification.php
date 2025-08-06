@@ -13,9 +13,6 @@ class Specification
      */
     private static array $_schema = ['properties' => ['options' => ['$ref' => '#/definitions/SpecificationOptions'], 'files' => ['type' => 'array', 'items' => ['properties' => ['input' => ['type' => ['string', 'object']], 'className' => ['type' => 'string'], 'options' => ['$ref' => '#/definitions/SpecificationOptions']], 'additionalProperties' => false, 'required' => ['input']]]], 'additionalProperties' => false, 'required' => ['files'], 'definitions' => ['SpecificationOptions' => ['additionalProperties' => false, 'properties' => ['targetDirectory' => ['type' => 'string'], 'targetNamespace' => ['type' => 'string'], 'targetPHPVersion' => ['oneOf' => [['type' => 'integer', 'enum' => [5, 7, 8]], ['type' => 'string']]], 'cleanTargetDirectory' => ['type' => 'boolean'], 'disableStrictTypes' => ['type' => 'boolean'], 'inlineAllofReferences' => ['type' => 'boolean'], 'newValidatorExpr' => ['type' => 'string'], 'arrayToObjectExpr' => ['type' => 'string'], 'preservePropertyNames' => ['type' => 'boolean'], 'noGetters' => ['type' => 'boolean'], 'noSetters' => ['type' => 'boolean'], 'mutableSetters' => ['oneOf' => [['type' => 'boolean', 'enum' => [true]], ['type' => 'string', 'enum' => ['chainable']]]], 'noSchemaMetadata' => ['type' => 'boolean'], 'singleLineSchema' => ['type' => 'boolean'], 'noEnums' => ['type' => 'boolean']]]]];
 
-    /**
-     * @var SpecificationOptions|null
-     */
     private ?SpecificationOptions $options = null;
 
     /**
@@ -26,23 +23,17 @@ class Specification
     /**
      * @param SpecificationFilesItem[] $files
      */
-    public function __construct(array $files)
+    public function __construct(array $files, ?SpecificationOptions $options = null)
     {
         $this->files = $files;
+        $this->options = $options;
     }
 
-    /**
-     * @return SpecificationOptions|null
-     */
     public function getOptions(): ?SpecificationOptions
     {
         return $this->options ?? null;
     }
 
-    /**
-     * @param SpecificationOptions $options
-     * @return self
-     */
     public function withOptions(SpecificationOptions $options): self
     {
         $clone = clone $this;
@@ -51,9 +42,6 @@ class Specification
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutOptions(): self
     {
         $clone = clone $this;
@@ -72,8 +60,6 @@ class Specification
 
     /**
      * @param SpecificationFilesItem[] $files
-     * @return self
-     * @param bool $validate
      */
     public function withFiles(array $files, bool $validate = true): self
     {
@@ -92,10 +78,10 @@ class Specification
     }
 
     /**
-     * Builds a new instance from an input array
+     * Builds a new instance from an input array or object
      *
      * @param array|object $input Input data
-     * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param bool $validate If `false`, validation against the schema will be skipped.
      * @return Specification Created instance
      * @throws \InvalidArgumentException
      */
@@ -106,11 +92,10 @@ class Specification
             static::validateInput($input);
         }
 
-        $options = isset($input->{'options'}) ? SpecificationOptions::fromInput($input->{'options'}, $validate) : null;
         $files = array_map(fn (array|object $i): SpecificationFilesItem => SpecificationFilesItem::fromInput($i, $validate), $input->{'files'});
+        $options = isset($input->{'options'}) ? SpecificationOptions::fromInput($input->{'options'}, $validate) : null;
 
-        $obj = new self($files);
-        $obj->options = $options;
+        $obj = new self($files, $options);
         return $obj;
     }
 

@@ -13,28 +13,21 @@ class Address
      */
     private static array $_schema = ['type' => 'object', 'properties' => ['street' => ['type' => 'string'], 'house' => ['type' => 'integer']]];
 
-    /**
-     * @var string|null
-     */
     private ?string $street = null;
 
-    /**
-     * @var int|null
-     */
     private ?int $house = null;
 
-    /**
-     * @return string|null
-     */
+    public function __construct(?string $street = null, ?int $house = null)
+    {
+        $this->street = $street;
+        $this->house = $house;
+    }
+
     public function getStreet(): ?string
     {
         return $this->street ?? null;
     }
 
-    /**
-     * @param string $street
-     * @return self
-     */
     public function withStreet(string $street): self
     {
         $clone = clone $this;
@@ -43,9 +36,6 @@ class Address
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutStreet(): self
     {
         $clone = clone $this;
@@ -54,18 +44,11 @@ class Address
         return $clone;
     }
 
-    /**
-     * @return int|null
-     */
     public function getHouse(): ?int
     {
         return $this->house ?? null;
     }
 
-    /**
-     * @param int $house
-     * @return self
-     */
     public function withHouse(int $house): self
     {
         $clone = clone $this;
@@ -74,9 +57,6 @@ class Address
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutHouse(): self
     {
         $clone = clone $this;
@@ -86,10 +66,10 @@ class Address
     }
 
     /**
-     * Builds a new instance from an input array
+     * Builds a new instance from an input array or object
      *
      * @param array|object $input Input data
-     * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param bool $validate If `false`, validation against the schema will be skipped.
      * @return Address Created instance
      * @throws \InvalidArgumentException
      */
@@ -106,12 +86,11 @@ class Address
             static::validateInput($input);
         }
 
+
         $street = isset($input->{'street'}) ? $input->{'street'} : null;
         $house = isset($input->{'house'}) ? $input->{'house'} : null;
 
-        $obj = new self();
-        $obj->street = $street;
-        $obj->house = $house;
+        $obj = new self($street, $house);
         return $obj;
     }
 

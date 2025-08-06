@@ -34,14 +34,10 @@ class UserPaymentAlternative2
      */
     private UserPaymentAlternative2Type $type;
 
-    /**
-     * @var string
-     */
     private string $accountNumber;
 
     /**
      * @param UserPaymentAlternative2Type $type
-     * @param string $accountNumber
      */
     public function __construct(UserPaymentAlternative2Type $type, string $accountNumber)
     {
@@ -59,7 +55,6 @@ class UserPaymentAlternative2
 
     /**
      * @param UserPaymentAlternative2Type $type
-     * @return self
      */
     public function withType(UserPaymentAlternative2Type $type): self
     {
@@ -69,18 +64,11 @@ class UserPaymentAlternative2
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function getAccountNumber(): string
     {
         return $this->accountNumber;
     }
 
-    /**
-     * @param string $accountNumber
-     * @return self
-     */
     public function withAccountNumber(string $accountNumber): self
     {
         $clone = clone $this;
@@ -90,10 +78,10 @@ class UserPaymentAlternative2
     }
 
     /**
-     * Builds a new instance from an input array
+     * Builds a new instance from an input array or object
      *
      * @param array|object $input Input data
-     * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param bool $validate If `false`, validation against the schema will be skipped.
      * @return UserPaymentAlternative2 Created instance
      * @throws \InvalidArgumentException
      */
@@ -107,8 +95,8 @@ class UserPaymentAlternative2
         $type = UserPaymentAlternative2Type::from($input->{'type'});
         $accountNumber = $input->{'accountNumber'};
 
-        $obj = new self($type, $accountNumber);
 
+        $obj = new self($type, $accountNumber);
         return $obj;
     }
 

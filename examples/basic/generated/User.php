@@ -13,43 +13,27 @@ class User
      */
     private static array $_schema = ['type' => 'object', 'required' => ['name', 'status'], 'properties' => ['name' => ['type' => 'string'], 'address' => ['$ref' => '#/definitions/Address'], 'status' => ['anyOf' => [['enum' => ['customer', 'manager'], 'type' => 'string'], ['type' => 'null']]]], 'definitions' => ['Address' => ['type' => 'object', 'properties' => ['street' => ['type' => 'string'], 'house' => ['type' => 'integer']]]]];
 
-    /**
-     * Name of the user - required field.
-     *
-     * @var string
-     */
     private string $name;
 
-    /**
-     * Object representing address of the user, field is optional.
-     *
-     * @var Address|null
-     */
     private ?Address $address = null;
 
     /**
-     * User status. Field is obligatory, but nullable.
-     *
-     * If target PHP is 8.1+ the type will be an `enum` with cases `CUSTOMER = 'customer'` and `MANAGER = 'manager'`
-     *
      * @var 'customer'|'manager'|null
      */
     private ?string $status;
 
     /**
-     * @param string $name
      * @param 'customer'|'manager'|null $status
      */
-    public function __construct(string $name, ?string $status)
+    public function __construct(string $name, ?string $status, ?Address $address = null)
     {
         $this->name = $name;
         $this->status = $status;
+        $this->address = $address;
     }
 
     /**
      * Name of the user - required field.
-     *
-     * @return string
      */
     public function getName(): string
     {
@@ -57,8 +41,7 @@ class User
     }
 
     /**
-     * @param string $name
-     * @return self
+     * Name of the user - required field.
      */
     public function withName(string $name): self
     {
@@ -70,8 +53,6 @@ class User
 
     /**
      * Object representing address of the user, field is optional.
-     *
-     * @return Address|null
      */
     public function getAddress(): ?Address
     {
@@ -79,8 +60,7 @@ class User
     }
 
     /**
-     * @param Address $address
-     * @return self
+     * Object representing address of the user, field is optional.
      */
     public function withAddress(Address $address): self
     {
@@ -90,9 +70,6 @@ class User
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutAddress(): self
     {
         $clone = clone $this;
@@ -114,9 +91,11 @@ class User
     }
 
     /**
+     * User status. Field is obligatory, but nullable.
+     *
+     * If target PHP is 8.1+ the type will be an `enum` with cases `CUSTOMER = 'customer'` and `MANAGER = 'manager'`
+     *
      * @param 'customer'|'manager'|null $status
-     * @return self
-     * @param bool $validate
      */
     public function withStatus(?string $status, bool $validate = true): self
     {
@@ -135,10 +114,10 @@ class User
     }
 
     /**
-     * Builds a new instance from an input array
+     * Builds a new instance from an input array or object
      *
      * @param array|object $input Input data
-     * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param bool $validate If `false`, validation against the schema will be skipped.
      * @return User Created instance
      * @throws \InvalidArgumentException
      */
@@ -156,11 +135,10 @@ class User
         }
 
         $name = $input->{'name'};
-        $address = isset($input->{'address'}) ? Address::fromInput($input->{'address'}, $validate) : null;
         $status = ($input->{'status'} !== null ? $input->{'status'} : null);
+        $address = isset($input->{'address'}) ? Address::fromInput($input->{'address'}, $validate) : null;
 
-        $obj = new self($name, $status);
-        $obj->address = $address;
+        $obj = new self($name, $status, $address);
         return $obj;
     }
 

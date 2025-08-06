@@ -152,9 +152,6 @@ class User
         ],
     ];
 
-    /**
-     * @var \DateTime|null
-     */
     private ?\DateTime $createdAt = null;
 
     /**
@@ -162,19 +159,10 @@ class User
      */
     private ?UserGender $gender = null;
 
-    /**
-     * @var string
-     */
     private string $firstName;
 
-    /**
-     * @var string
-     */
     private string $lastName;
 
-    /**
-     * @var string|null
-     */
     private ?string $email = null;
 
     /**
@@ -203,27 +191,32 @@ class User
     private ?array $hobbies = null;
 
     /**
-     * @param string $firstName
-     * @param string $lastName
+     * @param UserGender|null $gender
+     * @param UserBilling|null $billing
+     * @param UserPaymentAlternative1|UserPaymentAlternative2|string|null $payment
+     * @param UserAddress|null $address
+     * @param string[]|null $tags
+     * @param UserHobbiesItem[]|null $hobbies
      */
-    public function __construct(string $firstName, string $lastName)
+    public function __construct(string $firstName, string $lastName, ?\DateTime $createdAt = null, ?UserGender $gender = null, ?string $email = null, ?UserBilling $billing = null, UserPaymentAlternative1|UserPaymentAlternative2|string|null $payment = null, ?UserAddress $address = null, ?array $tags = null, ?array $hobbies = null)
     {
         $this->firstName = $firstName;
         $this->lastName = $lastName;
+        $this->createdAt = $createdAt;
+        $this->gender = $gender;
+        $this->email = $email;
+        $this->billing = $billing;
+        $this->payment = $payment;
+        $this->address = $address;
+        $this->tags = $tags;
+        $this->hobbies = $hobbies;
     }
 
-    /**
-     * @return \DateTime|null
-     */
     public function getCreatedAt(): ?\DateTime
     {
         return $this->createdAt ?? null;
     }
 
-    /**
-     * @param \DateTime $createdAt
-     * @return self
-     */
     public function withCreatedAt(\DateTime $createdAt): self
     {
         $clone = clone $this;
@@ -232,9 +225,6 @@ class User
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutCreatedAt(): self
     {
         $clone = clone $this;
@@ -253,7 +243,6 @@ class User
 
     /**
      * @param UserGender $gender
-     * @return self
      */
     public function withGender(UserGender $gender): self
     {
@@ -263,9 +252,6 @@ class User
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutGender(): self
     {
         $clone = clone $this;
@@ -274,19 +260,11 @@ class User
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function getFirstName(): string
     {
         return $this->firstName;
     }
 
-    /**
-     * @param string $firstName
-     * @return self
-     * @param bool $validate
-     */
     public function withFirstName(string $firstName, bool $validate = true): self
     {
         if ($validate) {
@@ -303,18 +281,11 @@ class User
         return $clone;
     }
 
-    /**
-     * @return string
-     */
     public function getLastName(): string
     {
         return $this->lastName;
     }
 
-    /**
-     * @param string $lastName
-     * @return self
-     */
     public function withLastName(string $lastName): self
     {
         $clone = clone $this;
@@ -323,38 +294,19 @@ class User
         return $clone;
     }
 
-    /**
-     * @return string|null
-     */
     public function getEmail(): ?string
     {
         return $this->email ?? null;
     }
 
-    /**
-     * @param string $email
-     * @return self
-     * @param bool $validate
-     */
-    public function withEmail(string $email, bool $validate = true): self
+    public function withEmail(string $email): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($email, self::$_schema['properties']['email']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->email = $email;
 
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutEmail(): self
     {
         $clone = clone $this;
@@ -373,7 +325,6 @@ class User
 
     /**
      * @param UserBilling $billing
-     * @return self
      */
     public function withBilling(UserBilling $billing): self
     {
@@ -383,9 +334,6 @@ class User
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutBilling(): self
     {
         $clone = clone $this;
@@ -404,7 +352,6 @@ class User
 
     /**
      * @param UserPaymentAlternative1|UserPaymentAlternative2|string $payment
-     * @return self
      */
     public function withPayment(UserPaymentAlternative1|UserPaymentAlternative2|string $payment): self
     {
@@ -414,9 +361,6 @@ class User
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutPayment(): self
     {
         $clone = clone $this;
@@ -435,7 +379,6 @@ class User
 
     /**
      * @param UserAddress $address
-     * @return self
      */
     public function withAddress(UserAddress $address): self
     {
@@ -445,9 +388,6 @@ class User
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutAddress(): self
     {
         $clone = clone $this;
@@ -466,8 +406,6 @@ class User
 
     /**
      * @param string[] $tags
-     * @return self
-     * @param bool $validate
      */
     public function withTags(array $tags, bool $validate = true): self
     {
@@ -485,9 +423,6 @@ class User
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutTags(): self
     {
         $clone = clone $this;
@@ -506,8 +441,6 @@ class User
 
     /**
      * @param UserHobbiesItem[] $hobbies
-     * @return self
-     * @param bool $validate
      */
     public function withHobbies(array $hobbies, bool $validate = true): self
     {
@@ -525,9 +458,6 @@ class User
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutHobbies(): self
     {
         $clone = clone $this;
@@ -537,10 +467,10 @@ class User
     }
 
     /**
-     * Builds a new instance from an input array
+     * Builds a new instance from an input array or object
      *
      * @param array|object $input Input data
-     * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param bool $validate If `false`, validation against the schema will be skipped.
      * @return User Created instance
      * @throws \InvalidArgumentException
      */
@@ -551,10 +481,10 @@ class User
             static::validateInput($input);
         }
 
-        $createdAt = isset($input->{'createdAt'}) ? $input->{'createdAt'} : null;
-        $gender = isset($input->{'gender'}) ? UserGender::from($input->{'gender'}) : null;
         $firstName = $input->{'firstName'};
         $lastName = $input->{'lastName'};
+        $createdAt = isset($input->{'createdAt'}) ? $input->{'createdAt'} : null;
+        $gender = isset($input->{'gender'}) ? UserGender::from($input->{'gender'}) : null;
         $email = isset($input->{'email'}) ? $input->{'email'} : null;
         $billing = isset($input->{'billing'}) ? UserBilling::fromInput($input->{'billing'}, $validate) : null;
         $payment = isset($input->{'payment'}) ? match (true) {
@@ -567,15 +497,18 @@ class User
         $tags = isset($input->{'tags'}) ? $input->{'tags'} : null;
         $hobbies = isset($input->{'hobbies'}) ? array_map(fn (array|object $i): UserHobbiesItem => UserHobbiesItem::fromInput($i, $validate), $input->{'hobbies'}) : null;
 
-        $obj = new self($firstName, $lastName);
-        $obj->createdAt = $createdAt;
-        $obj->gender = $gender;
-        $obj->email = $email;
-        $obj->billing = $billing;
-        $obj->payment = $payment;
-        $obj->address = $address;
-        $obj->tags = $tags;
-        $obj->hobbies = $hobbies;
+        $obj = new self(
+            $firstName,
+            $lastName,
+            $createdAt,
+            $gender,
+            $email,
+            $billing,
+            $payment,
+            $address,
+            $tags,
+            $hobbies
+        );
         return $obj;
     }
 

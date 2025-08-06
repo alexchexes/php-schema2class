@@ -97,7 +97,7 @@ class FromInputMethodFactory
     {
         $docBlockParams = [
             new ParamTag(self::INPUT_ARG_NAME, ['array|object'], 'Input data'),
-            new ParamTag(self::VALIDATE_ARG_NAME, ['bool'], 'Set this to false to skip validation; use at own risk'),
+            new ParamTag(self::VALIDATE_ARG_NAME, ['bool'], 'If `false`, validation against the schema will be skipped.'),
         ];
 
         if ($this->defaults) {
@@ -108,7 +108,7 @@ class FromInputMethodFactory
         $docBlockParams[] = new ThrowsTag('\\InvalidArgumentException');
 
         $docBlock = new DocBlockGenerator(
-            'Builds a new instance from an input array',
+            'Builds a new instance from an input array or object',
             null,
             $docBlockParams,
         );

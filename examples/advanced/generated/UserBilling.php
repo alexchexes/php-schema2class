@@ -31,46 +31,27 @@ class UserBilling
         ],
     ];
 
-    /**
-     * @var string
-     */
     private string $vatID;
 
-    /**
-     * @var int|null
-     */
     private ?int $creditLevel = null;
 
-    /**
-     * @var int|null
-     */
     private ?int $foo = null;
 
-    /**
-     * @var string|null
-     */
     private ?string $bar = null;
 
-    /**
-     * @param string $vatID
-     */
-    public function __construct(string $vatID)
+    public function __construct(string $vatID, ?int $creditLevel = null, ?int $foo = null, ?string $bar = null)
     {
         $this->vatID = $vatID;
+        $this->creditLevel = $creditLevel;
+        $this->foo = $foo;
+        $this->bar = $bar;
     }
 
-    /**
-     * @return string
-     */
     public function getVatID(): string
     {
         return $this->vatID;
     }
 
-    /**
-     * @param string $vatID
-     * @return self
-     */
     public function withVatID(string $vatID): self
     {
         $clone = clone $this;
@@ -79,18 +60,11 @@ class UserBilling
         return $clone;
     }
 
-    /**
-     * @return int|null
-     */
     public function getCreditLevel(): ?int
     {
         return $this->creditLevel ?? null;
     }
 
-    /**
-     * @param int $creditLevel
-     * @return self
-     */
     public function withCreditLevel(int $creditLevel): self
     {
         $clone = clone $this;
@@ -99,9 +73,6 @@ class UserBilling
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutCreditLevel(): self
     {
         $clone = clone $this;
@@ -110,18 +81,11 @@ class UserBilling
         return $clone;
     }
 
-    /**
-     * @return int|null
-     */
     public function getFoo(): ?int
     {
         return $this->foo ?? null;
     }
 
-    /**
-     * @param int $foo
-     * @return self
-     */
     public function withFoo(int $foo): self
     {
         $clone = clone $this;
@@ -130,9 +94,6 @@ class UserBilling
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutFoo(): self
     {
         $clone = clone $this;
@@ -141,18 +102,11 @@ class UserBilling
         return $clone;
     }
 
-    /**
-     * @return string|null
-     */
     public function getBar(): ?string
     {
         return $this->bar ?? null;
     }
 
-    /**
-     * @param string $bar
-     * @return self
-     */
     public function withBar(string $bar): self
     {
         $clone = clone $this;
@@ -161,9 +115,6 @@ class UserBilling
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutBar(): self
     {
         $clone = clone $this;
@@ -173,10 +124,10 @@ class UserBilling
     }
 
     /**
-     * Builds a new instance from an input array
+     * Builds a new instance from an input array or object
      *
      * @param array|object $input Input data
-     * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param bool $validate If `false`, validation against the schema will be skipped.
      * @return UserBilling Created instance
      * @throws \InvalidArgumentException
      */
@@ -192,10 +143,7 @@ class UserBilling
         $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
         $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
 
-        $obj = new self($vatID);
-        $obj->creditLevel = $creditLevel;
-        $obj->foo = $foo;
-        $obj->bar = $bar;
+        $obj = new self($vatID, $creditLevel, $foo, $bar);
         return $obj;
     }
 

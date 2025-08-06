@@ -19,23 +19,18 @@ class UserHobbiesItem
         ],
     ];
 
-    /**
-     * @var string|null
-     */
     private ?string $name = null;
 
-    /**
-     * @return string|null
-     */
+    public function __construct(?string $name = null)
+    {
+        $this->name = $name;
+    }
+
     public function getName(): ?string
     {
         return $this->name ?? null;
     }
 
-    /**
-     * @param string $name
-     * @return self
-     */
     public function withName(string $name): self
     {
         $clone = clone $this;
@@ -44,9 +39,6 @@ class UserHobbiesItem
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutName(): self
     {
         $clone = clone $this;
@@ -56,10 +48,10 @@ class UserHobbiesItem
     }
 
     /**
-     * Builds a new instance from an input array
+     * Builds a new instance from an input array or object
      *
      * @param array|object $input Input data
-     * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param bool $validate If `false`, validation against the schema will be skipped.
      * @return UserHobbiesItem Created instance
      * @throws \InvalidArgumentException
      */
@@ -70,10 +62,10 @@ class UserHobbiesItem
             static::validateInput($input);
         }
 
+
         $name = isset($input->{'name'}) ? $input->{'name'} : null;
 
-        $obj = new self();
-        $obj->name = $name;
+        $obj = new self($name);
         return $obj;
     }
 
