@@ -10,6 +10,7 @@ use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\MatchGenerator;
 use Helmich\Schema2Class\Generator\Property\Type\NullProperty;
 use Helmich\Schema2Class\Generator\Property\PropertyBuilder;
+use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeClass;
 use Helmich\Schema2Class\Writer\WriterInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -266,6 +267,10 @@ class UnionProperty extends AbstractProperty
         $types = [];
 
         foreach ($this->subProperties as $prop) {
+            if ($this->propName() === 'UnionOfOneNull') {
+                echo "\n---\$prop::class:\n";  print_r($prop::class);  echo "\n---";
+            }
+
             $ann = $prop->typeAnnotation();
             foreach (explode('|', $ann) as $t) {
                 $types[$t] = true;
@@ -281,8 +286,8 @@ class UnionProperty extends AbstractProperty
             $subTypeHints = [];
 
             foreach ($this->subProperties as $subProp) {
-                $th = $subProp->typeHint();
-                if ($th === null) {
+                $hint = $subProp->typeHint();
+                if ($hint === null) {
                     if ($subProp instanceof NullProperty) {
                         $subTypeHints['null'] = true;
                         continue;
@@ -290,17 +295,33 @@ class UnionProperty extends AbstractProperty
                     return null;
                 }
 
-                if (str_starts_with($th, '?')) {
+                if (str_starts_with($hint, '?')) {
                     $subTypeHints['null'] = true;
-                    $th = substr($th, 1);
+                    $hint = substr($hint, 1);
                 }
 
-                foreach (explode('|', $th) as $part) {
+                foreach (explode('|', $hint) as $part) {
                     $subTypeHints[$part] = true;
                 }
             }
 
             return join('|', array_keys($subTypeHints));
+        }
+
+        if ($this->request->isAtLeastPHP('7.2')) {
+            $onlyObjects = true;
+            foreach ($this->subProperties as $subProp) {
+                if (
+                    !($subProp instanceof NestedObjectProperty)
+                    && !($subProp instanceof ReferenceProperty && $subProp->getRefType() instanceof ReferencedTypeClass)
+                ) {
+                    $onlyObjects = false;
+                    break;
+                }
+            }
+            if ($onlyObjects) {
+                return 'object';
+            }
         }
 
         return null;

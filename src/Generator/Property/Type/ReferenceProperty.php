@@ -71,4 +71,9 @@ class ReferenceProperty extends AbstractProperty
         // Referenced classes are type hinted.
         return false;
     }
+
+    public function getRefType(): ReferencedTypeInterface
+    {
+        return $this->refType;
+    }
 }

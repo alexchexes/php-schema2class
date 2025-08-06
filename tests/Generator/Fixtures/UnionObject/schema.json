@@ -1,0 +1,52 @@
+{
+  "properties": {
+    "objectsUnion": {
+      "oneOf": [
+        { "properties": { "type": { "type": "string" } } },
+        { "properties": { "accountNumber": { "type": "string" } } }
+      ]
+    },
+    "refObjectsUnion": {
+      "oneOf": [
+        { "$ref": "#/definitions/SomeObj1" },
+        { "$ref": "#/definitions/SomeObj2" }
+      ]
+    },
+    "refAndNotRefObjectsUnion": {
+      "oneOf": [
+        { "$ref": "#/definitions/SomeObj1" },
+        { "properties": { "type": { "type": "string" } } },
+        { "$ref": "#/definitions/SomeObj2" },
+        { "properties": { "accountNumber": { "type": "string" } } }
+      ]
+    },
+    "objAndStringUnion": {
+      "oneOf": [
+        { "properties": { "type": { "type": "string" } } },
+        { "type": "string" }
+      ]
+    },
+    "unionOfOneObj": {
+      "oneOf": [
+        { "properties": { "type": { "type": "string" } } }
+      ]
+    },
+    "unionOfOneNull": {
+      "oneOf": [
+        { "type": "null" }
+      ]
+    }
+  },
+  "definitions": {
+    "SomeObj1": {
+      "properties": {
+        "a": { "type": "string a" }
+      }
+    },
+    "SomeObj2": {
+      "properties": {
+        "a": { "type": "string b" }
+      }
+    }
+  }
+}

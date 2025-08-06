@@ -14,6 +14,9 @@ class MyClass
     private static array $_schema = [
         'required' => [
             'foo',
+            'bar',
+            'baz',
+            'qux',
         ],
         'properties' => [
             'foo' => [
@@ -21,12 +24,72 @@ class MyClass
                     [
                         'type' => 'string',
                         'format' => 'uuid',
+                        'description' => 'Description of \'uuid\' string',
                     ],
                     [
                         'type' => 'string',
+                        'description' => 'Description of \'maxLength\' string',
                         'maxLength' => 0,
+                        'deprecated' => true,
                     ],
                 ],
+            ],
+            'bar' => [
+                'oneOf' => [
+                    [
+                        '$ref' => '#/definitions/FooDef',
+                    ],
+                    [
+                        '$ref' => '#/definitions/BarDef',
+                    ],
+                ],
+            ],
+            'baz' => [
+                'anyOf' => [
+                    [
+                        '$ref' => '#/definitions/FooDef',
+                    ],
+                    [
+                        '$ref' => '#/definitions/BarDef',
+                    ],
+                ],
+            ],
+            'qux' => [
+                'oneOf' => [
+                    [
+                        'type' => 'string',
+                        'format' => 'uuid',
+                        'description' => 'Description of \'uuid\' string',
+                    ],
+                    [
+                        'type' => [
+                            'string',
+                            'null',
+                        ],
+                        'description' => 'Description of \'maxLength\' string',
+                        'maxLength' => 0,
+                        'deprecated' => true,
+                    ],
+                    [
+                        '$ref' => '#/definitions/FooDef',
+                    ],
+                    [
+                        '$ref' => '#/definitions/BarDef',
+                    ],
+                ],
+            ],
+        ],
+        'definitions' => [
+            'FooDef' => [
+                'type' => 'string',
+                'format' => 'uuid',
+                'description' => 'Description of a definition of \'uuid\' string',
+            ],
+            'BarDef' => [
+                'type' => 'string',
+                'description' => 'Description of a definition of \'maxLength\' string',
+                'maxLength' => 0,
+                'deprecated' => true,
             ],
         ],
     ];
@@ -37,11 +100,32 @@ class MyClass
     private $foo;
 
     /**
-     * @param string $foo
+     * @var string
      */
-    public function __construct($foo)
+    private $bar;
+
+    /**
+     * @var string
+     */
+    private $baz;
+
+    /**
+     * @var string|null
+     */
+    private $qux;
+
+    /**
+     * @param string $foo
+     * @param string $bar
+     * @param string $baz
+     * @param string|null $qux
+     */
+    public function __construct($foo, $bar, $baz, $qux)
     {
         $this->foo = $foo;
+        $this->bar = $bar;
+        $this->baz = $baz;
+        $this->qux = $qux;
     }
 
     /**
@@ -72,6 +156,87 @@ class MyClass
     }
 
     /**
+     * @return string
+     */
+    public function getBar()
+    {
+        return $this->bar;
+    }
+
+    /**
+     * @param string $bar
+     */
+    public function withBar($bar, bool $validate = true): self
+    {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($bar, self::$_schema['properties']['bar']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
+        $clone = clone $this;
+        $clone->bar = $bar;
+
+        return $clone;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBaz()
+    {
+        return $this->baz;
+    }
+
+    /**
+     * @param string $baz
+     */
+    public function withBaz($baz, bool $validate = true): self
+    {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($baz, self::$_schema['properties']['baz']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
+        $clone = clone $this;
+        $clone->baz = $baz;
+
+        return $clone;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getQux()
+    {
+        return $this->qux;
+    }
+
+    /**
+     * @param string|null $qux
+     */
+    public function withQux($qux, bool $validate = true): self
+    {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($qux, self::$_schema['properties']['qux']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
+        $clone = clone $this;
+        $clone->qux = $qux;
+
+        return $clone;
+    }
+
+    /**
      * Builds a new instance from an input array or object
      *
      * @param array|object $input Input data
@@ -93,8 +258,11 @@ class MyClass
         }
 
         $foo = $input->{'foo'};
+        $bar = $input->{'bar'};
+        $baz = $input->{'baz'};
+        $qux = ($input->{'qux'} !== null ? ((is_string($input->{'qux'})) ? $input->{'qux'} : (((is_string($input->{'qux'})) ? $input->{'qux'} : ((((($input->{'qux'}) === null) || (is_string($input->{'qux'}))) ? ($input->{'qux'} !== null ? $input->{'qux'} : null) : (((is_string($input->{'qux'})) ? $input->{'qux'} : (null)))))))) : null);
 
-        $obj = new self($foo);
+        $obj = new self($foo, $bar, $baz, $qux);
         return $obj;
     }
 
@@ -108,6 +276,17 @@ class MyClass
         $output = [];
         if ((is_string($this->foo)) || (is_string($this->foo))) {
             $output['foo'] = $this->foo;
+        }
+        if ((is_string($this->bar)) || (is_string($this->bar))) {
+            $output['bar'] = $this->bar;
+        }
+        if ((is_string($this->baz)) || (is_string($this->baz))) {
+            $output['baz'] = $this->baz;
+        }
+        if ((is_string($this->qux)) || (is_string($this->qux)) || (is_string($this->qux))) {
+            $output['qux'] = $this->qux;
+        } else if (((($this->qux) === null) || (is_string($this->qux)))) {
+            $output['qux'] = ($this->qux !== null) ? ($this->qux) : null;
         }
 
         return $output;
@@ -123,6 +302,17 @@ class MyClass
         $output = new \stdClass();
         if ((is_string($this->foo)) || (is_string($this->foo))) {
         $output->{'foo'} = $this->foo;
+        }
+        if ((is_string($this->bar)) || (is_string($this->bar))) {
+        $output->{'bar'} = $this->bar;
+        }
+        if ((is_string($this->baz)) || (is_string($this->baz))) {
+        $output->{'baz'} = $this->baz;
+        }
+        if ((is_string($this->qux)) || (is_string($this->qux)) || (is_string($this->qux))) {
+        $output->{'qux'} = $this->qux;
+        } else if (((($this->qux) === null) || (is_string($this->qux)))) {
+        $output->{'qux'} = ($this->qux !== null) ? ($this->qux) : null;
         }
 
         return $output;
@@ -155,5 +345,8 @@ class MyClass
     public function __clone()
     {
         $this->foo = (is_string($this->foo)) ? ($this->foo) : ((is_string($this->foo)) ? ($this->foo) : ($this->foo));
+        $this->bar = (is_string($this->bar)) ? ($this->bar) : ((is_string($this->bar)) ? ($this->bar) : ($this->bar));
+        $this->baz = (is_string($this->baz)) ? ($this->baz) : ((is_string($this->baz)) ? ($this->baz) : ($this->baz));
+        $this->qux = (is_string($this->qux)) ? ($this->qux) : ((is_string($this->qux)) ? ($this->qux) : (((($this->qux) === null) || (is_string($this->qux))) ? (isset($this->qux) ? (clone $this->qux) : null) : ((is_string($this->qux)) ? ($this->qux) : ($this->qux))));
     }
 }

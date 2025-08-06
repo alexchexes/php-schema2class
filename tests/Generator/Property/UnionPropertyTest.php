@@ -131,8 +131,8 @@ EOCODE;
         return [
             "php {$php8Ver}" =>
                 [$php8Ver, '\BarNs\FooMyPropertyNameAlternative1|\BarNs\FooMyPropertyNameAlternative2'],
-            'php 7.2' => ['7.2.0', null],
-            'php 5.6' => ['5.6.0', null],
+            'php 7.2' => ['7.2.0', 'object'],
+            'php 7.1' => ['7.1.0', null],
         ];
     }
 
