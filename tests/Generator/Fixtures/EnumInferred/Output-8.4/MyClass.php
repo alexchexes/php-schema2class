@@ -81,7 +81,7 @@ class MyClass
     /**
      * @var '42'|42|42.5|false|null
      */
-    private string|int|float|bool|null $inferMixed;
+    private bool|int|float|string|null $inferMixed;
 
     private ?MyClassInferStringOpt $inferStringOpt = null;
 
@@ -90,7 +90,7 @@ class MyClass
     /**
      * @var '42'|42|42.5|false|null
      */
-    private string|int|float|bool|null $inferMixedOpt = null;
+    private bool|int|float|string|null $inferMixedOpt = null;
 
     /**
      * @param '42'|42|42.5|false|null $inferMixed

@@ -7,6 +7,9 @@ use Helmich\Schema2Class\Generator\Class\PropertyNames;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Laminas\Code\Generator\DocBlock\Tag\GenericTag;
 use Laminas\Code\Generator\DocBlockGenerator;
+use Laminas\Code\Generator\PropertyGenerator;
+use Laminas\Code\Generator\PropertyValueGenerator;
+use Laminas\Code\Generator\TypeGenerator;
 
 /**
  * Factory for creating "$schema" class property that holds the JSON-schema as array used for validation
@@ -33,11 +36,11 @@ class DefaultsPropertyFactory
         ));
 
         if ($this->request->isAtLeastPHP('7.4')) {
-            $prop->setTypeHint('array');
+            $prop->setType(TypeGenerator::fromTypeString('array'));
         }
 
         if ($this->request->getOptions()->getSingleLineSchema()) {
-            $prop->setSingleLineDefaultValue(true);
+            $prop->getDefaultValue()?->setOutputMode(PropertyValueGenerator::OUTPUT_SINGLE_LINE);
         }
 
         return $prop;

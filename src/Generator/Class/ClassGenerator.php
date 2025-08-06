@@ -5,7 +5,7 @@ namespace Helmich\Schema2Class\Generator\Class;
 
 use Helmich\Schema2Class\Generator\Class\Method\ClassMethodSuiteFactory;
 use Helmich\Schema2Class\Generator\Class\Property\ClassPropertySuiteFactory;
-use Helmich\Schema2Class\Generator\Class\Property\PropertyGenerator;
+use Laminas\Code\Generator\PropertyGenerator;
 use Helmich\Schema2Class\Generator\Class\IdentifierResolver;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\SchemaDefaultsCollector;

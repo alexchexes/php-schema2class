@@ -131,7 +131,7 @@ class MyClass
     /**
      * @var 'red'|'amber'|'green'|'42'|42|42.5|false|null
      */
-    private string|int|float|bool|null $baz;
+    private bool|int|float|string|null $baz;
 
     private ?MyClassInferString $inferString = null;
 
