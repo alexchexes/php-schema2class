@@ -23,7 +23,7 @@ class MyClass
         'type' => 'object',
     ];
 
-    private string|int|float|null $foo = null;
+    private int|float|string|null $foo = null;
 
     public function __construct(int|float|string|null $foo = null)
     {

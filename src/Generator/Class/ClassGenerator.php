@@ -5,12 +5,12 @@ namespace Helmich\Schema2Class\Generator\Class;
 
 use Helmich\Schema2Class\Generator\Class\Method\ClassMethodSuiteFactory;
 use Helmich\Schema2Class\Generator\Class\Property\ClassPropertySuiteFactory;
-use Helmich\Schema2Class\Generator\Class\Property\PropertyGenerator;
 use Helmich\Schema2Class\Generator\Class\IdentifierResolver;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\SchemaDefaultsCollector;
 use Helmich\Schema2Class\Generator\SchemaPropertyCollector;
 use Helmich\Schema2Class\Writer\WriterInterface;
+use Laminas\Code\Generator\PropertyGenerator;
 use Laminas\Code\DeclareStatement;
 use Laminas\Code\Generator\ClassGenerator as LaminasClassGenerator;
 use Laminas\Code\Generator\DocBlockGenerator;

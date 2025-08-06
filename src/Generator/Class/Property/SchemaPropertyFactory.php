@@ -10,6 +10,8 @@ use Helmich\Schema2Class\Generator\Property\Type\PropertyInterface;
 use Helmich\Schema2Class\Util\StringUtils;
 use Laminas\Code\Generator\DocBlock\Tag\GenericTag;
 use Laminas\Code\Generator\DocBlockGenerator;
+use Laminas\Code\Generator\PropertyGenerator;
+use Laminas\Code\Generator\TypeGenerator;
 
 class SchemaPropertyFactory
 {
@@ -31,7 +33,7 @@ class SchemaPropertyFactory
 
         $typeHint = $schemaProp->typeHint();
         if ($this->request->isAtLeastPHP("7.4") && $typeHint !== null) {
-            $propertyGenerator->setTypeHint($typeHint);
+            $propertyGenerator->setType(TypeGenerator::fromTypeString($typeHint));
         }
 
         $docBlock = $this->buildDockBlock($schemaProp);

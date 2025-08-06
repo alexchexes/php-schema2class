@@ -59,7 +59,7 @@ class Cat
      */
     private array $_providedOptionals = [];
 
-    private null|bool|string|int|float $hasFur = null;
+    private bool|int|float|string|null $hasFur = null;
 
     public function __construct(bool|int|float|string|null $hasFur = null)
     {

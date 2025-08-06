@@ -7,6 +7,9 @@ use Helmich\Schema2Class\Generator\Class\PropertyNames;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Laminas\Code\Generator\DocBlock\Tag\GenericTag;
 use Laminas\Code\Generator\DocBlockGenerator;
+use Laminas\Code\Generator\PropertyGenerator;
+use Laminas\Code\Generator\PropertyValueGenerator;
+use Laminas\Code\Generator\TypeGenerator;
 
 class ProvidedOptionalsPropertyFactory
 {
@@ -20,12 +23,11 @@ class ProvidedOptionalsPropertyFactory
             ? PropertyGenerator::FLAG_PUBLIC
             : PropertyGenerator::FLAG_PRIVATE;
 
-        $propertyGen = new PropertyGenerator(PropertyNames::OPTIONALS, [] , $visibility);
-        $propertyGen->setDefaultValue([]);
-        $propertyGen->setSingleLineDefaultValue(true);
+        $propertyGen = new PropertyGenerator(PropertyNames::OPTIONALS, [], $visibility);
+        $propertyGen->getDefaultValue()->setOutputMode(PropertyValueGenerator::OUTPUT_SINGLE_LINE);
 
         if ($this->request->isAtLeastPHP("7.4")) {
-            $propertyGen->setTypeHint("array");
+            $propertyGen->setType(TypeGenerator::fromTypeString("array"));
         }
 
         $propertyGen->setDocBlock(new DocBlockGenerator(

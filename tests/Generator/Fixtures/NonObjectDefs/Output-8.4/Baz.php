@@ -56,7 +56,7 @@ class Baz
         ],
     ];
 
-    private Foo|Bar|null $grox = null;
+    private Bar|Foo|null $grox = null;
 
     public function __construct(Bar|Foo|null $grox = null)
     {
