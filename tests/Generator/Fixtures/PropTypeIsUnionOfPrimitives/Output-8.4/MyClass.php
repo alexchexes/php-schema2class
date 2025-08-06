@@ -115,25 +115,25 @@ class MyClass
      */
     private array $_providedOptionals = [];
 
-    private string|int|float|bool $foo;
+    private bool|int|float|string $foo;
 
-    private string|int|float|bool|array $bar;
+    private bool|int|float|string|array $bar;
 
-    private string|int|float|bool|array|object $baz;
+    private bool|int|float|string|array|object $baz;
 
-    private string|int|float|bool|array|object $qux;
+    private bool|int|float|string|array|object $qux;
 
-    private string|int|float|bool|array|object|null $thud;
+    private bool|int|float|string|array|object|null $thud;
 
-    private string|int|float|bool|null $optFoo = null;
+    private bool|int|float|string|null $optFoo = null;
 
-    private string|int|float|bool|array|null $optBar = null;
+    private bool|int|float|string|array|null $optBar = null;
 
-    private string|int|float|bool|array|object|null $optBaz = null;
+    private bool|int|float|string|array|object|null $optBaz = null;
 
-    private string|int|float|bool|array|object|null $optQux = null;
+    private bool|int|float|string|array|object|null $optQux = null;
 
-    private string|int|float|bool|array|object|null $optThud = null;
+    private bool|int|float|string|array|object|null $optThud = null;
 
     public function __construct(bool|int|float|string $foo, bool|int|float|string|array $bar, bool|int|float|string|array|object $baz, bool|int|float|string|array|object $qux, bool|int|float|string|array|object|null $thud, bool|int|float|string|null $optFoo = null, bool|int|float|string|array|null $optBar = null, bool|int|float|string|array|object|null $optBaz = null, bool|int|float|string|array|object|null $optQux = null, bool|int|float|string|array|object|null $optThud = null)
     {

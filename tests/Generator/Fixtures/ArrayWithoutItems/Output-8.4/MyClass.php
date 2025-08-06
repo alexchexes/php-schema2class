@@ -92,21 +92,21 @@ class MyClass
 
     private array $a;
 
-    private array|string $b;
+    private string|array $b;
 
     private ?array $c;
 
-    private array|string|null $d;
+    private string|array|null $d;
 
     private ?array $e = null;
 
-    private array|string|null $f = null;
+    private string|array|null $f = null;
 
     private ?array $g = null;
 
-    private array|string|null $h = null;
+    private string|array|null $h = null;
 
-    private array|string|object|null $i = null;
+    private string|array|object|null $i = null;
 
     public function __construct(array $a, string|array $b, ?array $c, string|array|null $d, ?array $e = null, string|array|null $f = null, ?array $g = null, string|array|null $h = null, string|array|object|null $i = null)
     {

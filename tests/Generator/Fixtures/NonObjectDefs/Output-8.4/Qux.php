@@ -72,7 +72,7 @@ class Qux
     /**
      * @var string|string[]|Foo|Bar|null
      */
-    private string|array|Foo|Bar|null $grox = null;
+    private Bar|Foo|string|array|null $grox = null;
 
     /**
      * @param string|string[]|Foo|Bar|null $grox

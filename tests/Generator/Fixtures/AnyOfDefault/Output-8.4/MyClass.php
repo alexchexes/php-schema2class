@@ -40,7 +40,7 @@ class MyClass
         ],
     ];
 
-    private string|int|null $foo = null;
+    private int|string|null $foo = null;
 
     public function __construct(int|string|null $foo = null)
     {
