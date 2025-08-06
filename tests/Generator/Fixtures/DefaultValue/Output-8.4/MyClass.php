@@ -126,7 +126,7 @@ class MyClass
 
     private ?string $grox = null;
 
-    private string|int|float|null $qwert = null;
+    private int|float|string|null $qwert = null;
 
     private ?string $zyx = null;
 

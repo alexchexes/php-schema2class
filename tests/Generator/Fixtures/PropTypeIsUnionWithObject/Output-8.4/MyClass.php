@@ -33,7 +33,7 @@ class MyClass
         ],
     ];
 
-    private string|MyClassFooAlternative2 $foo;
+    private MyClassFooAlternative2|string $foo;
 
     public function __construct(MyClassFooAlternative2|string $foo)
     {

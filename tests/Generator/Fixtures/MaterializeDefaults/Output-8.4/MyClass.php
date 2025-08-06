@@ -320,19 +320,19 @@ class MyClass
     /**
      * @var string|ObjDef|string[]|null
      */
-    private string|ObjDef|array|null $xyyz = null;
+    private ObjDef|string|array|null $xyyz = null;
 
     /**
      * @var string|string[]|ObjDef|null
      */
-    private string|array|ObjDef|null $buux = null;
+    private ObjDef|string|array|null $buux = null;
 
     /**
      * @var string|string[]|ObjDef|null
      */
-    private string|array|ObjDef|null $boic = null;
+    private ObjDef|string|array|null $boic = null;
 
-    private string|NumericKeysObj|null $poox = null;
+    private NumericKeysObj|string|null $poox = null;
 
     private array|object|null $arrObjUnion = null;
 
