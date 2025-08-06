@@ -53,12 +53,12 @@ class MyObject
     /**
      * @var 'foo'|'bar'|'baz'|'quz'
      */
-    private $foo;
+    private string $foo;
 
     /**
      * @param 'foo'|'bar'|'baz'|'quz' $foo
      */
-    public function __construct($foo)
+    public function __construct(string $foo)
     {
         $this->foo = $foo;
     }
@@ -66,7 +66,7 @@ class MyObject
     /**
      * @return 'foo'|'bar'|'baz'|'quz'
      */
-    public function getFoo()
+    public function getFoo(): string
     {
         return $this->foo;
     }
@@ -74,7 +74,7 @@ class MyObject
     /**
      * @param 'foo'|'bar'|'baz'|'quz' $foo
      */
-    public function withFoo($foo, bool $validate = true): self
+    public function withFoo(string $foo, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();

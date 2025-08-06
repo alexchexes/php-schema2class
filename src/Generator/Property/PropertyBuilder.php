@@ -105,6 +105,10 @@ class PropertyBuilder
             return $property;
         }
 
+        if ($property = self::trySingleUnion($req, $name, $definition, $isRequired)) {
+            return $property;
+        }
+
         foreach (self::$propertyTypes as $propertyType) {
             if ($propertyType::canHandleSchema($definition)) {
                 /** @var PropertyInterface $property */
@@ -295,6 +299,33 @@ class PropertyBuilder
         return $isRequired
             ? new NullablePropertyDecorator($name, $unionProp, $req)
             : self::wrapProperty($req, $unionProp, $definition, $name, false);
+    }
+
+    /** Flatten anyOf/oneOf definitions with a single schema */
+    private static function trySingleUnion(
+        GeneratorRequest $req,
+        string $name,
+        array $definition,
+        bool $isRequired
+    ): ?PropertyInterface {
+        $unionKey = isset($definition['anyOf']) ? 'anyOf' : (isset($definition['oneOf']) ? 'oneOf' : null);
+        if (!$unionKey) {
+            return null;
+        }
+
+        $subs = $definition[$unionKey];
+        if (!is_array($subs) || count($subs) !== 1) {
+            return null;
+        }
+
+        $single = $subs[0];
+        foreach (['description', 'title', 'default', 'deprecated'] as $k) {
+            if (isset($definition[$k]) && !isset($single[$k])) {
+                $single[$k] = $definition[$k];
+            }
+        }
+
+        return self::buildPropertyFromSchema($req, $name, $single, $isRequired);
     }
 
     /** Apply optional/nullable decorators around a property */

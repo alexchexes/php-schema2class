@@ -131,7 +131,7 @@ class MyClass
 
     private MyClassObjAndStringUnionAlternative1|string|null $objAndStringUnion = null;
 
-    private ?MyClassUnionOfOneObjAlternative1 $unionOfOneObj = null;
+    private ?MyClassUnionOfOneObj $unionOfOneObj = null;
 
     /**
      * @var null
@@ -141,7 +141,7 @@ class MyClass
     /**
      * @param null $unionOfOneNull
      */
-    public function __construct(MyClassObjectsUnionAlternative1|MyClassObjectsUnionAlternative2|null $objectsUnion = null, SomeObj1|SomeObj2|null $refObjectsUnion = null, MyClassRefAndNotRefObjectsUnionAlternative2|MyClassRefAndNotRefObjectsUnionAlternative4|SomeObj1|SomeObj2|null $refAndNotRefObjectsUnion = null, MyClassObjAndStringUnionAlternative1|string|null $objAndStringUnion = null, ?MyClassUnionOfOneObjAlternative1 $unionOfOneObj = null, $unionOfOneNull = null)
+    public function __construct(MyClassObjectsUnionAlternative1|MyClassObjectsUnionAlternative2|null $objectsUnion = null, SomeObj1|SomeObj2|null $refObjectsUnion = null, MyClassRefAndNotRefObjectsUnionAlternative2|MyClassRefAndNotRefObjectsUnionAlternative4|SomeObj1|SomeObj2|null $refAndNotRefObjectsUnion = null, MyClassObjAndStringUnionAlternative1|string|null $objAndStringUnion = null, ?MyClassUnionOfOneObj $unionOfOneObj = null, $unionOfOneNull = null)
     {
         $this->objectsUnion = $objectsUnion;
         $this->refObjectsUnion = $refObjectsUnion;
@@ -235,12 +235,12 @@ class MyClass
         return $clone;
     }
 
-    public function getUnionOfOneObj(): ?MyClassUnionOfOneObjAlternative1
+    public function getUnionOfOneObj(): ?MyClassUnionOfOneObj
     {
         return $this->unionOfOneObj;
     }
 
-    public function withUnionOfOneObj(MyClassUnionOfOneObjAlternative1 $unionOfOneObj): self
+    public function withUnionOfOneObj(MyClassUnionOfOneObj $unionOfOneObj): self
     {
         $clone = clone $this;
         $clone->unionOfOneObj = $unionOfOneObj;
@@ -331,16 +331,10 @@ class MyClass
             is_string($input->{'objAndStringUnion'}) => $input->{'objAndStringUnion'},
             default => null,
         } : null;
-        $unionOfOneObj = isset($input->{'unionOfOneObj'}) ? match (true) {
-            MyClassUnionOfOneObjAlternative1::validateInput($input->{'unionOfOneObj'}, true) => MyClassUnionOfOneObjAlternative1::fromInput($input->{'unionOfOneObj'}, $validate),
-            default => null,
-        } : null;
+        $unionOfOneObj = isset($input->{'unionOfOneObj'}) ? MyClassUnionOfOneObj::fromInput($input->{'unionOfOneObj'}, $validate) : null;
         $unionOfOneNull = null;
         if (property_exists($input, 'unionOfOneNull')) {
-            $unionOfOneNull = ($input->{'unionOfOneNull'} !== null ? match (true) {
-            (($input->{'unionOfOneNull'}) === null) || ($input->{'unionOfOneNull'} === null) => ($input->{'unionOfOneNull'} !== null ? $input->{'unionOfOneNull'} : null),
-            default => null,
-        } : null);
+            $unionOfOneNull = ($input->{'unionOfOneNull'} !== null ? $input->{'unionOfOneNull'} : null);
             $__providedOptionals['unionOfOneNull'] = true;
         }
 
@@ -391,15 +385,10 @@ class MyClass
             };
         }
         if (isset($this->unionOfOneObj)) {
-            $output['unionOfOneObj'] = match (true) {
-                $this->unionOfOneObj instanceof MyClassUnionOfOneObjAlternative1 => ($this->unionOfOneObj)->toArray(),
-            };
+            $output['unionOfOneObj'] = ($this->unionOfOneObj)->toArray();
         }
         if (isset($this->unionOfOneNull) || array_key_exists('unionOfOneNull', $this->_providedOptionals)) {
-            $output['unionOfOneNull'] = ($this->unionOfOneNull !== null) ? (match (true) {
-                default => null,
-                (($this->unionOfOneNull) === null) || ($this->unionOfOneNull === null) => ($this->unionOfOneNull !== null) ? ($this->unionOfOneNull) : null,
-            }) : null;
+            $output['unionOfOneNull'] = ($this->unionOfOneNull !== null) ? ($this->unionOfOneNull) : null;
         }
 
         return $output;
@@ -440,15 +429,10 @@ class MyClass
             };
         }
         if (isset($this->unionOfOneObj)) {
-            $output->{'unionOfOneObj'} = match (true) {
-                $this->unionOfOneObj instanceof MyClassUnionOfOneObjAlternative1 => ($this->unionOfOneObj)->toStdClass(),
-            };
+            $output->{'unionOfOneObj'} = ($this->unionOfOneObj)->toStdClass();
         }
         if (isset($this->unionOfOneNull) || array_key_exists('unionOfOneNull', $this->_providedOptionals)) {
-            $output->{'unionOfOneNull'} = ($this->unionOfOneNull !== null) ? (match (true) {
-                default => null,
-                (($this->unionOfOneNull) === null) || ($this->unionOfOneNull === null) => ($this->unionOfOneNull !== null) ? ($this->unionOfOneNull) : null,
-            }) : null;
+            $output->{'unionOfOneNull'} = ($this->unionOfOneNull !== null) ? ($this->unionOfOneNull) : null;
         }
 
         return $output;
@@ -507,14 +491,7 @@ class MyClass
             };
         }
         if (isset($this->unionOfOneObj)) {
-            $this->unionOfOneObj = match (true) {
-                $this->unionOfOneObj instanceof MyClassUnionOfOneObjAlternative1 => clone $this->unionOfOneObj,
-            };
-        }
-        if (isset($this->unionOfOneNull)) {
-            $this->unionOfOneNull = match (true) {
-                (($this->unionOfOneNull) === null) || ($this->unionOfOneNull === null) => isset($this->unionOfOneNull) ? (clone $this->unionOfOneNull) : null,
-            };
+            $this->unionOfOneObj = clone $this->unionOfOneObj;
         }
     }
 

@@ -94,33 +94,15 @@ class MyClass
         ],
     ];
 
-    /**
-     * @var string
-     */
-    private $foo;
+    private string $foo;
 
-    /**
-     * @var string
-     */
-    private $bar;
+    private string $bar;
 
-    /**
-     * @var string
-     */
-    private $baz;
+    private string $baz;
 
-    /**
-     * @var string|null
-     */
-    private $qux;
+    private ?string $qux;
 
-    /**
-     * @param string $foo
-     * @param string $bar
-     * @param string $baz
-     * @param string|null $qux
-     */
-    public function __construct($foo, $bar, $baz, $qux)
+    public function __construct(string $foo, string $bar, string $baz, ?string $qux)
     {
         $this->foo = $foo;
         $this->bar = $bar;
@@ -128,18 +110,12 @@ class MyClass
         $this->qux = $qux;
     }
 
-    /**
-     * @return string
-     */
-    public function getFoo()
+    public function getFoo(): string
     {
         return $this->foo;
     }
 
-    /**
-     * @param string $foo
-     */
-    public function withFoo($foo, bool $validate = true): self
+    public function withFoo(string $foo, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -155,18 +131,12 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
-    public function getBar()
+    public function getBar(): string
     {
         return $this->bar;
     }
 
-    /**
-     * @param string $bar
-     */
-    public function withBar($bar, bool $validate = true): self
+    public function withBar(string $bar, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -182,18 +152,12 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string
-     */
-    public function getBaz()
+    public function getBaz(): string
     {
         return $this->baz;
     }
 
-    /**
-     * @param string $baz
-     */
-    public function withBaz($baz, bool $validate = true): self
+    public function withBaz(string $baz, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -209,18 +173,12 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getQux()
+    public function getQux(): ?string
     {
         return $this->qux;
     }
 
-    /**
-     * @param string|null $qux
-     */
-    public function withQux($qux, bool $validate = true): self
+    public function withQux(?string $qux, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();

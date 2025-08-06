@@ -59,12 +59,12 @@ class BarTest
     /**
      * @var FooTest|MoiKlass|FooTest_1|null
      */
-    private $exampleProp = null;
+    private ?object $exampleProp = null;
 
     /**
      * @param FooTest|MoiKlass|FooTest_1|null $exampleProp
      */
-    public function __construct($exampleProp = null)
+    public function __construct(?object $exampleProp = null)
     {
         $this->exampleProp = $exampleProp;
     }
@@ -72,7 +72,7 @@ class BarTest
     /**
      * @return FooTest|MoiKlass|FooTest_1|null
      */
-    public function getExampleProp()
+    public function getExampleProp(): ?object
     {
         return $this->exampleProp;
     }
@@ -80,7 +80,7 @@ class BarTest
     /**
      * @param FooTest|MoiKlass|FooTest_1 $exampleProp
      */
-    public function withExampleProp($exampleProp, bool $validate = true): self
+    public function withExampleProp(object $exampleProp, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();

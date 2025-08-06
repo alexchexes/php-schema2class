@@ -282,45 +282,70 @@ class UnionProperty extends AbstractProperty
 
     public function typeHint(): ?string
     {
-        if ($this->request->isAtLeastPHP("8.0")) {
-            $subTypeHints = [];
+        $subTypeHints = [];
 
-            foreach ($this->subProperties as $subProp) {
-                $hint = $subProp->typeHint();
-                if ($hint === null) {
-                    if ($subProp instanceof NullProperty) {
-                        $subTypeHints['null'] = true;
-                        continue;
-                    }
-                    return null;
-                }
-
-                if (str_starts_with($hint, '?')) {
+        foreach ($this->subProperties as $subProp) {
+            $hint = $subProp->typeHint();
+            if ($hint === null) {
+                if ($subProp instanceof NullProperty) {
                     $subTypeHints['null'] = true;
-                    $hint = substr($hint, 1);
+                    continue;
                 }
-
-                foreach (explode('|', $hint) as $part) {
-                    $subTypeHints[$part] = true;
-                }
+                $subTypeHints = [];
+                break;
             }
 
-            return join('|', array_keys($subTypeHints));
+            if (str_starts_with($hint, '?')) {
+                $subTypeHints['null'] = true;
+                $hint = substr($hint, 1);
+            }
+
+            foreach (explode('|', $hint) as $part) {
+                $subTypeHints[$part] = true;
+            }
         }
 
-        if ($this->request->isAtLeastPHP('7.2')) {
-            $onlyObjects = true;
-            foreach ($this->subProperties as $subProp) {
-                if (
-                    !($subProp instanceof NestedObjectProperty)
-                    && !($subProp instanceof ReferenceProperty && $subProp->getRefType() instanceof ReferencedTypeClass)
-                ) {
-                    $onlyObjects = false;
-                    break;
+        if ($this->request->isAtLeastPHP('8.0')) {
+            if (isset($subTypeHints['null']) && count($subTypeHints) === 2) {
+                unset($subTypeHints['null']);
+                return array_key_first($subTypeHints);
+            }
+
+            if (count($subTypeHints) === 1) {
+                return array_key_first($subTypeHints);
+            }
+
+            if (count($subTypeHints) > 0) {
+                return join('|', array_keys($subTypeHints));
+            }
+        } else {
+            if (isset($subTypeHints['null']) && count($subTypeHints) === 2) {
+                $types = array_keys($subTypeHints);
+                $type  = $types[0] === 'null' ? $types[1] : $types[0];
+                return $type;
+            }
+
+            if (count($subTypeHints) === 1) {
+                $type = array_key_first($subTypeHints);
+                if ($type !== 'null') {
+                    return $type;
                 }
             }
-            if ($onlyObjects) {
-                return 'object';
+
+            if ($this->request->isAtLeastPHP('7.2')) {
+                $onlyObjects = true;
+                foreach ($this->subProperties as $subProp) {
+                    if (
+                        !($subProp instanceof NestedObjectProperty)
+                        && !($subProp instanceof ReferenceProperty && $subProp->getRefType() instanceof ReferencedTypeClass)
+                    ) {
+                        $onlyObjects = false;
+                        break;
+                    }
+                }
+                if ($onlyObjects) {
+                    return 'object';
+                }
             }
         }
 
