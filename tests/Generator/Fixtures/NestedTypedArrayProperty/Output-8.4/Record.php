@@ -129,7 +129,7 @@ class Record
      */
     public function getDataArray(): ?array
     {
-        return $this->dataArray ?? null;
+        return $this->dataArray;
     }
 
     /**
@@ -164,7 +164,7 @@ class Record
      */
     public function getDataArrayNested(): ?array
     {
-        return $this->dataArrayNested ?? null;
+        return $this->dataArrayNested;
     }
 
     /**
@@ -199,7 +199,7 @@ class Record
      */
     public function getDataArrayAnyOf(): ?array
     {
-        return $this->dataArrayAnyOf ?? null;
+        return $this->dataArrayAnyOf;
     }
 
     /**
@@ -234,7 +234,7 @@ class Record
      */
     public function getDataArrayNestedAnyOf(): ?array
     {
-        return $this->dataArrayNestedAnyOf ?? null;
+        return $this->dataArrayNestedAnyOf;
     }
 
     /**

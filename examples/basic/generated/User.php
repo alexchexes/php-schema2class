@@ -56,7 +56,7 @@ class User
      */
     public function getAddress(): ?Address
     {
-        return $this->address ?? null;
+        return $this->address;
     }
 
     /**
@@ -87,7 +87,7 @@ class User
      */
     public function getStatus(): ?string
     {
-        return $this->status ?? null;
+        return $this->status;
     }
 
     /**

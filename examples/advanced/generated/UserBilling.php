@@ -62,7 +62,7 @@ class UserBilling
 
     public function getCreditLevel(): ?int
     {
-        return $this->creditLevel ?? null;
+        return $this->creditLevel;
     }
 
     public function withCreditLevel(int $creditLevel): self
@@ -83,7 +83,7 @@ class UserBilling
 
     public function getFoo(): ?int
     {
-        return $this->foo ?? null;
+        return $this->foo;
     }
 
     public function withFoo(int $foo): self
@@ -104,7 +104,7 @@ class UserBilling
 
     public function getBar(): ?string
     {
-        return $this->bar ?? null;
+        return $this->bar;
     }
 
     public function withBar(string $bar): self

@@ -43,7 +43,7 @@ class MyClassFilesItem
 
     public function getInput(): ?string
     {
-        return $this->input ?? null;
+        return $this->input;
     }
 
     public function withInput(string $_input): self
@@ -64,7 +64,7 @@ class MyClassFilesItem
 
     public function getOptions(): ?OptionsObject
     {
-        return $this->options ?? null;
+        return $this->options;
     }
 
     public function withOptions(OptionsObject $options): self

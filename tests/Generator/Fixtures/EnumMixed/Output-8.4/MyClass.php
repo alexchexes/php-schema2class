@@ -273,7 +273,7 @@ class MyClass
      */
     public function getInferString(): ?MyClassInferString
     {
-        return $this->inferString ?? null;
+        return $this->inferString;
     }
 
     /**
@@ -300,7 +300,7 @@ class MyClass
      */
     public function getInferInt(): ?MyClassInferInt
     {
-        return $this->inferInt ?? null;
+        return $this->inferInt;
     }
 
     /**
@@ -373,7 +373,7 @@ class MyClass
      */
     public function getNullable(): ?MyClassNullable
     {
-        return $this->nullable ?? null;
+        return $this->nullable;
     }
 
     /**
@@ -392,7 +392,7 @@ class MyClass
      */
     public function getOptionalNullable(): ?MyClassOptionalNullable
     {
-        return $this->optionalNullable ?? null;
+        return $this->optionalNullable;
     }
 
     /**

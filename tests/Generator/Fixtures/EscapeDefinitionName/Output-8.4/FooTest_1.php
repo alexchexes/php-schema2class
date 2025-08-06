@@ -29,7 +29,7 @@ class FooTest_1
 
     public function getB(): ?string
     {
-        return $this->b ?? null;
+        return $this->b;
     }
 
     public function withB(string $b): self

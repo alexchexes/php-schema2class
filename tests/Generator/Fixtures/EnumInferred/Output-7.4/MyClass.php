@@ -208,7 +208,7 @@ class MyClass
      */
     public function getInferStringOpt(): ?string
     {
-        return $this->inferStringOpt ?? null;
+        return $this->inferStringOpt;
     }
 
     /**
@@ -243,7 +243,7 @@ class MyClass
      */
     public function getInferIntOpt(): ?int
     {
-        return $this->inferIntOpt ?? null;
+        return $this->inferIntOpt;
     }
 
     /**

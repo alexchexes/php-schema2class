@@ -149,7 +149,7 @@ class MyClass
 
     public function getC(): ?array
     {
-        return $this->c ?? null;
+        return $this->c;
     }
 
     public function withC(?array $c): self
@@ -175,7 +175,7 @@ class MyClass
 
     public function getE(): ?array
     {
-        return $this->e ?? null;
+        return $this->e;
     }
 
     public function withE(array $e): self
@@ -217,7 +217,7 @@ class MyClass
 
     public function getG(): ?array
     {
-        return $this->g ?? null;
+        return $this->g;
     }
 
     public function withG(?array $g): self

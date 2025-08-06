@@ -28,7 +28,7 @@ class OptionsObject
 
     public function getOutput(): ?string
     {
-        return $this->output ?? null;
+        return $this->output;
     }
 
     public function withOutput(string $_output): self

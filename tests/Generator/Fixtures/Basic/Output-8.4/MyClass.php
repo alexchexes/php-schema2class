@@ -37,7 +37,7 @@ class MyClass
 
     public function getFoo(): ?string
     {
-        return $this->foo ?? null;
+        return $this->foo;
     }
 
     public function withFoo(string $foo): self

@@ -41,7 +41,7 @@ class MyClass_2
 
     public function get_1(): ?string
     {
-        return $this->_1 ?? null;
+        return $this->_1;
     }
 
     public function with_1(string $_1): self
@@ -62,7 +62,7 @@ class MyClass_2
 
     public function get_2(): ?string
     {
-        return $this->_2 ?? null;
+        return $this->_2;
     }
 
     public function with_2(string $_2): self
@@ -83,7 +83,7 @@ class MyClass_2
 
     public function get_3(): ?string
     {
-        return $this->_3 ?? null;
+        return $this->_3;
     }
 
     public function with_3(string $_3): self

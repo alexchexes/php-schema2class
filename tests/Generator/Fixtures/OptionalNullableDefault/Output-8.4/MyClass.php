@@ -205,7 +205,7 @@ class MyClass
      */
     public function getBar(): ?string
     {
-        return $this->bar ?? null;
+        return $this->bar;
     }
 
     /**
@@ -232,7 +232,7 @@ class MyClass
      */
     public function getBaz(): ?string
     {
-        return $this->baz ?? null;
+        return $this->baz;
     }
 
     /**
@@ -261,7 +261,7 @@ class MyClass
      */
     public function getQux(): ?string
     {
-        return $this->qux ?? null;
+        return $this->qux;
     }
 
     /**
@@ -290,7 +290,7 @@ class MyClass
      */
     public function getQuux(): ?string
     {
-        return $this->quux ?? null;
+        return $this->quux;
     }
 
     /**
@@ -309,7 +309,7 @@ class MyClass
      */
     public function getXyyz(): ?string
     {
-        return $this->xyyz ?? null;
+        return $this->xyyz;
     }
 
     /**
@@ -357,7 +357,7 @@ class MyClass
      */
     public function getGrox(): ?MyClassGrox
     {
-        return $this->grox ?? null;
+        return $this->grox;
     }
 
     /**
@@ -390,7 +390,7 @@ class MyClass
      */
     public function getGooks(): ?MyClassGooks
     {
-        return $this->gooks ?? null;
+        return $this->gooks;
     }
 
     /**

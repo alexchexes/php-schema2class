@@ -44,7 +44,7 @@ class MyClass
 
     public function getName(): ?string
     {
-        return $this->name ?? null;
+        return $this->name;
     }
 
     public function withName(string $name): self
@@ -68,7 +68,7 @@ class MyClass
      */
     public function getParams(): ?array
     {
-        return $this->params ?? null;
+        return $this->params;
     }
 
     /**

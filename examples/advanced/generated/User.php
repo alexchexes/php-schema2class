@@ -214,7 +214,7 @@ class User
 
     public function getCreatedAt(): ?\DateTime
     {
-        return $this->createdAt ?? null;
+        return $this->createdAt;
     }
 
     public function withCreatedAt(\DateTime $createdAt): self
@@ -238,7 +238,7 @@ class User
      */
     public function getGender(): ?UserGender
     {
-        return $this->gender ?? null;
+        return $this->gender;
     }
 
     /**
@@ -296,7 +296,7 @@ class User
 
     public function getEmail(): ?string
     {
-        return $this->email ?? null;
+        return $this->email;
     }
 
     public function withEmail(string $email): self
@@ -320,7 +320,7 @@ class User
      */
     public function getBilling(): ?UserBilling
     {
-        return $this->billing ?? null;
+        return $this->billing;
     }
 
     /**
@@ -374,7 +374,7 @@ class User
      */
     public function getAddress(): ?UserAddress
     {
-        return $this->address ?? null;
+        return $this->address;
     }
 
     /**
@@ -401,7 +401,7 @@ class User
      */
     public function getTags(): ?array
     {
-        return $this->tags ?? null;
+        return $this->tags;
     }
 
     /**
@@ -436,7 +436,7 @@ class User
      */
     public function getHobbies(): ?array
     {
-        return $this->hobbies ?? null;
+        return $this->hobbies;
     }
 
     /**

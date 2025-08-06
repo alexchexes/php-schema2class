@@ -50,7 +50,7 @@ class MyClass
 
     public function getFooBar(): ?string
     {
-        return $this->foo_bar ?? null;
+        return $this->foo_bar;
     }
 
     public function withFooBar(string $foo_bar): self

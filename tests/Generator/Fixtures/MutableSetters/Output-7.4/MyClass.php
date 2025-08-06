@@ -63,7 +63,7 @@ class MyClass
 
     public function getFoo(): ?string
     {
-        return $this->foo ?? null;
+        return $this->foo;
     }
 
     public function setFoo(string $foo): void
@@ -88,7 +88,7 @@ class MyClass
 
     public function getOpt(): ?string
     {
-        return $this->opt ?? null;
+        return $this->opt;
     }
 
     public function setOpt(?string $opt): void

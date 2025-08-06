@@ -53,7 +53,7 @@ class MyClass
      */
     public function getFoo(): ?MyClassFoo
     {
-        return $this->foo ?? null;
+        return $this->foo;
     }
 
     /**

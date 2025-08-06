@@ -330,7 +330,7 @@ class MyClass
 
     public function getItSA(): ?string
     {
-        return $this->it_s_A ?? null;
+        return $this->it_s_A;
     }
 
     public function withItSA(string $it_s_A): self

@@ -29,7 +29,7 @@ class Bar
 
     public function getB(): ?int
     {
-        return $this->b ?? null;
+        return $this->b;
     }
 
     public function withB(int $b): self

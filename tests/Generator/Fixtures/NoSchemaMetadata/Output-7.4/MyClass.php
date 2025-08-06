@@ -64,7 +64,7 @@ class MyClass
      */
     public function getBar(): ?int
     {
-        return $this->bar ?? null;
+        return $this->bar;
     }
 
     /**

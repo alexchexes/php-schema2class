@@ -50,7 +50,7 @@ class MyGenericStringNumberField
 
     public function getField(): ?MyGenericStringNumber
     {
-        return $this->field ?? null;
+        return $this->field;
     }
 
     public function withField(MyGenericStringNumber $field): self

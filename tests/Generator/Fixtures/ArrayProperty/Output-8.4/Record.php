@@ -53,7 +53,7 @@ class Record
      */
     public function getDataArray(): ?array
     {
-        return $this->dataArray ?? null;
+        return $this->dataArray;
     }
 
     /**

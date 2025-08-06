@@ -29,7 +29,7 @@ class MoiKlass
 
     public function getC(): ?string
     {
-        return $this->c ?? null;
+        return $this->c;
     }
 
     public function withC(string $c): self

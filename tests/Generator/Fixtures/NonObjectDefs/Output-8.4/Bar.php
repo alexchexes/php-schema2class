@@ -45,7 +45,7 @@ class Bar
      */
     public function getB(): ?array
     {
-        return $this->b ?? null;
+        return $this->b;
     }
 
     /**

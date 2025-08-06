@@ -465,7 +465,7 @@ class MyClass
 
     public function getNullFoo(): ?string
     {
-        return $this->nullFoo ?? null;
+        return $this->nullFoo;
     }
 
     public function withNullFoo(?string $nullFoo): self
@@ -491,7 +491,7 @@ class MyClass
 
     public function getNullBaz(): ?int
     {
-        return $this->nullBaz ?? null;
+        return $this->nullBaz;
     }
 
     public function withNullBaz(?int $nullBaz): self
@@ -504,7 +504,7 @@ class MyClass
 
     public function getNullQux(): ?bool
     {
-        return $this->nullQux ?? null;
+        return $this->nullQux;
     }
 
     public function withNullQux(?bool $nullQux): self
@@ -520,7 +520,7 @@ class MyClass
      */
     public function getNullQuux(): ?MyClassNullQuux
     {
-        return $this->nullQuux ?? null;
+        return $this->nullQuux;
     }
 
     /**
@@ -539,7 +539,7 @@ class MyClass
      */
     public function getNullThud(): ?array
     {
-        return $this->nullThud ?? null;
+        return $this->nullThud;
     }
 
     /**
@@ -563,7 +563,7 @@ class MyClass
 
     public function getOptFoo(): ?string
     {
-        return $this->optFoo ?? null;
+        return $this->optFoo;
     }
 
     public function withOptFoo(string $optFoo): self
@@ -605,7 +605,7 @@ class MyClass
 
     public function getOptBaz(): ?int
     {
-        return $this->optBaz ?? null;
+        return $this->optBaz;
     }
 
     public function withOptBaz(int $optBaz): self
@@ -626,7 +626,7 @@ class MyClass
 
     public function getOptQux(): ?bool
     {
-        return $this->optQux ?? null;
+        return $this->optQux;
     }
 
     public function withOptQux(bool $optQux): self
@@ -650,7 +650,7 @@ class MyClass
      */
     public function getOptQuux(): ?MyClassOptQuux
     {
-        return $this->optQuux ?? null;
+        return $this->optQuux;
     }
 
     /**
@@ -677,7 +677,7 @@ class MyClass
      */
     public function getOptThud(): ?array
     {
-        return $this->optThud ?? null;
+        return $this->optThud;
     }
 
     /**
@@ -746,7 +746,7 @@ class MyClass
 
     public function getOptNullFoo(): ?string
     {
-        return $this->optNullFoo ?? null;
+        return $this->optNullFoo;
     }
 
     public function withOptNullFoo(?string $optNullFoo): self
@@ -792,7 +792,7 @@ class MyClass
 
     public function getOptNullBaz(): ?int
     {
-        return $this->optNullBaz ?? null;
+        return $this->optNullBaz;
     }
 
     public function withOptNullBaz(?int $optNullBaz): self
@@ -815,7 +815,7 @@ class MyClass
 
     public function getOptNullQux(): ?bool
     {
-        return $this->optNullQux ?? null;
+        return $this->optNullQux;
     }
 
     public function withOptNullQux(?bool $optNullQux): self
@@ -841,7 +841,7 @@ class MyClass
      */
     public function getOptNullQuux(): ?MyClassOptNullQuux
     {
-        return $this->optNullQuux ?? null;
+        return $this->optNullQuux;
     }
 
     /**
@@ -870,7 +870,7 @@ class MyClass
      */
     public function getOptNullThud(): ?array
     {
-        return $this->optNullThud ?? null;
+        return $this->optNullThud;
     }
 
     /**

@@ -39,7 +39,7 @@ class Bar
 
     public function getA(): ?Foo
     {
-        return $this->a ?? null;
+        return $this->a;
     }
 
     public function withA(Foo $a): self

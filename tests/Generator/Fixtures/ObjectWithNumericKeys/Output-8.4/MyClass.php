@@ -52,7 +52,7 @@ class MyClass
 
     public function get_1(): ?string
     {
-        return $this->_1 ?? null;
+        return $this->_1;
     }
 
     public function with_1(string $_1): self
@@ -76,7 +76,7 @@ class MyClass
      */
     public function get_2(): ?MyClass_2
     {
-        return $this->_2 ?? null;
+        return $this->_2;
     }
 
     /**

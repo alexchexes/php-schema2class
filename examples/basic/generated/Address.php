@@ -25,7 +25,7 @@ class Address
 
     public function getStreet(): ?string
     {
-        return $this->street ?? null;
+        return $this->street;
     }
 
     public function withStreet(string $street): self
@@ -46,7 +46,7 @@ class Address
 
     public function getHouse(): ?int
     {
-        return $this->house ?? null;
+        return $this->house;
     }
 
     public function withHouse(int $house): self

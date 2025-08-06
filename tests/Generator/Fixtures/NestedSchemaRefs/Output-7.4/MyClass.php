@@ -62,7 +62,7 @@ class MyClass
      */
     public function getFiles(): ?array
     {
-        return $this->files ?? null;
+        return $this->files;
     }
 
     /**
@@ -94,7 +94,7 @@ class MyClass
 
     public function getOptions(): ?OptionsObject
     {
-        return $this->options ?? null;
+        return $this->options;
     }
 
     public function withOptions(OptionsObject $options): self

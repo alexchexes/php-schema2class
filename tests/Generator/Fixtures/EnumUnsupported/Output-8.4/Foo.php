@@ -177,7 +177,7 @@ class Foo
      */
     public function getBoolEnum(): ?bool
     {
-        return $this->boolEnum ?? null;
+        return $this->boolEnum;
     }
 
     /**
@@ -212,7 +212,7 @@ class Foo
      */
     public function getBoolEnumRef(): ?bool
     {
-        return $this->boolEnumRef ?? null;
+        return $this->boolEnumRef;
     }
 
     /**

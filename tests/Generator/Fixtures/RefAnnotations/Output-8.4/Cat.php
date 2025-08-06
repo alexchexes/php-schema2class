@@ -62,7 +62,7 @@ class Cat
      */
     public function getHasFur(): ?bool
     {
-        return $this->hasFur ?? null;
+        return $this->hasFur;
     }
 
     /**

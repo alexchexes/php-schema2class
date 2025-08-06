@@ -43,7 +43,7 @@ class MyClassGrox
 
     public function getA(): ?string
     {
-        return $this->a ?? null;
+        return $this->a;
     }
 
     public function withA(string $a): self

@@ -40,7 +40,7 @@ class FooItem
 
     public function getName(): ?string
     {
-        return $this->name ?? null;
+        return $this->name;
     }
 
     public function withName(string $name): self

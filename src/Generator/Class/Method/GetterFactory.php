@@ -69,10 +69,6 @@ class GetterFactory
         if ($this->request->isAtLeastPHP('7.0')) {
             if ($typeHint !== null) {
                 $methodGen->setReturnType($typeHint);
-
-                if ($typeHint[0] === '?') {
-                    $body = "return \$this->{$propName} ?? null;";
-                }
             }
         }
 

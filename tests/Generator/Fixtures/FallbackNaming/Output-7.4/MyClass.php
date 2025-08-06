@@ -675,7 +675,7 @@ class MyClass
 
     public function getValidate(): ?string
     {
-        return $this->validate ?? null;
+        return $this->validate;
     }
 
     public function withValidate(string $_validate): self
@@ -696,7 +696,7 @@ class MyClass
 
     public function getMaterializeDefaults(): ?string
     {
-        return $this->materializeDefaults ?? null;
+        return $this->materializeDefaults;
     }
 
     public function withMaterializeDefaults(?string $_materializeDefaults): self
@@ -748,7 +748,7 @@ class MyClass
      */
     public function getTestObj(): ?MyClassTestObj
     {
-        return $this->testObj ?? null;
+        return $this->testObj;
     }
 
     /**
@@ -889,7 +889,7 @@ class MyClass
 
     public function getProvidedOptionals1(): ?string
     {
-        return $this->_providedOptionals_1 ?? null;
+        return $this->_providedOptionals_1;
     }
 
     public function withProvidedOptionals1(string $_providedOptionals_1): self
@@ -1156,7 +1156,7 @@ class MyClass
      */
     public function getEnsureArgs2(): ?MyClassEnsureArgs2
     {
-        return $this->ensureArgs2 ?? null;
+        return $this->ensureArgs2;
     }
 
     /**
@@ -1183,7 +1183,7 @@ class MyClass
      */
     public function getEnsureArgs3(): ?array
     {
-        return $this->ensureArgs3 ?? null;
+        return $this->ensureArgs3;
     }
 
     /**

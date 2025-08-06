@@ -59,7 +59,7 @@ class Baz
 
     public function getA(): ?FooTest
     {
-        return $this->a ?? null;
+        return $this->a;
     }
 
     public function withA(FooTest $a): self
@@ -80,7 +80,7 @@ class Baz
 
     public function getB(): ?FooTest
     {
-        return $this->b ?? null;
+        return $this->b;
     }
 
     public function withB(FooTest $b): self
@@ -101,7 +101,7 @@ class Baz
 
     public function getC(): ?BarTest
     {
-        return $this->c ?? null;
+        return $this->c;
     }
 
     public function withC(BarTest $c): self

@@ -63,7 +63,7 @@ class Pets
 
     public function getPet(): ?GenericPet
     {
-        return $this->pet ?? null;
+        return $this->pet;
     }
 
     public function withPet(GenericPet $pet): self
@@ -84,7 +84,7 @@ class Pets
 
     public function getCat(): ?Cat
     {
-        return $this->cat ?? null;
+        return $this->cat;
     }
 
     public function withCat(Cat $cat): self

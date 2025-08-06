@@ -29,7 +29,7 @@ class BarTest
 
     public function getBar(): ?string
     {
-        return $this->bar ?? null;
+        return $this->bar;
     }
 
     public function withBar(string $bar): self

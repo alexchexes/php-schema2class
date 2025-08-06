@@ -71,7 +71,7 @@ class MyClass
      */
     public function getFoo(): ?array
     {
-        return $this->foo ?? null;
+        return $this->foo;
     }
 
     /**

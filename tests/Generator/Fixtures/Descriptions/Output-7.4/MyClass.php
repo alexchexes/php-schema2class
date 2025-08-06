@@ -55,7 +55,7 @@ class MyClass
      */
     public function getFoo(): ?string
     {
-        return $this->foo ?? null;
+        return $this->foo;
     }
 
     /**
@@ -79,7 +79,7 @@ class MyClass
 
     public function getBar(): ?Baz
     {
-        return $this->bar ?? null;
+        return $this->bar;
     }
 
     public function withBar(Baz $bar): self

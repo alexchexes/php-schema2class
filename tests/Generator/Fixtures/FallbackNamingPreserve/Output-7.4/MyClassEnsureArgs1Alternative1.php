@@ -52,7 +52,7 @@ class MyClassEnsureArgs1Alternative1
      */
     public function getType(): ?string
     {
-        return $this->type ?? null;
+        return $this->type;
     }
 
     /**

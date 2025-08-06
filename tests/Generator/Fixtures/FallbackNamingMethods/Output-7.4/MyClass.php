@@ -40,7 +40,7 @@ class MyClass
 
     public function getBound(): ?string
     {
-        return $this->bound ?? null;
+        return $this->bound;
     }
 
     public function withBound(string $bound): self
@@ -61,7 +61,7 @@ class MyClass
 
     public function get_Outbound(): ?string
     {
-        return $this->outbound ?? null;
+        return $this->outbound;
     }
 
     public function with_Outbound(string $outbound): self
@@ -82,7 +82,7 @@ class MyClass
 
     public function get_Outbound_1(): ?string
     {
-        return $this->_outbound ?? null;
+        return $this->_outbound;
     }
 
     public function with_Outbound_1(string $_outbound): self

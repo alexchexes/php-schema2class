@@ -410,7 +410,7 @@ class MyClass
      */
     public function getBaz(): ?MyClassBaz
     {
-        return $this->baz ?? null;
+        return $this->baz;
     }
 
     /**
@@ -439,7 +439,7 @@ class MyClass
      */
     public function getQuxObj(): ?MyClassQuxObj
     {
-        return $this->quxObj ?? null;
+        return $this->quxObj;
     }
 
     /**
@@ -472,7 +472,7 @@ class MyClass
      */
     public function getQuxObjNest(): ?MyClassQuxObjNest
     {
-        return $this->quxObjNest ?? null;
+        return $this->quxObjNest;
     }
 
     /**
@@ -505,7 +505,7 @@ class MyClass
      */
     public function getThudArray(): ?array
     {
-        return $this->thudArray ?? null;
+        return $this->thudArray;
     }
 
     /**
@@ -712,7 +712,7 @@ class MyClass
      */
     public function getNumKeysDefaults(): ?MyClassNumKeysDefaults
     {
-        return $this->numKeysDefaults ?? null;
+        return $this->numKeysDefaults;
     }
 
     /**

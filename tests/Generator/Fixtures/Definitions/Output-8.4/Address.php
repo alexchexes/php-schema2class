@@ -48,7 +48,7 @@ class Address
 
     public function getName(): ?Address\Defs\Name
     {
-        return $this->name ?? null;
+        return $this->name;
     }
 
     public function withName(Address\Defs\Name $name): self

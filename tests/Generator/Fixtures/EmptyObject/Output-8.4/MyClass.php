@@ -50,7 +50,7 @@ class MyClass
      */
     public function getA(): ?array
     {
-        return $this->a ?? null;
+        return $this->a;
     }
 
     /**

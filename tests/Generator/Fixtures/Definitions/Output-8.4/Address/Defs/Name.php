@@ -29,7 +29,7 @@ class Name
 
     public function getFirst(): ?string
     {
-        return $this->first ?? null;
+        return $this->first;
     }
 
     public function withFirst(string $first): self

@@ -144,7 +144,7 @@ class MyClass
 
     public function getFoo(): ?int
     {
-        return $this->foo ?? null;
+        return $this->foo;
     }
 
     public function withFoo(int $foo, bool $validate = true): self
@@ -173,7 +173,7 @@ class MyClass
 
     public function getBar(): ?string
     {
-        return $this->bar ?? null;
+        return $this->bar;
     }
 
     public function withBar(string $bar): self
@@ -194,7 +194,7 @@ class MyClass
 
     public function getBaz(): ?int
     {
-        return $this->baz ?? null;
+        return $this->baz;
     }
 
     public function withBaz(?int $baz): self
@@ -220,7 +220,7 @@ class MyClass
      */
     public function getQux(): ?string
     {
-        return $this->qux ?? null;
+        return $this->qux;
     }
 
     /**
@@ -247,7 +247,7 @@ class MyClass
      */
     public function getThud(): ?string
     {
-        return $this->thud ?? null;
+        return $this->thud;
     }
 
     /**
@@ -274,7 +274,7 @@ class MyClass
      */
     public function getGrox(): ?string
     {
-        return $this->grox ?? null;
+        return $this->grox;
     }
 
     /**
@@ -319,7 +319,7 @@ class MyClass
 
     public function getZyx(): ?string
     {
-        return $this->zyx ?? null;
+        return $this->zyx;
     }
 
     public function withZyx(string $zyx): self

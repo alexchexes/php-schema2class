@@ -107,7 +107,7 @@ class MyClassNumKeysDefaults
 
     public function get_0(): ?string
     {
-        return $this->_0 ?? null;
+        return $this->_0;
     }
 
     public function with_0(string $_0): self
@@ -128,7 +128,7 @@ class MyClassNumKeysDefaults
 
     public function get_1(): ?string
     {
-        return $this->_1 ?? null;
+        return $this->_1;
     }
 
     public function with_1(string $_1): self
@@ -149,7 +149,7 @@ class MyClassNumKeysDefaults
 
     public function get_2(): ?string
     {
-        return $this->_2 ?? null;
+        return $this->_2;
     }
 
     public function with_2(string $_2): self
