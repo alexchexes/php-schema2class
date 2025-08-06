@@ -218,7 +218,7 @@ class MyClass
         $foo = $input->{'foo'};
         $bar = $input->{'bar'};
         $baz = $input->{'baz'};
-        $qux = ($input->{'qux'} !== null ? ((is_string($input->{'qux'})) ? $input->{'qux'} : (((is_string($input->{'qux'})) ? $input->{'qux'} : ((((($input->{'qux'}) === null) || (is_string($input->{'qux'}))) ? ($input->{'qux'} !== null ? $input->{'qux'} : null) : (((is_string($input->{'qux'})) ? $input->{'qux'} : (null)))))))) : null);
+        $qux = ($input->{'qux'} !== null ? ((is_string($input->{'qux'})) ? $input->{'qux'} : (((is_string($input->{'qux'})) ? $input->{'qux'} : (((is_string($input->{'qux'})) ? $input->{'qux'} : (((is_string($input->{'qux'})) ? $input->{'qux'} : (null)))))))) : null);
 
         $obj = new self($foo, $bar, $baz, $qux);
         return $obj;
@@ -241,10 +241,8 @@ class MyClass
         if ((is_string($this->baz)) || (is_string($this->baz))) {
             $output['baz'] = $this->baz;
         }
-        if ((is_string($this->qux)) || (is_string($this->qux)) || (is_string($this->qux))) {
+        if ((is_string($this->qux)) || (is_string($this->qux)) || (is_string($this->qux)) || (is_string($this->qux))) {
             $output['qux'] = $this->qux;
-        } else if (((($this->qux) === null) || (is_string($this->qux)))) {
-            $output['qux'] = ($this->qux !== null) ? ($this->qux) : null;
         }
 
         return $output;
@@ -267,10 +265,8 @@ class MyClass
         if ((is_string($this->baz)) || (is_string($this->baz))) {
         $output->{'baz'} = $this->baz;
         }
-        if ((is_string($this->qux)) || (is_string($this->qux)) || (is_string($this->qux))) {
+        if ((is_string($this->qux)) || (is_string($this->qux)) || (is_string($this->qux)) || (is_string($this->qux))) {
         $output->{'qux'} = $this->qux;
-        } else if (((($this->qux) === null) || (is_string($this->qux)))) {
-        $output->{'qux'} = ($this->qux !== null) ? ($this->qux) : null;
         }
 
         return $output;
@@ -305,6 +301,6 @@ class MyClass
         $this->foo = (is_string($this->foo)) ? ($this->foo) : ((is_string($this->foo)) ? ($this->foo) : ($this->foo));
         $this->bar = (is_string($this->bar)) ? ($this->bar) : ((is_string($this->bar)) ? ($this->bar) : ($this->bar));
         $this->baz = (is_string($this->baz)) ? ($this->baz) : ((is_string($this->baz)) ? ($this->baz) : ($this->baz));
-        $this->qux = (is_string($this->qux)) ? ($this->qux) : ((is_string($this->qux)) ? ($this->qux) : (((($this->qux) === null) || (is_string($this->qux))) ? (isset($this->qux) ? (clone $this->qux) : null) : ((is_string($this->qux)) ? ($this->qux) : ($this->qux))));
+        $this->qux = (is_string($this->qux)) ? ($this->qux) : ((is_string($this->qux)) ? ($this->qux) : ((is_string($this->qux)) ? ($this->qux) : ((is_string($this->qux)) ? ($this->qux) : ($this->qux))));
     }
 }

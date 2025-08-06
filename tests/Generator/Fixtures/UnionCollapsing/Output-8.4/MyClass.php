@@ -223,7 +223,6 @@ class MyClass
         };
         $qux = ($input->{'qux'} !== null ? match (true) {
             is_string($input->{'qux'}) => $input->{'qux'},
-            (($input->{'qux'}) === null) || (is_string($input->{'qux'})) => ($input->{'qux'} !== null ? $input->{'qux'} : null),
             default => null,
         } : null);
 
@@ -250,7 +249,6 @@ class MyClass
         };
         $output['qux'] = match (true) {
             is_string($this->qux) => $this->qux,
-            (($this->qux) === null) || (is_string($this->qux)) => ($this->qux !== null) ? ($this->qux) : null,
         };
 
         return $output;
@@ -275,7 +273,6 @@ class MyClass
         };
         $output->{'qux'} = match (true) {
             is_string($this->qux) => $this->qux,
-            (($this->qux) === null) || (is_string($this->qux)) => ($this->qux !== null) ? ($this->qux) : null,
         };
 
         return $output;
@@ -318,7 +315,6 @@ class MyClass
         };
         $this->qux = match (true) {
             is_string($this->qux) => $this->qux,
-            (($this->qux) === null) || (is_string($this->qux)) => isset($this->qux) ? (clone $this->qux) : null,
         };
     }
 }
