@@ -1,0 +1,62 @@
+{
+  "required": ["foo", "bar", "baz", "qux"],
+  "properties": {
+    "foo": {
+      "oneOf": [
+        {
+          "type": "string",
+          "format": "uuid",
+          "description": "Description of 'uuid' string"
+        },
+        {
+          "type": "string",
+          "description": "Description of 'maxLength' string",
+          "maxLength": 0,
+          "deprecated": true
+        }
+      ]
+    },
+    "bar": {
+      "oneOf": [
+        { "$ref": "#/definitions/FooDef" },
+        { "$ref": "#/definitions/BarDef" }
+      ]
+    },
+    "baz": {
+      "anyOf": [
+        { "$ref": "#/definitions/FooDef" },
+        { "$ref": "#/definitions/BarDef" }
+      ]
+    },
+    "qux": {
+      "oneOf": [
+        {
+          "type": "string",
+          "format": "uuid",
+          "description": "Description of 'uuid' string"
+        },
+        {
+          "type": ["string", "null"],
+          "description": "Description of 'maxLength' string",
+          "maxLength": 0,
+          "deprecated": true
+        },
+        { "$ref": "#/definitions/FooDef" },
+        { "$ref": "#/definitions/BarDef" }
+      ]
+    }
+  },
+  "definitions": {
+    "FooDef": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Description of a definition of 'uuid' string"
+    },
+    "BarDef": {
+      "type": "string",
+      "description": "Description of a definition of 'maxLength' string",
+      "maxLength": 0,
+      "deprecated": true
+    }
+  }
+}

@@ -1,9 +1,0 @@
-required:
-  - foo
-properties:
-  foo:
-    oneOf:
-      - type: string
-        format: uuid
-      - type: string
-        maxLength: 0

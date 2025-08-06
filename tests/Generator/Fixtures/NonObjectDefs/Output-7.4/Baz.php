@@ -59,12 +59,12 @@ class Baz
     /**
      * @var Foo|Bar|null
      */
-    private $grox = null;
+    private ?object $grox = null;
 
     /**
      * @param Foo|Bar|null $grox
      */
-    public function __construct($grox = null)
+    public function __construct(?object $grox = null)
     {
         $this->grox = $grox;
     }
@@ -72,7 +72,7 @@ class Baz
     /**
      * @return Foo|Bar|null
      */
-    public function getGrox()
+    public function getGrox(): ?object
     {
         return $this->grox;
     }
@@ -80,7 +80,7 @@ class Baz
     /**
      * @param Foo|Bar $grox
      */
-    public function withGrox($grox, bool $validate = true): self
+    public function withGrox(object $grox, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();

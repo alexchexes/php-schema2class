@@ -10,6 +10,7 @@ use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\MatchGenerator;
 use Helmich\Schema2Class\Generator\Property\Type\NullProperty;
 use Helmich\Schema2Class\Generator\Property\PropertyBuilder;
+use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeClass;
 use Helmich\Schema2Class\Writer\WriterInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -266,6 +267,10 @@ class UnionProperty extends AbstractProperty
         $types = [];
 
         foreach ($this->subProperties as $prop) {
+            if ($this->propName() === 'UnionOfOneNull') {
+                echo "\n---\$prop::class:\n";  print_r($prop::class);  echo "\n---";
+            }
+
             $ann = $prop->typeAnnotation();
             foreach (explode('|', $ann) as $t) {
                 $types[$t] = true;
@@ -277,30 +282,71 @@ class UnionProperty extends AbstractProperty
 
     public function typeHint(): ?string
     {
-        if ($this->request->isAtLeastPHP("8.0")) {
-            $subTypeHints = [];
+        $subTypeHints = [];
 
-            foreach ($this->subProperties as $subProp) {
-                $th = $subProp->typeHint();
-                if ($th === null) {
-                    if ($subProp instanceof NullProperty) {
-                        $subTypeHints['null'] = true;
-                        continue;
-                    }
-                    return null;
-                }
-
-                if (str_starts_with($th, '?')) {
+        foreach ($this->subProperties as $subProp) {
+            $hint = $subProp->typeHint();
+            if ($hint === null) {
+                if ($subProp instanceof NullProperty) {
                     $subTypeHints['null'] = true;
-                    $th = substr($th, 1);
+                    continue;
                 }
+                $subTypeHints = [];
+                break;
+            }
 
-                foreach (explode('|', $th) as $part) {
-                    $subTypeHints[$part] = true;
+            if (str_starts_with($hint, '?')) {
+                $subTypeHints['null'] = true;
+                $hint = substr($hint, 1);
+            }
+
+            foreach (explode('|', $hint) as $part) {
+                $subTypeHints[$part] = true;
+            }
+        }
+
+        if ($this->request->isAtLeastPHP('8.0')) {
+            if (isset($subTypeHints['null']) && count($subTypeHints) === 2) {
+                unset($subTypeHints['null']);
+                return array_key_first($subTypeHints);
+            }
+
+            if (count($subTypeHints) === 1) {
+                return array_key_first($subTypeHints);
+            }
+
+            if (count($subTypeHints) > 0) {
+                return join('|', array_keys($subTypeHints));
+            }
+        } else {
+            if (isset($subTypeHints['null']) && count($subTypeHints) === 2) {
+                $types = array_keys($subTypeHints);
+                $type  = $types[0] === 'null' ? $types[1] : $types[0];
+                return $type;
+            }
+
+            if (count($subTypeHints) === 1) {
+                $type = array_key_first($subTypeHints);
+                if ($type !== 'null') {
+                    return $type;
                 }
             }
 
-            return join('|', array_keys($subTypeHints));
+            if ($this->request->isAtLeastPHP('7.2')) {
+                $onlyObjects = true;
+                foreach ($this->subProperties as $subProp) {
+                    if (
+                        !($subProp instanceof NestedObjectProperty)
+                        && !($subProp instanceof ReferenceProperty && $subProp->getRefType() instanceof ReferencedTypeClass)
+                    ) {
+                        $onlyObjects = false;
+                        break;
+                    }
+                }
+                if ($onlyObjects) {
+                    return 'object';
+                }
+            }
         }
 
         return null;

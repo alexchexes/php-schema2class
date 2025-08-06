@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ns\ReferencedUnion_7_4;
+namespace Ns\UnionObject_7_4;
 
-class MyObject
+class MyClassRefAndNotRefObjectsUnionAlternative4
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -12,80 +12,53 @@ class MyObject
      * @var array
      */
     private static array $_schema = [
-        'type' => 'object',
-        'additionalProperties' => false,
         'properties' => [
-            'foo' => [
-                '$ref' => '#/definitions/C',
+            'accountNumber' => [
+                'type' => 'string',
             ],
-        ],
-        'required' => [
-            'foo',
         ],
         'definitions' => [
-            'A' => [
-                'enum' => [
-                    'foo',
-                    'bar',
-                ],
-                'type' => 'string',
-            ],
-            'B' => [
-                'enum' => [
-                    'baz',
-                    'quz',
-                ],
-                'type' => 'string',
-            ],
-            'C' => [
-                'anyOf' => [
-                    [
-                        '$ref' => '#/definitions/A',
+            'SomeObj1' => [
+                'properties' => [
+                    'a' => [
+                        'type' => 'string a',
                     ],
-                    [
-                        '$ref' => '#/definitions/B',
+                ],
+            ],
+            'SomeObj2' => [
+                'properties' => [
+                    'a' => [
+                        'type' => 'string b',
                     ],
                 ],
             ],
         ],
     ];
 
-    /**
-     * @var 'foo'|'bar'|'baz'|'quz'
-     */
-    private string $foo;
+    private ?string $accountNumber = null;
 
-    /**
-     * @param 'foo'|'bar'|'baz'|'quz' $foo
-     */
-    public function __construct(string $foo)
+    public function __construct(?string $accountNumber = null)
     {
-        $this->foo = $foo;
+        $this->accountNumber = $accountNumber;
     }
 
-    /**
-     * @return 'foo'|'bar'|'baz'|'quz'
-     */
-    public function getFoo(): string
+    public function getAccountNumber(): ?string
     {
-        return $this->foo;
+        return $this->accountNumber;
     }
 
-    /**
-     * @param 'foo'|'bar'|'baz'|'quz' $foo
-     */
-    public function withFoo(string $foo, bool $validate = true): self
+    public function withAccountNumber(string $accountNumber): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($foo, self::$_schema['properties']['foo']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
-        $clone->foo = $foo;
+        $clone->accountNumber = $accountNumber;
+
+        return $clone;
+    }
+
+    public function withoutAccountNumber(): self
+    {
+        $clone = clone $this;
+        unset($clone->accountNumber);
 
         return $clone;
     }
@@ -95,10 +68,10 @@ class MyObject
      *
      * @param array|object $input Input data
      * @param bool $validate If `false`, validation against the schema will be skipped.
-     * @return MyObject Created instance
+     * @return MyClassRefAndNotRefObjectsUnionAlternative4 Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput($input, bool $validate = true): MyObject
+    public static function fromInput($input, bool $validate = true): MyClassRefAndNotRefObjectsUnionAlternative4
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
@@ -111,9 +84,9 @@ class MyObject
             static::validateInput($input);
         }
 
-        $foo = $input->{'foo'};
+        $accountNumber = isset($input->{'accountNumber'}) ? $input->{'accountNumber'} : null;
 
-        $obj = new self($foo);
+        $obj = new self($accountNumber);
         return $obj;
     }
 
@@ -125,14 +98,8 @@ class MyObject
     public function toArray(): array
     {
         $output = [];
-        if ((in_array($this->foo, array (
-          0 => 'foo',
-          1 => 'bar',
-        ), true)) || (in_array($this->foo, array (
-          0 => 'baz',
-          1 => 'quz',
-        ), true))) {
-            $output['foo'] = $this->foo;
+        if (isset($this->accountNumber)) {
+            $output['accountNumber'] = $this->accountNumber;
         }
 
         return $output;
@@ -146,14 +113,8 @@ class MyObject
     public function toStdClass(): \stdClass
     {
         $output = new \stdClass();
-        if ((in_array($this->foo, array (
-          0 => 'foo',
-          1 => 'bar',
-        ), true)) || (in_array($this->foo, array (
-          0 => 'baz',
-          1 => 'quz',
-        ), true))) {
-        $output->{'foo'} = $this->foo;
+        if (isset($this->accountNumber)) {
+            $output->{'accountNumber'} = $this->accountNumber;
         }
 
         return $output;
@@ -181,16 +142,5 @@ class MyObject
         }
 
         return $validator->isValid();
-    }
-
-    public function __clone()
-    {
-        $this->foo = (in_array($this->foo, array (
-          0 => 'baz',
-          1 => 'quz',
-        ), true)) ? ($this->foo) : ((in_array($this->foo, array (
-          0 => 'foo',
-          1 => 'bar',
-        ), true)) ? ($this->foo) : ($this->foo));
     }
 }

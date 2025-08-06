@@ -79,11 +79,12 @@ class PropertyBuilder
         bool $isRequired
     ): PropertyInterface
     {
-        self::assertNoPropertiesWithAdditional($definition);
-
+        $definition = self::collapseSingleUnion($definition);
         $definition = self::sanitizeEnum($definition);
         $definition = self::collapseSingleTypeArray($definition);
-
+        
+        self::assertNoPropertiesWithAdditional($definition);
+        
         if ($property = self::tryInlineReference($req, $name, $definition, $isRequired)) {
             return $property;
         }
@@ -114,6 +115,29 @@ class PropertyBuilder
         }
 
         throw new GeneratorException("cannot map type " . (string) json_encode($definition));
+    }
+
+    /** Collapse oneOf/anyOf unions with a single element */
+    private static function collapseSingleUnion(array $definition): array
+    {
+        $unionKey = isset($definition['anyOf']) ? 'anyOf' : (isset($definition['oneOf']) ? 'oneOf' : null);
+        if (!$unionKey) {
+            return $definition;
+        }
+
+        $subs = $definition[$unionKey];
+        if (!is_array($subs) || count($subs) !== 1) {
+            return $definition;
+        }
+
+        $single = $subs[0];
+        foreach (['description', 'title', 'default', 'deprecated'] as $k) {
+            if (isset($definition[$k]) && !isset($single[$k])) {
+                $single[$k] = $definition[$k];
+            }
+        }
+
+        return self::collapseSingleUnion($single);
     }
 
     /** Collapse single-element type arrays (e.g. ["string"] -> "string") */
@@ -259,21 +283,37 @@ class PropertyBuilder
             return null;
         }
 
-        $subs   = $definition[$unionKey];
-        $nullIx = null;
-        foreach ($subs as $i => $sub) {
-            if (isset($sub['type']) && $sub['type'] === 'null') {
-                $nullIx = $i;
-                break;
+        $subs      = $definition[$unionKey];
+        $otherArms = [];
+        $hasNull   = false;
+        foreach ($subs as $sub) {
+            if (!isset($sub['type'])) {
+                $otherArms[] = $sub;
+                continue;
             }
+
+            $type = $sub['type'];
+            if ($type === 'null') {
+                $hasNull = true;
+                continue;
+            }
+
+            if (is_array($type) && ($nullPos = array_search('null', $type, true)) !== false) {
+                $hasNull = true;
+                unset($type[$nullPos]);
+                $type = array_values($type);
+                if (count($type) === 0) {
+                    continue;
+                }
+                $sub['type'] = count($type) === 1 ? $type[0] : $type;
+            }
+
+            $otherArms[] = $sub;
         }
 
-        if ($nullIx === null || count($subs) <= 1) {
+        if (!$hasNull || count($subs) <= 1) {
             return null;
         }
-
-        $otherArms = $subs;
-        array_splice($otherArms, $nullIx, 1);
 
         if (count($otherArms) === 1) {
             $singleSchema = $otherArms[0];
