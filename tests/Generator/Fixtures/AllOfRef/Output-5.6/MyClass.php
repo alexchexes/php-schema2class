@@ -168,7 +168,6 @@ class MyClass
         $street = $input->{'street'};
         $country = $input->{'country'};
 
-
         $obj = new self($city, $street, $country);
         return $obj;
     }

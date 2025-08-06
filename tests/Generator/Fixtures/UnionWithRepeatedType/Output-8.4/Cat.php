@@ -105,7 +105,6 @@ class Cat
         }
 
         $__providedOptionals = [];
-
         $hasFur = null;
         if (property_exists($input, 'hasFur')) {
             $hasFur = ($input->{'hasFur'} !== null ? match (true) {

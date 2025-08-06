@@ -82,7 +82,6 @@ class Fio
         }
 
         $__providedOptionals = [];
-
         $bar = null;
         if (property_exists($input, 'bar')) {
             $bar = ($input->{'bar'} !== null ? $input->{'bar'} : null);

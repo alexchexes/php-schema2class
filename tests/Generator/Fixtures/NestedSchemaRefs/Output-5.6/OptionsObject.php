@@ -91,7 +91,6 @@ class OptionsObject
             static::validateInput($input);
         }
 
-
         $_output = isset($input->{'output'}) ? $input->{'output'} : null;
 
         $obj = new self($_output);

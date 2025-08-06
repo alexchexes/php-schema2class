@@ -5,9 +5,6 @@ namespace Helmich\Schema2Class\Util;
 
 final class SchemaKeywords
 {
-    /**
-     * Keywords that influence validation for string schemas.
-     */
     public const STRING_VALIDATION = [
         'minLength',
         'maxLength',
@@ -16,9 +13,6 @@ final class SchemaKeywords
         'const',
     ];
     
-    /**
-     * Keywords that influence validation for numeric schemas (integer/number).
-     */
     public const NUMERIC_VALIDATION = [
         'minimum',
         'maximum',
@@ -28,10 +22,19 @@ final class SchemaKeywords
         'enum',
         'const',
     ];
-    
-    /**
-     * Keywords that influence validation for array schemas.
-     */
+
+    public const BOOLEAN_VALIDATION = [
+        'enum',
+        'const',
+    ];
+
+    public const LOGICAL_VALIDATION = [
+        'not',
+        'if',
+        'then',
+        'else',
+    ];
+
     public const ARRAY_VALIDATION = [
         // tuple / per-index assertions
         'items',
@@ -53,18 +56,6 @@ final class SchemaKeywords
 
         'enum',
         'const',
-    ];
-
-    public const BOOLEAN_VALIDATION = [
-        'enum',
-        'const',
-    ];
-
-    public const LOGICAL_VALIDATION = [
-        'not',
-        'if',
-        'then',
-        'else',
     ];
 
     public static function hasAny(array $schema, array $keywords): bool

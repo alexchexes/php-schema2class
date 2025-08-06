@@ -139,7 +139,6 @@ class MyClass
             static::validateInput($input);
         }
 
-
         $foo = isset($input->{'foo'}) ? array_map(
             fn($i) => FooItem::fromInput($i, $validate, $materializeDefaults),
             $input->{'foo'}

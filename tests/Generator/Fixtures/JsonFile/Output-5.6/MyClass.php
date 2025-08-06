@@ -90,7 +90,6 @@ class MyClass
 
         $id = (int)$input->{'id'};
 
-
         $obj = new self($id);
         return $obj;
     }

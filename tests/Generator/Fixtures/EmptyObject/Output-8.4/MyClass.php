@@ -116,7 +116,6 @@ class MyClass
             static::validateInput($input);
         }
 
-
         $a = isset($input->{'a'}) ? $input->{'a'} : null;
         $b = isset($input->{'b'}) ? $input->{'b'} : null;
 

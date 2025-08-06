@@ -125,7 +125,6 @@ class Baz
             static::validateInput($input);
         }
 
-
         $grox = isset($input->{'grox'}) ? ((Bar::validateInput($input->{'grox'}, true)) ? Bar::fromInput($input->{'grox'}, $validate) : (((Foo::validateInput($input->{'grox'}, true)) ? Foo::fromInput($input->{'grox'}, $validate) : (null)))) : null;
 
         $obj = new self($grox);

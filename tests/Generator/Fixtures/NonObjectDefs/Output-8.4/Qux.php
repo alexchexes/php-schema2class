@@ -132,7 +132,6 @@ class Qux
             static::validateInput($input);
         }
 
-
         $grox = isset($input->{'grox'}) ? match (true) {
             is_string($input->{'grox'}),
             is_array($input->{'grox'}) => $input->{'grox'},

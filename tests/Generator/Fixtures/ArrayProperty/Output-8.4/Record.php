@@ -98,7 +98,6 @@ class Record
             static::validateInput($input);
         }
 
-
         $dataArray = isset($input->{'dataArray'}) ? array_map(
             fn(array|object $i): Phone => Phone::fromInput($i, $validate),
             $input->{'dataArray'}

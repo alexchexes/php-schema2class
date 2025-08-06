@@ -99,7 +99,6 @@ class Baz
             static::validateInput($input);
         }
 
-
         $grox = isset($input->{'grox'}) ? match (true) {
             Foo::validateInput($input->{'grox'}, true) => Foo::fromInput($input->{'grox'}, $validate),
             Bar::validateInput($input->{'grox'}, true) => Bar::fromInput($input->{'grox'}, $validate),

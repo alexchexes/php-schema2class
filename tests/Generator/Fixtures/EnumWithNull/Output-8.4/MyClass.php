@@ -93,7 +93,6 @@ class MyClass
         }
 
         $__providedOptionals = [];
-
         $foo = null;
         if (property_exists($input, 'foo')) {
             $foo = ($input->{'foo'} !== null ? MyClassFoo::from($input->{'foo'}) : null);

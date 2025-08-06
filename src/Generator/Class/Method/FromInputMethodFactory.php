@@ -322,10 +322,13 @@ class FromInputMethodFactory
     {
         $requiredProperties = $this->schemaProperties->filter(PropertyCollectionFilterFactory::onlyRequired());
         $optionalProperties = $this->schemaProperties->filter(PropertyCollectionFilterFactory::onlyOptional());
-        $requiredBlock = $requiredProperties->generateInputToTypeConversionCode();
-        $optionalBlock = $optionalProperties->generateInputToTypeConversionCode();
 
-        return $requiredBlock . "\n" . $optionalBlock . "\n\n";
+        $parts = array_filter([
+            $requiredProperties->generateInputToTypeConversionCode(),
+            $optionalProperties->generateInputToTypeConversionCode(),
+        ]);
+
+        return join("\n", $parts) . "\n\n";
     }
 
     /**

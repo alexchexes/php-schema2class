@@ -63,7 +63,6 @@ class MoiKlass
             static::validateInput($input);
         }
 
-
         $c = isset($input->{'c'}) ? $input->{'c'} : null;
 
         $obj = new self($c);

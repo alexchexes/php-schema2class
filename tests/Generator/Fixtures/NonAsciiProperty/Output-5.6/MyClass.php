@@ -167,7 +167,6 @@ class MyClass
         $nazvanieIurLitsa = $input->{'название юр.лица'};
         $IPAdres = $input->{'IP-адрес'};
 
-
         $obj = new self($Gorod, $nazvanieIurLitsa, $IPAdres);
         return $obj;
     }

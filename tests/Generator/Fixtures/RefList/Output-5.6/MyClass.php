@@ -97,7 +97,6 @@ class MyClass
             static::validateInput($input);
         }
 
-
         $foo = isset($input->{'foo'}) ? array_map(
             fn($i) => \Helmich\Schema2Class\Example\CustomerAddress::fromInput($i, $validate),
             $input->{'foo'}

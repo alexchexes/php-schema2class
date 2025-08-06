@@ -153,7 +153,6 @@ class MyClass
             static::validateInput($input);
         }
 
-
         $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
         $bar = isset($input->{'bar'}) ? Baz::fromInput($input->{'bar'}, $validate) : null;
 

@@ -98,7 +98,6 @@ class MyClassFilesItem
             static::validateInput($input);
         }
 
-
         $_input = isset($input->{'input'}) ? $input->{'input'} : null;
         $options = isset($input->{'options'}) ? OptionsObject::fromInput($input->{'options'}, $validate) : null;
 

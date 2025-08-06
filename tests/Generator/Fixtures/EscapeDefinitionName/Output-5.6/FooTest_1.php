@@ -92,7 +92,6 @@ class FooTest_1
             static::validateInput($input);
         }
 
-
         $b = isset($input->{'b'}) ? $input->{'b'} : null;
 
         $obj = new self($b);

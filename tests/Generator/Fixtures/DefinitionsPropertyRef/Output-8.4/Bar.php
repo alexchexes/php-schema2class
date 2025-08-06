@@ -73,7 +73,6 @@ class Bar
             static::validateInput($input);
         }
 
-
         $a = isset($input->{'a'}) ? Foo::fromInput($input->{'a'}, $validate) : null;
 
         $obj = new self($a);

@@ -90,7 +90,6 @@ class Baz
             static::validateInput($input);
         }
 
-
         $name = isset($input->{'name'}) ? $input->{'name'} : null;
 
         $obj = new self($name);

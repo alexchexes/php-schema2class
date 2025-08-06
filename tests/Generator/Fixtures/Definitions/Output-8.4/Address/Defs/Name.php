@@ -63,7 +63,6 @@ class Name
             static::validateInput($input);
         }
 
-
         $first = isset($input->{'first'}) ? $input->{'first'} : null;
 
         $obj = new self($first);

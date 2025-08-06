@@ -69,7 +69,6 @@ class BarTest
             static::validateInput($input);
         }
 
-
         $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
 
         $obj = new self($bar);

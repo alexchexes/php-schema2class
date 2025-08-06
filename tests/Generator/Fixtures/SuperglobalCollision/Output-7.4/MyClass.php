@@ -65,7 +65,6 @@ class MyClass
 
         $files = $input->{'files'};
 
-
         $obj = new self($files);
         return $obj;
     }

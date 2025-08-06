@@ -368,7 +368,6 @@ class MyClass
         }
 
         $__providedOptionals = [];
-
         $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
         $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
         $baz = null;

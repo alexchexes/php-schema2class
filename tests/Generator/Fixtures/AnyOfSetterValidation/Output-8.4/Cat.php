@@ -98,7 +98,6 @@ class Cat
             static::validateInput($input);
         }
 
-
         $hasFur = isset($input->{'hasFur'}) ? match (true) {
             in_array($input->{'hasFur'}, array (
           0 => 'a',

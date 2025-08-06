@@ -93,7 +93,6 @@ class MyClass
 
         $value = MyGenericStringNumber::fromInput($input->{'value'}, $validate);
 
-
         $obj = new self($value);
         return $obj;
     }

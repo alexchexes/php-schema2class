@@ -107,7 +107,6 @@ class MyClass
         }
 
         $__providedOptionals = [];
-
         $foo = null;
         if (property_exists($input, 'foo')) {
             $foo = ($input->{'foo'} !== null ? $input->{'foo'} : null);

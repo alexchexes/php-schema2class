@@ -84,7 +84,6 @@ class MyClass
         $foo = $input->{'foo'};
         $bar = (int)$input->{'bar'};
 
-
         $obj = new self($foo, $bar);
         return $obj;
     }

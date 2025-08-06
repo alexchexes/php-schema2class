@@ -63,7 +63,6 @@ class MyClassNullQuux
             static::validateInput($input);
         }
 
-
         $a = isset($input->{'a'}) ? $input->{'a'} : null;
 
         $obj = new self($a);
