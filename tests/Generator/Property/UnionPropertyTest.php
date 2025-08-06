@@ -71,7 +71,7 @@ EOCODE;
         $expected = <<<'EOCODE'
 $output['myPropertyName'] = match (true) {
     $this->myPropertyName instanceof FooMyPropertyNameAlternative1,
-    $this->myPropertyName instanceof FooMyPropertyNameAlternative2 => ($this->myPropertyName)->toArray(),
+    $this->myPropertyName instanceof FooMyPropertyNameAlternative2 => $this->myPropertyName->toArray(),
 };
 EOCODE;
 
@@ -87,7 +87,7 @@ EOCODE;
         $expected = <<<'EOCODE'
 $output->{'myPropertyName'} = match (true) {
     $this->myPropertyName instanceof FooMyPropertyNameAlternative1,
-    $this->myPropertyName instanceof FooMyPropertyNameAlternative2 => ($this->myPropertyName)->toStdClass(),
+    $this->myPropertyName instanceof FooMyPropertyNameAlternative2 => $this->myPropertyName->toStdClass(),
 };
 EOCODE;
 

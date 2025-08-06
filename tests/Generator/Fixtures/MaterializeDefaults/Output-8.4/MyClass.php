@@ -812,13 +812,13 @@ class MyClass
         $output['foo'] = $this->foo;
         $output['bar'] = $this->bar;
         if (isset($this->baz)) {
-            $output['baz'] = ($this->baz)->toArray($includeDefaults);
+            $output['baz'] = $this->baz->toArray($includeDefaults);
         }
         if (isset($this->quxObj) || array_key_exists('quxObj', $this->_providedOptionals)) {
-            $output['quxObj'] = ($this->quxObj !== null) ? (($this->quxObj)->toArray($includeDefaults)) : null;
+            $output['quxObj'] = ($this->quxObj !== null) ? ($this->quxObj->toArray($includeDefaults)) : null;
         }
         if (isset($this->quxObjNest) || array_key_exists('quxObjNest', $this->_providedOptionals)) {
-            $output['quxObjNest'] = ($this->quxObjNest !== null) ? (($this->quxObjNest)->toArray($includeDefaults)) : null;
+            $output['quxObjNest'] = ($this->quxObjNest !== null) ? ($this->quxObjNest->toArray($includeDefaults)) : null;
         }
         if (isset($this->thudArray) || array_key_exists('thudArray', $this->_providedOptionals)) {
             $output['thudArray'] = ($this->thudArray !== null) ? ($this->thudArray) : null;
@@ -827,27 +827,27 @@ class MyClass
             $output['xyyz'] = match (true) {
                 is_string($this->xyyz),
                 is_array($this->xyyz) => $this->xyyz,
-                ($this->xyyz) instanceof ObjDef => $this->xyyz->toArray($includeDefaults),
+                $this->xyyz instanceof ObjDef => $this->xyyz->toArray($includeDefaults),
             };
         }
         if (isset($this->buux)) {
             $output['buux'] = match (true) {
                 is_string($this->buux),
                 is_array($this->buux) => $this->buux,
-                ($this->buux) instanceof ObjDef => $this->buux->toArray($includeDefaults),
+                $this->buux instanceof ObjDef => $this->buux->toArray($includeDefaults),
             };
         }
         if (isset($this->boic)) {
             $output['boic'] = match (true) {
                 is_string($this->boic),
                 is_array($this->boic) => $this->boic,
-                ($this->boic) instanceof ObjDef => $this->boic->toArray($includeDefaults),
+                $this->boic instanceof ObjDef => $this->boic->toArray($includeDefaults),
             };
         }
         if (isset($this->poox)) {
             $output['poox'] = match (true) {
                 is_string($this->poox) => $this->poox,
-                ($this->poox) instanceof NumericKeysObj => $this->poox->toArray($includeDefaults),
+                $this->poox instanceof NumericKeysObj => $this->poox->toArray($includeDefaults),
             };
         }
         if (isset($this->arrObjUnion)) {
@@ -863,7 +863,7 @@ class MyClass
             };
         }
         if (isset($this->numKeysDefaults)) {
-            $output['numKeysDefaults'] = ($this->numKeysDefaults)->toArray($includeDefaults);
+            $output['numKeysDefaults'] = $this->numKeysDefaults->toArray($includeDefaults);
         }
 
         if ($includeDefaults) {
@@ -889,13 +889,13 @@ class MyClass
         $output->{'foo'} = $this->foo;
         $output->{'bar'} = $this->bar;
         if (isset($this->baz)) {
-            $output->{'baz'} = ($this->baz)->toStdClass($includeDefaults);
+            $output->{'baz'} = $this->baz->toStdClass($includeDefaults);
         }
         if (isset($this->quxObj) || array_key_exists('quxObj', $this->_providedOptionals)) {
-            $output->{'quxObj'} = ($this->quxObj !== null) ? (($this->quxObj)->toStdClass($includeDefaults)) : null;
+            $output->{'quxObj'} = ($this->quxObj !== null) ? ($this->quxObj->toStdClass($includeDefaults)) : null;
         }
         if (isset($this->quxObjNest) || array_key_exists('quxObjNest', $this->_providedOptionals)) {
-            $output->{'quxObjNest'} = ($this->quxObjNest !== null) ? (($this->quxObjNest)->toStdClass($includeDefaults)) : null;
+            $output->{'quxObjNest'} = ($this->quxObjNest !== null) ? ($this->quxObjNest->toStdClass($includeDefaults)) : null;
         }
         if (isset($this->thudArray) || array_key_exists('thudArray', $this->_providedOptionals)) {
             $output->{'thudArray'} = ($this->thudArray !== null) ? ($this->thudArray) : null;
@@ -904,27 +904,27 @@ class MyClass
             $output->{'xyyz'} = match (true) {
                 is_string($this->xyyz),
                 is_array($this->xyyz) => $this->xyyz,
-                ($this->xyyz) instanceof ObjDef => $this->xyyz->toStdClass($includeDefaults),
+                $this->xyyz instanceof ObjDef => $this->xyyz->toStdClass($includeDefaults),
             };
         }
         if (isset($this->buux)) {
             $output->{'buux'} = match (true) {
                 is_string($this->buux),
                 is_array($this->buux) => $this->buux,
-                ($this->buux) instanceof ObjDef => $this->buux->toStdClass($includeDefaults),
+                $this->buux instanceof ObjDef => $this->buux->toStdClass($includeDefaults),
             };
         }
         if (isset($this->boic)) {
             $output->{'boic'} = match (true) {
                 is_string($this->boic),
                 is_array($this->boic) => $this->boic,
-                ($this->boic) instanceof ObjDef => $this->boic->toStdClass($includeDefaults),
+                $this->boic instanceof ObjDef => $this->boic->toStdClass($includeDefaults),
             };
         }
         if (isset($this->poox)) {
             $output->{'poox'} = match (true) {
                 is_string($this->poox) => $this->poox,
-                ($this->poox) instanceof NumericKeysObj => $this->poox->toStdClass($includeDefaults),
+                $this->poox instanceof NumericKeysObj => $this->poox->toStdClass($includeDefaults),
             };
         }
         if (isset($this->arrObjUnion)) {
@@ -940,7 +940,7 @@ class MyClass
             };
         }
         if (isset($this->numKeysDefaults)) {
-            $output->{'numKeysDefaults'} = ($this->numKeysDefaults)->toStdClass($includeDefaults);
+            $output->{'numKeysDefaults'} = $this->numKeysDefaults->toStdClass($includeDefaults);
         }
 
         if ($includeDefaults) {
@@ -998,7 +998,7 @@ class MyClass
         if (isset($this->xyyz)) {
             $this->xyyz = match (true) {
                 is_string($this->xyyz),
-                ($this->xyyz) instanceof ObjDef,
+                $this->xyyz instanceof ObjDef,
                 is_array($this->xyyz) => $this->xyyz,
             };
         }
@@ -1006,20 +1006,20 @@ class MyClass
             $this->buux = match (true) {
                 is_string($this->buux),
                 is_array($this->buux),
-                ($this->buux) instanceof ObjDef => $this->buux,
+                $this->buux instanceof ObjDef => $this->buux,
             };
         }
         if (isset($this->boic)) {
             $this->boic = match (true) {
                 is_string($this->boic),
                 is_array($this->boic),
-                ($this->boic) instanceof ObjDef => $this->boic,
+                $this->boic instanceof ObjDef => $this->boic,
             };
         }
         if (isset($this->poox)) {
             $this->poox = match (true) {
                 is_string($this->poox),
-                ($this->poox) instanceof NumericKeysObj => $this->poox,
+                $this->poox instanceof NumericKeysObj => $this->poox,
             };
         }
         if (isset($this->arrObjUnion)) {

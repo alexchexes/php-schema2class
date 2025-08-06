@@ -119,8 +119,8 @@ class Baz
         $output = [];
         if (isset($this->grox)) {
             $output['grox'] = match (true) {
-                ($this->grox) instanceof Foo,
-                ($this->grox) instanceof Bar => $this->grox->toArray(),
+                $this->grox instanceof Foo,
+                $this->grox instanceof Bar => $this->grox->toArray(),
             };
         }
 
@@ -137,8 +137,8 @@ class Baz
         $output = new \stdClass();
         if (isset($this->grox)) {
             $output->{'grox'} = match (true) {
-                ($this->grox) instanceof Foo,
-                ($this->grox) instanceof Bar => $this->grox->toStdClass(),
+                $this->grox instanceof Foo,
+                $this->grox instanceof Bar => $this->grox->toStdClass(),
             };
         }
 
@@ -173,8 +173,8 @@ class Baz
     {
         if (isset($this->grox)) {
             $this->grox = match (true) {
-                ($this->grox) instanceof Foo,
-                ($this->grox) instanceof Bar => $this->grox,
+                $this->grox instanceof Foo,
+                $this->grox instanceof Bar => $this->grox,
             };
         }
     }

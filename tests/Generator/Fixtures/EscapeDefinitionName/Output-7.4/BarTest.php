@@ -140,7 +140,7 @@ class BarTest
     {
         $output = [];
         if (isset($this->exampleProp)) {
-            if ((($this->exampleProp) instanceof FooTest) || (($this->exampleProp) instanceof MoiKlass) || (($this->exampleProp) instanceof FooTest_1)) {
+            if (($this->exampleProp instanceof FooTest) || ($this->exampleProp instanceof MoiKlass) || ($this->exampleProp instanceof FooTest_1)) {
                 $output['exampleProp'] = $this->exampleProp->toArray();
             }
         }
@@ -157,7 +157,7 @@ class BarTest
     {
         $output = new \stdClass();
         if (isset($this->exampleProp)) {
-            if ((($this->exampleProp) instanceof FooTest) || (($this->exampleProp) instanceof MoiKlass) || (($this->exampleProp) instanceof FooTest_1)) {
+            if (($this->exampleProp instanceof FooTest) || ($this->exampleProp instanceof MoiKlass) || ($this->exampleProp instanceof FooTest_1)) {
             $output->{'exampleProp'} = $this->exampleProp->toStdClass();
             }
         }
@@ -192,7 +192,7 @@ class BarTest
     public function __clone()
     {
         if (isset($this->exampleProp)) {
-            $this->exampleProp = (($this->exampleProp) instanceof FooTest_1) ? ($this->exampleProp) : ((($this->exampleProp) instanceof MoiKlass) ? ($this->exampleProp) : ((($this->exampleProp) instanceof FooTest) ? ($this->exampleProp) : ($this->exampleProp)));
+            $this->exampleProp = ($this->exampleProp instanceof FooTest_1 ? $this->exampleProp : ($this->exampleProp instanceof MoiKlass ? $this->exampleProp : ($this->exampleProp instanceof FooTest ? $this->exampleProp : $this->exampleProp)));
         }
     }
 }

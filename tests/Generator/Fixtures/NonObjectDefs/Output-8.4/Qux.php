@@ -159,10 +159,10 @@ class Qux
             $output['grox'] = match (true) {
                 is_string($this->grox),
                 is_array($this->grox) => $this->grox,
-                (($this->grox) instanceof Foo) || (($this->grox) instanceof Bar) => match (true) {
+                ($this->grox instanceof Foo) || ($this->grox instanceof Bar) => match (true) {
                 default => null,
-                ($this->grox) instanceof Foo,
-                ($this->grox) instanceof Bar => $this->grox->toArray(),
+                $this->grox instanceof Foo,
+                $this->grox instanceof Bar => $this->grox->toArray(),
             },
             };
         }
@@ -182,10 +182,10 @@ class Qux
             $output->{'grox'} = match (true) {
                 is_string($this->grox),
                 is_array($this->grox) => $this->grox,
-                (($this->grox) instanceof Foo) || (($this->grox) instanceof Bar) => match (true) {
+                ($this->grox instanceof Foo) || ($this->grox instanceof Bar) => match (true) {
                 default => null,
-                ($this->grox) instanceof Foo,
-                ($this->grox) instanceof Bar => $this->grox->toStdClass(),
+                $this->grox instanceof Foo,
+                $this->grox instanceof Bar => $this->grox->toStdClass(),
             },
             };
         }
@@ -223,9 +223,9 @@ class Qux
             $this->grox = match (true) {
                 is_string($this->grox),
                 is_array($this->grox) => $this->grox,
-                (($this->grox) instanceof Foo) || (($this->grox) instanceof Bar) => match (true) {
-                ($this->grox) instanceof Foo,
-                ($this->grox) instanceof Bar => $this->grox,
+                ($this->grox instanceof Foo) || ($this->grox instanceof Bar) => match (true) {
+                $this->grox instanceof Foo,
+                $this->grox instanceof Bar => $this->grox,
             },
             };
         }

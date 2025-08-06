@@ -140,7 +140,7 @@ class Baz
     {
         $output = [];
         if (isset($this->grox)) {
-            if ((($this->grox) instanceof Foo) || (($this->grox) instanceof Bar)) {
+            if (($this->grox instanceof Foo) || ($this->grox instanceof Bar)) {
                 $output['grox'] = $this->grox->toArray();
             }
         }
@@ -157,7 +157,7 @@ class Baz
     {
         $output = new \stdClass();
         if (isset($this->grox)) {
-            if ((($this->grox) instanceof Foo) || (($this->grox) instanceof Bar)) {
+            if (($this->grox instanceof Foo) || ($this->grox instanceof Bar)) {
             $output->{'grox'} = $this->grox->toStdClass();
             }
         }
@@ -192,7 +192,7 @@ class Baz
     public function __clone()
     {
         if (isset($this->grox)) {
-            $this->grox = (($this->grox) instanceof Bar) ? ($this->grox) : ((($this->grox) instanceof Foo) ? ($this->grox) : ($this->grox));
+            $this->grox = ($this->grox instanceof Bar ? $this->grox : ($this->grox instanceof Foo ? $this->grox : $this->grox));
         }
     }
 }

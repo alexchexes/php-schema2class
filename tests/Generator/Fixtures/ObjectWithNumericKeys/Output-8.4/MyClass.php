@@ -120,7 +120,7 @@ class MyClass
             $output['1'] = $this->_1;
         }
         if (isset($this->_2)) {
-            $output['2'] = ($this->_2)->toArray();
+            $output['2'] = $this->_2->toArray();
         }
 
         return $output;
@@ -138,7 +138,7 @@ class MyClass
             $output->{'1'} = $this->_1;
         }
         if (isset($this->_2)) {
-            $output->{'2'} = ($this->_2)->toStdClass();
+            $output->{'2'} = $this->_2->toStdClass();
         }
 
         return $output;

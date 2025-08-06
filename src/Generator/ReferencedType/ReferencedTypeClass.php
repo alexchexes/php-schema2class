@@ -58,7 +58,7 @@ readonly class ReferencedTypeClass implements ReferencedTypeInterface
     public function typeAssertionExpr(string $expr): string
     {
         $cls = $this->relativeName();
-        return "({$expr}) instanceof {$cls}";
+        return "{$expr} instanceof {$cls}";
     }
 
     public function inputAssertionExpr(string $expr): string

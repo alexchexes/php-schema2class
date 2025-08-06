@@ -115,7 +115,7 @@ class MyClass
         if ((is_string($this->foo))) {
             $output['foo'] = $this->foo;
         } else if (($this->foo instanceof MyClassFooAlternative2)) {
-            $output['foo'] = ($this->foo)->toArray();
+            $output['foo'] = $this->foo->toArray();
         }
 
         return $output;
@@ -132,7 +132,7 @@ class MyClass
         if ((is_string($this->foo))) {
         $output->{'foo'} = $this->foo;
         } else if (($this->foo instanceof MyClassFooAlternative2)) {
-        $output->{'foo'} = ($this->foo)->toStdClass();
+        $output->{'foo'} = $this->foo->toStdClass();
         }
 
         return $output;
@@ -164,6 +164,6 @@ class MyClass
 
     public function __clone()
     {
-        $this->foo = ($this->foo instanceof MyClassFooAlternative2) ? (clone $this->foo) : ((is_string($this->foo)) ? ($this->foo) : ($this->foo));
+        $this->foo = ($this->foo instanceof MyClassFooAlternative2 ? clone $this->foo : (is_string($this->foo) ? $this->foo : $this->foo));
     }
 }

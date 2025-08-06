@@ -652,10 +652,10 @@ class MyClass
         }
         $output['thud'] = $this->thud;
         if (isset($this->grox) || array_key_exists('grox', $this->_providedOptionals)) {
-            $output['grox'] = ($this->grox !== null) ? (($this->grox)->toArray($includeDefaults)) : null;
+            $output['grox'] = ($this->grox !== null) ? ($this->grox->toArray($includeDefaults)) : null;
         }
         if (isset($this->gooks) || array_key_exists('gooks', $this->_providedOptionals)) {
-            $output['gooks'] = ($this->gooks !== null) ? (($this->gooks)->toArray($includeDefaults)) : null;
+            $output['gooks'] = ($this->gooks !== null) ? ($this->gooks->toArray($includeDefaults)) : null;
         }
 
         if ($includeDefaults) {
@@ -694,10 +694,10 @@ class MyClass
         }
         $output->{'thud'} = $this->thud;
         if (isset($this->grox) || array_key_exists('grox', $this->_providedOptionals)) {
-            $output->{'grox'} = ($this->grox !== null) ? (($this->grox)->toStdClass($includeDefaults)) : null;
+            $output->{'grox'} = ($this->grox !== null) ? ($this->grox->toStdClass($includeDefaults)) : null;
         }
         if (isset($this->gooks) || array_key_exists('gooks', $this->_providedOptionals)) {
-            $output->{'gooks'} = ($this->gooks !== null) ? (($this->gooks)->toStdClass($includeDefaults)) : null;
+            $output->{'gooks'} = ($this->gooks !== null) ? ($this->gooks->toStdClass($includeDefaults)) : null;
         }
 
         if ($includeDefaults) {

@@ -158,8 +158,8 @@ class Qux
         if (isset($this->grox)) {
             if ((is_string($this->grox)) || (is_array($this->grox))) {
                 $output['grox'] = $this->grox;
-            } else if (((($this->grox) instanceof Foo) || (($this->grox) instanceof Bar))) {
-                $output['grox'] = (($this->grox) instanceof Bar) ? ($this->grox->toArray()) : ((($this->grox) instanceof Foo) ? ($this->grox->toArray()) : (null));
+            } else if ((($this->grox instanceof Foo) || ($this->grox instanceof Bar))) {
+                $output['grox'] = ($this->grox instanceof Bar) ? ($this->grox->toArray()) : (($this->grox instanceof Foo) ? ($this->grox->toArray()) : (null));
             }
         }
 
@@ -177,8 +177,8 @@ class Qux
         if (isset($this->grox)) {
             if ((is_string($this->grox)) || (is_array($this->grox))) {
             $output->{'grox'} = $this->grox;
-            } else if (((($this->grox) instanceof Foo) || (($this->grox) instanceof Bar))) {
-            $output->{'grox'} = (($this->grox) instanceof Bar) ? ($this->grox->toStdClass()) : ((($this->grox) instanceof Foo) ? ($this->grox->toStdClass()) : (null));
+            } else if ((($this->grox instanceof Foo) || ($this->grox instanceof Bar))) {
+            $output->{'grox'} = ($this->grox instanceof Bar) ? ($this->grox->toStdClass()) : (($this->grox instanceof Foo) ? ($this->grox->toStdClass()) : (null));
             }
         }
 
@@ -212,7 +212,7 @@ class Qux
     public function __clone()
     {
         if (isset($this->grox)) {
-            $this->grox = ((($this->grox) instanceof Foo) || (($this->grox) instanceof Bar)) ? ((($this->grox) instanceof Bar) ? ($this->grox) : ((($this->grox) instanceof Foo) ? ($this->grox) : ($this->grox))) : ((is_array($this->grox)) ? ($this->grox) : ((is_string($this->grox)) ? ($this->grox) : ($this->grox)));
+            $this->grox = (($this->grox instanceof Foo) || ($this->grox instanceof Bar) ? ($this->grox instanceof Bar ? $this->grox : ($this->grox instanceof Foo ? $this->grox : $this->grox)) : (is_array($this->grox) ? $this->grox : (is_string($this->grox) ? $this->grox : $this->grox)));
         }
     }
 }

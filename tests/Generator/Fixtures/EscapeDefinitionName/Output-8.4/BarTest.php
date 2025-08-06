@@ -120,9 +120,9 @@ class BarTest
         $output = [];
         if (isset($this->exampleProp)) {
             $output['exampleProp'] = match (true) {
-                ($this->exampleProp) instanceof FooTest,
-                ($this->exampleProp) instanceof MoiKlass,
-                ($this->exampleProp) instanceof FooTest_1 => $this->exampleProp->toArray(),
+                $this->exampleProp instanceof FooTest,
+                $this->exampleProp instanceof MoiKlass,
+                $this->exampleProp instanceof FooTest_1 => $this->exampleProp->toArray(),
             };
         }
 
@@ -139,9 +139,9 @@ class BarTest
         $output = new \stdClass();
         if (isset($this->exampleProp)) {
             $output->{'exampleProp'} = match (true) {
-                ($this->exampleProp) instanceof FooTest,
-                ($this->exampleProp) instanceof MoiKlass,
-                ($this->exampleProp) instanceof FooTest_1 => $this->exampleProp->toStdClass(),
+                $this->exampleProp instanceof FooTest,
+                $this->exampleProp instanceof MoiKlass,
+                $this->exampleProp instanceof FooTest_1 => $this->exampleProp->toStdClass(),
             };
         }
 
@@ -176,9 +176,9 @@ class BarTest
     {
         if (isset($this->exampleProp)) {
             $this->exampleProp = match (true) {
-                ($this->exampleProp) instanceof FooTest,
-                ($this->exampleProp) instanceof MoiKlass,
-                ($this->exampleProp) instanceof FooTest_1 => $this->exampleProp,
+                $this->exampleProp instanceof FooTest,
+                $this->exampleProp instanceof MoiKlass,
+                $this->exampleProp instanceof FooTest_1 => $this->exampleProp,
             };
         }
     }

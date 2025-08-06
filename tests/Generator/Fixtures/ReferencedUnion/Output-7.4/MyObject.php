@@ -188,9 +188,9 @@ class MyObject
         $this->foo = (in_array($this->foo, array (
           0 => 'baz',
           1 => 'quz',
-        ), true)) ? ($this->foo) : ((in_array($this->foo, array (
+        ), true) ? $this->foo : (in_array($this->foo, array (
           0 => 'foo',
           1 => 'bar',
-        ), true)) ? ($this->foo) : ($this->foo));
+        ), true) ? $this->foo : $this->foo));
     }
 }

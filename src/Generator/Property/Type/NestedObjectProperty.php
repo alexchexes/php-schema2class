@@ -83,14 +83,14 @@ class NestedObjectProperty extends AbstractProperty
     {
         $inclDefaultsArg = $this->request->getClassHasDefaults() ? '$includeDefaults' : '';
         $TO_ARRAY = MethodNames::TO_ARRAY;
-        return "({$expr})->{$TO_ARRAY}({$inclDefaultsArg})";
+        return "{$expr}->{$TO_ARRAY}({$inclDefaultsArg})";
     }
 
     public function outputMappingExprStdClass(string $expr): string
     {
         $inclDefaultsArg = $this->request->getClassHasDefaults() ? '$includeDefaults' : '';
         $TO_STD_CLASS = MethodNames::TO_STD_CLASS;
-        return "({$expr})->{$TO_STD_CLASS}({$inclDefaultsArg})";
+        return "{$expr}->{$TO_STD_CLASS}({$inclDefaultsArg})";
     }
 
     public function cloneExpr(string $expr): string

@@ -2337,7 +2337,7 @@ class MyClass
         $output['obj'] = $this->obj;
         $output['includeDefaults'] = $this->includeDefaults;
         if (isset($this->testObj)) {
-            $output['testObj'] = ($this->testObj)->toArray($includeDefaults);
+            $output['testObj'] = $this->testObj->toArray($includeDefaults);
         }
         $output['fromInput'] = $this->fromInput;
         $output['toArray'] = $this->toArray;
@@ -2369,13 +2369,13 @@ class MyClass
         $output['this'] = $this->_this;
         if (isset($this->ensureArgs1)) {
             if (($this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative1) || ($this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative2)) {
-                $output['ensureArgs1'] = ($this->ensureArgs1)->toArray($includeDefaults);
+                $output['ensureArgs1'] = $this->ensureArgs1->toArray($includeDefaults);
             } else if ((is_string($this->ensureArgs1))) {
                 $output['ensureArgs1'] = $this->ensureArgs1;
             }
         }
         if (isset($this->ensureArgs2)) {
-            $output['ensureArgs2'] = ($this->ensureArgs2)->toArray($includeDefaults);
+            $output['ensureArgs2'] = $this->ensureArgs2->toArray($includeDefaults);
         }
         if (isset($this->ensureArgs3)) {
             $output['ensureArgs3'] = array_map(
@@ -2431,7 +2431,7 @@ class MyClass
         $output->{'obj'} = $this->obj;
         $output->{'includeDefaults'} = $this->includeDefaults;
         if (isset($this->testObj)) {
-            $output->{'testObj'} = ($this->testObj)->toStdClass($includeDefaults);
+            $output->{'testObj'} = $this->testObj->toStdClass($includeDefaults);
         }
         $output->{'fromInput'} = $this->fromInput;
         $output->{'toArray'} = $this->toArray;
@@ -2463,13 +2463,13 @@ class MyClass
         $output->{'this'} = $this->_this;
         if (isset($this->ensureArgs1)) {
             if (($this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative1) || ($this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative2)) {
-            $output->{'ensureArgs1'} = ($this->ensureArgs1)->toStdClass($includeDefaults);
+            $output->{'ensureArgs1'} = $this->ensureArgs1->toStdClass($includeDefaults);
             } else if ((is_string($this->ensureArgs1))) {
             $output->{'ensureArgs1'} = $this->ensureArgs1;
             }
         }
         if (isset($this->ensureArgs2)) {
-            $output->{'ensureArgs2'} = ($this->ensureArgs2)->toStdClass($includeDefaults);
+            $output->{'ensureArgs2'} = $this->ensureArgs2->toStdClass($includeDefaults);
         }
         if (isset($this->ensureArgs3)) {
             $output->{'ensureArgs3'} = array_map(
@@ -2523,7 +2523,7 @@ class MyClass
             $this->testObj = clone $this->testObj;
         }
         if (isset($this->ensureArgs1)) {
-            $this->ensureArgs1 = (is_string($this->ensureArgs1)) ? ($this->ensureArgs1) : (($this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative2) ? (clone $this->ensureArgs1) : (($this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative1) ? (clone $this->ensureArgs1) : ($this->ensureArgs1)));
+            $this->ensureArgs1 = (is_string($this->ensureArgs1) ? $this->ensureArgs1 : ($this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative2 ? clone $this->ensureArgs1 : ($this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative1 ? clone $this->ensureArgs1 : $this->ensureArgs1)));
         }
         if (isset($this->ensureArgs2)) {
             $this->ensureArgs2 = clone $this->ensureArgs2;

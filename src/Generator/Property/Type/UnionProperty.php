@@ -473,7 +473,7 @@ class UnionProperty extends AbstractProperty
         foreach ($this->subProperties as $subProperty) {
             $assert = $subProperty->typeAssertionExpr($expr);
             $map    = $subProperty->cloneExpr($expr);
-            $out    = "({$assert}) ? ({$map}) : ({$out})";
+            $out    = "({$assert} ? {$map} : {$out})";
         }
 
         return $out;

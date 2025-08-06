@@ -213,7 +213,7 @@ class MyClass
     public function __clone()
     {
         if (isset($this->foo)) {
-            $this->foo = (is_int($this->foo)) ? ($this->foo) : ((is_string($this->foo)) ? ($this->foo) : ($this->foo));
+            $this->foo = (is_int($this->foo) ? $this->foo : (is_string($this->foo) ? $this->foo : $this->foo));
         }
     }
 }

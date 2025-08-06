@@ -99,7 +99,7 @@ class MyGenericStringNumber
     public function toArray(): array
     {
         $output = [];
-        $output['field'] = ($this->field)->toArray();
+        $output['field'] = $this->field->toArray();
 
         return $output;
     }
@@ -112,7 +112,7 @@ class MyGenericStringNumber
     public function toStdClass(): \stdClass
     {
         $output = new \stdClass();
-        $output->{'field'} = ($this->field)->toStdClass();
+        $output->{'field'} = $this->field->toStdClass();
 
         return $output;
     }

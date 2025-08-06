@@ -315,10 +315,10 @@ class Record
             $output['dataArrayNested'] = array_map(fn($i) => array_map(fn(Phone $i): array => $i->toArray(), $i), $this->dataArrayNested);
         }
         if (isset($this->dataArrayAnyOf)) {
-            $output['dataArrayAnyOf'] = array_map(fn($i) => (($i) instanceof Fio) ? ($i->toArray()) : ((($i) instanceof Phone) ? ($i->toArray()) : (null)), $this->dataArrayAnyOf);
+            $output['dataArrayAnyOf'] = array_map(fn($i) => ($i instanceof Fio) ? ($i->toArray()) : (($i instanceof Phone) ? ($i->toArray()) : (null)), $this->dataArrayAnyOf);
         }
         if (isset($this->dataArrayNestedAnyOf)) {
-            $output['dataArrayNestedAnyOf'] = array_map(fn($i) => array_map(fn($i) => (($i) instanceof Fio) ? ($i->toArray()) : ((($i) instanceof Phone) ? ($i->toArray()) : (null)), $i), $this->dataArrayNestedAnyOf);
+            $output['dataArrayNestedAnyOf'] = array_map(fn($i) => array_map(fn($i) => ($i instanceof Fio) ? ($i->toArray()) : (($i instanceof Phone) ? ($i->toArray()) : (null)), $i), $this->dataArrayNestedAnyOf);
         }
 
         return $output;
@@ -339,10 +339,10 @@ class Record
             $output->{'dataArrayNested'} = array_map(fn($i) => array_map(fn(Phone $i): object => $i->toStdClass(), $i), $this->dataArrayNested);
         }
         if (isset($this->dataArrayAnyOf)) {
-            $output->{'dataArrayAnyOf'} = array_map(fn($i) => (($i) instanceof Fio) ? ($i->toStdClass()) : ((($i) instanceof Phone) ? ($i->toStdClass()) : (null)), $this->dataArrayAnyOf);
+            $output->{'dataArrayAnyOf'} = array_map(fn($i) => ($i instanceof Fio) ? ($i->toStdClass()) : (($i instanceof Phone) ? ($i->toStdClass()) : (null)), $this->dataArrayAnyOf);
         }
         if (isset($this->dataArrayNestedAnyOf)) {
-            $output->{'dataArrayNestedAnyOf'} = array_map(fn($i) => array_map(fn($i) => (($i) instanceof Fio) ? ($i->toStdClass()) : ((($i) instanceof Phone) ? ($i->toStdClass()) : (null)), $i), $this->dataArrayNestedAnyOf);
+            $output->{'dataArrayNestedAnyOf'} = array_map(fn($i) => array_map(fn($i) => ($i instanceof Fio) ? ($i->toStdClass()) : (($i instanceof Phone) ? ($i->toStdClass()) : (null)), $i), $this->dataArrayNestedAnyOf);
         }
 
         return $output;
@@ -378,10 +378,10 @@ class Record
             $this->dataArrayNested = array_map(fn($i) => $i, $this->dataArrayNested);
         }
         if (isset($this->dataArrayAnyOf)) {
-            $this->dataArrayAnyOf = array_map(fn($i) => (($i) instanceof Fio) ? ($i) : ((($i) instanceof Phone) ? ($i) : ($i)), $this->dataArrayAnyOf);
+            $this->dataArrayAnyOf = array_map(fn($i) => ($i instanceof Fio ? $i : ($i instanceof Phone ? $i : $i)), $this->dataArrayAnyOf);
         }
         if (isset($this->dataArrayNestedAnyOf)) {
-            $this->dataArrayNestedAnyOf = array_map(fn($i) => array_map(fn($i) => (($i) instanceof Fio) ? ($i) : ((($i) instanceof Phone) ? ($i) : ($i)), $i), $this->dataArrayNestedAnyOf);
+            $this->dataArrayNestedAnyOf = array_map(fn($i) => array_map(fn($i) => ($i instanceof Fio ? $i : ($i instanceof Phone ? $i : $i)), $i), $this->dataArrayNestedAnyOf);
         }
     }
 }

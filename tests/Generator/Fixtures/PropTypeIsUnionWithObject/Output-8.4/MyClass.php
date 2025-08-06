@@ -88,7 +88,7 @@ class MyClass
         $output = [];
         $output['foo'] = match (true) {
             is_string($this->foo) => $this->foo,
-            $this->foo instanceof MyClassFooAlternative2 => ($this->foo)->toArray(),
+            $this->foo instanceof MyClassFooAlternative2 => $this->foo->toArray(),
         };
 
         return $output;
@@ -104,7 +104,7 @@ class MyClass
         $output = new \stdClass();
         $output->{'foo'} = match (true) {
             is_string($this->foo) => $this->foo,
-            $this->foo instanceof MyClassFooAlternative2 => ($this->foo)->toStdClass(),
+            $this->foo instanceof MyClassFooAlternative2 => $this->foo->toStdClass(),
         };
 
         return $output;
