@@ -143,10 +143,7 @@ class MyClass
      */
     private $objAndStringUnion = null;
 
-    /**
-     * @var MyClassUnionOfOneObjAlternative1|null
-     */
-    private ?object $unionOfOneObj = null;
+    private ?MyClassUnionOfOneObj $unionOfOneObj = null;
 
     /**
      * @var null
@@ -158,10 +155,9 @@ class MyClass
      * @param SomeObj1|SomeObj2|null $refObjectsUnion
      * @param SomeObj1|MyClassRefAndNotRefObjectsUnionAlternative2|SomeObj2|MyClassRefAndNotRefObjectsUnionAlternative4|null $refAndNotRefObjectsUnion
      * @param MyClassObjAndStringUnionAlternative1|string|null $objAndStringUnion
-     * @param MyClassUnionOfOneObjAlternative1|null $unionOfOneObj
      * @param null $unionOfOneNull
      */
-    public function __construct(?object $objectsUnion = null, ?object $refObjectsUnion = null, ?object $refAndNotRefObjectsUnion = null, $objAndStringUnion = null, ?object $unionOfOneObj = null, $unionOfOneNull = null)
+    public function __construct(?object $objectsUnion = null, ?object $refObjectsUnion = null, ?object $refAndNotRefObjectsUnion = null, $objAndStringUnion = null, ?MyClassUnionOfOneObj $unionOfOneObj = null, $unionOfOneNull = null)
     {
         $this->objectsUnion = $objectsUnion;
         $this->refObjectsUnion = $refObjectsUnion;
@@ -311,27 +307,13 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return MyClassUnionOfOneObjAlternative1|null
-     */
-    public function getUnionOfOneObj(): ?object
+    public function getUnionOfOneObj(): ?MyClassUnionOfOneObj
     {
         return $this->unionOfOneObj;
     }
 
-    /**
-     * @param MyClassUnionOfOneObjAlternative1 $unionOfOneObj
-     */
-    public function withUnionOfOneObj(object $unionOfOneObj, bool $validate = true): self
+    public function withUnionOfOneObj(MyClassUnionOfOneObj $unionOfOneObj): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($unionOfOneObj, self::$_schema['properties']['unionOfOneObj']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->unionOfOneObj = $unionOfOneObj;
 
@@ -409,10 +391,10 @@ class MyClass
         $refObjectsUnion = isset($input->{'refObjectsUnion'}) ? ((SomeObj2::validateInput($input->{'refObjectsUnion'}, true)) ? SomeObj2::fromInput($input->{'refObjectsUnion'}, $validate) : (((SomeObj1::validateInput($input->{'refObjectsUnion'}, true)) ? SomeObj1::fromInput($input->{'refObjectsUnion'}, $validate) : (null)))) : null;
         $refAndNotRefObjectsUnion = isset($input->{'refAndNotRefObjectsUnion'}) ? ((MyClassRefAndNotRefObjectsUnionAlternative4::validateInput($input->{'refAndNotRefObjectsUnion'}, true)) ? MyClassRefAndNotRefObjectsUnionAlternative4::fromInput($input->{'refAndNotRefObjectsUnion'}, $validate) : (((SomeObj2::validateInput($input->{'refAndNotRefObjectsUnion'}, true)) ? SomeObj2::fromInput($input->{'refAndNotRefObjectsUnion'}, $validate) : (((MyClassRefAndNotRefObjectsUnionAlternative2::validateInput($input->{'refAndNotRefObjectsUnion'}, true)) ? MyClassRefAndNotRefObjectsUnionAlternative2::fromInput($input->{'refAndNotRefObjectsUnion'}, $validate) : (((SomeObj1::validateInput($input->{'refAndNotRefObjectsUnion'}, true)) ? SomeObj1::fromInput($input->{'refAndNotRefObjectsUnion'}, $validate) : (null)))))))) : null;
         $objAndStringUnion = isset($input->{'objAndStringUnion'}) ? ((is_string($input->{'objAndStringUnion'})) ? $input->{'objAndStringUnion'} : (((MyClassObjAndStringUnionAlternative1::validateInput($input->{'objAndStringUnion'}, true)) ? MyClassObjAndStringUnionAlternative1::fromInput($input->{'objAndStringUnion'}, $validate) : (null)))) : null;
-        $unionOfOneObj = isset($input->{'unionOfOneObj'}) ? ((MyClassUnionOfOneObjAlternative1::validateInput($input->{'unionOfOneObj'}, true)) ? MyClassUnionOfOneObjAlternative1::fromInput($input->{'unionOfOneObj'}, $validate) : (null)) : null;
+        $unionOfOneObj = isset($input->{'unionOfOneObj'}) ? MyClassUnionOfOneObj::fromInput($input->{'unionOfOneObj'}, $validate) : null;
         $unionOfOneNull = null;
         if (property_exists($input, 'unionOfOneNull')) {
-            $unionOfOneNull = ($input->{'unionOfOneNull'} !== null ? (((($input->{'unionOfOneNull'}) === null) || ($input->{'unionOfOneNull'} === null)) ? ($input->{'unionOfOneNull'} !== null ? $input->{'unionOfOneNull'} : null) : (null)) : null);
+            $unionOfOneNull = ($input->{'unionOfOneNull'} !== null ? $input->{'unionOfOneNull'} : null);
             $__providedOptionals['unionOfOneNull'] = true;
         }
 
@@ -461,12 +443,10 @@ class MyClass
             }
         }
         if (isset($this->unionOfOneObj)) {
-            if (($this->unionOfOneObj instanceof MyClassUnionOfOneObjAlternative1)) {
-                $output['unionOfOneObj'] = ($this->unionOfOneObj)->toArray();
-            }
+            $output['unionOfOneObj'] = ($this->unionOfOneObj)->toArray();
         }
         if (isset($this->unionOfOneNull) || array_key_exists('unionOfOneNull', $this->_providedOptionals)) {
-            $output['unionOfOneNull'] = ($this->unionOfOneNull !== null) ? (((($this->unionOfOneNull) === null) || ($this->unionOfOneNull === null)) ? (($this->unionOfOneNull !== null) ? ($this->unionOfOneNull) : null) : (null)) : null;
+            $output['unionOfOneNull'] = ($this->unionOfOneNull !== null) ? ($this->unionOfOneNull) : null;
         }
 
         return $output;
@@ -505,12 +485,10 @@ class MyClass
             }
         }
         if (isset($this->unionOfOneObj)) {
-            if (($this->unionOfOneObj instanceof MyClassUnionOfOneObjAlternative1)) {
             $output->{'unionOfOneObj'} = ($this->unionOfOneObj)->toStdClass();
-            }
         }
         if (isset($this->unionOfOneNull) || array_key_exists('unionOfOneNull', $this->_providedOptionals)) {
-            $output->{'unionOfOneNull'} = ($this->unionOfOneNull !== null) ? (((($this->unionOfOneNull) === null) || ($this->unionOfOneNull === null)) ? (($this->unionOfOneNull !== null) ? ($this->unionOfOneNull) : null) : (null)) : null;
+            $output->{'unionOfOneNull'} = ($this->unionOfOneNull !== null) ? ($this->unionOfOneNull) : null;
         }
 
         return $output;
@@ -555,10 +533,7 @@ class MyClass
             $this->objAndStringUnion = (is_string($this->objAndStringUnion)) ? ($this->objAndStringUnion) : (($this->objAndStringUnion instanceof MyClassObjAndStringUnionAlternative1) ? (clone $this->objAndStringUnion) : ($this->objAndStringUnion));
         }
         if (isset($this->unionOfOneObj)) {
-            $this->unionOfOneObj = ($this->unionOfOneObj instanceof MyClassUnionOfOneObjAlternative1) ? (clone $this->unionOfOneObj) : ($this->unionOfOneObj);
-        }
-        if (isset($this->unionOfOneNull)) {
-            $this->unionOfOneNull = ((($this->unionOfOneNull) === null) || ($this->unionOfOneNull === null)) ? (isset($this->unionOfOneNull) ? (clone $this->unionOfOneNull) : null) : ($this->unionOfOneNull);
+            $this->unionOfOneObj = clone $this->unionOfOneObj;
         }
     }
 
