@@ -1,8 +1,12 @@
 <?php
-declare(strict_types = 1);
+declare(strict_types=1);
 
-namespace Helmich\Schema2Class\Generator\Property;
+namespace Helmich\Schema2Class\Generator\Property\Type;
 
+use Helmich\Schema2Class\Generator\GeneratorRequest;
+use Helmich\Schema2Class\Generator\Property\Decorator\OptionalPropertyDecorator;
+use Helmich\Schema2Class\Spec\SpecificationOptions;
+use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
 use Laminas\Code\Generator\PropertyValueGenerator;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
@@ -20,13 +24,28 @@ class OptionalPropertyDecoratorTest extends TestCase
 
     private ObjectProphecy $innerProperty;
 
+    private GeneratorRequest $request;
+
     protected function setUp(): void
     {
         $this->innerProperty = $this->prophesize(PropertyInterface::class);
         $this->innerProperty->schema()->willReturn([]);
         $this->innerProperty->allowsNull()->willReturn(false);
         $this->innerProperty->formatValue(Argument::any())->willReturn(new PropertyValueGenerator(null));
-        $this->decorator     = new OptionalPropertyDecorator('myPropertyName', $this->innerProperty->reveal());
+        $this->innerProperty->varName()->willReturn('myPropertyName');
+        $this->innerProperty->keyStr()->willReturn('\'myPropertyName\'');
+        
+        $this->request = new GeneratorRequest(
+                [],
+                new ValidatedSpecificationFilesItem('', null, ''),
+                new SpecificationOptions,
+        );
+
+        $this->decorator = new OptionalPropertyDecorator(
+            'myPropertyName',
+            $this->innerProperty->reveal(),
+            $this->request,
+        );
     }
 
     public function testCanHandleSchema()
@@ -34,23 +53,23 @@ class OptionalPropertyDecoratorTest extends TestCase
         assertFalse(OptionalPropertyDecorator::canHandleSchema([]));
     }
 
-    public function testIsComplex()
+    public function testNeedsValidation()
     {
-        $this->innerProperty->isComplex()->shouldBeCalled()->willReturn(false);
-        assertFalse($this->decorator->isComplex());
+        $this->innerProperty->needsValidation()->shouldBeCalled()->willReturn(false);
+        assertFalse($this->decorator->needsValidation());
     }
 
     public function testConvertInputToType()
     {
-        $this->innerProperty->name()->shouldBeCalled()->willReturn('myPropertyName');
+        $this->innerProperty->varName()->shouldBeCalled()->willReturn('myPropertyName');
         $this->innerProperty
-            ->generateInputMappingExpr('$variable[\'myPropertyName\']', true)
+            ->inputMappingExpr('$input->{\'myPropertyName\'}', true)
             ->shouldBeCalled()
             ->willReturn('INNER_EXPR');
 
-        $result = $this->decorator->convertInputToType('variable');
+        $result = $this->decorator->convertInputToType();
 
-        $expected = '$myPropertyName = isset($variable[\'myPropertyName\']) ? INNER_EXPR : null;';
+        $expected = '$myPropertyName = isset($input->{\'myPropertyName\'}) ? INNER_EXPR : null;';
 
         assertSame($expected, $result);
     }
@@ -60,27 +79,53 @@ class OptionalPropertyDecoratorTest extends TestCase
         $prophecy = $this->prophesize(PropertyInterface::class);
         $prophecy->schema()->willReturn(['default' => false]);
         $prophecy->allowsNull()->willReturn(true);
-        $prophecy->name()->willReturn('myPropertyName');
+        $prophecy->varName()->willReturn('myPropertyName');
         $prophecy
-            ->generateInputMappingExpr('$variable[\'myPropertyName\']', true)
+            ->inputMappingExpr('$input->{\'myPropertyName\'}', true)
             ->willReturn('INNER_EXPR');
         $prophecy->formatValue(false)->willReturn(new PropertyValueGenerator(false));
+        $prophecy->keyStr()->willReturn('\'myPropertyName\'');
 
-        $decorator = new OptionalPropertyDecorator('myPropertyName', $prophecy->reveal());
+        $decorator = new OptionalPropertyDecorator(
+            'myPropertyName',
+            $prophecy->reveal(),
+            new GeneratorRequest(
+                [],
+                new ValidatedSpecificationFilesItem('', null, ''),
+                new SpecificationOptions()
+            )
+        );
 
-        $result = $decorator->convertInputToType('variable');
+        $result = $decorator->convertInputToType();
 
-        $expected = '$myPropertyName = array_key_exists(\'myPropertyName\', $variable) ? INNER_EXPR : null;';
+        $expected = '$myPropertyName = property_exists($input, \'myPropertyName\') ? INNER_EXPR : null;';
         assertSame($expected, $result);
     }
 
     public function testConvertTypeToArray()
     {
-        $this->innerProperty->name()->shouldBeCalled()->willReturn('myPropertyName');
+        $this->innerProperty->propName()->shouldBeCalled()->willReturn('myPropertyName');
         $this->innerProperty->allowsNull()->shouldBeCalled()->willReturn(false);
-        $this->innerProperty->convertTypeToArray('variable')->shouldBeCalled()->willReturn('echo "InnerCode";');
+        $this->innerProperty->convertTypeToArray()->shouldBeCalled()->willReturn('echo "InnerCode";');
 
-        $result = $this->decorator->convertTypeToArray('variable');
+        $result = $this->decorator->convertTypeToArray();
+
+        $expected = <<<'EOCODE'
+if (isset($this->myPropertyName)) {
+    echo "InnerCode";
+}
+EOCODE;
+
+        assertSame($expected, $result);
+    }
+
+    public function testConvertTypeToStdClass()
+    {
+        $this->innerProperty->propName()->shouldBeCalled()->willReturn('myPropertyName');
+        $this->innerProperty->allowsNull()->shouldBeCalled()->willReturn(false);
+        $this->innerProperty->convertTypeToStdClass()->shouldBeCalled()->willReturn('echo "InnerCode";');
+
+        $result = $this->decorator->convertTypeToStdClass();
 
         $expected = <<<'EOCODE'
 if (isset($this->myPropertyName)) {
@@ -93,22 +138,22 @@ EOCODE;
 
     public function testClonePropertyWithoutInnerCode()
     {
-        $this->innerProperty->name()->shouldBeCalled()->willReturn('innerPropertyName');
-        $this->innerProperty->cloneProperty()->shouldBeCalled()->willReturn(null);
+        $this->innerProperty->propName()->shouldBeCalled()->willReturn('innerPropertyName');
+        $this->innerProperty->cloneAssignment()->shouldBeCalled()->willReturn(null);
 
-        assertNull($this->decorator->cloneProperty());
+        assertNull($this->decorator->cloneAssignment());
     }
 
     public function testClonePropertyWithInnerCode()
     {
-        $this->innerProperty->name()->shouldBeCalled()->willReturn('innerPropertyName');
-        $this->innerProperty->cloneProperty()->shouldBeCalled()->willReturn('echo "InnerCode";');
+        $this->innerProperty->propName()->shouldBeCalled()->willReturn('innerPropertyName');
+        $this->innerProperty->cloneAssignment()->shouldBeCalled()->willReturn('echo "InnerCode";');
         $expected = <<<'EOCODE'
 if (isset($this->innerPropertyName)) {
     echo "InnerCode";
 }
 EOCODE;
-        assertSame($expected, $this->decorator->cloneProperty());
+        assertSame($expected, $this->decorator->cloneAssignment());
     }
 
     public function testGetAnnotationAndHintWithSimpleArray()
@@ -116,14 +161,29 @@ EOCODE;
         $this->innerProperty->typeAnnotation()->shouldBeCalled()->willReturn('Foo');
         assertSame('Foo|null', $this->decorator->typeAnnotation());
 
-        $this->innerProperty->typeHint("7.2.0")->shouldBeCalled()->willReturn('Foo');
-        assertSame('?Foo', $this->decorator->typeHint("7.2.0"));
+        $decorator = new OptionalPropertyDecorator(
+            'myPropertyName',
+            $this->innerProperty->reveal(),
+            $this->request->withPHPVersion('7.2.0'),
+        );
+        $this->innerProperty->typeHint()->shouldBeCalled()->willReturn('Foo');
+        assertSame('?Foo', $decorator->typeHint());
 
-        $this->innerProperty->typeHint("5.6.0")->shouldBeCalled()->willReturn('Foo');
-        assertSame('Foo', $this->decorator->typeHint("5.6.0"));
+        $decorator = new OptionalPropertyDecorator(
+            'myPropertyName',
+            $this->innerProperty->reveal(),
+            $this->request->withPHPVersion('5.6.0'),
+        );
+        $this->innerProperty->typeHint()->shouldBeCalled()->willReturn('Foo');
+        assertSame('Foo', $decorator->typeHint());
 
-        $this->innerProperty->typeHint("7.2.0")->shouldBeCalled()->willReturn(null);
-        assertSame(null, $this->decorator->typeHint("7.2.0"));
+        $decorator = new OptionalPropertyDecorator(
+            'myPropertyName',
+            $this->innerProperty->reveal(),
+            $this->request->withPHPVersion('7.2.0'),
+        );
+        $this->innerProperty->typeHint()->shouldBeCalled()->willReturn(null);
+        assertSame(null, $decorator->typeHint());
 
     }
 

@@ -4,15 +4,11 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class;
 
 use Helmich\Schema2Class\Generator\GenerationRunner;
-use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\NamespaceInferrer;
 use Helmich\Schema2Class\Loader\SchemaLoader;
 use Helmich\Schema2Class\Generator\SchemaToClassFactory;
 use Helmich\Schema2Class\Loader\LoadingException;
 use Helmich\Schema2Class\Spec\Specification;
-use Helmich\Schema2Class\Spec\SpecificationOptions;
-use Helmich\Schema2Class\Spec\OptionsDefaults;
-use Helmich\Schema2Class\Spec\SpecificationFilesItem;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Yaml\Yaml;
@@ -20,7 +16,7 @@ use Symfony\Component\Yaml\Yaml;
 /**
  * Convenience API for generating classes without using the CLI commands.
  *
- * This class can load a StructBuilder specification from a YAML file or from
+ * This class can load a Schema2Class specification from a YAML or JSON file or from
  * an associative array and generate all classes described therein.
  */
 class Schema2Class
@@ -52,9 +48,13 @@ class Schema2Class
                 if (!file_exists($config)) {
                     throw new LoadingException($config, "specification file not found");
                 }
-                $config = Yaml::parse(file_get_contents($config));
+                $contents = file_get_contents($config);
+                if ($contents === false) {
+                    throw new LoadingException($config, "failed to read file contents");
+                }
+                $config = Yaml::parse($contents);
             }
-            $config = Specification::buildFromInput($config);
+            $config = Specification::fromInput($config);
         }
 
         $this->runner->generateFromSpecification($config, $output, $dryRun);

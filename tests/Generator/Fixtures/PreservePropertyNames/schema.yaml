@@ -30,3 +30,4 @@ properties:
   "название юр.лица": { type: string }
   "IP-адрес": { type: string }
   "~~tildas~~": { type: string }
+  "it's \"A\"": { type: string }

@@ -3,3 +3,4 @@ required:
 properties:
   foo:
     type: string
+    description: this descriptions will be added to the property docblock when generating with "no-getters" option

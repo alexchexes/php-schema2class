@@ -11,7 +11,7 @@ class MyGenericStringNumberField
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'additionalProperties' => false,
         'properties' => [
             'field' => [
@@ -41,23 +41,18 @@ class MyGenericStringNumberField
         ],
     ];
 
-    /**
-     * @var MyGenericStringNumber|null
-     */
     private ?MyGenericStringNumber $field = null;
 
-    /**
-     * @return MyGenericStringNumber|null
-     */
-    public function getField(): ?MyGenericStringNumber
+    public function __construct(?MyGenericStringNumber $field = null)
     {
-        return $this->field ?? null;
+        $this->field = $field;
     }
 
-    /**
-     * @param MyGenericStringNumber $field
-     * @return self
-     */
+    public function getField(): ?MyGenericStringNumber
+    {
+        return $this->field;
+    }
+
     public function withField(MyGenericStringNumber $field): self
     {
         $clone = clone $this;
@@ -66,9 +61,6 @@ class MyGenericStringNumberField
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutField(): self
     {
         $clone = clone $this;
@@ -78,24 +70,23 @@ class MyGenericStringNumberField
     }
 
     /**
-     * Builds a new instance from an input array
+     * Builds a new instance from an input array or object
      *
      * @param array|object $input Input data
-     * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param bool $validate If `false`, validation against the schema will be skipped.
      * @return MyGenericStringNumberField Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): MyGenericStringNumberField
+    public static function fromInput(array|object $input, bool $validate = true): MyGenericStringNumberField
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $field = isset($input->{'field'}) ? MyGenericStringNumber::buildFromInput($input->{'field'}, $validate) : null;
+        $field = isset($input->{'field'}) ? MyGenericStringNumber::fromInput($input->{'field'}, $validate) : null;
 
-        $obj = new self();
-        $obj->field = $field;
+        $obj = new self($field);
         return $obj;
     }
 
@@ -115,6 +106,21 @@ class MyGenericStringNumberField
     }
 
     /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        if (isset($this->field)) {
+            $output->{'field'} = $this->field->toStdClass();
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data
@@ -126,7 +132,7 @@ class MyGenericStringNumberField
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {

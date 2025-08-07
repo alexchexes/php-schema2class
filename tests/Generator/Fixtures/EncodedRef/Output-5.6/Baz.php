@@ -9,7 +9,7 @@ class Baz
      *
      * @var array
      */
-    private static $schema = [
+    private static $_schema = [
         'type' => 'object',
         'properties' => [
             'a' => [
@@ -58,6 +58,18 @@ class Baz
     private $c = null;
 
     /**
+     * @param FooTest|null $a
+     * @param FooTest|null $b
+     * @param BarTest|null $c
+     */
+    public function __construct(FooTest $a = null, FooTest $b = null, BarTest $c = null)
+    {
+        $this->a = $a;
+        $this->b = $b;
+        $this->c = $c;
+    }
+
+    /**
      * @return FooTest|null
      */
     public function getA()
@@ -66,23 +78,6 @@ class Baz
     }
 
     /**
-     * @return FooTest|null
-     */
-    public function getB()
-    {
-        return $this->b;
-    }
-
-    /**
-     * @return BarTest|null
-     */
-    public function getC()
-    {
-        return $this->c;
-    }
-
-    /**
-     * @param FooTest $a
      * @return self
      */
     public function withA(FooTest $a)
@@ -105,7 +100,14 @@ class Baz
     }
 
     /**
-     * @param FooTest $b
+     * @return FooTest|null
+     */
+    public function getB()
+    {
+        return $this->b;
+    }
+
+    /**
      * @return self
      */
     public function withB(FooTest $b)
@@ -128,7 +130,14 @@ class Baz
     }
 
     /**
-     * @param BarTest $c
+     * @return BarTest|null
+     */
+    public function getC()
+    {
+        return $this->c;
+    }
+
+    /**
      * @return self
      */
     public function withC(BarTest $c)
@@ -151,18 +160,18 @@ class Baz
     }
 
     /**
-     * Builds a new instance from an input array
+     * Builds a new instance from an input array or object
      *
      * @param array|object $input Input data
-     * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param bool $validate If `false`, validation against the schema will be skipped.
      * @return Baz Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true)
+    public static function fromInput($input, $validate = true)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($input)
+                'Input to fromInput must be array or object, got ' . gettype($input)
             );
         }
 
@@ -171,14 +180,11 @@ class Baz
             static::validateInput($input);
         }
 
-        $a = isset($input->{'a'}) ? FooTest::buildFromInput($input->{'a'}, $validate) : null;
-        $b = isset($input->{'b'}) ? FooTest::buildFromInput($input->{'b'}, $validate) : null;
-        $c = isset($input->{'c'}) ? BarTest::buildFromInput($input->{'c'}, $validate) : null;
+        $a = isset($input->{'a'}) ? FooTest::fromInput($input->{'a'}, $validate) : null;
+        $b = isset($input->{'b'}) ? FooTest::fromInput($input->{'b'}, $validate) : null;
+        $c = isset($input->{'c'}) ? BarTest::fromInput($input->{'c'}, $validate) : null;
 
-        $obj = new self();
-        $obj->a = $a;
-        $obj->b = $b;
-        $obj->c = $c;
+        $obj = new self($a, $b, $c);
         return $obj;
     }
 
@@ -204,6 +210,27 @@ class Baz
     }
 
     /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass()
+    {
+        $output = new \stdClass();
+        if (isset($this->a)) {
+            $output->{'a'} = $this->a->toStdClass();
+        }
+        if (isset($this->b)) {
+            $output->{'b'} = $this->b->toStdClass();
+        }
+        if (isset($this->c)) {
+            $output->{'c'} = $this->c->toStdClass();
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data
@@ -215,7 +242,7 @@ class Baz
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function($e) {

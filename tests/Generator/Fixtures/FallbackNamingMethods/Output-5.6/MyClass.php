@@ -9,7 +9,7 @@ class MyClass
      *
      * @var array
      */
-    private static $schema = [
+    private static $_schema = [
         'properties' => [
             'bound' => [
                 'type' => 'string',
@@ -39,6 +39,18 @@ class MyClass
     private $_outbound = null;
 
     /**
+     * @param string|null $bound
+     * @param string|null $outbound
+     * @param string|null $_outbound
+     */
+    public function __construct($bound = null, $outbound = null, $_outbound = null)
+    {
+        $this->bound = $bound;
+        $this->outbound = $outbound;
+        $this->_outbound = $_outbound;
+    }
+
+    /**
      * @return string|null
      */
     public function getBound()
@@ -47,31 +59,15 @@ class MyClass
     }
 
     /**
-     * @return string|null
-     */
-    public function getOutbound()
-    {
-        return $this->outbound;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function get_Outbound()
-    {
-        return $this->_outbound;
-    }
-
-    /**
      * @param string $bound
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withBound($bound, bool $validate = true)
+    public function withBound($bound, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($bound, self::$schema['properties']['bound']);
+            $validator->validate($bound, self::$_schema['properties']['bound']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -95,15 +91,23 @@ class MyClass
     }
 
     /**
-     * @param string $outbound
-     * @return self
-     * @param bool $validate
+     * @return string|null
      */
-    public function with_Outbound($outbound, bool $validate = true)
+    public function get_Outbound()
+    {
+        return $this->outbound;
+    }
+
+    /**
+     * @param string $outbound
+     * @param bool $validate
+     * @return self
+     */
+    public function with_Outbound($outbound, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($outbound, self::$schema['properties']['outbound']);
+            $validator->validate($outbound, self::$_schema['properties']['outbound']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -118,7 +122,7 @@ class MyClass
     /**
      * @return self
      */
-    public function withoutOutbound()
+    public function without_Outbound()
     {
         $clone = clone $this;
         unset($clone->outbound);
@@ -127,15 +131,23 @@ class MyClass
     }
 
     /**
-     * @param string $_outbound
-     * @return self
-     * @param bool $validate
+     * @return string|null
      */
-    public function with__Outbound($_outbound, bool $validate = true)
+    public function get_Outbound_1()
+    {
+        return $this->_outbound;
+    }
+
+    /**
+     * @param string $_outbound
+     * @param bool $validate
+     * @return self
+     */
+    public function with_Outbound_1($_outbound, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($_outbound, self::$schema['properties']['_outbound']);
+            $validator->validate($_outbound, self::$_schema['properties']['_outbound']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -150,7 +162,7 @@ class MyClass
     /**
      * @return self
      */
-    public function without_Outbound()
+    public function without_Outbound_1()
     {
         $clone = clone $this;
         unset($clone->_outbound);
@@ -159,18 +171,18 @@ class MyClass
     }
 
     /**
-     * Builds a new instance from an input array
+     * Builds a new instance from an input array or object
      *
      * @param array|object $input Input data
-     * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param bool $validate If `false`, validation against the schema will be skipped.
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true)
+    public static function fromInput($input, $validate = true)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($input)
+                'Input to fromInput must be array or object, got ' . gettype($input)
             );
         }
 
@@ -183,10 +195,7 @@ class MyClass
         $outbound = isset($input->{'outbound'}) ? $input->{'outbound'} : null;
         $_outbound = isset($input->{'_outbound'}) ? $input->{'_outbound'} : null;
 
-        $obj = new self();
-        $obj->bound = $bound;
-        $obj->outbound = $outbound;
-        $obj->_outbound = $_outbound;
+        $obj = new self($bound, $outbound, $_outbound);
         return $obj;
     }
 
@@ -212,6 +221,27 @@ class MyClass
     }
 
     /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass()
+    {
+        $output = new \stdClass();
+        if (isset($this->bound)) {
+            $output->{'bound'} = $this->bound;
+        }
+        if (isset($this->outbound)) {
+            $output->{'outbound'} = $this->outbound;
+        }
+        if (isset($this->_outbound)) {
+            $output->{'_outbound'} = $this->_outbound;
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data
@@ -223,7 +253,7 @@ class MyClass
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function($e) {

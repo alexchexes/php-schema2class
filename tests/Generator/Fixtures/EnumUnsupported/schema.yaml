@@ -1,0 +1,39 @@
+definitions:
+  Foo:
+    type: object
+    properties:
+      floatEnum:
+        type: number
+        enum:
+          - 0
+          - 1.5
+          - 2.5
+          - 3.5
+      floatEnumRef:
+        $ref: "#/definitions/EnumFloat"
+      boolEnum:
+        type: boolean
+        enum:
+          - false
+      boolEnumRef:
+        $ref: "#/definitions/EnumBool"
+      requiredBoolEnumRef:
+        $ref: "#/definitions/EnumBool"
+    required:
+      - requiredBoolEnumRef
+  EnumFloat:
+    type: number
+    enum:
+      - 0
+      - 1.5
+      - 2.5
+      - 3.5
+  EnumBool:
+    type: boolean
+    enum:
+      - false
+
+# 8.0 fails 
+# 7.4:
+#   $foo is @var int|float|null 
+#   $bar is @var 0|1|2|3|null    [sic!]

@@ -11,7 +11,7 @@ class OptionsObject
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'properties' => [
             'output' => [
                 'type' => 'string',
@@ -19,43 +19,26 @@ class OptionsObject
         ],
     ];
 
-    /**
-     * @var string|null
-     */
     private ?string $output = null;
 
-    /**
-     * @return string|null
-     */
-    public function getOutput(): ?string
+    public function __construct(?string $_output = null)
     {
-        return $this->output ?? null;
+        $this->output = $_output;
     }
 
-    /**
-     * @param string $output
-     * @return self
-     * @param bool $validate
-     */
-    public function withOutput(string $output, bool $validate = true): self
+    public function getOutput(): ?string
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($output, self::$schema['properties']['output']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
+        return $this->output;
+    }
 
+    public function withOutput(string $_output): self
+    {
         $clone = clone $this;
-        $clone->output = $output;
+        $clone->output = $_output;
 
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutOutput(): self
     {
         $clone = clone $this;
@@ -65,18 +48,18 @@ class OptionsObject
     }
 
     /**
-     * Builds a new instance from an input array
+     * Builds a new instance from an input array or object
      *
      * @param array|object $input Input data
-     * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param bool $validate If `false`, validation against the schema will be skipped.
      * @return OptionsObject Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true): OptionsObject
+    public static function fromInput($input, bool $validate = true): OptionsObject
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($input)
+                'Input to fromInput must be array or object, got ' . gettype($input)
             );
         }
 
@@ -85,10 +68,9 @@ class OptionsObject
             static::validateInput($input);
         }
 
-        $output = isset($input->{'output'}) ? $input->{'output'} : null;
+        $_output = isset($input->{'output'}) ? $input->{'output'} : null;
 
-        $obj = new self();
-        $obj->output = $output;
+        $obj = new self($_output);
         return $obj;
     }
 
@@ -108,6 +90,21 @@ class OptionsObject
     }
 
     /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        if (isset($this->output)) {
+            $output->{'output'} = $this->output;
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data
@@ -119,7 +116,7 @@ class OptionsObject
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {

@@ -1,0 +1,43 @@
+{
+  definitions: {
+    Foo: {
+      type: "object",
+      properties: {
+        a: {
+          anyOf: [
+            {
+              type: "string",
+              enum: ["a", "b"]
+            },
+            {
+              type: "array",
+              items: { type: "string" },
+              minItems: 1
+            }
+          ],
+          description: "Should have validation block"
+        },
+        b: {
+          type: "array",
+          description: "Should not have validation block"
+        },
+        c: {
+          type: ["number", "null"],
+          description: "Should not have validation block"
+        },
+        d: {
+          $ref: "#/definitions/Bar",
+          description: "Should not have validation block due to presence of type-hint that restricts value to 'Bar' class instances"
+        }
+      }
+    },
+    Bar: {
+      type: "object",
+      properties: {
+        a: {
+          type: "string"
+        }
+      }
+    }
+  }
+}

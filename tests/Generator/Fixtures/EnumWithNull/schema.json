@@ -1,0 +1,9 @@
+{
+  "type": "object",
+  "properties": {
+    "foo": {
+      "type": ["null", "string"],
+      "enum": [null, "red", "green"]
+    }
+  }
+}

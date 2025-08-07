@@ -1,24 +1,22 @@
 <?php
-declare(strict_types = 1);
+declare(strict_types=1);
 
-namespace Helmich\Schema2Class\Generator\Property;
+namespace Helmich\Schema2Class\Generator\Property\Type;
 
 use Helmich\Schema2Class\Generator\GeneratorRequest;
-use Helmich\Schema2Class\Generator\SchemaToClass;
+use Helmich\Schema2Class\Writer\DebugWriter;
+use Symfony\Component\Console\Output\NullOutput;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
 use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
-use Prophecy\PhpUnit\ProphecyTrait;
 use function PHPUnit\Framework\assertFalse;
 use function PHPUnit\Framework\assertSame;
 use function PHPUnit\Framework\assertTrue;
 
 class IntersectPropertyTest extends TestCase
 {
-    use ProphecyTrait;
 
     private IntersectProperty $property;
 
@@ -41,19 +39,19 @@ class IntersectPropertyTest extends TestCase
         assertFalse(IntersectProperty::canHandleSchema([]));
     }
 
-    public function testIsComplex()
+    public function testNeedsValidation()
     {
-        assertTrue($this->property->isComplex());
+        assertFalse($this->property->needsValidation());
     }
 
     public function testConvertInputToType()
     {
         $underTest = new IntersectProperty('myPropertyName', ['allOf' => []], $this->generatorRequest);
 
-        $result = $underTest->convertInputToType('variable');
+        $result = $underTest->convertInputToType();
 
         $expected = <<<'EOCODE'
-$myPropertyName = FooMyPropertyName::buildFromInput($variable['myPropertyName'], $validate, $materializeDefaults);
+$myPropertyName = FooMyPropertyName::fromInput($input->{'myPropertyName'}, $validate);
 EOCODE;
 
         assertSame($expected, $result);
@@ -61,10 +59,21 @@ EOCODE;
 
     public function testConvertTypeToArray()
     {
-        $result = $this->property->convertTypeToArray('variable');
+        $result = $this->property->convertTypeToArray();
 
         $expected = <<<'EOCODE'
-$variable['myPropertyName'] = ($this->myPropertyName)->toArray();
+$output['myPropertyName'] = $this->myPropertyName->toArray();
+EOCODE;
+
+        assertSame($expected, $result);
+    }
+
+    public function testConvertTypeToStdClass()
+    {
+        $result = $this->property->convertTypeToStdClass();
+
+        $expected = <<<'EOCODE'
+$output->{'myPropertyName'} = $this->myPropertyName->toStdClass();
 EOCODE;
 
         assertSame($expected, $result);
@@ -75,16 +84,18 @@ EOCODE;
         $expected = <<<'EOCODE'
 $this->myPropertyName = clone $this->myPropertyName;
 EOCODE;
-        assertSame($expected, $this->property->cloneProperty());
+        assertSame($expected, $this->property->cloneAssignment());
     }
 
     public function testGetAnnotationAndHintWithSimpleArray()
     {
         $underTest = new IntersectProperty('myPropertyName', ['allOf' => []], $this->generatorRequest);
 
-        assertSame('FooMyPropertyName', $underTest->typeAnnotation());
-        assertSame('\\BarNs\\FooMyPropertyName', $underTest->typeHint("7.2.0"));
-        assertSame('\\BarNs\\FooMyPropertyName', $underTest->typeHint("5.6.0"));
+        assertSame('\BarNs\FooMyPropertyName', $underTest->typeAnnotation());
+
+        $underTest = new IntersectProperty('myPropertyName', ['allOf' => []], $this->generatorRequest->withPHPVersion('5.6.0'));
+
+        assertSame('\BarNs\FooMyPropertyName', $underTest->typeHint());
     }
 
 
@@ -132,12 +143,11 @@ EOCODE;
     {
         $underTest = new IntersectProperty('myPropertyName', $schema, $this->generatorRequest);
 
-        $schemaToClass = $this->prophesize(SchemaToClass::class);
+        $writer = new DebugWriter(new NullOutput());
 
-        $underTest->generateSubTypes($schemaToClass->reveal());
+        $underTest->generateSubTypes($writer, new NullOutput());
 
-        $schemaToClass->schemaToClass(Argument::that(function(GeneratorRequest $subReq) use ($subschema) {
-            return Assert::equalTo($subschema)->evaluate($subReq->getSchema());
-        }))->shouldHaveBeenCalled();
+        $expectedFiles = count($subschema['properties']) > 0 ? 1 : 0;
+        $this->assertCount($expectedFiles, $writer->getWrittenFiles());
     }
 }

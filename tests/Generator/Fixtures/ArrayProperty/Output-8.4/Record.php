@@ -11,7 +11,7 @@ class Record
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'type' => 'object',
         'properties' => [
             'dataArray' => [
@@ -41,23 +41,29 @@ class Record
     private ?array $dataArray = null;
 
     /**
+     * @param Phone[]|null $dataArray
+     */
+    public function __construct(?array $dataArray = null)
+    {
+        $this->dataArray = $dataArray;
+    }
+
+    /**
      * @return Phone[]|null
      */
     public function getDataArray(): ?array
     {
-        return $this->dataArray ?? null;
+        return $this->dataArray;
     }
 
     /**
      * @param Phone[] $dataArray
-     * @return self
-     * @param bool $validate
      */
     public function withDataArray(array $dataArray, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($dataArray, self::$schema['properties']['dataArray']);
+            $validator->validate($dataArray, self::$_schema['properties']['dataArray']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -69,9 +75,6 @@ class Record
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutDataArray(): self
     {
         $clone = clone $this;
@@ -81,14 +84,14 @@ class Record
     }
 
     /**
-     * Builds a new instance from an input array
+     * Builds a new instance from an input array or object
      *
      * @param array|object $input Input data
-     * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param bool $validate If `false`, validation against the schema will be skipped.
      * @return Record Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): Record
+    public static function fromInput(array|object $input, bool $validate = true): Record
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -96,12 +99,11 @@ class Record
         }
 
         $dataArray = isset($input->{'dataArray'}) ? array_map(
-            fn(array|object $i): Phone => Phone::buildFromInput($i, $validate),
+            fn(array|object $i): Phone => Phone::fromInput($i, $validate),
             $input->{'dataArray'}
         ) : null;
 
-        $obj = new self();
-        $obj->dataArray = $dataArray;
+        $obj = new self($dataArray);
         return $obj;
     }
 
@@ -121,6 +123,21 @@ class Record
     }
 
     /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        if (isset($this->dataArray)) {
+            $output->{'dataArray'} = array_map(fn(Phone $i): object => $i->toStdClass(), $this->dataArray);
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data
@@ -132,7 +149,7 @@ class Record
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {

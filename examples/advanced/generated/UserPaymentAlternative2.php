@@ -11,7 +11,7 @@ class UserPaymentAlternative2
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'required' => [
             'type',
             'accountNumber',
@@ -34,14 +34,10 @@ class UserPaymentAlternative2
      */
     private UserPaymentAlternative2Type $type;
 
-    /**
-     * @var string
-     */
     private string $accountNumber;
 
     /**
      * @param UserPaymentAlternative2Type $type
-     * @param string $accountNumber
      */
     public function __construct(UserPaymentAlternative2Type $type, string $accountNumber)
     {
@@ -58,16 +54,7 @@ class UserPaymentAlternative2
     }
 
     /**
-     * @return string
-     */
-    public function getAccountNumber(): string
-    {
-        return $this->accountNumber;
-    }
-
-    /**
      * @param UserPaymentAlternative2Type $type
-     * @return self
      */
     public function withType(UserPaymentAlternative2Type $type): self
     {
@@ -77,21 +64,13 @@ class UserPaymentAlternative2
         return $clone;
     }
 
-    /**
-     * @param string $accountNumber
-     * @return self
-     * @param bool $validate
-     */
-    public function withAccountNumber(string $accountNumber, bool $validate = true): self
+    public function getAccountNumber(): string
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($accountNumber, self::$schema['properties']['accountNumber']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
+        return $this->accountNumber;
+    }
 
+    public function withAccountNumber(string $accountNumber): self
+    {
         $clone = clone $this;
         $clone->accountNumber = $accountNumber;
 
@@ -99,14 +78,14 @@ class UserPaymentAlternative2
     }
 
     /**
-     * Builds a new instance from an input array
+     * Builds a new instance from an input array or object
      *
      * @param array|object $input Input data
-     * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param bool $validate If `false`, validation against the schema will be skipped.
      * @return UserPaymentAlternative2 Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): UserPaymentAlternative2
+    public static function fromInput(array|object $input, bool $validate = true): UserPaymentAlternative2
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -116,8 +95,8 @@ class UserPaymentAlternative2
         $type = UserPaymentAlternative2Type::from($input->{'type'});
         $accountNumber = $input->{'accountNumber'};
 
-        $obj = new self($type, $accountNumber);
 
+        $obj = new self($type, $accountNumber);
         return $obj;
     }
 
@@ -136,6 +115,20 @@ class UserPaymentAlternative2
     }
 
     /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        $output->{'type'} = ($this->type)->value;
+        $output->{'accountNumber'} = $this->accountNumber;
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data
@@ -147,7 +140,7 @@ class UserPaymentAlternative2
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {

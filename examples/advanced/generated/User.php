@@ -11,7 +11,7 @@ class User
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'required' => [
             'firstName',
             'lastName',
@@ -152,9 +152,6 @@ class User
         ],
     ];
 
-    /**
-     * @var \DateTime|null
-     */
     private ?\DateTime $createdAt = null;
 
     /**
@@ -162,19 +159,10 @@ class User
      */
     private ?UserGender $gender = null;
 
-    /**
-     * @var string
-     */
     private string $firstName;
 
-    /**
-     * @var string
-     */
     private string $lastName;
 
-    /**
-     * @var string|null
-     */
     private ?string $email = null;
 
     /**
@@ -203,99 +191,32 @@ class User
     private ?array $hobbies = null;
 
     /**
-     * @param string $firstName
-     * @param string $lastName
+     * @param UserGender|null $gender
+     * @param UserBilling|null $billing
+     * @param UserPaymentAlternative1|UserPaymentAlternative2|string|null $payment
+     * @param UserAddress|null $address
+     * @param string[]|null $tags
+     * @param UserHobbiesItem[]|null $hobbies
      */
-    public function __construct(string $firstName, string $lastName)
+    public function __construct(string $firstName, string $lastName, ?\DateTime $createdAt = null, ?UserGender $gender = null, ?string $email = null, ?UserBilling $billing = null, UserPaymentAlternative1|UserPaymentAlternative2|string|null $payment = null, ?UserAddress $address = null, ?array $tags = null, ?array $hobbies = null)
     {
         $this->firstName = $firstName;
         $this->lastName = $lastName;
+        $this->createdAt = $createdAt;
+        $this->gender = $gender;
+        $this->email = $email;
+        $this->billing = $billing;
+        $this->payment = $payment;
+        $this->address = $address;
+        $this->tags = $tags;
+        $this->hobbies = $hobbies;
     }
 
-    /**
-     * @return \DateTime|null
-     */
     public function getCreatedAt(): ?\DateTime
     {
-        return $this->createdAt ?? null;
+        return $this->createdAt;
     }
 
-    /**
-     * @return UserGender|null
-     */
-    public function getGender(): ?UserGender
-    {
-        return $this->gender ?? null;
-    }
-
-    /**
-     * @return string
-     */
-    public function getFirstName(): string
-    {
-        return $this->firstName;
-    }
-
-    /**
-     * @return string
-     */
-    public function getLastName(): string
-    {
-        return $this->lastName;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getEmail(): ?string
-    {
-        return $this->email ?? null;
-    }
-
-    /**
-     * @return UserBilling|null
-     */
-    public function getBilling(): ?UserBilling
-    {
-        return $this->billing ?? null;
-    }
-
-    /**
-     * @return UserPaymentAlternative1|UserPaymentAlternative2|string|null
-     */
-    public function getPayment(): UserPaymentAlternative1|UserPaymentAlternative2|string|null
-    {
-        return $this->payment;
-    }
-
-    /**
-     * @return UserAddress|null
-     */
-    public function getAddress(): ?UserAddress
-    {
-        return $this->address ?? null;
-    }
-
-    /**
-     * @return string[]|null
-     */
-    public function getTags(): ?array
-    {
-        return $this->tags ?? null;
-    }
-
-    /**
-     * @return UserHobbiesItem[]|null
-     */
-    public function getHobbies(): ?array
-    {
-        return $this->hobbies ?? null;
-    }
-
-    /**
-     * @param \DateTime $createdAt
-     * @return self
-     */
     public function withCreatedAt(\DateTime $createdAt): self
     {
         $clone = clone $this;
@@ -304,9 +225,6 @@ class User
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutCreatedAt(): self
     {
         $clone = clone $this;
@@ -316,8 +234,15 @@ class User
     }
 
     /**
+     * @return UserGender|null
+     */
+    public function getGender(): ?UserGender
+    {
+        return $this->gender;
+    }
+
+    /**
      * @param UserGender $gender
-     * @return self
      */
     public function withGender(UserGender $gender): self
     {
@@ -327,9 +252,6 @@ class User
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutGender(): self
     {
         $clone = clone $this;
@@ -338,16 +260,16 @@ class User
         return $clone;
     }
 
-    /**
-     * @param string $firstName
-     * @return self
-     * @param bool $validate
-     */
+    public function getFirstName(): string
+    {
+        return $this->firstName;
+    }
+
     public function withFirstName(string $firstName, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($firstName, self::$schema['properties']['firstName']);
+            $validator->validate($firstName, self::$_schema['properties']['firstName']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -359,51 +281,32 @@ class User
         return $clone;
     }
 
-    /**
-     * @param string $lastName
-     * @return self
-     * @param bool $validate
-     */
-    public function withLastName(string $lastName, bool $validate = true): self
+    public function getLastName(): string
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($lastName, self::$schema['properties']['lastName']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
+        return $this->lastName;
+    }
 
+    public function withLastName(string $lastName): self
+    {
         $clone = clone $this;
         $clone->lastName = $lastName;
 
         return $clone;
     }
 
-    /**
-     * @param string $email
-     * @return self
-     * @param bool $validate
-     */
-    public function withEmail(string $email, bool $validate = true): self
+    public function getEmail(): ?string
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($email, self::$schema['properties']['email']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
+        return $this->email;
+    }
 
+    public function withEmail(string $email): self
+    {
         $clone = clone $this;
         $clone->email = $email;
 
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutEmail(): self
     {
         $clone = clone $this;
@@ -413,8 +316,15 @@ class User
     }
 
     /**
+     * @return UserBilling|null
+     */
+    public function getBilling(): ?UserBilling
+    {
+        return $this->billing;
+    }
+
+    /**
      * @param UserBilling $billing
-     * @return self
      */
     public function withBilling(UserBilling $billing): self
     {
@@ -424,9 +334,6 @@ class User
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutBilling(): self
     {
         $clone = clone $this;
@@ -436,8 +343,15 @@ class User
     }
 
     /**
+     * @return UserPaymentAlternative1|UserPaymentAlternative2|string|null
+     */
+    public function getPayment(): UserPaymentAlternative1|UserPaymentAlternative2|string|null
+    {
+        return $this->payment;
+    }
+
+    /**
      * @param UserPaymentAlternative1|UserPaymentAlternative2|string $payment
-     * @return self
      */
     public function withPayment(UserPaymentAlternative1|UserPaymentAlternative2|string $payment): self
     {
@@ -447,9 +361,6 @@ class User
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutPayment(): self
     {
         $clone = clone $this;
@@ -459,8 +370,15 @@ class User
     }
 
     /**
+     * @return UserAddress|null
+     */
+    public function getAddress(): ?UserAddress
+    {
+        return $this->address;
+    }
+
+    /**
      * @param UserAddress $address
-     * @return self
      */
     public function withAddress(UserAddress $address): self
     {
@@ -470,9 +388,6 @@ class User
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutAddress(): self
     {
         $clone = clone $this;
@@ -482,15 +397,21 @@ class User
     }
 
     /**
+     * @return string[]|null
+     */
+    public function getTags(): ?array
+    {
+        return $this->tags;
+    }
+
+    /**
      * @param string[] $tags
-     * @return self
-     * @param bool $validate
      */
     public function withTags(array $tags, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($tags, self::$schema['properties']['tags']);
+            $validator->validate($tags, self::$_schema['properties']['tags']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -502,9 +423,6 @@ class User
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutTags(): self
     {
         $clone = clone $this;
@@ -514,15 +432,21 @@ class User
     }
 
     /**
+     * @return UserHobbiesItem[]|null
+     */
+    public function getHobbies(): ?array
+    {
+        return $this->hobbies;
+    }
+
+    /**
      * @param UserHobbiesItem[] $hobbies
-     * @return self
-     * @param bool $validate
      */
     public function withHobbies(array $hobbies, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($hobbies, self::$schema['properties']['hobbies']);
+            $validator->validate($hobbies, self::$_schema['properties']['hobbies']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -534,9 +458,6 @@ class User
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutHobbies(): self
     {
         $clone = clone $this;
@@ -546,45 +467,48 @@ class User
     }
 
     /**
-     * Builds a new instance from an input array
+     * Builds a new instance from an input array or object
      *
      * @param array|object $input Input data
-     * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param bool $validate If `false`, validation against the schema will be skipped.
      * @return User Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): User
+    public static function fromInput(array|object $input, bool $validate = true): User
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $createdAt = isset($input->{'createdAt'}) ? $input->{'createdAt'} : null;
-        $gender = isset($input->{'gender'}) ? UserGender::from($input->{'gender'}) : null;
         $firstName = $input->{'firstName'};
         $lastName = $input->{'lastName'};
+        $createdAt = isset($input->{'createdAt'}) ? $input->{'createdAt'} : null;
+        $gender = isset($input->{'gender'}) ? UserGender::from($input->{'gender'}) : null;
         $email = isset($input->{'email'}) ? $input->{'email'} : null;
-        $billing = isset($input->{'billing'}) ? UserBilling::buildFromInput($input->{'billing'}, $validate) : null;
+        $billing = isset($input->{'billing'}) ? UserBilling::fromInput($input->{'billing'}, $validate) : null;
         $payment = isset($input->{'payment'}) ? match (true) {
-            UserPaymentAlternative1::validateInput($input->{'payment'}, true) => UserPaymentAlternative1::buildFromInput($input->{'payment'}, $validate),
-            UserPaymentAlternative2::validateInput($input->{'payment'}, true) => UserPaymentAlternative2::buildFromInput($input->{'payment'}, $validate),
+            UserPaymentAlternative1::validateInput($input->{'payment'}, true) => UserPaymentAlternative1::fromInput($input->{'payment'}, $validate),
+            UserPaymentAlternative2::validateInput($input->{'payment'}, true) => UserPaymentAlternative2::fromInput($input->{'payment'}, $validate),
             is_string($input->{'payment'}) => $input->{'payment'},
             default => null,
         } : null;
-        $address = isset($input->{'address'}) ? UserAddress::buildFromInput($input->{'address'}, $validate) : null;
+        $address = isset($input->{'address'}) ? UserAddress::fromInput($input->{'address'}, $validate) : null;
         $tags = isset($input->{'tags'}) ? $input->{'tags'} : null;
-        $hobbies = isset($input->{'hobbies'}) ? array_map(fn (array|object $i): UserHobbiesItem => UserHobbiesItem::buildFromInput($i, $validate), $input->{'hobbies'}) : null;
+        $hobbies = isset($input->{'hobbies'}) ? array_map(fn (array|object $i): UserHobbiesItem => UserHobbiesItem::fromInput($i, $validate), $input->{'hobbies'}) : null;
 
-        $obj = new self($firstName, $lastName);
-        $obj->createdAt = $createdAt;
-        $obj->gender = $gender;
-        $obj->email = $email;
-        $obj->billing = $billing;
-        $obj->payment = $payment;
-        $obj->address = $address;
-        $obj->tags = $tags;
-        $obj->hobbies = $hobbies;
+        $obj = new self(
+            $firstName,
+            $lastName,
+            $createdAt,
+            $gender,
+            $email,
+            $billing,
+            $payment,
+            $address,
+            $tags,
+            $hobbies
+        );
         return $obj;
     }
 
@@ -631,6 +555,48 @@ class User
     }
 
     /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        if (isset($this->createdAt)) {
+            $output->{'createdAt'} = $this->createdAt;
+        }
+        if (isset($this->gender)) {
+            $output->{'gender'} = ($this->gender)->value;
+        }
+        $output->{'firstName'} = $this->firstName;
+        $output->{'lastName'} = $this->lastName;
+        if (isset($this->email)) {
+            $output->{'email'} = $this->email;
+        }
+        if (isset($this->billing)) {
+            $output->{'billing'} = ($this->billing)->toStdClass();
+        }
+        if (isset($this->payment)) {
+            $output->{'payment'} = match (true) {
+                $this->payment instanceof UserPaymentAlternative1,
+                $this->payment instanceof UserPaymentAlternative2 => ($this->payment)->toStdClass(),
+                is_string($this->payment) => $this->payment,
+            };
+        }
+        if (isset($this->address)) {
+            $output->{'address'} = ($this->address)->toStdClass();
+        }
+        if (isset($this->tags)) {
+            $output->{'tags'} = $this->tags;
+        }
+        if (isset($this->hobbies)) {
+            $output->{'hobbies'} = array_map(fn (UserHobbiesItem $i) => $i->toStdClass(), $this->hobbies);
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data
@@ -642,7 +608,7 @@ class User
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {

@@ -12,17 +12,46 @@ Generate PHP classes from [JSON Schema][jsonschema] automatically. Use it from P
 
 ## Installation
 
-Install with [Composer](https://getcomposer.org/):
+~~Install with [Composer](https://getcomposer.org/):~~
 
-```sh
-composer require --dev helmich/schema2class
+> ```sh
+> composer require --dev helmich/schema2class
+> ```
+
+**This fork is not released on Packagist yet**. To install the current version from this repository, you can do the following:
+
+1. Add this to your `composer.json` and run `composer install`:
+```json
+{
+	"require-dev": {
+		"helmich/schema2class": "dev-enhanced",
+	},
+	"repositories": [
+		{
+			"type": "vcs",
+			"url": "https://github.com/alexchexes/php-schema2class"
+		}
+	]
+}
 ```
+
+2. Or simply clone this repo and use it right away:
+```sh
+git clone https://github.com/alexchexes/php-schema2class
+cd php-schema2class
+# using spec file:
+bin/s2c generate:fromspec PATH/TO/YOUR/SPEC-CONFIG.yaml
+# using CLI options:
+bin/s2c generate:fromschema path/to/schema.json path/to/output-dir
+```
+
+A release on Packagist is planned in the near future.
 
 ## Usage
 
 You can use this tool in three different ways:
 
-### A. Via the CLI, passing options and the schema path directly
+### A. Via the CLI – passing options and the schema path directly
 
 ```sh
 vendor/bin/s2c generate:fromschema --class User my-schema.json src/TargetDir   # or ./my-schema.yaml
@@ -33,7 +62,7 @@ php vendor\bin\s2c generate:fromschema --class User my-schema.json src\TargetDir
 
 See [all available options](#options).
 
-### B. Via the CLI, using a configuration file
+### B. Via the CLI – using a configuration file
 
 1. Create a configuration file, for example `my-config.yaml` (or the equivalent `.json` file):
 
@@ -63,9 +92,9 @@ vendor/bin/s2c generate:fromspec
 
 `.s2c.yaml` will be used automatically.
 
-### C. From PHP code
+### C. Programmatically – from your PHP code
 
-The simplest way to use the generator programmatically is to call `Schema2Class` class methods.
+To use the generator programmatically, create an instance of `Schema2Class` class and call its methods.
 
 Generate from a configuration file:
 
@@ -127,9 +156,9 @@ Both the CLI and specification files accept the following options:
 | `--class`, `-c`               | `className`                        | Class name to generate. Use this only when generating a single class from a schema that contains one top‑level object (not from a schema with multiple `definitions`).                               |
 | `--target-php`, `-p`          | `targetPHPVersion`                 | PHP version **with which** the generated code must be compatible. Numeric value without exact subversion like `5`, `7` or `8` resolves to the latest (`5.6`, `7.4`, `8.x`), not to `5.0`/`7.0`/`8.0` |
 | `--disable-strict-types`      | `disableStrictTypes`               | Omit the `strict_types` declaration.                                                                                                                                                                 |
-| `--treat-default-as-optional` | `treatValuesWithDefaultAsOptional` | Treat properties that have a default value as optional.                                                                                                                                              |
 | `--inline-allof`              | `inlineAllofReferences`            | Inline `allOf` references before generating classes.                                                                                                                                                 |
-| `--validator-expr`            | `newValidatorClassExpr`            | Expression used to create a validator instance (e.g. `new MyValidator()`).                                                                                                                           |
+| `--validator-expr`            | `newValidatorExpr`            | Expression used to create a validator instance (e.g. `new MyValidator()`).                                                                                                                           |
+| `--arr-to-obj-expr`           | `arrayToObjectExpr`                | Expression used to recursively convert arrays to objects (e.g. `Utils::arrayToObjectRecursive` - no call parens!).                                                                                                                           |
 | `--preserve-property-names`   | `preservePropertyNames`            | Keep property names as is instead of converting them to camelCase (non-valid identifiers names will be sanitized).                                                                                   |
 | `--no-getters`                | `noGetters`                        | If **true**, no getter methods are generated and all properties are `public`.                                                                                                                        |
 | `--no-setters`                | `noSetters`                        | Do not generate `withX()` / `withoutX()` methods.                                                                                                                                                    |
@@ -188,10 +217,10 @@ Next, use the generated classes in your code:
 $someApiResponse = '...';
 $userData = json_decode($someApiResponse, true);
 
-$user = \Example\Basic\User::buildFromInput($userData);
+$user = \Example\Basic\User::fromInput($userData);
 
 // or, if for some reason you don't care about validation:
-$user = \Example\Basic\User::buildFromInput($userData, false);
+$user = \Example\Basic\User::fromInput($userData, false);
 
 // Access object properties via getters:
 echo "User name:   " . $user->getName();
@@ -210,8 +239,9 @@ $updatedUser = $user->withStatus("customer");
 echo "Old status: " . $user->getStatus();      // not mutated
 echo "New status: " . $updatedUser->getStatus(); // 'customer'
 
-// Finally, convert the updated user back to a simple PHP array:
-$userAsArray = $updatedUser->toArray();
+// Finally, convert the updated user back to simple data structures:
+$userAsArray  = $updatedUser->toArray();
+$userAsObject = $updatedUser->toStdClass(); // if you need to distinguish arrays from object
 ```
 
 ## Compatibility
@@ -242,10 +272,12 @@ The generated classes offer:
 - Class/enum names for sub‑objects are derived from property names.
 - Classes generated for array items are suffixed with "Item". See [`Example\Advanced\User::$hobbies`](examples/advanced/generated/User.php#L203).
 - `oneOf`/`anyOf` alternatives are suffixed with "AlternativeX", where _X_ is an incrementing integer. See [`Example\Advanced\User::$payment`](examples/advanced/generated/User.php#L188).
-- The static method `buildFromInput(array $data[, bool $validate = true])` accepts an array (for example the result of `json_decode(..., true)`), validates it against the schema, and creates the full object graph. No additional mapping is required.
-  **Note:** Do not instantiate the class directly; always use `buildFromInput(...)`.
-- To disable validation, pass `false` as the second argument: `buildFromInput($data, false)`. Use at your own risk.
-- The method `toArray()` returns a plain array ready for `json_encode()`.
+- The static method `fromInput(array $data[, bool $validate = true])` accepts an array (for example the result of `json_decode(..., true)`), validates it against the schema, and creates the full object graph. No additional mapping is required.
+  **Note:** Do not instantiate the class directly; always use `fromInput(...)`.
+- To disable validation, pass `false` as the second argument of `fromInput($data, false)`. Use at your own risk.
+- If your schema has default values and you want to use them to populate the object properties that are not set in the input, pass the parameter `materializeDefaults = true` to `fromInput`. The parameter is generated only when the schema has default values.
+- The `toArray()` method returns a plain PHP array representation of the object
+- The `toStdClass()` method returns a plain PHP `stdClass` representation of the object (useful if you need to distinguish objects from arrays — for example, when the object is empty or has numeric keys)
 - Properties are immutable by default; use `withX()` (or `withoutX()` for optional values) to create modified copies. Pass `--mutable-setters` to generate classic `setX()` methods instead.
 
 ## Advanced programmatic usage
@@ -258,6 +290,7 @@ use Helmich\Schema2Class\Generator\SchemaLoader;
 use Helmich\Schema2Class\Generator\SchemaToClassFactory;
 use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
+use Laminas\Code\Generator\ClassGenerator as LaminasClassGenerator;
 use Symfony\Component\Console\Output\NullOutput;
 
 $schema  = (new SchemaLoader())->loadSchema('example.json');
@@ -269,7 +302,7 @@ $request = new GeneratorRequest(
 
 // Adding a hook
 $hook = new class implements ClassCreatedHook {
-    public function onClassCreated(string $name, ClassGenerator $class): void
+    public function onClassCreated(string $name, LaminasClassGenerator $class): void
     {
         $class->addProperty('extra');
     }
@@ -290,5 +323,75 @@ The generator exposes several hook interfaces that let you customize the generat
 - `FileCreatedHook` – called before each file is written.
 
 Implement any of these interfaces and register the instance on a `GeneratorRequest` to adjust the generated output.
+
+### Custom `$ref` links lookup
+
+If your schema contains `$ref` pointers to definitions that live outside the schema file being
+processed, or if you want to map some references to classes that already exist in your codebase,
+you can resolve such references as desired by implementing the `ReferenceLookup` interface
+and registering your lookup on a `GeneratorRequest`.
+
+```php
+use Helmich\Schema2Class\Generator\GeneratorRequest;
+use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeInterface;
+use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeClass;
+use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeUnknown;
+use Helmich\Schema2Class\Generator\ReferenceLookup\DefinitionsReferenceLookup;
+use Helmich\Schema2Class\Generator\ReferenceLookup\ReferenceLookup;
+
+class MyReferenceLookup implements ReferenceLookup
+{
+    public function __construct(private DefinitionsReferenceLookup $defaultLookup) {}
+
+    // Must return instance of a class implementing `ReferencedTypeInterface`,
+    // including the `ReferencedTypeUnknown` when reference cannot be resolved
+    public function lookupReference(string $ref, GeneratorRequest $currentRequest): ReferencedTypeInterface
+    {
+        if ($ref === "#/properties/address") {
+            // Point '#/properties/address' ref to existing class
+            return new ReferencedTypeClass(CustomerAddress::class, $currentRequest);
+        }
+
+        // resolve other refs by built-in Schema2Class lookup mechanism
+        $result = $this->defaultLookup->lookupReference($ref, $currentRequest);
+        if ($result instanceof ReferencedTypeUnknown) {
+            return new ReferencedTypeUnknown($currentRequest);
+        }
+        return $result;
+    }
+
+    // Must return the schema array referenced by the given `$ref` pointer,
+    // or empty array if no schema available
+    public function lookupSchema(string $ref): array
+    {
+        if ($ref === "#/properties/address") {
+            return [
+                'required' => ['city', 'street'],
+                'properties' => [
+                    'city' => ['type' => 'string', 'maxLength' => 32],
+                    'street' => ['type' => 'string'],
+                ],
+            ];
+        }
+
+        return $this->defaultLookup->lookupSchema($ref);
+    }
+}
+```
+
+Then use it:
+
+```php
+// use MyReferenceLookup\MyReferenceLookup;
+use Helmich\Schema2Class\Generator\GeneratorRequest;
+use Helmich\Schema2Class\Generator\SchemaToClassFactory;
+use Helmich\Schema2Class\Generator\ReferenceLookup\DefinitionsReferenceLookup;
+
+$req = new GeneratorRequest(/* ... */);
+$req = $req->withReferenceLookup(
+  new MyReferenceLookup(new DefinitionsReferenceLookup($schema['definitions'] ?? []))
+);
+(new SchemaToClassFactory())->build($writer, $output)->schemaToClass($req);
+```
 
 [jsonschema]: http://json-schema.org/

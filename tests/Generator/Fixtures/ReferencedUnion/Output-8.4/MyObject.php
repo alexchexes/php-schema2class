@@ -11,7 +11,7 @@ class MyObject
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'type' => 'object',
         'additionalProperties' => false,
         'properties' => [
@@ -50,31 +50,18 @@ class MyObject
         ],
     ];
 
-    /**
-     * @var A|B
-     */
     private A|B $foo;
 
-    /**
-     * @param A|B $foo
-     */
     public function __construct(A|B $foo)
     {
         $this->foo = $foo;
     }
 
-    /**
-     * @return A|B
-     */
     public function getFoo(): A|B
     {
         return $this->foo;
     }
 
-    /**
-     * @param A|B $foo
-     * @return self
-     */
     public function withFoo(A|B $foo): self
     {
         $clone = clone $this;
@@ -84,14 +71,14 @@ class MyObject
     }
 
     /**
-     * Builds a new instance from an input array
+     * Builds a new instance from an input array or object
      *
      * @param array|object $input Input data
-     * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param bool $validate If `false`, validation against the schema will be skipped.
      * @return MyObject Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): MyObject
+    public static function fromInput(array|object $input, bool $validate = true): MyObject
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -105,7 +92,6 @@ class MyObject
         };
 
         $obj = new self($foo);
-
         return $obj;
     }
 
@@ -126,6 +112,22 @@ class MyObject
     }
 
     /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        $output->{'foo'} = match (true) {
+            ($this->foo) instanceof A,
+            ($this->foo) instanceof B => $this->foo->value,
+        };
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data
@@ -137,7 +139,7 @@ class MyObject
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {

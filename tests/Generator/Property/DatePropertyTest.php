@@ -1,31 +1,38 @@
 <?php
 declare(strict_types=1);
 
-namespace Helmich\Schema2Class\Generator\Property;
+namespace Helmich\Schema2Class\Generator\Property\Type;
 
 use Helmich\Schema2Class\Generator\GeneratorRequest;
-use Helmich\Schema2Class\Generator\SchemaToClass;
+use Helmich\Schema2Class\Writer\DebugWriter;
+use Symfony\Component\Console\Output\NullOutput;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
 use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
 use function PHPUnit\Framework\assertFalse;
 use function PHPUnit\Framework\assertSame;
 use function PHPUnit\Framework\assertTrue;
-use Prophecy\PhpUnit\ProphecyTrait;
 
 class DatePropertyTest extends TestCase
 {
-    use ProphecyTrait;
 
     private DateProperty $property;
 
     private GeneratorRequest $generatorRequest;
 
+    private array $schema;
+
     protected function setUp(): void
     {
-        $this->generatorRequest = new GeneratorRequest([], new ValidatedSpecificationFilesItem("", "Foo", ""), new SpecificationOptions());
-        $this->property         = new DateProperty('myPropertyName', ['type' => 'string', 'format' => 'date-time'], $this->generatorRequest);
+        $this->generatorRequest = new GeneratorRequest(
+            [],
+            new ValidatedSpecificationFilesItem("", "Foo", ""),
+            new SpecificationOptions()
+        );
+
+        $this->schema = ['type' => 'string', 'format' => 'date-time'];
+
+        $this->property = new DateProperty('myPropertyName', $this->schema, $this->generatorRequest);
     }
 
     public function testCanHandleSchema()
@@ -37,17 +44,17 @@ class DatePropertyTest extends TestCase
 
     }
 
-    public function testIsComplex()
+    public function testNeedsValidation()
     {
-        assertTrue($this->property->isComplex());
+        assertFalse($this->property->needsValidation());
     }
 
     public function testConvertInputToType()
     {
-        $result = $this->property->convertInputToType('variable');
+        $result = $this->property->convertInputToType();
 
         $expected = <<<'EOCODE'
-$myPropertyName = new \DateTime($variable['myPropertyName']);
+$myPropertyName = new \DateTime($input->{'myPropertyName'});
 EOCODE;
 
         assertSame($expected, $result);
@@ -55,10 +62,10 @@ EOCODE;
 
     public function testConvertTypeToArray()
     {
-        $result = $this->property->convertTypeToArray('variable');
+        $result = $this->property->convertTypeToArray();
 
         $expected = <<<'EOCODE'
-$variable['myPropertyName'] = ($this->myPropertyName)->format(\DateTime::ATOM);
+$output['myPropertyName'] = ($this->myPropertyName)->format(\DateTime::ATOM);
 EOCODE;
 
         assertSame($expected, $result);
@@ -69,23 +76,26 @@ EOCODE;
         $expected = <<<'EOCODE'
 $this->myPropertyName = clone $this->myPropertyName;
 EOCODE;
-        assertSame($expected, $this->property->cloneProperty());
+        assertSame($expected, $this->property->cloneAssignment());
     }
 
     public function testGetAnnotationAndHintWithSimpleArray()
     {
         assertSame('\\DateTime', $this->property->typeAnnotation());
-        assertSame('\\DateTime', $this->property->typeHint("7.2.0"));
-        assertSame('\\DateTime', $this->property->typeHint("5.6.0"));
+        assertSame('\\DateTime', $this->property->typeHint());
+
+        $property = new DateProperty('myPropertyName', $this->schema, $this->generatorRequest->withPHPVersion('5.6.0'));
+
+        assertSame('\\DateTime', $property->typeHint());
     }
 
     public function testGenerateSubTypesWithSimpleArray()
     {
-        $schemaToClass = $this->prophesize(SchemaToClass::class);
+        $writer = new DebugWriter(new NullOutput());
 
-        $this->property->generateSubTypes($schemaToClass->reveal());
+        $this->property->generateSubTypes($writer, new NullOutput());
 
-        $schemaToClass->schemaToClass(Argument::any(), Argument::any(), Argument::any())->shouldNotHaveBeenCalled();
+        $this->assertCount(0, $writer->getWrittenFiles());
     }
 
 }

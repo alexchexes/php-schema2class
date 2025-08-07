@@ -1,25 +1,24 @@
 <?php
-declare(strict_types = 1);
+declare(strict_types=1);
 
-namespace Helmich\Schema2Class\Generator\Property;
+namespace Helmich\Schema2Class\Generator\Property\Type;
 
 use Helmich\Schema2Class\Generator\GeneratorRequest;
-use Helmich\Schema2Class\Generator\SchemaToClass;
+use Helmich\Schema2Class\Writer\DebugWriter;
+use Symfony\Component\Console\Output\NullOutput;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
 use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
-use Prophecy\PhpUnit\ProphecyTrait;
 use function PHPUnit\Framework\assertSame;
 use function PHPUnit\Framework\assertTrue;
-use Helmich\Schema2Class\Generator\Definitions\Definition;
-use Helmich\Schema2Class\Generator\DefinitionsReferenceLookup;
+use function PHPUnit\Framework\assertFalse;
+use Helmich\Schema2Class\Generator\Definition\Definition;
+use Helmich\Schema2Class\Generator\ReferenceLookup\DefinitionsReferenceLookup;
 
 class UnionPropertyTest extends TestCase
 {
-    use ProphecyTrait;
 
     private UnionProperty $property;
 
@@ -41,21 +40,21 @@ class UnionPropertyTest extends TestCase
         assertTrue(UnionProperty::canHandleSchema(['oneOf' => []]));
     }
 
-    public function testIsComplex()
+    public function testNeedsValidation()
     {
-        assertTrue($this->property->isComplex());
+        assertFalse($this->property->needsValidation());
     }
 
     public function testConvertInputToType()
     {
         $underTest = new UnionProperty('myPropertyName', ['anyOf' => [['properties' => ['subFoo1' => ['type' => 'string']]], ['properties' => ['subFoo2' => ['type' => 'string']]]]], $this->generatorRequest);
 
-        $result = $underTest->convertInputToType('variable');
+        $result = $underTest->convertInputToType();
 
         $expected = <<<'EOCODE'
 $myPropertyName = match (true) {
-    FooMyPropertyNameAlternative1::validateInput($variable['myPropertyName'], true) => FooMyPropertyNameAlternative1::buildFromInput($variable['myPropertyName'], $validate, $materializeDefaults),
-    FooMyPropertyNameAlternative2::validateInput($variable['myPropertyName'], true) => FooMyPropertyNameAlternative2::buildFromInput($variable['myPropertyName'], $validate, $materializeDefaults),
+    FooMyPropertyNameAlternative1::validateInput($input->{'myPropertyName'}, true) => FooMyPropertyNameAlternative1::fromInput($input->{'myPropertyName'}, $validate),
+    FooMyPropertyNameAlternative2::validateInput($input->{'myPropertyName'}, true) => FooMyPropertyNameAlternative2::fromInput($input->{'myPropertyName'}, $validate),
     default => throw new \InvalidArgumentException("could not build property 'myPropertyName' from JSON"),
 };
 EOCODE;
@@ -67,12 +66,28 @@ EOCODE;
     {
         $underTest = new UnionProperty('myPropertyName', ['anyOf' => [['properties' => ['subFoo1' => ['type' => 'string']]], ['properties' => ['subFoo2' => ['type' => 'string']]]]], $this->generatorRequest);
 
-        $result = $underTest->convertTypeToArray('variable');
+        $result = $underTest->convertTypeToArray();
 
         $expected = <<<'EOCODE'
-$variable['myPropertyName'] = match (true) {
+$output['myPropertyName'] = match (true) {
     $this->myPropertyName instanceof FooMyPropertyNameAlternative1,
-    $this->myPropertyName instanceof FooMyPropertyNameAlternative2 => ($this->myPropertyName)->toArray(),
+    $this->myPropertyName instanceof FooMyPropertyNameAlternative2 => $this->myPropertyName->toArray(),
+};
+EOCODE;
+
+        assertSame($expected, $result);
+    }
+
+    public function testConvertTypeToStdClass()
+    {
+        $underTest = new UnionProperty('myPropertyName', ['anyOf' => [['properties' => ['subFoo1' => ['type' => 'string']]], ['properties' => ['subFoo2' => ['type' => 'string']]]]], $this->generatorRequest);
+
+        $result = $underTest->convertTypeToStdClass();
+
+        $expected = <<<'EOCODE'
+$output->{'myPropertyName'} = match (true) {
+    $this->myPropertyName instanceof FooMyPropertyNameAlternative1,
+    $this->myPropertyName instanceof FooMyPropertyNameAlternative2 => $this->myPropertyName->toStdClass(),
 };
 EOCODE;
 
@@ -87,7 +102,7 @@ $this->myPropertyName = match (true) {
     $this->myPropertyName instanceof FooMyPropertyNameAlternative2 => clone $this->myPropertyName,
 };
 EOCODE;
-        assertSame($expected, $this->property->cloneProperty());
+        assertSame($expected, $this->property->cloneAssignment());
     }
 
     public function testAllowsNullIfSubPropertyAllowsNull(): void
@@ -114,9 +129,10 @@ EOCODE;
     {
         $php8Ver = GeneratorRequest::DEFAULT_PHP8_VERSION;
         return [
-            "php {$php8Ver}" => [$php8Ver, '\BarNs\FooMyPropertyNameAlternative1|\BarNs\FooMyPropertyNameAlternative2'],
-            'php 7.2' => ['7.2.0', null],
-            'php 5.6' => ['5.6.0', null],
+            "php {$php8Ver}" =>
+                [$php8Ver, '\BarNs\FooMyPropertyNameAlternative1|\BarNs\FooMyPropertyNameAlternative2'],
+            'php 7.2' => ['7.2.0', 'object'],
+            'php 7.1' => ['7.1.0', null],
         ];
     }
 
@@ -124,9 +140,13 @@ EOCODE;
     public function testGetAnnotationAndHintWithSimpleArray(string $phpVersion, mixed $expected)
     {
         $request = $this->generatorRequest->withPHPVersion($phpVersion);
-        $underTest = new UnionProperty('myPropertyName', ['anyOf' => [['properties' => ['subFoo1' => ['type' => 'string']]], ['properties' => ['subFoo2' => ['type' => 'string']]]]], $request);
+        $underTest = new UnionProperty(
+            'myPropertyName',
+            ['anyOf' => [['properties' => ['subFoo1' => ['type' => 'string']]], ['properties' => ['subFoo2' => ['type' => 'string']]]]],
+            $request
+        );
 
-        assertSame('FooMyPropertyNameAlternative1|FooMyPropertyNameAlternative2', $underTest->typeAnnotation());
+        assertSame('\BarNs\FooMyPropertyNameAlternative1|\BarNs\FooMyPropertyNameAlternative2', $underTest->typeAnnotation());
         assertSame($expected, $underTest->typeHint("n/a"));
     }
 
@@ -159,14 +179,11 @@ EOCODE;
 
         $underTest = new UnionProperty('myPropertyName', $schema, $this->generatorRequest);
 
-        $schemaToClass = $this->prophesize(SchemaToClass::class);
+        $writer = new DebugWriter(new NullOutput());
 
-        $underTest->generateSubTypes($schemaToClass->reveal());
+        $underTest->generateSubTypes($writer, new NullOutput());
 
-        $idx = 0;
-        $schemaToClass->schemaToClass(Argument::that(function (GeneratorRequest $subReq) use ($subschemas, &$idx) {
-            return Assert::equalTo($subschemas[$idx++])->evaluate($subReq->getSchema());
-        }))->shouldHaveBeenCalled();
+        $this->assertCount(count($subschemas), $writer->getWrittenFiles());
     }
 
 }

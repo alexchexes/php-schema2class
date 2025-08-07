@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 namespace Helmich\Schema2Class;
@@ -104,7 +103,7 @@ class Schema2ClassTest extends TestCase
             ],
         ];
 
-        $spec = Specification::buildFromInput($config);
+        $spec = Specification::fromInput($config);
 
         $generator = new Schema2Class();
         $generator->generateFromSpec($spec);

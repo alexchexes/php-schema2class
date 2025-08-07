@@ -11,91 +11,47 @@ class SpecificationFilesItem
      *
      * @var array
      */
-    private static array $schema = ['properties' => ['input' => ['type' => ['string', 'object']], 'className' => ['type' => 'string'], 'options' => ['$ref' => '#/definitions/SpecificationOptions']], 'additionalProperties' => false, 'required' => ['input'], 'definitions' => ['SpecificationOptions' => ['additionalProperties' => false, 'properties' => ['targetDirectory' => ['type' => 'string'], 'targetNamespace' => ['type' => 'string'], 'targetPHPVersion' => ['oneOf' => [['type' => 'integer', 'enum' => [5, 7, 8]], ['type' => 'string']]], 'cleanTargetDirectory' => ['type' => 'boolean'], 'disableStrictTypes' => ['type' => 'boolean'], 'treatValuesWithDefaultAsOptional' => ['type' => 'boolean'], 'inlineAllofReferences' => ['type' => 'boolean'], 'newValidatorClassExpr' => ['type' => 'string'], 'preservePropertyNames' => ['type' => 'boolean'], 'noGetters' => ['type' => 'boolean'], 'noSetters' => ['type' => 'boolean'], 'mutableSetters' => ['oneOf' => [['type' => 'boolean', 'enum' => [true]], ['type' => 'string', 'enum' => ['chainable']]]], 'noSchemaMetadata' => ['type' => 'boolean'], 'singleLineSchema' => ['type' => 'boolean'], 'noEnums' => ['type' => 'boolean']]]]];
+    private static array $_schema = ['properties' => ['input' => ['type' => ['string', 'object']], 'className' => ['type' => 'string'], 'options' => ['$ref' => '#/definitions/SpecificationOptions']], 'additionalProperties' => false, 'required' => ['input'], 'definitions' => ['SpecificationOptions' => ['additionalProperties' => false, 'properties' => ['targetDirectory' => ['type' => 'string'], 'targetNamespace' => ['type' => 'string'], 'targetPHPVersion' => ['oneOf' => [['type' => 'integer', 'enum' => [5, 7, 8]], ['type' => 'string']]], 'cleanTargetDirectory' => ['type' => 'boolean'], 'disableStrictTypes' => ['type' => 'boolean'], 'inlineAllofReferences' => ['type' => 'boolean'], 'newValidatorExpr' => ['type' => 'string'], 'arrayToObjectExpr' => ['type' => 'string'], 'preservePropertyNames' => ['type' => 'boolean'], 'noGetters' => ['type' => 'boolean'], 'noSetters' => ['type' => 'boolean'], 'mutableSetters' => ['oneOf' => [['type' => 'boolean', 'enum' => [true]], ['type' => 'string', 'enum' => ['chainable']]]], 'noSchemaMetadata' => ['type' => 'boolean'], 'singleLineSchema' => ['type' => 'boolean'], 'noEnums' => ['type' => 'boolean']]]]];
 
-    /**
-     * @var string|array|object
-     */
     private string|array|object $input;
 
-    /**
-     * @var string|null
-     */
     private ?string $className = null;
 
-    /**
-     * @var SpecificationOptions|null
-     */
     private ?SpecificationOptions $options = null;
 
-    /**
-     * @param string|array|object $input
-     */
-    public function __construct(string|array|object $input)
+    public function __construct(string|array|object $_input, ?string $className = null, ?SpecificationOptions $options = null)
     {
-        $this->input = $input;
+        $this->input = $_input;
+        $this->className = $className;
+        $this->options = $options;
     }
 
-    /**
-     * @return string|array|object
-     */
     public function getInput(): string|array|object
     {
         return $this->input;
     }
 
-    /**
-     * @return string|null
-     */
+    public function withInput(string|array|object $_input): self
+    {
+        $clone = clone $this;
+        $clone->input = $_input;
+
+        return $clone;
+    }
+
     public function getClassName(): ?string
     {
         return $this->className ?? null;
     }
 
-    /**
-     * @return SpecificationOptions|null
-     */
-    public function getOptions(): ?SpecificationOptions
+    public function withClassName(string $className): self
     {
-        return $this->options ?? null;
-    }
-
-    /**
-     * @param string|array|object $input
-     * @return self
-     */
-    public function withInput(string|array|object $input): self
-    {
-        $clone = clone $this;
-        $clone->input = $input;
-
-        return $clone;
-    }
-
-    /**
-     * @param string $className
-     * @return self
-     * @param bool $validate
-     */
-    public function withClassName(string $className, bool $validate = true): self
-    {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($className, self::$schema['properties']['className']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->className = $className;
 
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutClassName(): self
     {
         $clone = clone $this;
@@ -104,10 +60,11 @@ class SpecificationFilesItem
         return $clone;
     }
 
-    /**
-     * @param SpecificationOptions $options
-     * @return self
-     */
+    public function getOptions(): ?SpecificationOptions
+    {
+        return $this->options ?? null;
+    }
+
     public function withOptions(SpecificationOptions $options): self
     {
         $clone = clone $this;
@@ -116,9 +73,6 @@ class SpecificationFilesItem
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutOptions(): self
     {
         $clone = clone $this;
@@ -128,31 +82,29 @@ class SpecificationFilesItem
     }
 
     /**
-     * Builds a new instance from an input array
+     * Builds a new instance from an input array or object
      *
-     * @param array|object $_input Input data
-     * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param array|object $input Input data
+     * @param bool $validate If `false`, validation against the schema will be skipped.
      * @return SpecificationFilesItem Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $_input, bool $validate = true): SpecificationFilesItem
+    public static function fromInput(array|object $input, bool $validate = true): SpecificationFilesItem
     {
-        $_input = is_array($_input) ? \JsonSchema\Validator::arrayToObjectRecursive($_input) : $_input;
+        $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
-            static::validateInput($_input);
+            static::validateInput($input);
         }
 
-        $input = match (true) {
-            is_string($_input->{'input'}),
-            is_array($_input->{'input'}) || is_object($_input->{'input'}) => $_input->{'input'},
+        $_input = match (true) {
+            is_string($input->{'input'}),
+            is_array($input->{'input'}) || is_object($input->{'input'}) => $input->{'input'},
             default => throw new \InvalidArgumentException("could not build property 'input' from JSON"),
         };
-        $className = isset($_input->{'className'}) ? $_input->{'className'} : null;
-        $options = isset($_input->{'options'}) ? SpecificationOptions::buildFromInput($_input->{'options'}, $validate) : null;
+        $className = isset($input->{'className'}) ? $input->{'className'} : null;
+        $options = isset($input->{'options'}) ? SpecificationOptions::fromInput($input->{'options'}, $validate) : null;
 
-        $obj = new self($input);
-        $obj->className = $className;
-        $obj->options = $options;
+        $obj = new self($_input, $className, $options);
         return $obj;
     }
 
@@ -179,6 +131,28 @@ class SpecificationFilesItem
     }
 
     /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        $output->{'input'} = match (true) {
+            is_string($this->input) => $this->input,
+            is_array($this->input) || is_object($this->input) => json_decode(json_encode($this->input)),
+        };
+        if (isset($this->className)) {
+            $output->{'className'} = $this->className;
+        }
+        if (isset($this->options)) {
+            $output->{'options'} = $this->options->toStdClass();
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data
@@ -190,7 +164,7 @@ class SpecificationFilesItem
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {

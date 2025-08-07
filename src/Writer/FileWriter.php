@@ -1,5 +1,5 @@
 <?php
-declare(strict_types = 1);
+declare(strict_types=1);
 namespace Helmich\Schema2Class\Writer;
 
 use Symfony\Component\Console\Output\OutputInterface;
@@ -13,9 +13,9 @@ class FileWriter implements WriterInterface
         $this->output = $output;
     }
 
-    public function writeFile(string $filename, string $contents): void
+    public function writeFile(string $filePath, string $contents): void
     {
-        $dirname = dirname($filename);
+        $dirname = dirname($filePath);
 
         if (!is_dir($dirname)) {
             $this->output->writeln("creating directory <comment>$dirname</comment>");
@@ -23,9 +23,9 @@ class FileWriter implements WriterInterface
         }
 
         $len = strlen($contents);
-        $this->output->writeln("writing <info>$len</info> bytes to <comment>$filename</comment>");
+        $this->output->writeln("writing <info>$len</info> bytes to <comment>$filePath</comment>");
 
-        file_put_contents($filename, $contents);
+        file_put_contents($filePath, $contents);
     }
 
 }

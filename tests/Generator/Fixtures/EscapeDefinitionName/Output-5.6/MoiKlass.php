@@ -9,7 +9,7 @@ class MoiKlass
      *
      * @var array
      */
-    private static $schema = [
+    private static $_schema = [
         'type' => 'object',
         'properties' => [
             'c' => [
@@ -24,6 +24,14 @@ class MoiKlass
     private $c = null;
 
     /**
+     * @param string|null $c
+     */
+    public function __construct($c = null)
+    {
+        $this->c = $c;
+    }
+
+    /**
      * @return string|null
      */
     public function getC()
@@ -33,14 +41,14 @@ class MoiKlass
 
     /**
      * @param string $c
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withC($c, bool $validate = true)
+    public function withC($c, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($c, self::$schema['properties']['c']);
+            $validator->validate($c, self::$_schema['properties']['c']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -64,18 +72,18 @@ class MoiKlass
     }
 
     /**
-     * Builds a new instance from an input array
+     * Builds a new instance from an input array or object
      *
      * @param array|object $input Input data
-     * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param bool $validate If `false`, validation against the schema will be skipped.
      * @return MoiKlass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true)
+    public static function fromInput($input, $validate = true)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($input)
+                'Input to fromInput must be array or object, got ' . gettype($input)
             );
         }
 
@@ -86,8 +94,7 @@ class MoiKlass
 
         $c = isset($input->{'c'}) ? $input->{'c'} : null;
 
-        $obj = new self();
-        $obj->c = $c;
+        $obj = new self($c);
         return $obj;
     }
 
@@ -107,6 +114,21 @@ class MoiKlass
     }
 
     /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass()
+    {
+        $output = new \stdClass();
+        if (isset($this->c)) {
+            $output->{'c'} = $this->c;
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data
@@ -118,7 +140,7 @@ class MoiKlass
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function($e) {

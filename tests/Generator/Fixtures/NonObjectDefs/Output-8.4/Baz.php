@@ -11,7 +11,7 @@ class Baz
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'type' => 'object',
         'properties' => [
             'grox' => [
@@ -56,23 +56,18 @@ class Baz
         ],
     ];
 
-    /**
-     * @var Foo|Bar|null
-     */
-    private Foo|Bar|null $grox = null;
+    private Bar|Foo|null $grox = null;
 
-    /**
-     * @return Foo|Bar|null
-     */
+    public function __construct(Bar|Foo|null $grox = null)
+    {
+        $this->grox = $grox;
+    }
+
     public function getGrox(): Bar|Foo|null
     {
         return $this->grox;
     }
 
-    /**
-     * @param Foo|Bar $grox
-     * @return self
-     */
     public function withGrox(Bar|Foo $grox): self
     {
         $clone = clone $this;
@@ -81,9 +76,6 @@ class Baz
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutGrox(): self
     {
         $clone = clone $this;
@@ -93,14 +85,14 @@ class Baz
     }
 
     /**
-     * Builds a new instance from an input array
+     * Builds a new instance from an input array or object
      *
      * @param array|object $input Input data
-     * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param bool $validate If `false`, validation against the schema will be skipped.
      * @return Baz Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): Baz
+    public static function fromInput(array|object $input, bool $validate = true): Baz
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -108,13 +100,12 @@ class Baz
         }
 
         $grox = isset($input->{'grox'}) ? match (true) {
-            Foo::validateInput($input->{'grox'}, true) => Foo::buildFromInput($input->{'grox'}, $validate),
-            Bar::validateInput($input->{'grox'}, true) => Bar::buildFromInput($input->{'grox'}, $validate),
+            Foo::validateInput($input->{'grox'}, true) => Foo::fromInput($input->{'grox'}, $validate),
+            Bar::validateInput($input->{'grox'}, true) => Bar::fromInput($input->{'grox'}, $validate),
             default => null,
         } : null;
 
-        $obj = new self();
-        $obj->grox = $grox;
+        $obj = new self($grox);
         return $obj;
     }
 
@@ -128,8 +119,26 @@ class Baz
         $output = [];
         if (isset($this->grox)) {
             $output['grox'] = match (true) {
-                ($this->grox) instanceof Foo,
-                ($this->grox) instanceof Bar => $this->grox->toArray(),
+                $this->grox instanceof Foo,
+                $this->grox instanceof Bar => $this->grox->toArray(),
+            };
+        }
+
+        return $output;
+    }
+
+    /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        if (isset($this->grox)) {
+            $output->{'grox'} = match (true) {
+                $this->grox instanceof Foo,
+                $this->grox instanceof Bar => $this->grox->toStdClass(),
             };
         }
 
@@ -148,7 +157,7 @@ class Baz
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {
@@ -164,8 +173,8 @@ class Baz
     {
         if (isset($this->grox)) {
             $this->grox = match (true) {
-                ($this->grox) instanceof Foo,
-                ($this->grox) instanceof Bar => $this->grox,
+                $this->grox instanceof Foo,
+                $this->grox instanceof Bar => $this->grox,
             };
         }
     }

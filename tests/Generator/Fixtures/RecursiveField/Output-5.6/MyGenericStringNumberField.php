@@ -9,7 +9,7 @@ class MyGenericStringNumberField
      *
      * @var array
      */
-    private static $schema = [
+    private static $_schema = [
         'additionalProperties' => false,
         'properties' => [
             'field' => [
@@ -45,6 +45,14 @@ class MyGenericStringNumberField
     private $field = null;
 
     /**
+     * @param MyGenericStringNumber|null $field
+     */
+    public function __construct(MyGenericStringNumber $field = null)
+    {
+        $this->field = $field;
+    }
+
+    /**
      * @return MyGenericStringNumber|null
      */
     public function getField()
@@ -53,7 +61,6 @@ class MyGenericStringNumberField
     }
 
     /**
-     * @param MyGenericStringNumber $field
      * @return self
      */
     public function withField(MyGenericStringNumber $field)
@@ -76,18 +83,18 @@ class MyGenericStringNumberField
     }
 
     /**
-     * Builds a new instance from an input array
+     * Builds a new instance from an input array or object
      *
      * @param array|object $input Input data
-     * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param bool $validate If `false`, validation against the schema will be skipped.
      * @return MyGenericStringNumberField Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true)
+    public static function fromInput($input, $validate = true)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($input)
+                'Input to fromInput must be array or object, got ' . gettype($input)
             );
         }
 
@@ -96,10 +103,9 @@ class MyGenericStringNumberField
             static::validateInput($input);
         }
 
-        $field = isset($input->{'field'}) ? MyGenericStringNumber::buildFromInput($input->{'field'}, $validate) : null;
+        $field = isset($input->{'field'}) ? MyGenericStringNumber::fromInput($input->{'field'}, $validate) : null;
 
-        $obj = new self();
-        $obj->field = $field;
+        $obj = new self($field);
         return $obj;
     }
 
@@ -119,6 +125,21 @@ class MyGenericStringNumberField
     }
 
     /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass()
+    {
+        $output = new \stdClass();
+        if (isset($this->field)) {
+            $output->{'field'} = $this->field->toStdClass();
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data
@@ -130,7 +151,7 @@ class MyGenericStringNumberField
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function($e) {

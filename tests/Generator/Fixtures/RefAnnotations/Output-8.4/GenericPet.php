@@ -11,7 +11,7 @@ class GenericPet
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'type' => 'object',
         'properties' => [
             'hasFur' => [
@@ -31,100 +31,145 @@ class GenericPet
     ];
 
     /**
-     * Map of optional nullable property names that were explicitly set to `null`
+     * Default values from the schema
+     *
+     * @var array
+     */
+    private static array $_defaults = [
+        'hasFur' => [
+            'default' => false,
+        ],
+    ];
+
+    /**
+     * Map of optional nullable property names that were explicitly set
      *
      * @var array<string,true>
      */
-    private array $_explicitNulls = [];
+    private array $_providedOptionals = [];
 
-    /**
-     * Whether the animal has fur (true), doesn't (false), or it's unknown or varies (null)
-     *
-     * @var bool|null
-     */
     private ?bool $hasFur = null;
 
-    /**
-     * Whether the animal has fur (true), doesn't (false), or it's unknown or varies (null)
-     *
-     * @return bool|null
-     */
-    public function getHasFur(): ?bool
+    public function __construct(?bool $hasFur = null)
     {
-        return $this->hasFur ?? null;
+        $this->hasFur = $hasFur;
     }
 
     /**
-     * @param bool $hasFur
-     * @return self
-     * @param bool $validate
+     * Whether the animal has fur (true), doesn't (false), or it's unknown or varies (null)
      */
-    public function withHasFur(bool $hasFur, bool $validate = true): self
+    public function getHasFur(): ?bool
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($hasFur, self::$schema['properties']['hasFur']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
+        return $this->hasFur;
+    }
 
+    /**
+     * Whether the animal has fur (true), doesn't (false), or it's unknown or varies (null)
+     */
+    public function withHasFur(?bool $hasFur): self
+    {
         $clone = clone $this;
         $clone->hasFur = $hasFur;
-        $clone->_explicitNulls['hasFur'] = true;
+        $clone->_providedOptionals['hasFur'] = true;
 
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutHasFur(): self
     {
         $clone = clone $this;
         unset($clone->hasFur);
-        unset($clone->_explicitNulls['hasFur']);
+        unset($clone->_providedOptionals['hasFur']);
 
         return $clone;
     }
 
     /**
-     * Builds a new instance from an input array
+     * Builds a new instance from an input array or object
      *
      * @param array|object $input Input data
-     * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param bool $validate If `false`, validation against the schema will be skipped.
+     * @param bool $materializeDefaults Apply defaults defined in schema when missing
      * @return GenericPet Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): GenericPet
+    public static function fromInput(array|object $input, bool $validate = true, bool $materializeDefaults = false): GenericPet
     {
-        $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
+        $input = is_array($input)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($input)
+            : ($materializeDefaults ? clone $input : $input);
+
+        if ($materializeDefaults) {
+            foreach (self::$_defaults as $__k => $__v) {
+                if (!property_exists($input, (string) $__k)) {
+                    $input->{$__k} = ($__v['type'] ?? null) === 'object'
+                        ? \JsonSchema\Validator::arrayToObjectRecursive($__v['default'])
+                        : $__v['default'];
+                }
+            }
+        }
+
         if ($validate) {
             static::validateInput($input);
         }
 
-        $__explicitNulls = [];
-        $hasFur = property_exists($input, 'hasFur') ? $input->{'hasFur'} : null;
+        $__providedOptionals = [];
+        $hasFur = null;
         if (property_exists($input, 'hasFur')) {
-            $__explicitNulls['hasFur'] = true;
+            $hasFur = ($input->{'hasFur'} !== null ? $input->{'hasFur'} : null);
+            $__providedOptionals['hasFur'] = true;
         }
 
-        $obj = new self();
-        $obj->hasFur = $hasFur;
-        $obj->_explicitNulls = $__explicitNulls;
+        $obj = new self($hasFur);
+        $obj->_providedOptionals = $__providedOptionals;
         return $obj;
     }
 
     /**
      * Converts this object back to a simple array that can be JSON-serialized
      *
+     * @param bool $includeDefaults Add defaults for missing properties
      * @return array Converted array
      */
-    public function toArray(): array
+    public function toArray(bool $includeDefaults = false): array
     {
         $output = [];
-        if (isset($this->hasFur) || array_key_exists('hasFur', $this->_explicitNulls)) {
-            $output['hasFur'] = $this->hasFur;
+        if (isset($this->hasFur) || array_key_exists('hasFur', $this->_providedOptionals)) {
+            $output['hasFur'] = ($this->hasFur !== null) ? ($this->hasFur) : null;
+        }
+
+        if ($includeDefaults) {
+            foreach (self::$_defaults as $k => $v) {
+                if (!array_key_exists($k, $output)) {
+                    $output[$k] = $v['default'];
+                }
+            }
+        }
+
+        return $output;
+    }
+
+    /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @param bool $includeDefaults Add defaults for missing properties
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(bool $includeDefaults = false): \stdClass
+    {
+        $output = new \stdClass();
+        if (isset($this->hasFur) || array_key_exists('hasFur', $this->_providedOptionals)) {
+            $output->{'hasFur'} = ($this->hasFur !== null) ? ($this->hasFur) : null;
+        }
+
+        if ($includeDefaults) {
+            foreach (self::$_defaults as $k => $v) {
+                if (!property_exists($output, (string) $k)) {
+                    $output->{$k} = (isset($v['type']) && $v['type'] === 'object')
+                       ? \JsonSchema\Validator::arrayToObjectRecursive($v['default'])
+                       : $v['default'];
+                }
+            }
         }
 
         return $output;
@@ -142,7 +187,7 @@ class GenericPet
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {
@@ -155,13 +200,13 @@ class GenericPet
     }
 
     /**
-     * Checks if an optional nullable property was explicitly set to `null`
+     * Checks if an optional nullable property was explicitly set
      *
-     * @param string $propertyName property name as appears in the schema
+     * @param string $propertyName Property name to check (exactly as it appears in the schema)
      * @return bool
      */
-    public function isExplicitNull(string $propertyName): bool
+    public function isOptionalProvided(string $propertyName): bool
     {
-        return array_key_exists($propertyName, $this->_explicitNulls);
+        return array_key_exists($propertyName, $this->_providedOptionals);
     }
 }

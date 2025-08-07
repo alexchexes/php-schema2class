@@ -22,6 +22,14 @@ properties:
     - 42.5
     - false
     - null
+  inferString:
+    enum:
+      - "3"
+      - "4"
+  inferInt:
+    enum:
+      - 3
+      - 4
   contradiction:
     type: integer
     enum:
@@ -38,6 +46,11 @@ properties:
       - false
       - null
   nullable:
+    type: [string, null]
+    enum:
+      - "red"
+      - "green"
+  optionalNullable:
     type: [string, null]
     enum:
       - "red"

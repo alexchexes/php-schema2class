@@ -1,0 +1,22 @@
+{
+  definitions: {
+    Cat: {
+      type: "object",
+      properties: {
+        hasFur: {
+          anyOf: [
+            {
+              type: "string",
+              enum: ["a", "b"]
+            },
+            {
+              type: "array",
+              items: { type: "string" },
+              minItems: 1
+            }
+          ]
+        }
+      }
+    }
+  }
+}

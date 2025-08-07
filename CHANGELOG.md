@@ -24,7 +24,7 @@ New options provide more control over how classes are generated:
 
 ### Additional CLI options
 
-- CLI now supports all the options previously available only via spec files, e.g., `--disable-strict-types`, `--inline-allof`, `--treat-default-as-optional`, etc., and all the new options like `--no-getters`, `--no-setters`, `--preserve-property-names`, etc.
+- CLI now supports all the options previously available only via spec files, e.g., `--disable-strict-types`, `--inline-allof`, etc., and all the new options like `--no-getters`, `--no-setters`, `--preserve-property-names`, etc.
 
 ### Generator enhancements
 
@@ -36,14 +36,16 @@ Now it:
 - Improves camelCase/PascalCase handling when generating identifier names.
 - Omits the default `null` value for properties listed in the `required` schema block.
 - Improves type hints and PHPDoc type generation for complex types like unions, nested arrays, etc.
-- Adds a guard against passing anything other than an array/object to `buildFromInput`, building multi-line validation error messages.
-- Setter methods (`withX()`) now accept an optional `$validate` argument to be able skip validation, mirroring `buildFromInput()`.
+- Adds a guard against passing anything other than an array/object to `fromInput`, building multi-line validation error messages.
+- Setter methods (`withX()`) now accept an optional `$validate` argument to be able skip validation, mirroring `fromInput()`.
+- Deterministic resolution of class property, accessor method and temporary variable names via a unified resolver, allowing case-sensitive properties and avoiding collisions with reserved names.
 - Option `mutableSetters` allows generating mutable `setX()` methods (optionally chainable).
 - Skips emitting empty `__construct` or `__clone` methods.
 - Prints a notice when skipping `definitions` that do not describe an object.
 - Validates written files with `php -l` to ensure generated code is syntactically correct.
 - Handles URL-encoded references
 - Handles definition descriptions and/or top-level schema description and adds it to a class' PHPDoc
+- Generates a `toStdClass()` method returning an object representation of the instance
 
 ### Better support for older PHP versions:
 
@@ -55,8 +57,12 @@ Now it:
 
 ### Enums
 
-- Laminas's immutable EnumGenerator replaced with own mutable implementation PhpParserEnumGenerator built on nikic/php-parser which allows modifications via the hook system.
-- Mixed int/string enum values are now skipped with fallback to type hints instead of raising an error.
+- Laminas's immutable `EnumGenerator` replaced with own mutable implementation built on `nikic/php-parser` which allows modifications via the hook system.
+- Unsupported enum types are now skipped with fallback to type hints instead of raising an error.
+
+### Defaults handling
+
+- Now, if the schema has a default for some property, the generated class includes the parameter `$materializeDefaults` in `fromInput` and `$includeDefaults` in `toArray()`/`toStdClass()`.
 
 ### Documentation
 
@@ -73,7 +79,13 @@ Now it:
   - New dependencies: `voku/portable-ascii`, `nikic/php-parser`
   - Bumped PHPUnit to 12 and Psalm to 6
 
-### Breaking changes?
+### Breaking changes
+
+- The `toJson` method of the generated class was renamed to `toArray` to reflect its purpose (`toStdClass` method is added but it is not breaking).
+
+- The `buildFromInput` method of the generated class was renamed to `fromInput`.
+
+- The `treatValuesWithDefaultAsOptional` option was removed in favor of the runtime options `$materializeDefaults` in `fromInput()` and `$includeDefaults` in `toArray()`.
 
 - Configuration layout has been simplified: there are now only two top-level keys, `options` and `files`. Each `files` item has three keys: `input`, an optional `className`, and `options`, where the `options` object can override any setting from the top-level `options`.
 

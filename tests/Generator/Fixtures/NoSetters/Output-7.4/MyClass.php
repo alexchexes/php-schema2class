@@ -11,7 +11,7 @@ class MyClass
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'required' => [
             'foo',
             'bar',
@@ -26,55 +26,39 @@ class MyClass
         ],
     ];
 
-    /**
-     * @var string
-     */
     private string $foo;
 
-    /**
-     * @var int
-     */
     private int $bar;
 
-    /**
-     * @param string $foo
-     * @param int $bar
-     */
     public function __construct(string $foo, int $bar)
     {
         $this->foo = $foo;
         $this->bar = $bar;
     }
 
-    /**
-     * @return string
-     */
     public function getFoo(): string
     {
         return $this->foo;
     }
 
-    /**
-     * @return int
-     */
     public function getBar(): int
     {
         return $this->bar;
     }
 
     /**
-     * Builds a new instance from an input array
+     * Builds a new instance from an input array or object
      *
      * @param array|object $input Input data
-     * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param bool $validate If `false`, validation against the schema will be skipped.
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true): MyClass
+    public static function fromInput($input, bool $validate = true): MyClass
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($input)
+                'Input to fromInput must be array or object, got ' . gettype($input)
             );
         }
 
@@ -84,10 +68,9 @@ class MyClass
         }
 
         $foo = $input->{'foo'};
-        $bar = (int)($input->{'bar'});
+        $bar = (int)$input->{'bar'};
 
         $obj = new self($foo, $bar);
-
         return $obj;
     }
 
@@ -106,6 +89,20 @@ class MyClass
     }
 
     /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        $output->{'foo'} = $this->foo;
+        $output->{'bar'} = $this->bar;
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data
@@ -117,7 +114,7 @@ class MyClass
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {

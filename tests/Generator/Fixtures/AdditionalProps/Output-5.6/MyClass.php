@@ -9,7 +9,7 @@ class MyClass
      *
      * @var array
      */
-    private static $schema = [
+    private static $_schema = [
         'type' => 'object',
         'properties' => [
             'name' => [
@@ -35,6 +35,16 @@ class MyClass
     private $params = null;
 
     /**
+     * @param string|null $name
+     * @param mixed[]|null $params
+     */
+    public function __construct($name = null, array $params = null)
+    {
+        $this->name = $name;
+        $this->params = $params;
+    }
+
+    /**
      * @return string|null
      */
     public function getName()
@@ -43,23 +53,15 @@ class MyClass
     }
 
     /**
-     * @return mixed[]|null
-     */
-    public function getParams()
-    {
-        return $this->params;
-    }
-
-    /**
      * @param string $name
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withName($name, bool $validate = true)
+    public function withName($name, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($name, self::$schema['properties']['name']);
+            $validator->validate($name, self::$_schema['properties']['name']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -83,20 +85,19 @@ class MyClass
     }
 
     /**
+     * @return mixed[]|null
+     */
+    public function getParams()
+    {
+        return $this->params;
+    }
+
+    /**
      * @param mixed[] $params
      * @return self
-     * @param bool $validate
      */
-    public function withParams(array $params, bool $validate = true)
+    public function withParams(array $params)
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($params, self::$schema['properties']['params']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->params = $params;
 
@@ -115,18 +116,18 @@ class MyClass
     }
 
     /**
-     * Builds a new instance from an input array
+     * Builds a new instance from an input array or object
      *
      * @param array|object $input Input data
-     * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param bool $validate If `false`, validation against the schema will be skipped.
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true)
+    public static function fromInput($input, $validate = true)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($input)
+                'Input to fromInput must be array or object, got ' . gettype($input)
             );
         }
 
@@ -138,9 +139,7 @@ class MyClass
         $name = isset($input->{'name'}) ? $input->{'name'} : null;
         $params = isset($input->{'params'}) ? (array)$input->{'params'} : null;
 
-        $obj = new self();
-        $obj->name = $name;
-        $obj->params = $params;
+        $obj = new self($name, $params);
         return $obj;
     }
 
@@ -163,6 +162,24 @@ class MyClass
     }
 
     /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass()
+    {
+        $output = new \stdClass();
+        if (isset($this->name)) {
+            $output->{'name'} = $this->name;
+        }
+        if (isset($this->params)) {
+            $output->{'params'} = $this->params;
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data
@@ -174,7 +191,7 @@ class MyClass
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function($e) {

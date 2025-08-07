@@ -11,7 +11,7 @@ class BarTest
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'type' => 'object',
         'properties' => [
             'exampleProp' => [
@@ -56,23 +56,18 @@ class BarTest
         ],
     ];
 
-    /**
-     * @var FooTest|MoiKlass|FooTest_1|null
-     */
-    private FooTest|MoiKlass|FooTest_1|null $exampleProp = null;
+    private FooTest|FooTest_1|MoiKlass|null $exampleProp = null;
 
-    /**
-     * @return FooTest|MoiKlass|FooTest_1|null
-     */
+    public function __construct(FooTest|FooTest_1|MoiKlass|null $exampleProp = null)
+    {
+        $this->exampleProp = $exampleProp;
+    }
+
     public function getExampleProp(): FooTest|FooTest_1|MoiKlass|null
     {
         return $this->exampleProp;
     }
 
-    /**
-     * @param FooTest|MoiKlass|FooTest_1 $exampleProp
-     * @return self
-     */
     public function withExampleProp(FooTest|FooTest_1|MoiKlass $exampleProp): self
     {
         $clone = clone $this;
@@ -81,9 +76,6 @@ class BarTest
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutExampleProp(): self
     {
         $clone = clone $this;
@@ -93,14 +85,14 @@ class BarTest
     }
 
     /**
-     * Builds a new instance from an input array
+     * Builds a new instance from an input array or object
      *
      * @param array|object $input Input data
-     * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param bool $validate If `false`, validation against the schema will be skipped.
      * @return BarTest Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): BarTest
+    public static function fromInput(array|object $input, bool $validate = true): BarTest
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -108,14 +100,13 @@ class BarTest
         }
 
         $exampleProp = isset($input->{'exampleProp'}) ? match (true) {
-            FooTest::validateInput($input->{'exampleProp'}, true) => FooTest::buildFromInput($input->{'exampleProp'}, $validate),
-            MoiKlass::validateInput($input->{'exampleProp'}, true) => MoiKlass::buildFromInput($input->{'exampleProp'}, $validate),
-            FooTest_1::validateInput($input->{'exampleProp'}, true) => FooTest_1::buildFromInput($input->{'exampleProp'}, $validate),
+            FooTest::validateInput($input->{'exampleProp'}, true) => FooTest::fromInput($input->{'exampleProp'}, $validate),
+            MoiKlass::validateInput($input->{'exampleProp'}, true) => MoiKlass::fromInput($input->{'exampleProp'}, $validate),
+            FooTest_1::validateInput($input->{'exampleProp'}, true) => FooTest_1::fromInput($input->{'exampleProp'}, $validate),
             default => null,
         } : null;
 
-        $obj = new self();
-        $obj->exampleProp = $exampleProp;
+        $obj = new self($exampleProp);
         return $obj;
     }
 
@@ -129,9 +120,28 @@ class BarTest
         $output = [];
         if (isset($this->exampleProp)) {
             $output['exampleProp'] = match (true) {
-                ($this->exampleProp) instanceof FooTest,
-                ($this->exampleProp) instanceof MoiKlass,
-                ($this->exampleProp) instanceof FooTest_1 => $this->exampleProp->toArray(),
+                $this->exampleProp instanceof FooTest,
+                $this->exampleProp instanceof MoiKlass,
+                $this->exampleProp instanceof FooTest_1 => $this->exampleProp->toArray(),
+            };
+        }
+
+        return $output;
+    }
+
+    /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        if (isset($this->exampleProp)) {
+            $output->{'exampleProp'} = match (true) {
+                $this->exampleProp instanceof FooTest,
+                $this->exampleProp instanceof MoiKlass,
+                $this->exampleProp instanceof FooTest_1 => $this->exampleProp->toStdClass(),
             };
         }
 
@@ -150,7 +160,7 @@ class BarTest
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {
@@ -166,9 +176,9 @@ class BarTest
     {
         if (isset($this->exampleProp)) {
             $this->exampleProp = match (true) {
-                ($this->exampleProp) instanceof FooTest,
-                ($this->exampleProp) instanceof MoiKlass,
-                ($this->exampleProp) instanceof FooTest_1 => $this->exampleProp,
+                $this->exampleProp instanceof FooTest,
+                $this->exampleProp instanceof MoiKlass,
+                $this->exampleProp instanceof FooTest_1 => $this->exampleProp,
             };
         }
     }

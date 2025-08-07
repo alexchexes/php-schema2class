@@ -1,9 +1,0 @@
-language: php
-php:
-  - "7.4"
-install:
-  - composer install --prefer-dist
-script:
-  - cmd/s2c --class=Customer generate:fromschema tests/example.yaml src/Example
-  - vendor/bin/psalm
-  - vendor/bin/phpunit --testdox

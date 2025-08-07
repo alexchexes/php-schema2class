@@ -9,7 +9,7 @@ class MyClassFilesItem
      *
      * @var array
      */
-    private static $schema = [
+    private static $_schema = [
         'properties' => [
             'input' => [
                 'type' => 'string',
@@ -40,6 +40,16 @@ class MyClassFilesItem
     private $options = null;
 
     /**
+     * @param string|null $_input
+     * @param OptionsObject|null $options
+     */
+    public function __construct($_input = null, OptionsObject $options = null)
+    {
+        $this->input = $_input;
+        $this->options = $options;
+    }
+
+    /**
      * @return string|null
      */
     public function getInput()
@@ -48,30 +58,22 @@ class MyClassFilesItem
     }
 
     /**
-     * @return OptionsObject|null
-     */
-    public function getOptions()
-    {
-        return $this->options;
-    }
-
-    /**
-     * @param string $input
-     * @return self
+     * @param string $_input
      * @param bool $validate
+     * @return self
      */
-    public function withInput($input, bool $validate = true)
+    public function withInput($_input, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($input, self::$schema['properties']['input']);
+            $validator->validate($_input, self::$_schema['properties']['input']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
         }
 
         $clone = clone $this;
-        $clone->input = $input;
+        $clone->input = $_input;
 
         return $clone;
     }
@@ -88,7 +90,14 @@ class MyClassFilesItem
     }
 
     /**
-     * @param OptionsObject $options
+     * @return OptionsObject|null
+     */
+    public function getOptions()
+    {
+        return $this->options;
+    }
+
+    /**
      * @return self
      */
     public function withOptions(OptionsObject $options)
@@ -111,32 +120,30 @@ class MyClassFilesItem
     }
 
     /**
-     * Builds a new instance from an input array
+     * Builds a new instance from an input array or object
      *
-     * @param array|object $_input Input data
-     * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param array|object $input Input data
+     * @param bool $validate If `false`, validation against the schema will be skipped.
      * @return MyClassFilesItem Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($_input, bool $validate = true)
+    public static function fromInput($input, $validate = true)
     {
-        if (!is_array($_input) && !is_object($_input)) {
+        if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($_input)
+                'Input to fromInput must be array or object, got ' . gettype($input)
             );
         }
 
-        $_input = is_array($_input) ? \JsonSchema\Validator::arrayToObjectRecursive($_input) : $_input;
+        $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
-            static::validateInput($_input);
+            static::validateInput($input);
         }
 
-        $input = isset($_input->{'input'}) ? $_input->{'input'} : null;
-        $options = isset($_input->{'options'}) ? OptionsObject::buildFromInput($_input->{'options'}, $validate) : null;
+        $_input = isset($input->{'input'}) ? $input->{'input'} : null;
+        $options = isset($input->{'options'}) ? OptionsObject::fromInput($input->{'options'}, $validate) : null;
 
-        $obj = new self();
-        $obj->input = $input;
-        $obj->options = $options;
+        $obj = new self($_input, $options);
         return $obj;
     }
 
@@ -159,6 +166,24 @@ class MyClassFilesItem
     }
 
     /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass()
+    {
+        $output = new \stdClass();
+        if (isset($this->input)) {
+            $output->{'input'} = $this->input;
+        }
+        if (isset($this->options)) {
+            $output->{'options'} = $this->options->toStdClass();
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data
@@ -170,7 +195,7 @@ class MyClassFilesItem
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function($e) {
