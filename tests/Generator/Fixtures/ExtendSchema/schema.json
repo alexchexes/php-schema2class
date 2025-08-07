@@ -1,0 +1,15 @@
+{
+  "allOf": [
+    {
+      "type": "object",
+      "properties": {
+        "state": { "type": "string" }
+      }
+    }
+  ],
+  "properties": {
+    "city": { "type": "string" },
+    "street_address": { "type": "string" }
+  }
+}
+
