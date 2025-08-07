@@ -2,9 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Ns\RefSetterValidation_8_4;
+namespace Ns\SettersFullValidation_8_4;
 
-class CatBaz
+/**
+ * Class generated from this definition should add full re-validation to each property setter as its schema contains conditional validation which might affect any of its properties
+ */
+class IfThenElse
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -12,67 +15,108 @@ class CatBaz
      * @var array
      */
     private static array $_schema = [
+        'description' => 'Class generated from this definition should add full re-validation to each property setter as its schema contains conditional validation which might affect any of its properties',
         'type' => 'object',
         'properties' => [
-            'nestedFoo' => [
-                '$ref' => '#/definitions/Bar',
+            'kind' => [
+                'type' => [
+                    'string',
+                    'null',
+                ],
+            ],
+            'value' => [
+                
             ],
         ],
-        'definitions' => [
-            'Bar' => [
-                'type' => 'number',
-                'enum' => [
-                    1,
-                    2,
+        'required' => [
+            'kind',
+        ],
+        'if' => [
+            'properties' => [
+                'kind' => [
+                    'type' => 'null',
                 ],
+            ],
+        ],
+        'then' => [
+            'properties' => [
+                'value' => [
+                    'type' => 'number',
+                    'enum' => [
+                        1,
+                        2,
+                    ],
+                ],
+            ],
+            'required' => [
+                'value',
+            ],
+        ],
+        'else' => [
+            'properties' => [
+                'value' => [
+                    'type' => 'string',
+                    'minLength' => 1,
+                ],
+            ],
+            'required' => [
+                'value',
             ],
         ],
     ];
 
-    /**
-     * @var 1|2|null
-     */
-    private ?int $nestedFoo = null;
+    private ?string $kind;
 
     /**
-     * @param 1|2|null $nestedFoo
+     * @var mixed|null
      */
-    public function __construct(?int $nestedFoo = null)
+    private $value = null;
+
+    /**
+     * @param mixed|null $value
+     */
+    public function __construct(?string $kind, $value = null)
     {
-        $this->nestedFoo = $nestedFoo;
+        $this->kind = $kind;
+        $this->value = $value;
     }
 
-    /**
-     * @return 1|2|null
-     */
-    public function getNestedFoo(): ?int
+    public function getKind(): ?string
     {
-        return $this->nestedFoo;
+        return $this->kind;
     }
 
-    /**
-     * @param 1|2 $nestedFoo
-     */
-    public function withNestedFoo(int $nestedFoo, bool $validate = true): self
+    public function withKind(?string $kind): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($nestedFoo, self::$_schema['properties']['nestedFoo']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
-        $clone->nestedFoo = $nestedFoo;
+        $clone->kind = $kind;
 
         return $clone;
     }
 
-    public function withoutNestedFoo(): self
+    /**
+     * @return mixed|null
+     */
+    public function getValue()
+    {
+        return $this->value;
+    }
+
+    /**
+     * @param mixed $value
+     */
+    public function withValue($value): self
     {
         $clone = clone $this;
-        unset($clone->nestedFoo);
+        $clone->value = $value;
+
+        return $clone;
+    }
+
+    public function withoutValue(): self
+    {
+        $clone = clone $this;
+        unset($clone->value);
 
         return $clone;
     }
@@ -82,19 +126,20 @@ class CatBaz
      *
      * @param array|object $input Input data
      * @param bool $validate If `false`, validation against the schema will be skipped.
-     * @return CatBaz Created instance
+     * @return IfThenElse Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput(array|object $input, bool $validate = true): CatBaz
+    public static function fromInput(array|object $input, bool $validate = true): IfThenElse
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $nestedFoo = isset($input->{'nestedFoo'}) ? $input->{'nestedFoo'} : null;
+        $kind = $input->{'kind'};
+        $value = isset($input->{'value'}) ? $input->{'value'} : null;
 
-        $obj = new self($nestedFoo);
+        $obj = new self($kind, $value);
         return $obj;
     }
 
@@ -106,8 +151,9 @@ class CatBaz
     public function toArray(): array
     {
         $output = [];
-        if (isset($this->nestedFoo)) {
-            $output['nestedFoo'] = $this->nestedFoo;
+        $output['kind'] = $this->kind;
+        if (isset($this->value)) {
+            $output['value'] = $this->value;
         }
 
         return $output;
@@ -121,8 +167,9 @@ class CatBaz
     public function toStdClass(): \stdClass
     {
         $output = new \stdClass();
-        if (isset($this->nestedFoo)) {
-            $output->{'nestedFoo'} = $this->nestedFoo;
+        $output->{'kind'} = $this->kind;
+        if (isset($this->value)) {
+            $output->{'value'} = $this->value;
         }
 
         return $output;

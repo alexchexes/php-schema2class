@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ns\RefSetterValidation_8_4;
+namespace Ns\SettersFullValidation_8_4;
 
-class MyClass
+class RefValidationBaz
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -14,44 +14,11 @@ class MyClass
     private static array $_schema = [
         'type' => 'object',
         'properties' => [
-            'foo' => [
-                '$ref' => '#/definitions/Foo',
+            'nestedFoo' => [
+                '$ref' => '#/definitions/Bar',
             ],
         ],
         'definitions' => [
-            'Cat' => [
-                'type' => 'object',
-                'properties' => [
-                    'foo' => [
-                        '$ref' => '#/definitions/Bar',
-                    ],
-                    'bar' => [
-                        'anyOf' => [
-                            [
-                                'type' => 'string',
-                            ],
-                            [
-                                '$ref' => '#/definitions/Bar',
-                            ],
-                        ],
-                    ],
-                    'baz' => [
-                        'type' => 'object',
-                        'properties' => [
-                            'nestedFoo' => [
-                                '$ref' => '#/definitions/Bar',
-                            ],
-                        ],
-                    ],
-                ],
-            ],
-            'Foo' => [
-                'type' => 'string',
-                'enum' => [
-                    'a',
-                    'b',
-                ],
-            ],
             'Bar' => [
                 'type' => 'number',
                 'enum' => [
@@ -63,49 +30,49 @@ class MyClass
     ];
 
     /**
-     * @var 'a'|'b'|null
+     * @var 1|2|null
      */
-    private ?string $foo = null;
+    private ?int $nestedFoo = null;
 
     /**
-     * @param 'a'|'b'|null $foo
+     * @param 1|2|null $nestedFoo
      */
-    public function __construct(?string $foo = null)
+    public function __construct(?int $nestedFoo = null)
     {
-        $this->foo = $foo;
+        $this->nestedFoo = $nestedFoo;
     }
 
     /**
-     * @return 'a'|'b'|null
+     * @return 1|2|null
      */
-    public function getFoo(): ?string
+    public function getNestedFoo(): ?int
     {
-        return $this->foo;
+        return $this->nestedFoo;
     }
 
     /**
-     * @param 'a'|'b' $foo
+     * @param 1|2 $nestedFoo
      */
-    public function withFoo(string $foo, bool $validate = true): self
+    public function withNestedFoo(int $nestedFoo, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($foo, self::$_schema['properties']['foo']);
+            $validator->validate($nestedFoo, self::$_schema['properties']['nestedFoo']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
         }
 
         $clone = clone $this;
-        $clone->foo = $foo;
+        $clone->nestedFoo = $nestedFoo;
 
         return $clone;
     }
 
-    public function withoutFoo(): self
+    public function withoutNestedFoo(): self
     {
         $clone = clone $this;
-        unset($clone->foo);
+        unset($clone->nestedFoo);
 
         return $clone;
     }
@@ -115,19 +82,19 @@ class MyClass
      *
      * @param array|object $input Input data
      * @param bool $validate If `false`, validation against the schema will be skipped.
-     * @return MyClass Created instance
+     * @return RefValidationBaz Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput(array|object $input, bool $validate = true): MyClass
+    public static function fromInput(array|object $input, bool $validate = true): RefValidationBaz
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
+        $nestedFoo = isset($input->{'nestedFoo'}) ? $input->{'nestedFoo'} : null;
 
-        $obj = new self($foo);
+        $obj = new self($nestedFoo);
         return $obj;
     }
 
@@ -139,8 +106,8 @@ class MyClass
     public function toArray(): array
     {
         $output = [];
-        if (isset($this->foo)) {
-            $output['foo'] = $this->foo;
+        if (isset($this->nestedFoo)) {
+            $output['nestedFoo'] = $this->nestedFoo;
         }
 
         return $output;
@@ -154,8 +121,8 @@ class MyClass
     public function toStdClass(): \stdClass
     {
         $output = new \stdClass();
-        if (isset($this->foo)) {
-            $output->{'foo'} = $this->foo;
+        if (isset($this->nestedFoo)) {
+            $output->{'nestedFoo'} = $this->nestedFoo;
         }
 
         return $output;

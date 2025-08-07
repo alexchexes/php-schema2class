@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ns\RefSetterValidation_8_4;
+namespace Ns\SettersFullValidation_8_4;
 
-class Cat
+class MyClass
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -15,28 +15,44 @@ class Cat
         'type' => 'object',
         'properties' => [
             'foo' => [
-                '$ref' => '#/definitions/Bar',
-            ],
-            'bar' => [
-                'anyOf' => [
-                    [
-                        'type' => 'string',
-                    ],
-                    [
-                        '$ref' => '#/definitions/Bar',
-                    ],
-                ],
-            ],
-            'baz' => [
-                'type' => 'object',
-                'properties' => [
-                    'nestedFoo' => [
-                        '$ref' => '#/definitions/Bar',
-                    ],
-                ],
+                '$ref' => '#/definitions/Foo',
             ],
         ],
         'definitions' => [
+            'RefValidation' => [
+                'type' => 'object',
+                'properties' => [
+                    'foo' => [
+                        '$ref' => '#/definitions/Bar',
+                    ],
+                    'bar' => [
+                        'description' => 'This must be correctly validated in setter, it contains $ref to another definition with restrictions',
+                        'anyOf' => [
+                            [
+                                'type' => 'string',
+                            ],
+                            [
+                                '$ref' => '#/definitions/Bar',
+                            ],
+                        ],
+                    ],
+                    'baz' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'nestedFoo' => [
+                                '$ref' => '#/definitions/Bar',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            'Foo' => [
+                'type' => 'string',
+                'enum' => [
+                    'a',
+                    'b',
+                ],
+            ],
             'Bar' => [
                 'type' => 'number',
                 'enum' => [
@@ -44,44 +60,84 @@ class Cat
                     2,
                 ],
             ],
+            'IfThenElse' => [
+                'description' => 'Class generated from this definition should add full re-validation to each property setter as its schema contains conditional validation which might affect any of its properties',
+                'type' => 'object',
+                'properties' => [
+                    'kind' => [
+                        'type' => [
+                            'string',
+                            'null',
+                        ],
+                    ],
+                    'value' => [
+                        
+                    ],
+                ],
+                'required' => [
+                    'kind',
+                ],
+                'if' => [
+                    'properties' => [
+                        'kind' => [
+                            'type' => 'null',
+                        ],
+                    ],
+                ],
+                'then' => [
+                    'properties' => [
+                        'value' => [
+                            'type' => 'number',
+                            'enum' => [
+                                1,
+                                2,
+                            ],
+                        ],
+                    ],
+                    'required' => [
+                        'value',
+                    ],
+                ],
+                'else' => [
+                    'properties' => [
+                        'value' => [
+                            'type' => 'string',
+                            'minLength' => 1,
+                        ],
+                    ],
+                    'required' => [
+                        'value',
+                    ],
+                ],
+            ],
         ],
     ];
 
     /**
-     * @var 1|2|null
+     * @var 'a'|'b'|null
      */
-    private ?int $foo = null;
+    private ?string $foo = null;
 
     /**
-     * @var string|1|2|null
+     * @param 'a'|'b'|null $foo
      */
-    private int|string|null $bar = null;
-
-    private ?CatBaz $baz = null;
-
-    /**
-     * @param 1|2|null $foo
-     * @param string|1|2|null $bar
-     */
-    public function __construct(?int $foo = null, int|string|null $bar = null, ?CatBaz $baz = null)
+    public function __construct(?string $foo = null)
     {
         $this->foo = $foo;
-        $this->bar = $bar;
-        $this->baz = $baz;
     }
 
     /**
-     * @return 1|2|null
+     * @return 'a'|'b'|null
      */
-    public function getFoo(): ?int
+    public function getFoo(): ?string
     {
         return $this->foo;
     }
 
     /**
-     * @param 1|2 $foo
+     * @param 'a'|'b' $foo
      */
-    public function withFoo(int $foo, bool $validate = true): self
+    public function withFoo(string $foo, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
@@ -106,70 +162,14 @@ class Cat
     }
 
     /**
-     * @return string|1|2|null
-     */
-    public function getBar(): int|string|null
-    {
-        return $this->bar;
-    }
-
-    /**
-     * @param string|1|2 $bar
-     */
-    public function withBar(int|string $bar, bool $validate = true): self
-    {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($bar, self::$_schema['properties']['bar']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
-        $clone = clone $this;
-        $clone->bar = $bar;
-
-        return $clone;
-    }
-
-    public function withoutBar(): self
-    {
-        $clone = clone $this;
-        unset($clone->bar);
-
-        return $clone;
-    }
-
-    public function getBaz(): ?CatBaz
-    {
-        return $this->baz;
-    }
-
-    public function withBaz(CatBaz $baz): self
-    {
-        $clone = clone $this;
-        $clone->baz = $baz;
-
-        return $clone;
-    }
-
-    public function withoutBaz(): self
-    {
-        $clone = clone $this;
-        unset($clone->baz);
-
-        return $clone;
-    }
-
-    /**
      * Builds a new instance from an input array or object
      *
      * @param array|object $input Input data
      * @param bool $validate If `false`, validation against the schema will be skipped.
-     * @return Cat Created instance
+     * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput(array|object $input, bool $validate = true): Cat
+    public static function fromInput(array|object $input, bool $validate = true): MyClass
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -177,17 +177,8 @@ class Cat
         }
 
         $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
-        $bar = isset($input->{'bar'}) ? match (true) {
-            is_string($input->{'bar'}),
-            in_array($input->{'bar'}, array (
-          0 => 1,
-          1 => 2,
-        ), true) => $input->{'bar'},
-            default => null,
-        } : null;
-        $baz = isset($input->{'baz'}) ? CatBaz::fromInput($input->{'baz'}, $validate) : null;
 
-        $obj = new self($foo, $bar, $baz);
+        $obj = new self($foo);
         return $obj;
     }
 
@@ -201,18 +192,6 @@ class Cat
         $output = [];
         if (isset($this->foo)) {
             $output['foo'] = $this->foo;
-        }
-        if (isset($this->bar)) {
-            $output['bar'] = match (true) {
-                is_string($this->bar),
-                in_array($this->bar, array (
-              0 => 1,
-              1 => 2,
-            ), true) => $this->bar,
-            };
-        }
-        if (isset($this->baz)) {
-            $output['baz'] = $this->baz->toArray();
         }
 
         return $output;
@@ -228,18 +207,6 @@ class Cat
         $output = new \stdClass();
         if (isset($this->foo)) {
             $output->{'foo'} = $this->foo;
-        }
-        if (isset($this->bar)) {
-            $output->{'bar'} = match (true) {
-                is_string($this->bar),
-                in_array($this->bar, array (
-              0 => 1,
-              1 => 2,
-            ), true) => $this->bar,
-            };
-        }
-        if (isset($this->baz)) {
-            $output->{'baz'} = $this->baz->toStdClass();
         }
 
         return $output;
@@ -279,21 +246,5 @@ class Cat
         }
 
         return $validator->isValid();
-    }
-
-    public function __clone()
-    {
-        if (isset($this->bar)) {
-            $this->bar = match (true) {
-                is_string($this->bar),
-                in_array($this->bar, array (
-              0 => 1,
-              1 => 2,
-            ), true) => $this->bar,
-            };
-        }
-        if (isset($this->baz)) {
-            $this->baz = clone $this->baz;
-        }
     }
 }

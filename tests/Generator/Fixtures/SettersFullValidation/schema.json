@@ -1,0 +1,49 @@
+{
+  "type": "object",
+  "properties": {
+    "foo": { "$ref": "#/definitions/Foo" }
+  },
+  "definitions": {
+    "RefValidation": {
+      "type": "object",
+      "properties": {
+        "foo": { "$ref": "#/definitions/Bar" },
+        "bar": {
+          "description": "This must be correctly validated in setter, it contains $ref to another definition with restrictions",
+          "anyOf": [
+            { "type": "string" },
+            { "$ref": "#/definitions/Bar" }
+          ]
+        },
+        "baz": {
+          "type": "object",
+          "properties": {
+            "nestedFoo": { "$ref": "#/definitions/Bar" }
+          }
+        }
+      }
+    },
+    "Foo": { "type": "string", "enum": ["a", "b"] },
+    "Bar": { "type": "number", "enum": [1, 2] },
+    "IfThenElse": {
+      "description": "Class generated from this definition should add full re-validation to each property setter as its schema contains conditional validation which might affect any of its properties",
+      "type": "object",
+      "properties": {
+        "kind": { "type": ["string", "null"] },
+        "value": {}
+      },
+      "required": ["kind"],
+      "if": {
+        "properties": { "kind": { "type": "null" } }
+      },
+      "then": {
+        "properties": { "value": { "type": "number", "enum": [1, 2] } },
+        "required": ["value"]
+      },
+      "else": {
+        "properties": { "value": { "type": "string", "minLength": 1 } },
+        "required": ["value"]
+      }
+    }
+  }
+}
