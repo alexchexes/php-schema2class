@@ -29,7 +29,7 @@ class ClassMethodSuiteFactory
         $accessorsFactory = new PropertyAccessorsFactory($this->request, $this->schemaProperties);
         $buildMethodFactory = new FromInputMethodFactory($this->request, $this->schemaProperties, $this->defaults);
         $serializeMethodFactory = new SerializeMethodFactory($this->request, $this->schemaProperties, $this->defaults);
-        $validateMethodFactory = new ValidateMethodFactory($this->request);
+        $validateMethodFactory = new ValidateInputMethodFactory($this->request);
         $cloneMethodFactory = new CloneMethodFactory($this->schemaProperties);
         $isProvidedMethodFactory = new IsProvidedMethodFactory($this->request, $this->schemaProperties->hasOptionalNullable());
 

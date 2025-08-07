@@ -13,7 +13,7 @@ use Laminas\Code\Generator\DocBlockGenerator;
 use Laminas\Code\Generator\MethodGenerator;
 use Laminas\Code\Generator\ParameterGenerator;
 
-class ValidateMethodFactory
+class ValidateInputMethodFactory
 {
     public const INPUT_ARG_NAME = 'input';
     public const RETURN_ARG_NAME = 'return';
