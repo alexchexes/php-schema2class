@@ -136,6 +136,63 @@ class MyClass
         return $output;
     }
 
+    // When there is at least one additional property, this is not null, otherwise always null (no empty stdClass objects!)
+    private ?object $_additionalProperies = null;
+
+    // getter for the whole set
+    public function additionalProperties(bool $associative = false): array|object|null
+    {
+        if ($associative && $this->_additionalProperies) {
+            return json_decode(json_encode($this->_additionalProperies), true);
+        }
+        return $this->_additionalProperies;
+    }
+
+    // setter for the whole set
+    public function addAdditionalProperties(array|object $additionalProperties, bool $validate = true): self
+    {
+        $this->_additionalProperies = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+        if ($validate) {
+            $this->validate();
+        }
+        return $this;
+    }
+
+    // unsetter for the whole set
+    public function removeAdditionalProperties(): self
+    {
+        $this->_additionalProperies = null;
+        return $this;
+    }
+
+    // setter for only one additional property
+    public function addAdditionalProperty(string $name, mixed $value, bool $validate = true): self
+    {
+        $this->_additionalProperies->{$name} = $value;
+        if ($validate) {
+            $this->validate();
+        }
+        return $this;
+    }
+
+    // unsetter for just one additional property
+    public function removeAdditionalProperty(string $name): self
+    {
+        unset($this->_additionalProperies->{$name});
+        if ((array) $this->_additionalProperies === []) {
+            $this->_additionalProperies = null;
+        }
+        return $this;
+    }
+
+    // passes this object serialized to the validateInput method. If $return is true, returns bool instead of throwing an exception
+    public function validate(bool $return = false): bool
+    {
+        return self::validateInput($this->toStdClass(), $return);
+    }
+
     /**
      * Validates an input array
      *
