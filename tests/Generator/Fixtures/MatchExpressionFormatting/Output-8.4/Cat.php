@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ns\MatchExpressionFormatting;
+namespace Ns\MatchExpressionFormatting_8_4;
 
 class Cat
 {
@@ -11,7 +11,7 @@ class Cat
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'type' => 'object',
         'properties' => [
             'hasFur' => [
@@ -48,29 +48,41 @@ class Cat
     private string|array|null $hasFur = null;
 
     /**
+     * @param 'a'|'b'|string[]|null $hasFur
+     */
+    public function __construct(string|array|null $hasFur = null)
+    {
+        $this->hasFur = $hasFur;
+    }
+
+    /**
      * @return 'a'|'b'|string[]|null
      */
-    public function getHasFur() : string|array|null
+    public function getHasFur(): string|array|null
     {
         return $this->hasFur;
     }
 
     /**
      * @param 'a'|'b'|string[] $hasFur
-     * @return self
      */
-    public function withHasFur(string|array $hasFur) : self
+    public function withHasFur(string|array $hasFur, bool $validate = true): self
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($hasFur, self::$_schema['properties']['hasFur']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
         $clone->hasFur = $hasFur;
 
         return $clone;
     }
 
-    /**
-     * @return self
-     */
-    public function withoutHasFur() : self
+    public function withoutHasFur(): self
     {
         $clone = clone $this;
         unset($clone->hasFur);
@@ -79,14 +91,14 @@ class Cat
     }
 
     /**
-     * Builds a new instance from an input array
+     * Builds a new instance from an input array or object
      *
      * @param array|object $input Input data
-     * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param bool $validate If `false`, validation against the schema will be skipped.
      * @return Cat Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : Cat
+    public static function fromInput(array|object $input, bool $validate = true): Cat
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -102,8 +114,7 @@ class Cat
             default => null,
         } : null;
 
-        $obj = new self();
-        $obj->hasFur = $hasFur;
+        $obj = new self($hasFur);
         return $obj;
     }
 
@@ -112,11 +123,32 @@ class Cat
      *
      * @return array Converted array
      */
-    public function toArray() : array
+    public function toArray(): array
     {
         $output = [];
         if (isset($this->hasFur)) {
             $output['hasFur'] = match (true) {
+                in_array($this->hasFur, array (
+              0 => 'a',
+              1 => 'b',
+            ), true),
+                is_array($this->hasFur) => $this->hasFur,
+            };
+        }
+
+        return $output;
+    }
+
+    /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        if (isset($this->hasFur)) {
+            $output->{'hasFur'} = match (true) {
                 in_array($this->hasFur, array (
               0 => 'a',
               1 => 'b',
@@ -136,11 +168,11 @@ class Cat
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput(array|object $input, bool $return = false) : bool
+    public static function validateInput(array|object $input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {
