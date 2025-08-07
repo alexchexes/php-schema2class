@@ -1,0 +1,13 @@
+{
+  "MyRecursiveObject": {
+    "MyRecursiveObject": {
+      "MyRecursiveObject": {
+        "MyRecursiveObject": {
+          "MyRecursiveObject": {
+            "MyRecursiveObject": { }
+          }
+        }
+      }
+    }
+  }
+}

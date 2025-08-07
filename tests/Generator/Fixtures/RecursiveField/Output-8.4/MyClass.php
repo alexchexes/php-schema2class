@@ -53,6 +53,15 @@ class MyClass
                 ],
                 'type' => 'object',
             ],
+            'MyRecursiveObject' => [
+                'additionalProperties' => false,
+                'properties' => [
+                    'MyRecursiveObject' => [
+                        '$ref' => '#/definitions/MyRecursiveObject',
+                    ],
+                ],
+                'type' => 'object',
+            ],
         ],
     ];
 

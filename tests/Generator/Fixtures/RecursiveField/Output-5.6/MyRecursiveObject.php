@@ -1,58 +1,23 @@
 <?php
 
-declare(strict_types=1);
+namespace Ns\RecursiveField_5_6;
 
-namespace Ns\RecursiveField_7_4;
-
-class MyClass
+class MyRecursiveObject
 {
     /**
      * Schema used to validate input for creating instances of this class
      *
      * @var array
      */
-    private static array $_schema = [
+    private static $_schema = [
         'additionalProperties' => false,
         'properties' => [
-            'value' => [
-                '$ref' => '#/definitions/MyGeneric<string,number>',
+            'MyRecursiveObject' => [
+                '$ref' => '#/definitions/MyRecursiveObject',
             ],
-        ],
-        'required' => [
-            'value',
         ],
         'type' => 'object',
         'definitions' => [
-            'MyGeneric<string,number>' => [
-                'additionalProperties' => false,
-                'properties' => [
-                    'field' => [
-                        'additionalProperties' => false,
-                        'properties' => [
-                            'field' => [
-                                '$ref' => '#/definitions/MyGeneric<string,number>',
-                            ],
-                        ],
-                        'type' => 'object',
-                    ],
-                ],
-                'required' => [
-                    'field',
-                ],
-                'type' => 'object',
-            ],
-            'MyObject' => [
-                'additionalProperties' => false,
-                'properties' => [
-                    'value' => [
-                        '$ref' => '#/definitions/MyGeneric<string,number>',
-                    ],
-                ],
-                'required' => [
-                    'value',
-                ],
-                'type' => 'object',
-            ],
             'MyRecursiveObject' => [
                 'additionalProperties' => false,
                 'properties' => [
@@ -65,22 +30,45 @@ class MyClass
         ],
     ];
 
-    private MyGenericStringNumber $value;
+    /**
+     * @var MyRecursiveObject|null
+     */
+    private $MyRecursiveObject = null;
 
-    public function __construct(MyGenericStringNumber $value)
+    /**
+     * @param MyRecursiveObject|null $MyRecursiveObject
+     */
+    public function __construct(MyRecursiveObject $MyRecursiveObject = null)
     {
-        $this->value = $value;
+        $this->MyRecursiveObject = $MyRecursiveObject;
     }
 
-    public function getValue(): MyGenericStringNumber
+    /**
+     * @return MyRecursiveObject|null
+     */
+    public function getMyRecursiveObject()
     {
-        return $this->value;
+        return $this->MyRecursiveObject;
     }
 
-    public function withValue(MyGenericStringNumber $value): self
+    /**
+     * @return self
+     */
+    public function withMyRecursiveObject(MyRecursiveObject $MyRecursiveObject)
     {
         $clone = clone $this;
-        $clone->value = $value;
+        $clone->MyRecursiveObject = $MyRecursiveObject;
+
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutMyRecursiveObject()
+    {
+        $clone = clone $this;
+        unset($clone->MyRecursiveObject);
 
         return $clone;
     }
@@ -90,10 +78,10 @@ class MyClass
      *
      * @param array|object $input Input data
      * @param bool $validate If `false`, validation against the schema will be skipped.
-     * @return MyClass Created instance
+     * @return MyRecursiveObject Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput($input, bool $validate = true): MyClass
+    public static function fromInput($input, $validate = true)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
@@ -106,9 +94,9 @@ class MyClass
             static::validateInput($input);
         }
 
-        $value = MyGenericStringNumber::fromInput($input->{'value'}, $validate);
+        $MyRecursiveObject = isset($input->{'MyRecursiveObject'}) ? MyRecursiveObject::fromInput($input->{'MyRecursiveObject'}, $validate) : null;
 
-        $obj = new self($value);
+        $obj = new self($MyRecursiveObject);
         return $obj;
     }
 
@@ -117,10 +105,12 @@ class MyClass
      *
      * @return array Converted array
      */
-    public function toArray(): array
+    public function toArray()
     {
         $output = [];
-        $output['value'] = $this->value->toArray();
+        if (isset($this->MyRecursiveObject)) {
+            $output['MyRecursiveObject'] = $this->MyRecursiveObject->toArray();
+        }
 
         return $output;
     }
@@ -130,10 +120,12 @@ class MyClass
      *
      * @return \stdClass Converted object
      */
-    public function toStdClass(): \stdClass
+    public function toStdClass()
     {
         $output = new \stdClass();
-        $output->{'value'} = $this->value->toStdClass();
+        if (isset($this->MyRecursiveObject)) {
+            $output->{'MyRecursiveObject'} = $this->MyRecursiveObject->toStdClass();
+        }
 
         return $output;
     }
@@ -145,7 +137,7 @@ class MyClass
      * @return bool Validation result if `$return` is `true`
      * @throws \InvalidArgumentException
      */
-    public function validate(bool $return = false): bool
+    public function validate($return = false)
     {
         return self::validateInput($this->toStdClass(), $return);
     }
@@ -158,14 +150,14 @@ class MyClass
      * @return bool Validation result if `$return` is `true`
      * @throws \InvalidArgumentException
      */
-    public static function validateInput($input, bool $return = false): bool
+    public static function validateInput($input, $return = false)
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
-            $errors = array_map(function(array $e): string {
+            $errors = array_map(function($e) {
                 return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];
             }, $validator->getErrors());
             throw new \InvalidArgumentException(join(".\n", $errors));
