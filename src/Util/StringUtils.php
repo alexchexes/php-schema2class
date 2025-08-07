@@ -28,10 +28,15 @@ class StringUtils
             $sanitized = rtrim($sanitized, '_');
         }
 
-        // fallback to hash id if empty or underscores-only (unless original already was just '_')
+        // if empty or underscores-only, prefix something unique (unless original already was just '_')
         if ($sanitized === '' || ($sanitized === '_' && $input !== '_')) {
-            $hash = substr(md5($input), 0, 8);
-            $sanitized = '_' . $hash;
+            if (mb_strlen($input) <= 3 && $input !== '') {
+                // use char code for short names
+                $suffix = implode('', array_map('ord', str_split($input)));
+            } else {
+                $suffix = substr(md5($input), 0, 8);
+            }
+            $sanitized = '_' . $suffix;
         }
 
         // Identifiers must not start with a digit

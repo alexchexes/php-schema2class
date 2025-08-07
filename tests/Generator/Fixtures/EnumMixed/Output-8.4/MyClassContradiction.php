@@ -5,5 +5,5 @@ declare(strict_types=1);
 namespace Ns\EnumMixed_8_4;
 
 enum MyClassContradiction: int {
-    case VALUE_1 = 1;
+    case INT_1 = 1;
 }

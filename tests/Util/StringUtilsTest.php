@@ -78,7 +78,7 @@ class StringUtilsTest extends TestCase
 
     public function testSanitizeIdentifierFallbackForInvalidString()
     {
-        $sanitized = StringUtils::sanitizeIdentifier("!!!");
+        $sanitized = StringUtils::sanitizeIdentifier("~!@#$%^");
         $this->assertMatchesRegularExpression('/^_[a-f0-9]{8}$/', $sanitized);
     }
 }

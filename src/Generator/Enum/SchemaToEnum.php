@@ -8,6 +8,7 @@ use Laminas\Code\Generator\FileGenerator;
 use Helmich\Schema2Class\Generator\Enum\EnumGenerator;
 use Helmich\Schema2Class\Generator\GeneratorException;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
+use Helmich\Schema2Class\Util\StringUtils;
 
 /**
  * Generates PHP enums or backed enum from JSON Schema `enum` definitions,
@@ -55,6 +56,15 @@ class SchemaToEnum
         return $hasCase;
     }
 
+    /** 
+     * Checks if user config disables enum either via noEnums option or
+     * due to target PHP version being set that doesn't support Enums
+     */
+    public static function areEnumsDisabled(GeneratorRequest $req): bool
+    {
+        return !$req->isAtLeastPHP('8.1') || $req->getNoEnums();
+    }
+
     static public function isMixedEnum(array $schema): bool
     {
         $hasInt = false;
@@ -74,11 +84,6 @@ class SchemaToEnum
         return $hasInt && $hasString;
     }
 
-    public static function areEnumsDisabled(GeneratorRequest $req): bool
-    {
-        return !$req->isAtLeastPHP('8.1') || $req->getNoEnums();
-    }
-
     public function schemaToEnum(GeneratorRequest $req): void
     {
         if (!$req->isAtLeastPHP('8.1')) {
@@ -89,12 +94,21 @@ class SchemaToEnum
             throw new GeneratorException("cannot generate enum classes for mixed int/string enum values");
         }
 
-        /** @var array<non-empty-string, string|int> $cases */
-        $cases = [];
+        /** @var array<non-empty-string, string|int> $casesFiltered */
+        $casesFiltered = [];
         $hasInt = false;
         $hasString = false;
-        foreach ($req->getSchema()["enum"] as $case) {
+        $cases = $req->getSchema()["enum"];
+
+        // sort to get deterministic results when we're renaming
+        $moveNonAlfanum = fn(mixed $str) => is_string($str) ? preg_replace('/^([\W]*)(.+)/', '$2$1', $str) : $str;
+        usort($cases, fn($a, $b) => $moveNonAlfanum($a) <=> $moveNonAlfanum($b));
+
+        foreach ($cases as $case) {
             if ($case === null) {
+                continue;
+            }
+            if (in_array($case, $casesFiltered, true)) {
                 continue;
             }
             if (!is_string($case) && !is_int($case)) {
@@ -105,29 +119,31 @@ class SchemaToEnum
 
             $name = self::enumCaseName($case);
 
-            // --- guarantee uniqueness ---
-            if (isset($cases[$name])) {
+            // guarantee uniqueness: try to prepend "_" if doesn't start with it
+            // already, or append "__#"
+            if (isset($casesFiltered[$name])) {
                 $i = 2;
-                $alt = "{$name}__{$i}";
-                while (isset($cases[$alt])) {
+                $alt = str_starts_with($name, '_') ? "{$name}__{$i}" : "_{$name}";
+                while (isset($casesFiltered[$alt])) {
                     ++$i;
+                    $alt = "{$name}__{$i}";
                 }
-                $name = $alt;              // use the first free "…__n"
+                $name = $alt;
             }
 
-            $cases[$name] = $case;
+            $casesFiltered[$name] = $case;
         }
 
-        $cases = self::makeCaseNamesConsistent($cases);
-
         $typeField = $req->getSchema()["type"] ?? null;
+
         if (is_array($typeField)) {
             $type = in_array('string', $typeField, true) ? 'string' : 'int';
         } else {
             $type = $typeField === 'string' ? 'string' : 'int';
         }
+
         $enumName = $req->getTargetNamespace() . "\\" . $req->getTargetClass();
-        $enum     = new EnumGenerator($enumName, $type, $cases);
+        $enum     = new EnumGenerator($enumName, $type, $casesFiltered);
 
         $req->onEnumCreated($enumName, $enum);
 
@@ -143,39 +159,6 @@ class SchemaToEnum
     
     }
 
-
-    /**
-     * @param array<non-empty-string, string|int> $cases
-     * @return array<non-empty-string, string|int>
-     */
-    private static function makeCaseNamesConsistent(array $cases): array
-    {
-        $hasValuePrefix = false;
-
-        foreach ($cases as $name => $value) {
-            if (str_starts_with($name, "VALUE_")) {
-                $hasValuePrefix = true;
-                break;
-            }
-        }
-
-        if (!$hasValuePrefix) {
-            return $cases;
-        }
-
-        $newCases = [];
-        foreach ($cases as $name => $value) {
-            if (str_starts_with($name, "VALUE_")) {
-                $newCases[$name] = $value;
-            } else {
-                $newCases["VALUE_$name"] = $value;
-            }
-        }
-
-        return $newCases;
-    }
-
-
     /**
      * @param string|int $value
      * @return non-empty-string
@@ -184,26 +167,28 @@ class SchemaToEnum
     {
         // numeric *int* stays as before
         if (is_int($value)) {
-            return 'VALUE_' . $value;
+            $suffix = abs($value);
+            $intPrefix = $value < 0 ? 'NEGATIVE_' : 'INT_';
+            return $intPrefix . $suffix;
         }
-
-        // keep "-" by mapping every non-alnum char to "_"
-        /** @var string */
-        $clean = preg_replace('/[^a-zA-Z0-9]/', '_', $value);
 
         // empty after cleaning  →  use literal "EMPTY"
-        if ($clean === '') {
+        if ($value === '') {
             return 'EMPTY';
         }
+        if ($value === ' ') {
+            return 'SPACE';
+        }
+        // TODO: add popular chars map?
 
-        // starts with a digit or minus?  →  VALUE_…
-        if (preg_match('/^[0-9\-]/', $clean)) {
-            return 'VALUE_' . strtoupper($clean);
+        $clean = StringUtils::sanitizeIdentifier($value);
+        
+        if (preg_match('/^-\d+$/', $value)) {
+            $clean = 'MINUS' . $clean;
+        } elseif (preg_match('/^\d+$/', $value)) {
+            $clean .= '_';
         }
 
-        // otherwise just upper-cased identifier
         return strtoupper($clean);
     }
-
-
 }
