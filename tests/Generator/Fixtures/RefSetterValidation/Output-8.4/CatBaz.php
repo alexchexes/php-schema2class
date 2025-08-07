@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ns\RefSetterValidation;
+namespace Ns\RefSetterValidation_8_4;
 
 class CatBaz
 {
@@ -11,7 +11,7 @@ class CatBaz
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'type' => 'object',
         'properties' => [
             'nestedFoo' => [
@@ -35,23 +35,29 @@ class CatBaz
     private ?int $nestedFoo = null;
 
     /**
+     * @param 1|2|null $nestedFoo
+     */
+    public function __construct(?int $nestedFoo = null)
+    {
+        $this->nestedFoo = $nestedFoo;
+    }
+
+    /**
      * @return 1|2|null
      */
-    public function getNestedFoo() : ?int
+    public function getNestedFoo(): ?int
     {
-        return $this->nestedFoo ?? null;
+        return $this->nestedFoo;
     }
 
     /**
      * @param 1|2 $nestedFoo
-     * @return self
-     * @param bool $validate
      */
-    public function withNestedFoo(int $nestedFoo, bool $validate = true) : self
+    public function withNestedFoo(int $nestedFoo, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($nestedFoo, self::$schema['properties']['nestedFoo']);
+            $validator->validate($nestedFoo, self::$_schema['properties']['nestedFoo']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -63,10 +69,7 @@ class CatBaz
         return $clone;
     }
 
-    /**
-     * @return self
-     */
-    public function withoutNestedFoo() : self
+    public function withoutNestedFoo(): self
     {
         $clone = clone $this;
         unset($clone->nestedFoo);
@@ -75,14 +78,14 @@ class CatBaz
     }
 
     /**
-     * Builds a new instance from an input array
+     * Builds a new instance from an input array or object
      *
      * @param array|object $input Input data
-     * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param bool $validate If `false`, validation against the schema will be skipped.
      * @return CatBaz Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true) : CatBaz
+    public static function fromInput(array|object $input, bool $validate = true): CatBaz
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -91,8 +94,7 @@ class CatBaz
 
         $nestedFoo = isset($input->{'nestedFoo'}) ? $input->{'nestedFoo'} : null;
 
-        $obj = new self();
-        $obj->nestedFoo = $nestedFoo;
+        $obj = new self($nestedFoo);
         return $obj;
     }
 
@@ -101,11 +103,26 @@ class CatBaz
      *
      * @return array Converted array
      */
-    public function toArray() : array
+    public function toArray(): array
     {
         $output = [];
         if (isset($this->nestedFoo)) {
             $output['nestedFoo'] = $this->nestedFoo;
+        }
+
+        return $output;
+    }
+
+    /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        if (isset($this->nestedFoo)) {
+            $output->{'nestedFoo'} = $this->nestedFoo;
         }
 
         return $output;
@@ -119,11 +136,11 @@ class CatBaz
      * @return bool Validation result
      * @throws \InvalidArgumentException
      */
-    public static function validateInput(array|object $input, bool $return = false) : bool
+    public static function validateInput(array|object $input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {
