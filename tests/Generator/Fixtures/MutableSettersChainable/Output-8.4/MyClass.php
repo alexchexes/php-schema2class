@@ -11,7 +11,7 @@ class MyClass
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'required' => [
             'bar',
         ],
@@ -42,83 +42,49 @@ class MyClass
     ];
 
     /**
-     * Map of optional nullable property names that were explicitly set to `null`
+     * Map of optional nullable property names that were explicitly set
      *
      * @var array<string,true>
      */
-    private array $_explicitNulls = [];
+    private array $_providedOptionals = [];
 
-    /**
-     * @var string|null
-     */
     private ?string $foo = null;
 
-    /**
-     * @var Baz
-     */
     private Baz $bar;
 
-    /**
-     * @var string|null
-     */
     private ?string $opt = null;
 
-    /**
-     * @param Baz $bar
-     */
-    public function __construct(Baz $bar)
+    public function __construct(Baz $bar, ?string $foo = null, ?string $opt = null)
     {
         $this->bar = $bar;
+        $this->foo = $foo;
+        $this->opt = $opt;
     }
 
-    /**
-     * @return string|null
-     */
     public function getFoo(): ?string
     {
-        return $this->foo ?? null;
+        return $this->foo;
     }
 
-    /**
-     * @return Baz
-     */
-    public function getBar(): Baz
+    public function setFoo(string $foo): self
     {
-        return $this->bar;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getOpt(): ?string
-    {
-        return $this->opt ?? null;
-    }
-
-    /**
-     * @param string $foo
-     * @return self
-     * @param bool $validate
-     */
-    public function setFoo(string $foo, bool $validate = true): self
-    {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($foo, self::$schema['properties']['foo']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $this->foo = $foo;
 
         return $this;
     }
 
-    /**
-     * @param Baz $bar
-     * @return self
-     */
+    public function unsetFoo(): self
+    {
+        $this->foo = null;
+
+        return $this;
+    }
+
+    public function getBar(): Baz
+    {
+        return $this->bar;
+    }
+
     public function setBar(Baz $bar): self
     {
         $this->bar = $bar;
@@ -126,65 +92,53 @@ class MyClass
         return $this;
     }
 
-    /**
-     * @param string $opt
-     * @return self
-     * @param bool $validate
-     */
-    public function setOpt(string $opt, bool $validate = true): self
+    public function getOpt(): ?string
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($opt, self::$schema['properties']['opt']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
+        return $this->opt;
+    }
 
+    public function setOpt(?string $opt): self
+    {
         $this->opt = $opt;
-        $this->_explicitNulls['opt'] = true;
+        $this->_providedOptionals['opt'] = true;
 
         return $this;
     }
 
-    /**
-     * @return self
-     */
     public function unsetOpt(): self
     {
         $this->opt = null;
-        unset($this->_explicitNulls['opt']);
+        unset($this->_providedOptionals['opt']);
 
         return $this;
     }
 
     /**
-     * Builds a new instance from an input array
+     * Builds a new instance from an input array or object
      *
      * @param array|object $input Input data
-     * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param bool $validate If `false`, validation against the schema will be skipped.
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): MyClass
+    public static function fromInput(array|object $input, bool $validate = true): MyClass
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $__explicitNulls = [];
+        $__providedOptionals = [];
+        $bar = Baz::fromInput($input->{'bar'}, $validate);
         $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
-        $bar = Baz::buildFromInput($input->{'bar'}, $validate);
-        $opt = property_exists($input, 'opt') ? $input->{'opt'} : null;
+        $opt = null;
         if (property_exists($input, 'opt')) {
-            $__explicitNulls['opt'] = true;
+            $opt = ($input->{'opt'} !== null ? $input->{'opt'} : null);
+            $__providedOptionals['opt'] = true;
         }
 
-        $obj = new self($bar);
-        $obj->foo = $foo;
-        $obj->opt = $opt;
-        $obj->_explicitNulls = $__explicitNulls;
+        $obj = new self($bar, $foo, $opt);
+        $obj->_providedOptionals = $__providedOptionals;
         return $obj;
     }
 
@@ -200,8 +154,27 @@ class MyClass
             $output['foo'] = $this->foo;
         }
         $output['bar'] = $this->bar->toArray();
-        if (isset($this->opt) || array_key_exists('opt', $this->_explicitNulls)) {
-            $output['opt'] = $this->opt;
+        if (isset($this->opt) || array_key_exists('opt', $this->_providedOptionals)) {
+            $output['opt'] = ($this->opt !== null) ? ($this->opt) : null;
+        }
+
+        return $output;
+    }
+
+    /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        if (isset($this->foo)) {
+            $output->{'foo'} = $this->foo;
+        }
+        $output->{'bar'} = $this->bar->toStdClass();
+        if (isset($this->opt) || array_key_exists('opt', $this->_providedOptionals)) {
+            $output->{'opt'} = ($this->opt !== null) ? ($this->opt) : null;
         }
 
         return $output;
@@ -219,7 +192,7 @@ class MyClass
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {
@@ -232,13 +205,13 @@ class MyClass
     }
 
     /**
-     * Checks if an optional nullable property was explicitly set to `null`
+     * Checks if an optional nullable property was explicitly set
      *
-     * @param string $propertyName property name as appears in the schema
+     * @param string $propertyName Property name to check (exactly as it appears in the schema)
      * @return bool
      */
-    public function isExplicitNull(string $propertyName): bool
+    public function isOptionalProvided(string $propertyName): bool
     {
-        return array_key_exists($propertyName, $this->_explicitNulls);
+        return array_key_exists($propertyName, $this->_providedOptionals);
     }
 }

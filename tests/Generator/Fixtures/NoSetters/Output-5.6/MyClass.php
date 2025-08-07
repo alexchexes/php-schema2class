@@ -9,7 +9,7 @@ class MyClass
      *
      * @var array
      */
-    private static $schema = [
+    private static $_schema = [
         'required' => [
             'foo',
             'bar',
@@ -61,18 +61,18 @@ class MyClass
     }
 
     /**
-     * Builds a new instance from an input array
+     * Builds a new instance from an input array or object
      *
      * @param array|object $input Input data
-     * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param bool $validate If `false`, validation against the schema will be skipped.
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true)
+    public static function fromInput($input, $validate = true)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($input)
+                'Input to fromInput must be array or object, got ' . gettype($input)
             );
         }
 
@@ -82,10 +82,9 @@ class MyClass
         }
 
         $foo = $input->{'foo'};
-        $bar = (int)($input->{'bar'});
+        $bar = (int)$input->{'bar'};
 
         $obj = new self($foo, $bar);
-
         return $obj;
     }
 
@@ -104,6 +103,20 @@ class MyClass
     }
 
     /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass()
+    {
+        $output = new \stdClass();
+        $output->{'foo'} = $this->foo;
+        $output->{'bar'} = $this->bar;
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data
@@ -115,7 +128,7 @@ class MyClass
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function($e) {

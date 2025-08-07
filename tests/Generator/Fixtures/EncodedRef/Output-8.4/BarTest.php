@@ -11,7 +11,7 @@ class BarTest
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'type' => 'object',
         'properties' => [
             'bar' => [
@@ -20,43 +20,26 @@ class BarTest
         ],
     ];
 
-    /**
-     * @var string|null
-     */
     private ?string $bar = null;
 
-    /**
-     * @return string|null
-     */
-    public function getBar(): ?string
+    public function __construct(?string $bar = null)
     {
-        return $this->bar ?? null;
+        $this->bar = $bar;
     }
 
-    /**
-     * @param string $bar
-     * @return self
-     * @param bool $validate
-     */
-    public function withBar(string $bar, bool $validate = true): self
+    public function getBar(): ?string
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($bar, self::$schema['properties']['bar']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
+        return $this->bar;
+    }
 
+    public function withBar(string $bar): self
+    {
         $clone = clone $this;
         $clone->bar = $bar;
 
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutBar(): self
     {
         $clone = clone $this;
@@ -66,14 +49,14 @@ class BarTest
     }
 
     /**
-     * Builds a new instance from an input array
+     * Builds a new instance from an input array or object
      *
      * @param array|object $input Input data
-     * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param bool $validate If `false`, validation against the schema will be skipped.
      * @return BarTest Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): BarTest
+    public static function fromInput(array|object $input, bool $validate = true): BarTest
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -82,8 +65,7 @@ class BarTest
 
         $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
 
-        $obj = new self();
-        $obj->bar = $bar;
+        $obj = new self($bar);
         return $obj;
     }
 
@@ -103,6 +85,21 @@ class BarTest
     }
 
     /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        if (isset($this->bar)) {
+            $output->{'bar'} = $this->bar;
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data
@@ -114,7 +111,7 @@ class BarTest
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {

@@ -11,7 +11,7 @@ class Pets
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'type' => 'object',
         'properties' => [
             'pet' => [
@@ -51,36 +51,21 @@ class Pets
         ],
     ];
 
-    /**
-     * @var GenericPet|null
-     */
     private ?GenericPet $pet = null;
 
-    /**
-     * @var Cat|null
-     */
     private ?Cat $cat = null;
 
-    /**
-     * @return GenericPet|null
-     */
+    public function __construct(?GenericPet $pet = null, ?Cat $cat = null)
+    {
+        $this->pet = $pet;
+        $this->cat = $cat;
+    }
+
     public function getPet(): ?GenericPet
     {
-        return $this->pet ?? null;
+        return $this->pet;
     }
 
-    /**
-     * @return Cat|null
-     */
-    public function getCat(): ?Cat
-    {
-        return $this->cat ?? null;
-    }
-
-    /**
-     * @param GenericPet $pet
-     * @return self
-     */
     public function withPet(GenericPet $pet): self
     {
         $clone = clone $this;
@@ -89,9 +74,6 @@ class Pets
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutPet(): self
     {
         $clone = clone $this;
@@ -100,10 +82,11 @@ class Pets
         return $clone;
     }
 
-    /**
-     * @param Cat $cat
-     * @return self
-     */
+    public function getCat(): ?Cat
+    {
+        return $this->cat;
+    }
+
     public function withCat(Cat $cat): self
     {
         $clone = clone $this;
@@ -112,9 +95,6 @@ class Pets
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutCat(): self
     {
         $clone = clone $this;
@@ -124,26 +104,24 @@ class Pets
     }
 
     /**
-     * Builds a new instance from an input array
+     * Builds a new instance from an input array or object
      *
      * @param array|object $input Input data
-     * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param bool $validate If `false`, validation against the schema will be skipped.
      * @return Pets Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): Pets
+    public static function fromInput(array|object $input, bool $validate = true): Pets
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $pet = isset($input->{'pet'}) ? GenericPet::buildFromInput($input->{'pet'}, $validate) : null;
-        $cat = isset($input->{'cat'}) ? Cat::buildFromInput($input->{'cat'}, $validate) : null;
+        $pet = isset($input->{'pet'}) ? GenericPet::fromInput($input->{'pet'}, $validate) : null;
+        $cat = isset($input->{'cat'}) ? Cat::fromInput($input->{'cat'}, $validate) : null;
 
-        $obj = new self();
-        $obj->pet = $pet;
-        $obj->cat = $cat;
+        $obj = new self($pet, $cat);
         return $obj;
     }
 
@@ -166,6 +144,24 @@ class Pets
     }
 
     /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        if (isset($this->pet)) {
+            $output->{'pet'} = $this->pet->toStdClass();
+        }
+        if (isset($this->cat)) {
+            $output->{'cat'} = $this->cat->toStdClass();
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data
@@ -177,7 +173,7 @@ class Pets
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {

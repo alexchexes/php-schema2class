@@ -11,7 +11,7 @@ class Fio
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'type' => 'object',
         'properties' => [
             'bar' => [
@@ -24,72 +24,55 @@ class Fio
     ];
 
     /**
-     * Map of optional nullable property names that were explicitly set to `null`
+     * Map of optional nullable property names that were explicitly set
      *
      * @var array<string,true>
      */
-    private array $_explicitNulls = [];
+    private array $_providedOptionals = [];
 
-    /**
-     * @var string|null
-     */
     private ?string $bar = null;
 
-    /**
-     * @return string|null
-     */
-    public function getBar(): ?string
+    public function __construct(?string $bar = null)
     {
-        return $this->bar ?? null;
+        $this->bar = $bar;
     }
 
-    /**
-     * @param string $bar
-     * @return self
-     * @param bool $validate
-     */
-    public function withBar(string $bar, bool $validate = true): self
+    public function getBar(): ?string
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($bar, self::$schema['properties']['bar']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
+        return $this->bar;
+    }
 
+    public function withBar(?string $bar): self
+    {
         $clone = clone $this;
         $clone->bar = $bar;
-        $clone->_explicitNulls['bar'] = true;
+        $clone->_providedOptionals['bar'] = true;
 
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutBar(): self
     {
         $clone = clone $this;
         unset($clone->bar);
-        unset($clone->_explicitNulls['bar']);
+        unset($clone->_providedOptionals['bar']);
 
         return $clone;
     }
 
     /**
-     * Builds a new instance from an input array
+     * Builds a new instance from an input array or object
      *
      * @param array|object $input Input data
-     * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param bool $validate If `false`, validation against the schema will be skipped.
      * @return Fio Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true): Fio
+    public static function fromInput($input, bool $validate = true): Fio
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($input)
+                'Input to fromInput must be array or object, got ' . gettype($input)
             );
         }
 
@@ -98,15 +81,15 @@ class Fio
             static::validateInput($input);
         }
 
-        $__explicitNulls = [];
-        $bar = property_exists($input, 'bar') ? $input->{'bar'} : null;
+        $__providedOptionals = [];
+        $bar = null;
         if (property_exists($input, 'bar')) {
-            $__explicitNulls['bar'] = true;
+            $bar = ($input->{'bar'} !== null ? $input->{'bar'} : null);
+            $__providedOptionals['bar'] = true;
         }
 
-        $obj = new self();
-        $obj->bar = $bar;
-        $obj->_explicitNulls = $__explicitNulls;
+        $obj = new self($bar);
+        $obj->_providedOptionals = $__providedOptionals;
         return $obj;
     }
 
@@ -118,8 +101,23 @@ class Fio
     public function toArray(): array
     {
         $output = [];
-        if (isset($this->bar) || array_key_exists('bar', $this->_explicitNulls)) {
-            $output['bar'] = $this->bar;
+        if (isset($this->bar) || array_key_exists('bar', $this->_providedOptionals)) {
+            $output['bar'] = ($this->bar !== null) ? ($this->bar) : null;
+        }
+
+        return $output;
+    }
+
+    /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        if (isset($this->bar) || array_key_exists('bar', $this->_providedOptionals)) {
+            $output->{'bar'} = ($this->bar !== null) ? ($this->bar) : null;
         }
 
         return $output;
@@ -137,7 +135,7 @@ class Fio
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {
@@ -150,13 +148,13 @@ class Fio
     }
 
     /**
-     * Checks if an optional nullable property was explicitly set to `null`
+     * Checks if an optional nullable property was explicitly set
      *
-     * @param string $propertyName property name as appears in the schema
+     * @param string $propertyName Property name to check (exactly as it appears in the schema)
      * @return bool
      */
-    public function isExplicitNull(string $propertyName): bool
+    public function isOptionalProvided(string $propertyName): bool
     {
-        return array_key_exists($propertyName, $this->_explicitNulls);
+        return array_key_exists($propertyName, $this->_providedOptionals);
     }
 }

@@ -11,7 +11,7 @@ class Foo
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'type' => 'object',
         'additionalProperties' => false,
         'properties' => [
@@ -43,44 +43,21 @@ class Foo
         ],
     ];
 
-    /**
-     * @var Color
-     */
     private Color $color;
 
-    /**
-     * @var Size|null
-     */
     private ?Size $size = null;
 
-    /**
-     * @param Color $color
-     */
-    public function __construct(Color $color)
+    public function __construct(Color $color, ?Size $size = null)
     {
         $this->color = $color;
+        $this->size = $size;
     }
 
-    /**
-     * @return Color
-     */
     public function getColor(): Color
     {
         return $this->color;
     }
 
-    /**
-     * @return Size|null
-     */
-    public function getSize(): ?Size
-    {
-        return $this->size ?? null;
-    }
-
-    /**
-     * @param Color $color
-     * @return self
-     */
     public function withColor(Color $color): self
     {
         $clone = clone $this;
@@ -89,10 +66,11 @@ class Foo
         return $clone;
     }
 
-    /**
-     * @param Size $size
-     * @return self
-     */
+    public function getSize(): ?Size
+    {
+        return $this->size;
+    }
+
     public function withSize(Size $size): self
     {
         $clone = clone $this;
@@ -101,9 +79,6 @@ class Foo
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutSize(): self
     {
         $clone = clone $this;
@@ -113,14 +88,14 @@ class Foo
     }
 
     /**
-     * Builds a new instance from an input array
+     * Builds a new instance from an input array or object
      *
      * @param array|object $input Input data
-     * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param bool $validate If `false`, validation against the schema will be skipped.
      * @return Foo Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): Foo
+    public static function fromInput(array|object $input, bool $validate = true): Foo
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -130,8 +105,7 @@ class Foo
         $color = Color::from($input->{'color'});
         $size = isset($input->{'size'}) ? Size::from($input->{'size'}) : null;
 
-        $obj = new self($color);
-        $obj->size = $size;
+        $obj = new self($color, $size);
         return $obj;
     }
 
@@ -152,6 +126,22 @@ class Foo
     }
 
     /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        $output->{'color'} = $this->color->value;
+        if (isset($this->size)) {
+            $output->{'size'} = $this->size->value;
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data
@@ -163,7 +153,7 @@ class Foo
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {

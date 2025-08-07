@@ -11,7 +11,7 @@ class MyObject
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'type' => 'object',
         'additionalProperties' => false,
         'properties' => [
@@ -53,12 +53,12 @@ class MyObject
     /**
      * @var 'foo'|'bar'|'baz'|'quz'
      */
-    private $foo;
+    private string $foo;
 
     /**
      * @param 'foo'|'bar'|'baz'|'quz' $foo
      */
-    public function __construct($foo)
+    public function __construct(string $foo)
     {
         $this->foo = $foo;
     }
@@ -66,17 +66,24 @@ class MyObject
     /**
      * @return 'foo'|'bar'|'baz'|'quz'
      */
-    public function getFoo()
+    public function getFoo(): string
     {
         return $this->foo;
     }
 
     /**
      * @param 'foo'|'bar'|'baz'|'quz' $foo
-     * @return self
      */
-    public function withFoo($foo): self
+    public function withFoo(string $foo, bool $validate = true): self
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($foo, self::$_schema['properties']['foo']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
         $clone->foo = $foo;
 
@@ -84,18 +91,18 @@ class MyObject
     }
 
     /**
-     * Builds a new instance from an input array
+     * Builds a new instance from an input array or object
      *
      * @param array|object $input Input data
-     * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param bool $validate If `false`, validation against the schema will be skipped.
      * @return MyObject Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true): MyObject
+    public static function fromInput($input, bool $validate = true): MyObject
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($input)
+                'Input to fromInput must be array or object, got ' . gettype($input)
             );
         }
 
@@ -107,7 +114,6 @@ class MyObject
         $foo = $input->{'foo'};
 
         $obj = new self($foo);
-
         return $obj;
     }
 
@@ -133,6 +139,27 @@ class MyObject
     }
 
     /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        if ((in_array($this->foo, array (
+          0 => 'foo',
+          1 => 'bar',
+        ), true)) || (in_array($this->foo, array (
+          0 => 'baz',
+          1 => 'quz',
+        ), true))) {
+        $output->{'foo'} = $this->foo;
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data
@@ -144,7 +171,7 @@ class MyObject
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {
@@ -161,9 +188,9 @@ class MyObject
         $this->foo = (in_array($this->foo, array (
           0 => 'baz',
           1 => 'quz',
-        ), true)) ? ($this->foo) : ((in_array($this->foo, array (
+        ), true) ? $this->foo : (in_array($this->foo, array (
           0 => 'foo',
           1 => 'bar',
-        ), true)) ? ($this->foo) : ($this->foo));
+        ), true) ? $this->foo : $this->foo));
     }
 }

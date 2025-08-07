@@ -9,7 +9,7 @@ class Address
      *
      * @var array
      */
-    private static $schema = [
+    private static $_schema = [
         'type' => 'object',
         'properties' => [
             'name' => [
@@ -46,10 +46,12 @@ class Address
 
     /**
      * @param string $city
+     * @param Address\Defs\Name|null $name
      */
-    public function __construct($city)
+    public function __construct($city, Address\Defs\Name $name = null)
     {
         $this->city = $city;
+        $this->name = $name;
     }
 
     /**
@@ -61,15 +63,6 @@ class Address
     }
 
     /**
-     * @return string
-     */
-    public function getCity()
-    {
-        return $this->city;
-    }
-
-    /**
-     * @param Address\Defs\Name $name
      * @return self
      */
     public function withName(Address\Defs\Name $name)
@@ -92,15 +85,23 @@ class Address
     }
 
     /**
-     * @param string $city
-     * @return self
-     * @param bool $validate
+     * @return string
      */
-    public function withCity($city, bool $validate = true)
+    public function getCity()
+    {
+        return $this->city;
+    }
+
+    /**
+     * @param string $city
+     * @param bool $validate
+     * @return self
+     */
+    public function withCity($city, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($city, self::$schema['properties']['city']);
+            $validator->validate($city, self::$_schema['properties']['city']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -113,18 +114,18 @@ class Address
     }
 
     /**
-     * Builds a new instance from an input array
+     * Builds a new instance from an input array or object
      *
      * @param array|object $input Input data
-     * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param bool $validate If `false`, validation against the schema will be skipped.
      * @return Address Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true)
+    public static function fromInput($input, $validate = true)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($input)
+                'Input to fromInput must be array or object, got ' . gettype($input)
             );
         }
 
@@ -133,11 +134,10 @@ class Address
             static::validateInput($input);
         }
 
-        $name = isset($input->{'name'}) ? Address\Defs\Name::buildFromInput($input->{'name'}, $validate) : null;
         $city = $input->{'city'};
+        $name = isset($input->{'name'}) ? Address\Defs\Name::fromInput($input->{'name'}, $validate) : null;
 
-        $obj = new self($city);
-        $obj->name = $name;
+        $obj = new self($city, $name);
         return $obj;
     }
 
@@ -158,6 +158,22 @@ class Address
     }
 
     /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass()
+    {
+        $output = new \stdClass();
+        if (isset($this->name)) {
+            $output->{'name'} = $this->name->toStdClass();
+        }
+        $output->{'city'} = $this->city;
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data
@@ -169,7 +185,7 @@ class Address
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function($e) {

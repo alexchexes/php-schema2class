@@ -14,7 +14,7 @@ class Baz
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'type' => 'object',
         'properties' => [
             'name' => [
@@ -25,47 +25,32 @@ class Baz
         'description' => 'Description  of the `Baz` definition',
     ];
 
-    /**
-     * Description of the `name` property in `Baz` definition
-     *
-     * @var string|null
-     */
     private ?string $name = null;
 
-    /**
-     * Description of the `name` property in `Baz` definition
-     *
-     * @return string|null
-     */
-    public function getName(): ?string
+    public function __construct(?string $name = null)
     {
-        return $this->name ?? null;
+        $this->name = $name;
     }
 
     /**
-     * @param string $name
-     * @return self
-     * @param bool $validate
+     * Description of the `name` property in `Baz` definition
      */
-    public function withName(string $name, bool $validate = true): self
+    public function getName(): ?string
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($name, self::$schema['properties']['name']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
+        return $this->name;
+    }
 
+    /**
+     * Description of the `name` property in `Baz` definition
+     */
+    public function withName(string $name): self
+    {
         $clone = clone $this;
         $clone->name = $name;
 
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutName(): self
     {
         $clone = clone $this;
@@ -75,14 +60,14 @@ class Baz
     }
 
     /**
-     * Builds a new instance from an input array
+     * Builds a new instance from an input array or object
      *
      * @param array|object $input Input data
-     * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param bool $validate If `false`, validation against the schema will be skipped.
      * @return Baz Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): Baz
+    public static function fromInput(array|object $input, bool $validate = true): Baz
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -91,8 +76,7 @@ class Baz
 
         $name = isset($input->{'name'}) ? $input->{'name'} : null;
 
-        $obj = new self();
-        $obj->name = $name;
+        $obj = new self($name);
         return $obj;
     }
 
@@ -112,6 +96,21 @@ class Baz
     }
 
     /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        if (isset($this->name)) {
+            $output->{'name'} = $this->name;
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data
@@ -123,7 +122,7 @@ class Baz
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {

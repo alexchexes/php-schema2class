@@ -1,0 +1,39 @@
+required:
+  - inferString
+  - inferInt
+  - inferMixed
+properties:
+  inferString:
+    enum:
+      - "3"
+      - "4"
+      - ""
+  inferInt:
+    enum:
+      - 3
+      - 4
+      - 5.0
+  inferMixed:
+    enum:
+      - "42"
+      - 42
+      - 42.5
+      - false
+      - null
+  inferStringOpt:
+    enum:
+      - "3"
+      - "4"
+      - ""
+  inferIntOpt:
+    enum:
+      - 3
+      - 4
+      - 5.0
+  inferMixedOpt:
+    enum:
+      - "42"
+      - 42
+      - 42.5
+      - false
+      - null

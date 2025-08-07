@@ -11,7 +11,7 @@ class UserBilling
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'required' => [
             'vatID',
         ],
@@ -31,111 +31,48 @@ class UserBilling
         ],
     ];
 
-    /**
-     * @var string
-     */
     private string $vatID;
 
-    /**
-     * @var int|null
-     */
     private ?int $creditLevel = null;
 
-    /**
-     * @var int|null
-     */
     private ?int $foo = null;
 
-    /**
-     * @var string|null
-     */
     private ?string $bar = null;
 
-    /**
-     * @param string $vatID
-     */
-    public function __construct(string $vatID)
+    public function __construct(string $vatID, ?int $creditLevel = null, ?int $foo = null, ?string $bar = null)
     {
         $this->vatID = $vatID;
+        $this->creditLevel = $creditLevel;
+        $this->foo = $foo;
+        $this->bar = $bar;
     }
 
-    /**
-     * @return string
-     */
     public function getVatID(): string
     {
         return $this->vatID;
     }
 
-    /**
-     * @return int|null
-     */
-    public function getCreditLevel(): ?int
+    public function withVatID(string $vatID): self
     {
-        return $this->creditLevel ?? null;
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getFoo(): ?int
-    {
-        return $this->foo ?? null;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getBar(): ?string
-    {
-        return $this->bar ?? null;
-    }
-
-    /**
-     * @param string $vatID
-     * @return self
-     * @param bool $validate
-     */
-    public function withVatID(string $vatID, bool $validate = true): self
-    {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($vatID, self::$schema['properties']['vatID']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->vatID = $vatID;
 
         return $clone;
     }
 
-    /**
-     * @param int $creditLevel
-     * @return self
-     * @param bool $validate
-     */
-    public function withCreditLevel(int $creditLevel, bool $validate = true): self
+    public function getCreditLevel(): ?int
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($creditLevel, self::$schema['properties']['creditLevel']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
+        return $this->creditLevel;
+    }
 
+    public function withCreditLevel(int $creditLevel): self
+    {
         $clone = clone $this;
         $clone->creditLevel = $creditLevel;
 
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutCreditLevel(): self
     {
         $clone = clone $this;
@@ -144,30 +81,19 @@ class UserBilling
         return $clone;
     }
 
-    /**
-     * @param int $foo
-     * @return self
-     * @param bool $validate
-     */
-    public function withFoo(int $foo, bool $validate = true): self
+    public function getFoo(): ?int
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($foo, self::$schema['properties']['foo']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
+        return $this->foo;
+    }
 
+    public function withFoo(int $foo): self
+    {
         $clone = clone $this;
         $clone->foo = $foo;
 
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutFoo(): self
     {
         $clone = clone $this;
@@ -176,30 +102,19 @@ class UserBilling
         return $clone;
     }
 
-    /**
-     * @param string $bar
-     * @return self
-     * @param bool $validate
-     */
-    public function withBar(string $bar, bool $validate = true): self
+    public function getBar(): ?string
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($bar, self::$schema['properties']['bar']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
+        return $this->bar;
+    }
 
+    public function withBar(string $bar): self
+    {
         $clone = clone $this;
         $clone->bar = $bar;
 
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutBar(): self
     {
         $clone = clone $this;
@@ -209,14 +124,14 @@ class UserBilling
     }
 
     /**
-     * Builds a new instance from an input array
+     * Builds a new instance from an input array or object
      *
      * @param array|object $input Input data
-     * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param bool $validate If `false`, validation against the schema will be skipped.
      * @return UserBilling Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): UserBilling
+    public static function fromInput(array|object $input, bool $validate = true): UserBilling
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -228,10 +143,7 @@ class UserBilling
         $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
         $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
 
-        $obj = new self($vatID);
-        $obj->creditLevel = $creditLevel;
-        $obj->foo = $foo;
-        $obj->bar = $bar;
+        $obj = new self($vatID, $creditLevel, $foo, $bar);
         return $obj;
     }
 
@@ -258,6 +170,28 @@ class UserBilling
     }
 
     /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        $output->{'vatID'} = $this->vatID;
+        if (isset($this->creditLevel)) {
+            $output->{'creditLevel'} = $this->creditLevel;
+        }
+        if (isset($this->foo)) {
+            $output->{'foo'} = $this->foo;
+        }
+        if (isset($this->bar)) {
+            $output->{'bar'} = $this->bar;
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data
@@ -269,7 +203,7 @@ class UserBilling
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {

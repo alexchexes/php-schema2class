@@ -1,11 +1,10 @@
 <?php
-
 declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator;
 
-use Helmich\Schema2Class\Generator\Definitions\Definition;
-use Helmich\Schema2Class\Generator\Definitions\DefinitionsCollector;
+use Helmich\Schema2Class\Generator\Definition\Definition;
+use Helmich\Schema2Class\Generator\Definition\DefinitionsCollector;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
 use Helmich\Schema2Class\Spec\ValidatedSpecificationFilesItem;
 use PHPUnit\Framework\TestCase;

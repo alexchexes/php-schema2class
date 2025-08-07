@@ -9,7 +9,7 @@ class MyClass
      *
      * @var array
      */
-    private static $schema = [
+    private static $_schema = [
         'type' => 'object',
         'properties' => [
             'foo' => [
@@ -33,13 +33,23 @@ class MyClass
      * @var array
      */
     private static $_defaults = [
-        'foo' => 'hello',
+        'foo' => [
+            'default' => 'hello',
+        ],
     ];
 
     /**
      * @var string|int|null
      */
     private $foo = null;
+
+    /**
+     * @param string|int|null $foo
+     */
+    public function __construct($foo = null)
+    {
+        $this->foo = $foo;
+    }
 
     /**
      * @return string|int|null
@@ -51,10 +61,19 @@ class MyClass
 
     /**
      * @param string|int $foo
+     * @param bool $validate
      * @return self
      */
-    public function withFoo($foo)
+    public function withFoo($foo, $validate = true)
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($foo, self::$_schema['properties']['foo']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
         $clone->foo = $foo;
 
@@ -73,19 +92,19 @@ class MyClass
     }
 
     /**
-     * Builds a new instance from an input array
+     * Builds a new instance from an input array or object
      *
      * @param array|object $input Input data
-     * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param bool $validate If `false`, validation against the schema will be skipped.
      * @param bool $materializeDefaults Apply defaults defined in schema when missing
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true, bool $materializeDefaults = false)
+    public static function fromInput($input, $validate = true, $materializeDefaults = false)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($input)
+                'Input to fromInput must be array or object, got ' . gettype($input)
             );
         }
 
@@ -95,8 +114,10 @@ class MyClass
 
         if ($materializeDefaults) {
             foreach (self::$_defaults as $__k => $__v) {
-                if (!property_exists($input, $__k)) {
-                    $input->{$__k} = is_array($__v) ? \JsonSchema\Validator::arrayToObjectRecursive($__v) : $__v;
+                if (!property_exists($input, (string) $__k)) {
+                    $input->{$__k} = ($__v['type'] ?? null) === 'object'
+                        ? \JsonSchema\Validator::arrayToObjectRecursive($__v['default'])
+                        : $__v['default'];
                 }
             }
         }
@@ -105,10 +126,9 @@ class MyClass
             static::validateInput($input);
         }
 
-        $foo = isset($input->{'foo'}) ? (is_int($input->{'foo'})) ? ((int)($input->{'foo'})) : ((is_string($input->{'foo'})) ? ($input->{'foo'}) : (null)) : null;
+        $foo = isset($input->{'foo'}) ? ((is_int($input->{'foo'})) ? (int)$input->{'foo'} : (((is_string($input->{'foo'})) ? $input->{'foo'} : (null)))) : null;
 
-        $obj = new self();
-        $obj->foo = $foo;
+        $obj = new self($foo);
         return $obj;
     }
 
@@ -130,7 +150,35 @@ class MyClass
         if ($includeDefaults) {
             foreach (self::$_defaults as $k => $v) {
                 if (!array_key_exists($k, $output)) {
-                    $output[$k] = $v;
+                    $output[$k] = $v['default'];
+                }
+            }
+        }
+
+        return $output;
+    }
+
+    /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @param bool $includeDefaults Add defaults for missing properties
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(bool $includeDefaults = false)
+    {
+        $output = new \stdClass();
+        if (isset($this->foo)) {
+            if ((is_string($this->foo)) || (is_int($this->foo))) {
+            $output->{'foo'} = $this->foo;
+            }
+        }
+
+        if ($includeDefaults) {
+            foreach (self::$_defaults as $k => $v) {
+                if (!property_exists($output, (string) $k)) {
+                    $output->{$k} = (isset($v['type']) && $v['type'] === 'object')
+                       ? \JsonSchema\Validator::arrayToObjectRecursive($v['default'])
+                       : $v['default'];
                 }
             }
         }
@@ -150,7 +198,7 @@ class MyClass
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function($e) {
@@ -165,7 +213,7 @@ class MyClass
     public function __clone()
     {
         if (isset($this->foo)) {
-            $this->foo = (is_int($this->foo)) ? ($this->foo) : ((is_string($this->foo)) ? ($this->foo) : ($this->foo));
+            $this->foo = (is_int($this->foo) ? $this->foo : (is_string($this->foo) ? $this->foo : $this->foo));
         }
     }
 }

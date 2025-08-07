@@ -1,0 +1,38 @@
+{
+  type: "object",
+  required: ["a", "b", "c", "d"],
+  properties: {
+    a: {
+      type: "array"
+    },
+    b: {
+      type: ["array", "string"]
+    },
+    c: {
+      type: ["array", "null"]
+    },
+    d: {
+      type: ["array", "string", "null"]
+    },
+    e: {
+      type: "array"
+    },
+    f: {
+      type: ["array", "string"]
+    },
+    g: {
+      type: ["array", "null"]
+    },
+    h: {
+      type: ["array", "string", "null"]
+    },
+    i: {
+      anyOf: [
+        { type: array },
+        { type: string },
+        { type: object },
+        { type: 'null' },
+      ]
+    }
+  }
+}

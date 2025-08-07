@@ -11,7 +11,7 @@ class Cat
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'type' => 'object',
         'properties' => [
             'hasFur' => [
@@ -53,88 +53,80 @@ class Cat
     ];
 
     /**
-     * Map of optional nullable property names that were explicitly set to `null`
+     * Map of optional nullable property names that were explicitly set
      *
      * @var array<string,true>
      */
-    private array $_explicitNulls = [];
+    private array $_providedOptionals = [];
 
-    /**
-     * @var bool|null|string|int|float
-     */
-    private null|bool|string|int|float $hasFur = null;
+    private bool|int|float|string|null $hasFur = null;
 
-    /**
-     * @return bool|null|string|int|float
-     */
+    public function __construct(bool|int|float|string|null $hasFur = null)
+    {
+        $this->hasFur = $hasFur;
+    }
+
     public function getHasFur(): bool|int|float|string|null
     {
         return $this->hasFur;
     }
 
-    /**
-     * @param bool|string|int|float $hasFur
-     * @return self
-     */
     public function withHasFur(bool|int|float|string|null $hasFur): self
     {
         $clone = clone $this;
         $clone->hasFur = $hasFur;
-        $clone->_explicitNulls['hasFur'] = true;
+        $clone->_providedOptionals['hasFur'] = true;
 
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutHasFur(): self
     {
         $clone = clone $this;
         unset($clone->hasFur);
-        unset($clone->_explicitNulls['hasFur']);
+        unset($clone->_providedOptionals['hasFur']);
 
         return $clone;
     }
 
     /**
-     * Builds a new instance from an input array
+     * Builds a new instance from an input array or object
      *
      * @param array|object $input Input data
-     * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param bool $validate If `false`, validation against the schema will be skipped.
      * @return Cat Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): Cat
+    public static function fromInput(array|object $input, bool $validate = true): Cat
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $__explicitNulls = [];
-        $hasFur = property_exists($input, 'hasFur') ? match (true) {
-            (($input->{'hasFur'}) === null) || (is_bool($input->{'hasFur'})) => ($input->{'hasFur'} !== null) ? ((bool)($input->{'hasFur'})) : null,
-            (($input->{'hasFur'}) === null) || ((is_string($input->{'hasFur'})) || (is_int($input->{'hasFur'}) || is_float($input->{'hasFur'}))) => ($input->{'hasFur'} !== null) ? (match (true) {
+        $__providedOptionals = [];
+        $hasFur = null;
+        if (property_exists($input, 'hasFur')) {
+            $hasFur = ($input->{'hasFur'} !== null ? match (true) {
+            (($input->{'hasFur'}) === null) || (is_bool($input->{'hasFur'})) => ($input->{'hasFur'} !== null ? (bool)$input->{'hasFur'} : null),
+            (($input->{'hasFur'}) === null) || ((is_string($input->{'hasFur'})) || (is_int($input->{'hasFur'}) || is_float($input->{'hasFur'}))) => ($input->{'hasFur'} !== null ? match (true) {
             is_string($input->{'hasFur'}) => $input->{'hasFur'},
-            is_int($input->{'hasFur'}) || is_float($input->{'hasFur'}) => str_contains((string)($input->{'hasFur'}), '.') ? (float)($input->{'hasFur'}) : (int)($input->{'hasFur'}),
+            is_int($input->{'hasFur'}) || is_float($input->{'hasFur'}) => (str_contains((string)$input->{'hasFur'}, '.') ? (float)$input->{'hasFur'} : (int)$input->{'hasFur'}),
             default => null,
-        }) : null,
+        } : null),
             (is_string($input->{'hasFur'})) || (is_int($input->{'hasFur'}) || is_float($input->{'hasFur'})) || (is_bool($input->{'hasFur'})) => match (true) {
             is_string($input->{'hasFur'}) => $input->{'hasFur'},
-            is_int($input->{'hasFur'}) || is_float($input->{'hasFur'}) => str_contains((string)($input->{'hasFur'}), '.') ? (float)($input->{'hasFur'}) : (int)($input->{'hasFur'}),
-            is_bool($input->{'hasFur'}) => (bool)($input->{'hasFur'}),
+            is_int($input->{'hasFur'}) || is_float($input->{'hasFur'}) => (str_contains((string)$input->{'hasFur'}, '.') ? (float)$input->{'hasFur'} : (int)$input->{'hasFur'}),
+            is_bool($input->{'hasFur'}) => (bool)$input->{'hasFur'},
             default => null,
         },
             default => null,
-        } : null;
-        if (property_exists($input, 'hasFur')) {
-            $__explicitNulls['hasFur'] = true;
+        } : null);
+            $__providedOptionals['hasFur'] = true;
         }
 
-        $obj = new self();
-        $obj->hasFur = $hasFur;
-        $obj->_explicitNulls = $__explicitNulls;
+        $obj = new self($hasFur);
+        $obj->_providedOptionals = $__providedOptionals;
         return $obj;
     }
 
@@ -146,8 +138,9 @@ class Cat
     public function toArray(): array
     {
         $output = [];
-        if (isset($this->hasFur) || array_key_exists('hasFur', $this->_explicitNulls)) {
-            $output['hasFur'] = match (true) {
+        if (isset($this->hasFur) || array_key_exists('hasFur', $this->_providedOptionals)) {
+            $output['hasFur'] = ($this->hasFur !== null) ? (match (true) {
+                default => null,
                 (($this->hasFur) === null) || (is_bool($this->hasFur)) => ($this->hasFur !== null) ? ($this->hasFur) : null,
                 (($this->hasFur) === null) || ((is_string($this->hasFur)) || (is_int($this->hasFur) || is_float($this->hasFur))) => ($this->hasFur !== null) ? (match (true) {
                 default => null,
@@ -160,7 +153,36 @@ class Cat
                 is_int($this->hasFur) || is_float($this->hasFur),
                 is_bool($this->hasFur) => $this->hasFur,
             },
-            };
+            }) : null;
+        }
+
+        return $output;
+    }
+
+    /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        if (isset($this->hasFur) || array_key_exists('hasFur', $this->_providedOptionals)) {
+            $output->{'hasFur'} = ($this->hasFur !== null) ? (match (true) {
+                default => null,
+                (($this->hasFur) === null) || (is_bool($this->hasFur)) => ($this->hasFur !== null) ? ($this->hasFur) : null,
+                (($this->hasFur) === null) || ((is_string($this->hasFur)) || (is_int($this->hasFur) || is_float($this->hasFur))) => ($this->hasFur !== null) ? (match (true) {
+                default => null,
+                is_string($this->hasFur),
+                is_int($this->hasFur) || is_float($this->hasFur) => $this->hasFur,
+            }) : null,
+                (is_string($this->hasFur)) || (is_int($this->hasFur) || is_float($this->hasFur)) || (is_bool($this->hasFur)) => match (true) {
+                default => null,
+                is_string($this->hasFur),
+                is_int($this->hasFur) || is_float($this->hasFur),
+                is_bool($this->hasFur) => $this->hasFur,
+            },
+            }) : null;
         }
 
         return $output;
@@ -178,7 +200,7 @@ class Cat
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {
@@ -206,13 +228,13 @@ class Cat
     }
 
     /**
-     * Checks if an optional nullable property was explicitly set to `null`
+     * Checks if an optional nullable property was explicitly set
      *
-     * @param string $propertyName property name as appears in the schema
+     * @param string $propertyName Property name to check (exactly as it appears in the schema)
      * @return bool
      */
-    public function isExplicitNull(string $propertyName): bool
+    public function isOptionalProvided(string $propertyName): bool
     {
-        return array_key_exists($propertyName, $this->_explicitNulls);
+        return array_key_exists($propertyName, $this->_providedOptionals);
     }
 }

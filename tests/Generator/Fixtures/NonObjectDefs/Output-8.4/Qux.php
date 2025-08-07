@@ -11,7 +11,7 @@ class Qux
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'type' => 'object',
         'properties' => [
             'grox' => [
@@ -72,7 +72,15 @@ class Qux
     /**
      * @var string|string[]|Foo|Bar|null
      */
-    private string|array|Foo|Bar|null $grox = null;
+    private Bar|Foo|string|array|null $grox = null;
+
+    /**
+     * @param string|string[]|Foo|Bar|null $grox
+     */
+    public function __construct(Bar|Foo|string|array|null $grox = null)
+    {
+        $this->grox = $grox;
+    }
 
     /**
      * @return string|string[]|Foo|Bar|null
@@ -84,19 +92,23 @@ class Qux
 
     /**
      * @param string|string[]|Foo|Bar $grox
-     * @return self
      */
-    public function withGrox(Bar|Foo|string|array $grox): self
+    public function withGrox(Bar|Foo|string|array $grox, bool $validate = true): self
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($grox, self::$_schema['properties']['grox']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
         $clone->grox = $grox;
 
         return $clone;
     }
 
-    /**
-     * @return self
-     */
     public function withoutGrox(): self
     {
         $clone = clone $this;
@@ -106,14 +118,14 @@ class Qux
     }
 
     /**
-     * Builds a new instance from an input array
+     * Builds a new instance from an input array or object
      *
      * @param array|object $input Input data
-     * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param bool $validate If `false`, validation against the schema will be skipped.
      * @return Qux Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): Qux
+    public static function fromInput(array|object $input, bool $validate = true): Qux
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -124,15 +136,14 @@ class Qux
             is_string($input->{'grox'}),
             is_array($input->{'grox'}) => $input->{'grox'},
             (Foo::validateInput($input->{'grox'}, true)) || (Bar::validateInput($input->{'grox'}, true)) => match (true) {
-            Foo::validateInput($input->{'grox'}, true) => Foo::buildFromInput($input->{'grox'}, $validate),
-            Bar::validateInput($input->{'grox'}, true) => Bar::buildFromInput($input->{'grox'}, $validate),
+            Foo::validateInput($input->{'grox'}, true) => Foo::fromInput($input->{'grox'}, $validate),
+            Bar::validateInput($input->{'grox'}, true) => Bar::fromInput($input->{'grox'}, $validate),
             default => null,
         },
             default => null,
         } : null;
 
-        $obj = new self();
-        $obj->grox = $grox;
+        $obj = new self($grox);
         return $obj;
     }
 
@@ -148,10 +159,33 @@ class Qux
             $output['grox'] = match (true) {
                 is_string($this->grox),
                 is_array($this->grox) => $this->grox,
-                (($this->grox) instanceof Foo) || (($this->grox) instanceof Bar) => match (true) {
+                ($this->grox instanceof Foo) || ($this->grox instanceof Bar) => match (true) {
                 default => null,
-                ($this->grox) instanceof Foo,
-                ($this->grox) instanceof Bar => $this->grox->toArray(),
+                $this->grox instanceof Foo,
+                $this->grox instanceof Bar => $this->grox->toArray(),
+            },
+            };
+        }
+
+        return $output;
+    }
+
+    /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        if (isset($this->grox)) {
+            $output->{'grox'} = match (true) {
+                is_string($this->grox),
+                is_array($this->grox) => $this->grox,
+                ($this->grox instanceof Foo) || ($this->grox instanceof Bar) => match (true) {
+                default => null,
+                $this->grox instanceof Foo,
+                $this->grox instanceof Bar => $this->grox->toStdClass(),
             },
             };
         }
@@ -171,7 +205,7 @@ class Qux
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {
@@ -189,9 +223,9 @@ class Qux
             $this->grox = match (true) {
                 is_string($this->grox),
                 is_array($this->grox) => $this->grox,
-                (($this->grox) instanceof Foo) || (($this->grox) instanceof Bar) => match (true) {
-                ($this->grox) instanceof Foo,
-                ($this->grox) instanceof Bar => $this->grox,
+                ($this->grox instanceof Foo) || ($this->grox instanceof Bar) => match (true) {
+                $this->grox instanceof Foo,
+                $this->grox instanceof Bar => $this->grox,
             },
             };
         }

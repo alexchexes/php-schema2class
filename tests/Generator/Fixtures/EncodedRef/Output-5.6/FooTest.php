@@ -9,7 +9,7 @@ class FooTest
      *
      * @var array
      */
-    private static $schema = [
+    private static $_schema = [
         'type' => 'object',
         'properties' => [
             'foo' => [
@@ -24,6 +24,14 @@ class FooTest
     private $foo = null;
 
     /**
+     * @param string|null $foo
+     */
+    public function __construct($foo = null)
+    {
+        $this->foo = $foo;
+    }
+
+    /**
      * @return string|null
      */
     public function getFoo()
@@ -33,14 +41,14 @@ class FooTest
 
     /**
      * @param string $foo
-     * @return self
      * @param bool $validate
+     * @return self
      */
-    public function withFoo($foo, bool $validate = true)
+    public function withFoo($foo, $validate = true)
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($foo, self::$schema['properties']['foo']);
+            $validator->validate($foo, self::$_schema['properties']['foo']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -64,18 +72,18 @@ class FooTest
     }
 
     /**
-     * Builds a new instance from an input array
+     * Builds a new instance from an input array or object
      *
      * @param array|object $input Input data
-     * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param bool $validate If `false`, validation against the schema will be skipped.
      * @return FooTest Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput($input, bool $validate = true)
+    public static function fromInput($input, $validate = true)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
-                'Input to buildFromInput must be array or object, got ' . gettype($input)
+                'Input to fromInput must be array or object, got ' . gettype($input)
             );
         }
 
@@ -86,8 +94,7 @@ class FooTest
 
         $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
 
-        $obj = new self();
-        $obj->foo = $foo;
+        $obj = new self($foo);
         return $obj;
     }
 
@@ -107,6 +114,21 @@ class FooTest
     }
 
     /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass()
+    {
+        $output = new \stdClass();
+        if (isset($this->foo)) {
+            $output->{'foo'} = $this->foo;
+        }
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data
@@ -118,7 +140,7 @@ class FooTest
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function($e) {

@@ -11,7 +11,7 @@ class MyClass
      *
      * @var array
      */
-    private static array $schema = [
+    private static array $_schema = [
         'required' => [
             'city',
             'street',
@@ -31,26 +31,12 @@ class MyClass
         ],
     ];
 
-    /**
-     * @var string
-     */
     private string $city;
 
-    /**
-     * @var string
-     */
     private string $street;
 
-    /**
-     * @var string
-     */
     private string $country;
 
-    /**
-     * @param string $city
-     * @param string $street
-     * @param string $country
-     */
     public function __construct(string $city, string $street, string $country)
     {
         $this->city = $city;
@@ -58,40 +44,16 @@ class MyClass
         $this->country = $country;
     }
 
-    /**
-     * @return string
-     */
     public function getCity(): string
     {
         return $this->city;
     }
 
-    /**
-     * @return string
-     */
-    public function getStreet(): string
-    {
-        return $this->street;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCountry(): string
-    {
-        return $this->country;
-    }
-
-    /**
-     * @param string $city
-     * @return self
-     * @param bool $validate
-     */
     public function withCity(string $city, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($city, self::$schema['properties']['city']);
+            $validator->validate($city, self::$_schema['properties']['city']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
@@ -103,42 +65,26 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @param string $street
-     * @return self
-     * @param bool $validate
-     */
-    public function withStreet(string $street, bool $validate = true): self
+    public function getStreet(): string
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($street, self::$schema['properties']['street']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
+        return $this->street;
+    }
 
+    public function withStreet(string $street): self
+    {
         $clone = clone $this;
         $clone->street = $street;
 
         return $clone;
     }
 
-    /**
-     * @param string $country
-     * @return self
-     * @param bool $validate
-     */
-    public function withCountry(string $country, bool $validate = true): self
+    public function getCountry(): string
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($country, self::$schema['properties']['country']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
+        return $this->country;
+    }
 
+    public function withCountry(string $country): self
+    {
         $clone = clone $this;
         $clone->country = $country;
 
@@ -146,14 +92,14 @@ class MyClass
     }
 
     /**
-     * Builds a new instance from an input array
+     * Builds a new instance from an input array or object
      *
      * @param array|object $input Input data
-     * @param bool $validate Set this to false to skip validation; use at own risk
+     * @param bool $validate If `false`, validation against the schema will be skipped.
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function buildFromInput(array|object $input, bool $validate = true): MyClass
+    public static function fromInput(array|object $input, bool $validate = true): MyClass
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
@@ -165,7 +111,6 @@ class MyClass
         $country = $input->{'country'};
 
         $obj = new self($city, $street, $country);
-
         return $obj;
     }
 
@@ -185,6 +130,21 @@ class MyClass
     }
 
     /**
+     * Converts this object to a stdClass that can be JSON-serialized
+     *
+     * @return \stdClass Converted object
+     */
+    public function toStdClass(): \stdClass
+    {
+        $output = new \stdClass();
+        $output->{'city'} = $this->city;
+        $output->{'street'} = $this->street;
+        $output->{'country'} = $this->country;
+
+        return $output;
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data
@@ -196,7 +156,7 @@ class MyClass
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
-        $validator->validate($input, self::$schema);
+        $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
             $errors = array_map(function(array $e): string {
