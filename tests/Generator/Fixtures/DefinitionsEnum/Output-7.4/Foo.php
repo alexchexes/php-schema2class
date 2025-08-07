@@ -186,11 +186,23 @@ class Foo
     }
 
     /**
+     * Validates the current instance against its schema
+     *
+     * @param bool $return Return instead of throwing errors
+     * @return bool Validation result if `$return` is `true`
+     * @throws \InvalidArgumentException
+     */
+    public function validate(bool $return = false): bool
+    {
+        return self::validateInput($this->toStdClass(), $return);
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data
      * @param bool $return Return instead of throwing errors
-     * @return bool Validation result
+     * @return bool Validation result if `$return` is `true`
      * @throws \InvalidArgumentException
      */
     public static function validateInput($input, bool $return = false): bool
