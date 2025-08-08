@@ -1,9 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Helmich\Schema2Class\Generator\Property\Type;
+namespace Helmich\Schema2Class\Generator\Property\Type\Object;
 
 use Composer\Semver\Semver;
+use Helmich\Schema2Class\Generator\Property\Type\AbstractProperty;
 
 /**
  * Represents an object type without defined properties.

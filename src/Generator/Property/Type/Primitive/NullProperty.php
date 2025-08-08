@@ -1,8 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Helmich\Schema2Class\Generator\Property\Type;
+namespace Helmich\Schema2Class\Generator\Property\Type\Primitive;
 
+use Helmich\Schema2Class\Generator\Property\Type\AbstractProperty;
 use Laminas\Code\Generator\PropertyValueGenerator;
 use Laminas\Code\Generator\ValueGenerator;
 

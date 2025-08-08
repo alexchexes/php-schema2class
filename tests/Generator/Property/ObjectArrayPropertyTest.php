@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class\Generator\Property\Type;
 
 use Helmich\Schema2Class\Generator\GeneratorRequest;
+use Helmich\Schema2Class\Generator\Property\Type\Array\ObjectArrayProperty;
 use Helmich\Schema2Class\Writer\DebugWriter;
 use Symfony\Component\Console\Output\NullOutput;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
@@ -16,15 +17,11 @@ use function PHPUnit\Framework\assertTrue;
 
 class ObjectArrayPropertyTest extends TestCase
 {
-
-    private ObjectArrayProperty $property;
-
     private GeneratorRequest $generatorRequest;
 
     protected function setUp(): void
     {
         $this->generatorRequest = new GeneratorRequest([], new ValidatedSpecificationFilesItem("", "Foo", ""), new SpecificationOptions());
-        $this->property = new ObjectArrayProperty('myPropertyName', ['type' => 'array', 'items' => ['type' => 'object']], $this->generatorRequest);
     }
 
     public static function allowedSchemas(): array {

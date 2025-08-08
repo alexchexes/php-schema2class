@@ -5,9 +5,9 @@ namespace Helmich\Schema2Class\Generator\Property\Decorator;
 
 use Helmich\Schema2Class\Generator\Class\Method\FromInputMethodFactory;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
-use Helmich\Schema2Class\Generator\Property\Type\NullProperty;
+use Helmich\Schema2Class\Generator\Property\Type\Primitive\NullProperty;
 use Helmich\Schema2Class\Generator\Property\Type\PropertyInterface;
-use Helmich\Schema2Class\Generator\Property\Type\StringProperty;
+use Helmich\Schema2Class\Generator\Property\Type\Primitive\StringProperty;
 use Helmich\Schema2Class\Writer\WriterInterface;
 use Laminas\Code\Generator\PropertyValueGenerator;
 use Symfony\Component\Console\Output\OutputInterface;

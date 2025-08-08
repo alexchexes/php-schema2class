@@ -1,26 +1,25 @@
 <?php
 declare(strict_types=1);
 
-namespace Helmich\Schema2Class\Generator\Property\Type;
+namespace Helmich\Schema2Class\Generator\Property\Type\Primitive;
 
 use Composer\Semver\Semver;
+use Helmich\Schema2Class\Generator\Property\Type\AbstractProperty;
 use Helmich\Schema2Class\Util\EnumUtils;
 use Helmich\Schema2Class\Util\SchemaKeywords;
 
 /**
- * Primitive "integer" type
+ * Represents a boolean value.
  */
-class IntegerProperty extends AbstractProperty
+class BooleanProperty extends AbstractProperty
 {
     public static function canHandleSchema(array $schema): bool
     {
         if (!isset($schema["type"])) {
             return false;
         }
-        return $schema["type"] === "integer"
-            || $schema["type"] === "int"
-            || (isset($schema["format"]) && $schema["type"] === "number" && $schema["format"] === "integer")
-            || (isset($schema["format"]) && $schema["type"] === "number" && $schema["format"] === "int")
+        return $schema["type"] === "bool"
+            || $schema["type"] === "boolean";
         ;
     }
 
@@ -29,7 +28,8 @@ class IntegerProperty extends AbstractProperty
         if (isset($this->schema['enum'])) {
             return EnumUtils::typeAnnotation($this->schema['enum']);
         }
-        return "int";
+
+        return "bool";
     }
 
     public function typeHint(): ?string
@@ -37,7 +37,12 @@ class IntegerProperty extends AbstractProperty
         if (isset($this->schema['enum'])) {
             return EnumUtils::typeHint($this->schema['enum'], $this->request->getTargetPHPVersion());
         }
-        return $this->request->isAtLeastPHP('7.0') ? 'int' : null;
+
+        if (Semver::satisfies($this->request->getTargetPHPVersion(), "<7.0")) {
+            return null;
+        }
+
+        return "bool";
     }
 
     public function typeAssertionExpr(string $expr): string
@@ -45,7 +50,8 @@ class IntegerProperty extends AbstractProperty
         if (isset($this->schema['enum'])) {
             return EnumUtils::assertionExpr($this->schema['enum'], $expr);
         }
-        return "is_int({$expr})";
+
+        return "is_bool({$expr})";
     }
 
     public function inputMappingExpr(string $expr, bool $asserted = false): string
@@ -54,7 +60,7 @@ class IntegerProperty extends AbstractProperty
             return $expr;
         }
 
-        return "(int){$expr}";
+        return "(bool){$expr}";
     }
 
     public function needsValidation(): bool
@@ -62,10 +68,11 @@ class IntegerProperty extends AbstractProperty
         if (isset($this->schema['enum'])) {
             return true;
         }
+
         if (!$this->request->isAtLeastPHP('7.0')) {
             return true;
         }
-        return SchemaKeywords::hasAny($this->schema, SchemaKeywords::NUMERIC_VALIDATION);
-    }
 
+        return SchemaKeywords::hasAny($this->schema, SchemaKeywords::BOOLEAN_VALIDATION);
+    }
 }

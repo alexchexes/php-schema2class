@@ -1,25 +1,25 @@
 <?php
 declare(strict_types=1);
 
-namespace Helmich\Schema2Class\Generator\Property\Type;
+namespace Helmich\Schema2Class\Generator\Property\Type\Primitive;
 
 use Composer\Semver\Semver;
+use Helmich\Schema2Class\Generator\Property\Type\AbstractProperty;
 use Helmich\Schema2Class\Util\EnumUtils;
 use Helmich\Schema2Class\Util\SchemaKeywords;
 
-/**
- * Represents a boolean value.
+/** 
+ * Represents schema property of type "number".
+ * Allows `int|float` in PHP, and uses {@see EnumUtils} when "enum" restriction exists in the schema.
  */
-class BooleanProperty extends AbstractProperty
+class NumberProperty extends AbstractProperty
 {
     public static function canHandleSchema(array $schema): bool
     {
         if (!isset($schema["type"])) {
             return false;
         }
-        return $schema["type"] === "bool"
-            || $schema["type"] === "boolean";
-        ;
+        return $schema["type"] === "number";
     }
 
     public function typeAnnotation(): string
@@ -28,20 +28,22 @@ class BooleanProperty extends AbstractProperty
             return EnumUtils::typeAnnotation($this->schema['enum']);
         }
 
-        return "bool";
+        return 'int|float';
     }
 
     public function typeHint(): ?string
     {
+        $phpVersion = $this->request->getTargetPHPVersion();
+        
         if (isset($this->schema['enum'])) {
-            return EnumUtils::typeHint($this->schema['enum'], $this->request->getTargetPHPVersion());
+            return EnumUtils::typeHint($this->schema['enum'], $phpVersion);
         }
 
-        if (Semver::satisfies($this->request->getTargetPHPVersion(), "<7.0")) {
+        if (Semver::satisfies($phpVersion, "<8.0")) {
             return null;
         }
 
-        return "bool";
+        return 'int|float';
     }
 
     public function typeAssertionExpr(string $expr): string
@@ -50,7 +52,7 @@ class BooleanProperty extends AbstractProperty
             return EnumUtils::assertionExpr($this->schema['enum'], $expr);
         }
 
-        return "is_bool({$expr})";
+        return "is_int({$expr}) || is_float({$expr})";
     }
 
     public function inputMappingExpr(string $expr, bool $asserted = false): string
@@ -59,19 +61,15 @@ class BooleanProperty extends AbstractProperty
             return $expr;
         }
 
-        return "(bool){$expr}";
+        return "(str_contains((string){$expr}, '.') ? (float){$expr} : (int){$expr})";
     }
 
     public function needsValidation(): bool
     {
-        if (isset($this->schema['enum'])) {
+        if (!$this->request->isAtLeastPHP('8.0')) {
             return true;
         }
-
-        if (!$this->request->isAtLeastPHP('7.0')) {
-            return true;
-        }
-
-        return SchemaKeywords::hasAny($this->schema, SchemaKeywords::BOOLEAN_VALIDATION);
+        return SchemaKeywords::hasAny($this->schema, SchemaKeywords::NUMERIC_VALIDATION);
     }
+
 }

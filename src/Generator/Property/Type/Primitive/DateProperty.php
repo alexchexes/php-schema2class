@@ -1,7 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Helmich\Schema2Class\Generator\Property\Type;
+namespace Helmich\Schema2Class\Generator\Property\Type\Primitive;
+
+use Helmich\Schema2Class\Generator\Property\Type\AbstractProperty;
 
 /**
  * Represents schema property of type `"string"` with `"date-time"` format as `\DateTime` objects in PHP.

@@ -1,24 +1,27 @@
 <?php
 declare(strict_types=1);
 
-namespace Helmich\Schema2Class\Generator\Property\Type;
+namespace Helmich\Schema2Class\Generator\Property\Type\Primitive;
 
-use Composer\Semver\Semver;
+use Helmich\Schema2Class\Generator\Property\Type\AbstractProperty;
 use Helmich\Schema2Class\Util\EnumUtils;
 use Helmich\Schema2Class\Util\SchemaKeywords;
 
-/** 
- * Represents schema property of type "number".
- * Allows `int|float` in PHP, and uses {@see EnumUtils} when "enum" restriction exists in the schema.
+/**
+ * Primitive "integer" type
  */
-class NumberProperty extends AbstractProperty
+class IntegerProperty extends AbstractProperty
 {
     public static function canHandleSchema(array $schema): bool
     {
         if (!isset($schema["type"])) {
             return false;
         }
-        return $schema["type"] === "number";
+        return $schema["type"] === "integer"
+            || $schema["type"] === "int"
+            || (isset($schema["format"]) && $schema["type"] === "number" && $schema["format"] === "integer")
+            || (isset($schema["format"]) && $schema["type"] === "number" && $schema["format"] === "int")
+        ;
     }
 
     public function typeAnnotation(): string
@@ -26,23 +29,15 @@ class NumberProperty extends AbstractProperty
         if (isset($this->schema['enum'])) {
             return EnumUtils::typeAnnotation($this->schema['enum']);
         }
-
-        return 'int|float';
+        return "int";
     }
 
     public function typeHint(): ?string
     {
-        $phpVersion = $this->request->getTargetPHPVersion();
-        
         if (isset($this->schema['enum'])) {
-            return EnumUtils::typeHint($this->schema['enum'], $phpVersion);
+            return EnumUtils::typeHint($this->schema['enum'], $this->request->getTargetPHPVersion());
         }
-
-        if (Semver::satisfies($phpVersion, "<8.0")) {
-            return null;
-        }
-
-        return 'int|float';
+        return $this->request->isAtLeastPHP('7.0') ? 'int' : null;
     }
 
     public function typeAssertionExpr(string $expr): string
@@ -50,8 +45,7 @@ class NumberProperty extends AbstractProperty
         if (isset($this->schema['enum'])) {
             return EnumUtils::assertionExpr($this->schema['enum'], $expr);
         }
-
-        return "is_int({$expr}) || is_float({$expr})";
+        return "is_int({$expr})";
     }
 
     public function inputMappingExpr(string $expr, bool $asserted = false): string
@@ -60,12 +54,15 @@ class NumberProperty extends AbstractProperty
             return $expr;
         }
 
-        return "(str_contains((string){$expr}, '.') ? (float){$expr} : (int){$expr})";
+        return "(int){$expr}";
     }
 
     public function needsValidation(): bool
     {
-        if (!$this->request->isAtLeastPHP('8.0')) {
+        if (isset($this->schema['enum'])) {
+            return true;
+        }
+        if (!$this->request->isAtLeastPHP('7.0')) {
             return true;
         }
         return SchemaKeywords::hasAny($this->schema, SchemaKeywords::NUMERIC_VALIDATION);

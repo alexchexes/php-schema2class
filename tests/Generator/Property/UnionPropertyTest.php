@@ -15,6 +15,7 @@ use function PHPUnit\Framework\assertSame;
 use function PHPUnit\Framework\assertTrue;
 use function PHPUnit\Framework\assertFalse;
 use Helmich\Schema2Class\Generator\Definition\Definition;
+use Helmich\Schema2Class\Generator\Property\Type\Composite\UnionProperty;
 use Helmich\Schema2Class\Generator\ReferenceLookup\DefinitionsReferenceLookup;
 
 class UnionPropertyTest extends TestCase

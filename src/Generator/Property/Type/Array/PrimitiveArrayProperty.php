@@ -1,9 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Helmich\Schema2Class\Generator\Property\Type;
+namespace Helmich\Schema2Class\Generator\Property\Type\Array;
 
 use Helmich\Schema2Class\Generator\GeneratorRequest;
+use Helmich\Schema2Class\Generator\Property\Type\AbstractProperty;
 use Helmich\Schema2Class\Util\SchemaKeywords;
 use Helmich\Schema2Class\Util\SchemaUtils;
 use Helmich\Schema2Class\Writer\WriterInterface;
