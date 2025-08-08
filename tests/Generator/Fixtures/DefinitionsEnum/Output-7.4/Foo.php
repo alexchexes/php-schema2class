@@ -76,16 +76,11 @@ class Foo
      */
     public function withColor(string $color, bool $validate = true): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($color, self::$_schema['properties']['color']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->color = $color;
+        if ($validate) {
+            $clone->validate();
+        }
 
         return $clone;
     }
@@ -103,16 +98,11 @@ class Foo
      */
     public function withSize(string $size, bool $validate = true): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($size, self::$_schema['properties']['size']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->size = $size;
+        if ($validate) {
+            $clone->validate();
+        }
 
         return $clone;
     }

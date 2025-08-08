@@ -215,16 +215,11 @@ class MyClass
      */
     public function withRefObjectsUnion(object $refObjectsUnion, bool $validate = true): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($refObjectsUnion, self::$_schema['properties']['refObjectsUnion']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->refObjectsUnion = $refObjectsUnion;
+        if ($validate) {
+            $clone->validate();
+        }
 
         return $clone;
     }
@@ -250,16 +245,11 @@ class MyClass
      */
     public function withRefAndNotRefObjectsUnion(object $refAndNotRefObjectsUnion, bool $validate = true): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($refAndNotRefObjectsUnion, self::$_schema['properties']['refAndNotRefObjectsUnion']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->refAndNotRefObjectsUnion = $refAndNotRefObjectsUnion;
+        if ($validate) {
+            $clone->validate();
+        }
 
         return $clone;
     }

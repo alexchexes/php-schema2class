@@ -2,9 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Ns\NestedSchemaRefs_8_4;
+namespace Ns\SettersFullValidation_8_4;
 
-class MyClass
+/**
+ * Class generated from this definition should add full re-validation to each property setter as its schema contains conditional validation which might affect any of its properties
+ */
+class IfThenElse
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -12,66 +15,81 @@ class MyClass
      * @var array
      */
     private static array $_schema = [
+        'description' => 'Class generated from this definition should add full re-validation to each property setter as its schema contains conditional validation which might affect any of its properties',
+        'type' => 'object',
         'properties' => [
-            'files' => [
-                'type' => 'array',
-                'items' => [
-                    'properties' => [
-                        'input' => [
-                            'type' => 'string',
-                        ],
-                        'options' => [
-                            '$ref' => '#/definitions/OptionsObject',
-                        ],
-                    ],
+            'kind' => [
+                'type' => [
+                    'string',
+                    'null',
                 ],
             ],
-            'options' => [
-                '$ref' => '#/definitions/OptionsObject',
+            'value' => [
+                
             ],
         ],
-        'definitions' => [
-            'OptionsObject' => [
-                'properties' => [
-                    'output' => [
-                        'type' => 'string',
+        'required' => [
+            'kind',
+        ],
+        'if' => [
+            'properties' => [
+                'kind' => [
+                    'type' => 'null',
+                ],
+            ],
+        ],
+        'then' => [
+            'properties' => [
+                'value' => [
+                    'type' => 'number',
+                    'enum' => [
+                        1,
+                        2,
                     ],
                 ],
+            ],
+            'required' => [
+                'value',
+            ],
+        ],
+        'else' => [
+            'properties' => [
+                'value' => [
+                    'type' => 'string',
+                    'minLength' => 1,
+                ],
+            ],
+            'required' => [
+                'value',
             ],
         ],
     ];
 
-    /**
-     * @var MyClassFilesItem[]|null
-     */
-    private ?array $files = null;
-
-    private ?OptionsObject $options = null;
+    private ?string $kind;
 
     /**
-     * @param MyClassFilesItem[]|null $files
+     * @var mixed|null
      */
-    public function __construct(?array $files = null, ?OptionsObject $options = null)
+    private $value = null;
+
+    /**
+     * @param mixed|null $value
+     */
+    public function __construct(?string $kind, $value = null)
     {
-        $this->files = $files;
-        $this->options = $options;
+        $this->kind = $kind;
+        $this->value = $value;
     }
 
-    /**
-     * @return MyClassFilesItem[]|null
-     */
-    public function getFiles(): ?array
+    public function getKind(): ?string
     {
-        return $this->files;
+        return $this->kind;
     }
 
-    /**
-     * @param MyClassFilesItem[] $files
-     */
-    public function withFiles(array $files, bool $validate = true): self
+    public function withKind(?string $kind, bool $validate = true): self
     {
         $clone = clone $this;
-        $clone->files = $files;
+        $clone->kind = $kind;
         if ($validate) {
             $clone->validate();
         }
@@ -79,31 +97,32 @@ class MyClass
         return $clone;
     }
 
-    public function withoutFiles(): self
+    /**
+     * @return mixed|null
+     */
+    public function getValue()
+    {
+        return $this->value;
+    }
+
+    /**
+     * @param mixed $value
+     */
+    public function withValue($value, bool $validate = true): self
     {
         $clone = clone $this;
-        unset($clone->files);
+        $clone->value = $value;
+        if ($validate) {
+            $clone->validate();
+        }
 
         return $clone;
     }
 
-    public function getOptions(): ?OptionsObject
-    {
-        return $this->options;
-    }
-
-    public function withOptions(OptionsObject $options): self
+    public function withoutValue(): self
     {
         $clone = clone $this;
-        $clone->options = $options;
-
-        return $clone;
-    }
-
-    public function withoutOptions(): self
-    {
-        $clone = clone $this;
-        unset($clone->options);
+        unset($clone->value);
 
         return $clone;
     }
@@ -113,20 +132,20 @@ class MyClass
      *
      * @param array|object $input Input data
      * @param bool $validate If `false`, validation against the schema will be skipped.
-     * @return MyClass Created instance
+     * @return IfThenElse Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput(array|object $input, bool $validate = true): MyClass
+    public static function fromInput(array|object $input, bool $validate = true): IfThenElse
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $files = isset($input->{'files'}) ? array_map(fn (array|object $i): MyClassFilesItem => MyClassFilesItem::fromInput($i, $validate), $input->{'files'}) : null;
-        $options = isset($input->{'options'}) ? OptionsObject::fromInput($input->{'options'}, $validate) : null;
+        $kind = $input->{'kind'};
+        $value = isset($input->{'value'}) ? $input->{'value'} : null;
 
-        $obj = new self($files, $options);
+        $obj = new self($kind, $value);
         return $obj;
     }
 
@@ -138,11 +157,9 @@ class MyClass
     public function toArray(): array
     {
         $output = [];
-        if (isset($this->files)) {
-            $output['files'] = array_map(fn (MyClassFilesItem $i) => $i->toArray(), $this->files);
-        }
-        if (isset($this->options)) {
-            $output['options'] = $this->options->toArray();
+        $output['kind'] = $this->kind;
+        if (isset($this->value)) {
+            $output['value'] = $this->value;
         }
 
         return $output;
@@ -156,11 +173,9 @@ class MyClass
     public function toStdClass(): \stdClass
     {
         $output = new \stdClass();
-        if (isset($this->files)) {
-            $output->{'files'} = array_map(fn (MyClassFilesItem $i) => $i->toStdClass(), $this->files);
-        }
-        if (isset($this->options)) {
-            $output->{'options'} = $this->options->toStdClass();
+        $output->{'kind'} = $this->kind;
+        if (isset($this->value)) {
+            $output->{'value'} = $this->value;
         }
 
         return $output;
@@ -200,12 +215,5 @@ class MyClass
         }
 
         return $validator->isValid();
-    }
-
-    public function __clone()
-    {
-        if (isset($this->files)) {
-            $this->files = array_map(fn (MyClassFilesItem $i) => clone $i, $this->files);
-        }
     }
 }

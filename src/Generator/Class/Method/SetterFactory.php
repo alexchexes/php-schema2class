@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Class\Method;
 
+use Helmich\Schema2Class\Generator\Class\MethodNames;
 use Helmich\Schema2Class\Generator\Class\PropertyNames;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\Decorator\OptionalPropertyDecorator;
@@ -19,6 +20,7 @@ use Laminas\Code\Generator\ParameterGenerator;
 class SetterFactory
 {
     public const CLONE_VAR_NAME = 'clone';
+    public const VALIDATE_ARG = 'validate';
 
     private bool $mutating;
     private bool $chainable;
@@ -52,12 +54,19 @@ class SetterFactory
         $propAnnotatedType = $paramProperty->typeAnnotation();
         $propTypeHint = $paramProperty->typeHint();
 
-        // Determine whether setter needs runtime validation.
-        $addValidation = $property->needsValidation();
+        // Determine whether setter needs runtime validation and whether
+        // validation must be performed against the full schema or just the
+        // property fragment.
+        $schemaRequiresFullValidation = $this->schemaRequiresFullValidation();
+        $propertyNeedsValidation = $property->needsValidation();
+        $propertyNeedsFullValidation = $propertyNeedsValidation && $this->schemaHasRef($property->schema());
+
+        $addValidation = $propertyNeedsValidation || $schemaRequiresFullValidation;
+        $fullValidation = $schemaRequiresFullValidation || $propertyNeedsFullValidation;
 
         $docBlock = $this->buildDocBlock($property, $varName, $propAnnotatedType, $propTypeHint, $addValidation);
         $parameters = $this->buildParams($varName, $propTypeHint, $addValidation);
-        $body = $this->generateBody($property, $propName, $varName, $addValidation);
+        $body = $this->generateBody($property, $propName, $varName, $addValidation, $fullValidation);
 
         $methodGen = new MethodGenerator(
             name: $methodName,
@@ -76,6 +85,32 @@ class SetterFactory
         }
 
         return $methodGen;
+    }
+
+    private function schemaRequiresFullValidation(): bool
+    {
+        $schema = $this->request->getSchema();
+        foreach (['if', 'then', 'else', 'dependencies', 'dependentRequired', 'dependentSchemas'] as $k) {
+            if (isset($schema[$k])) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private function schemaHasRef(array $schema): bool
+    {
+        if (isset($schema['$ref'])) {
+            return true;
+        }
+
+        foreach ($schema as $value) {
+            if (is_array($value) && $this->schemaHasRef($value)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function buildDocBlock(
@@ -134,53 +169,79 @@ class SetterFactory
         return $parameters;
     }
 
-    private function generateBody(PropertyInterface $property, string $propName, string $varName, bool $addValidation): string
+    private function generateBody(
+        PropertyInterface $property,
+        string $propName,
+        string $varName,
+        bool $addValidation,
+        bool $fullValidation,
+    ): string
     {
         $propKey = $property->keyStr();
 
+        $OPTIONALS = PropertyNames::OPTIONALS;
+        $VALIDATE = MethodNames::VALIDATE_SELF;
+        $VALIDATE_ARG = self::VALIDATE_ARG;
+        $CLONE_VAR = self::CLONE_VAR_NAME;
+
         $validationBlock = '';
-        if ($addValidation) {
+        if ($addValidation && !$fullValidation) {
             $newValidatorExpr = $this->request->getOptions()->getNewValidatorExpr();
 
             $SCHEMA = PropertyNames::SCHEMA;
             $validationBlock =
                 <<<PHP
-                if (\$validate) {
+                if (\${$VALIDATE_ARG}) {
                     \$validator = {$newValidatorExpr};
                     \$validator->validate(\$$varName, self::\${$SCHEMA}['properties'][{$propKey}]);
                     if (!\$validator->isValid()) {
-                        throw new \\InvalidArgumentException(\$validator->getErrors()[0]['message']);
+                        throw new \InvalidArgumentException(\$validator->getErrors()[0]['message']);
                     }
                 }\n\n
                 PHP;
         }
 
-        $OPTIONALS = PropertyNames::OPTIONALS;
-
         if ($this->mutating) {
             $body =
                 $validationBlock .
-                "\$this->{$propName} = \$$varName;";
+                "\$this->{$propName} = \$$varName;\n";
 
             if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
-                $body .= "\n\$this->{$OPTIONALS}[{$propKey}] = true;";
+                $body .= "\$this->{$OPTIONALS}[{$propKey}] = true;\n";
+            }
+
+            if ($addValidation && $fullValidation) {
+                $body .= 
+                    <<<PHP
+                    if (\${$VALIDATE_ARG}) {
+                        \$this->{$VALIDATE}();
+                    }\n
+                    PHP;
             }
 
             if ($this->chainable) {
-                $body .= "\n\nreturn \$this;";
+                $body .= "\nreturn \$this;";
             }
         } else {
-            $CLONE = self::CLONE_VAR_NAME;
             $body =
                 $validationBlock .
-                "\${$CLONE} = clone \$this;\n" .
-                "\${$CLONE}->$propName = \$$varName;\n";
+                "\${$CLONE_VAR} = clone \$this;\n" .
+                "\${$CLONE_VAR}->$propName = \$$varName;\n";
 
             if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
-                $body .= "\${$CLONE}->{$OPTIONALS}[{$propKey}] = true;\n";
+                $body .= "\${$CLONE_VAR}->{$OPTIONALS}[{$propKey}] = true;\n";
             }
 
-            $body .= "\nreturn \${$CLONE};";
+            if ($addValidation && $fullValidation) {
+                $body .= 
+                    <<<PHP
+                    if (\${$VALIDATE_ARG}) {
+                        \${$CLONE_VAR}->{$VALIDATE}();
+                    }\n
+                    PHP;
+            }
+
+            $body .= "\nreturn \${$CLONE_VAR};";
         }
 
         return $body;

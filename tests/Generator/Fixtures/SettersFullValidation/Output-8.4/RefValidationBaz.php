@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ns\RefList_7_4;
+namespace Ns\SettersFullValidation_8_4;
 
-class MyClass
+class RefValidationBaz
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -12,47 +12,51 @@ class MyClass
      * @var array
      */
     private static array $_schema = [
-        'required' => [
-            'foo_bar',
-        ],
+        'type' => 'object',
         'properties' => [
-            'foo' => [
-                'type' => 'array',
-                'items' => [
-                    '$ref' => '#/properties/address',
+            'nestedFoo' => [
+                '$ref' => '#/definitions/Bar',
+            ],
+        ],
+        'definitions' => [
+            'Bar' => [
+                'type' => 'number',
+                'enum' => [
+                    1,
+                    2,
                 ],
             ],
         ],
     ];
 
     /**
-     * @var \Helmich\Schema2Class\Example\CustomerAddress[]|null
+     * @var 1|2|null
      */
-    private ?array $foo = null;
+    private ?int $nestedFoo = null;
 
     /**
-     * @param \Helmich\Schema2Class\Example\CustomerAddress[]|null $foo
+     * @param 1|2|null $nestedFoo
      */
-    public function __construct(?array $foo = null)
+    public function __construct(?int $nestedFoo = null)
     {
-        $this->foo = $foo;
+        $this->nestedFoo = $nestedFoo;
     }
 
     /**
-     * @return \Helmich\Schema2Class\Example\CustomerAddress[]|null
+     * @return 1|2|null
      */
-    public function getFoo(): ?array
+    public function getNestedFoo(): ?int
     {
-        return $this->foo;
+        return $this->nestedFoo;
     }
 
     /**
-     * @param \Helmich\Schema2Class\Example\CustomerAddress[] $foo
+     * @param 1|2 $nestedFoo
      */
-    public function withFoo(array $foo, bool $validate = true): self
+    public function withNestedFoo(int $nestedFoo, bool $validate = true): self
     {
         $clone = clone $this;
-        $clone->foo = $foo;
+        $clone->nestedFoo = $nestedFoo;
         if ($validate) {
             $clone->validate();
         }
@@ -60,10 +64,10 @@ class MyClass
         return $clone;
     }
 
-    public function withoutFoo(): self
+    public function withoutNestedFoo(): self
     {
         $clone = clone $this;
-        unset($clone->foo);
+        unset($clone->nestedFoo);
 
         return $clone;
     }
@@ -73,28 +77,19 @@ class MyClass
      *
      * @param array|object $input Input data
      * @param bool $validate If `false`, validation against the schema will be skipped.
-     * @return MyClass Created instance
+     * @return RefValidationBaz Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput($input, bool $validate = true): MyClass
+    public static function fromInput(array|object $input, bool $validate = true): RefValidationBaz
     {
-        if (!is_array($input) && !is_object($input)) {
-            throw new \InvalidArgumentException(
-                'Input to fromInput must be array or object, got ' . gettype($input)
-            );
-        }
-
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $foo = isset($input->{'foo'}) ? array_map(
-            fn($i) => \Helmich\Schema2Class\Example\CustomerAddress::fromInput($i, $validate),
-            $input->{'foo'}
-        ) : null;
+        $nestedFoo = isset($input->{'nestedFoo'}) ? $input->{'nestedFoo'} : null;
 
-        $obj = new self($foo);
+        $obj = new self($nestedFoo);
         return $obj;
     }
 
@@ -106,8 +101,8 @@ class MyClass
     public function toArray(): array
     {
         $output = [];
-        if (isset($this->foo)) {
-            $output['foo'] = array_map(fn(\Helmich\Schema2Class\Example\CustomerAddress $i): array => $i->toArray(), $this->foo);
+        if (isset($this->nestedFoo)) {
+            $output['nestedFoo'] = $this->nestedFoo;
         }
 
         return $output;
@@ -121,8 +116,8 @@ class MyClass
     public function toStdClass(): \stdClass
     {
         $output = new \stdClass();
-        if (isset($this->foo)) {
-            $output->{'foo'} = array_map(fn(\Helmich\Schema2Class\Example\CustomerAddress $i): object => $i->toStdClass(), $this->foo);
+        if (isset($this->nestedFoo)) {
+            $output->{'nestedFoo'} = $this->nestedFoo;
         }
 
         return $output;
@@ -148,7 +143,7 @@ class MyClass
      * @return bool Validation result if `$return` is `true`
      * @throws \InvalidArgumentException
      */
-    public static function validateInput($input, bool $return = false): bool
+    public static function validateInput(array|object $input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
