@@ -74,16 +74,11 @@ class MyClass
      */
     public function withFiles(array $files, $validate = true)
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($files, self::$_schema['properties']['files']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->files = $files;
+        if ($validate) {
+            $clone->validate();
+        }
 
         return $clone;
     }

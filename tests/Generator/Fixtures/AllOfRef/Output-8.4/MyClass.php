@@ -51,16 +51,11 @@ class MyClass
 
     public function withCity(string $city, bool $validate = true): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($city, self::$_schema['properties']['city']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->city = $city;
+        if ($validate) {
+            $clone->validate();
+        }
 
         return $clone;
     }
@@ -70,10 +65,13 @@ class MyClass
         return $this->street;
     }
 
-    public function withStreet(string $street): self
+    public function withStreet(string $street, bool $validate = true): self
     {
         $clone = clone $this;
         $clone->street = $street;
+        if ($validate) {
+            $clone->validate();
+        }
 
         return $clone;
     }
@@ -83,10 +81,13 @@ class MyClass
         return $this->country;
     }
 
-    public function withCountry(string $country): self
+    public function withCountry(string $country, bool $validate = true): self
     {
         $clone = clone $this;
         $clone->country = $country;
+        if ($validate) {
+            $clone->validate();
+        }
 
         return $clone;
     }

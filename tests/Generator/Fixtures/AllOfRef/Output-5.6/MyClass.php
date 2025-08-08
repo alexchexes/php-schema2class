@@ -71,16 +71,11 @@ class MyClass
      */
     public function withCity($city, $validate = true)
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($city, self::$_schema['properties']['city']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->city = $city;
+        if ($validate) {
+            $clone->validate();
+        }
 
         return $clone;
     }
@@ -100,16 +95,11 @@ class MyClass
      */
     public function withStreet($street, $validate = true)
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($street, self::$_schema['properties']['street']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->street = $street;
+        if ($validate) {
+            $clone->validate();
+        }
 
         return $clone;
     }
@@ -129,16 +119,11 @@ class MyClass
      */
     public function withCountry($country, $validate = true)
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($country, self::$_schema['properties']['country']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->country = $country;
+        if ($validate) {
+            $clone->validate();
+        }
 
         return $clone;
     }

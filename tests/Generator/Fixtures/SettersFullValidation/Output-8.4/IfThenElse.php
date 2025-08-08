@@ -86,10 +86,13 @@ class IfThenElse
         return $this->kind;
     }
 
-    public function withKind(?string $kind): self
+    public function withKind(?string $kind, bool $validate = true): self
     {
         $clone = clone $this;
         $clone->kind = $kind;
+        if ($validate) {
+            $clone->validate();
+        }
 
         return $clone;
     }
@@ -105,10 +108,13 @@ class IfThenElse
     /**
      * @param mixed $value
      */
-    public function withValue($value): self
+    public function withValue($value, bool $validate = true): self
     {
         $clone = clone $this;
         $clone->value = $value;
+        if ($validate) {
+            $clone->validate();
+        }
 
         return $clone;
     }

@@ -22,6 +22,11 @@ class SetterFactory
 
     private bool $mutating;
     private bool $chainable;
+    /**
+     * Whether the whole object must be revalidated on each setter call
+     * due to cross-property constraints in the schema.
+     */
+    private bool $alwaysRevalidate;
 
     public function __construct(
         private GeneratorRequest $request,
@@ -29,6 +34,7 @@ class SetterFactory
         $mutableConfig = $this->request->getMutableSetters();
         $this->mutating = $mutableConfig !== null;
         $this->chainable = $mutableConfig === 'chainable' || $this->mutating === false;
+        $this->alwaysRevalidate = $this->schemaRequiresFullValidation($request->getSchema());
     }
 
     public function generateSetter(PropertyInterface $property): ?MethodGenerator
@@ -52,12 +58,18 @@ class SetterFactory
         $propAnnotatedType = $paramProperty->typeAnnotation();
         $propTypeHint = $paramProperty->typeHint();
 
-        // Determine whether setter needs runtime validation.
-        $addValidation = $property->needsValidation();
+        // Determine whether setter needs runtime validation.  Validation is required
+        // when the property itself has constraints that are not enforced by PHP's
+        // type system or when the class schema contains cross-property constraints
+        // (like `if`/`then`/`else`) that may be invalidated by changing any property.
+        $needsValidation = $property->needsValidation();
+        $propRequiresFullValidation = $needsValidation && $this->schemaContainsRef($property->schema());
+        $fullRevalidation = $this->alwaysRevalidate || $propRequiresFullValidation;
+        $addValidation = $needsValidation || $this->alwaysRevalidate;
 
         $docBlock = $this->buildDocBlock($property, $varName, $propAnnotatedType, $propTypeHint, $addValidation);
         $parameters = $this->buildParams($varName, $propTypeHint, $addValidation);
-        $body = $this->generateBody($property, $propName, $varName, $addValidation);
+        $body = $this->generateBody($property, $propName, $varName, $addValidation, $fullRevalidation);
 
         $methodGen = new MethodGenerator(
             name: $methodName,
@@ -134,9 +146,58 @@ class SetterFactory
         return $parameters;
     }
 
-    private function generateBody(PropertyInterface $property, string $propName, string $varName, bool $addValidation): string
-    {
+    private function generateBody(
+        PropertyInterface $property,
+        string $propName,
+        string $varName,
+        bool $addValidation,
+        bool $fullRevalidation
+    ): string {
         $propKey = $property->keyStr();
+
+        $OPTIONALS = PropertyNames::OPTIONALS;
+
+        if ($fullRevalidation) {
+            if ($this->mutating) {
+                $CLONE = self::CLONE_VAR_NAME;
+                $body = "if (\$validate) {\n";
+                $body .= "    \${$CLONE} = clone \$this;\n";
+                $body .= "    \${$CLONE}->$propName = \$$varName;\n";
+                if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
+                    $body .= "    \${$CLONE}->{$OPTIONALS}[{$propKey}] = true;\n";
+                }
+                $body .= "    \${$CLONE}->validate();\n";
+                $body .= "    \$this->{$propName} = \${$CLONE}->$propName;\n";
+                if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
+                    $body .= "    \$this->{$OPTIONALS}[{$propKey}] = true;\n";
+                }
+                $body .= "} else {\n";
+                $body .= "    \$this->{$propName} = \$$varName;\n";
+                if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
+                    $body .= "    \$this->{$OPTIONALS}[{$propKey}] = true;\n";
+                }
+                $body .= "}\n";
+
+                if ($this->chainable) {
+                    $body .= "\nreturn \$this;";
+                }
+
+                return $body;
+            }
+
+            $CLONE = self::CLONE_VAR_NAME;
+            $body = "\${$CLONE} = clone \$this;\n";
+            $body .= "\${$CLONE}->$propName = \$$varName;\n";
+            if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
+                $body .= "\${$CLONE}->{$OPTIONALS}[{$propKey}] = true;\n";
+            }
+            if ($addValidation) {
+                $body .= "if (\$validate) {\n    \${$CLONE}->validate();\n}\n";
+            }
+            $body .= "\nreturn \${$CLONE};";
+
+            return $body;
+        }
 
         $validationBlock = '';
         if ($addValidation) {
@@ -154,8 +215,6 @@ class SetterFactory
                 }\n\n
                 PHP;
         }
-
-        $OPTIONALS = PropertyNames::OPTIONALS;
 
         if ($this->mutating) {
             $body =
@@ -184,5 +243,32 @@ class SetterFactory
         }
 
         return $body;
+    }
+
+    private function schemaContainsRef(array $schema): bool
+    {
+        if (isset($schema['$ref'])) {
+            return true;
+        }
+
+        foreach ($schema as $value) {
+            if (is_array($value) && $this->schemaContainsRef($value)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function schemaRequiresFullValidation(array $schema): bool
+    {
+        $keywords = ['if', 'then', 'else', 'allOf', 'anyOf', 'oneOf', 'not', 'dependencies', 'dependentRequired', 'dependentSchemas'];
+        foreach ($keywords as $kw) {
+            if (array_key_exists($kw, $schema)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
