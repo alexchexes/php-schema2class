@@ -137,16 +137,12 @@ class Record
      */
     public function withDataArray(array $dataArray, bool $validate = true): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($dataArray, self::$_schema['properties']['dataArray']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->dataArray = $dataArray;
+
+        if ($validate) {
+            $clone->validate();
+        }
 
         return $clone;
     }
@@ -172,16 +168,12 @@ class Record
      */
     public function withDataArrayNested(array $dataArrayNested, bool $validate = true): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($dataArrayNested, self::$_schema['properties']['dataArrayNested']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->dataArrayNested = $dataArrayNested;
+
+        if ($validate) {
+            $clone->validate();
+        }
 
         return $clone;
     }
@@ -207,16 +199,12 @@ class Record
      */
     public function withDataArrayAnyOf(array $dataArrayAnyOf, bool $validate = true): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($dataArrayAnyOf, self::$_schema['properties']['dataArrayAnyOf']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->dataArrayAnyOf = $dataArrayAnyOf;
+
+        if ($validate) {
+            $clone->validate();
+        }
 
         return $clone;
     }
@@ -242,16 +230,12 @@ class Record
      */
     public function withDataArrayNestedAnyOf(array $dataArrayNestedAnyOf, bool $validate = true): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($dataArrayNestedAnyOf, self::$_schema['properties']['dataArrayNestedAnyOf']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->dataArrayNestedAnyOf = $dataArrayNestedAnyOf;
+
+        if ($validate) {
+            $clone->validate();
+        }
 
         return $clone;
     }

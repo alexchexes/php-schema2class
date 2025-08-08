@@ -55,16 +55,12 @@ class RefValidationBaz
      */
     public function withNestedFoo(int $nestedFoo, bool $validate = true): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($nestedFoo, self::$_schema['properties']['nestedFoo']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->nestedFoo = $nestedFoo;
+
+        if ($validate) {
+            $clone->validate();
+        }
 
         return $clone;
     }

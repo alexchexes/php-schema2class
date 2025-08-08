@@ -82,16 +82,12 @@ class BarTest
      */
     public function withExampleProp($exampleProp, $validate = true)
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($exampleProp, self::$_schema['properties']['exampleProp']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->exampleProp = $exampleProp;
+
+        if ($validate) {
+            $clone->validate();
+        }
 
         return $clone;
     }

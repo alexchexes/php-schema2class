@@ -23,6 +23,8 @@ class SetterFactory
     private bool $mutating;
     private bool $chainable;
 
+    private ?bool $fullSchemaValidation = null;
+
     public function __construct(
         private GeneratorRequest $request,
     ) {
@@ -52,12 +54,19 @@ class SetterFactory
         $propAnnotatedType = $paramProperty->typeAnnotation();
         $propTypeHint = $paramProperty->typeHint();
 
-        // Determine whether setter needs runtime validation.
-        $addValidation = $property->needsValidation();
+        // Determine whether setter needs runtime validation and whether
+        // validation must be performed against the full schema or just the
+        // property fragment.
+        $schemaRequiresFullValidation = $this->schemaRequiresFullValidation();
+        $propertyNeedsValidation = $property->needsValidation();
+        $propertyHasRef = $propertyNeedsValidation && $this->schemaHasRef($property->schema());
+
+        $addValidation = $propertyNeedsValidation || $schemaRequiresFullValidation;
+        $fullValidation = $schemaRequiresFullValidation || $propertyHasRef;
 
         $docBlock = $this->buildDocBlock($property, $varName, $propAnnotatedType, $propTypeHint, $addValidation);
         $parameters = $this->buildParams($varName, $propTypeHint, $addValidation);
-        $body = $this->generateBody($property, $propName, $varName, $addValidation);
+        $body = $this->generateBody($property, $propName, $varName, $addValidation, $fullValidation);
 
         $methodGen = new MethodGenerator(
             name: $methodName,
@@ -76,6 +85,37 @@ class SetterFactory
         }
 
         return $methodGen;
+    }
+
+    private function schemaRequiresFullValidation(): bool
+    {
+        if ($this->fullSchemaValidation !== null) {
+            return $this->fullSchemaValidation;
+        }
+
+        $schema = $this->request->getSchema();
+        foreach (['if', 'then', 'else', 'dependencies', 'dependentRequired', 'dependentSchemas'] as $k) {
+            if (array_key_exists($k, $schema)) {
+                return $this->fullSchemaValidation = true;
+            }
+        }
+
+        return $this->fullSchemaValidation = false;
+    }
+
+    private function schemaHasRef(array $schema): bool
+    {
+        if (array_key_exists('$ref', $schema)) {
+            return true;
+        }
+
+        foreach ($schema as $v) {
+            if (is_array($v) && $this->schemaHasRef($v)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function buildDocBlock(
@@ -134,12 +174,18 @@ class SetterFactory
         return $parameters;
     }
 
-    private function generateBody(PropertyInterface $property, string $propName, string $varName, bool $addValidation): string
+    private function generateBody(
+        PropertyInterface $property,
+        string $propName,
+        string $varName,
+        bool $addValidation,
+        bool $fullValidation,
+    ): string
     {
         $propKey = $property->keyStr();
 
         $validationBlock = '';
-        if ($addValidation) {
+        if ($addValidation && !$fullValidation) {
             $newValidatorExpr = $this->request->getOptions()->getNewValidatorExpr();
 
             $SCHEMA = PropertyNames::SCHEMA;
@@ -166,6 +212,10 @@ class SetterFactory
                 $body .= "\n\$this->{$OPTIONALS}[{$propKey}] = true;";
             }
 
+            if ($addValidation && $fullValidation) {
+                $body .= "\nif (\$validate) {\n    \$this->validate();\n}\n";
+            }
+
             if ($this->chainable) {
                 $body .= "\n\nreturn \$this;";
             }
@@ -178,6 +228,10 @@ class SetterFactory
 
             if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
                 $body .= "\${$CLONE}->{$OPTIONALS}[{$propKey}] = true;\n";
+            }
+
+            if ($addValidation && $fullValidation) {
+                $body .= "\nif (\$validate) {\n    \${$CLONE}->validate();\n}\n";
             }
 
             $body .= "\nreturn \${$CLONE};";

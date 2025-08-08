@@ -150,16 +150,12 @@ class Foo
      */
     public function withFloatEnumRef($floatEnumRef, bool $validate = true): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($floatEnumRef, self::$_schema['properties']['floatEnumRef']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->floatEnumRef = $floatEnumRef;
+
+        if ($validate) {
+            $clone->validate();
+        }
 
         return $clone;
     }
@@ -220,16 +216,12 @@ class Foo
      */
     public function withBoolEnumRef(bool $boolEnumRef, bool $validate = true): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($boolEnumRef, self::$_schema['properties']['boolEnumRef']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->boolEnumRef = $boolEnumRef;
+
+        if ($validate) {
+            $clone->validate();
+        }
 
         return $clone;
     }
@@ -255,16 +247,12 @@ class Foo
      */
     public function withRequiredBoolEnumRef(bool $requiredBoolEnumRef, bool $validate = true): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($requiredBoolEnumRef, self::$_schema['properties']['requiredBoolEnumRef']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->requiredBoolEnumRef = $requiredBoolEnumRef;
+
+        if ($validate) {
+            $clone->validate();
+        }
 
         return $clone;
     }

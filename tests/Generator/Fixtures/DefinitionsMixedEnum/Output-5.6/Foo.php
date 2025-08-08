@@ -64,16 +64,12 @@ class Foo
      */
     public function withVal($val, $validate = true)
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($val, self::$_schema['properties']['val']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->val = $val;
+
+        if ($validate) {
+            $clone->validate();
+        }
 
         return $clone;
     }
