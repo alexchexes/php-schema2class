@@ -162,7 +162,6 @@ class Record
         if ($validate) {
             $clone->validate();
         }
-
         return $clone;
     }
 
@@ -192,7 +191,6 @@ class Record
         if ($validate) {
             $clone->validate();
         }
-
         return $clone;
     }
 
@@ -222,7 +220,6 @@ class Record
         if ($validate) {
             $clone->validate();
         }
-
         return $clone;
     }
 
@@ -252,7 +249,6 @@ class Record
         if ($validate) {
             $clone->validate();
         }
-
         return $clone;
     }
 

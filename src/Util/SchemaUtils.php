@@ -69,7 +69,7 @@ class SchemaUtils
      *                                  additional-/pattern-/unevaluated Properties.
      * 
      */
-    public static function needsFullValidationOnPropertyChange(
+    public static function needsRevalidationOnPropertyChange(
         array $schema,
         bool $isPropertyOptional,
         bool $isPropertyDefined,
@@ -122,7 +122,7 @@ class SchemaUtils
                 foreach ($schema[$k] as $sub) {
                     if (
                         is_array($sub)
-                        && self::needsFullValidationOnPropertyChange($sub, $isPropertyOptional, $isPropertyDefined)
+                        && self::needsRevalidationOnPropertyChange($sub, $isPropertyOptional, $isPropertyDefined)
                     ) {
                         return true;
                     }

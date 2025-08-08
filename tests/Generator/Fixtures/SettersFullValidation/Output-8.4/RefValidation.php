@@ -109,7 +109,6 @@ class RefValidation
         if ($validate) {
             $clone->validate();
         }
-
         return $clone;
     }
 
@@ -143,7 +142,6 @@ class RefValidation
         if ($validate) {
             $clone->validate();
         }
-
         return $clone;
     }
 

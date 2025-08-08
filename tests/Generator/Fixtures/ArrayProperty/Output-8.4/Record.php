@@ -86,7 +86,6 @@ class Record
         if ($validate) {
             $clone->validate();
         }
-
         return $clone;
     }
 

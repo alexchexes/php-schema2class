@@ -35,7 +35,7 @@ class AdditionalPropSetterFactory
     public function generate(): MethodGenerator
     {
         $addValidation = false;
-        if (SchemaUtils::needsFullValidationOnPropertyChange($this->schema, true, false)) {
+        if (SchemaUtils::needsRevalidationOnPropertyChange($this->schema, true, false)) {
             $addValidation = true;
         }
 

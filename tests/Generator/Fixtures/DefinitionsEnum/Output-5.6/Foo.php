@@ -81,7 +81,6 @@ class Foo
         if ($validate) {
             $clone->validate();
         }
-
         return $clone;
     }
 
@@ -105,7 +104,6 @@ class Foo
         if ($validate) {
             $clone->validate();
         }
-
         return $clone;
     }
 

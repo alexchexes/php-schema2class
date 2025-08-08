@@ -95,7 +95,6 @@ class MyClass
         if ($validate) {
             $clone->validate();
         }
-
         return $clone;
     }
 

@@ -120,7 +120,6 @@ class Qux
         if ($validate) {
             $clone->validate();
         }
-
         return $clone;
     }
 

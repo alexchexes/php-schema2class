@@ -81,7 +81,6 @@ class MyObject
         if ($validate) {
             $clone->validate();
         }
-
         return $clone;
     }
 

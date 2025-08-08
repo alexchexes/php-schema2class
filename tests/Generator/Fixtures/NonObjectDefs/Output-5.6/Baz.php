@@ -110,7 +110,6 @@ class Baz
         if ($validate) {
             $clone->validate();
         }
-
         return $clone;
     }
 

@@ -117,7 +117,6 @@ class IfThenElse
         if ($validate) {
             $clone->validate();
         }
-
         return $clone;
     }
 
@@ -139,15 +138,16 @@ class IfThenElse
         if ($validate) {
             $clone->validate();
         }
-
         return $clone;
     }
 
-    public function withoutValue(): self
+    public function withoutValue(bool $validate = true): self
     {
         $clone = clone $this;
         unset($clone->value);
-
+        if ($validate) {
+            $clone->validate();
+        }
         return $clone;
     }
 

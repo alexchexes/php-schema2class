@@ -80,7 +80,6 @@ class RefValidationBaz
         if ($validate) {
             $clone->validate();
         }
-
         return $clone;
     }
 

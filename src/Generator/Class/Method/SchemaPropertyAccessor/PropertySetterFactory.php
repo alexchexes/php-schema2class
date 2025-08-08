@@ -55,7 +55,7 @@ class PropertySetterFactory
         // validation must be performed against the full schema or just the
         // property fragment.
         $isPropOptional = $property instanceof OptionalPropertyDecorator;
-        $schemaNeedsValidation = SchemaUtils::needsFullValidationOnPropertyChange($this->schema, $isPropOptional, true);
+        $schemaNeedsValidation = SchemaUtils::needsRevalidationOnPropertyChange($this->schema, $isPropOptional, true);
         $propertyNeedsValidation = $property->needsValidation();
 
         $addValidation = $propertyNeedsValidation || $schemaNeedsValidation;
@@ -80,13 +80,11 @@ class PropertySetterFactory
             docBlock: $docBlock
         );
 
-        // set return type hint or add it to the docblock
+        // set return type hint if possible
         if ($this->chainable && $this->request->isAtLeastPHP('7.0')) {
             $methodGen->setReturnType('self');
-        } elseif (!$this->chainable) {
-            if ($this->request->isAtLeastPHP('7.1')) {
-                $methodGen->setReturnType('void');
-            }
+        } elseif (!$this->chainable && $this->request->isAtLeastPHP('7.1')) {
+            $methodGen->setReturnType('void');
         }
 
         return $methodGen;
@@ -205,7 +203,7 @@ class PropertySetterFactory
                 <<<PHP
                 if (\${$VALIDATE_ARG}) {
                     \${$object}->{$VALIDATE_SELF}();
-                }\n
+                }
                 PHP;
         }
 
