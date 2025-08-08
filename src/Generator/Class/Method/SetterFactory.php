@@ -53,11 +53,16 @@ class SetterFactory
         $propTypeHint = $paramProperty->typeHint();
 
         // Determine whether setter needs runtime validation.
-        $addValidation = $property->needsValidation();
+        $schemaNeedsValidation = $this->rootSchemaRequiresFullValidation();
+        $propertyNeedsValidation = $property->needsValidation();
+        $propertyNeedsFullValidation = $propertyNeedsValidation && $this->schemaContainsRef($property->schema());
+
+        $requiresFullValidation = $schemaNeedsValidation || $propertyNeedsFullValidation;
+        $addValidation = $propertyNeedsValidation || $schemaNeedsValidation;
 
         $docBlock = $this->buildDocBlock($property, $varName, $propAnnotatedType, $propTypeHint, $addValidation);
         $parameters = $this->buildParams($varName, $propTypeHint, $addValidation);
-        $body = $this->generateBody($property, $propName, $varName, $addValidation);
+        $body = $this->generateBody($property, $propName, $varName, $addValidation, $requiresFullValidation);
 
         $methodGen = new MethodGenerator(
             name: $methodName,
@@ -134,12 +139,17 @@ class SetterFactory
         return $parameters;
     }
 
-    private function generateBody(PropertyInterface $property, string $propName, string $varName, bool $addValidation): string
-    {
+    private function generateBody(
+        PropertyInterface $property,
+        string $propName,
+        string $varName,
+        bool $addValidation,
+        bool $requiresFullValidation,
+    ): string {
         $propKey = $property->keyStr();
 
         $validationBlock = '';
-        if ($addValidation) {
+        if ($addValidation && !$requiresFullValidation) {
             $newValidatorExpr = $this->request->getOptions()->getNewValidatorExpr();
 
             $SCHEMA = PropertyNames::SCHEMA;
@@ -158,31 +168,81 @@ class SetterFactory
         $OPTIONALS = PropertyNames::OPTIONALS;
 
         if ($this->mutating) {
-            $body =
-                $validationBlock .
-                "\$this->{$propName} = \$$varName;";
+            if ($requiresFullValidation) {
+                $body = "\$this->{$propName} = \$$varName;\n";
+                if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
+                    $body .= "\$this->{$OPTIONALS}[{$propKey}] = true;\n";
+                }
+                if ($addValidation) {
+                    $body .= "if (\$validate) {\n    \$this->validate();\n}\n";
+                }
+                if ($this->chainable) {
+                    $body .= "\nreturn \$this;";
+                }
+            } else {
+                $body =
+                    $validationBlock .
+                    "\$this->{$propName} = \$$varName;";
 
-            if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
-                $body .= "\n\$this->{$OPTIONALS}[{$propKey}] = true;";
-            }
+                if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
+                    $body .= "\n\$this->{$OPTIONALS}[{$propKey}] = true;";
+                }
 
-            if ($this->chainable) {
-                $body .= "\n\nreturn \$this;";
+                if ($this->chainable) {
+                    $body .= "\n\nreturn \$this;";
+                }
             }
         } else {
             $CLONE = self::CLONE_VAR_NAME;
-            $body =
-                $validationBlock .
-                "\${$CLONE} = clone \$this;\n" .
-                "\${$CLONE}->$propName = \$$varName;\n";
+            if ($requiresFullValidation) {
+                $body =
+                    "\${$CLONE} = clone \$this;\n" .
+                    "\${$CLONE}->$propName = \$$varName;\n";
+                if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
+                    $body .= "\${$CLONE}->{$OPTIONALS}[{$propKey}] = true;\n";
+                }
+                if ($addValidation) {
+                    $body .= "if (\$validate) {\n    \${$CLONE}->validate();\n}\n";
+                }
+                $body .= "\nreturn \${$CLONE};";
+            } else {
+                $body =
+                    $validationBlock .
+                    "\${$CLONE} = clone \$this;\n" .
+                    "\${$CLONE}->$propName = \$$varName;\n";
 
-            if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
-                $body .= "\${$CLONE}->{$OPTIONALS}[{$propKey}] = true;\n";
+                if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
+                    $body .= "\${$CLONE}->{$OPTIONALS}[{$propKey}] = true;\n";
+                }
+
+                $body .= "\nreturn \${$CLONE};";
             }
-
-            $body .= "\nreturn \${$CLONE};";
         }
 
         return $body;
+    }
+
+    private function schemaContainsRef(array $schema): bool
+    {
+        if (isset($schema['$ref'])) {
+            return true;
+        }
+
+        foreach ($schema as $value) {
+            if (is_array($value) && $this->schemaContainsRef($value)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function rootSchemaRequiresFullValidation(): bool
+    {
+        $schema = $this->request->getSchema();
+
+        return isset($schema['if']) || isset($schema['then']) || isset($schema['else'])
+            || isset($schema['dependentSchemas']) || isset($schema['dependentRequired'])
+            || isset($schema['dependencies']);
     }
 }
