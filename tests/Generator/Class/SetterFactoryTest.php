@@ -30,7 +30,7 @@ class SetterFactoryTest extends TestCase
         $prop = $props[0];
 
         $factory = new SetterFactory($req);
-        $setter = $factory->generateSetter($prop);
+        $setter = $factory->generate($prop);
         self::assertNotNull($setter);
 
         return [$setter, $prop];

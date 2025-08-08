@@ -29,7 +29,7 @@ class UnsetterFactory
      * or shouldn't be generated at all, and creates one if needed.
      * If no unsetter should be generated, returns `null`.
      */
-    public function generateUnsetter(PropertyInterface $property): ?MethodGenerator
+    public function generate(PropertyInterface $property): ?MethodGenerator
     {
         if ($this->request->getNoSetters()) {
             return null;

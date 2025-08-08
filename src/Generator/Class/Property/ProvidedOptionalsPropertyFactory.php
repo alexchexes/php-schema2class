@@ -17,7 +17,7 @@ class ProvidedOptionalsPropertyFactory
       private GeneratorRequest $request,
     ) {}
 
-    public function generateProvidedOptionalsProperty(): PropertyGenerator
+    public function generate(): PropertyGenerator
     {
         $visibility = ($this->request->getNoGetters() && $this->request->getNoSetters())
             ? PropertyGenerator::FLAG_PUBLIC

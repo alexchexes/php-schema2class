@@ -22,26 +22,26 @@ class ClassPropertySuiteFactory
     /**
      * @return PropertyGenerator[]
      */
-    public function generateProperties()
+    public function generateAll()
     {
         $validationSchemaFactory = new ValidationSchemaPropertyFactory($this->request, $this->schema);
         $providedOptionalsFactory = new ProvidedOptionalsPropertyFactory($this->request);
         $defaultsFactory = new DefaultsPropertyFactory($this->request, $this->defaults);
         $schemaPropertyFactory = new SchemaPropertyFactory($this->request);
 
-        $schemaProperty = $validationSchemaFactory->generateValidationSchemaProperty();
+        $schemaProperty = $validationSchemaFactory->generate();
         $propertyGenerators[] = $schemaProperty;
 
         if ($this->defaults) {
-            $propertyGenerators[] = $defaultsFactory->generateDefaultsProperty();
+            $propertyGenerators[] = $defaultsFactory->generate();
         }
 
         if ($this->schemaProperties->hasOptionalNullable()) {
-            $propertyGenerators[] = $providedOptionalsFactory->generateProvidedOptionalsProperty();
+            $propertyGenerators[] = $providedOptionalsFactory->generate();
         }
         
         foreach ($this->schemaProperties as $schemaProp) {
-            $propertyGenerators[] = $schemaPropertyFactory->generateClassSchemaProperty($schemaProp);
+            $propertyGenerators[] = $schemaPropertyFactory->generate($schemaProp);
         }
 
         return $propertyGenerators;

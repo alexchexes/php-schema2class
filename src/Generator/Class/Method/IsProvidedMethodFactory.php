@@ -20,7 +20,7 @@ class IsProvidedMethodFactory
     )
     {}
 
-    public function generateIsProvidedMethod(): ?MethodGenerator
+    public function generate(): ?MethodGenerator
     {
         if (!$this->hasOptionalNullable) {
             return null;

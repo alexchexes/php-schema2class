@@ -33,7 +33,7 @@ class SetterFactory
         $this->chainable = $mutableConfig === 'chainable' || $this->mutating === false;
     }
 
-    public function generateSetter(PropertyInterface $property): ?MethodGenerator
+    public function generate(PropertyInterface $property): ?MethodGenerator
     {
         if ($this->request->getNoSetters()) {
             return null;

@@ -24,7 +24,7 @@ class ConstructorFactory
     /** 
      * Returns `null` when constructor should not be generated
      */
-    public function generateConstructor(): ?MethodGenerator
+    public function generate(): ?MethodGenerator
     {
         $params      = [];
         $tags        = [];

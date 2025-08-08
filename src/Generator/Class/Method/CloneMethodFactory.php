@@ -12,7 +12,7 @@ class CloneMethodFactory
         private PropertyCollection $schemaProperties,
     ) {}
 
-    public function generateCloneMethod(): ?MethodGenerator
+    public function generate(): ?MethodGenerator
     {
         $expressions = [];
 

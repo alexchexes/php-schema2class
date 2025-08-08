@@ -18,7 +18,7 @@ class GetterFactory
         private GeneratorRequest $request,
     ) {}
 
-    public function generateGetter(PropertyInterface $property): ?MethodGenerator
+    public function generate(PropertyInterface $property): ?MethodGenerator
     {
         if ($this->request->getNoGetters()) {
             return null;

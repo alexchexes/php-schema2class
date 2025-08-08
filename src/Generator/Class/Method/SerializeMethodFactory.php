@@ -35,7 +35,7 @@ class SerializeMethodFactory
     /** 
      * @return MethodGenerator[]
      */
-    public function generateSerializeMethods(): array
+    public function generateAll(): array
     {
       return [
         $this->generateToArrayMethod(),

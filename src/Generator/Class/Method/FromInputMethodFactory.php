@@ -41,7 +41,7 @@ class FromInputMethodFactory
     ) {
     }
 
-    public function generateFromInputMethod(): MethodGenerator
+    public function generate(): MethodGenerator
     {
         $parameterGenerators = $this->buildParams();
         $docBlockGenerators = $this->buildDocBlock();

@@ -21,7 +21,7 @@ class DefaultsPropertyFactory
       private array $defaults,
     ) {}
 
-    public function generateDefaultsProperty(): PropertyGenerator
+    public function generate(): PropertyGenerator
     {
         $prop = new PropertyGenerator(
             PropertyNames::DEFAULTS,

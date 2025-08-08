@@ -23,10 +23,10 @@ class ClassMethodSuiteFactory
      *
      * @return MethodGenerator[]
      */
-    public function generateMethods(): array
+    public function generateAll(): array
     {
         $constructorFactory = new ConstructorFactory($this->schemaProperties);
-        $accessorsFactory = new PropertyAccessorsFactory($this->request, $this->schemaProperties);
+        $accessorsFactory = new SchemaPropertyAccessorsFactory($this->request, $this->schemaProperties);
         $buildMethodFactory = new FromInputMethodFactory($this->request, $this->schemaProperties, $this->defaults);
         $serializeMethodFactory = new SerializeMethodFactory($this->request, $this->schemaProperties, $this->defaults);
         $validateMethodFactory = new ValidateMethodFactory($this->request);
@@ -35,14 +35,14 @@ class ClassMethodSuiteFactory
         $isProvidedMethodFactory = new IsProvidedMethodFactory($this->request, $this->schemaProperties->hasOptionalNullable());
 
         $methodGenerators = [
-            $constructorFactory->generateConstructor(),
-            ...$accessorsFactory->generatePropertyAccessors(),
-            $buildMethodFactory->generateFromInputMethod(),
-            ...$serializeMethodFactory->generateSerializeMethods(),
+            $constructorFactory->generate(),
+            ...$accessorsFactory->generateAll(),
+            $buildMethodFactory->generate(),
+            ...$serializeMethodFactory->generateAll(),
             $validateMethodFactory->generate(),
             $validateInputMethodFactory->generate(),
-            $cloneMethodFactory->generateCloneMethod(),
-            $isProvidedMethodFactory->generateIsProvidedMethod(),
+            $cloneMethodFactory->generate(),
+            $isProvidedMethodFactory->generate(),
         ];
 
         return array_values(array_filter($methodGenerators));

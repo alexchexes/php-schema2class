@@ -21,7 +21,7 @@ class ValidationSchemaPropertyFactory
       private array $schema,
     ) {}
 
-    public function generateValidationSchemaProperty(): PropertyGenerator
+    public function generate(): PropertyGenerator
     {
         // remove metadata like descriptions from schema if such option is set, but keep them
         // for building property documentation

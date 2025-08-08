@@ -19,30 +19,30 @@ class SchemaPropertyFactory
       private GeneratorRequest $request,
     ) {}
     
-    public function generateClassSchemaProperty(PropertyInterface $schemaProp): PropertyGenerator
+    public function generate(PropertyInterface $property): PropertyGenerator
     {
         $visibility = $this->request->getNoGetters()
             ? PropertyGenerator::FLAG_PUBLIC
             : PropertyGenerator::FLAG_PRIVATE;
 
         $propertyGenerator = new PropertyGenerator(
-            name: $schemaProp->propName(),
-            defaultValue: $schemaProp->formatValue(null),
+            name: $property->propName(),
+            defaultValue: $property->formatValue(null),
             flags: $visibility
         );
 
-        $typeHint = $schemaProp->typeHint();
+        $typeHint = $property->typeHint();
         if ($this->request->isAtLeastPHP('7.4') && $typeHint !== null) {
             $propertyGenerator->setType(TypeGenerator::fromTypeString($typeHint));
         }
 
-        $docBlock = $this->buildDockBlock($schemaProp);
+        $docBlock = $this->buildDockBlock($property);
         if ($docBlock) {
             $propertyGenerator->setDocBlock($docBlock);
         }
 
         $isOptional = false;
-        if ($schemaProp instanceof OptionalPropertyDecorator) {
+        if ($property instanceof OptionalPropertyDecorator) {
             $isOptional = true;
         }
         // omit default `null` for every required field, unsless default is specified in the schema

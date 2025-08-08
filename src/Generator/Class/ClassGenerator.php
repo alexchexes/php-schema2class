@@ -53,13 +53,13 @@ class ClassGenerator
             $this->schema,
             $schemaProperties,
             $defaults,
-        ))->generateProperties();
+        ))->generateAll();
 
         $methodGenerators = (new ClassMethodSuiteFactory(
             $this->request,
             $schemaProperties,
             $defaults,
-        ))->generateMethods();
+        ))->generateAll();
 
         $classFileGenerator = $this->prepareFileGenerator($propertyGenerators, $methodGenerators);
 

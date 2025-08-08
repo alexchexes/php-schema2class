@@ -11,7 +11,7 @@ use Laminas\Code\Generator\MethodGenerator;
 /** 
  * Factory for creating all accessors (get/set/unset/with/without) of a generated class.
  */
-class PropertyAccessorsFactory
+class SchemaPropertyAccessorsFactory
 {
     public function __construct(
         private GeneratorRequest $request,
@@ -22,7 +22,7 @@ class PropertyAccessorsFactory
     /**
      * @return MethodGenerator[]
      */
-    public function generatePropertyAccessors(): array
+    public function generateAll(): array
     {
         $methodsGenerators = [];
 
@@ -35,9 +35,9 @@ class PropertyAccessorsFactory
         $unsetterFactory = new UnsetterFactory($this->request);
 
         foreach ($filteredProperties as $property) {
-            $methodsGenerators[] = $getterFactory->generateGetter($property);
-            $methodsGenerators[] = $setterFactory->generateSetter($property);
-            $methodsGenerators[] = $unsetterFactory->generateUnsetter($property);
+            $methodsGenerators[] = $getterFactory->generate($property);
+            $methodsGenerators[] = $setterFactory->generate($property);
+            $methodsGenerators[] = $unsetterFactory->generate($property);
         }
 
         return array_values(array_filter($methodsGenerators));
