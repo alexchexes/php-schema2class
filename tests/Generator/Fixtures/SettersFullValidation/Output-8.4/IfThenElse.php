@@ -73,12 +73,12 @@ class IfThenElse
     private ?string $kind;
 
     /**
-     * @var mixed|null
+     * @var mixed
      */
     private $value = null;
 
     /**
-     * @param mixed|null $value
+     * @param mixed $value
      */
     public function __construct(?string $kind, $value = null)
     {
@@ -121,7 +121,7 @@ class IfThenElse
     }
 
     /**
-     * @return mixed|null
+     * @return mixed
      */
     public function getValue()
     {
