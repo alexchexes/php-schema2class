@@ -47,6 +47,13 @@ class MyClass
     private $_providedOptionals = [];
 
     /**
+     * Map of name/value pairs for properties not specified in the schema.
+     *
+     * @var object
+     */
+    private $_additionalProperties;
+
+    /**
      * @var string|null
      */
     private $foo = null;
@@ -70,11 +77,26 @@ class MyClass
     }
 
     /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     * @return self
+     */
+    public function setAdditionalProperties($additionalProperties)
+    {
+        $this->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $this;
+    }
+
+    /**
      * @return string|null
      */
     public function getFoo()
     {
-        return $this->foo;
+        return isset($this->foo) ? $this->foo : null;
     }
 
     /**
@@ -102,7 +124,7 @@ class MyClass
      */
     public function unsetFoo()
     {
-        $this->foo = null;
+        unset($this->foo);
 
         return $this;
     }
@@ -127,7 +149,7 @@ class MyClass
      */
     public function getOpt()
     {
-        return $this->opt;
+        return isset($this->opt) ? $this->opt : null;
     }
 
     /**
@@ -156,7 +178,7 @@ class MyClass
      */
     public function unsetOpt()
     {
-        $this->opt = null;
+        unset($this->opt);
         unset($this->_providedOptionals['opt']);
 
         return $this;

@@ -13,6 +13,9 @@ use Laminas\Code\Generator\MethodGenerator;
 
 class PropertyUnsetterFactory
 {
+    public const CLONE_VAR = 'clone';
+    public const VALIDATE_ARG = 'validate';
+
     private bool $mutating;
     private bool $chainable;
 
@@ -34,66 +37,14 @@ class PropertyUnsetterFactory
         if ($this->request->getNoSetters()) {
             return null;
         }
-
-        if ($this->mutating) {
-            // TODO: check why for "mutable" style we generate unsetter only when property is not just optional, but also nullable. Is this necessary?
-            if ($property instanceof OptionalPropertyDecorator) {
-                return $this->generateMutatingUnsetter($property);
-            }
-        } else {
-            if ($property instanceof OptionalPropertyDecorator) {
-                return $this->generateNonMutatingUnsetter($property);
-            }
+        if (!$property instanceof OptionalPropertyDecorator) {
+            return null;
         }
 
-        return null;
-    }
+        $prefix = $this->mutating ? 'unset' : 'without';
+        $methodName = $prefix . $property->methodName();
 
-    private function generateNonMutatingUnsetter(PropertyInterface $property): MethodGenerator
-    {
-        $methodName = 'without' . $property->methodName();
-        $propKey = $property->keyStr();
-        $propName = $property->propName();
-
-        $body = "\$clone = clone \$this;\n";
-        $body .= "unset(\$clone->$propName);\n";
-
-        if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
-            $body .= "unset(\$clone->".PropertyNames::OPTIONALS."[{$propKey}]);\n";
-        }
-
-        $body .= "\nreturn \$clone;";
-
-        $unsetMethod = new MethodGenerator(
-            name: $methodName,
-            parameters: [],
-            flags: MethodGenerator::FLAG_PUBLIC,
-            body: $body,
-        );
-
-        if ($this->request->isAtLeastPHP('7.0')) {
-            $unsetMethod->setReturnType('self');
-        } else {
-            $dockBlock = new DocBlockGenerator(null, null, [new ReturnTag('self')]);
-            $unsetMethod->setDocBlock($dockBlock);
-        }
-
-        return $unsetMethod;
-    }
-
-    private function generateMutatingUnsetter(PropertyInterface $property): MethodGenerator
-    {
-        $methodName = 'unset' . $property->methodName();
-        $keyStr = $property->keyStr();
-        $propName = $property->propName();
-
-        $body = "\$this->{$propName} = null;\n";
-        if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
-            $body .= "unset(\$this->".PropertyNames::OPTIONALS."[{$keyStr}]);\n";
-        }
-        if ($this->chainable) {
-            $body .= "\nreturn \$this;";
-        }
+        $body = $this->generateBody($property);
 
         $unsetMethod = new MethodGenerator(
             name: $methodName,
@@ -114,5 +65,32 @@ class PropertyUnsetterFactory
         }
 
         return $unsetMethod;
+    }
+
+    private function generateBody(PropertyInterface $property): string
+    {
+        $OPTIONALS = PropertyNames::OPTIONALS;
+        $CLONE_VAR = self::CLONE_VAR;
+        $propKey = $property->keyStr();
+        $propName = $property->propName();
+        $object = $this->mutating ? 'this' : $CLONE_VAR;
+
+        $bodyParts = [];
+
+        if (!$this->mutating) {
+            $bodyParts[] = "\${$CLONE_VAR} = clone \$this;\n";
+        }
+
+        $bodyParts[] = "unset(\${$object}->{$propName});\n";
+
+        if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
+            $bodyParts[] = "unset(\${$object}->{$OPTIONALS}[{$propKey}]);\n";
+        }
+
+        if ($this->chainable) {
+            $bodyParts[] = "\nreturn \${$object};";
+        }
+
+        return implode('', $bodyParts);
     }
 }

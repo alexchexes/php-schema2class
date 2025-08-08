@@ -74,6 +74,11 @@ class MyClass
      */
     private array $_providedOptionals = [];
 
+    /**
+     * Map of name/value pairs for properties not specified in the schema.
+     */
+    private object $_additionalProperties;
+
     private MyClassInferString $inferString;
 
     private MyClassInferInt $inferInt;
@@ -104,6 +109,21 @@ class MyClass
         $this->inferStringOpt = $inferStringOpt;
         $this->inferIntOpt = $inferIntOpt;
         $this->inferMixedOpt = $inferMixedOpt;
+    }
+
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     */
+    public function withAdditionalProperties(array|object $additionalProperties): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
     }
 
     public function getInferString(): MyClassInferString
@@ -161,7 +181,7 @@ class MyClass
 
     public function getInferStringOpt(): ?MyClassInferStringOpt
     {
-        return $this->inferStringOpt;
+        return $this->inferStringOpt ?? null;
     }
 
     public function withInferStringOpt(MyClassInferStringOpt $inferStringOpt): self
@@ -182,7 +202,7 @@ class MyClass
 
     public function getInferIntOpt(): ?MyClassInferIntOpt
     {
-        return $this->inferIntOpt;
+        return $this->inferIntOpt ?? null;
     }
 
     public function withInferIntOpt(MyClassInferIntOpt $inferIntOpt): self
@@ -206,7 +226,7 @@ class MyClass
      */
     public function getInferMixedOpt(): bool|int|float|string|null
     {
-        return $this->inferMixedOpt;
+        return $this->inferMixedOpt ?? null;
     }
 
     /**

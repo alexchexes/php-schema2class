@@ -36,6 +36,11 @@ class Record
     ];
 
     /**
+     * Map of name/value pairs for properties not specified in the schema.
+     */
+    private object $_additionalProperties;
+
+    /**
      * @var Phone[]|null
      */
     private ?array $dataArray = null;
@@ -49,11 +54,26 @@ class Record
     }
 
     /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     */
+    public function withAdditionalProperties(array|object $additionalProperties): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
+    }
+
+    /**
      * @return Phone[]|null
      */
     public function getDataArray(): ?array
     {
-        return $this->dataArray;
+        return $this->dataArray ?? null;
     }
 
     /**

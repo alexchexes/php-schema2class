@@ -69,6 +69,11 @@ class Foo
     private array $_providedOptionals = [];
 
     /**
+     * Map of name/value pairs for properties not specified in the schema.
+     */
+    private object $_additionalProperties;
+
+    /**
      * @var 'a'|'b'|string[]|null
      */
     private string|array|null $a = null;
@@ -91,13 +96,28 @@ class Foo
     }
 
     /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     */
+    public function withAdditionalProperties(array|object $additionalProperties): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
+    }
+
+    /**
      * Should have validation block
      *
      * @return 'a'|'b'|string[]|null
      */
     public function getA(): string|array|null
     {
-        return $this->a;
+        return $this->a ?? null;
     }
 
     /**
@@ -134,7 +154,7 @@ class Foo
      */
     public function getB(): ?array
     {
-        return $this->b;
+        return $this->b ?? null;
     }
 
     /**
@@ -161,7 +181,7 @@ class Foo
      */
     public function getC(): int|float|null
     {
-        return $this->c;
+        return $this->c ?? null;
     }
 
     /**
@@ -190,7 +210,7 @@ class Foo
      */
     public function getD(): ?Bar
     {
-        return $this->d;
+        return $this->d ?? null;
     }
 
     /**

@@ -293,6 +293,11 @@ class MyClass
      */
     private array $_providedOptionals = [];
 
+    /**
+     * Map of name/value pairs for properties not specified in the schema.
+     */
+    private object $_additionalProperties;
+
     private string $_GLOBALS;
 
     private string $GLOBALS;
@@ -455,6 +460,21 @@ class MyClass
         $this->ensureArgs1 = $ensureArgs1;
         $this->ensureArgs2 = $ensureArgs2;
         $this->ensureArgs3 = $ensureArgs3;
+    }
+
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     */
+    public function withAdditionalProperties($additionalProperties): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
     }
 
     public function get_GLOBALS(): string
@@ -667,7 +687,7 @@ class MyClass
 
     public function getValidate(): ?string
     {
-        return $this->validate;
+        return $this->validate ?? null;
     }
 
     public function withValidate(string $_validate): self
@@ -688,7 +708,7 @@ class MyClass
 
     public function getMaterializeDefaults(): ?string
     {
-        return $this->materializeDefaults;
+        return $this->materializeDefaults ?? null;
     }
 
     public function withMaterializeDefaults(?string $_materializeDefaults): self
@@ -737,7 +757,7 @@ class MyClass
 
     public function getTestObj(): ?MyClassTestObj
     {
-        return $this->testObj;
+        return $this->testObj ?? null;
     }
 
     public function withTestObj(MyClassTestObj $testObj): self
@@ -875,7 +895,7 @@ class MyClass
 
     public function get__ProvidedOptionals(): ?string
     {
-        return $this->__providedOptionals;
+        return $this->__providedOptionals ?? null;
     }
 
     public function with__ProvidedOptionals(string $__providedOptionals_1): self
@@ -1107,7 +1127,7 @@ class MyClass
      */
     public function getEnsureArgs1()
     {
-        return $this->ensureArgs1;
+        return $this->ensureArgs1 ?? null;
     }
 
     /**
@@ -1139,7 +1159,7 @@ class MyClass
 
     public function getEnsureArgs2(): ?MyClassEnsureArgs2
     {
-        return $this->ensureArgs2;
+        return $this->ensureArgs2 ?? null;
     }
 
     public function withEnsureArgs2(MyClassEnsureArgs2 $ensureArgs2): self
@@ -1163,7 +1183,7 @@ class MyClass
      */
     public function getEnsureArgs3(): ?array
     {
-        return $this->ensureArgs3;
+        return $this->ensureArgs3 ?? null;
     }
 
     /**

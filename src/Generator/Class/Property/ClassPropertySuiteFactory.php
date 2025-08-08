@@ -8,7 +8,7 @@ use Helmich\Schema2Class\Generator\Property\Collection\PropertyCollection;
 use Laminas\Code\Generator\PropertyGenerator;
 
 /**
- * Factory for creating all methods of a generated class.
+ * Factory for creating all properties of a generated class.
  */
 class ClassPropertySuiteFactory
 {
@@ -17,6 +17,7 @@ class ClassPropertySuiteFactory
       private array $schema,
       private PropertyCollection $schemaProperties,
       private array $defaults,
+      private bool $additionalAllowed,
     ) {}
 
     /**
@@ -25,12 +26,12 @@ class ClassPropertySuiteFactory
     public function generateAll()
     {
         $validationSchemaFactory = new ValidationSchemaPropertyFactory($this->request, $this->schema);
+        $addPropsPropertyFactory = new AdditionalPropertiesPropertyFactory($this->request, $this->schema);
         $providedOptionalsFactory = new ProvidedOptionalsPropertyFactory($this->request);
         $defaultsFactory = new DefaultsPropertyFactory($this->request, $this->defaults);
         $schemaPropertyFactory = new SchemaPropertyFactory($this->request);
 
-        $schemaProperty = $validationSchemaFactory->generate();
-        $propertyGenerators[] = $schemaProperty;
+        $propertyGenerators[] = $validationSchemaFactory->generate();
 
         if ($this->defaults) {
             $propertyGenerators[] = $defaultsFactory->generate();
@@ -39,11 +40,15 @@ class ClassPropertySuiteFactory
         if ($this->schemaProperties->hasOptionalNullable()) {
             $propertyGenerators[] = $providedOptionalsFactory->generate();
         }
+
+        if ($this->additionalAllowed) {
+            $propertyGenerators[] = $addPropsPropertyFactory->generate();
+        }
         
         foreach ($this->schemaProperties as $schemaProp) {
             $propertyGenerators[] = $schemaPropertyFactory->generate($schemaProp);
         }
 
-        return $propertyGenerators;
+        return array_values(array_filter($propertyGenerators));
     }
 }

@@ -93,7 +93,7 @@ class IdentifierResolver
             ReservedNames::phpPredefined(),
             FromInputMethodFactory::allVarNames(),
             SerializeMethodFactory::allVarNames(),
-            [PropertySetterFactory::CLONE_VAR_NAME],
+            [PropertySetterFactory::CLONE_VAR],
         );
 
         $used = [];

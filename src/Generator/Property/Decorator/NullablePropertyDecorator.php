@@ -106,7 +106,7 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface
     {
         $varName  = $this->inner->varName();
 
-        $inputVarName = FromInputMethodFactory::INPUT_ARG_NAME;
+        $inputVarName = FromInputMethodFactory::INPUT_ARG;
         $accessor = "\${$inputVarName}->{{$this->keyStr()}}";
 
         $mapped = $this->inner->inputMappingExpr($accessor);

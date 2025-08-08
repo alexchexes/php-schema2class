@@ -176,9 +176,9 @@ class ObjectArrayProperty extends AbstractProperty
     
     private function buildUseClause(): string
     {
-        $vars = ['$' . FromInputMethodFactory::VALIDATE_ARG_NAME];
+        $vars = ['$' . FromInputMethodFactory::VALIDATE_ARG];
         if ($this->request->getClassHasDefaults()) {
-            $vars[] = '$' . FromInputMethodFactory::DEFAULTS_ARG_NAME;
+            $vars[] = '$' . FromInputMethodFactory::DEFAULTS_ARG;
         }
         return implode(', ', $vars);
     }

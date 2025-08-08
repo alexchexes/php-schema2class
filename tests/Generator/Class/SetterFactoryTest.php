@@ -29,7 +29,7 @@ class SetterFactoryTest extends TestCase
         $props = SchemaPropertyCollector::collectPropertiesFromSchema($schema, $req)->toArray();
         $prop = $props[0];
 
-        $factory = new PropertySetterFactory($req);
+        $factory = new PropertySetterFactory($req, $schema);
         $setter = $factory->generate($prop);
         self::assertNotNull($setter);
 

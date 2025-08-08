@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class\Generator\Class\Method\SchemaPropertyAccessor;
 
 use Helmich\Schema2Class\Generator\GeneratorRequest;
+use Helmich\Schema2Class\Generator\Property\Decorator\OptionalPropertyDecorator;
 use Helmich\Schema2Class\Generator\Property\PropertyQuery;
 use Helmich\Schema2Class\Generator\Property\Type\PropertyInterface;
 use Helmich\Schema2Class\Util\StringUtils;
@@ -27,15 +28,49 @@ class PropertyGetterFactory
         $propName = $property->propName();
         $methodName = 'get' . $property->methodName();
 
+
+        $docBlock = $this->buildDocBlock($property);
+        
+        if ($property instanceof OptionalPropertyDecorator) {
+            if ($this->request->isAtLeastPHP('7.0')) {
+                $body = "return \$this->{$propName} ?? null;";
+            } else {
+                $body = "return isset(\$this->{$propName}) ? \$this->{$propName} : null;";
+            }
+        } else {
+            $body = "return \$this->{$propName};";
+        }
+
+        $methodGen = new MethodGenerator(
+            name: $methodName,
+            parameters: [],
+            flags: MethodGenerator::FLAG_PUBLIC,
+            body: $body,
+            docBlock: $docBlock,
+        );
+
+        if ($this->request->isAtLeastPHP('7.0')) {
+            $typeHint = $property->typeHint();
+            if ($typeHint !== null) {
+                $methodGen->setReturnType($typeHint);
+            }
+        }
+
+        return $methodGen;
+    }
+
+    private function buildDocBlock(PropertyInterface $property): ?DocBlockGenerator
+    {
+        $docBlockTags = [];
+
         $typeHint = $property->typeHint();
         $annotType = $property->typeAnnotation();
+
         if ($annotType === '') {
             $annotType = null;
         } elseif ($typeHint !== null && StringUtils::isAnnotationSameAsTypeHint($annotType, $typeHint)) {
             $annotType = null;
         }
-
-        $docBlockTags = [];
 
         if ($annotType) {
             $docBlockTags[] = new ReturnTag($annotType);
@@ -56,24 +91,6 @@ class PropertyGetterFactory
             $docBlock->setWordWrap(false);
         }
 
-        $methodGen = new MethodGenerator(
-            name: $methodName,
-            parameters: [],
-            flags: MethodGenerator::FLAG_PUBLIC,
-            body: null,
-            docBlock: $docBlock,
-        );
-
-        $body = "return \$this->{$propName};";
-
-        if ($this->request->isAtLeastPHP('7.0')) {
-            if ($typeHint !== null) {
-                $methodGen->setReturnType($typeHint);
-            }
-        }
-
-        $methodGen->setBody($body);
-
-        return $methodGen;
+        return $docBlock;
     }
 }

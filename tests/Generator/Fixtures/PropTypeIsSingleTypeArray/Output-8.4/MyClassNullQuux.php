@@ -20,6 +20,11 @@ class MyClassNullQuux
         ],
     ];
 
+    /**
+     * Map of name/value pairs for properties not specified in the schema.
+     */
+    private object $_additionalProperties;
+
     private ?string $a = null;
 
     public function __construct(?string $a = null)
@@ -27,9 +32,24 @@ class MyClassNullQuux
         $this->a = $a;
     }
 
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     */
+    public function withAdditionalProperties(array|object $additionalProperties): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
+    }
+
     public function getA(): ?string
     {
-        return $this->a;
+        return $this->a ?? null;
     }
 
     public function withA(string $a): self

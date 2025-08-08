@@ -48,7 +48,7 @@ class MyRecursiveObject
      */
     public function getMyRecursiveObject()
     {
-        return $this->MyRecursiveObject;
+        return isset($this->MyRecursiveObject) ? $this->MyRecursiveObject : null;
     }
 
     /**

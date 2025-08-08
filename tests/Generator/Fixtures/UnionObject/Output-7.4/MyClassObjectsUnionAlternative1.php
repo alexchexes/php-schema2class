@@ -35,6 +35,11 @@ class MyClassObjectsUnionAlternative1
         ],
     ];
 
+    /**
+     * Map of name/value pairs for properties not specified in the schema.
+     */
+    private object $_additionalProperties;
+
     private ?string $type = null;
 
     public function __construct(?string $type = null)
@@ -42,9 +47,24 @@ class MyClassObjectsUnionAlternative1
         $this->type = $type;
     }
 
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     */
+    public function withAdditionalProperties($additionalProperties): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
+    }
+
     public function getType(): ?string
     {
-        return $this->type;
+        return $this->type ?? null;
     }
 
     public function withType(string $type): self

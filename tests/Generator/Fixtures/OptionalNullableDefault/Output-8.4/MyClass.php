@@ -140,6 +140,11 @@ class MyClass
      */
     private array $_providedOptionals = [];
 
+    /**
+     * Map of name/value pairs for properties not specified in the schema.
+     */
+    private object $_additionalProperties;
+
     private string $foo;
 
     private ?string $bar = null;
@@ -172,6 +177,21 @@ class MyClass
     }
 
     /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     */
+    public function withAdditionalProperties(array|object $additionalProperties): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
+    }
+
+    /**
      * required, not nullable, no default
      */
     public function getFoo(): string
@@ -195,7 +215,7 @@ class MyClass
      */
     public function getBar(): ?string
     {
-        return $this->bar;
+        return $this->bar ?? null;
     }
 
     /**
@@ -222,7 +242,7 @@ class MyClass
      */
     public function getBaz(): ?string
     {
-        return $this->baz;
+        return $this->baz ?? null;
     }
 
     /**
@@ -251,7 +271,7 @@ class MyClass
      */
     public function getQux(): ?string
     {
-        return $this->qux;
+        return $this->qux ?? null;
     }
 
     /**
@@ -299,7 +319,7 @@ class MyClass
      */
     public function getXyyz(): ?string
     {
-        return $this->xyyz;
+        return $this->xyyz ?? null;
     }
 
     /**
@@ -345,7 +365,7 @@ class MyClass
      */
     public function getGrox(): ?MyClassGrox
     {
-        return $this->grox;
+        return $this->grox ?? null;
     }
 
     /**
@@ -374,7 +394,7 @@ class MyClass
      */
     public function getGooks(): ?MyClassGooks
     {
-        return $this->gooks;
+        return $this->gooks ?? null;
     }
 
     /**

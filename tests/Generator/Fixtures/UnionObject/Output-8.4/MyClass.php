@@ -123,6 +123,11 @@ class MyClass
      */
     private array $_providedOptionals = [];
 
+    /**
+     * Map of name/value pairs for properties not specified in the schema.
+     */
+    private object $_additionalProperties;
+
     private MyClassObjectsUnionAlternative1|MyClassObjectsUnionAlternative2|null $objectsUnion = null;
 
     private SomeObj1|SomeObj2|null $refObjectsUnion = null;
@@ -151,9 +156,24 @@ class MyClass
         $this->unionOfOneNull = $unionOfOneNull;
     }
 
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     */
+    public function withAdditionalProperties(array|object $additionalProperties): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
+    }
+
     public function getObjectsUnion(): MyClassObjectsUnionAlternative1|MyClassObjectsUnionAlternative2|null
     {
-        return $this->objectsUnion;
+        return $this->objectsUnion ?? null;
     }
 
     public function withObjectsUnion(MyClassObjectsUnionAlternative1|MyClassObjectsUnionAlternative2 $objectsUnion): self
@@ -174,7 +194,7 @@ class MyClass
 
     public function getRefObjectsUnion(): SomeObj1|SomeObj2|null
     {
-        return $this->refObjectsUnion;
+        return $this->refObjectsUnion ?? null;
     }
 
     public function withRefObjectsUnion(SomeObj1|SomeObj2 $refObjectsUnion): self
@@ -195,7 +215,7 @@ class MyClass
 
     public function getRefAndNotRefObjectsUnion(): MyClassRefAndNotRefObjectsUnionAlternative2|MyClassRefAndNotRefObjectsUnionAlternative4|SomeObj1|SomeObj2|null
     {
-        return $this->refAndNotRefObjectsUnion;
+        return $this->refAndNotRefObjectsUnion ?? null;
     }
 
     public function withRefAndNotRefObjectsUnion(MyClassRefAndNotRefObjectsUnionAlternative2|MyClassRefAndNotRefObjectsUnionAlternative4|SomeObj1|SomeObj2 $refAndNotRefObjectsUnion): self
@@ -216,7 +236,7 @@ class MyClass
 
     public function getObjAndStringUnion(): MyClassObjAndStringUnionAlternative1|string|null
     {
-        return $this->objAndStringUnion;
+        return $this->objAndStringUnion ?? null;
     }
 
     public function withObjAndStringUnion(MyClassObjAndStringUnionAlternative1|string $objAndStringUnion): self
@@ -237,7 +257,7 @@ class MyClass
 
     public function getUnionOfOneObj(): ?MyClassUnionOfOneObj
     {
-        return $this->unionOfOneObj;
+        return $this->unionOfOneObj ?? null;
     }
 
     public function withUnionOfOneObj(MyClassUnionOfOneObj $unionOfOneObj): self
@@ -261,7 +281,7 @@ class MyClass
      */
     public function getUnionOfOneNull()
     {
-        return $this->unionOfOneNull;
+        return $this->unionOfOneNull ?? null;
     }
 
     /**

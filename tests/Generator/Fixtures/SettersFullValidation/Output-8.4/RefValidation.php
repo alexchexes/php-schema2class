@@ -49,6 +49,11 @@ class RefValidation
     ];
 
     /**
+     * Map of name/value pairs for properties not specified in the schema.
+     */
+    private object $_additionalProperties;
+
+    /**
      * @var 1|2|null
      */
     private ?int $foo = null;
@@ -72,11 +77,26 @@ class RefValidation
     }
 
     /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     */
+    public function withAdditionalProperties(array|object $additionalProperties): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
+    }
+
+    /**
      * @return 1|2|null
      */
     public function getFoo(): ?int
     {
-        return $this->foo;
+        return $this->foo ?? null;
     }
 
     /**
@@ -108,7 +128,7 @@ class RefValidation
      */
     public function getBar(): int|string|null
     {
-        return $this->bar;
+        return $this->bar ?? null;
     }
 
     /**
@@ -137,7 +157,7 @@ class RefValidation
 
     public function getBaz(): ?RefValidationBaz
     {
-        return $this->baz;
+        return $this->baz ?? null;
     }
 
     public function withBaz(RefValidationBaz $baz): self

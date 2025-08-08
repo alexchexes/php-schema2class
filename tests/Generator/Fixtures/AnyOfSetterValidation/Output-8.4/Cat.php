@@ -36,6 +36,11 @@ class Cat
     ];
 
     /**
+     * Map of name/value pairs for properties not specified in the schema.
+     */
+    private object $_additionalProperties;
+
+    /**
      * @var 'a'|'b'|string[]|null
      */
     private string|array|null $hasFur = null;
@@ -49,11 +54,26 @@ class Cat
     }
 
     /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     */
+    public function withAdditionalProperties(array|object $additionalProperties): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
+    }
+
+    /**
      * @return 'a'|'b'|string[]|null
      */
     public function getHasFur(): string|array|null
     {
-        return $this->hasFur;
+        return $this->hasFur ?? null;
     }
 
     /**

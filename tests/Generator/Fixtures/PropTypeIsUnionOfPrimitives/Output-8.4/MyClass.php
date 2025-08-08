@@ -115,6 +115,11 @@ class MyClass
      */
     private array $_providedOptionals = [];
 
+    /**
+     * Map of name/value pairs for properties not specified in the schema.
+     */
+    private object $_additionalProperties;
+
     private bool|int|float|string $foo;
 
     private bool|int|float|string|array $bar;
@@ -147,6 +152,21 @@ class MyClass
         $this->optBaz = $optBaz;
         $this->optQux = $optQux;
         $this->optThud = $optThud;
+    }
+
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     */
+    public function withAdditionalProperties(array|object $additionalProperties): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
     }
 
     public function getFoo(): bool|int|float|string
@@ -216,7 +236,7 @@ class MyClass
 
     public function getOptFoo(): bool|int|float|string|null
     {
-        return $this->optFoo;
+        return $this->optFoo ?? null;
     }
 
     public function withOptFoo(bool|int|float|string $optFoo): self
@@ -237,7 +257,7 @@ class MyClass
 
     public function getOptBar(): bool|int|float|string|array|null
     {
-        return $this->optBar;
+        return $this->optBar ?? null;
     }
 
     public function withOptBar(bool|int|float|string|array $optBar): self
@@ -258,7 +278,7 @@ class MyClass
 
     public function getOptBaz(): bool|int|float|string|array|object|null
     {
-        return $this->optBaz;
+        return $this->optBaz ?? null;
     }
 
     public function withOptBaz(bool|int|float|string|array|object $optBaz): self
@@ -279,7 +299,7 @@ class MyClass
 
     public function getOptQux(): bool|int|float|string|array|object|null
     {
-        return $this->optQux;
+        return $this->optQux ?? null;
     }
 
     public function withOptQux(bool|int|float|string|array|object $optQux): self
@@ -300,7 +320,7 @@ class MyClass
 
     public function getOptThud(): bool|int|float|string|array|object|null
     {
-        return $this->optThud;
+        return $this->optThud ?? null;
     }
 
     public function withOptThud(bool|int|float|string|array|object|null $optThud): self

@@ -139,6 +139,13 @@ class MyClass
     private $_providedOptionals = [];
 
     /**
+     * Map of name/value pairs for properties not specified in the schema.
+     *
+     * @var object
+     */
+    private $_additionalProperties;
+
+    /**
      * @var string
      */
     private $foo;
@@ -208,6 +215,22 @@ class MyClass
     }
 
     /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     * @return self
+     */
+    public function withAdditionalProperties($additionalProperties)
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
+    }
+
+    /**
      * required, not nullable, no default
      *
      * @return string
@@ -247,7 +270,7 @@ class MyClass
      */
     public function getBar()
     {
-        return $this->bar;
+        return isset($this->bar) ? $this->bar : null;
     }
 
     /**
@@ -291,7 +314,7 @@ class MyClass
      */
     public function getBaz()
     {
-        return $this->baz;
+        return isset($this->baz) ? $this->baz : null;
     }
 
     /**
@@ -337,7 +360,7 @@ class MyClass
      */
     public function getQux()
     {
-        return $this->qux;
+        return isset($this->qux) ? $this->qux : null;
     }
 
     /**
@@ -416,7 +439,7 @@ class MyClass
      */
     public function getXyyz()
     {
-        return $this->xyyz;
+        return isset($this->xyyz) ? $this->xyyz : null;
     }
 
     /**
@@ -493,7 +516,7 @@ class MyClass
      */
     public function getGrox()
     {
-        return $this->grox;
+        return isset($this->grox) ? $this->grox : null;
     }
 
     /**
@@ -530,7 +553,7 @@ class MyClass
      */
     public function getGooks()
     {
-        return $this->gooks;
+        return isset($this->gooks) ? $this->gooks : null;
     }
 
     /**

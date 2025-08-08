@@ -24,6 +24,13 @@ class MyClass
     ];
 
     /**
+     * Map of name/value pairs for properties not specified in the schema.
+     *
+     * @var object
+     */
+    private $_additionalProperties;
+
+    /**
      * @var string|null
      */
     private $bound = null;
@@ -51,11 +58,27 @@ class MyClass
     }
 
     /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     * @return self
+     */
+    public function withAdditionalProperties($additionalProperties)
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
+    }
+
+    /**
      * @return string|null
      */
     public function getBound()
     {
-        return $this->bound;
+        return isset($this->bound) ? $this->bound : null;
     }
 
     /**
@@ -95,7 +118,7 @@ class MyClass
      */
     public function get_Outbound()
     {
-        return $this->outbound;
+        return isset($this->outbound) ? $this->outbound : null;
     }
 
     /**
@@ -135,7 +158,7 @@ class MyClass
      */
     public function get_Outbound_1()
     {
-        return $this->_outbound;
+        return isset($this->_outbound) ? $this->_outbound : null;
     }
 
     /**

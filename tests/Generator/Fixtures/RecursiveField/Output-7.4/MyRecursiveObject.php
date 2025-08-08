@@ -41,7 +41,7 @@ class MyRecursiveObject
 
     public function getMyRecursiveObject(): ?MyRecursiveObject
     {
-        return $this->MyRecursiveObject;
+        return $this->MyRecursiveObject ?? null;
     }
 
     public function withMyRecursiveObject(MyRecursiveObject $MyRecursiveObject): self

@@ -56,7 +56,7 @@ class UnionProperty extends AbstractProperty
 
     public function convertInputToTypeMatch(): string
     {
-        $inputVarName = FromInputMethodFactory::INPUT_ARG_NAME;
+        $inputVarName = FromInputMethodFactory::INPUT_ARG;
         $accessor = "\${$inputVarName}->{{$this->keyStr()}}";
 
         $match = new MatchGenerator("true");
@@ -86,7 +86,7 @@ class UnionProperty extends AbstractProperty
         $name   = $this->varName();
         $keyStr = $this->keyStr();
     
-        $inputVarName = FromInputMethodFactory::INPUT_ARG_NAME;
+        $inputVarName = FromInputMethodFactory::INPUT_ARG;
         $accessor = "\${$inputVarName}->{{$keyStr}}";
     
         // Start with a "fallback" that just reassigns the raw value

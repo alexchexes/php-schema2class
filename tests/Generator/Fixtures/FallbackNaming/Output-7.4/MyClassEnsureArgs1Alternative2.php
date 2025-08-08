@@ -38,6 +38,11 @@ class MyClassEnsureArgs1Alternative2
         ],
     ];
 
+    /**
+     * Map of name/value pairs for properties not specified in the schema.
+     */
+    private object $_additionalProperties;
+
     private string $type;
 
     private string $accountNumber;
@@ -46,6 +51,21 @@ class MyClassEnsureArgs1Alternative2
     {
         $this->type = $type;
         $this->accountNumber = $accountNumber;
+    }
+
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     */
+    public function withAdditionalProperties($additionalProperties): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
     }
 
     public function getType(): string

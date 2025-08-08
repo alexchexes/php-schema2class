@@ -30,6 +30,11 @@ class MyClassGooks
         ],
     ];
 
+    /**
+     * Map of name/value pairs for properties not specified in the schema.
+     */
+    private object $_additionalProperties;
+
     private ?string $a = null;
 
     private int|float|null $b = null;
@@ -40,9 +45,24 @@ class MyClassGooks
         $this->b = $b;
     }
 
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     */
+    public function withAdditionalProperties(array|object $additionalProperties): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
+    }
+
     public function getA(): ?string
     {
-        return $this->a;
+        return $this->a ?? null;
     }
 
     public function withA(string $a): self
@@ -63,7 +83,7 @@ class MyClassGooks
 
     public function getB(): int|float|null
     {
-        return $this->b;
+        return $this->b ?? null;
     }
 
     public function withB(int|float $b): self

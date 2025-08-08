@@ -57,7 +57,7 @@ class MyGenericStringNumberField
      */
     public function getField()
     {
-        return $this->field;
+        return isset($this->field) ? $this->field : null;
     }
 
     /**

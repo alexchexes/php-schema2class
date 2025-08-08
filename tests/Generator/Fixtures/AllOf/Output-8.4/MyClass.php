@@ -43,6 +43,11 @@ class MyClass
         ],
     ];
 
+    /**
+     * Map of name/value pairs for properties not specified in the schema.
+     */
+    private object $_additionalProperties;
+
     private string $streetAddress;
 
     private ?string $houseNumber = null;
@@ -60,6 +65,21 @@ class MyClass
         $this->houseNumber = $houseNumber;
         $this->type = $type;
         $this->city = $city;
+    }
+
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     */
+    public function withAdditionalProperties(array|object $additionalProperties): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
     }
 
     /**
@@ -86,7 +106,7 @@ class MyClass
      */
     public function getHouseNumber(): ?string
     {
-        return $this->houseNumber;
+        return $this->houseNumber ?? null;
     }
 
     /**
@@ -113,7 +133,7 @@ class MyClass
      */
     public function getType(): ?MyClassType
     {
-        return $this->type;
+        return $this->type ?? null;
     }
 
     /**
@@ -140,7 +160,7 @@ class MyClass
      */
     public function getCity(): ?string
     {
-        return $this->city;
+        return $this->city ?? null;
     }
 
     /**

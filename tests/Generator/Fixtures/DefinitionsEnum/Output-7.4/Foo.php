@@ -90,7 +90,7 @@ class Foo
      */
     public function getSize(): ?string
     {
-        return $this->size;
+        return $this->size ?? null;
     }
 
     /**

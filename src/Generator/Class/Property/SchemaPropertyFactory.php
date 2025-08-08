@@ -13,6 +13,10 @@ use Laminas\Code\Generator\DocBlockGenerator;
 use Laminas\Code\Generator\PropertyGenerator;
 use Laminas\Code\Generator\TypeGenerator;
 
+/** 
+ * Factory for creating a class property from {@see PropertyInterface} 
+ * representation of the schema property
+ */
 class SchemaPropertyFactory
 {
     public function __construct(
@@ -25,7 +29,7 @@ class SchemaPropertyFactory
             ? PropertyGenerator::FLAG_PUBLIC
             : PropertyGenerator::FLAG_PRIVATE;
 
-        $propertyGenerator = new PropertyGenerator(
+        $propertyGen = new PropertyGenerator(
             name: $property->propName(),
             defaultValue: $property->formatValue(null),
             flags: $visibility
@@ -33,12 +37,12 @@ class SchemaPropertyFactory
 
         $typeHint = $property->typeHint();
         if ($this->request->isAtLeastPHP('7.4') && $typeHint !== null) {
-            $propertyGenerator->setType(TypeGenerator::fromTypeString($typeHint));
+            $propertyGen->setType(TypeGenerator::fromTypeString($typeHint));
         }
 
         $docBlock = $this->buildDockBlock($property);
         if ($docBlock) {
-            $propertyGenerator->setDocBlock($docBlock);
+            $propertyGen->setDocBlock($docBlock);
         }
 
         $isOptional = false;
@@ -46,9 +50,9 @@ class SchemaPropertyFactory
             $isOptional = true;
         }
         // omit default `null` for every required field, unsless default is specified in the schema
-        $propertyGenerator->omitDefaultValue(!$isOptional);
+        $propertyGen->omitDefaultValue(!$isOptional);
 
-        return $propertyGenerator;
+        return $propertyGen;
     }
 
     private function buildDockBlock(PropertyInterface $property): ?DocBlockGenerator

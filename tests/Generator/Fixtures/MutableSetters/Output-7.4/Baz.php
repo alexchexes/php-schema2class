@@ -20,6 +20,11 @@ class Baz
         ],
     ];
 
+    /**
+     * Map of name/value pairs for properties not specified in the schema.
+     */
+    private object $_additionalProperties;
+
     private ?string $name = null;
 
     public function __construct(?string $name = null)
@@ -27,9 +32,21 @@ class Baz
         $this->name = $name;
     }
 
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     */
+    public function setAdditionalProperties($additionalProperties): void
+    {
+        $this->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+    }
+
     public function getName(): ?string
     {
-        return $this->name;
+        return $this->name ?? null;
     }
 
     public function setName(string $name): void
@@ -39,7 +56,7 @@ class Baz
 
     public function unsetName(): void
     {
-        $this->name = null;
+        unset($this->name);
     }
 
     /**

@@ -91,9 +91,9 @@ class TypedArrayProperty extends AbstractProperty
             return "array_map(fn(\$i) => {$map}, {$expr})";
         }
 
-        $use = ['$' . FromInputMethodFactory::VALIDATE_ARG_NAME];
+        $use = ['$' . FromInputMethodFactory::VALIDATE_ARG];
         if ($this->request->getClassHasDefaults()) {
-            $use[] = '$' . FromInputMethodFactory::DEFAULTS_ARG_NAME;
+            $use[] = '$' . FromInputMethodFactory::DEFAULTS_ARG;
         }
         $useExpr = implode(', ', $use);
         return "array_map(function(\$i) use ({$useExpr}) { return {$map}; }, {$expr})";

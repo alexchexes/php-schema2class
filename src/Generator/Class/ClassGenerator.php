@@ -40,6 +40,13 @@ class ClassGenerator
     {
         $defaults = SchemaDefaultsCollector::collectDefaults($this->schema, $this->request);
         $this->request = $this->request->withClassHasDefaults(!empty($defaults));
+
+        $schemaAdditionalProps = $this->schema['additionalProperties'] ?? null;
+        $additionalAllowed =
+            $schemaAdditionalProps !== false
+            && $schemaAdditionalProps !== ['not' => []]; // {"additionalProperties": {"not": {}}}
+            // TODO: resolve other always-invalid schemas like "$ref" to false,
+            // {"enum":[]}, {"anyOf":[]}, or {"not":{"allOf":[]}}, etc
         
         $schemaProperties = SchemaPropertyCollector::collectPropertiesFromSchema($this->schema, $this->request);    
         (new IdentifierResolver($this->request))->resolve($schemaProperties);
@@ -53,12 +60,15 @@ class ClassGenerator
             $this->schema,
             $schemaProperties,
             $defaults,
+            $additionalAllowed,
         ))->generateAll();
 
         $methodGenerators = (new ClassMethodSuiteFactory(
             $this->request,
+            $this->schema,
             $schemaProperties,
             $defaults,
+            $additionalAllowed,
         ))->generateAll();
 
         $classFileGenerator = $this->prepareFileGenerator($propertyGenerators, $methodGenerators);

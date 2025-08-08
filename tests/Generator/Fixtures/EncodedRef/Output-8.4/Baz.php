@@ -44,6 +44,11 @@ class Baz
         ],
     ];
 
+    /**
+     * Map of name/value pairs for properties not specified in the schema.
+     */
+    private object $_additionalProperties;
+
     private ?FooTest $a = null;
 
     private ?FooTest $b = null;
@@ -57,9 +62,24 @@ class Baz
         $this->c = $c;
     }
 
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     */
+    public function withAdditionalProperties(array|object $additionalProperties): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
+    }
+
     public function getA(): ?FooTest
     {
-        return $this->a;
+        return $this->a ?? null;
     }
 
     public function withA(FooTest $a): self
@@ -80,7 +100,7 @@ class Baz
 
     public function getB(): ?FooTest
     {
-        return $this->b;
+        return $this->b ?? null;
     }
 
     public function withB(FooTest $b): self
@@ -101,7 +121,7 @@ class Baz
 
     public function getC(): ?BarTest
     {
-        return $this->c;
+        return $this->c ?? null;
     }
 
     public function withC(BarTest $c): self

@@ -11,6 +11,11 @@ use Laminas\Code\Generator\PropertyGenerator;
 use Laminas\Code\Generator\PropertyValueGenerator;
 use Laminas\Code\Generator\TypeGenerator;
 
+/** 
+ * Factory for generating `$_providedOptionals` class property that is used to keep
+ * track on optional nullable schema properties that were explicitly set (to distinguish
+ * absent from `null`)
+ */
 class ProvidedOptionalsPropertyFactory
 {
     public function __construct(

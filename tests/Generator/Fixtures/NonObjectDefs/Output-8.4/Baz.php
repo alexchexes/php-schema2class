@@ -56,6 +56,11 @@ class Baz
         ],
     ];
 
+    /**
+     * Map of name/value pairs for properties not specified in the schema.
+     */
+    private object $_additionalProperties;
+
     private Bar|Foo|null $grox = null;
 
     public function __construct(Bar|Foo|null $grox = null)
@@ -63,9 +68,24 @@ class Baz
         $this->grox = $grox;
     }
 
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     */
+    public function withAdditionalProperties(array|object $additionalProperties): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
+    }
+
     public function getGrox(): Bar|Foo|null
     {
-        return $this->grox;
+        return $this->grox ?? null;
     }
 
     public function withGrox(Bar|Foo $grox): self

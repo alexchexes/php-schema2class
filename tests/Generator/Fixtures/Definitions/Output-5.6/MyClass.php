@@ -108,7 +108,7 @@ class MyClass
      */
     public function getAddress()
     {
-        return $this->address;
+        return isset($this->address) ? $this->address : null;
     }
 
     /**

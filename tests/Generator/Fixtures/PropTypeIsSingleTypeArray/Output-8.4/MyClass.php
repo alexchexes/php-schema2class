@@ -214,6 +214,11 @@ class MyClass
      */
     private array $_providedOptionals = [];
 
+    /**
+     * Map of name/value pairs for properties not specified in the schema.
+     */
+    private object $_additionalProperties;
+
     private string $foo;
 
     private int|float $bar;
@@ -320,6 +325,21 @@ class MyClass
         $this->optNullQux = $optNullQux;
         $this->optNullQuux = $optNullQuux;
         $this->optNullThud = $optNullThud;
+    }
+
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     */
+    public function withAdditionalProperties(array|object $additionalProperties): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
     }
 
     public function getFoo(): string
@@ -535,7 +555,7 @@ class MyClass
 
     public function getOptFoo(): ?string
     {
-        return $this->optFoo;
+        return $this->optFoo ?? null;
     }
 
     public function withOptFoo(string $optFoo): self
@@ -556,7 +576,7 @@ class MyClass
 
     public function getOptBar(): int|float|null
     {
-        return $this->optBar;
+        return $this->optBar ?? null;
     }
 
     public function withOptBar(int|float $optBar): self
@@ -577,7 +597,7 @@ class MyClass
 
     public function getOptBaz(): ?int
     {
-        return $this->optBaz;
+        return $this->optBaz ?? null;
     }
 
     public function withOptBaz(int $optBaz): self
@@ -598,7 +618,7 @@ class MyClass
 
     public function getOptQux(): ?bool
     {
-        return $this->optQux;
+        return $this->optQux ?? null;
     }
 
     public function withOptQux(bool $optQux): self
@@ -619,7 +639,7 @@ class MyClass
 
     public function getOptQuux(): ?MyClassOptQuux
     {
-        return $this->optQuux;
+        return $this->optQuux ?? null;
     }
 
     public function withOptQuux(MyClassOptQuux $optQuux): self
@@ -643,7 +663,7 @@ class MyClass
      */
     public function getOptThud(): ?array
     {
-        return $this->optThud;
+        return $this->optThud ?? null;
     }
 
     /**
@@ -678,7 +698,7 @@ class MyClass
      */
     public function getOptGrox()
     {
-        return $this->optGrox;
+        return $this->optGrox ?? null;
     }
 
     /**
@@ -712,7 +732,7 @@ class MyClass
 
     public function getOptNullFoo(): ?string
     {
-        return $this->optNullFoo;
+        return $this->optNullFoo ?? null;
     }
 
     public function withOptNullFoo(?string $optNullFoo): self
@@ -735,7 +755,7 @@ class MyClass
 
     public function getOptNullBar(): int|float|null
     {
-        return $this->optNullBar;
+        return $this->optNullBar ?? null;
     }
 
     public function withOptNullBar(int|float|null $optNullBar): self
@@ -758,7 +778,7 @@ class MyClass
 
     public function getOptNullBaz(): ?int
     {
-        return $this->optNullBaz;
+        return $this->optNullBaz ?? null;
     }
 
     public function withOptNullBaz(?int $optNullBaz): self
@@ -781,7 +801,7 @@ class MyClass
 
     public function getOptNullQux(): ?bool
     {
-        return $this->optNullQux;
+        return $this->optNullQux ?? null;
     }
 
     public function withOptNullQux(?bool $optNullQux): self
@@ -804,7 +824,7 @@ class MyClass
 
     public function getOptNullQuux(): ?MyClassOptNullQuux
     {
-        return $this->optNullQuux;
+        return $this->optNullQuux ?? null;
     }
 
     public function withOptNullQuux(?MyClassOptNullQuux $optNullQuux): self
@@ -830,7 +850,7 @@ class MyClass
      */
     public function getOptNullThud(): ?array
     {
-        return $this->optNullThud;
+        return $this->optNullThud ?? null;
     }
 
     /**

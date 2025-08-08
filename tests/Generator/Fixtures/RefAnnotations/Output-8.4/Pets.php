@@ -51,6 +51,11 @@ class Pets
         ],
     ];
 
+    /**
+     * Map of name/value pairs for properties not specified in the schema.
+     */
+    private object $_additionalProperties;
+
     private ?GenericPet $pet = null;
 
     private ?Cat $cat = null;
@@ -61,9 +66,24 @@ class Pets
         $this->cat = $cat;
     }
 
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     */
+    public function withAdditionalProperties(array|object $additionalProperties): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
+    }
+
     public function getPet(): ?GenericPet
     {
-        return $this->pet;
+        return $this->pet ?? null;
     }
 
     public function withPet(GenericPet $pet): self
@@ -84,7 +104,7 @@ class Pets
 
     public function getCat(): ?Cat
     {
-        return $this->cat;
+        return $this->cat ?? null;
     }
 
     public function withCat(Cat $cat): self

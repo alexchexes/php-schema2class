@@ -90,6 +90,11 @@ class MyClass
      */
     private array $_providedOptionals = [];
 
+    /**
+     * Map of name/value pairs for properties not specified in the schema.
+     */
+    private object $_additionalProperties;
+
     private array $a;
 
     private string|array $b;
@@ -119,6 +124,21 @@ class MyClass
         $this->g = $g;
         $this->h = $h;
         $this->i = $i;
+    }
+
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     */
+    public function withAdditionalProperties(array|object $additionalProperties): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
     }
 
     public function getA(): array
@@ -175,7 +195,7 @@ class MyClass
 
     public function getE(): ?array
     {
-        return $this->e;
+        return $this->e ?? null;
     }
 
     public function withE(array $e): self
@@ -196,7 +216,7 @@ class MyClass
 
     public function getF(): string|array|null
     {
-        return $this->f;
+        return $this->f ?? null;
     }
 
     public function withF(string|array $f): self
@@ -217,7 +237,7 @@ class MyClass
 
     public function getG(): ?array
     {
-        return $this->g;
+        return $this->g ?? null;
     }
 
     public function withG(?array $g): self
@@ -240,7 +260,7 @@ class MyClass
 
     public function getH(): string|array|null
     {
-        return $this->h;
+        return $this->h ?? null;
     }
 
     public function withH(string|array|null $h): self
@@ -263,7 +283,7 @@ class MyClass
 
     public function getI(): string|array|object|null
     {
-        return $this->i;
+        return $this->i ?? null;
     }
 
     public function withI(string|array|object|null $i): self

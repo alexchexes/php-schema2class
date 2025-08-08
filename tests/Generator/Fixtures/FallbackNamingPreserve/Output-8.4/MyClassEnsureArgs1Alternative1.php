@@ -34,6 +34,11 @@ class MyClassEnsureArgs1Alternative1
         ],
     ];
 
+    /**
+     * Map of name/value pairs for properties not specified in the schema.
+     */
+    private object $_additionalProperties;
+
     private ?MyClassEnsureArgs1Alternative1Type $type = null;
 
     public function __construct(?MyClassEnsureArgs1Alternative1Type $type = null)
@@ -41,9 +46,24 @@ class MyClassEnsureArgs1Alternative1
         $this->type = $type;
     }
 
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     */
+    public function withAdditionalProperties(array|object $additionalProperties): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
+    }
+
     public function getType(): ?MyClassEnsureArgs1Alternative1Type
     {
-        return $this->type;
+        return $this->type ?? null;
     }
 
     public function withType(MyClassEnsureArgs1Alternative1Type $type): self

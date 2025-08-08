@@ -20,6 +20,11 @@ class MoiKlass
         ],
     ];
 
+    /**
+     * Map of name/value pairs for properties not specified in the schema.
+     */
+    private object $_additionalProperties;
+
     private ?string $c = null;
 
     public function __construct(?string $c = null)
@@ -27,9 +32,24 @@ class MoiKlass
         $this->c = $c;
     }
 
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     */
+    public function withAdditionalProperties($additionalProperties): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
+    }
+
     public function getC(): ?string
     {
-        return $this->c;
+        return $this->c ?? null;
     }
 
     public function withC(string $c): self

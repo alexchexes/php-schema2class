@@ -80,6 +80,13 @@ class MyClass
     ];
 
     /**
+     * Map of name/value pairs for properties not specified in the schema.
+     *
+     * @var object
+     */
+    private $_additionalProperties;
+
+    /**
      * @var string
      */
     private $foo;
@@ -195,6 +202,22 @@ class MyClass
         $this->IP_adres = $IP_adres;
         $this->_tildas = $_tildas;
         $this->it_s_A = $it_s_A;
+    }
+
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     * @return self
+     */
+    public function withAdditionalProperties($additionalProperties)
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
     }
 
     /**
@@ -637,7 +660,7 @@ class MyClass
      */
     public function getItSA()
     {
-        return $this->it_s_A;
+        return isset($this->it_s_A) ? $this->it_s_A : null;
     }
 
     /**

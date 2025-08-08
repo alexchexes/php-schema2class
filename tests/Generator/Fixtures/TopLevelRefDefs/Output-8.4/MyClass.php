@@ -40,6 +40,11 @@ class MyClass
         ],
     ];
 
+    /**
+     * Map of name/value pairs for properties not specified in the schema.
+     */
+    private object $_additionalProperties;
+
     private array|object|null $foo = null;
 
     private array|object|null $encoded = null;
@@ -50,9 +55,24 @@ class MyClass
         $this->encoded = $encoded;
     }
 
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     */
+    public function withAdditionalProperties(array|object $additionalProperties): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
+    }
+
     public function getFoo(): array|object|null
     {
-        return $this->foo;
+        return $this->foo ?? null;
     }
 
     public function withFoo(array|object $foo): self
@@ -73,7 +93,7 @@ class MyClass
 
     public function getEncoded(): array|object|null
     {
-        return $this->encoded;
+        return $this->encoded ?? null;
     }
 
     public function withEncoded(array|object $encoded): self

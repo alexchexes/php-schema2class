@@ -124,6 +124,11 @@ class MyClass
     private array $_providedOptionals = [];
 
     /**
+     * Map of name/value pairs for properties not specified in the schema.
+     */
+    private object $_additionalProperties;
+
+    /**
      * @var MyClassObjectsUnionAlternative1|MyClassObjectsUnionAlternative2|null
      */
     private ?object $objectsUnion = null;
@@ -168,11 +173,26 @@ class MyClass
     }
 
     /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     */
+    public function withAdditionalProperties($additionalProperties): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
+    }
+
+    /**
      * @return MyClassObjectsUnionAlternative1|MyClassObjectsUnionAlternative2|null
      */
     public function getObjectsUnion(): ?object
     {
-        return $this->objectsUnion;
+        return $this->objectsUnion ?? null;
     }
 
     /**
@@ -207,7 +227,7 @@ class MyClass
      */
     public function getRefObjectsUnion(): ?object
     {
-        return $this->refObjectsUnion;
+        return $this->refObjectsUnion ?? null;
     }
 
     /**
@@ -237,7 +257,7 @@ class MyClass
      */
     public function getRefAndNotRefObjectsUnion(): ?object
     {
-        return $this->refAndNotRefObjectsUnion;
+        return $this->refAndNotRefObjectsUnion ?? null;
     }
 
     /**
@@ -267,7 +287,7 @@ class MyClass
      */
     public function getObjAndStringUnion()
     {
-        return $this->objAndStringUnion;
+        return $this->objAndStringUnion ?? null;
     }
 
     /**
@@ -299,7 +319,7 @@ class MyClass
 
     public function getUnionOfOneObj(): ?MyClassUnionOfOneObj
     {
-        return $this->unionOfOneObj;
+        return $this->unionOfOneObj ?? null;
     }
 
     public function withUnionOfOneObj(MyClassUnionOfOneObj $unionOfOneObj): self
@@ -323,7 +343,7 @@ class MyClass
      */
     public function getUnionOfOneNull()
     {
-        return $this->unionOfOneNull;
+        return $this->unionOfOneNull ?? null;
     }
 
     /**

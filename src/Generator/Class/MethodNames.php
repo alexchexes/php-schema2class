@@ -11,6 +11,9 @@ class MethodNames
     public const VALIDATE_INPUT = 'validateInput';
     public const IS_PROVIDED = 'isOptionalProvided';
 
+    public const ADDITIONAL_PROPERTIES = 'AdditionalProperties';
+    public const ADDITIONAL_PROPERTY = 'AdditionalProperty';
+
     static public function all(): array
     {
         return [
@@ -19,6 +22,8 @@ class MethodNames
             self::TO_STD_CLASS,
             self::VALIDATE_INPUT,
             self::IS_PROVIDED,
+            self::ADDITIONAL_PROPERTIES,
+            self::ADDITIONAL_PROPERTY,
         ];
     }
 }

@@ -12,7 +12,7 @@ use Laminas\Code\Generator\PropertyValueGenerator;
 use Laminas\Code\Generator\TypeGenerator;
 
 /**
- * Factory for creating "$schema" class property that holds the JSON-schema as array used for validation
+ * Factory for creating "$_schema" class property that holds the JSON-schema as array used for validation
  */
 class ValidationSchemaPropertyFactory
 {
@@ -31,9 +31,9 @@ class ValidationSchemaPropertyFactory
         }
 
         $prop = new PropertyGenerator(
-            PropertyNames::SCHEMA,
-            $validationSchema,
-            PropertyGenerator::FLAG_PRIVATE | PropertyGenerator::FLAG_STATIC,
+            name: PropertyNames::SCHEMA,
+            defaultValue: $validationSchema,
+            flags: PropertyGenerator::FLAG_PRIVATE | PropertyGenerator::FLAG_STATIC,
         );
 
         $prop->setDocBlock(new DocBlockGenerator(

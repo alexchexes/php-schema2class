@@ -292,6 +292,13 @@ class MyClass
     private $_providedOptionals = [];
 
     /**
+     * Map of name/value pairs for properties not specified in the schema.
+     *
+     * @var object
+     */
+    private $_additionalProperties;
+
+    /**
      * @var string
      */
     private $_GLOBALS;
@@ -645,6 +652,22 @@ class MyClass
         $this->ensureArgs1 = $ensureArgs1;
         $this->ensureArgs2 = $ensureArgs2;
         $this->ensureArgs3 = $ensureArgs3;
+    }
+
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     * @return self
+     */
+    public function withAdditionalProperties($additionalProperties)
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
     }
 
     /**
@@ -1116,7 +1139,7 @@ class MyClass
      */
     public function getValidate()
     {
-        return $this->validate;
+        return isset($this->validate) ? $this->validate : null;
     }
 
     /**
@@ -1156,7 +1179,7 @@ class MyClass
      */
     public function getMaterializeDefaults()
     {
-        return $this->materializeDefaults;
+        return isset($this->materializeDefaults) ? $this->materializeDefaults : null;
     }
 
     /**
@@ -1256,7 +1279,7 @@ class MyClass
      */
     public function getTestObj()
     {
-        return $this->testObj;
+        return isset($this->testObj) ? $this->testObj : null;
     }
 
     /**
@@ -1547,7 +1570,7 @@ class MyClass
      */
     public function getProvidedOptionals1()
     {
-        return $this->_providedOptionals_1;
+        return isset($this->_providedOptionals_1) ? $this->_providedOptionals_1 : null;
     }
 
     /**
@@ -2051,7 +2074,7 @@ class MyClass
      */
     public function getEnsureArgs1()
     {
-        return $this->ensureArgs1;
+        return isset($this->ensureArgs1) ? $this->ensureArgs1 : null;
     }
 
     /**
@@ -2091,7 +2114,7 @@ class MyClass
      */
     public function getEnsureArgs2()
     {
-        return $this->ensureArgs2;
+        return isset($this->ensureArgs2) ? $this->ensureArgs2 : null;
     }
 
     /**
@@ -2121,7 +2144,7 @@ class MyClass
      */
     public function getEnsureArgs3()
     {
-        return $this->ensureArgs3;
+        return isset($this->ensureArgs3) ? $this->ensureArgs3 : null;
     }
 
     /**

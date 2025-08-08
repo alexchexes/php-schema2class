@@ -70,6 +70,11 @@ class Qux
     ];
 
     /**
+     * Map of name/value pairs for properties not specified in the schema.
+     */
+    private object $_additionalProperties;
+
+    /**
      * @var string|string[]|Foo|Bar|null
      */
     private Bar|Foo|string|array|null $grox = null;
@@ -83,11 +88,26 @@ class Qux
     }
 
     /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     */
+    public function withAdditionalProperties(array|object $additionalProperties): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
+    }
+
+    /**
      * @return string|string[]|Foo|Bar|null
      */
     public function getGrox(): Bar|Foo|string|array|null
     {
-        return $this->grox;
+        return $this->grox ?? null;
     }
 
     /**

@@ -302,6 +302,11 @@ class MyClass
      */
     private array $_providedOptionals = [];
 
+    /**
+     * Map of name/value pairs for properties not specified in the schema.
+     */
+    private object $_additionalProperties;
+
     private string $foo;
 
     private string $bar;
@@ -363,6 +368,21 @@ class MyClass
         $this->numKeysDefaults = $numKeysDefaults;
     }
 
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     */
+    public function withAdditionalProperties(array|object $additionalProperties): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
+    }
+
     public function getFoo(): string
     {
         return $this->foo;
@@ -391,7 +411,7 @@ class MyClass
 
     public function getBaz(): ?MyClassBaz
     {
-        return $this->baz;
+        return $this->baz ?? null;
     }
 
     public function withBaz(MyClassBaz $baz): self
@@ -415,7 +435,7 @@ class MyClass
      */
     public function getQuxObj(): ?MyClassQuxObj
     {
-        return $this->quxObj;
+        return $this->quxObj ?? null;
     }
 
     /**
@@ -444,7 +464,7 @@ class MyClass
      */
     public function getQuxObjNest(): ?MyClassQuxObjNest
     {
-        return $this->quxObjNest;
+        return $this->quxObjNest ?? null;
     }
 
     /**
@@ -475,7 +495,7 @@ class MyClass
      */
     public function getThudArray(): ?array
     {
-        return $this->thudArray;
+        return $this->thudArray ?? null;
     }
 
     /**
@@ -514,7 +534,7 @@ class MyClass
      */
     public function getXyyz(): ObjDef|string|array|null
     {
-        return $this->xyyz;
+        return $this->xyyz ?? null;
     }
 
     /**
@@ -544,7 +564,7 @@ class MyClass
      */
     public function getBuux(): ObjDef|string|array|null
     {
-        return $this->buux;
+        return $this->buux ?? null;
     }
 
     /**
@@ -574,7 +594,7 @@ class MyClass
      */
     public function getBoic(): ObjDef|string|array|null
     {
-        return $this->boic;
+        return $this->boic ?? null;
     }
 
     /**
@@ -601,7 +621,7 @@ class MyClass
 
     public function getPoox(): NumericKeysObj|string|null
     {
-        return $this->poox;
+        return $this->poox ?? null;
     }
 
     public function withPoox(NumericKeysObj|string $poox): self
@@ -622,7 +642,7 @@ class MyClass
 
     public function getArrObjUnion(): array|object|null
     {
-        return $this->arrObjUnion;
+        return $this->arrObjUnion ?? null;
     }
 
     public function withArrObjUnion(array|object $arrObjUnion): self
@@ -643,7 +663,7 @@ class MyClass
 
     public function getObjArrUnion(): array|object|null
     {
-        return $this->objArrUnion;
+        return $this->objArrUnion ?? null;
     }
 
     public function withObjArrUnion(array|object $objArrUnion): self
@@ -664,7 +684,7 @@ class MyClass
 
     public function getNumKeysDefaults(): ?MyClassNumKeysDefaults
     {
-        return $this->numKeysDefaults;
+        return $this->numKeysDefaults ?? null;
     }
 
     public function withNumKeysDefaults(MyClassNumKeysDefaults $numKeysDefaults): self

@@ -59,6 +59,11 @@ class Cat
      */
     private array $_providedOptionals = [];
 
+    /**
+     * Map of name/value pairs for properties not specified in the schema.
+     */
+    private object $_additionalProperties;
+
     private bool|int|float|string|null $hasFur = null;
 
     public function __construct(bool|int|float|string|null $hasFur = null)
@@ -66,9 +71,24 @@ class Cat
         $this->hasFur = $hasFur;
     }
 
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     */
+    public function withAdditionalProperties(array|object $additionalProperties): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
+    }
+
     public function getHasFur(): bool|int|float|string|null
     {
-        return $this->hasFur;
+        return $this->hasFur ?? null;
     }
 
     public function withHasFur(bool|int|float|string|null $hasFur): self

@@ -91,7 +91,7 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator
     {
         $varName  = $this->inner->varName();
 
-        $inputVarName = FromInputMethodFactory::INPUT_ARG_NAME;
+        $inputVarName = FromInputMethodFactory::INPUT_ARG;
         // JSON accessor:  $input->{'key'}   or   $input['key']
         $accessor = "\${$inputVarName}->{{$this->keyStr()}}";
 

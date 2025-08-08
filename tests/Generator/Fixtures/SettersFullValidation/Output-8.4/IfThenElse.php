@@ -65,6 +65,11 @@ class IfThenElse
         ],
     ];
 
+    /**
+     * Map of name/value pairs for properties not specified in the schema.
+     */
+    private object $_additionalProperties;
+
     private ?string $kind;
 
     /**
@@ -79,6 +84,25 @@ class IfThenElse
     {
         $this->kind = $kind;
         $this->value = $value;
+    }
+
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     * @param bool $validate Whether to revalidate the resulting object.
+     */
+    public function withAdditionalProperties(array|object $additionalProperties, bool $validate = true): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        if ($validate) {
+            $clone->validate();
+        }
+        return $clone;
     }
 
     public function getKind(): ?string
@@ -102,7 +126,7 @@ class IfThenElse
      */
     public function getValue()
     {
-        return $this->value;
+        return $this->value ?? null;
     }
 
     /**

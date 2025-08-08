@@ -114,6 +114,11 @@ class MyClass
      */
     private array $_providedOptionals = [];
 
+    /**
+     * Map of name/value pairs for properties not specified in the schema.
+     */
+    private object $_additionalProperties;
+
     private ?int $foo = null;
 
     private ?string $bar = null;
@@ -142,9 +147,24 @@ class MyClass
         $this->zyx = $zyx;
     }
 
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     */
+    public function withAdditionalProperties(array|object $additionalProperties): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
+    }
+
     public function getFoo(): ?int
     {
-        return $this->foo;
+        return $this->foo ?? null;
     }
 
     public function withFoo(int $foo, bool $validate = true): self
@@ -173,7 +193,7 @@ class MyClass
 
     public function getBar(): ?string
     {
-        return $this->bar;
+        return $this->bar ?? null;
     }
 
     public function withBar(string $bar): self
@@ -194,7 +214,7 @@ class MyClass
 
     public function getBaz(): ?int
     {
-        return $this->baz;
+        return $this->baz ?? null;
     }
 
     public function withBaz(?int $baz): self
@@ -220,7 +240,7 @@ class MyClass
      */
     public function getQux(): ?string
     {
-        return $this->qux;
+        return $this->qux ?? null;
     }
 
     /**
@@ -247,7 +267,7 @@ class MyClass
      */
     public function getThud(): ?string
     {
-        return $this->thud;
+        return $this->thud ?? null;
     }
 
     /**
@@ -274,7 +294,7 @@ class MyClass
      */
     public function getGrox(): ?string
     {
-        return $this->grox;
+        return $this->grox ?? null;
     }
 
     /**
@@ -298,7 +318,7 @@ class MyClass
 
     public function getQwert(): int|float|string|null
     {
-        return $this->qwert;
+        return $this->qwert ?? null;
     }
 
     public function withQwert(int|float|string $qwert): self
@@ -319,7 +339,7 @@ class MyClass
 
     public function getZyx(): ?string
     {
-        return $this->zyx;
+        return $this->zyx ?? null;
     }
 
     public function withZyx(string $zyx): self

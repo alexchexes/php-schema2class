@@ -90,7 +90,7 @@ class Foo
      */
     public function getSize()
     {
-        return $this->size;
+        return isset($this->size) ? $this->size : null;
     }
 
     /**

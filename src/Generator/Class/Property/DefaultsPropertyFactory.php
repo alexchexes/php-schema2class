@@ -12,7 +12,7 @@ use Laminas\Code\Generator\PropertyValueGenerator;
 use Laminas\Code\Generator\TypeGenerator;
 
 /**
- * Factory for creating "$schema" class property that holds the JSON-schema as array used for validation
+ * Factory for creating "$_defaults" class property that stores default values for schema properties
  */
 class DefaultsPropertyFactory
 {
@@ -24,9 +24,9 @@ class DefaultsPropertyFactory
     public function generate(): PropertyGenerator
     {
         $prop = new PropertyGenerator(
-            PropertyNames::DEFAULTS,
-            $this->defaults,
-            PropertyGenerator::FLAG_PRIVATE | PropertyGenerator::FLAG_STATIC
+            name: PropertyNames::DEFAULTS,
+            defaultValue: $this->defaults,
+            flags: PropertyGenerator::FLAG_PRIVATE | PropertyGenerator::FLAG_STATIC
         );
 
         $prop->setDocBlock(new DocBlockGenerator(

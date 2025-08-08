@@ -69,9 +69,9 @@ class NestedObjectProperty extends AbstractProperty
 
     public function inputMappingExpr(string $expr, bool $asserted = false): string
     {
-        $args = [$expr, '$' . FromInputMethodFactory::VALIDATE_ARG_NAME];
+        $args = [$expr, '$' . FromInputMethodFactory::VALIDATE_ARG];
         if ($this->request->getClassHasDefaults()) {
-            $args[] = '$' . FromInputMethodFactory::DEFAULTS_ARG_NAME;
+            $args[] = '$' . FromInputMethodFactory::DEFAULTS_ARG;
         }
         $argsStr = implode(', ', $args);
 

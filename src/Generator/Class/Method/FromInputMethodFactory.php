@@ -17,19 +17,19 @@ use Laminas\Code\Generator\ParameterGenerator;
 
 class FromInputMethodFactory
 {
-    public const INPUT_ARG_NAME = 'input';
-    public const VALIDATE_ARG_NAME = 'validate';
-    public const DEFAULTS_ARG_NAME = 'materializeDefaults';
-    public const OBJ_VAR_NAME = 'obj';
+    public const INPUT_ARG = 'input';
+    public const VALIDATE_ARG = 'validate';
+    public const DEFAULTS_ARG = 'materializeDefaults';
+    public const OBJ_VAR = 'obj';
     static public function OPTIONALS_VAR_NAME() { return '_' . PropertyNames::OPTIONALS; }
 
     static public function allVarNames()
     {
         return [
-            self::INPUT_ARG_NAME,
-            self::VALIDATE_ARG_NAME,
-            self::DEFAULTS_ARG_NAME,
-            self::OBJ_VAR_NAME,
+            self::INPUT_ARG,
+            self::VALIDATE_ARG,
+            self::DEFAULTS_ARG,
+            self::OBJ_VAR,
             self::OPTIONALS_VAR_NAME(),
         ];
     }
@@ -74,9 +74,9 @@ class FromInputMethodFactory
         }
 
         $parameterGenerators = [
-            new ParameterGenerator(self::INPUT_ARG_NAME, $paramType),
+            new ParameterGenerator(self::INPUT_ARG, $paramType),
             new ParameterGenerator(
-                name: self::VALIDATE_ARG_NAME,
+                name: self::VALIDATE_ARG,
                 type: $this->request->isAtLeastPHP('7.0') ? 'bool' : null,
                 defaultValue: true
             ),
@@ -84,7 +84,7 @@ class FromInputMethodFactory
 
         if ($this->defaults) {
             $parameterGenerators[] = new ParameterGenerator(
-                name: self::DEFAULTS_ARG_NAME,
+                name: self::DEFAULTS_ARG,
                 type: $this->request->isAtLeastPHP('7.0') ? 'bool' : null,
                 defaultValue: false,
             );
@@ -95,22 +95,21 @@ class FromInputMethodFactory
 
     private function buildDocBlock(): DocBlockGenerator
     {
-        $docBlockParams = [
-            new ParamTag(self::INPUT_ARG_NAME, ['array|object'], 'Input data'),
-            new ParamTag(self::VALIDATE_ARG_NAME, ['bool'], 'If `false`, validation against the schema will be skipped.'),
+        $tags = [
+            new ParamTag(self::INPUT_ARG, ['array|object'], 'Input data'),
+            new ParamTag(self::VALIDATE_ARG, ['bool'], 'If `false`, validation against the schema will be skipped.'),
         ];
 
         if ($this->defaults) {
-            $docBlockParams[] = new ParamTag(self::DEFAULTS_ARG_NAME, ['bool'], 'Apply defaults defined in schema when missing');
+            $tags[] = new ParamTag(self::DEFAULTS_ARG, ['bool'], 'Apply defaults defined in schema when missing');
         }
 
-        $docBlockParams[] = new ReturnTag([$this->request->getTargetClass()], 'Created instance');
-        $docBlockParams[] = new ThrowsTag('\\InvalidArgumentException');
+        $tags[] = new ReturnTag([$this->request->getTargetClass()], 'Created instance');
+        $tags[] = new ThrowsTag('\\InvalidArgumentException');
 
         $docBlock = new DocBlockGenerator(
-            'Builds a new instance from an input array or object',
-            null,
-            $docBlockParams,
+            shortDescription: 'Builds a new instance from an input array or object',
+            tags: $tags,
         );
         $docBlock->setWordWrap(false);
 
@@ -123,7 +122,7 @@ class FromInputMethodFactory
     private function generateBody(): string
     {
         $arrayToObjectExpr = $this->request->getOptions()->getArrayToObjectExpr();
-        $OBJ_VAR_NAME = self::OBJ_VAR_NAME;
+        $OBJ_VAR_NAME = self::OBJ_VAR;
 
         $bodyParts = [
             // in target PHP<8 we can't input specify $input type as `array|object` so we add a guard
@@ -162,7 +161,7 @@ class FromInputMethodFactory
      */
     private function bodyInputGuard(): string
     {
-        $INPUT_ARG_NAME = self::INPUT_ARG_NAME;
+        $INPUT_ARG_NAME = self::INPUT_ARG;
 
         if ($this->request->isAtLeastPHP('8.0')) {
             return '';
@@ -196,8 +195,8 @@ class FromInputMethodFactory
      */
     private function bodyInputToObjectConversion(string $arrayToObjectExpr): string
     {
-        $INPUT_ARG_NAME = self::INPUT_ARG_NAME;
-        $DEFAULTS_ARG_NAME = self::DEFAULTS_ARG_NAME;
+        $INPUT_ARG_NAME = self::INPUT_ARG;
+        $DEFAULTS_ARG_NAME = self::DEFAULTS_ARG;
 
         $inputToObjectConversion = '';
 
@@ -249,8 +248,8 @@ class FromInputMethodFactory
 
         // let's accept https://wiki.php.net/rfc/arbitrary_string_interpolation so we don't do this:
         $DEFAULTS = PropertyNames::DEFAULTS;
-        $INPUT_ARG_NAME = self::INPUT_ARG_NAME;
-        $DEFAULTS_ARG_NAME = self::DEFAULTS_ARG_NAME;
+        $INPUT_ARG_NAME = self::INPUT_ARG;
+        $DEFAULTS_ARG_NAME = self::DEFAULTS_ARG;
 
         $materializeDefaultsBlock =
             <<<PHP
@@ -279,8 +278,8 @@ class FromInputMethodFactory
     private function bodyInputValidation(): string
     {
         $VALIDATE_INPUT = MethodNames::VALIDATE_INPUT;
-        $INPUT_ARG_NAME = self::INPUT_ARG_NAME;
-        $VALIDATE_ARG_NAME = self::VALIDATE_ARG_NAME;
+        $INPUT_ARG_NAME = self::INPUT_ARG;
+        $VALIDATE_ARG_NAME = self::VALIDATE_ARG;
 
         $inputValidation =
             <<<PHP
@@ -340,7 +339,7 @@ class FromInputMethodFactory
      */
     private function bodyCreateNewInstance(): string
     {
-        $OBJ_VAR_NAME = self::OBJ_VAR_NAME;
+        $OBJ_VAR_NAME = self::OBJ_VAR;
         $requiredProperties = $this->schemaProperties->filter(PropertyCollectionFilterFactory::onlyRequired());
         $optionalProperties = $this->schemaProperties->filter(PropertyCollectionFilterFactory::onlyOptional());
         $constructorParams = [];
@@ -369,7 +368,7 @@ class FromInputMethodFactory
     private function bodyAssignProvidedOptionalsProperty(): string
     {
         $OPTIONALS = PropertyNames::OPTIONALS;
-        $OBJ_VAR_NAME = self::OBJ_VAR_NAME;
+        $OBJ_VAR_NAME = self::OBJ_VAR;
         $OPTIONALS_VAR_NAME = self::OPTIONALS_VAR_NAME();
 
         return $this->schemaProperties->hasOptionalNullable()

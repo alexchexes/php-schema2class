@@ -68,7 +68,7 @@ class Foo
 
     public function getSize(): ?Size
     {
-        return $this->size;
+        return $this->size ?? null;
     }
 
     public function withSize(Size $size): self

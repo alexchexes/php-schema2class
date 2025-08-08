@@ -19,6 +19,11 @@ class OptionsObject
         ],
     ];
 
+    /**
+     * Map of name/value pairs for properties not specified in the schema.
+     */
+    private object $_additionalProperties;
+
     private ?string $output = null;
 
     public function __construct(?string $_output = null)
@@ -26,9 +31,24 @@ class OptionsObject
         $this->output = $_output;
     }
 
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     */
+    public function withAdditionalProperties($additionalProperties): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
+    }
+
     public function getOutput(): ?string
     {
-        return $this->output;
+        return $this->output ?? null;
     }
 
     public function withOutput(string $_output): self

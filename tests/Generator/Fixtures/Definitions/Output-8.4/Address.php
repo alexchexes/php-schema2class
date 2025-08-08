@@ -36,6 +36,11 @@ class Address
         ],
     ];
 
+    /**
+     * Map of name/value pairs for properties not specified in the schema.
+     */
+    private object $_additionalProperties;
+
     private ?Address\Defs\Name $name = null;
 
     private string $city;
@@ -46,9 +51,24 @@ class Address
         $this->name = $name;
     }
 
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     */
+    public function withAdditionalProperties(array|object $additionalProperties): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
+    }
+
     public function getName(): ?Address\Defs\Name
     {
-        return $this->name;
+        return $this->name ?? null;
     }
 
     public function withName(Address\Defs\Name $name): self

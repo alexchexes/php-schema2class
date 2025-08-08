@@ -31,6 +31,11 @@ class MyClassFilesItem
         ],
     ];
 
+    /**
+     * Map of name/value pairs for properties not specified in the schema.
+     */
+    private object $_additionalProperties;
+
     private ?string $input = null;
 
     private ?OptionsObject $options = null;
@@ -41,9 +46,24 @@ class MyClassFilesItem
         $this->options = $options;
     }
 
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     */
+    public function withAdditionalProperties($additionalProperties): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
+    }
+
     public function getInput(): ?string
     {
-        return $this->input;
+        return $this->input ?? null;
     }
 
     public function withInput(string $_input): self
@@ -64,7 +84,7 @@ class MyClassFilesItem
 
     public function getOptions(): ?OptionsObject
     {
-        return $this->options;
+        return $this->options ?? null;
     }
 
     public function withOptions(OptionsObject $options): self

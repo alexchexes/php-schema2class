@@ -7,6 +7,7 @@ class PropertyNames
     public const SCHEMA = '_schema';
     public const DEFAULTS = '_defaults';
     public const OPTIONALS = '_providedOptionals';
+    public const ADDITIONAL_PROPS = '_additionalProperties';
 
     static public function all(): array
     {
@@ -14,6 +15,7 @@ class PropertyNames
             self::SCHEMA,
             self::DEFAULTS,
             self::OPTIONALS,
+            self::ADDITIONAL_PROPS,
         ];
     }
 }

@@ -107,7 +107,7 @@ abstract class AbstractProperty implements PropertyInterface
         $keyStr = $this->keyStr();
 
         // build the raw lookup expression (using the JSON key only inside the braces)
-        $inputVarName = FromInputMethodFactory::INPUT_ARG_NAME;
+        $inputVarName = FromInputMethodFactory::INPUT_ARG;
         $accessor = "\${$inputVarName}->{{$keyStr}}";
 
         // now map from JSON→Type (this will call fromInput, etc.)

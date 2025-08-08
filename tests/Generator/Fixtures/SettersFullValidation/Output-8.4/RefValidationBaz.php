@@ -30,6 +30,11 @@ class RefValidationBaz
     ];
 
     /**
+     * Map of name/value pairs for properties not specified in the schema.
+     */
+    private object $_additionalProperties;
+
+    /**
      * @var 1|2|null
      */
     private ?int $nestedFoo = null;
@@ -43,11 +48,26 @@ class RefValidationBaz
     }
 
     /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     */
+    public function withAdditionalProperties(array|object $additionalProperties): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
+    }
+
+    /**
      * @return 1|2|null
      */
     public function getNestedFoo(): ?int
     {
-        return $this->nestedFoo;
+        return $this->nestedFoo ?? null;
     }
 
     /**

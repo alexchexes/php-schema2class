@@ -81,7 +81,7 @@ class MyClass
 
     public function getAddress(): ?Address
     {
-        return $this->address;
+        return $this->address ?? null;
     }
 
     public function withAddress(Address $address): self

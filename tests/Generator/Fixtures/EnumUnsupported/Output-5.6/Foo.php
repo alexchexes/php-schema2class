@@ -60,6 +60,13 @@ class Foo
     ];
 
     /**
+     * Map of name/value pairs for properties not specified in the schema.
+     *
+     * @var object
+     */
+    private $_additionalProperties;
+
+    /**
      * @var 0|1.5|2.5|3.5|null
      */
     private $floatEnum = null;
@@ -101,11 +108,27 @@ class Foo
     }
 
     /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     * @return self
+     */
+    public function withAdditionalProperties($additionalProperties)
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
+    }
+
+    /**
      * @return 0|1.5|2.5|3.5|null
      */
     public function getFloatEnum()
     {
-        return $this->floatEnum;
+        return isset($this->floatEnum) ? $this->floatEnum : null;
     }
 
     /**
@@ -145,7 +168,7 @@ class Foo
      */
     public function getFloatEnumRef()
     {
-        return $this->floatEnumRef;
+        return isset($this->floatEnumRef) ? $this->floatEnumRef : null;
     }
 
     /**
@@ -180,7 +203,7 @@ class Foo
      */
     public function getBoolEnum()
     {
-        return $this->boolEnum;
+        return isset($this->boolEnum) ? $this->boolEnum : null;
     }
 
     /**
@@ -220,7 +243,7 @@ class Foo
      */
     public function getBoolEnumRef()
     {
-        return $this->boolEnumRef;
+        return isset($this->boolEnumRef) ? $this->boolEnumRef : null;
     }
 
     /**

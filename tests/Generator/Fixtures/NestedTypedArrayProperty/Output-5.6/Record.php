@@ -89,6 +89,13 @@ class Record
     ];
 
     /**
+     * Map of name/value pairs for properties not specified in the schema.
+     *
+     * @var object
+     */
+    private $_additionalProperties;
+
+    /**
      * @var Phone[]|null
      */
     private $dataArray = null;
@@ -123,11 +130,27 @@ class Record
     }
 
     /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     * @return self
+     */
+    public function withAdditionalProperties($additionalProperties)
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
+    }
+
+    /**
      * @return Phone[]|null
      */
     public function getDataArray()
     {
-        return $this->dataArray;
+        return isset($this->dataArray) ? $this->dataArray : null;
     }
 
     /**
@@ -162,7 +185,7 @@ class Record
      */
     public function getDataArrayNested()
     {
-        return $this->dataArrayNested;
+        return isset($this->dataArrayNested) ? $this->dataArrayNested : null;
     }
 
     /**
@@ -197,7 +220,7 @@ class Record
      */
     public function getDataArrayAnyOf()
     {
-        return $this->dataArrayAnyOf;
+        return isset($this->dataArrayAnyOf) ? $this->dataArrayAnyOf : null;
     }
 
     /**
@@ -232,7 +255,7 @@ class Record
      */
     public function getDataArrayNestedAnyOf()
     {
-        return $this->dataArrayNestedAnyOf;
+        return isset($this->dataArrayNestedAnyOf) ? $this->dataArrayNestedAnyOf : null;
     }
 
     /**

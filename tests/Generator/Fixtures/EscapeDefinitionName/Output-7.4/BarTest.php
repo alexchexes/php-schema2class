@@ -57,6 +57,11 @@ class BarTest
     ];
 
     /**
+     * Map of name/value pairs for properties not specified in the schema.
+     */
+    private object $_additionalProperties;
+
+    /**
      * @var FooTest|MoiKlass|FooTest_1|null
      */
     private ?object $exampleProp = null;
@@ -70,11 +75,26 @@ class BarTest
     }
 
     /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     */
+    public function withAdditionalProperties($additionalProperties): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
+    }
+
+    /**
      * @return FooTest|MoiKlass|FooTest_1|null
      */
     public function getExampleProp(): ?object
     {
-        return $this->exampleProp;
+        return $this->exampleProp ?? null;
     }
 
     /**

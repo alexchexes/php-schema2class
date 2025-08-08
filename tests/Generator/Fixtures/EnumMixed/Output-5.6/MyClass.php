@@ -117,6 +117,13 @@ class MyClass
     private $_providedOptionals = [];
 
     /**
+     * Map of name/value pairs for properties not specified in the schema.
+     *
+     * @var object
+     */
+    private $_additionalProperties;
+
+    /**
      * @var 1|2|'1'|'2'
      */
     private $foo;
@@ -183,6 +190,22 @@ class MyClass
         $this->inferString = $inferString;
         $this->inferInt = $inferInt;
         $this->optionalNullable = $optionalNullable;
+    }
+
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     * @return self
+     */
+    public function withAdditionalProperties($additionalProperties)
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
     }
 
     /**
@@ -277,7 +300,7 @@ class MyClass
      */
     public function getInferString()
     {
-        return $this->inferString;
+        return isset($this->inferString) ? $this->inferString : null;
     }
 
     /**
@@ -317,7 +340,7 @@ class MyClass
      */
     public function getInferInt()
     {
-        return $this->inferInt;
+        return isset($this->inferInt) ? $this->inferInt : null;
     }
 
     /**
@@ -444,7 +467,7 @@ class MyClass
      */
     public function getOptionalNullable()
     {
-        return $this->optionalNullable;
+        return isset($this->optionalNullable) ? $this->optionalNullable : null;
     }
 
     /**
