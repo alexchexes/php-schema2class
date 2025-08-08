@@ -5,7 +5,7 @@ namespace Helmich\Schema2Class\Generator\Class;
 
 use Helmich\Schema2Class\Generator\Class\Method\FromInputMethodFactory;
 use Helmich\Schema2Class\Generator\Class\Method\SerializeMethodFactory;
-use Helmich\Schema2Class\Generator\Class\Method\SetterFactory;
+use Helmich\Schema2Class\Generator\Class\Method\SchemaPropertyAccessor\PropertySetterFactory;
 use Helmich\Schema2Class\Generator\Class\PropertyNames;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\Collection\PropertyCollection;
@@ -93,7 +93,7 @@ class IdentifierResolver
             ReservedNames::phpPredefined(),
             FromInputMethodFactory::allVarNames(),
             SerializeMethodFactory::allVarNames(),
-            [SetterFactory::CLONE_VAR_NAME],
+            [PropertySetterFactory::CLONE_VAR_NAME],
         );
 
         $used = [];

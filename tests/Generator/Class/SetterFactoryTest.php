@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Class;
 
-use Helmich\Schema2Class\Generator\Class\Method\SetterFactory;
+use Helmich\Schema2Class\Generator\Class\Method\SchemaPropertyAccessor\PropertySetterFactory;
 use Helmich\Schema2Class\Generator\SchemaPropertyCollector;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Spec\SpecificationOptions;
@@ -29,7 +29,7 @@ class SetterFactoryTest extends TestCase
         $props = SchemaPropertyCollector::collectPropertiesFromSchema($schema, $req)->toArray();
         $prop = $props[0];
 
-        $factory = new SetterFactory($req);
+        $factory = new PropertySetterFactory($req);
         $setter = $factory->generate($prop);
         self::assertNotNull($setter);
 

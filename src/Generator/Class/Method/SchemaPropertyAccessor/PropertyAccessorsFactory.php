@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Helmich\Schema2Class\Generator\Class\Method;
+namespace Helmich\Schema2Class\Generator\Class\Method\SchemaPropertyAccessor;
 
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\Collection\PropertyCollection;
@@ -11,7 +11,7 @@ use Laminas\Code\Generator\MethodGenerator;
 /** 
  * Factory for creating all accessors (get/set/unset/with/without) of a generated class.
  */
-class SchemaPropertyAccessorsFactory
+class PropertyAccessorsFactory
 {
     public function __construct(
         private GeneratorRequest $request,
@@ -30,9 +30,9 @@ class SchemaPropertyAccessorsFactory
             PropertyCollectionFilterFactory::excludeDeprecatedCaseVariants($this->schemaProperties)
         );
 
-        $getterFactory = new GetterFactory($this->request);
-        $setterFactory = new SetterFactory($this->request);
-        $unsetterFactory = new UnsetterFactory($this->request);
+        $getterFactory = new PropertyGetterFactory($this->request);
+        $setterFactory = new PropertySetterFactory($this->request);
+        $unsetterFactory = new PropertyUnsetterFactory($this->request);
 
         foreach ($filteredProperties as $property) {
             $methodsGenerators[] = $getterFactory->generate($property);

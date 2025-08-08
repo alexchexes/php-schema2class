@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Class\Method;
 
+use Helmich\Schema2Class\Generator\Class\Method\SchemaPropertyAccessor\PropertyAccessorsFactory;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\Collection\PropertyCollection;
 use Laminas\Code\Generator\MethodGenerator;
@@ -26,7 +27,7 @@ class ClassMethodSuiteFactory
     public function generateAll(): array
     {
         $constructorFactory = new ConstructorFactory($this->schemaProperties);
-        $accessorsFactory = new SchemaPropertyAccessorsFactory($this->request, $this->schemaProperties);
+        $accessorsFactory = new PropertyAccessorsFactory($this->request, $this->schemaProperties);
         $buildMethodFactory = new FromInputMethodFactory($this->request, $this->schemaProperties, $this->defaults);
         $serializeMethodFactory = new SerializeMethodFactory($this->request, $this->schemaProperties, $this->defaults);
         $validateMethodFactory = new ValidateMethodFactory($this->request);

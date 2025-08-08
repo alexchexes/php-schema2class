@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Helmich\Schema2Class\Generator\Class\Method;
+namespace Helmich\Schema2Class\Generator\Class\Method\SchemaPropertyAccessor;
 
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\PropertyQuery;
@@ -12,7 +12,7 @@ use Laminas\Code\Generator\DocBlock\Tag\ReturnTag;
 use Laminas\Code\Generator\DocBlockGenerator;
 use Laminas\Code\Generator\MethodGenerator;
 
-class GetterFactory
+class PropertyGetterFactory
 {
     public function __construct(
         private GeneratorRequest $request,

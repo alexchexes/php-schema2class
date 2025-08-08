@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Helmich\Schema2Class\Generator\Class\Method;
+namespace Helmich\Schema2Class\Generator\Class\Method\SchemaPropertyAccessor;
 
 use Helmich\Schema2Class\Generator\Class\MethodNames;
 use Helmich\Schema2Class\Generator\Class\PropertyNames;
@@ -17,7 +17,7 @@ use Laminas\Code\Generator\DocBlockGenerator;
 use Laminas\Code\Generator\MethodGenerator;
 use Laminas\Code\Generator\ParameterGenerator;
 
-class SetterFactory
+class PropertySetterFactory
 {
     public const CLONE_VAR_NAME = 'clone';
     public const VALIDATE_ARG = 'validate';

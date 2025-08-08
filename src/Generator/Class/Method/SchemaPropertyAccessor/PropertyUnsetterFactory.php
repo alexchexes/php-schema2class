@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Helmich\Schema2Class\Generator\Class\Method;
+namespace Helmich\Schema2Class\Generator\Class\Method\SchemaPropertyAccessor;
 
 use Helmich\Schema2Class\Generator\Class\PropertyNames;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
@@ -11,7 +11,7 @@ use Laminas\Code\Generator\DocBlock\Tag\ReturnTag;
 use Laminas\Code\Generator\DocBlockGenerator;
 use Laminas\Code\Generator\MethodGenerator;
 
-class UnsetterFactory
+class PropertyUnsetterFactory
 {
     private bool $mutating;
     private bool $chainable;
