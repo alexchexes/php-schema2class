@@ -136,7 +136,7 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface
         $ann = $this->inner->typeAnnotation();
 
         // Add "null" to PHPDoc & type-hint if missing
-        if (!preg_match('/(^|\\|)null(\\||$)/', $ann)) {
+        if ($ann !== 'mixed' && !preg_match('/(^|\\|)null(\\||$)/', $ann)) {
             $ann .= '|null';
         }
 

@@ -20,12 +20,12 @@ class SomeObj1
     ];
 
     /**
-     * @var mixed|null
+     * @var mixed
      */
     private $a = null;
 
     /**
-     * @param mixed|null $a
+     * @param mixed $a
      */
     public function __construct($a = null)
     {
@@ -33,7 +33,7 @@ class SomeObj1
     }
 
     /**
-     * @return mixed|null
+     * @return mixed
      */
     public function getA()
     {
