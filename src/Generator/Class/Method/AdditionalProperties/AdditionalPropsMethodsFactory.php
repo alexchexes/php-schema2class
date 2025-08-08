@@ -24,7 +24,9 @@ class AdditionalPropsMethodsFactory
         }
 
         $methodGenerators = [
+            (new AdditionalPropGetterFactory($this->request))->generate(),
             (new AdditionalPropSetterFactory($this->request, $this->schema))->generate(),
+            (new AdditionalPropUnsetterFactory($this->request, $this->schema))->generate(),
         ];
 
         return $methodGenerators;

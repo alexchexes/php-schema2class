@@ -81,6 +81,18 @@ class IfThenElse
     }
 
     /**
+     * Object or array containing name/value pairs for properties not specified in the schema.
+     *
+     * @param bool $asArray Whether return array instead of `stdClass` object.
+     */
+    public function getAdditionalProperties(bool $asArray = true): array|object
+    {
+        return $asArray
+            ? json_decode(json_encode($this->_additionalProperties), true)
+            : $this->_additionalProperties;
+    }
+
+    /**
      * Allows adding properties not specified in the schema.
      *
      * @param array|object $additionalProperties Map of property name/value pairs to add.
@@ -93,6 +105,21 @@ class IfThenElse
             ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
             : $additionalProperties;
 
+        if ($validate) {
+            $clone->validate();
+        }
+        return $clone;
+    }
+
+    /**
+     * Removes all extra properties not specified in the schema.
+     *
+     * @param bool $validate Whether to revalidate the resulting object.
+     */
+    public function withoutAdditionalProperties(bool $validate = true): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = new \stdClass;
         if ($validate) {
             $clone->validate();
         }

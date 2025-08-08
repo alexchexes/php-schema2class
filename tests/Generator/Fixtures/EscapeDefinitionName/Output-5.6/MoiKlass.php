@@ -39,6 +39,19 @@ class MoiKlass
     }
 
     /**
+     * Object or array containing name/value pairs for properties not specified in the schema.
+     *
+     * @param bool $asArray Whether return array instead of `stdClass` object.
+     * @return array|object
+     */
+    public function getAdditionalProperties($asArray = true)
+    {
+        return $asArray
+            ? json_decode(json_encode($this->_additionalProperties), true)
+            : $this->_additionalProperties;
+    }
+
+    /**
      * Allows adding properties not specified in the schema.
      *
      * @param array|object $additionalProperties Map of property name/value pairs to add.
@@ -51,6 +64,18 @@ class MoiKlass
             ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
             : $additionalProperties;
 
+        return $clone;
+    }
+
+    /**
+     * Removes all extra properties not specified in the schema.
+     *
+     * @return self
+     */
+    public function withoutAdditionalProperties()
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = new \stdClass;
         return $clone;
     }
 

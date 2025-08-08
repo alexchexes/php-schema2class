@@ -22,23 +22,23 @@ class AdditionalPropertiesPropertyFactory
 
     public function generate(): PropertyGenerator
     {
-        $prop = new PropertyGenerator(
+        $propGen = new PropertyGenerator(
             name: PropertyNames::ADDITIONAL_PROPS,
             flags: PropertyGenerator::FLAG_PRIVATE,
         );
-        $prop->omitDefaultValue(true);
+        $propGen->omitDefaultValue(true);
 
         $docBlock = new DocBlockGenerator('Map of name/value pairs for properties not specified in the schema.');
 
         $typeHint = 'object';
         if ($this->request->isAtLeastPHP('7.2')) {
-            $prop->setType(TypeGenerator::fromTypeString($typeHint));
+            $propGen->setType(TypeGenerator::fromTypeString($typeHint));
         } else {
             $docBlock->setTags([new GenericTag('var', $typeHint)]);
         }
 
-        $prop->setDocBlock($docBlock);
+        $propGen->setDocBlock($docBlock);
 
-        return $prop;
+        return $propGen;
     }
 }
