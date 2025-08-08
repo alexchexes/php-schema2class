@@ -67,15 +67,9 @@ class IfThenElse
 
     private ?string $kind;
 
-    /**
-     * @var mixed
-     */
-    private $value = null;
+    private mixed $value = null;
 
-    /**
-     * @param mixed $value
-     */
-    public function __construct(?string $kind, $value = null)
+    public function __construct(?string $kind, mixed $value = null)
     {
         $this->kind = $kind;
         $this->value = $value;
@@ -97,18 +91,12 @@ class IfThenElse
         return $clone;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getValue()
+    public function getValue(): mixed
     {
         return $this->value;
     }
 
-    /**
-     * @param mixed $value
-     */
-    public function withValue($value, bool $validate = true): self
+    public function withValue(mixed $value, bool $validate = true): self
     {
         $clone = clone $this;
         $clone->value = $value;
