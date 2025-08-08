@@ -20,6 +20,9 @@ class MixedProperty extends AbstractProperty
 
     public function typeHint(): ?string
     {
+        if ($this->request->isAtLeastPHP('8.0')) {
+            return 'mixed';
+        }
         return null;
     }
 

@@ -24,15 +24,9 @@ class SomeObj1
      */
     private object $_additionalProperties;
 
-    /**
-     * @var mixed
-     */
-    private $a = null;
+    private mixed $a = null;
 
-    /**
-     * @param mixed $a
-     */
-    public function __construct($a = null)
+    public function __construct(mixed $a = null)
     {
         $this->a = $a;
     }
@@ -52,18 +46,12 @@ class SomeObj1
         return $clone;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getA()
+    public function getA(): mixed
     {
         return $this->a ?? null;
     }
 
-    /**
-     * @param mixed $a
-     */
-    public function withA($a): self
+    public function withA(mixed $a): self
     {
         $clone = clone $this;
         $clone->a = $a;
