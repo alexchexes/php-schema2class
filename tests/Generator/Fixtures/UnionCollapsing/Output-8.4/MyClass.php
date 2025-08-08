@@ -138,16 +138,11 @@ class MyClass
 
     public function withBar(string $bar, bool $validate = true): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($bar, self::$_schema['properties']['bar']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->bar = $bar;
+        if ($validate) {
+            $clone->validate();
+        }
 
         return $clone;
     }
@@ -159,16 +154,11 @@ class MyClass
 
     public function withBaz(string $baz, bool $validate = true): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($baz, self::$_schema['properties']['baz']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->baz = $baz;
+        if ($validate) {
+            $clone->validate();
+        }
 
         return $clone;
     }
@@ -180,16 +170,11 @@ class MyClass
 
     public function withQux(?string $qux, bool $validate = true): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($qux, self::$_schema['properties']['qux']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->qux = $qux;
+        if ($validate) {
+            $clone->validate();
+        }
 
         return $clone;
     }

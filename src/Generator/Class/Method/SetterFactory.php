@@ -53,11 +53,15 @@ class SetterFactory
         $propTypeHint = $paramProperty->typeHint();
 
         // Determine whether setter needs runtime validation.
-        $addValidation = $property->needsValidation();
+        $schemaRequiresFullValidation = $this->rootSchemaRequiresFullValidation();
+        $propHasRef = $this->schemaContainsRef($property->schema());
+
+        $addValidation = $property->needsValidation() || $schemaRequiresFullValidation;
+        $validateFullSchema = $schemaRequiresFullValidation || ($addValidation && $propHasRef);
 
         $docBlock = $this->buildDocBlock($property, $varName, $propAnnotatedType, $propTypeHint, $addValidation);
         $parameters = $this->buildParams($varName, $propTypeHint, $addValidation);
-        $body = $this->generateBody($property, $propName, $varName, $addValidation);
+        $body = $this->generateBody($property, $propName, $varName, $addValidation, $validateFullSchema);
 
         $methodGen = new MethodGenerator(
             name: $methodName,
@@ -134,12 +138,13 @@ class SetterFactory
         return $parameters;
     }
 
-    private function generateBody(PropertyInterface $property, string $propName, string $varName, bool $addValidation): string
+    private function generateBody(PropertyInterface $property, string $propName, string $varName, bool $addValidation, bool $validateFullSchema): string
     {
         $propKey = $property->keyStr();
+        $OPTIONALS = PropertyNames::OPTIONALS;
 
         $validationBlock = '';
-        if ($addValidation) {
+        if ($addValidation && !$validateFullSchema) {
             $newValidatorExpr = $this->request->getOptions()->getNewValidatorExpr();
 
             $SCHEMA = PropertyNames::SCHEMA;
@@ -155,34 +160,60 @@ class SetterFactory
                 PHP;
         }
 
-        $OPTIONALS = PropertyNames::OPTIONALS;
-
         if ($this->mutating) {
-            $body =
-                $validationBlock .
-                "\$this->{$propName} = \$$varName;";
+            $body = $validationBlock . "\$this->{$propName} = \$$varName;\n";
 
             if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
-                $body .= "\n\$this->{$OPTIONALS}[{$propKey}] = true;";
+                $body .= "\$this->{$OPTIONALS}[{$propKey}] = true;\n";
+            }
+
+            if ($addValidation && $validateFullSchema) {
+                $body .= "if (\$validate) {\n    \$this->validate();\n}\n";
             }
 
             if ($this->chainable) {
-                $body .= "\n\nreturn \$this;";
+                $body .= "\nreturn \$this;";
             }
         } else {
             $CLONE = self::CLONE_VAR_NAME;
-            $body =
-                $validationBlock .
-                "\${$CLONE} = clone \$this;\n" .
-                "\${$CLONE}->$propName = \$$varName;\n";
+            $body = $validationBlock . "\${$CLONE} = clone \$this;\n\${$CLONE}->$propName = \$$varName;\n";
 
             if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
                 $body .= "\${$CLONE}->{$OPTIONALS}[{$propKey}] = true;\n";
+            }
+
+            if ($addValidation && $validateFullSchema) {
+                $body .= "if (\$validate) {\n    \${$CLONE}->validate();\n}\n";
             }
 
             $body .= "\nreturn \${$CLONE};";
         }
 
         return $body;
+    }
+
+    private function schemaContainsRef(array $schema): bool
+    {
+        $iterator = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($schema));
+        foreach ($iterator as $key => $_) {
+            if ($key === '$ref') {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function rootSchemaRequiresFullValidation(): bool
+    {
+        $schema = $this->request->getSchema();
+        $keywords = ['if', 'then', 'else', 'allOf', 'anyOf', 'oneOf', 'not', 'dependencies', 'dependentSchemas', 'dependentRequired'];
+        foreach ($keywords as $keyword) {
+            if (array_key_exists($keyword, $schema)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

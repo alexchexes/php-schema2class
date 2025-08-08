@@ -73,10 +73,13 @@ class MyClass
     /**
      * Descr for 'street_address'
      */
-    public function withStreetAddress(string $streetAddress): self
+    public function withStreetAddress(string $streetAddress, bool $validate = true): self
     {
         $clone = clone $this;
         $clone->streetAddress = $streetAddress;
+        if ($validate) {
+            $clone->validate();
+        }
 
         return $clone;
     }
@@ -92,10 +95,13 @@ class MyClass
     /**
      * Descr for 'house_number'
      */
-    public function withHouseNumber(string $houseNumber): self
+    public function withHouseNumber(string $houseNumber, bool $validate = true): self
     {
         $clone = clone $this;
         $clone->houseNumber = $houseNumber;
+        if ($validate) {
+            $clone->validate();
+        }
 
         return $clone;
     }
@@ -119,10 +125,13 @@ class MyClass
     /**
      * Descr for 'type'
      */
-    public function withType(MyClassType $type): self
+    public function withType(MyClassType $type, bool $validate = true): self
     {
         $clone = clone $this;
         $clone->type = $type;
+        if ($validate) {
+            $clone->validate();
+        }
 
         return $clone;
     }
@@ -146,10 +155,13 @@ class MyClass
     /**
      * Descr for 'city'
      */
-    public function withCity(string $city): self
+    public function withCity(string $city, bool $validate = true): self
     {
         $clone = clone $this;
         $clone->city = $city;
+        if ($validate) {
+            $clone->validate();
+        }
 
         return $clone;
     }
@@ -173,10 +185,13 @@ class MyClass
     /**
      * Descr for 'state'
      */
-    public function withState(string $state): self
+    public function withState(string $state, bool $validate = true): self
     {
         $clone = clone $this;
         $clone->state = $state;
+        if ($validate) {
+            $clone->validate();
+        }
 
         return $clone;
     }
