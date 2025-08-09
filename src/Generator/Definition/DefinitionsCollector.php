@@ -20,9 +20,11 @@ class DefinitionsCollector
     /** @var array<int,string> */
     private array $usedClassNames = [];
 
-    public function __construct(private readonly GeneratorRequest $generatorRequest)
-    {
-        if (($cls = $this->generatorRequest->getTargetClass()) !== null) {
+    public function __construct(
+        private readonly GeneratorRequest $generatorRequest,
+        bool $rootSchemaIsObject = true,
+    ) {
+        if ($rootSchemaIsObject && ($cls = $this->generatorRequest->getTargetClass()) !== null) {
             $ns = trim($this->generatorRequest->getTargetNamespace(), '\\');
             $fqn = $ns !== '' ? $ns . '\\' . $cls : $cls;
             $this->usedClassNames[] = $fqn;

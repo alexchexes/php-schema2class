@@ -9,7 +9,6 @@ use Helmich\Schema2Class\Generator\Definition\DefinitionsCollector;
 use Helmich\Schema2Class\Generator\Definition\DefinitionsGenerator;
 use Helmich\Schema2Class\Generator\Enum\SchemaToEnum;
 use Helmich\Schema2Class\Generator\Property\Type\Composite\IntersectProperty;
-use Helmich\Schema2Class\Generator\Property\Type\Object\NestedObjectProperty;
 use Helmich\Schema2Class\Generator\ReferenceLookup\DefinitionsReferenceLookup;
 use Helmich\Schema2Class\Writer\WriterInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -164,7 +163,7 @@ class SchemaToClass
             return (new IntersectProperty($req->getTargetClass(), $schema, $req))->buildSchemaIntersect();
         }
 
-        if (!NestedObjectProperty::canHandleSchema($schema)) {
+        if (!$this->describesObject($schema)) {
             // If the schema does not describe an object we only generate definitions
             $class = $req->getTargetClass();
             if ($class !== null) {
@@ -177,6 +176,34 @@ class SchemaToClass
         return $schema;
     }
 
+    private function describesObject(array $schema): bool
+    {
+        if (isset($schema['type'])) {
+            $type = $schema['type'];
+            if (is_string($type)) {
+                if ($type !== 'object') {
+                    return false;
+                }
+            } elseif (is_array($type)) {
+                if (!in_array('object', $type, true)) {
+                    return false;
+                }
+            }
+        }
+
+        $hasProps = isset($schema['properties'])
+            && is_array($schema['properties'])
+            && count($schema['properties']) > 0;
+
+        $hasAdditional = isset($schema['additionalProperties'])
+            && (
+                $schema['additionalProperties'] === true
+                || (is_array($schema['additionalProperties']) && count($schema['additionalProperties']) > 0)
+            );
+
+        return $hasProps || $hasAdditional;
+    }
+
     private function definitionsToSchemas(GeneratorRequest &$req): void
     {
         if ($req->hasReferenceLookup(DefinitionsReferenceLookup::class)) {
@@ -185,7 +212,7 @@ class SchemaToClass
 
         $rootRef = $req->getSchema()['$ref'] ?? null;
 
-        $collector = new DefinitionsCollector($req);
+        $collector = new DefinitionsCollector($req, $this->describesObject($req->getSchema()));
         $allDefinitions  = iterator_to_array($collector->collect($req->getSchema()));
 
         $ns = $req->getTargetNamespace();
