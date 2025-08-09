@@ -24,6 +24,24 @@ class MyClass
     ];
 
     /**
+     * Mapping of schema property names to this class's property names.
+     *
+     * @var array
+     */
+    private static $_namesMap = [
+        'bound' => 'bound',
+        'outbound' => 'outbound',
+        '_outbound' => '_outbound',
+    ];
+
+    /**
+     * Map of name/value pairs for properties not specified in the schema.
+     *
+     * @var \stdClass
+     */
+    private $_additionalProperties;
+
+    /**
      * @var string|null
      */
     private $bound = null;
@@ -45,9 +63,52 @@ class MyClass
      */
     public function __construct($bound = null, $outbound = null, $_outbound = null)
     {
+        $this->_additionalProperties = new \stdClass();
+
         $this->bound = $bound;
         $this->outbound = $outbound;
         $this->_outbound = $_outbound;
+    }
+
+    /**
+     * Object (`stdClass`) or array with name/value pairs for properties not specified in the schema.
+     *
+     * @param bool $asArray Whether return an associative array instead of `stdClass` object.
+     * @return array|\stdClass
+     */
+    public function getAdditionalProperties($asArray = true)
+    {
+        return $asArray
+            ? json_decode(json_encode($this->_additionalProperties), true)
+            : $this->_additionalProperties;
+    }
+
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param \stdClass|array $additionalProperties Map of property name/value pairs to add.
+     * @return self
+     */
+    public function withAdditionalProperties($additionalProperties)
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
+    }
+
+    /**
+     * Removes all extra properties not specified in the schema.
+     *
+     * @return self
+     */
+    public function withoutAdditionalProperties()
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = new \stdClass();
+        return $clone;
     }
 
     /**
@@ -55,7 +116,7 @@ class MyClass
      */
     public function getBound()
     {
-        return $this->bound;
+        return isset($this->bound) ? $this->bound : null;
     }
 
     /**
@@ -95,7 +156,7 @@ class MyClass
      */
     public function get_Outbound()
     {
-        return $this->outbound;
+        return isset($this->outbound) ? $this->outbound : null;
     }
 
     /**
@@ -135,7 +196,7 @@ class MyClass
      */
     public function get_Outbound_1()
     {
-        return $this->_outbound;
+        return isset($this->_outbound) ? $this->_outbound : null;
     }
 
     /**
@@ -196,6 +257,12 @@ class MyClass
         $_outbound = isset($input->{'_outbound'}) ? $input->{'_outbound'} : null;
 
         $obj = new self($bound, $outbound, $_outbound);
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
+
         return $obj;
     }
 
@@ -206,7 +273,8 @@ class MyClass
      */
     public function toArray()
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         if (isset($this->bound)) {
             $output['bound'] = $this->bound;
         }
@@ -227,7 +295,8 @@ class MyClass
      */
     public function toStdClass()
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         if (isset($this->bound)) {
             $output->{'bound'} = $this->bound;
         }

@@ -8,8 +8,6 @@ class Qux
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
     private static array $_schema = [
         'type' => 'object',
@@ -70,6 +68,18 @@ class Qux
     ];
 
     /**
+     * Mapping of schema property names to this class's property names.
+     */
+    private static array $_namesMap = [
+        'grox' => 'grox',
+    ];
+
+    /**
+     * Map of name/value pairs for properties not specified in the schema.
+     */
+    private \stdClass $_additionalProperties;
+
+    /**
      * @var string|string[]|Foo|Bar|null
      */
     private $grox = null;
@@ -79,7 +89,47 @@ class Qux
      */
     public function __construct($grox = null)
     {
+        $this->_additionalProperties = new \stdClass();
+
         $this->grox = $grox;
+    }
+
+    /**
+     * Object (`stdClass`) or array with name/value pairs for properties not specified in the schema.
+     *
+     * @param bool $asArray Whether return an associative array instead of `stdClass` object.
+     * @return array|\stdClass
+     */
+    public function getAdditionalProperties(bool $asArray = true)
+    {
+        return $asArray
+            ? json_decode(json_encode($this->_additionalProperties), true)
+            : $this->_additionalProperties;
+    }
+
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param \stdClass|array $additionalProperties Map of property name/value pairs to add.
+     */
+    public function withAdditionalProperties($additionalProperties): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
+    }
+
+    /**
+     * Removes all extra properties not specified in the schema.
+     */
+    public function withoutAdditionalProperties(): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = new \stdClass();
+        return $clone;
     }
 
     /**
@@ -87,7 +137,7 @@ class Qux
      */
     public function getGrox()
     {
-        return $this->grox;
+        return $this->grox ?? null;
     }
 
     /**
@@ -100,7 +150,6 @@ class Qux
         if ($validate) {
             $clone->validate();
         }
-
         return $clone;
     }
 
@@ -136,6 +185,12 @@ class Qux
         $grox = isset($input->{'grox'}) ? (((Foo::validateInput($input->{'grox'}, true)) || (Bar::validateInput($input->{'grox'}, true))) ? ((Bar::validateInput($input->{'grox'}, true)) ? Bar::fromInput($input->{'grox'}, $validate) : (((Foo::validateInput($input->{'grox'}, true)) ? Foo::fromInput($input->{'grox'}, $validate) : (null)))) : (((is_array($input->{'grox'})) ? $input->{'grox'} : (((is_string($input->{'grox'})) ? $input->{'grox'} : (null)))))) : null;
 
         $obj = new self($grox);
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
+
         return $obj;
     }
 
@@ -146,7 +201,8 @@ class Qux
      */
     public function toArray(): array
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         if (isset($this->grox)) {
             if ((is_string($this->grox)) || (is_array($this->grox))) {
                 $output['grox'] = $this->grox;
@@ -165,7 +221,8 @@ class Qux
      */
     public function toStdClass(): \stdClass
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         if (isset($this->grox)) {
             if ((is_string($this->grox)) || (is_array($this->grox))) {
             $output->{'grox'} = $this->grox;

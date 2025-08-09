@@ -8,8 +8,6 @@ class Record
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
     private static array $_schema = [
         'type' => 'object',
@@ -36,6 +34,18 @@ class Record
     ];
 
     /**
+     * Mapping of schema property names to this class's property names.
+     */
+    private static array $_namesMap = [
+        'dataArray' => 'dataArray',
+    ];
+
+    /**
+     * Map of name/value pairs for properties not specified in the schema.
+     */
+    private \stdClass $_additionalProperties;
+
+    /**
      * @var Phone[]|null
      */
     private ?array $dataArray = null;
@@ -45,7 +55,46 @@ class Record
      */
     public function __construct(?array $dataArray = null)
     {
+        $this->_additionalProperties = new \stdClass();
+
         $this->dataArray = $dataArray;
+    }
+
+    /**
+     * Object (`stdClass`) or array with name/value pairs for properties not specified in the schema.
+     *
+     * @param bool $asArray Whether return an associative array instead of `stdClass` object.
+     */
+    public function getAdditionalProperties(bool $asArray = true): \stdClass|array
+    {
+        return $asArray
+            ? json_decode(json_encode($this->_additionalProperties), true)
+            : $this->_additionalProperties;
+    }
+
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param \stdClass|array $additionalProperties Map of property name/value pairs to add.
+     */
+    public function withAdditionalProperties(\stdClass|array $additionalProperties): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
+    }
+
+    /**
+     * Removes all extra properties not specified in the schema.
+     */
+    public function withoutAdditionalProperties(): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = new \stdClass();
+        return $clone;
     }
 
     /**
@@ -53,7 +102,7 @@ class Record
      */
     public function getDataArray(): ?array
     {
-        return $this->dataArray;
+        return $this->dataArray ?? null;
     }
 
     /**
@@ -66,7 +115,6 @@ class Record
         if ($validate) {
             $clone->validate();
         }
-
         return $clone;
     }
 
@@ -99,6 +147,12 @@ class Record
         ) : null;
 
         $obj = new self($dataArray);
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
+
         return $obj;
     }
 
@@ -109,7 +163,8 @@ class Record
      */
     public function toArray(): array
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         if (isset($this->dataArray)) {
             $output['dataArray'] = array_map(fn(Phone $i): array => $i->toArray(), $this->dataArray);
         }
@@ -124,7 +179,8 @@ class Record
      */
     public function toStdClass(): \stdClass
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         if (isset($this->dataArray)) {
             $output->{'dataArray'} = array_map(fn(Phone $i): object => $i->toStdClass(), $this->dataArray);
         }

@@ -26,6 +26,16 @@ class MyClassEnsureArgs1Alternative2
     ];
 
     /**
+     * Mapping of schema property names to this class's property names.
+     *
+     * @var array
+     */
+    private static $_namesMap = [
+        'type' => 'type',
+        'accountNumber' => 'accountNumber',
+    ];
+
+    /**
      * Default values from the schema
      *
      * @var array
@@ -35,6 +45,13 @@ class MyClassEnsureArgs1Alternative2
             'default' => 'debit',
         ],
     ];
+
+    /**
+     * Map of name/value pairs for properties not specified in the schema.
+     *
+     * @var \stdClass
+     */
+    private $_additionalProperties;
 
     /**
      * @var string
@@ -52,8 +69,51 @@ class MyClassEnsureArgs1Alternative2
      */
     public function __construct($type, $accountNumber)
     {
+        $this->_additionalProperties = new \stdClass();
+
         $this->type = $type;
         $this->accountNumber = $accountNumber;
+    }
+
+    /**
+     * Object (`stdClass`) or array with name/value pairs for properties not specified in the schema.
+     *
+     * @param bool $asArray Whether return an associative array instead of `stdClass` object.
+     * @return array|\stdClass
+     */
+    public function getAdditionalProperties($asArray = true)
+    {
+        return $asArray
+            ? json_decode(json_encode($this->_additionalProperties), true)
+            : $this->_additionalProperties;
+    }
+
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param \stdClass|array $additionalProperties Map of property name/value pairs to add.
+     * @return self
+     */
+    public function withAdditionalProperties($additionalProperties)
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
+    }
+
+    /**
+     * Removes all extra properties not specified in the schema.
+     *
+     * @return self
+     */
+    public function withoutAdditionalProperties()
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = new \stdClass();
+        return $clone;
     }
 
     /**
@@ -153,6 +213,12 @@ class MyClassEnsureArgs1Alternative2
         $accountNumber = $input->{'accountNumber'};
 
         $obj = new self($type, $accountNumber);
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
+
         return $obj;
     }
 
@@ -164,7 +230,8 @@ class MyClassEnsureArgs1Alternative2
      */
     public function toArray(bool $includeDefaults = false)
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         $output['type'] = $this->type;
         $output['accountNumber'] = $this->accountNumber;
 
@@ -187,7 +254,8 @@ class MyClassEnsureArgs1Alternative2
      */
     public function toStdClass(bool $includeDefaults = false)
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         $output->{'type'} = $this->type;
         $output->{'accountNumber'} = $this->accountNumber;
 

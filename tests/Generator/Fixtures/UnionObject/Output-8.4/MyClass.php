@@ -8,8 +8,6 @@ class MyClass
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
     private static array $_schema = [
         'properties' => [
@@ -117,11 +115,28 @@ class MyClass
     ];
 
     /**
+     * Mapping of schema property names to this class's property names.
+     */
+    private static array $_namesMap = [
+        'objectsUnion' => 'objectsUnion',
+        'refObjectsUnion' => 'refObjectsUnion',
+        'refAndNotRefObjectsUnion' => 'refAndNotRefObjectsUnion',
+        'objAndStringUnion' => 'objAndStringUnion',
+        'unionOfOneObj' => 'unionOfOneObj',
+        'unionOfOneNull' => 'unionOfOneNull',
+    ];
+
+    /**
      * Map of optional nullable property names that were explicitly set
      *
      * @var array<string,true>
      */
     private array $_providedOptionals = [];
+
+    /**
+     * Map of name/value pairs for properties not specified in the schema.
+     */
+    private \stdClass $_additionalProperties;
 
     private MyClassObjectsUnionAlternative1|MyClassObjectsUnionAlternative2|null $objectsUnion = null;
 
@@ -143,17 +158,59 @@ class MyClass
      */
     public function __construct(MyClassObjectsUnionAlternative1|MyClassObjectsUnionAlternative2|null $objectsUnion = null, SomeObj1|SomeObj2|null $refObjectsUnion = null, MyClassRefAndNotRefObjectsUnionAlternative2|MyClassRefAndNotRefObjectsUnionAlternative4|SomeObj1|SomeObj2|null $refAndNotRefObjectsUnion = null, MyClassObjAndStringUnionAlternative1|string|null $objAndStringUnion = null, ?MyClassUnionOfOneObj $unionOfOneObj = null, $unionOfOneNull = null)
     {
+        $this->_additionalProperties = new \stdClass();
+
         $this->objectsUnion = $objectsUnion;
         $this->refObjectsUnion = $refObjectsUnion;
         $this->refAndNotRefObjectsUnion = $refAndNotRefObjectsUnion;
         $this->objAndStringUnion = $objAndStringUnion;
         $this->unionOfOneObj = $unionOfOneObj;
-        $this->unionOfOneNull = $unionOfOneNull;
+        if ($unionOfOneNull !== null) {
+            $this->unionOfOneNull = $unionOfOneNull;
+            $this->_providedOptionals['unionOfOneNull'] = true;
+        };
+    }
+
+    /**
+     * Object (`stdClass`) or array with name/value pairs for properties not specified in the schema.
+     *
+     * @param bool $asArray Whether return an associative array instead of `stdClass` object.
+     */
+    public function getAdditionalProperties(bool $asArray = true): \stdClass|array
+    {
+        return $asArray
+            ? json_decode(json_encode($this->_additionalProperties), true)
+            : $this->_additionalProperties;
+    }
+
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param \stdClass|array $additionalProperties Map of property name/value pairs to add.
+     */
+    public function withAdditionalProperties(\stdClass|array $additionalProperties): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
+    }
+
+    /**
+     * Removes all extra properties not specified in the schema.
+     */
+    public function withoutAdditionalProperties(): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = new \stdClass();
+        return $clone;
     }
 
     public function getObjectsUnion(): MyClassObjectsUnionAlternative1|MyClassObjectsUnionAlternative2|null
     {
-        return $this->objectsUnion;
+        return $this->objectsUnion ?? null;
     }
 
     public function withObjectsUnion(MyClassObjectsUnionAlternative1|MyClassObjectsUnionAlternative2 $objectsUnion): self
@@ -174,7 +231,7 @@ class MyClass
 
     public function getRefObjectsUnion(): SomeObj1|SomeObj2|null
     {
-        return $this->refObjectsUnion;
+        return $this->refObjectsUnion ?? null;
     }
 
     public function withRefObjectsUnion(SomeObj1|SomeObj2 $refObjectsUnion): self
@@ -195,7 +252,7 @@ class MyClass
 
     public function getRefAndNotRefObjectsUnion(): MyClassRefAndNotRefObjectsUnionAlternative2|MyClassRefAndNotRefObjectsUnionAlternative4|SomeObj1|SomeObj2|null
     {
-        return $this->refAndNotRefObjectsUnion;
+        return $this->refAndNotRefObjectsUnion ?? null;
     }
 
     public function withRefAndNotRefObjectsUnion(MyClassRefAndNotRefObjectsUnionAlternative2|MyClassRefAndNotRefObjectsUnionAlternative4|SomeObj1|SomeObj2 $refAndNotRefObjectsUnion): self
@@ -216,7 +273,7 @@ class MyClass
 
     public function getObjAndStringUnion(): MyClassObjAndStringUnionAlternative1|string|null
     {
-        return $this->objAndStringUnion;
+        return $this->objAndStringUnion ?? null;
     }
 
     public function withObjAndStringUnion(MyClassObjAndStringUnionAlternative1|string $objAndStringUnion): self
@@ -237,7 +294,7 @@ class MyClass
 
     public function getUnionOfOneObj(): ?MyClassUnionOfOneObj
     {
-        return $this->unionOfOneObj;
+        return $this->unionOfOneObj ?? null;
     }
 
     public function withUnionOfOneObj(MyClassUnionOfOneObj $unionOfOneObj): self
@@ -261,7 +318,7 @@ class MyClass
      */
     public function getUnionOfOneNull()
     {
-        return $this->unionOfOneNull;
+        return $this->unionOfOneNull ?? null;
     }
 
     /**
@@ -308,7 +365,7 @@ class MyClass
             static::validateInput($input);
         }
 
-        $__providedOptionals = [];
+        $_providedOptionals = [];
         $objectsUnion = isset($input->{'objectsUnion'}) ? match (true) {
             MyClassObjectsUnionAlternative1::validateInput($input->{'objectsUnion'}, true) => MyClassObjectsUnionAlternative1::fromInput($input->{'objectsUnion'}, $validate),
             MyClassObjectsUnionAlternative2::validateInput($input->{'objectsUnion'}, true) => MyClassObjectsUnionAlternative2::fromInput($input->{'objectsUnion'}, $validate),
@@ -335,7 +392,7 @@ class MyClass
         $unionOfOneNull = null;
         if (property_exists($input, 'unionOfOneNull')) {
             $unionOfOneNull = ($input->{'unionOfOneNull'} !== null ? $input->{'unionOfOneNull'} : null);
-            $__providedOptionals['unionOfOneNull'] = true;
+            $_providedOptionals['unionOfOneNull'] = true;
         }
 
         $obj = new self(
@@ -346,7 +403,13 @@ class MyClass
             $unionOfOneObj,
             $unionOfOneNull
         );
-        $obj->_providedOptionals = $__providedOptionals;
+        $obj->_providedOptionals = $_providedOptionals;
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
+
         return $obj;
     }
 
@@ -357,7 +420,8 @@ class MyClass
      */
     public function toArray(): array
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         if (isset($this->objectsUnion)) {
             $output['objectsUnion'] = match (true) {
                 $this->objectsUnion instanceof MyClassObjectsUnionAlternative1,
@@ -401,7 +465,8 @@ class MyClass
      */
     public function toStdClass(): \stdClass
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         if (isset($this->objectsUnion)) {
             $output->{'objectsUnion'} = match (true) {
                 $this->objectsUnion instanceof MyClassObjectsUnionAlternative1,
@@ -508,13 +573,18 @@ class MyClass
     }
 
     /**
-     * Checks if an optional nullable property was explicitly set
+     * Checks if an optional nullable property was explicitly set.
      *
-     * @param string $propertyName Property name to check (exactly as it appears in the schema)
-     * @return bool
+     * @param string $propertyName Property name to check (exactly as it appears in the schema).
+     * @throws \InvalidArgumentException If property with that name doesn't exist.
      */
     public function isOptionalProvided(string $propertyName): bool
     {
-        return array_key_exists($propertyName, $this->_providedOptionals);
+        if (!array_key_exists($propertyName, self::$_namesMap)) {
+            throw new \InvalidArgumentException("Unknown property: {$propertyName}");
+        }
+        return
+            array_key_exists($propertyName, $this->_providedOptionals)
+            || isset($this->{ self::$_namesMap[$propertyName] });
     }
 }

@@ -15,6 +15,7 @@ class PropertyAccessorsFactory
 {
     public function __construct(
         private GeneratorRequest $request,
+        private array $schema,
         private PropertyCollection $schemaProperties,
     )
     {}
@@ -31,8 +32,8 @@ class PropertyAccessorsFactory
         );
 
         $getterFactory = new PropertyGetterFactory($this->request);
-        $setterFactory = new PropertySetterFactory($this->request);
-        $unsetterFactory = new PropertyUnsetterFactory($this->request);
+        $setterFactory = new PropertySetterFactory($this->request, $this->schema);
+        $unsetterFactory = new PropertyUnsetterFactory($this->request, $this->schema);
 
         foreach ($filteredProperties as $property) {
             $methodsGenerators[] = $getterFactory->generate($property);

@@ -8,8 +8,6 @@ class RefValidation
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
     private static array $_schema = [
         'type' => 'object',
@@ -49,6 +47,20 @@ class RefValidation
     ];
 
     /**
+     * Mapping of schema property names to this class's property names.
+     */
+    private static array $_namesMap = [
+        'foo' => 'foo',
+        'bar' => 'bar',
+        'baz' => 'baz',
+    ];
+
+    /**
+     * Map of name/value pairs for properties not specified in the schema.
+     */
+    private \stdClass $_additionalProperties;
+
+    /**
      * @var 1|2|null
      */
     private ?int $foo = null;
@@ -66,9 +78,48 @@ class RefValidation
      */
     public function __construct(?int $foo = null, int|string|null $bar = null, ?RefValidationBaz $baz = null)
     {
+        $this->_additionalProperties = new \stdClass();
+
         $this->foo = $foo;
         $this->bar = $bar;
         $this->baz = $baz;
+    }
+
+    /**
+     * Object (`stdClass`) or array with name/value pairs for properties not specified in the schema.
+     *
+     * @param bool $asArray Whether return an associative array instead of `stdClass` object.
+     */
+    public function getAdditionalProperties(bool $asArray = true): \stdClass|array
+    {
+        return $asArray
+            ? json_decode(json_encode($this->_additionalProperties), true)
+            : $this->_additionalProperties;
+    }
+
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param \stdClass|array $additionalProperties Map of property name/value pairs to add.
+     */
+    public function withAdditionalProperties(\stdClass|array $additionalProperties): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
+    }
+
+    /**
+     * Removes all extra properties not specified in the schema.
+     */
+    public function withoutAdditionalProperties(): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = new \stdClass();
+        return $clone;
     }
 
     /**
@@ -76,7 +127,7 @@ class RefValidation
      */
     public function getFoo(): ?int
     {
-        return $this->foo;
+        return $this->foo ?? null;
     }
 
     /**
@@ -89,7 +140,6 @@ class RefValidation
         if ($validate) {
             $clone->validate();
         }
-
         return $clone;
     }
 
@@ -108,7 +158,7 @@ class RefValidation
      */
     public function getBar(): int|string|null
     {
-        return $this->bar;
+        return $this->bar ?? null;
     }
 
     /**
@@ -123,7 +173,6 @@ class RefValidation
         if ($validate) {
             $clone->validate();
         }
-
         return $clone;
     }
 
@@ -137,7 +186,7 @@ class RefValidation
 
     public function getBaz(): ?RefValidationBaz
     {
-        return $this->baz;
+        return $this->baz ?? null;
     }
 
     public function withBaz(RefValidationBaz $baz): self
@@ -183,6 +232,12 @@ class RefValidation
         $baz = isset($input->{'baz'}) ? RefValidationBaz::fromInput($input->{'baz'}, $validate) : null;
 
         $obj = new self($foo, $bar, $baz);
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
+
         return $obj;
     }
 
@@ -193,7 +248,8 @@ class RefValidation
      */
     public function toArray(): array
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         if (isset($this->foo)) {
             $output['foo'] = $this->foo;
         }
@@ -220,7 +276,8 @@ class RefValidation
      */
     public function toStdClass(): \stdClass
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         if (isset($this->foo)) {
             $output->{'foo'} = $this->foo;
         }

@@ -8,8 +8,6 @@ class MyClass_2
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
     private static array $_schema = [
         'type' => 'object',
@@ -26,6 +24,20 @@ class MyClass_2
         ],
     ];
 
+    /**
+     * Mapping of schema property names to this class's property names.
+     */
+    private static array $_namesMap = [
+        1 => '_1',
+        '_2',
+        '_3',
+    ];
+
+    /**
+     * Map of name/value pairs for properties not specified in the schema.
+     */
+    private \stdClass $_additionalProperties;
+
     private ?string $_1 = null;
 
     private ?string $_2 = null;
@@ -34,14 +46,53 @@ class MyClass_2
 
     public function __construct(?string $_1 = null, ?string $_2 = null, ?string $_3 = null)
     {
+        $this->_additionalProperties = new \stdClass();
+
         $this->_1 = $_1;
         $this->_2 = $_2;
         $this->_3 = $_3;
     }
 
+    /**
+     * Object (`stdClass`) or array with name/value pairs for properties not specified in the schema.
+     *
+     * @param bool $asArray Whether return an associative array instead of `stdClass` object.
+     */
+    public function getAdditionalProperties(bool $asArray = true): \stdClass|array
+    {
+        return $asArray
+            ? json_decode(json_encode($this->_additionalProperties), true)
+            : $this->_additionalProperties;
+    }
+
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param \stdClass|array $additionalProperties Map of property name/value pairs to add.
+     */
+    public function withAdditionalProperties(\stdClass|array $additionalProperties): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
+    }
+
+    /**
+     * Removes all extra properties not specified in the schema.
+     */
+    public function withoutAdditionalProperties(): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = new \stdClass();
+        return $clone;
+    }
+
     public function get_1(): ?string
     {
-        return $this->_1;
+        return $this->_1 ?? null;
     }
 
     public function with_1(string $_1): self
@@ -62,7 +113,7 @@ class MyClass_2
 
     public function get_2(): ?string
     {
-        return $this->_2;
+        return $this->_2 ?? null;
     }
 
     public function with_2(string $_2): self
@@ -83,7 +134,7 @@ class MyClass_2
 
     public function get_3(): ?string
     {
-        return $this->_3;
+        return $this->_3 ?? null;
     }
 
     public function with_3(string $_3): self
@@ -122,6 +173,12 @@ class MyClass_2
         $_3 = isset($input->{'3'}) ? $input->{'3'} : null;
 
         $obj = new self($_1, $_2, $_3);
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
+
         return $obj;
     }
 
@@ -132,7 +189,8 @@ class MyClass_2
      */
     public function toArray(): array
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         if (isset($this->_1)) {
             $output['1'] = $this->_1;
         }
@@ -153,7 +211,8 @@ class MyClass_2
      */
     public function toStdClass(): \stdClass
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         if (isset($this->_1)) {
             $output->{'1'} = $this->_1;
         }

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Property\Type\Composite;
 
-use Helmich\Schema2Class\Generator\Class\Method\FromInputMethodFactory;
+use Helmich\Schema2Class\Generator\Class\ArgumentNames;
 use Helmich\Schema2Class\Generator\Class\MethodNames;
 use Helmich\Schema2Class\Generator\GeneratorException;
 use Helmich\Schema2Class\Generator\Property\Type\AbstractProperty;
@@ -60,9 +60,9 @@ class IntersectProperty extends AbstractProperty
 
     public function inputMappingExpr(string $expr, bool $asserted = false): string
     {
-        $args = [$expr, '$' . FromInputMethodFactory::VALIDATE_ARG_NAME];
+        $args = [$expr, '$' . ArgumentNames::VALIDATE];
         if ($this->request->getClassHasDefaults()) {
-            $args[] = '$' . FromInputMethodFactory::DEFAULTS_ARG_NAME;
+            $args[] = '$' . ArgumentNames::MATRLZ_DEFAULTS;
         }
         $argsStr = implode(', ', $args);
 

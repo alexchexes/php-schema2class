@@ -108,7 +108,7 @@ class MyClass
      */
     public function getAddress()
     {
-        return $this->address;
+        return isset($this->address) ? $this->address : null;
     }
 
     /**
@@ -158,6 +158,7 @@ class MyClass
         $address = isset($input->{'address'}) ? Address::fromInput($input->{'address'}, $validate) : null;
 
         $obj = new self($id, $address);
+
         return $obj;
     }
 

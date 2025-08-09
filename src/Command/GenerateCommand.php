@@ -53,14 +53,14 @@ final class GenerateCommand extends Command
             'cleanTargetDirectory'              => $input->getOption('clean-dir'),
             'disableStrictTypes'                => $input->getOption('disable-strict-types'),
             'inlineAllofReferences'             => $input->getOption('inline-allof'),
-            'newValidatorExpr'             => $input->getOption('validator-expr'),
+            'newValidatorExpr'                  => $input->getOption('validator-expr'),
             'arrayToObjectExpr'                 => $input->getOption('arr-to-obj-expr'),
             'preservePropertyNames'             => $input->getOption('preserve-property-names'),
             'noGetters'                         => $input->getOption('no-getters'),
             'noSetters'                         => $input->getOption('no-setters'),
             'mutableSetters'                    => $input->hasParameterOption('--mutable-setters')
-                ? ($input->getOption('mutable-setters') ?: true)
-                : null,
+                                                    ? ($input->getOption('mutable-setters') ?: true)
+                                                    : null,
             'noSchemaMetadata'                  => $input->getOption('no-schema-metadata'),
             'singleLineSchema'                  => $input->getOption('single-line-schema'),
             'noEnums'                           => $input->getOption('no-enums'),

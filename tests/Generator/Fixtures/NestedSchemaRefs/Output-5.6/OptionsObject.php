@@ -18,6 +18,22 @@ class OptionsObject
     ];
 
     /**
+     * Mapping of schema property names to this class's property names.
+     *
+     * @var array
+     */
+    private static $_namesMap = [
+        'output' => 'output',
+    ];
+
+    /**
+     * Map of name/value pairs for properties not specified in the schema.
+     *
+     * @var \stdClass
+     */
+    private $_additionalProperties;
+
+    /**
      * @var string|null
      */
     private $output = null;
@@ -27,7 +43,50 @@ class OptionsObject
      */
     public function __construct($_output = null)
     {
+        $this->_additionalProperties = new \stdClass();
+
         $this->output = $_output;
+    }
+
+    /**
+     * Object (`stdClass`) or array with name/value pairs for properties not specified in the schema.
+     *
+     * @param bool $asArray Whether return an associative array instead of `stdClass` object.
+     * @return array|\stdClass
+     */
+    public function getAdditionalProperties($asArray = true)
+    {
+        return $asArray
+            ? json_decode(json_encode($this->_additionalProperties), true)
+            : $this->_additionalProperties;
+    }
+
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param \stdClass|array $additionalProperties Map of property name/value pairs to add.
+     * @return self
+     */
+    public function withAdditionalProperties($additionalProperties)
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
+    }
+
+    /**
+     * Removes all extra properties not specified in the schema.
+     *
+     * @return self
+     */
+    public function withoutAdditionalProperties()
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = new \stdClass();
+        return $clone;
     }
 
     /**
@@ -35,7 +94,7 @@ class OptionsObject
      */
     public function getOutput()
     {
-        return $this->output;
+        return isset($this->output) ? $this->output : null;
     }
 
     /**
@@ -94,6 +153,12 @@ class OptionsObject
         $_output = isset($input->{'output'}) ? $input->{'output'} : null;
 
         $obj = new self($_output);
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
+
         return $obj;
     }
 
@@ -104,7 +169,8 @@ class OptionsObject
      */
     public function toArray()
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         if (isset($this->output)) {
             $output['output'] = $this->output;
         }
@@ -119,7 +185,8 @@ class OptionsObject
      */
     public function toStdClass()
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         if (isset($this->output)) {
             $output->{'output'} = $this->output;
         }

@@ -57,7 +57,7 @@ class MyGenericStringNumberField
      */
     public function getField()
     {
-        return $this->field;
+        return isset($this->field) ? $this->field : null;
     }
 
     /**
@@ -106,6 +106,7 @@ class MyGenericStringNumberField
         $field = isset($input->{'field'}) ? MyGenericStringNumber::fromInput($input->{'field'}, $validate) : null;
 
         $obj = new self($field);
+
         return $obj;
     }
 

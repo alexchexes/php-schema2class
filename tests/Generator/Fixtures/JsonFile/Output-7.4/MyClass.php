@@ -8,8 +8,6 @@ class MyClass
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
     private static array $_schema = [
         '$schema' => 'http://json-schema.org/draft-07/schema#',
@@ -71,6 +69,7 @@ class MyClass
         $id = (int)$input->{'id'};
 
         $obj = new self($id);
+
         return $obj;
     }
 

@@ -89,6 +89,25 @@ class Record
     ];
 
     /**
+     * Mapping of schema property names to this class's property names.
+     *
+     * @var array
+     */
+    private static $_namesMap = [
+        'dataArray' => 'dataArray',
+        'dataArrayNested' => 'dataArrayNested',
+        'dataArrayAnyOf' => 'dataArrayAnyOf',
+        'dataArrayNestedAnyOf' => 'dataArrayNestedAnyOf',
+    ];
+
+    /**
+     * Map of name/value pairs for properties not specified in the schema.
+     *
+     * @var \stdClass
+     */
+    private $_additionalProperties;
+
+    /**
      * @var Phone[]|null
      */
     private $dataArray = null;
@@ -116,6 +135,8 @@ class Record
      */
     public function __construct(array $dataArray = null, array $dataArrayNested = null, array $dataArrayAnyOf = null, array $dataArrayNestedAnyOf = null)
     {
+        $this->_additionalProperties = new \stdClass();
+
         $this->dataArray = $dataArray;
         $this->dataArrayNested = $dataArrayNested;
         $this->dataArrayAnyOf = $dataArrayAnyOf;
@@ -123,11 +144,52 @@ class Record
     }
 
     /**
+     * Object (`stdClass`) or array with name/value pairs for properties not specified in the schema.
+     *
+     * @param bool $asArray Whether return an associative array instead of `stdClass` object.
+     * @return array|\stdClass
+     */
+    public function getAdditionalProperties($asArray = true)
+    {
+        return $asArray
+            ? json_decode(json_encode($this->_additionalProperties), true)
+            : $this->_additionalProperties;
+    }
+
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param \stdClass|array $additionalProperties Map of property name/value pairs to add.
+     * @return self
+     */
+    public function withAdditionalProperties($additionalProperties)
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
+    }
+
+    /**
+     * Removes all extra properties not specified in the schema.
+     *
+     * @return self
+     */
+    public function withoutAdditionalProperties()
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = new \stdClass();
+        return $clone;
+    }
+
+    /**
      * @return Phone[]|null
      */
     public function getDataArray()
     {
-        return $this->dataArray;
+        return isset($this->dataArray) ? $this->dataArray : null;
     }
 
     /**
@@ -142,7 +204,6 @@ class Record
         if ($validate) {
             $clone->validate();
         }
-
         return $clone;
     }
 
@@ -162,7 +223,7 @@ class Record
      */
     public function getDataArrayNested()
     {
-        return $this->dataArrayNested;
+        return isset($this->dataArrayNested) ? $this->dataArrayNested : null;
     }
 
     /**
@@ -177,7 +238,6 @@ class Record
         if ($validate) {
             $clone->validate();
         }
-
         return $clone;
     }
 
@@ -197,7 +257,7 @@ class Record
      */
     public function getDataArrayAnyOf()
     {
-        return $this->dataArrayAnyOf;
+        return isset($this->dataArrayAnyOf) ? $this->dataArrayAnyOf : null;
     }
 
     /**
@@ -212,7 +272,6 @@ class Record
         if ($validate) {
             $clone->validate();
         }
-
         return $clone;
     }
 
@@ -232,7 +291,7 @@ class Record
      */
     public function getDataArrayNestedAnyOf()
     {
-        return $this->dataArrayNestedAnyOf;
+        return isset($this->dataArrayNestedAnyOf) ? $this->dataArrayNestedAnyOf : null;
     }
 
     /**
@@ -247,7 +306,6 @@ class Record
         if ($validate) {
             $clone->validate();
         }
-
         return $clone;
     }
 
@@ -295,6 +353,12 @@ class Record
         $dataArrayNestedAnyOf = isset($input->{'dataArrayNestedAnyOf'}) ? array_map(function($i) use ($validate) { return array_map(function($i) use ($validate) { return ((Fio::validateInput($i, true)) ? Fio::fromInput($i, $validate) : (((Phone::validateInput($i, true)) ? Phone::fromInput($i, $validate) : (null)))); }, $i); }, $input->{'dataArrayNestedAnyOf'}) : null;
 
         $obj = new self($dataArray, $dataArrayNested, $dataArrayAnyOf, $dataArrayNestedAnyOf);
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
+
         return $obj;
     }
 
@@ -305,7 +369,8 @@ class Record
      */
     public function toArray()
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         if (isset($this->dataArray)) {
             $output['dataArray'] = array_map(fn(Phone $i): array => $i->toArray(), $this->dataArray);
         }
@@ -329,7 +394,8 @@ class Record
      */
     public function toStdClass()
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         if (isset($this->dataArray)) {
             $output->{'dataArray'} = array_map(fn(Phone $i): object => $i->toStdClass(), $this->dataArray);
         }

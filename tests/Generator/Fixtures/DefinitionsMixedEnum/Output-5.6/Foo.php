@@ -69,7 +69,6 @@ class Foo
         if ($validate) {
             $clone->validate();
         }
-
         return $clone;
     }
 
@@ -97,6 +96,7 @@ class Foo
         $val = $input->{'val'};
 
         $obj = new self($val);
+
         return $obj;
     }
 

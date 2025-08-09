@@ -3,8 +3,10 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Property\Type;
 
+use Helmich\Schema2Class\Generator\Class\ArgumentNames;
 use Helmich\Schema2Class\Generator\Class\Method\FromInputMethodFactory;
-use Helmich\Schema2Class\Generator\Class\Method\SerializeMethodFactory;
+use Helmich\Schema2Class\Generator\Class\Method\Serialize\SerializeMethodFactory;
+use Helmich\Schema2Class\Generator\Class\VariableNames;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Util\StringUtils;
 use Helmich\Schema2Class\Writer\WriterInterface;
@@ -107,7 +109,7 @@ abstract class AbstractProperty implements PropertyInterface
         $keyStr = $this->keyStr();
 
         // build the raw lookup expression (using the JSON key only inside the braces)
-        $inputVarName = FromInputMethodFactory::INPUT_ARG_NAME;
+        $inputVarName = ArgumentNames::INPUT;
         $accessor = "\${$inputVarName}->{{$keyStr}}";
 
         // now map from JSON→Type (this will call fromInput, etc.)
@@ -121,7 +123,7 @@ abstract class AbstractProperty implements PropertyInterface
     {
         $keyStr = $this->keyStr();
         $map    = $this->outputMappingExpr("\$this->{$this->propName()}");
-        $outputVarName = SerializeMethodFactory::OUTPUT_VAR_NAME;
+        $outputVarName = VariableNames::OUTPUT;
         return "\${$outputVarName}[{$keyStr}] = {$map};";
     }
 
@@ -129,7 +131,7 @@ abstract class AbstractProperty implements PropertyInterface
     {
         $keyStr = $this->keyStr();
         $map    = $this->outputMappingExprStdClass("\$this->{$this->propName()}");
-        $outputVarName = SerializeMethodFactory::OUTPUT_VAR_NAME;
+        $outputVarName = VariableNames::OUTPUT;
         return "\${$outputVarName}->{{$keyStr}} = {$map};";
     }
 

@@ -5,6 +5,8 @@ namespace Helmich\Schema2Class\Generator\Definition;
 
 use Generator as PhpGenerator;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
+use Helmich\Schema2Class\Generator\Property\Type\Composite\IntersectProperty;
+use Helmich\Schema2Class\Generator\Property\Type\Object\NestedObjectProperty;
 
 /**
  * Class is used to traverse a schema and collect {@see Definition} objects
@@ -22,11 +24,55 @@ class DefinitionsCollector
 
     public function __construct(private readonly GeneratorRequest $generatorRequest)
     {
-        if (($cls = $this->generatorRequest->getTargetClass()) !== null) {
+        if (($cls = $this->generatorRequest->getTargetClass()) !== null
+            && self::schemaGeneratesClass($this->generatorRequest->getSchema())
+        ) {
             $ns = trim($this->generatorRequest->getTargetNamespace(), '\\');
             $fqn = $ns !== '' ? $ns . '\\' . $cls : $cls;
             $this->usedClassNames[] = $fqn;
         }
+    }
+
+    /**
+     * Determine if the given schema results in a generated class or enum.
+     *
+     * @param array<string,mixed> $schema
+     */
+    private static function schemaGeneratesClass(array $schema): bool
+    {
+        if (isset($schema['$ref']) && is_string($schema['$ref'])) {
+            $resolved = self::dereference($schema, $schema['$ref']);
+            if (is_array($resolved)) {
+                $schema = $resolved;
+            }
+        }
+
+        return IntersectProperty::canHandleSchema($schema)
+            || NestedObjectProperty::canHandleSchema($schema)
+            || array_key_exists('enum', $schema);
+    }
+
+    /**
+     * Resolve an internal reference within the given schema.
+     *
+     * @param array<string,mixed> $schema
+     */
+    private static function dereference(array $schema, string $ref): ?array
+    {
+        if (!str_starts_with($ref, '#/')) {
+            return null;
+        }
+
+        $segments = explode('/', substr($ref, 2));
+        $node = $schema;
+        foreach ($segments as $seg) {
+            if (!is_array($node) || !array_key_exists($seg, $node)) {
+                return null;
+            }
+            $node = $node[$seg];
+        }
+
+        return is_array($node) ? $node : null;
     }
 
     /**

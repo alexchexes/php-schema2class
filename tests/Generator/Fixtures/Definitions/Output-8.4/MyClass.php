@@ -8,8 +8,6 @@ class MyClass
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
     private static array $_schema = [
         '$schema' => 'http://json-schema.org/draft-07/schema#',
@@ -81,7 +79,7 @@ class MyClass
 
     public function getAddress(): ?Address
     {
-        return $this->address;
+        return $this->address ?? null;
     }
 
     public function withAddress(Address $address): self
@@ -119,6 +117,7 @@ class MyClass
         $address = isset($input->{'address'}) ? Address::fromInput($input->{'address'}, $validate) : null;
 
         $obj = new self($id, $address);
+
         return $obj;
     }
 

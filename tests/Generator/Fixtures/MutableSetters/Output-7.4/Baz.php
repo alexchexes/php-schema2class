@@ -8,8 +8,6 @@ class Baz
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
     private static array $_schema = [
         'type' => 'object',
@@ -20,16 +18,63 @@ class Baz
         ],
     ];
 
+    /**
+     * Mapping of schema property names to this class's property names.
+     */
+    private static array $_namesMap = [
+        'name' => 'name',
+    ];
+
+    /**
+     * Map of name/value pairs for properties not specified in the schema.
+     */
+    private \stdClass $_additionalProperties;
+
     private ?string $name = null;
 
     public function __construct(?string $name = null)
     {
+        $this->_additionalProperties = new \stdClass();
+
         $this->name = $name;
+    }
+
+    /**
+     * Object (`stdClass`) or array with name/value pairs for properties not specified in the schema.
+     *
+     * @param bool $asArray Whether return an associative array instead of `stdClass` object.
+     * @return array|\stdClass
+     */
+    public function getAdditionalProperties(bool $asArray = true)
+    {
+        return $asArray
+            ? json_decode(json_encode($this->_additionalProperties), true)
+            : $this->_additionalProperties;
+    }
+
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param \stdClass|array $additionalProperties Map of property name/value pairs to add.
+     */
+    public function setAdditionalProperties($additionalProperties): void
+    {
+        $this->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+    }
+
+    /**
+     * Removes all extra properties not specified in the schema.
+     */
+    public function unsetAdditionalProperties(): void
+    {
+        $this->_additionalProperties = new \stdClass();
     }
 
     public function getName(): ?string
     {
-        return $this->name;
+        return $this->name ?? null;
     }
 
     public function setName(string $name): void
@@ -39,7 +84,7 @@ class Baz
 
     public function unsetName(): void
     {
-        $this->name = null;
+        unset($this->name);
     }
 
     /**
@@ -66,6 +111,12 @@ class Baz
         $name = isset($input->{'name'}) ? $input->{'name'} : null;
 
         $obj = new self($name);
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
+
         return $obj;
     }
 
@@ -76,7 +127,8 @@ class Baz
      */
     public function toArray(): array
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         if (isset($this->name)) {
             $output['name'] = $this->name;
         }
@@ -91,7 +143,8 @@ class Baz
      */
     public function toStdClass(): \stdClass
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         if (isset($this->name)) {
             $output->{'name'} = $this->name;
         }

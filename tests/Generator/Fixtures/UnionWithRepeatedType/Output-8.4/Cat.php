@@ -8,8 +8,6 @@ class Cat
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
     private static array $_schema = [
         'type' => 'object',
@@ -53,22 +51,76 @@ class Cat
     ];
 
     /**
+     * Mapping of schema property names to this class's property names.
+     */
+    private static array $_namesMap = [
+        'hasFur' => 'hasFur',
+    ];
+
+    /**
      * Map of optional nullable property names that were explicitly set
      *
      * @var array<string,true>
      */
     private array $_providedOptionals = [];
 
+    /**
+     * Map of name/value pairs for properties not specified in the schema.
+     */
+    private \stdClass $_additionalProperties;
+
     private bool|int|float|string|null $hasFur = null;
 
     public function __construct(bool|int|float|string|null $hasFur = null)
     {
-        $this->hasFur = $hasFur;
+        $this->_additionalProperties = new \stdClass();
+
+        if ($hasFur !== null) {
+            $this->hasFur = $hasFur;
+            $this->_providedOptionals['hasFur'] = true;
+        };
+    }
+
+    /**
+     * Object (`stdClass`) or array with name/value pairs for properties not specified in the schema.
+     *
+     * @param bool $asArray Whether return an associative array instead of `stdClass` object.
+     */
+    public function getAdditionalProperties(bool $asArray = true): \stdClass|array
+    {
+        return $asArray
+            ? json_decode(json_encode($this->_additionalProperties), true)
+            : $this->_additionalProperties;
+    }
+
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param \stdClass|array $additionalProperties Map of property name/value pairs to add.
+     */
+    public function withAdditionalProperties(\stdClass|array $additionalProperties): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
+    }
+
+    /**
+     * Removes all extra properties not specified in the schema.
+     */
+    public function withoutAdditionalProperties(): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = new \stdClass();
+        return $clone;
     }
 
     public function getHasFur(): bool|int|float|string|null
     {
-        return $this->hasFur;
+        return $this->hasFur ?? null;
     }
 
     public function withHasFur(bool|int|float|string|null $hasFur): self
@@ -104,7 +156,7 @@ class Cat
             static::validateInput($input);
         }
 
-        $__providedOptionals = [];
+        $_providedOptionals = [];
         $hasFur = null;
         if (property_exists($input, 'hasFur')) {
             $hasFur = ($input->{'hasFur'} !== null ? match (true) {
@@ -122,11 +174,17 @@ class Cat
         },
             default => null,
         } : null);
-            $__providedOptionals['hasFur'] = true;
+            $_providedOptionals['hasFur'] = true;
         }
 
         $obj = new self($hasFur);
-        $obj->_providedOptionals = $__providedOptionals;
+        $obj->_providedOptionals = $_providedOptionals;
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
+
         return $obj;
     }
 
@@ -137,7 +195,8 @@ class Cat
      */
     public function toArray(): array
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         if (isset($this->hasFur) || array_key_exists('hasFur', $this->_providedOptionals)) {
             $output['hasFur'] = ($this->hasFur !== null) ? (match (true) {
                 default => null,
@@ -166,7 +225,8 @@ class Cat
      */
     public function toStdClass(): \stdClass
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         if (isset($this->hasFur) || array_key_exists('hasFur', $this->_providedOptionals)) {
             $output->{'hasFur'} = ($this->hasFur !== null) ? (match (true) {
                 default => null,
@@ -240,13 +300,18 @@ class Cat
     }
 
     /**
-     * Checks if an optional nullable property was explicitly set
+     * Checks if an optional nullable property was explicitly set.
      *
-     * @param string $propertyName Property name to check (exactly as it appears in the schema)
-     * @return bool
+     * @param string $propertyName Property name to check (exactly as it appears in the schema).
+     * @throws \InvalidArgumentException If property with that name doesn't exist.
      */
     public function isOptionalProvided(string $propertyName): bool
     {
-        return array_key_exists($propertyName, $this->_providedOptionals);
+        if (!array_key_exists($propertyName, self::$_namesMap)) {
+            throw new \InvalidArgumentException("Unknown property: {$propertyName}");
+        }
+        return
+            array_key_exists($propertyName, $this->_providedOptionals)
+            || isset($this->{ self::$_namesMap[$propertyName] });
     }
 }

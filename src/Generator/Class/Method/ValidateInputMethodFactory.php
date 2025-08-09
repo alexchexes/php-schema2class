@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Class\Method;
 
+use Helmich\Schema2Class\Generator\Class\ArgumentNames;
 use Helmich\Schema2Class\Generator\Class\MethodNames;
 use Helmich\Schema2Class\Generator\Class\PropertyNames;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
@@ -15,9 +16,6 @@ use Laminas\Code\Generator\ParameterGenerator;
 
 class ValidateInputMethodFactory
 {
-    public const INPUT_ARG_NAME = 'input';
-    public const RETURN_ARG_NAME = 'return';
-
     public function __construct(
         private GeneratorRequest $request,
     ) {}
@@ -26,11 +24,11 @@ class ValidateInputMethodFactory
     {
         $params = [
             new ParameterGenerator(
-                name: self::INPUT_ARG_NAME,
+                name: ArgumentNames::INPUT,
                 type: $this->request->isAtLeastPHP('8.0') ? 'array|object' : null
             ),
             new ParameterGenerator(
-                name: self::RETURN_ARG_NAME,
+                name: ArgumentNames::RETURN,
                 type: $this->request->isAtLeastPHP('7.0') ? 'bool' : null,
                 defaultValue: false
             ),
@@ -55,11 +53,11 @@ class ValidateInputMethodFactory
 
     private function buildDocBlock(): DocBlockGenerator
     {
-        $RETURN_ARG_NAME = self::RETURN_ARG_NAME;
+        $RETURN_ARG_NAME = ArgumentNames::RETURN;
 
         $tags = [
-            new ParamTag(self::INPUT_ARG_NAME, ['array|object'], 'Input data'),
-            new ParamTag(self::RETURN_ARG_NAME, ['bool'], 'Return instead of throwing errors'),
+            new ParamTag(ArgumentNames::INPUT, ['array|object'], 'Input data'),
+            new ParamTag(ArgumentNames::RETURN, ['bool'], 'Return instead of throwing errors'),
             new ReturnTag(['bool'], "Validation result if `\${$RETURN_ARG_NAME}` is `true`"),
             new ThrowsTag('\\InvalidArgumentException'),
         ];
@@ -80,8 +78,8 @@ class ValidateInputMethodFactory
         $arrayToObjectExpr = $this->request->getOptions()->getArrayToObjectExpr();
 
         $SCHEMA = PropertyNames::SCHEMA;
-        $INPUT_ARG = self::INPUT_ARG_NAME;
-        $RETURN_ARG = self::RETURN_ARG_NAME;
+        $INPUT_ARG = ArgumentNames::INPUT;
+        $RETURN_ARG = ArgumentNames::RETURN;
 
         $errorsMapExpr = $this->request->isAtLeastPHP('7.0')
             ? '$errors = array_map(function(array $e): string'

@@ -8,8 +8,6 @@ class MyClass
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
     private static array $_schema = [
         'properties' => [
@@ -112,11 +110,31 @@ class MyClass
     ];
 
     /**
+     * Mapping of schema property names to this class's property names.
+     */
+    private static array $_namesMap = [
+        'foo' => 'foo',
+        'bar' => 'bar',
+        'baz' => 'baz',
+        'inferString' => 'inferString',
+        'inferInt' => 'inferInt',
+        'contradiction' => 'contradiction',
+        'contradiction2' => 'contradiction2',
+        'nullable' => 'nullable',
+        'optionalNullable' => 'optionalNullable',
+    ];
+
+    /**
      * Map of optional nullable property names that were explicitly set
      *
      * @var array<string,true>
      */
     private array $_providedOptionals = [];
+
+    /**
+     * Map of name/value pairs for properties not specified in the schema.
+     */
+    private \stdClass $_additionalProperties;
 
     /**
      * @var 1|2|'1'|'2'
@@ -156,6 +174,8 @@ class MyClass
      */
     public function __construct(int|string $foo, int|string $bar, bool|int|float|string|null $baz, MyClassContradiction $contradiction, int|string $contradiction2, ?MyClassNullable $nullable, ?MyClassInferString $inferString = null, ?MyClassInferInt $inferInt = null, ?MyClassOptionalNullable $optionalNullable = null)
     {
+        $this->_additionalProperties = new \stdClass();
+
         $this->foo = $foo;
         $this->bar = $bar;
         $this->baz = $baz;
@@ -164,7 +184,47 @@ class MyClass
         $this->nullable = $nullable;
         $this->inferString = $inferString;
         $this->inferInt = $inferInt;
-        $this->optionalNullable = $optionalNullable;
+        if ($optionalNullable !== null) {
+            $this->optionalNullable = $optionalNullable;
+            $this->_providedOptionals['optionalNullable'] = true;
+        };
+    }
+
+    /**
+     * Object (`stdClass`) or array with name/value pairs for properties not specified in the schema.
+     *
+     * @param bool $asArray Whether return an associative array instead of `stdClass` object.
+     */
+    public function getAdditionalProperties(bool $asArray = true): \stdClass|array
+    {
+        return $asArray
+            ? json_decode(json_encode($this->_additionalProperties), true)
+            : $this->_additionalProperties;
+    }
+
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param \stdClass|array $additionalProperties Map of property name/value pairs to add.
+     */
+    public function withAdditionalProperties(\stdClass|array $additionalProperties): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
+    }
+
+    /**
+     * Removes all extra properties not specified in the schema.
+     */
+    public function withoutAdditionalProperties(): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = new \stdClass();
+        return $clone;
     }
 
     /**
@@ -250,7 +310,7 @@ class MyClass
 
     public function getInferString(): ?MyClassInferString
     {
-        return $this->inferString;
+        return $this->inferString ?? null;
     }
 
     public function withInferString(MyClassInferString $inferString): self
@@ -271,7 +331,7 @@ class MyClass
 
     public function getInferInt(): ?MyClassInferInt
     {
-        return $this->inferInt;
+        return $this->inferInt ?? null;
     }
 
     public function withInferInt(MyClassInferInt $inferInt): self
@@ -345,7 +405,7 @@ class MyClass
 
     public function getOptionalNullable(): ?MyClassOptionalNullable
     {
-        return $this->optionalNullable;
+        return $this->optionalNullable ?? null;
     }
 
     public function withOptionalNullable(?MyClassOptionalNullable $optionalNullable): self
@@ -381,7 +441,7 @@ class MyClass
             static::validateInput($input);
         }
 
-        $__providedOptionals = [];
+        $_providedOptionals = [];
         $foo = $input->{'foo'};
         $bar = $input->{'bar'};
         $baz = ($input->{'baz'} !== null ? $input->{'baz'} : null);
@@ -393,7 +453,7 @@ class MyClass
         $optionalNullable = null;
         if (property_exists($input, 'optionalNullable')) {
             $optionalNullable = ($input->{'optionalNullable'} !== null ? MyClassOptionalNullable::from($input->{'optionalNullable'}) : null);
-            $__providedOptionals['optionalNullable'] = true;
+            $_providedOptionals['optionalNullable'] = true;
         }
 
         $obj = new self(
@@ -407,7 +467,13 @@ class MyClass
             $inferInt,
             $optionalNullable
         );
-        $obj->_providedOptionals = $__providedOptionals;
+        $obj->_providedOptionals = $_providedOptionals;
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
+
         return $obj;
     }
 
@@ -418,7 +484,8 @@ class MyClass
      */
     public function toArray(): array
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         $output['foo'] = $this->foo;
         $output['bar'] = $this->bar;
         $output['baz'] = $this->baz;
@@ -445,7 +512,8 @@ class MyClass
      */
     public function toStdClass(): \stdClass
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         $output->{'foo'} = $this->foo;
         $output->{'bar'} = $this->bar;
         $output->{'baz'} = $this->baz;
@@ -502,13 +570,18 @@ class MyClass
     }
 
     /**
-     * Checks if an optional nullable property was explicitly set
+     * Checks if an optional nullable property was explicitly set.
      *
-     * @param string $propertyName Property name to check (exactly as it appears in the schema)
-     * @return bool
+     * @param string $propertyName Property name to check (exactly as it appears in the schema).
+     * @throws \InvalidArgumentException If property with that name doesn't exist.
      */
     public function isOptionalProvided(string $propertyName): bool
     {
-        return array_key_exists($propertyName, $this->_providedOptionals);
+        if (!array_key_exists($propertyName, self::$_namesMap)) {
+            throw new \InvalidArgumentException("Unknown property: {$propertyName}");
+        }
+        return
+            array_key_exists($propertyName, $this->_providedOptionals)
+            || isset($this->{ self::$_namesMap[$propertyName] });
     }
 }

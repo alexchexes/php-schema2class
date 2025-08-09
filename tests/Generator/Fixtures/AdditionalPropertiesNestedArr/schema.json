@@ -1,0 +1,15 @@
+{
+  "definitions": {
+    "MyClass": {
+      "properties": {
+        "foo": { "type": "number" },
+        "bar": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  }
+}

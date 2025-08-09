@@ -8,8 +8,6 @@ class MyClass
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
     private static array $_schema = [
         'required' => [
@@ -43,6 +41,22 @@ class MyClass
         ],
     ];
 
+    /**
+     * Mapping of schema property names to this class's property names.
+     */
+    private static array $_namesMap = [
+        'street_address' => 'streetAddress',
+        'house_number' => 'houseNumber',
+        'type' => 'type',
+        'city' => 'city',
+        'state' => 'state',
+    ];
+
+    /**
+     * Map of name/value pairs for properties not specified in the schema.
+     */
+    private \stdClass $_additionalProperties;
+
     private string $streetAddress;
 
     private ?string $houseNumber = null;
@@ -55,11 +69,50 @@ class MyClass
 
     public function __construct(string $streetAddress, string $state, ?string $houseNumber = null, ?MyClassType $type = null, ?string $city = null)
     {
+        $this->_additionalProperties = new \stdClass();
+
         $this->streetAddress = $streetAddress;
         $this->state = $state;
         $this->houseNumber = $houseNumber;
         $this->type = $type;
         $this->city = $city;
+    }
+
+    /**
+     * Object (`stdClass`) or array with name/value pairs for properties not specified in the schema.
+     *
+     * @param bool $asArray Whether return an associative array instead of `stdClass` object.
+     */
+    public function getAdditionalProperties(bool $asArray = true): \stdClass|array
+    {
+        return $asArray
+            ? json_decode(json_encode($this->_additionalProperties), true)
+            : $this->_additionalProperties;
+    }
+
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param \stdClass|array $additionalProperties Map of property name/value pairs to add.
+     */
+    public function withAdditionalProperties(\stdClass|array $additionalProperties): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
+    }
+
+    /**
+     * Removes all extra properties not specified in the schema.
+     */
+    public function withoutAdditionalProperties(): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = new \stdClass();
+        return $clone;
     }
 
     /**
@@ -86,7 +139,7 @@ class MyClass
      */
     public function getHouseNumber(): ?string
     {
-        return $this->houseNumber;
+        return $this->houseNumber ?? null;
     }
 
     /**
@@ -113,7 +166,7 @@ class MyClass
      */
     public function getType(): ?MyClassType
     {
-        return $this->type;
+        return $this->type ?? null;
     }
 
     /**
@@ -140,7 +193,7 @@ class MyClass
      */
     public function getCity(): ?string
     {
-        return $this->city;
+        return $this->city ?? null;
     }
 
     /**
@@ -203,6 +256,12 @@ class MyClass
         $city = isset($input->{'city'}) ? $input->{'city'} : null;
 
         $obj = new self($streetAddress, $state, $houseNumber, $type, $city);
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
+
         return $obj;
     }
 
@@ -213,7 +272,8 @@ class MyClass
      */
     public function toArray(): array
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         $output['street_address'] = $this->streetAddress;
         if (isset($this->houseNumber)) {
             $output['house_number'] = $this->houseNumber;
@@ -236,7 +296,8 @@ class MyClass
      */
     public function toStdClass(): \stdClass
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         $output->{'street_address'} = $this->streetAddress;
         if (isset($this->houseNumber)) {
             $output->{'house_number'} = $this->houseNumber;

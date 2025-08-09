@@ -8,8 +8,6 @@ class Foo
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
     private static array $_schema = [
         'type' => 'object',
@@ -81,7 +79,6 @@ class Foo
         if ($validate) {
             $clone->validate();
         }
-
         return $clone;
     }
 
@@ -90,7 +87,7 @@ class Foo
      */
     public function getSize(): ?string
     {
-        return $this->size;
+        return $this->size ?? null;
     }
 
     /**
@@ -103,7 +100,6 @@ class Foo
         if ($validate) {
             $clone->validate();
         }
-
         return $clone;
     }
 
@@ -140,6 +136,7 @@ class Foo
         $size = isset($input->{'size'}) ? $input->{'size'} : null;
 
         $obj = new self($color, $size);
+
         return $obj;
     }
 

@@ -8,8 +8,6 @@ class MyRecursiveObject
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
     private static array $_schema = [
         'additionalProperties' => false,
@@ -41,7 +39,7 @@ class MyRecursiveObject
 
     public function getMyRecursiveObject(): ?MyRecursiveObject
     {
-        return $this->MyRecursiveObject;
+        return $this->MyRecursiveObject ?? null;
     }
 
     public function withMyRecursiveObject(MyRecursiveObject $MyRecursiveObject): self
@@ -78,6 +76,7 @@ class MyRecursiveObject
         $MyRecursiveObject = isset($input->{'MyRecursiveObject'}) ? MyRecursiveObject::fromInput($input->{'MyRecursiveObject'}, $validate) : null;
 
         $obj = new self($MyRecursiveObject);
+
         return $obj;
     }
 

@@ -8,8 +8,6 @@ class MyClass
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
     private static array $_schema = [
         'properties' => [
@@ -42,6 +40,19 @@ class MyClass
     ];
 
     /**
+     * Mapping of schema property names to this class's property names.
+     */
+    private static array $_namesMap = [
+        'files' => 'files',
+        'options' => 'options',
+    ];
+
+    /**
+     * Map of name/value pairs for properties not specified in the schema.
+     */
+    private \stdClass $_additionalProperties;
+
+    /**
      * @var MyClassFilesItem[]|null
      */
     private ?array $files = null;
@@ -53,8 +64,48 @@ class MyClass
      */
     public function __construct(?array $files = null, ?OptionsObject $options = null)
     {
+        $this->_additionalProperties = new \stdClass();
+
         $this->files = $files;
         $this->options = $options;
+    }
+
+    /**
+     * Object (`stdClass`) or array with name/value pairs for properties not specified in the schema.
+     *
+     * @param bool $asArray Whether return an associative array instead of `stdClass` object.
+     * @return array|\stdClass
+     */
+    public function getAdditionalProperties(bool $asArray = true)
+    {
+        return $asArray
+            ? json_decode(json_encode($this->_additionalProperties), true)
+            : $this->_additionalProperties;
+    }
+
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param \stdClass|array $additionalProperties Map of property name/value pairs to add.
+     */
+    public function withAdditionalProperties($additionalProperties): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
+    }
+
+    /**
+     * Removes all extra properties not specified in the schema.
+     */
+    public function withoutAdditionalProperties(): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = new \stdClass();
+        return $clone;
     }
 
     /**
@@ -62,7 +113,7 @@ class MyClass
      */
     public function getFiles(): ?array
     {
-        return $this->files;
+        return $this->files ?? null;
     }
 
     /**
@@ -75,7 +126,6 @@ class MyClass
         if ($validate) {
             $clone->validate();
         }
-
         return $clone;
     }
 
@@ -89,7 +139,7 @@ class MyClass
 
     public function getOptions(): ?OptionsObject
     {
-        return $this->options;
+        return $this->options ?? null;
     }
 
     public function withOptions(OptionsObject $options): self
@@ -133,6 +183,12 @@ class MyClass
         $options = isset($input->{'options'}) ? OptionsObject::fromInput($input->{'options'}, $validate) : null;
 
         $obj = new self($files, $options);
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
+
         return $obj;
     }
 
@@ -143,7 +199,8 @@ class MyClass
      */
     public function toArray(): array
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         if (isset($this->files)) {
             $output['files'] = array_map(fn (MyClassFilesItem $i) => $i->toArray(), $this->files);
         }
@@ -161,7 +218,8 @@ class MyClass
      */
     public function toStdClass(): \stdClass
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         if (isset($this->files)) {
             $output->{'files'} = array_map(fn (MyClassFilesItem $i) => $i->toStdClass(), $this->files);
         }

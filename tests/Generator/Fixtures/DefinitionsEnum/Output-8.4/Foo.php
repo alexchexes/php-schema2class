@@ -8,8 +8,6 @@ class Foo
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
     private static array $_schema = [
         'type' => 'object',
@@ -68,7 +66,7 @@ class Foo
 
     public function getSize(): ?Size
     {
-        return $this->size;
+        return $this->size ?? null;
     }
 
     public function withSize(Size $size): self
@@ -106,6 +104,7 @@ class Foo
         $size = isset($input->{'size'}) ? Size::from($input->{'size'}) : null;
 
         $obj = new self($color, $size);
+
         return $obj;
     }
 

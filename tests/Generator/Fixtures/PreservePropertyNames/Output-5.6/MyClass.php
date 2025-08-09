@@ -80,6 +80,37 @@ class MyClass
     ];
 
     /**
+     * Mapping of schema property names to this class's property names.
+     *
+     * @var array
+     */
+    private static $_namesMap = [
+        'foo' => 'foo',
+        '_foo' => '_foo',
+        '__foo' => '__foo',
+        'foo_' => 'foo_',
+        'foo__' => 'foo__',
+        '_foo_' => '_foo_',
+        '__foo__' => '__foo__',
+        'foo-bar' => '_foo_bar',
+        'foo bar' => 'foo_bar',
+        'baz qux' => 'baz_qux',
+        '123 qwe' => '_123_qwe',
+        'Город' => 'Gorod',
+        'название юр.лица' => 'nazvanie_iur_litsa',
+        'IP-адрес' => 'IP_adres',
+        '~~tildas~~' => '_tildas',
+        'it\'s "A"' => 'it_s_A',
+    ];
+
+    /**
+     * Map of name/value pairs for properties not specified in the schema.
+     *
+     * @var \stdClass
+     */
+    private $_additionalProperties;
+
+    /**
      * @var string
      */
     private $foo;
@@ -179,6 +210,8 @@ class MyClass
      */
     public function __construct($foo, $_foo, $__foo, $foo_, $foo__, $_foo_, $__foo__, $_foo_bar, $foo_bar, $baz_qux, $_123_qwe, $Gorod, $nazvanie_iur_litsa, $IP_adres, $_tildas, $it_s_A = null)
     {
+        $this->_additionalProperties = new \stdClass();
+
         $this->foo = $foo;
         $this->_foo = $_foo;
         $this->__foo = $__foo;
@@ -195,6 +228,47 @@ class MyClass
         $this->IP_adres = $IP_adres;
         $this->_tildas = $_tildas;
         $this->it_s_A = $it_s_A;
+    }
+
+    /**
+     * Object (`stdClass`) or array with name/value pairs for properties not specified in the schema.
+     *
+     * @param bool $asArray Whether return an associative array instead of `stdClass` object.
+     * @return array|\stdClass
+     */
+    public function getAdditionalProperties($asArray = true)
+    {
+        return $asArray
+            ? json_decode(json_encode($this->_additionalProperties), true)
+            : $this->_additionalProperties;
+    }
+
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param \stdClass|array $additionalProperties Map of property name/value pairs to add.
+     * @return self
+     */
+    public function withAdditionalProperties($additionalProperties)
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
+    }
+
+    /**
+     * Removes all extra properties not specified in the schema.
+     *
+     * @return self
+     */
+    public function withoutAdditionalProperties()
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = new \stdClass();
+        return $clone;
     }
 
     /**
@@ -637,7 +711,7 @@ class MyClass
      */
     public function getItSA()
     {
-        return $this->it_s_A;
+        return isset($this->it_s_A) ? $this->it_s_A : null;
     }
 
     /**
@@ -728,6 +802,12 @@ class MyClass
             $_tildas,
             $it_s_A
         );
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
+
         return $obj;
     }
 
@@ -738,7 +818,8 @@ class MyClass
      */
     public function toArray()
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         $output['foo'] = $this->foo;
         $output['_foo'] = $this->_foo;
         $output['__foo'] = $this->__foo;
@@ -768,7 +849,8 @@ class MyClass
      */
     public function toStdClass()
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         $output->{'foo'} = $this->foo;
         $output->{'_foo'} = $this->_foo;
         $output->{'__foo'} = $this->__foo;

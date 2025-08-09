@@ -3,12 +3,15 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Class\Method\SchemaPropertyAccessor;
 
+use Helmich\Schema2Class\Generator\Class\ArgumentNames;
 use Helmich\Schema2Class\Generator\Class\MethodNames;
 use Helmich\Schema2Class\Generator\Class\PropertyNames;
+use Helmich\Schema2Class\Generator\Class\VariableNames;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\Decorator\OptionalPropertyDecorator;
 use Helmich\Schema2Class\Generator\Property\PropertyQuery;
 use Helmich\Schema2Class\Generator\Property\Type\PropertyInterface;
+use Helmich\Schema2Class\Util\SchemaUtils;
 use Helmich\Schema2Class\Util\StringUtils;
 use Laminas\Code\Generator\DocBlock\Tag\GenericTag;
 use Laminas\Code\Generator\DocBlock\Tag\ParamTag;
@@ -19,14 +22,12 @@ use Laminas\Code\Generator\ParameterGenerator;
 
 class PropertySetterFactory
 {
-    public const CLONE_VAR_NAME = 'clone';
-    public const VALIDATE_ARG = 'validate';
-
     private bool $mutating;
     private bool $chainable;
 
     public function __construct(
         private GeneratorRequest $request,
+        private array $schema,
     ) {
         $mutableConfig = $this->request->getMutableSetters();
         $this->mutating = $mutableConfig !== null;
@@ -38,11 +39,6 @@ class PropertySetterFactory
         if ($this->request->getNoSetters()) {
             return null;
         }
-
-        $prefix = $this->mutating ? 'set' : 'with';
-        $methodName = $prefix . $property->methodName();
-        $propName = $property->propName();
-        $varName = $property->varName();
 
         // Determine which property should be used for parameter type information.
         // Optional properties are always stored as nullable internally, but
@@ -57,16 +53,23 @@ class PropertySetterFactory
         // Determine whether setter needs runtime validation and whether
         // validation must be performed against the full schema or just the
         // property fragment.
-        $schemaRequiresFullValidation = $this->schemaRequiresFullValidation();
+        $isPropOptional = $property instanceof OptionalPropertyDecorator;
+        $schemaNeedsValidation = SchemaUtils::needsRevalidationOnPropertyChange($this->schema, $isPropOptional, true);
         $propertyNeedsValidation = $property->needsValidation();
-        $propertyNeedsFullValidation = $propertyNeedsValidation && $this->schemaHasRef($property->schema());
 
-        $addValidation = $propertyNeedsValidation || $schemaRequiresFullValidation;
-        $fullValidation = $schemaRequiresFullValidation || $propertyNeedsFullValidation;
+        $addValidation = $propertyNeedsValidation || $schemaNeedsValidation;
+        $addFullValidation =
+            $schemaNeedsValidation
+            || ($propertyNeedsValidation && SchemaUtils::schemaHasRef($property->schema()));
 
-        $docBlock = $this->buildDocBlock($property, $varName, $propAnnotatedType, $propTypeHint, $addValidation);
-        $parameters = $this->buildParams($varName, $propTypeHint, $addValidation);
-        $body = $this->generateBody($property, $propName, $varName, $addValidation, $fullValidation);
+        // Now construct all the components for the MethodGenerator
+
+        $parameters = $this->buildParams($property, $propTypeHint, $addValidation);
+        $body = $this->generateBody($property, $addValidation, $addFullValidation);
+        $docBlock = $this->buildDocBlock($property, $propAnnotatedType, $propTypeHint, $addValidation);
+
+        $prefix = $this->mutating ? 'set' : 'with';
+        $methodName = $prefix . $property->methodName();
 
         $methodGen = new MethodGenerator(
             name: $methodName,
@@ -76,46 +79,18 @@ class PropertySetterFactory
             docBlock: $docBlock
         );
 
+        // set return type hint if possible
         if ($this->chainable && $this->request->isAtLeastPHP('7.0')) {
             $methodGen->setReturnType('self');
-        } elseif (!$this->chainable) {
-            if ($this->request->isAtLeastPHP('7.1')) {
-                $methodGen->setReturnType('void');
-            }
+        } elseif (!$this->chainable && $this->request->isAtLeastPHP('7.1')) {
+            $methodGen->setReturnType('void');
         }
 
         return $methodGen;
     }
 
-    private function schemaRequiresFullValidation(): bool
-    {
-        $schema = $this->request->getSchema();
-        foreach (['if', 'then', 'else', 'dependencies', 'dependentRequired', 'dependentSchemas'] as $k) {
-            if (isset($schema[$k])) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private function schemaHasRef(array $schema): bool
-    {
-        if (isset($schema['$ref'])) {
-            return true;
-        }
-
-        foreach ($schema as $value) {
-            if (is_array($value) && $this->schemaHasRef($value)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     private function buildDocBlock(
         PropertyInterface $property,
-        string $varName,
         string $propAnnotatedType,
         ?string $propTypeHint,
         bool $addValidation,
@@ -129,11 +104,11 @@ class PropertySetterFactory
         }
 
         if ($propAnnotatedType) {
-            $tags[] = new ParamTag($varName, explode('|', $propAnnotatedType));
+            $tags[] = new ParamTag($property->varName(), explode('|', $propAnnotatedType));
         }
 
         if ($addValidation && !$this->request->isAtLeastPHP('7.0')) {
-            $tags[] = new ParamTag('validate', ['bool']);
+            $tags[] = new ParamTag(ArgumentNames::VALIDATE, ['bool']);
         }
 
         if ($this->chainable && !$this->request->isAtLeastPHP('7.0')) {
@@ -157,43 +132,49 @@ class PropertySetterFactory
         return $docBlock;
     }
 
-    private function buildParams(string $varName, ?string $propTypeHint, bool $addValidation): array
+    private function buildParams(PropertyInterface $property, ?string $propTypeHint, bool $addValidation): array
     {
-        $parameters = [new ParameterGenerator($varName, $propTypeHint)];
+        $parameters = [new ParameterGenerator($property->varName(), $propTypeHint)];
+
         if ($addValidation) {
             $type = $this->request->isAtLeastPHP('7.0') ? 'bool' : null;
-            $validateParam = new ParameterGenerator('validate', $type);
-            $validateParam->setDefaultValue(true);
+            $validateParam = new ParameterGenerator(
+                name: ArgumentNames::VALIDATE,
+                type: $type,
+                defaultValue: true,
+            );
             $parameters[] = $validateParam;
         }
+
         return $parameters;
     }
 
     private function generateBody(
         PropertyInterface $property,
-        string $propName,
-        string $varName,
         bool $addValidation,
-        bool $fullValidation,
+        bool $addFullValidation,
     ): string
     {
+        $newValidatorExpr = $this->request->getOptions()->getNewValidatorExpr();
+        $OPTIONALS = PropertyNames::PROVIDED_OPTIONALS;
+        $SCHEMA_PROP = PropertyNames::SCHEMA;
+        $VALIDATE_SELF = MethodNames::VALIDATE_SELF;
+        $VALIDATE_ARG = ArgumentNames::VALIDATE;
+        $CLONE_VAR = VariableNames::CLONE;
         $propKey = $property->keyStr();
+        $propName = $property->propName();
+        $varName = $property->varName();
+        $object = $this->mutating ? 'this' : $CLONE_VAR;
 
-        $OPTIONALS = PropertyNames::OPTIONALS;
-        $VALIDATE = MethodNames::VALIDATE_SELF;
-        $VALIDATE_ARG = self::VALIDATE_ARG;
-        $CLONE_VAR = self::CLONE_VAR_NAME;
+        $bodyParts = [];
 
-        $validationBlock = '';
-        if ($addValidation && !$fullValidation) {
-            $newValidatorExpr = $this->request->getOptions()->getNewValidatorExpr();
-
-            $SCHEMA = PropertyNames::SCHEMA;
-            $validationBlock =
+        // partial validation (when the property canNOT invalidate the whole schema)
+        if ($addValidation && !$addFullValidation) {
+            $bodyParts[] =
                 <<<PHP
                 if (\${$VALIDATE_ARG}) {
                     \$validator = {$newValidatorExpr};
-                    \$validator->validate(\$$varName, self::\${$SCHEMA}['properties'][{$propKey}]);
+                    \$validator->validate(\$$varName, self::\${$SCHEMA_PROP}['properties'][{$propKey}]);
                     if (!\$validator->isValid()) {
                         throw new \InvalidArgumentException(\$validator->getErrors()[0]['message']);
                     }
@@ -201,49 +182,35 @@ class PropertySetterFactory
                 PHP;
         }
 
-        if ($this->mutating) {
-            $body =
-                $validationBlock .
-                "\$this->{$propName} = \$$varName;\n";
-
-            if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
-                $body .= "\$this->{$OPTIONALS}[{$propKey}] = true;\n";
-            }
-
-            if ($addValidation && $fullValidation) {
-                $body .= 
-                    <<<PHP
-                    if (\${$VALIDATE_ARG}) {
-                        \$this->{$VALIDATE}();
-                    }\n
-                    PHP;
-            }
-
-            if ($this->chainable) {
-                $body .= "\nreturn \$this;";
-            }
-        } else {
-            $body =
-                $validationBlock .
-                "\${$CLONE_VAR} = clone \$this;\n" .
-                "\${$CLONE_VAR}->$propName = \$$varName;\n";
-
-            if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
-                $body .= "\${$CLONE_VAR}->{$OPTIONALS}[{$propKey}] = true;\n";
-            }
-
-            if ($addValidation && $fullValidation) {
-                $body .= 
-                    <<<PHP
-                    if (\${$VALIDATE_ARG}) {
-                        \${$CLONE_VAR}->{$VALIDATE}();
-                    }\n
-                    PHP;
-            }
-
-            $body .= "\nreturn \${$CLONE_VAR};";
+        // self clone if in "immutable" mode
+        if (!$this->mutating) {
+            $bodyParts[] = "\${$CLONE_VAR} = clone \$this;\n";
         }
 
-        return $body;
+        // set the property
+        $bodyParts[] = "\${$object}->{$propName} = \${$varName};\n";
+
+        // add it to the list of provided optional nullables
+        if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
+            $bodyParts[] = "\${$object}->{$OPTIONALS}[{$propKey}] = true;\n";
+        }
+
+        // full revalidation of the whole object after the property was set
+        // (if schema has complex top-level constraints)
+        if ($addValidation && $addFullValidation) {
+            $bodyParts[] = 
+                <<<PHP
+                if (\${$VALIDATE_ARG}) {
+                    \${$object}->{$VALIDATE_SELF}();
+                }
+                PHP;
+        }
+
+        // return $this or $clone
+        if ($this->chainable) {
+            $bodyParts[] = "\nreturn \${$object};";
+        }
+
+        return implode('', $bodyParts);
     }
 }

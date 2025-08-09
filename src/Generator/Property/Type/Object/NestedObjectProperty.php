@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Property\Type\Object;
 
-use Helmich\Schema2Class\Generator\Class\Method\FromInputMethodFactory;
+use Helmich\Schema2Class\Generator\Class\ArgumentNames;
 use Helmich\Schema2Class\Generator\Class\MethodNames;
 use Helmich\Schema2Class\Generator\GeneratorException;
 use Helmich\Schema2Class\Generator\Property\Type\AbstractProperty;
@@ -26,11 +26,7 @@ class NestedObjectProperty extends AbstractProperty
             && is_array($schema["properties"])
             && count($schema["properties"]) > 0;
 
-        $hasAdditionalProperties = isset($schema["additionalProperties"])
-            && is_array($schema["additionalProperties"])
-            && count($schema["additionalProperties"]) > 0;
-
-        return $isObject && $hasProperties && !$hasAdditionalProperties;
+        return $isObject && $hasProperties;
     }
 
     /**
@@ -69,9 +65,9 @@ class NestedObjectProperty extends AbstractProperty
 
     public function inputMappingExpr(string $expr, bool $asserted = false): string
     {
-        $args = [$expr, '$' . FromInputMethodFactory::VALIDATE_ARG_NAME];
+        $args = [$expr, '$' . ArgumentNames::VALIDATE];
         if ($this->request->getClassHasDefaults()) {
-            $args[] = '$' . FromInputMethodFactory::DEFAULTS_ARG_NAME;
+            $args[] = '$' . ArgumentNames::MATRLZ_DEFAULTS;
         }
         $argsStr = implode(', ', $args);
 

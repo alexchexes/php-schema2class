@@ -12,7 +12,7 @@ use Laminas\Code\Generator\PropertyValueGenerator;
 use Laminas\Code\Generator\TypeGenerator;
 
 /**
- * Factory for creating "$schema" class property that holds the JSON-schema as array used for validation
+ * Factory for creating "$_schema" class property that holds the JSON-schema as array used for validation
  */
 class ValidationSchemaPropertyFactory
 {
@@ -31,20 +31,21 @@ class ValidationSchemaPropertyFactory
         }
 
         $prop = new PropertyGenerator(
-            PropertyNames::SCHEMA,
-            $validationSchema,
-            PropertyGenerator::FLAG_PRIVATE | PropertyGenerator::FLAG_STATIC,
+            name: PropertyNames::SCHEMA,
+            defaultValue: $validationSchema,
+            flags: PropertyGenerator::FLAG_PRIVATE | PropertyGenerator::FLAG_STATIC,
         );
 
-        $prop->setDocBlock(new DocBlockGenerator(
-            'Schema used to validate input for creating instances of this class',
-            null,
-            [new GenericTag('var', 'array')],
-        ));
+        $docBlock = new DocBlockGenerator('Schema used to validate input for creating instances of this class');
 
         if ($this->request->isAtLeastPHP('7.4')) {
             $prop->setType(TypeGenerator::fromTypeString('array'));
+        } else {
+            $docBlock->setTag(new GenericTag('var', 'array'));
         }
+
+        $prop->setDocBlock($docBlock);
+
         if ($this->request->getOptions()->getSingleLineSchema()) {
             $prop->getDefaultValue()?->setOutputMode(PropertyValueGenerator::OUTPUT_SINGLE_LINE);
         }
@@ -56,6 +57,7 @@ class ValidationSchemaPropertyFactory
     {
         $metaFields = [
             'description',
+            'markdownDescription',
             'title',
             'examples',
             'deprecated',

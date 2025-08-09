@@ -8,8 +8,6 @@ class Foo
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
     private static array $_schema = [
         'type' => 'object',
@@ -69,7 +67,6 @@ class Foo
         if ($validate) {
             $clone->validate();
         }
-
         return $clone;
     }
 
@@ -97,6 +94,7 @@ class Foo
         $val = $input->{'val'};
 
         $obj = new self($val);
+
         return $obj;
     }
 

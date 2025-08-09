@@ -8,8 +8,6 @@ class Foo
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
     private static array $_schema = [
         'type' => 'object',
@@ -62,6 +60,22 @@ class Foo
     ];
 
     /**
+     * Mapping of schema property names to this class's property names.
+     */
+    private static array $_namesMap = [
+        'floatEnum' => 'floatEnum',
+        'floatEnumRef' => 'floatEnumRef',
+        'boolEnum' => 'boolEnum',
+        'boolEnumRef' => 'boolEnumRef',
+        'requiredBoolEnumRef' => 'requiredBoolEnumRef',
+    ];
+
+    /**
+     * Map of name/value pairs for properties not specified in the schema.
+     */
+    private \stdClass $_additionalProperties;
+
+    /**
      * @var 0|1.5|2.5|3.5|null
      */
     private int|float|null $floatEnum = null;
@@ -95,6 +109,8 @@ class Foo
      */
     public function __construct(bool $requiredBoolEnumRef, int|float|null $floatEnum = null, int|float|null $floatEnumRef = null, ?bool $boolEnum = null, ?bool $boolEnumRef = null)
     {
+        $this->_additionalProperties = new \stdClass();
+
         $this->requiredBoolEnumRef = $requiredBoolEnumRef;
         $this->floatEnum = $floatEnum;
         $this->floatEnumRef = $floatEnumRef;
@@ -103,11 +119,48 @@ class Foo
     }
 
     /**
+     * Object (`stdClass`) or array with name/value pairs for properties not specified in the schema.
+     *
+     * @param bool $asArray Whether return an associative array instead of `stdClass` object.
+     */
+    public function getAdditionalProperties(bool $asArray = true): \stdClass|array
+    {
+        return $asArray
+            ? json_decode(json_encode($this->_additionalProperties), true)
+            : $this->_additionalProperties;
+    }
+
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param \stdClass|array $additionalProperties Map of property name/value pairs to add.
+     */
+    public function withAdditionalProperties(\stdClass|array $additionalProperties): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
+    }
+
+    /**
+     * Removes all extra properties not specified in the schema.
+     */
+    public function withoutAdditionalProperties(): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = new \stdClass();
+        return $clone;
+    }
+
+    /**
      * @return 0|1.5|2.5|3.5|null
      */
     public function getFloatEnum(): int|float|null
     {
-        return $this->floatEnum;
+        return $this->floatEnum ?? null;
     }
 
     /**
@@ -142,7 +195,7 @@ class Foo
      */
     public function getFloatEnumRef(): int|float|null
     {
-        return $this->floatEnumRef;
+        return $this->floatEnumRef ?? null;
     }
 
     /**
@@ -155,7 +208,6 @@ class Foo
         if ($validate) {
             $clone->validate();
         }
-
         return $clone;
     }
 
@@ -172,7 +224,7 @@ class Foo
      */
     public function getBoolEnum(): ?bool
     {
-        return $this->boolEnum;
+        return $this->boolEnum ?? null;
     }
 
     /**
@@ -207,7 +259,7 @@ class Foo
      */
     public function getBoolEnumRef(): ?bool
     {
-        return $this->boolEnumRef;
+        return $this->boolEnumRef ?? null;
     }
 
     /**
@@ -220,7 +272,6 @@ class Foo
         if ($validate) {
             $clone->validate();
         }
-
         return $clone;
     }
 
@@ -250,7 +301,6 @@ class Foo
         if ($validate) {
             $clone->validate();
         }
-
         return $clone;
     }
 
@@ -282,6 +332,12 @@ class Foo
             $boolEnum,
             $boolEnumRef
         );
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
+
         return $obj;
     }
 
@@ -292,7 +348,8 @@ class Foo
      */
     public function toArray(): array
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         if (isset($this->floatEnum)) {
             $output['floatEnum'] = $this->floatEnum;
         }
@@ -317,7 +374,8 @@ class Foo
      */
     public function toStdClass(): \stdClass
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         if (isset($this->floatEnum)) {
             $output->{'floatEnum'} = $this->floatEnum;
         }

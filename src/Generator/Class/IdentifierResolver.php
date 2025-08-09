@@ -4,12 +4,12 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class\Generator\Class;
 
 use Helmich\Schema2Class\Generator\Class\Method\FromInputMethodFactory;
-use Helmich\Schema2Class\Generator\Class\Method\SerializeMethodFactory;
 use Helmich\Schema2Class\Generator\Class\Method\SchemaPropertyAccessor\PropertySetterFactory;
+use Helmich\Schema2Class\Generator\Class\Method\Serialize\SerializeMethodFactory;
 use Helmich\Schema2Class\Generator\Class\PropertyNames;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\Collection\PropertyCollection;
-use Helmich\Schema2Class\Util\ReservedNames;
+use Helmich\Schema2Class\Util\PhpReservedNames;
 use Helmich\Schema2Class\Util\StringUtils;
 
 /**
@@ -90,10 +90,9 @@ class IdentifierResolver
     {
         // Collect all variable names that must not be used
         $reserved = array_merge(
-            ReservedNames::phpPredefined(),
-            FromInputMethodFactory::allVarNames(),
-            SerializeMethodFactory::allVarNames(),
-            [PropertySetterFactory::CLONE_VAR_NAME],
+            PhpReservedNames::phpPredefined(),
+            VariableNames::all(),
+            ArgumentNames::all(),
         );
 
         $used = [];

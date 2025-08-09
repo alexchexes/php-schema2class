@@ -8,8 +8,6 @@ class MyGenericStringNumberField
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
     private static array $_schema = [
         'additionalProperties' => false,
@@ -50,7 +48,7 @@ class MyGenericStringNumberField
 
     public function getField(): ?MyGenericStringNumber
     {
-        return $this->field;
+        return $this->field ?? null;
     }
 
     public function withField(MyGenericStringNumber $field): self
@@ -93,6 +91,7 @@ class MyGenericStringNumberField
         $field = isset($input->{'field'}) ? MyGenericStringNumber::fromInput($input->{'field'}, $validate) : null;
 
         $obj = new self($field);
+
         return $obj;
     }
 

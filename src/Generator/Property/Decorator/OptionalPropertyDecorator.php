@@ -3,9 +3,11 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Property\Decorator;
 
+use Helmich\Schema2Class\Generator\Class\ArgumentNames;
 use Helmich\Schema2Class\Generator\Class\Method\FromInputMethodFactory;
-use Helmich\Schema2Class\Generator\Class\Method\SerializeMethodFactory;
+use Helmich\Schema2Class\Generator\Class\Method\Serialize\SerializeMethodFactory;
 use Helmich\Schema2Class\Generator\Class\PropertyNames;
+use Helmich\Schema2Class\Generator\Class\VariableNames;
 use Helmich\Schema2Class\Util\StringUtils;
 
 /**
@@ -91,7 +93,7 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator
     {
         $varName  = $this->inner->varName();
 
-        $inputVarName = FromInputMethodFactory::INPUT_ARG_NAME;
+        $inputVarName = ArgumentNames::INPUT;
         // JSON accessor:  $input->{'key'}   or   $input['key']
         $accessor = "\${$inputVarName}->{{$this->keyStr()}}";
 
@@ -107,7 +109,7 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator
         $existsCheck = $this->generateIssetCheckExpr($inputVarName);
 
         if ($this->isOptionalNullable) {
-            $OPTIONALS_VAR_NAME = FromInputMethodFactory::OPTIONALS_VAR_NAME();
+            $OPTIONALS_VAR_NAME = VariableNames::PROVIDED_OPTIONALS;
             $code =
                 <<<PHP
                 \${$varName} = null;
@@ -126,10 +128,10 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator
     public function convertTypeToArray(): string
     {
         $propName  = $this->inner->propName();
-        $outputVarName = SerializeMethodFactory::OUTPUT_VAR_NAME;
+        $outputVarName = VariableNames::OUTPUT;
 
         if ($this->isOptionalNullable) {
-            $OPTIONALS = PropertyNames::OPTIONALS;
+            $OPTIONALS = PropertyNames::PROVIDED_OPTIONALS;
             $check = "isset(\$this->{$propName}) || array_key_exists('{$this->key}', \$this->{$OPTIONALS})";
 
             $map = $this->outputMappingExpr("\$this->{$propName}");
@@ -149,10 +151,10 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator
     public function convertTypeToStdClass(): string
     {
         $propName  = $this->inner->propName();
-        $outputVarName = SerializeMethodFactory::OUTPUT_VAR_NAME;
+        $outputVarName = VariableNames::OUTPUT;
 
         if ($this->isOptionalNullable) {
-            $OPTIONALS = PropertyNames::OPTIONALS;
+            $OPTIONALS = PropertyNames::PROVIDED_OPTIONALS;
             $check = "isset(\$this->{$propName}) || array_key_exists('{$this->key}', \$this->{$OPTIONALS})";
             $keyStr = $this->keyStr();
             $map = $this->outputMappingExprStdClass("\$this->{$propName}");

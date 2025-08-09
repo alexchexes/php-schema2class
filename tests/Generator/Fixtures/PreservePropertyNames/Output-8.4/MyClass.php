@@ -8,8 +8,6 @@ class MyClass
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
     private static array $_schema = [
         'required' => [
@@ -81,6 +79,33 @@ class MyClass
         ],
     ];
 
+    /**
+     * Mapping of schema property names to this class's property names.
+     */
+    private static array $_namesMap = [
+        'foo' => 'foo',
+        '_foo' => '_foo',
+        '__foo' => '__foo',
+        'foo_' => 'foo_',
+        'foo__' => 'foo__',
+        '_foo_' => '_foo_',
+        '__foo__' => '__foo__',
+        'foo-bar' => '_foo_bar',
+        'foo bar' => 'foo_bar',
+        'baz qux' => 'baz_qux',
+        '123 qwe' => '_123_qwe',
+        'Город' => 'Gorod',
+        'название юр.лица' => 'nazvanie_iur_litsa',
+        'IP-адрес' => 'IP_adres',
+        '~~tildas~~' => '_tildas',
+        'it\'s "A"' => 'it_s_A',
+    ];
+
+    /**
+     * Map of name/value pairs for properties not specified in the schema.
+     */
+    private \stdClass $_additionalProperties;
+
     private string $foo;
 
     private string $_foo;
@@ -115,6 +140,8 @@ class MyClass
 
     public function __construct(string $foo, string $_foo, string $__foo, string $foo_, string $foo__, string $_foo_, string $__foo__, string $_foo_bar, string $foo_bar, string $baz_qux, string $_123_qwe, string $Gorod, string $nazvanie_iur_litsa, string $IP_adres, string $_tildas, ?string $it_s_A = null)
     {
+        $this->_additionalProperties = new \stdClass();
+
         $this->foo = $foo;
         $this->_foo = $_foo;
         $this->__foo = $__foo;
@@ -131,6 +158,43 @@ class MyClass
         $this->IP_adres = $IP_adres;
         $this->_tildas = $_tildas;
         $this->it_s_A = $it_s_A;
+    }
+
+    /**
+     * Object (`stdClass`) or array with name/value pairs for properties not specified in the schema.
+     *
+     * @param bool $asArray Whether return an associative array instead of `stdClass` object.
+     */
+    public function getAdditionalProperties(bool $asArray = true): \stdClass|array
+    {
+        return $asArray
+            ? json_decode(json_encode($this->_additionalProperties), true)
+            : $this->_additionalProperties;
+    }
+
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param \stdClass|array $additionalProperties Map of property name/value pairs to add.
+     */
+    public function withAdditionalProperties(\stdClass|array $additionalProperties): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
+    }
+
+    /**
+     * Removes all extra properties not specified in the schema.
+     */
+    public function withoutAdditionalProperties(): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = new \stdClass();
+        return $clone;
     }
 
     public function getFoo(): string
@@ -330,7 +394,7 @@ class MyClass
 
     public function getItSA(): ?string
     {
-        return $this->it_s_A;
+        return $this->it_s_A ?? null;
     }
 
     public function withItSA(string $it_s_A): self
@@ -399,6 +463,12 @@ class MyClass
             $_tildas,
             $it_s_A
         );
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
+
         return $obj;
     }
 
@@ -409,7 +479,8 @@ class MyClass
      */
     public function toArray(): array
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         $output['foo'] = $this->foo;
         $output['_foo'] = $this->_foo;
         $output['__foo'] = $this->__foo;
@@ -439,7 +510,8 @@ class MyClass
      */
     public function toStdClass(): \stdClass
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         $output->{'foo'} = $this->foo;
         $output->{'_foo'} = $this->_foo;
         $output->{'__foo'} = $this->__foo;

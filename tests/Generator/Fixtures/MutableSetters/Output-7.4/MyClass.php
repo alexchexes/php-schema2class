@@ -8,8 +8,6 @@ class MyClass
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
     private static array $_schema = [
         'required' => [
@@ -42,11 +40,25 @@ class MyClass
     ];
 
     /**
+     * Mapping of schema property names to this class's property names.
+     */
+    private static array $_namesMap = [
+        'foo' => 'foo',
+        'bar' => 'bar',
+        'opt' => 'opt',
+    ];
+
+    /**
      * Map of optional nullable property names that were explicitly set
      *
      * @var array<string,true>
      */
     private array $_providedOptionals = [];
+
+    /**
+     * Map of name/value pairs for properties not specified in the schema.
+     */
+    private \stdClass $_additionalProperties;
 
     private ?string $foo = null;
 
@@ -56,14 +68,52 @@ class MyClass
 
     public function __construct(Baz $bar, ?string $foo = null, ?string $opt = null)
     {
+        $this->_additionalProperties = new \stdClass();
+
         $this->bar = $bar;
         $this->foo = $foo;
-        $this->opt = $opt;
+        if ($opt !== null) {
+            $this->opt = $opt;
+            $this->_providedOptionals['opt'] = true;
+        };
+    }
+
+    /**
+     * Object (`stdClass`) or array with name/value pairs for properties not specified in the schema.
+     *
+     * @param bool $asArray Whether return an associative array instead of `stdClass` object.
+     * @return array|\stdClass
+     */
+    public function getAdditionalProperties(bool $asArray = true)
+    {
+        return $asArray
+            ? json_decode(json_encode($this->_additionalProperties), true)
+            : $this->_additionalProperties;
+    }
+
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param \stdClass|array $additionalProperties Map of property name/value pairs to add.
+     */
+    public function setAdditionalProperties($additionalProperties): void
+    {
+        $this->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+    }
+
+    /**
+     * Removes all extra properties not specified in the schema.
+     */
+    public function unsetAdditionalProperties(): void
+    {
+        $this->_additionalProperties = new \stdClass();
     }
 
     public function getFoo(): ?string
     {
-        return $this->foo;
+        return $this->foo ?? null;
     }
 
     public function setFoo(string $foo): void
@@ -73,7 +123,7 @@ class MyClass
 
     public function unsetFoo(): void
     {
-        $this->foo = null;
+        unset($this->foo);
     }
 
     public function getBar(): Baz
@@ -88,7 +138,7 @@ class MyClass
 
     public function getOpt(): ?string
     {
-        return $this->opt;
+        return $this->opt ?? null;
     }
 
     public function setOpt(?string $opt): void
@@ -99,7 +149,7 @@ class MyClass
 
     public function unsetOpt(): void
     {
-        $this->opt = null;
+        unset($this->opt);
         unset($this->_providedOptionals['opt']);
     }
 
@@ -124,17 +174,23 @@ class MyClass
             static::validateInput($input);
         }
 
-        $__providedOptionals = [];
+        $_providedOptionals = [];
         $bar = Baz::fromInput($input->{'bar'}, $validate);
         $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
         $opt = null;
         if (property_exists($input, 'opt')) {
             $opt = ($input->{'opt'} !== null ? $input->{'opt'} : null);
-            $__providedOptionals['opt'] = true;
+            $_providedOptionals['opt'] = true;
         }
 
         $obj = new self($bar, $foo, $opt);
-        $obj->_providedOptionals = $__providedOptionals;
+        $obj->_providedOptionals = $_providedOptionals;
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
+
         return $obj;
     }
 
@@ -145,7 +201,8 @@ class MyClass
      */
     public function toArray(): array
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         if (isset($this->foo)) {
             $output['foo'] = $this->foo;
         }
@@ -164,7 +221,8 @@ class MyClass
      */
     public function toStdClass(): \stdClass
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         if (isset($this->foo)) {
             $output->{'foo'} = $this->foo;
         }
@@ -213,13 +271,18 @@ class MyClass
     }
 
     /**
-     * Checks if an optional nullable property was explicitly set
+     * Checks if an optional nullable property was explicitly set.
      *
-     * @param string $propertyName Property name to check (exactly as it appears in the schema)
-     * @return bool
+     * @param string $propertyName Property name to check (exactly as it appears in the schema).
+     * @throws \InvalidArgumentException If property with that name doesn't exist.
      */
     public function isOptionalProvided(string $propertyName): bool
     {
-        return array_key_exists($propertyName, $this->_providedOptionals);
+        if (!array_key_exists($propertyName, self::$_namesMap)) {
+            throw new \InvalidArgumentException("Unknown property: {$propertyName}");
+        }
+        return
+            array_key_exists($propertyName, $this->_providedOptionals)
+            || isset($this->{ self::$_namesMap[$propertyName] });
     }
 }

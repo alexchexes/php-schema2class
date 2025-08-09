@@ -271,6 +271,64 @@ class MyClass
     ];
 
     /**
+     * Mapping of schema property names to this class's property names.
+     *
+     * @var array
+     */
+    private static $_namesMap = [
+        '_GLOBALS' => '_GLOBALS',
+        'GLOBALS' => 'GLOBALS',
+        'GLOBALS_1' => 'GLOBALS1',
+        '_SERVER' => 'SERVER',
+        '_GET' => 'GET',
+        '_POST' => 'POST',
+        '_FILES' => 'FILES',
+        '_REQUEST' => 'REQUEST',
+        '_SESSION' => 'SESSION',
+        '_ENV' => 'ENV',
+        '_COOKIE' => 'COOKIE',
+        'php_errormsg' => 'phpErrormsg',
+        'http_response_header' => 'httpResponseHeader',
+        'argc' => 'argc',
+        'argv' => 'argv',
+        'input' => 'input',
+        'validate' => 'validate',
+        'materializeDefaults' => 'materializeDefaults',
+        'obj' => 'obj',
+        'includeDefaults' => 'includeDefaults',
+        'testObj' => 'testObj',
+        'fromInput' => 'fromInput',
+        'toArray' => 'toArray',
+        'toStdClass' => 'toStdClass',
+        'validateInput' => 'validateInput',
+        '_schema' => '_schema_1',
+        'schema' => 'schema',
+        '_defaults' => '_defaults_1',
+        'defaults' => 'defaults',
+        '_providedOptionals' => 'providedOptionals',
+        '__providedOptionals' => '_providedOptionals_1',
+        'clone' => 'clone',
+        '__clone' => '_clone',
+        '__construct' => 'construct',
+        '__destruct' => 'destruct',
+        '__get' => 'get',
+        '__set' => 'set',
+        '__call' => 'call',
+        '__isset' => 'isset',
+        '__unset' => 'unset',
+        '__sleep' => 'sleep',
+        '__wakeup' => 'wakeup',
+        '__toString' => 'toString',
+        '__invoke' => 'invoke',
+        '__debugInfo' => 'debugInfo',
+        'files' => 'files',
+        'this' => '_this',
+        'ensureArgs1' => 'ensureArgs1',
+        'ensureArgs2' => 'ensureArgs2',
+        'ensureArgs3' => 'ensureArgs3',
+    ];
+
+    /**
      * Default values from the schema
      *
      * @var array
@@ -290,6 +348,13 @@ class MyClass
      * @var array<string,true>
      */
     private $_providedOptionals = [];
+
+    /**
+     * Map of name/value pairs for properties not specified in the schema.
+     *
+     * @var \stdClass
+     */
+    private $_additionalProperties;
 
     /**
      * @var string
@@ -595,6 +660,8 @@ class MyClass
      */
     public function __construct($_GLOBALS_1, $_GLOBALS, $GLOBALS1, $SERVER, $GET, $POST, $FILES, $REQUEST, $SESSION, $ENV, $COOKIE, $phpErrormsg, $httpResponseHeader, $_argc, $_argv, $_input, $_obj, $_includeDefaults, $fromInput, $toArray, $toStdClass, $validateInput, $_schema_1, $schema, $_defaults_1, $defaults, $providedOptionals, $_clone, $_clone_1, $construct, $destruct, $get, $set, $call, $isset, $unset, $sleep, $wakeup, $toString, $invoke, $debugInfo, $files, $_this, $_validate = null, $_materializeDefaults = null, MyClassTestObj $testObj = null, $_providedOptionals_1 = null, $ensureArgs1 = null, MyClassEnsureArgs2 $ensureArgs2 = null, array $ensureArgs3 = null)
     {
+        $this->_additionalProperties = new \stdClass();
+
         $this->_GLOBALS = $_GLOBALS_1;
         $this->GLOBALS = $_GLOBALS;
         $this->GLOBALS1 = $GLOBALS1;
@@ -639,12 +706,56 @@ class MyClass
         $this->files = $files;
         $this->_this = $_this;
         $this->validate = $_validate;
-        $this->materializeDefaults = $_materializeDefaults;
+        if ($_materializeDefaults !== null) {
+            $this->materializeDefaults = $_materializeDefaults;
+            $this->_providedOptionals['materializeDefaults'] = true;
+        };
         $this->testObj = $testObj;
         $this->_providedOptionals_1 = $_providedOptionals_1;
         $this->ensureArgs1 = $ensureArgs1;
         $this->ensureArgs2 = $ensureArgs2;
         $this->ensureArgs3 = $ensureArgs3;
+    }
+
+    /**
+     * Object (`stdClass`) or array with name/value pairs for properties not specified in the schema.
+     *
+     * @param bool $asArray Whether return an associative array instead of `stdClass` object.
+     * @return array|\stdClass
+     */
+    public function getAdditionalProperties($asArray = true)
+    {
+        return $asArray
+            ? json_decode(json_encode($this->_additionalProperties), true)
+            : $this->_additionalProperties;
+    }
+
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param \stdClass|array $additionalProperties Map of property name/value pairs to add.
+     * @return self
+     */
+    public function withAdditionalProperties($additionalProperties)
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
+    }
+
+    /**
+     * Removes all extra properties not specified in the schema.
+     *
+     * @return self
+     */
+    public function withoutAdditionalProperties()
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = new \stdClass();
+        return $clone;
     }
 
     /**
@@ -1116,7 +1227,7 @@ class MyClass
      */
     public function getValidate()
     {
-        return $this->validate;
+        return isset($this->validate) ? $this->validate : null;
     }
 
     /**
@@ -1156,7 +1267,7 @@ class MyClass
      */
     public function getMaterializeDefaults()
     {
-        return $this->materializeDefaults;
+        return isset($this->materializeDefaults) ? $this->materializeDefaults : null;
     }
 
     /**
@@ -1256,7 +1367,7 @@ class MyClass
      */
     public function getTestObj()
     {
-        return $this->testObj;
+        return isset($this->testObj) ? $this->testObj : null;
     }
 
     /**
@@ -1547,7 +1658,7 @@ class MyClass
      */
     public function getProvidedOptionals1()
     {
-        return $this->_providedOptionals_1;
+        return isset($this->_providedOptionals_1) ? $this->_providedOptionals_1 : null;
     }
 
     /**
@@ -2051,7 +2162,7 @@ class MyClass
      */
     public function getEnsureArgs1()
     {
-        return $this->ensureArgs1;
+        return isset($this->ensureArgs1) ? $this->ensureArgs1 : null;
     }
 
     /**
@@ -2091,7 +2202,7 @@ class MyClass
      */
     public function getEnsureArgs2()
     {
-        return $this->ensureArgs2;
+        return isset($this->ensureArgs2) ? $this->ensureArgs2 : null;
     }
 
     /**
@@ -2121,7 +2232,7 @@ class MyClass
      */
     public function getEnsureArgs3()
     {
-        return $this->ensureArgs3;
+        return isset($this->ensureArgs3) ? $this->ensureArgs3 : null;
     }
 
     /**
@@ -2191,7 +2302,7 @@ class MyClass
             static::validateInput($input);
         }
 
-        $__providedOptionals = [];
+        $_providedOptionals = [];
         $_GLOBALS_1 = $input->{'_GLOBALS'};
         $_GLOBALS = $input->{'GLOBALS'};
         $GLOBALS1 = $input->{'GLOBALS_1'};
@@ -2239,7 +2350,7 @@ class MyClass
         $_materializeDefaults = null;
         if (property_exists($input, 'materializeDefaults')) {
             $_materializeDefaults = ($input->{'materializeDefaults'} !== null ? $input->{'materializeDefaults'} : null);
-            $__providedOptionals['materializeDefaults'] = true;
+            $_providedOptionals['materializeDefaults'] = true;
         }
         $testObj = isset($input->{'testObj'}) ? MyClassTestObj::fromInput($input->{'testObj'}, $validate, $materializeDefaults) : null;
         $_providedOptionals_1 = isset($input->{'__providedOptionals'}) ? $input->{'__providedOptionals'} : null;
@@ -2299,7 +2410,13 @@ class MyClass
             $ensureArgs2,
             $ensureArgs3
         );
-        $obj->_providedOptionals = $__providedOptionals;
+        $obj->_providedOptionals = $_providedOptionals;
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
+
         return $obj;
     }
 
@@ -2311,7 +2428,8 @@ class MyClass
      */
     public function toArray(bool $includeDefaults = false)
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         $output['_GLOBALS'] = $this->_GLOBALS;
         $output['GLOBALS'] = $this->GLOBALS;
         $output['GLOBALS_1'] = $this->GLOBALS1;
@@ -2405,7 +2523,8 @@ class MyClass
      */
     public function toStdClass(bool $includeDefaults = false)
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         $output->{'_GLOBALS'} = $this->_GLOBALS;
         $output->{'GLOBALS'} = $this->GLOBALS;
         $output->{'GLOBALS_1'} = $this->GLOBALS1;
@@ -2546,13 +2665,19 @@ class MyClass
     }
 
     /**
-     * Checks if an optional nullable property was explicitly set
+     * Checks if an optional nullable property was explicitly set.
      *
-     * @param string $propertyName Property name to check (exactly as it appears in the schema)
+     * @param string $propertyName Property name to check (exactly as it appears in the schema).
+     * @throws \InvalidArgumentException If property with that name doesn't exist.
      * @return bool
      */
     public function isOptionalProvided(string $propertyName)
     {
-        return array_key_exists($propertyName, $this->_providedOptionals);
+        if (!array_key_exists($propertyName, self::$_namesMap)) {
+            throw new \InvalidArgumentException("Unknown property: {$propertyName}");
+        }
+        return
+            array_key_exists($propertyName, $this->_providedOptionals)
+            || isset($this->{ self::$_namesMap[$propertyName] });
     }
 }

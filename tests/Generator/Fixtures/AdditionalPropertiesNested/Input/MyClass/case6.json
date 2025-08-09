@@ -1,0 +1,12 @@
+{
+  "foo": 123,
+  "bar": {
+    "someProperty": {
+      "someDeeperPropertyInt": 123,
+      "someDeeperPropertyStr": "xyz",
+      "someDeeperPropertyNull": null,
+      "someDeeperPropertyArr": [],
+      "someDeeperPropertyObj": {}
+    }
+  }
+}

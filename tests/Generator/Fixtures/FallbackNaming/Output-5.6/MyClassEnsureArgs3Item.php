@@ -19,6 +19,15 @@ class MyClassEnsureArgs3Item
     ];
 
     /**
+     * Mapping of schema property names to this class's property names.
+     *
+     * @var array
+     */
+    private static $_namesMap = [
+        'name' => 'name',
+    ];
+
+    /**
      * Default values from the schema
      *
      * @var array
@@ -30,6 +39,13 @@ class MyClassEnsureArgs3Item
     ];
 
     /**
+     * Map of name/value pairs for properties not specified in the schema.
+     *
+     * @var \stdClass
+     */
+    private $_additionalProperties;
+
+    /**
      * @var string|null
      */
     private $name = null;
@@ -39,7 +55,50 @@ class MyClassEnsureArgs3Item
      */
     public function __construct($name = null)
     {
+        $this->_additionalProperties = new \stdClass();
+
         $this->name = $name;
+    }
+
+    /**
+     * Object (`stdClass`) or array with name/value pairs for properties not specified in the schema.
+     *
+     * @param bool $asArray Whether return an associative array instead of `stdClass` object.
+     * @return array|\stdClass
+     */
+    public function getAdditionalProperties($asArray = true)
+    {
+        return $asArray
+            ? json_decode(json_encode($this->_additionalProperties), true)
+            : $this->_additionalProperties;
+    }
+
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param \stdClass|array $additionalProperties Map of property name/value pairs to add.
+     * @return self
+     */
+    public function withAdditionalProperties($additionalProperties)
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
+    }
+
+    /**
+     * Removes all extra properties not specified in the schema.
+     *
+     * @return self
+     */
+    public function withoutAdditionalProperties()
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = new \stdClass();
+        return $clone;
     }
 
     /**
@@ -47,7 +106,7 @@ class MyClassEnsureArgs3Item
      */
     public function getName()
     {
-        return $this->name;
+        return isset($this->name) ? $this->name : null;
     }
 
     /**
@@ -120,6 +179,12 @@ class MyClassEnsureArgs3Item
         $name = isset($input->{'name'}) ? $input->{'name'} : null;
 
         $obj = new self($name);
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
+
         return $obj;
     }
 
@@ -131,7 +196,8 @@ class MyClassEnsureArgs3Item
      */
     public function toArray(bool $includeDefaults = false)
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         if (isset($this->name)) {
             $output['name'] = $this->name;
         }
@@ -155,7 +221,8 @@ class MyClassEnsureArgs3Item
      */
     public function toStdClass(bool $includeDefaults = false)
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         if (isset($this->name)) {
             $output->{'name'} = $this->name;
         }

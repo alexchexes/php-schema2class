@@ -8,8 +8,6 @@ class MyClass
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
     private static array $_schema = [
         'additionalProperties' => false,
@@ -103,6 +101,7 @@ class MyClass
         $value = MyGenericStringNumber::fromInput($input->{'value'}, $validate);
 
         $obj = new self($value);
+
         return $obj;
     }
 

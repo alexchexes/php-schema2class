@@ -8,7 +8,7 @@ use Helmich\Schema2Class\Generator\Property\Collection\PropertyCollection;
 use Laminas\Code\Generator\PropertyGenerator;
 
 /**
- * Factory for creating all methods of a generated class.
+ * Factory for creating all properties of a generated class.
  */
 class ClassPropertySuiteFactory
 {
@@ -17,6 +17,7 @@ class ClassPropertySuiteFactory
       private array $schema,
       private PropertyCollection $schemaProperties,
       private array $defaults,
+      private bool $additionalsAllowed,
     ) {}
 
     /**
@@ -24,26 +25,15 @@ class ClassPropertySuiteFactory
      */
     public function generateAll()
     {
-        $validationSchemaFactory = new ValidationSchemaPropertyFactory($this->request, $this->schema);
-        $providedOptionalsFactory = new ProvidedOptionalsPropertyFactory($this->request);
-        $defaultsFactory = new DefaultsPropertyFactory($this->request, $this->defaults);
-        $schemaPropertyFactory = new SchemaPropertyFactory($this->request);
-
-        $schemaProperty = $validationSchemaFactory->generate();
-        $propertyGenerators[] = $schemaProperty;
-
-        if ($this->defaults) {
-            $propertyGenerators[] = $defaultsFactory->generate();
-        }
-
-        if ($this->schemaProperties->hasOptionalNullable()) {
-            $propertyGenerators[] = $providedOptionalsFactory->generate();
-        }
+        $propertyGenerators = [
+            (new ValidationSchemaPropertyFactory($this->request, $this->schema))->generate(),
+            (new NamesMapPropertyFactory($this->request, $this->schemaProperties, $this->additionalsAllowed))->generate(),
+            (new DefaultsPropertyFactory($this->request, $this->defaults))->generate(),
+            (new ProvidedOptionalsPropertyFactory($this->request, $this->schemaProperties))->generate(),
+            (new AdditionalPropertiesPropertyFactory($this->request, $this->additionalsAllowed))->generate(),
+            ...(new SchemaPropertyFactory($this->request, $this->schemaProperties))->generateAll(),
+        ];
         
-        foreach ($this->schemaProperties as $schemaProp) {
-            $propertyGenerators[] = $schemaPropertyFactory->generate($schemaProp);
-        }
-
-        return $propertyGenerators;
+        return array_values(array_filter($propertyGenerators));
     }
 }

@@ -81,7 +81,6 @@ class Foo
         if ($validate) {
             $clone->validate();
         }
-
         return $clone;
     }
 
@@ -90,7 +89,7 @@ class Foo
      */
     public function getSize()
     {
-        return $this->size;
+        return isset($this->size) ? $this->size : null;
     }
 
     /**
@@ -105,7 +104,6 @@ class Foo
         if ($validate) {
             $clone->validate();
         }
-
         return $clone;
     }
 
@@ -145,6 +143,7 @@ class Foo
         $size = isset($input->{'size'}) ? $input->{'size'} : null;
 
         $obj = new self($color, $size);
+
         return $obj;
     }
 

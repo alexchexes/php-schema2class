@@ -81,7 +81,6 @@ class MyObject
         if ($validate) {
             $clone->validate();
         }
-
         return $clone;
     }
 
@@ -109,6 +108,7 @@ class MyObject
         $foo = $input->{'foo'};
 
         $obj = new self($foo);
+
         return $obj;
     }
 

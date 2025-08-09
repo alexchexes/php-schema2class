@@ -29,6 +29,23 @@ class MyClassGooks
     ];
 
     /**
+     * Mapping of schema property names to this class's property names.
+     *
+     * @var array
+     */
+    private static $_namesMap = [
+        'a' => 'a',
+        'b' => 'b',
+    ];
+
+    /**
+     * Map of name/value pairs for properties not specified in the schema.
+     *
+     * @var \stdClass
+     */
+    private $_additionalProperties;
+
+    /**
      * @var string|null
      */
     private $a = null;
@@ -44,8 +61,51 @@ class MyClassGooks
      */
     public function __construct($a = null, $b = null)
     {
+        $this->_additionalProperties = new \stdClass();
+
         $this->a = $a;
         $this->b = $b;
+    }
+
+    /**
+     * Object (`stdClass`) or array with name/value pairs for properties not specified in the schema.
+     *
+     * @param bool $asArray Whether return an associative array instead of `stdClass` object.
+     * @return array|\stdClass
+     */
+    public function getAdditionalProperties($asArray = true)
+    {
+        return $asArray
+            ? json_decode(json_encode($this->_additionalProperties), true)
+            : $this->_additionalProperties;
+    }
+
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param \stdClass|array $additionalProperties Map of property name/value pairs to add.
+     * @return self
+     */
+    public function withAdditionalProperties($additionalProperties)
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
+    }
+
+    /**
+     * Removes all extra properties not specified in the schema.
+     *
+     * @return self
+     */
+    public function withoutAdditionalProperties()
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = new \stdClass();
+        return $clone;
     }
 
     /**
@@ -53,7 +113,7 @@ class MyClassGooks
      */
     public function getA()
     {
-        return $this->a;
+        return isset($this->a) ? $this->a : null;
     }
 
     /**
@@ -93,7 +153,7 @@ class MyClassGooks
      */
     public function getB()
     {
-        return $this->b;
+        return isset($this->b) ? $this->b : null;
     }
 
     /**
@@ -153,6 +213,12 @@ class MyClassGooks
         $b = isset($input->{'b'}) ? $input->{'b'} : null;
 
         $obj = new self($a, $b);
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
+
         return $obj;
     }
 
@@ -163,7 +229,8 @@ class MyClassGooks
      */
     public function toArray()
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         if (isset($this->a)) {
             $output['a'] = $this->a;
         }
@@ -181,7 +248,8 @@ class MyClassGooks
      */
     public function toStdClass()
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         if (isset($this->a)) {
             $output->{'a'} = $this->a;
         }

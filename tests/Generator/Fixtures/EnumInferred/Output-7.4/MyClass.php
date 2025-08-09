@@ -8,8 +8,6 @@ class MyClass
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
     private static array $_schema = [
         'required' => [
@@ -68,11 +66,28 @@ class MyClass
     ];
 
     /**
+     * Mapping of schema property names to this class's property names.
+     */
+    private static array $_namesMap = [
+        'inferString' => 'inferString',
+        'inferInt' => 'inferInt',
+        'inferMixed' => 'inferMixed',
+        'inferStringOpt' => 'inferStringOpt',
+        'inferIntOpt' => 'inferIntOpt',
+        'inferMixedOpt' => 'inferMixedOpt',
+    ];
+
+    /**
      * Map of optional nullable property names that were explicitly set
      *
      * @var array<string,true>
      */
     private array $_providedOptionals = [];
+
+    /**
+     * Map of name/value pairs for properties not specified in the schema.
+     */
+    private \stdClass $_additionalProperties;
 
     /**
      * @var '3'|'4'|''
@@ -114,12 +129,55 @@ class MyClass
      */
     public function __construct(string $inferString, int $inferInt, $inferMixed, ?string $inferStringOpt = null, ?int $inferIntOpt = null, $inferMixedOpt = null)
     {
+        $this->_additionalProperties = new \stdClass();
+
         $this->inferString = $inferString;
         $this->inferInt = $inferInt;
         $this->inferMixed = $inferMixed;
         $this->inferStringOpt = $inferStringOpt;
         $this->inferIntOpt = $inferIntOpt;
-        $this->inferMixedOpt = $inferMixedOpt;
+        if ($inferMixedOpt !== null) {
+            $this->inferMixedOpt = $inferMixedOpt;
+            $this->_providedOptionals['inferMixedOpt'] = true;
+        };
+    }
+
+    /**
+     * Object (`stdClass`) or array with name/value pairs for properties not specified in the schema.
+     *
+     * @param bool $asArray Whether return an associative array instead of `stdClass` object.
+     * @return array|\stdClass
+     */
+    public function getAdditionalProperties(bool $asArray = true)
+    {
+        return $asArray
+            ? json_decode(json_encode($this->_additionalProperties), true)
+            : $this->_additionalProperties;
+    }
+
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param \stdClass|array $additionalProperties Map of property name/value pairs to add.
+     */
+    public function withAdditionalProperties($additionalProperties): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
+    }
+
+    /**
+     * Removes all extra properties not specified in the schema.
+     */
+    public function withoutAdditionalProperties(): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = new \stdClass();
+        return $clone;
     }
 
     /**
@@ -208,7 +266,7 @@ class MyClass
      */
     public function getInferStringOpt(): ?string
     {
-        return $this->inferStringOpt;
+        return $this->inferStringOpt ?? null;
     }
 
     /**
@@ -243,7 +301,7 @@ class MyClass
      */
     public function getInferIntOpt(): ?int
     {
-        return $this->inferIntOpt;
+        return $this->inferIntOpt ?? null;
     }
 
     /**
@@ -278,7 +336,7 @@ class MyClass
      */
     public function getInferMixedOpt()
     {
-        return $this->inferMixedOpt;
+        return $this->inferMixedOpt ?? null;
     }
 
     /**
@@ -331,7 +389,7 @@ class MyClass
             static::validateInput($input);
         }
 
-        $__providedOptionals = [];
+        $_providedOptionals = [];
         $inferString = $input->{'inferString'};
         $inferInt = (int)$input->{'inferInt'};
         $inferMixed = ($input->{'inferMixed'} !== null ? $input->{'inferMixed'} : null);
@@ -340,7 +398,7 @@ class MyClass
         $inferMixedOpt = null;
         if (property_exists($input, 'inferMixedOpt')) {
             $inferMixedOpt = ($input->{'inferMixedOpt'} !== null ? $input->{'inferMixedOpt'} : null);
-            $__providedOptionals['inferMixedOpt'] = true;
+            $_providedOptionals['inferMixedOpt'] = true;
         }
 
         $obj = new self(
@@ -351,7 +409,13 @@ class MyClass
             $inferIntOpt,
             $inferMixedOpt
         );
-        $obj->_providedOptionals = $__providedOptionals;
+        $obj->_providedOptionals = $_providedOptionals;
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
+
         return $obj;
     }
 
@@ -362,7 +426,8 @@ class MyClass
      */
     public function toArray(): array
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         $output['inferString'] = $this->inferString;
         $output['inferInt'] = $this->inferInt;
         $output['inferMixed'] = $this->inferMixed;
@@ -386,7 +451,8 @@ class MyClass
      */
     public function toStdClass(): \stdClass
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         $output->{'inferString'} = $this->inferString;
         $output->{'inferInt'} = $this->inferInt;
         $output->{'inferMixed'} = $this->inferMixed;
@@ -440,13 +506,18 @@ class MyClass
     }
 
     /**
-     * Checks if an optional nullable property was explicitly set
+     * Checks if an optional nullable property was explicitly set.
      *
-     * @param string $propertyName Property name to check (exactly as it appears in the schema)
-     * @return bool
+     * @param string $propertyName Property name to check (exactly as it appears in the schema).
+     * @throws \InvalidArgumentException If property with that name doesn't exist.
      */
     public function isOptionalProvided(string $propertyName): bool
     {
-        return array_key_exists($propertyName, $this->_providedOptionals);
+        if (!array_key_exists($propertyName, self::$_namesMap)) {
+            throw new \InvalidArgumentException("Unknown property: {$propertyName}");
+        }
+        return
+            array_key_exists($propertyName, $this->_providedOptionals)
+            || isset($this->{ self::$_namesMap[$propertyName] });
     }
 }

@@ -8,8 +8,6 @@ class MyClassEnsureArgs1Alternative1
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
     private static array $_schema = [
         'properties' => [
@@ -24,9 +22,14 @@ class MyClassEnsureArgs1Alternative1
     ];
 
     /**
+     * Mapping of schema property names to this class's property names.
+     */
+    private static array $_namesMap = [
+        'type' => 'type',
+    ];
+
+    /**
      * Default values from the schema
-     *
-     * @var array
      */
     private static array $_defaults = [
         'type' => [
@@ -34,16 +37,60 @@ class MyClassEnsureArgs1Alternative1
         ],
     ];
 
+    /**
+     * Map of name/value pairs for properties not specified in the schema.
+     */
+    private \stdClass $_additionalProperties;
+
     private ?MyClassEnsureArgs1Alternative1Type $type = null;
 
     public function __construct(?MyClassEnsureArgs1Alternative1Type $type = null)
     {
+        $this->_additionalProperties = new \stdClass();
+
         $this->type = $type;
+    }
+
+    /**
+     * Object (`stdClass`) or array with name/value pairs for properties not specified in the schema.
+     *
+     * @param bool $asArray Whether return an associative array instead of `stdClass` object.
+     */
+    public function getAdditionalProperties(bool $asArray = true): \stdClass|array
+    {
+        return $asArray
+            ? json_decode(json_encode($this->_additionalProperties), true)
+            : $this->_additionalProperties;
+    }
+
+    /**
+     * Allows adding properties not specified in the schema.
+     *
+     * @param \stdClass|array $additionalProperties Map of property name/value pairs to add.
+     */
+    public function withAdditionalProperties(\stdClass|array $additionalProperties): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = is_array($additionalProperties)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
+            : $additionalProperties;
+
+        return $clone;
+    }
+
+    /**
+     * Removes all extra properties not specified in the schema.
+     */
+    public function withoutAdditionalProperties(): self
+    {
+        $clone = clone $this;
+        $clone->_additionalProperties = new \stdClass();
+        return $clone;
     }
 
     public function getType(): ?MyClassEnsureArgs1Alternative1Type
     {
-        return $this->type;
+        return $this->type ?? null;
     }
 
     public function withType(MyClassEnsureArgs1Alternative1Type $type): self
@@ -94,6 +141,12 @@ class MyClassEnsureArgs1Alternative1
         $type = isset($input->{'type'}) ? MyClassEnsureArgs1Alternative1Type::from($input->{'type'}) : null;
 
         $obj = new self($type);
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
+
         return $obj;
     }
 
@@ -105,7 +158,8 @@ class MyClassEnsureArgs1Alternative1
      */
     public function toArray(bool $includeDefaults = false): array
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         if (isset($this->type)) {
             $output['type'] = ($this->type)->value;
         }
@@ -129,7 +183,8 @@ class MyClassEnsureArgs1Alternative1
      */
     public function toStdClass(bool $includeDefaults = false): \stdClass
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         if (isset($this->type)) {
             $output->{'type'} = ($this->type)->value;
         }
