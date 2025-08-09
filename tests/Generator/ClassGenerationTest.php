@@ -385,13 +385,8 @@ class ClassGenerationTest extends TestCase
                     );
 
                     $expectedObject = json_decode(json_encode($input));
-
-                    echo "\n---\$expectedObject:\n";  print_r($expectedObject);  echo "\n---";
-
                     $actualObject   = $obj->toStdClass();
-
-                    echo "\n---\$actualObject:\n";  print_r($actualObject);  echo "\n---";
-
+                    
                     $this->assertEquals(
                         $expectedObject,
                         $actualObject,

@@ -80,7 +80,7 @@ readonly class ReferencedTypeEnum implements ReferencedTypeInterface
     public function typeAssertionExpr(string $expr): string
     {
         if ($this->canUseNativeEnum()) {
-            return "({$expr}) instanceof " . $this->relativeName();
+            return "{$expr} instanceof " . $this->relativeName();
         }
 
         return EnumUtils::assertionExpr($this->schema['enum'], $expr);
@@ -89,7 +89,7 @@ readonly class ReferencedTypeEnum implements ReferencedTypeInterface
     public function inputAssertionExpr(string $expr): string
     {
         if ($this->canUseNativeEnum()) {
-            return "" . $this->relativeName() . "::tryFrom({$expr}) !== null";
+            return $this->relativeName() . "::tryFrom({$expr}) !== null";
         }
 
         return EnumUtils::assertionExpr($this->schema['enum'], $expr);

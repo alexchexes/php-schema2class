@@ -276,10 +276,6 @@ class UnionProperty extends AbstractProperty
         $types = [];
 
         foreach ($this->subProperties as $prop) {
-            if ($this->propName() === 'UnionOfOneNull') {
-                echo "\n---\$prop::class:\n";  print_r($prop::class);  echo "\n---";
-            }
-
             $ann = $prop->typeAnnotation();
             foreach (explode('|', $ann) as $t) {
                 $types[$t] = true;
