@@ -83,8 +83,6 @@ class PropertyBuilder
         $definition = self::sanitizeEnum($definition);
         $definition = self::collapseSingleTypeArray($definition);
         
-        self::assertNoPropertiesWithAdditional($definition);
-        
         if ($property = self::tryInlineReference($req, $name, $definition, $isRequired)) {
             return $property;
         }
@@ -354,23 +352,6 @@ class PropertyBuilder
         }
 
         return $property->allowsNull() ? new NullablePropertyDecorator($name, $property, $req) : $property;
-    }
-
-    private static function assertNoPropertiesWithAdditional(array $definition): void
-    {
-        $hasAdditionalProperties =
-            isset($definition["additionalProperties"])
-            && is_array($definition["additionalProperties"])
-            && count($definition["additionalProperties"]) > 0;
-
-        $hasProperties =
-            isset($definition["properties"])
-            && is_array($definition["properties"])
-            && count($definition["properties"]) > 0;
-
-        if ($hasProperties && $hasAdditionalProperties) {
-            throw new GeneratorException("using 'properties' and 'additionalProperties' in the same schema is currently not supported.");
-        }
     }
 
     /**

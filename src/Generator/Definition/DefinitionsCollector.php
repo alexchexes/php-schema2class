@@ -5,6 +5,7 @@ namespace Helmich\Schema2Class\Generator\Definition;
 
 use Generator as PhpGenerator;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
+use Helmich\Schema2Class\Generator\Property\Type\Object\NestedObjectProperty;
 
 /**
  * Class is used to traverse a schema and collect {@see Definition} objects
@@ -22,8 +23,11 @@ class DefinitionsCollector
 
     public function __construct(private readonly GeneratorRequest $generatorRequest)
     {
-        if (($cls = $this->generatorRequest->getTargetClass()) !== null) {
-            $ns = trim($this->generatorRequest->getTargetNamespace(), '\\');
+        if (
+            ($cls = $this->generatorRequest->getTargetClass()) !== null
+            && NestedObjectProperty::canHandleSchema($this->generatorRequest->getSchema())
+        ) {
+            $ns  = trim($this->generatorRequest->getTargetNamespace(), '\\');
             $fqn = $ns !== '' ? $ns . '\\' . $cls : $cls;
             $this->usedClassNames[] = $fqn;
         }
