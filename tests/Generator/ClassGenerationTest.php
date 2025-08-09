@@ -6,6 +6,7 @@ namespace Helmich\Schema2Class\Generator;
 use function PHPUnit\Framework\assertThat;
 use function PHPUnit\Framework\equalTo;
 
+use Composer\Semver\Semver;
 use Helmich\Schema2Class\Example\CustomerAddress;
 use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeClass;
 use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeInterface;
@@ -360,7 +361,14 @@ class ClassGenerationTest extends TestCase
             // load classes in memory by evaluating the generated code
             foreach ($writtenFiles as $code) {
                 $evalCode = preg_replace('/^<\?php/', '', $code);
-                eval($evalCode);
+
+                if (Semver::satisfies($version, '<7.0')) {
+                    set_error_handler(static fn() => true, E_DEPRECATED);
+                    eval($evalCode);
+                    restore_error_handler();
+                } else {
+                    eval($evalCode);
+                }
             }
 
             foreach ($inputFiles as $class => $classInputs) {
@@ -386,7 +394,7 @@ class ClassGenerationTest extends TestCase
 
                     $expectedObject = json_decode(json_encode($input));
                     $actualObject   = $obj->toStdClass();
-                    
+
                     $this->assertEquals(
                         $expectedObject,
                         $actualObject,
