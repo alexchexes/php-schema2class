@@ -38,6 +38,8 @@ Now it:
 - Improves type hints and PHPDoc type generation for complex types like unions, nested arrays, etc.
 - Adds a guard against passing anything other than an array/object to `fromInput`, building multi-line validation error messages.
 - Setter methods (`withX()`) now accept an optional `$validate` argument to be able skip validation, mirroring `fromInput()`.
+- Generates classes for schemas that combine explicit `properties` with typed `additionalProperties`.
+- Avoids reserving a root class name when the schema does not produce a class or enum.
 - Deterministic resolution of class property, accessor method and temporary variable names via a unified resolver, allowing case-sensitive properties and avoiding collisions with reserved names.
 - Option `mutableSetters` allows generating mutable `setX()` methods (optionally chainable).
 - Skips emitting empty `__construct` or `__clone` methods.
