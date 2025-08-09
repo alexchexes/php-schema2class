@@ -79,4 +79,59 @@ final class SchemaDefinitionsCollectorTest extends TestCase
         $this->assertSame('Address', $definitions['#/definitions/address']->className);
         $this->assertSame('Name', $definitions['#/definitions/address/$defs/name']->className);
     }
+
+    public function testReservesRootClassNameForEnum(): void
+    {
+        $schema = [
+            'enum' => ['a', 'b'],
+            '$defs' => [
+                'TargetClass' => [
+                    'type' => 'object',
+                    'properties' => [],
+                ],
+            ],
+        ];
+
+        $collector = new DefinitionsCollector(new GeneratorRequest(
+            schema: $schema,
+            spec: new ValidatedSpecificationFilesItem('TargetNamespace', 'TargetClass', 'targetDirectory'),
+            opts: new SpecificationOptions(),
+        ));
+        $definitions = iterator_to_array($collector->collect($schema));
+
+        $this->assertArrayHasKey('#/$defs/TargetClass', $definitions);
+        $this->assertSame('TargetNamespace\\TargetClass_1', $definitions['#/$defs/TargetClass']->classFQN);
+    }
+
+    public function testReservesRootClassNameForReferencedSchema(): void
+    {
+        $schema = [
+            '$ref' => '#/$defs/address',
+            '$defs' => [
+                'address' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'street' => ['type' => 'string'],
+                    ],
+                ],
+                'TargetClass' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => ['type' => 'integer'],
+                    ],
+                ],
+            ],
+        ];
+
+        $collector = new DefinitionsCollector(new GeneratorRequest(
+            schema: $schema,
+            spec: new ValidatedSpecificationFilesItem('TargetNamespace', 'TargetClass', 'targetDirectory'),
+            opts: new SpecificationOptions(),
+        ));
+        $definitions = iterator_to_array($collector->collect($schema));
+
+        $this->assertArrayHasKey('#/$defs/address', $definitions);
+        $this->assertArrayHasKey('#/$defs/TargetClass', $definitions);
+        $this->assertSame('TargetNamespace\\TargetClass_1', $definitions['#/$defs/TargetClass']->classFQN);
+    }
 }
