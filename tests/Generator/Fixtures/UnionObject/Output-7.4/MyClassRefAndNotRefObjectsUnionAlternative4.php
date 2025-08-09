@@ -132,6 +132,7 @@ class MyClassRefAndNotRefObjectsUnionAlternative4
         $accountNumber = isset($input->{'accountNumber'}) ? $input->{'accountNumber'} : null;
 
         $obj = new self($accountNumber);
+
         return $obj;
     }
 

@@ -246,6 +246,7 @@ class MyClassNumKeysDefaults
         $_2 = isset($input->{'2'}) ? $input->{'2'} : null;
 
         $obj = new self($_0, $_1, $_2);
+
         return $obj;
     }
 

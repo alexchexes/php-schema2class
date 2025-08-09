@@ -474,6 +474,7 @@ class MyClass
             $optThud
         );
         $obj->_providedOptionals = $__providedOptionals;
+
         return $obj;
     }
 

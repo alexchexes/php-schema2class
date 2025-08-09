@@ -128,6 +128,7 @@ class MyClass
         $color = $input->{'color'};
 
         $obj = new self($color);
+
         return $obj;
     }
 

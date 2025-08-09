@@ -138,6 +138,7 @@ class Fio
 
         $obj = new self($bar);
         $obj->_providedOptionals = $__providedOptionals;
+
         return $obj;
     }
 

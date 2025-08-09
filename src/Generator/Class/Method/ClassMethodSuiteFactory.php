@@ -5,6 +5,7 @@ namespace Helmich\Schema2Class\Generator\Class\Method;
 
 use Helmich\Schema2Class\Generator\Class\Method\AdditionalProperties\AdditionalPropsMethodsFactory;
 use Helmich\Schema2Class\Generator\Class\Method\SchemaPropertyAccessor\PropertyAccessorsFactory;
+use Helmich\Schema2Class\Generator\Class\Method\Serialize\SerializeMethodFactory;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\Collection\PropertyCollection;
 use Laminas\Code\Generator\MethodGenerator;
@@ -33,8 +34,8 @@ class ClassMethodSuiteFactory
             (new ConstructorFactory($this->schemaProperties, $this->additionalsAllowed))->generate(),
             ...(new AdditionalPropsMethodsFactory($this->request, $this->schema, $this->additionalsAllowed))->generateAll(),
             ...(new PropertyAccessorsFactory($this->request, $this->schema, $this->schemaProperties))->generateAll(),
-            (new FromInputMethodFactory($this->request, $this->schemaProperties, $this->defaults))->generate(),
-            ...(new SerializeMethodFactory($this->request, $this->schemaProperties, $this->defaults))->generateAll(),
+            (new FromInputMethodFactory($this->request, $this->schemaProperties, $this->defaults, $this->additionalsAllowed))->generate(),
+            ...(new SerializeMethodFactory($this->request, $this->schemaProperties, $this->defaults, $this->additionalsAllowed))->generateAll(),
             (new ValidateMethodFactory($this->request))->generate(),
             (new ValidateInputMethodFactory($this->request))->generate(),
             (new CloneMethodFactory($this->schemaProperties))->generate(),

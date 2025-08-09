@@ -151,6 +151,7 @@ class MyClassEnsureArgs1Alternative2
         $accountNumber = $input->{'accountNumber'};
 
         $obj = new self($type, $accountNumber);
+
         return $obj;
     }
 

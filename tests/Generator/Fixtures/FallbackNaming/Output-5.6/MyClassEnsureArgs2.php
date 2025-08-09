@@ -204,6 +204,7 @@ class MyClassEnsureArgs2
         $street = $input->{'street'};
 
         $obj = new self($city, $street);
+
         return $obj;
     }
 

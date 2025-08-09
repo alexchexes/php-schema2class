@@ -145,6 +145,7 @@ class BarTest
         $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
 
         $obj = new self($bar);
+
         return $obj;
     }
 

@@ -152,6 +152,7 @@ class Cat
         } : null;
 
         $obj = new self($hasFur);
+
         return $obj;
     }
 

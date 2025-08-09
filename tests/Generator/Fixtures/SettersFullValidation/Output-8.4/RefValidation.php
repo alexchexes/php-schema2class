@@ -225,6 +225,7 @@ class RefValidation
         $baz = isset($input->{'baz'}) ? RefValidationBaz::fromInput($input->{'baz'}, $validate) : null;
 
         $obj = new self($foo, $bar, $baz);
+
         return $obj;
     }
 

@@ -142,6 +142,7 @@ class Record
         ) : null;
 
         $obj = new self($dataArray);
+
         return $obj;
     }
 

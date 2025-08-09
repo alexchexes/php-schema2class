@@ -168,6 +168,7 @@ class MyClass
         $bar = isset($input->{'bar'}) ? Baz::fromInput($input->{'bar'}, $validate) : null;
 
         $obj = new self($foo, $bar);
+
         return $obj;
     }
 

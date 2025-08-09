@@ -150,6 +150,7 @@ class Baz
         } : null;
 
         $obj = new self($grox);
+
         return $obj;
     }
 

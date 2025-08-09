@@ -582,6 +582,7 @@ class MyClass
             $optionalNullable
         );
         $obj->_providedOptionals = $__providedOptionals;
+
         return $obj;
     }
 

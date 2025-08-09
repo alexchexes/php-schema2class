@@ -187,6 +187,7 @@ class IfThenElse
         $value = isset($input->{'value'}) ? $input->{'value'} : null;
 
         $obj = new self($kind, $value);
+
         return $obj;
     }
 

@@ -92,6 +92,7 @@ class MyObject
         };
 
         $obj = new self($foo);
+
         return $obj;
     }
 

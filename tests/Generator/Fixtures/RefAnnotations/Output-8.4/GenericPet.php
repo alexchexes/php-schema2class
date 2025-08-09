@@ -169,6 +169,7 @@ class GenericPet
 
         $obj = new self($hasFur);
         $obj->_providedOptionals = $__providedOptionals;
+
         return $obj;
     }
 

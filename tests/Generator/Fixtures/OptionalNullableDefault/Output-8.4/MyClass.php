@@ -512,6 +512,7 @@ class MyClass
 
         $obj = new self($foo, $quux, $thud, $bar, $baz, $qux, $xyyz, $grox, $gooks);
         $obj->_providedOptionals = $__providedOptionals;
+
         return $obj;
     }
 

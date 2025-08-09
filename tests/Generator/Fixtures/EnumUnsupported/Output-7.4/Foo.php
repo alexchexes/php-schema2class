@@ -330,6 +330,7 @@ class Foo
             $boolEnum,
             $boolEnumRef
         );
+
         return $obj;
     }
 

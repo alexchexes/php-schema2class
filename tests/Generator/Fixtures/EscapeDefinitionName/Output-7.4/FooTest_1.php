@@ -117,6 +117,7 @@ class FooTest_1
         $b = isset($input->{'b'}) ? $input->{'b'} : null;
 
         $obj = new self($b);
+
         return $obj;
     }
 

@@ -1385,6 +1385,7 @@ class MyClass
             $ensureArgs3
         );
         $obj->_providedOptionals = $__providedOptionals;
+
         return $obj;
     }
 

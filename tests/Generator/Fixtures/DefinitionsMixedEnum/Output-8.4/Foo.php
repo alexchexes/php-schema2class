@@ -90,6 +90,7 @@ class Foo
         $val = $input->{'val'};
 
         $obj = new self($val);
+
         return $obj;
     }
 

@@ -151,6 +151,7 @@ class MyClassBaz
         $nestedFoo = $input->{'nestedFoo'};
 
         $obj = new self($nestedFoo);
+
         return $obj;
     }
 

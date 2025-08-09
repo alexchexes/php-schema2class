@@ -195,6 +195,7 @@ class MyClass
         $encoded = isset($input->{'encoded'}) ? $input->{'encoded'} : null;
 
         $obj = new self($foo, $encoded);
+
         return $obj;
     }
 

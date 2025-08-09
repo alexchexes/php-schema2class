@@ -191,6 +191,7 @@ class MyClassQuxObjNest
         $a = isset($input->{'a'}) ? $input->{'a'} : null;
 
         $obj = new self($a);
+
         return $obj;
     }
 

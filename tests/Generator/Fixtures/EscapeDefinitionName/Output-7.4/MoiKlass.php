@@ -117,6 +117,7 @@ class MoiKlass
         $c = isset($input->{'c'}) ? $input->{'c'} : null;
 
         $obj = new self($c);
+
         return $obj;
     }
 

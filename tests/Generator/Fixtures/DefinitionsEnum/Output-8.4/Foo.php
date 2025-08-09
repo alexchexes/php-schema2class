@@ -106,6 +106,7 @@ class Foo
         $size = isset($input->{'size'}) ? Size::from($input->{'size'}) : null;
 
         $obj = new self($color, $size);
+
         return $obj;
     }
 

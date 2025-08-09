@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class\Generator\Property\Type;
 
 use Helmich\Schema2Class\Generator\Class\Method\FromInputMethodFactory;
-use Helmich\Schema2Class\Generator\Class\Method\SerializeMethodFactory;
+use Helmich\Schema2Class\Generator\Class\Method\Serialize\SerializeMethodFactory;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Util\StringUtils;
 use Helmich\Schema2Class\Writer\WriterInterface;

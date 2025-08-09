@@ -109,6 +109,7 @@ class OptionsObject
         $_output = isset($input->{'output'}) ? $input->{'output'} : null;
 
         $obj = new self($_output);
+
         return $obj;
     }
 

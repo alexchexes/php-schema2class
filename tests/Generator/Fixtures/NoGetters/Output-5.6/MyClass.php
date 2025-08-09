@@ -133,6 +133,7 @@ class MyClass
         $foo = $input->{'foo'};
 
         $obj = new self($foo);
+
         return $obj;
     }
 

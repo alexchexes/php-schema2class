@@ -138,6 +138,7 @@ class Foo
         $size = isset($input->{'size'}) ? $input->{'size'} : null;
 
         $obj = new self($color, $size);
+
         return $obj;
     }
 

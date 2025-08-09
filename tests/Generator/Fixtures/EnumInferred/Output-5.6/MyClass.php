@@ -424,6 +424,7 @@ class MyClass
             $inferMixedOpt
         );
         $obj->_providedOptionals = $__providedOptionals;
+
         return $obj;
     }
 

@@ -319,6 +319,7 @@ class Record
         }, $i), $input->{'dataArrayNestedAnyOf'}) : null;
 
         $obj = new self($dataArray, $dataArrayNested, $dataArrayAnyOf, $dataArrayNestedAnyOf);
+
         return $obj;
     }
 

@@ -1027,6 +1027,7 @@ class MyClass
             $optNullThud
         );
         $obj->_providedOptionals = $__providedOptionals;
+
         return $obj;
     }
 

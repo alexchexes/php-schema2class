@@ -133,6 +133,7 @@ class RefValidationBaz
         $nestedFoo = isset($input->{'nestedFoo'}) ? $input->{'nestedFoo'} : null;
 
         $obj = new self($nestedFoo);
+
         return $obj;
     }
 

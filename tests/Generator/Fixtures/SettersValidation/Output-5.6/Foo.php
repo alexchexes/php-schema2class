@@ -347,6 +347,7 @@ class Foo
 
         $obj = new self($a, $b, $c, $d);
         $obj->_providedOptionals = $__providedOptionals;
+
         return $obj;
     }
 

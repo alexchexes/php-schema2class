@@ -450,6 +450,7 @@ class MyClass
             $_tildas,
             $it_s_A
         );
+
         return $obj;
     }
 

@@ -235,6 +235,7 @@ class Baz
         $c = isset($input->{'c'}) ? BarTest::fromInput($input->{'c'}, $validate) : null;
 
         $obj = new self($a, $b, $c);
+
         return $obj;
     }
 

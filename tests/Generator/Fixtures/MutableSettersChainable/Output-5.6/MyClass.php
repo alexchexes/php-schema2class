@@ -245,6 +245,7 @@ class MyClass
 
         $obj = new self($bar, $foo, $opt);
         $obj->_providedOptionals = $__providedOptionals;
+
         return $obj;
     }
 

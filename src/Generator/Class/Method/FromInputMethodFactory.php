@@ -38,6 +38,7 @@ class FromInputMethodFactory
         private GeneratorRequest $request,
         private PropertyCollection $schemaProperties,
         private array $defaults,
+        private bool $additionalsAllowed,
     ) {
     }
 
@@ -142,7 +143,7 @@ class FromInputMethodFactory
             // assign the `_providedOptionals` if needed
             $this->bodyAssignProvidedOptionalsProperty(),
             // return the instance
-            "return \${$OBJ_VAR_NAME};",
+            "\nreturn \${$OBJ_VAR_NAME};",
         ];
 
         $body = implode('', $bodyParts);

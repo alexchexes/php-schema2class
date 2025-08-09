@@ -253,6 +253,7 @@ class MyClass
         } : null);
 
         $obj = new self($foo, $bar, $baz, $qux);
+
         return $obj;
     }
 

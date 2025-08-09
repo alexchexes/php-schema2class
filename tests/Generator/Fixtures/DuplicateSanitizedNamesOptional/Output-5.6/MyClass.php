@@ -187,6 +187,7 @@ class MyClass
         $foo_bar = isset($input->{'foo bar'}) ? $input->{'foo bar'} : null;
 
         $obj = new self($_foo_bar, $foo_bar);
+
         return $obj;
     }
 

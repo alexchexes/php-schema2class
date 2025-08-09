@@ -832,6 +832,7 @@ class MyClass
             $numKeysDefaults
         );
         $obj->_providedOptionals = $__providedOptionals;
+
         return $obj;
     }
 

@@ -125,6 +125,7 @@ class MyClassObjectsUnionAlternative2
         $accountNumber = isset($input->{'accountNumber'}) ? $input->{'accountNumber'} : null;
 
         $obj = new self($accountNumber);
+
         return $obj;
     }
 

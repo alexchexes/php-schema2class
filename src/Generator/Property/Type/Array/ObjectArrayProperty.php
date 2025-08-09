@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Property\Type\Array;
 
-use Helmich\Schema2Class\Generator\Class\Method\SerializeMethodFactory;
+use Helmich\Schema2Class\Generator\Class\Method\Serialize\SerializeMethodFactory;
 use Helmich\Schema2Class\Generator\Class\Method\FromInputMethodFactory;
 use Helmich\Schema2Class\Generator\Class\MethodNames;
 use Helmich\Schema2Class\Generator\GeneratorException;

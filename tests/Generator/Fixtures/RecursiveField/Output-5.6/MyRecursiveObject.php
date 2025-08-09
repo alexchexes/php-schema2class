@@ -97,6 +97,7 @@ class MyRecursiveObject
         $MyRecursiveObject = isset($input->{'MyRecursiveObject'}) ? MyRecursiveObject::fromInput($input->{'MyRecursiveObject'}, $validate) : null;
 
         $obj = new self($MyRecursiveObject);
+
         return $obj;
     }
 

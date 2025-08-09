@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class\Generator\Class;
 
 use Helmich\Schema2Class\Generator\Class\Method\FromInputMethodFactory;
-use Helmich\Schema2Class\Generator\Class\Method\SerializeMethodFactory;
 use Helmich\Schema2Class\Generator\Class\Method\SchemaPropertyAccessor\PropertySetterFactory;
+use Helmich\Schema2Class\Generator\Class\Method\Serialize\SerializeMethodFactory;
 use Helmich\Schema2Class\Generator\Class\PropertyNames;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\Collection\PropertyCollection;

@@ -189,6 +189,7 @@ class MyClass
         ) : null;
 
         $obj = new self($foo);
+
         return $obj;
     }
 

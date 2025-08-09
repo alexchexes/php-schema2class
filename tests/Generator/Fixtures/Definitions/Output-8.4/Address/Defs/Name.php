@@ -110,6 +110,7 @@ class Name
         $first = isset($input->{'first'}) ? $input->{'first'} : null;
 
         $obj = new self($first);
+
         return $obj;
     }
 

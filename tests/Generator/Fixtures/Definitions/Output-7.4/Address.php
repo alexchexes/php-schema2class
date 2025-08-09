@@ -150,6 +150,7 @@ class Address
         $name = isset($input->{'name'}) ? Address\Defs\Name::fromInput($input->{'name'}, $validate) : null;
 
         $obj = new self($city, $name);
+
         return $obj;
     }
 

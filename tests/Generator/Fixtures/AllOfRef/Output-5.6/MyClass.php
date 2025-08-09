@@ -219,6 +219,7 @@ class MyClass
         $country = $input->{'country'};
 
         $obj = new self($city, $street, $country);
+
         return $obj;
     }
 

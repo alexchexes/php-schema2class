@@ -138,6 +138,7 @@ class MyClassEnsureArgs1Alternative1
         $type = isset($input->{'type'}) ? MyClassEnsureArgs1Alternative1Type::from($input->{'type'}) : null;
 
         $obj = new self($type);
+
         return $obj;
     }
 

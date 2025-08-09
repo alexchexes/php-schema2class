@@ -182,6 +182,7 @@ class Qux
         } : null;
 
         $obj = new self($grox);
+
         return $obj;
     }
 

@@ -135,6 +135,7 @@ class MyClass
         $bar = (int)$input->{'bar'};
 
         $obj = new self($foo, $bar);
+
         return $obj;
     }
 

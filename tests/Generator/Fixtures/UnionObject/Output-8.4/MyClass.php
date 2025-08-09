@@ -394,6 +394,7 @@ class MyClass
             $unionOfOneNull
         );
         $obj->_providedOptionals = $__providedOptionals;
+
         return $obj;
     }
 

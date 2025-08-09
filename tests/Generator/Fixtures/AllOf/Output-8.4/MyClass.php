@@ -247,6 +247,7 @@ class MyClass
         $city = isset($input->{'city'}) ? $input->{'city'} : null;
 
         $obj = new self($streetAddress, $state, $houseNumber, $type, $city);
+
         return $obj;
     }
 

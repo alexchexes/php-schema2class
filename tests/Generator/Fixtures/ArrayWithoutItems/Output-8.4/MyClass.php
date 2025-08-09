@@ -398,6 +398,7 @@ class MyClass
 
         $obj = new self($a, $b, $c, $d, $e, $f, $g, $h, $i);
         $obj->_providedOptionals = $__providedOptionals;
+
         return $obj;
     }
 

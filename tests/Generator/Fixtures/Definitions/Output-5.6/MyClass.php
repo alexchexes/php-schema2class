@@ -158,6 +158,7 @@ class MyClass
         $address = isset($input->{'address'}) ? Address::fromInput($input->{'address'}, $validate) : null;
 
         $obj = new self($id, $address);
+
         return $obj;
     }
 

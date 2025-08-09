@@ -165,6 +165,7 @@ class MyClass
         $_outbound = isset($input->{'_outbound'}) ? $input->{'_outbound'} : null;
 
         $obj = new self($bound, $outbound, $_outbound);
+
         return $obj;
     }
 

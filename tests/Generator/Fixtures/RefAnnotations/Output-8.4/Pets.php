@@ -166,6 +166,7 @@ class Pets
         $cat = isset($input->{'cat'}) ? Cat::fromInput($input->{'cat'}, $validate) : null;
 
         $obj = new self($pet, $cat);
+
         return $obj;
     }
 

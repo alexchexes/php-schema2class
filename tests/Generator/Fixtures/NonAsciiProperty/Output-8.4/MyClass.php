@@ -146,6 +146,7 @@ class MyClass
         $IPAdres = $input->{'IP-адрес'};
 
         $obj = new self($Gorod, $nazvanieIurLitsa, $IPAdres);
+
         return $obj;
     }
 

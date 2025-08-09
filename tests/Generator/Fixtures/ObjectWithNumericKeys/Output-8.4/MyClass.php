@@ -149,6 +149,7 @@ class MyClass
         $_2 = isset($input->{'2'}) ? MyClass_2::fromInput($input->{'2'}, $validate) : null;
 
         $obj = new self($_1, $_2);
+
         return $obj;
     }
 

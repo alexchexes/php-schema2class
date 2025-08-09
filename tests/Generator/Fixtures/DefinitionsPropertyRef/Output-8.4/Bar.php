@@ -120,6 +120,7 @@ class Bar
         $a = isset($input->{'a'}) ? Foo::fromInput($input->{'a'}, $validate) : null;
 
         $obj = new self($a);
+
         return $obj;
     }
 

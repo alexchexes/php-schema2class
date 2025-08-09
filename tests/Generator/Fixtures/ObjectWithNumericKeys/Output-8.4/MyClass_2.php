@@ -166,6 +166,7 @@ class MyClass_2
         $_3 = isset($input->{'3'}) ? $input->{'3'} : null;
 
         $obj = new self($_1, $_2, $_3);
+
         return $obj;
     }
 

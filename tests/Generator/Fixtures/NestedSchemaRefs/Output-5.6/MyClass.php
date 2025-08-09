@@ -198,6 +198,7 @@ class MyClass
         $options = isset($input->{'options'}) ? OptionsObject::fromInput($input->{'options'}, $validate) : null;
 
         $obj = new self($files, $options);
+
         return $obj;
     }
 

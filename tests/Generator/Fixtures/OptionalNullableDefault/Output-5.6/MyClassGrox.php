@@ -204,6 +204,7 @@ class MyClassGrox
         $b = isset($input->{'b'}) ? $input->{'b'} : null;
 
         $obj = new self($a, $b);
+
         return $obj;
     }
 

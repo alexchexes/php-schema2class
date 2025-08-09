@@ -132,6 +132,7 @@ class MyClassObjectsUnionAlternative1
         $type = isset($input->{'type'}) ? $input->{'type'} : null;
 
         $obj = new self($type);
+
         return $obj;
     }
 

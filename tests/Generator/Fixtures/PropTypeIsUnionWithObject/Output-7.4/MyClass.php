@@ -146,6 +146,7 @@ class MyClass
         }
 
         $obj = new self($foo);
+
         return $obj;
     }
 

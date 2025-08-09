@@ -204,6 +204,7 @@ class MyClass
         $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
 
         $obj = new self($fooBar, $foobar, $bar);
+
         return $obj;
     }
 

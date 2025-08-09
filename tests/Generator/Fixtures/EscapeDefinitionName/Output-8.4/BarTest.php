@@ -151,6 +151,7 @@ class BarTest
         } : null;
 
         $obj = new self($exampleProp);
+
         return $obj;
     }
 

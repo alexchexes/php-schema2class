@@ -161,6 +161,7 @@ class MyClass
         $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
 
         $obj = new self($bar, $foo);
+
         return $obj;
     }
 

@@ -136,6 +136,7 @@ class MyClass
 
         $obj = new self($foo);
         $obj->_providedOptionals = $__providedOptionals;
+
         return $obj;
     }
 

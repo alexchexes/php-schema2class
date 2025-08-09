@@ -135,6 +135,7 @@ class MyClassEnsureArgs3Item
         $name = isset($input->{'name'}) ? $input->{'name'} : null;
 
         $obj = new self($name);
+
         return $obj;
     }
 
