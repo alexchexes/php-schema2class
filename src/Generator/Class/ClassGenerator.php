@@ -42,7 +42,7 @@ class ClassGenerator
         $this->request = $this->request->withClassHasDefaults(!empty($defaults));
 
         $schemaAdditionalProps = $this->schema['additionalProperties'] ?? null;
-        $additionalAllowed =
+        $additionalsAllowed =
             $schemaAdditionalProps !== false
             && $schemaAdditionalProps !== ['not' => []]; // {"additionalProperties": {"not": {}}}
             // TODO: resolve other always-invalid schemas like "$ref" to false,
@@ -60,7 +60,7 @@ class ClassGenerator
             $this->schema,
             $schemaProperties,
             $defaults,
-            $additionalAllowed,
+            $additionalsAllowed,
         ))->generateAll();
 
         $methodGenerators = (new ClassMethodSuiteFactory(
@@ -68,7 +68,7 @@ class ClassGenerator
             $this->schema,
             $schemaProperties,
             $defaults,
-            $additionalAllowed,
+            $additionalsAllowed,
         ))->generateAll();
 
         $classFileGenerator = $this->prepareFileGenerator($propertyGenerators, $methodGenerators);

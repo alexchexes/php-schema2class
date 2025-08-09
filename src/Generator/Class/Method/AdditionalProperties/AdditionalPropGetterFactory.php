@@ -40,7 +40,7 @@ class AdditionalPropGetterFactory
         );
 
         if ($this->request->isAtLeastPHP('8.0')) {
-            $methodGen->setReturnType('array|object');
+            $methodGen->setReturnType('\stdClass|array');
         }
 
         return $methodGen;
@@ -52,16 +52,16 @@ class AdditionalPropGetterFactory
             new ParamTag(
                 variableName: self::AS_ARRAY_ARG,
                 types: 'bool',
-                description: 'Whether return array instead of `stdClass` object.',
+                description: 'Whether return an associative array instead of `stdClass` object.',
             ),
         ];
 
         if (!$this->request->isAtLeastPHP('8.0')) {
-            $tags[] = new ReturnTag(['array', 'object']);
+            $tags[] = new ReturnTag(['array', '\stdClass']);
         }
 
         $docBlock = new DocBlockGenerator(
-            shortDescription: "Object or array containing name/value pairs for properties not specified in the schema.",
+            shortDescription: "Object (`stdClass`) or array with name/value pairs for properties not specified in the schema.",
             tags: $tags,
         );
 

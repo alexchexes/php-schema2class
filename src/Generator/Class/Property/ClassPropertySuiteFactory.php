@@ -17,7 +17,7 @@ class ClassPropertySuiteFactory
       private array $schema,
       private PropertyCollection $schemaProperties,
       private array $defaults,
-      private bool $additionalAllowed,
+      private bool $additionalsAllowed,
     ) {}
 
     /**
@@ -41,7 +41,7 @@ class ClassPropertySuiteFactory
             $propertyGenerators[] = $providedOptionalsFactory->generate();
         }
 
-        if ($this->additionalAllowed) {
+        if ($this->additionalsAllowed) {
             $propertyGenerators[] = $addPropsPropertyFactory->generate();
         }
         

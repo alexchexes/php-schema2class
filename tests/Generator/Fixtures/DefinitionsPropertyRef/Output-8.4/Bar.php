@@ -33,21 +33,23 @@ class Bar
     /**
      * Map of name/value pairs for properties not specified in the schema.
      */
-    private object $_additionalProperties;
+    private \stdClass $_additionalProperties;
 
     private ?Foo $a = null;
 
     public function __construct(?Foo $a = null)
     {
+        $this->_additionalProperties = new \stdClass();
+
         $this->a = $a;
     }
 
     /**
-     * Object or array containing name/value pairs for properties not specified in the schema.
+     * Object (`stdClass`) or array with name/value pairs for properties not specified in the schema.
      *
-     * @param bool $asArray Whether return array instead of `stdClass` object.
+     * @param bool $asArray Whether return an associative array instead of `stdClass` object.
      */
-    public function getAdditionalProperties(bool $asArray = true): array|object
+    public function getAdditionalProperties(bool $asArray = true): \stdClass|array
     {
         return $asArray
             ? json_decode(json_encode($this->_additionalProperties), true)
@@ -57,9 +59,9 @@ class Bar
     /**
      * Allows adding properties not specified in the schema.
      *
-     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     * @param \stdClass|array $additionalProperties Map of property name/value pairs to add.
      */
-    public function withAdditionalProperties(array|object $additionalProperties): self
+    public function withAdditionalProperties(\stdClass|array $additionalProperties): self
     {
         $clone = clone $this;
         $clone->_additionalProperties = is_array($additionalProperties)
@@ -75,7 +77,7 @@ class Bar
     public function withoutAdditionalProperties(): self
     {
         $clone = clone $this;
-        $clone->_additionalProperties = new \stdClass;
+        $clone->_additionalProperties = new \stdClass();
         return $clone;
     }
 

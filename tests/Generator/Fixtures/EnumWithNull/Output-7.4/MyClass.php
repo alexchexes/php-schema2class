@@ -38,7 +38,7 @@ class MyClass
     /**
      * Map of name/value pairs for properties not specified in the schema.
      */
-    private object $_additionalProperties;
+    private \stdClass $_additionalProperties;
 
     /**
      * @var 'red'|'green'|null
@@ -50,14 +50,19 @@ class MyClass
      */
     public function __construct(?string $foo = null)
     {
-        $this->foo = $foo;
+        $this->_additionalProperties = new \stdClass();
+
+        if ($foo !== null) {
+            $this->foo = $foo;
+            $this->_providedOptionals['foo'] = true;
+        };
     }
 
     /**
-     * Object or array containing name/value pairs for properties not specified in the schema.
+     * Object (`stdClass`) or array with name/value pairs for properties not specified in the schema.
      *
-     * @param bool $asArray Whether return array instead of `stdClass` object.
-     * @return array|object
+     * @param bool $asArray Whether return an associative array instead of `stdClass` object.
+     * @return array|\stdClass
      */
     public function getAdditionalProperties(bool $asArray = true)
     {
@@ -69,7 +74,7 @@ class MyClass
     /**
      * Allows adding properties not specified in the schema.
      *
-     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     * @param \stdClass|array $additionalProperties Map of property name/value pairs to add.
      */
     public function withAdditionalProperties($additionalProperties): self
     {
@@ -87,7 +92,7 @@ class MyClass
     public function withoutAdditionalProperties(): self
     {
         $clone = clone $this;
-        $clone->_additionalProperties = new \stdClass;
+        $clone->_additionalProperties = new \stdClass();
         return $clone;
     }
 

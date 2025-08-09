@@ -30,8 +30,8 @@ class AdditionalPropertiesPropertyFactory
 
         $docBlock = new DocBlockGenerator('Map of name/value pairs for properties not specified in the schema.');
 
-        $typeHint = 'object';
-        if ($this->request->isAtLeastPHP('7.2')) {
+        $typeHint = '\stdClass';
+        if ($this->request->isAtLeastPHP('7.4')) {
             $propGen->setType(TypeGenerator::fromTypeString($typeHint));
         } else {
             $docBlock->setTags([new GenericTag('var', $typeHint)]);

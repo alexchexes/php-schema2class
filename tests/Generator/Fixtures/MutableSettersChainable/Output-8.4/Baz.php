@@ -23,21 +23,23 @@ class Baz
     /**
      * Map of name/value pairs for properties not specified in the schema.
      */
-    private object $_additionalProperties;
+    private \stdClass $_additionalProperties;
 
     private ?string $name = null;
 
     public function __construct(?string $name = null)
     {
+        $this->_additionalProperties = new \stdClass();
+
         $this->name = $name;
     }
 
     /**
-     * Object or array containing name/value pairs for properties not specified in the schema.
+     * Object (`stdClass`) or array with name/value pairs for properties not specified in the schema.
      *
-     * @param bool $asArray Whether return array instead of `stdClass` object.
+     * @param bool $asArray Whether return an associative array instead of `stdClass` object.
      */
-    public function getAdditionalProperties(bool $asArray = true): array|object
+    public function getAdditionalProperties(bool $asArray = true): \stdClass|array
     {
         return $asArray
             ? json_decode(json_encode($this->_additionalProperties), true)
@@ -47,9 +49,9 @@ class Baz
     /**
      * Allows adding properties not specified in the schema.
      *
-     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     * @param \stdClass|array $additionalProperties Map of property name/value pairs to add.
      */
-    public function setAdditionalProperties(array|object $additionalProperties): self
+    public function setAdditionalProperties(\stdClass|array $additionalProperties): self
     {
         $this->_additionalProperties = is_array($additionalProperties)
             ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
@@ -63,7 +65,7 @@ class Baz
      */
     public function unsetAdditionalProperties(): self
     {
-        $this->_additionalProperties = new \stdClass;
+        $this->_additionalProperties = new \stdClass();
         return $this;
     }
 

@@ -19,7 +19,7 @@ class ClassMethodSuiteFactory
         private array $schema,
         private PropertyCollection $schemaProperties,
         private array $defaults,
-        private bool $additionalAllowed,
+        private bool $additionalsAllowed,
     ) {}
 
     /**
@@ -30,8 +30,8 @@ class ClassMethodSuiteFactory
     public function generateAll(): array
     {
         $methodGenerators = [
-            (new ConstructorFactory($this->schemaProperties))->generate(),
-            ...(new AdditionalPropsMethodsFactory($this->request, $this->schema, $this->additionalAllowed))->generateAll(),
+            (new ConstructorFactory($this->schemaProperties, $this->additionalsAllowed))->generate(),
+            ...(new AdditionalPropsMethodsFactory($this->request, $this->schema, $this->additionalsAllowed))->generateAll(),
             ...(new PropertyAccessorsFactory($this->request, $this->schema, $this->schemaProperties))->generateAll(),
             (new FromInputMethodFactory($this->request, $this->schemaProperties, $this->defaults))->generate(),
             ...(new SerializeMethodFactory($this->request, $this->schemaProperties, $this->defaults))->generateAll(),

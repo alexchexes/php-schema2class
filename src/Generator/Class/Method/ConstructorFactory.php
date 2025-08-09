@@ -19,6 +19,7 @@ class ConstructorFactory
 {
     public function __construct(
         private PropertyCollection $schemaProperties,
+        private bool $additionalsAllowed,
     ) {}
 
     /** 
@@ -33,26 +34,31 @@ class ConstructorFactory
         $requiredProperties = $this->schemaProperties->filter(PropertyCollectionFilterFactory::onlyRequired());
         $optionalProperties = $this->schemaProperties->filter(PropertyCollectionFilterFactory::onlyOptional());
 
+        if ($this->additionalsAllowed) {
+            $ADDITIONAL_PROPS = PropertyNames::ADDITIONAL_PROPS;
+            $bodyParts[] = "\$this->{$ADDITIONAL_PROPS} = new \stdClass();\n";
+        }
+
         foreach ([...$requiredProperties, ...$optionalProperties] as $property) {
             $params[] = $this->buildParameter($property);
 
             $varName = $property->varName();
 
-            $bodyParts[] = "\$this->{$property->propName()} = \${$varName};";
-            
-            // This doesn't make sense since we only can detect non-nulls, but non-nulls
-            // get into the output anyway, even without their presence in the `_providedOptionals`
+            $assignment = "\$this->{$property->propName()} = \${$varName};";
 
-            // if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
-            //     $keyStr = $property->keyStr();
-            //     $OPTIONALS = PropertyNames::OPTIONALS;
-            //     $bodyParts[] =
-            //         <<<PHP
-            //         if (\${$varName} !== null) {
-            //             \$this->{$OPTIONALS}[{$keyStr}] = true;
-            //         }
-            //         PHP;
-            // }
+            if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
+                $keyStr = $property->keyStr();
+                $OPTIONALS = PropertyNames::OPTIONALS;
+                $bodyParts[] =
+                    <<<PHP
+                    if (\${$varName} !== null) {
+                        $assignment
+                        \$this->{$OPTIONALS}[{$keyStr}] = true;
+                    };
+                    PHP;
+            } else {
+                $bodyParts[] = $assignment;
+            }
 
             $tag = $this->buildTag($property);
             if ($tag !== null) {

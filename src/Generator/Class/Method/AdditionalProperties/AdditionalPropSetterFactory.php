@@ -68,7 +68,7 @@ class AdditionalPropSetterFactory
         $params = [
             new ParameterGenerator(
                 name: self::INPUT_ARG,
-                type: $this->request->isAtLeastPHP('8.0') ? 'array|object' : null,
+                type: $this->request->isAtLeastPHP('8.0') ? '\stdClass|array' : null,
             )
         ];
         
@@ -88,7 +88,7 @@ class AdditionalPropSetterFactory
         $tags = [
             new ParamTag(
                 variableName: self::INPUT_ARG,
-                types: ['array', 'object'],
+                types: ['\stdClass', 'array'],
                 description: 'Map of property name/value pairs to add.',
             ),
         ];

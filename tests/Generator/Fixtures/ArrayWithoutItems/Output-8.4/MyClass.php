@@ -93,7 +93,7 @@ class MyClass
     /**
      * Map of name/value pairs for properties not specified in the schema.
      */
-    private object $_additionalProperties;
+    private \stdClass $_additionalProperties;
 
     private array $a;
 
@@ -115,23 +115,34 @@ class MyClass
 
     public function __construct(array $a, string|array $b, ?array $c, string|array|null $d, ?array $e = null, string|array|null $f = null, ?array $g = null, string|array|null $h = null, string|array|object|null $i = null)
     {
+        $this->_additionalProperties = new \stdClass();
+
         $this->a = $a;
         $this->b = $b;
         $this->c = $c;
         $this->d = $d;
         $this->e = $e;
         $this->f = $f;
-        $this->g = $g;
-        $this->h = $h;
-        $this->i = $i;
+        if ($g !== null) {
+            $this->g = $g;
+            $this->_providedOptionals['g'] = true;
+        };
+        if ($h !== null) {
+            $this->h = $h;
+            $this->_providedOptionals['h'] = true;
+        };
+        if ($i !== null) {
+            $this->i = $i;
+            $this->_providedOptionals['i'] = true;
+        };
     }
 
     /**
-     * Object or array containing name/value pairs for properties not specified in the schema.
+     * Object (`stdClass`) or array with name/value pairs for properties not specified in the schema.
      *
-     * @param bool $asArray Whether return array instead of `stdClass` object.
+     * @param bool $asArray Whether return an associative array instead of `stdClass` object.
      */
-    public function getAdditionalProperties(bool $asArray = true): array|object
+    public function getAdditionalProperties(bool $asArray = true): \stdClass|array
     {
         return $asArray
             ? json_decode(json_encode($this->_additionalProperties), true)
@@ -141,9 +152,9 @@ class MyClass
     /**
      * Allows adding properties not specified in the schema.
      *
-     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     * @param \stdClass|array $additionalProperties Map of property name/value pairs to add.
      */
-    public function withAdditionalProperties(array|object $additionalProperties): self
+    public function withAdditionalProperties(\stdClass|array $additionalProperties): self
     {
         $clone = clone $this;
         $clone->_additionalProperties = is_array($additionalProperties)
@@ -159,7 +170,7 @@ class MyClass
     public function withoutAdditionalProperties(): self
     {
         $clone = clone $this;
-        $clone->_additionalProperties = new \stdClass;
+        $clone->_additionalProperties = new \stdClass();
         return $clone;
     }
 

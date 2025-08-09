@@ -10,7 +10,7 @@ class AdditionalPropsMethodsFactory
     public function __construct(
         private GeneratorRequest $request,
         private array $schema,
-        private bool $additionalAllowed,
+        private bool $additionalsAllowed,
     )
     {}
 
@@ -19,7 +19,7 @@ class AdditionalPropsMethodsFactory
      */
     public function generateAll(): array
     {
-        if (!$this->additionalAllowed) {
+        if (!$this->additionalsAllowed) {
             return [];
         }
 

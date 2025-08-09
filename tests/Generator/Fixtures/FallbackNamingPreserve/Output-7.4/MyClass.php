@@ -296,7 +296,7 @@ class MyClass
     /**
      * Map of name/value pairs for properties not specified in the schema.
      */
-    private object $_additionalProperties;
+    private \stdClass $_additionalProperties;
 
     private string $_GLOBALS;
 
@@ -410,6 +410,8 @@ class MyClass
      */
     public function __construct(string $_GLOBALS_1, string $_GLOBALS, string $GLOBALS_1, string $_SERVER_1, string $_GET_1, string $_POST_1, string $_FILES_1, string $_REQUEST_1, string $_SESSION_1, string $_ENV_1, string $_COOKIE_1, string $_php_errormsg, string $_http_response_header, string $_argc, string $_argv, string $_input, string $_obj, string $_includeDefaults, string $fromInput, string $toArray, string $toStdClass, string $validateInput, string $_schema_1, string $schema, string $_defaults_1, string $defaults, string $_providedOptionals_1, string $_clone, string $__clone, string $__construct, string $__destruct, string $__get, string $__set, string $__call, string $__isset, string $__unset, string $__sleep, string $__wakeup, string $__toString, string $__invoke, string $__debugInfo, string $files, string $_this, ?string $_validate = null, ?string $_materializeDefaults = null, ?MyClassTestObj $testObj = null, ?string $__providedOptionals_1 = null, $ensureArgs1 = null, ?MyClassEnsureArgs2 $ensureArgs2 = null, ?array $ensureArgs3 = null)
     {
+        $this->_additionalProperties = new \stdClass();
+
         $this->_GLOBALS = $_GLOBALS_1;
         $this->GLOBALS = $_GLOBALS;
         $this->GLOBALS_1 = $GLOBALS_1;
@@ -454,7 +456,10 @@ class MyClass
         $this->files = $files;
         $this->_this = $_this;
         $this->validate = $_validate;
-        $this->materializeDefaults = $_materializeDefaults;
+        if ($_materializeDefaults !== null) {
+            $this->materializeDefaults = $_materializeDefaults;
+            $this->_providedOptionals['materializeDefaults'] = true;
+        };
         $this->testObj = $testObj;
         $this->__providedOptionals = $__providedOptionals_1;
         $this->ensureArgs1 = $ensureArgs1;
@@ -463,10 +468,10 @@ class MyClass
     }
 
     /**
-     * Object or array containing name/value pairs for properties not specified in the schema.
+     * Object (`stdClass`) or array with name/value pairs for properties not specified in the schema.
      *
-     * @param bool $asArray Whether return array instead of `stdClass` object.
-     * @return array|object
+     * @param bool $asArray Whether return an associative array instead of `stdClass` object.
+     * @return array|\stdClass
      */
     public function getAdditionalProperties(bool $asArray = true)
     {
@@ -478,7 +483,7 @@ class MyClass
     /**
      * Allows adding properties not specified in the schema.
      *
-     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     * @param \stdClass|array $additionalProperties Map of property name/value pairs to add.
      */
     public function withAdditionalProperties($additionalProperties): self
     {
@@ -496,7 +501,7 @@ class MyClass
     public function withoutAdditionalProperties(): self
     {
         $clone = clone $this;
-        $clone->_additionalProperties = new \stdClass;
+        $clone->_additionalProperties = new \stdClass();
         return $clone;
     }
 

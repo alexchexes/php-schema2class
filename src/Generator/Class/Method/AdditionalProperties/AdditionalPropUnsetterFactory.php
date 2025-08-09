@@ -117,7 +117,7 @@ class AdditionalPropUnsetterFactory
             $bodyParts[] = "\${$CLONE_VAR} = clone \$this;\n";
         }
 
-        $bodyParts[] = "\${$object}->{$ADDITIONAL_PROPS} = new \stdClass;\n";
+        $bodyParts[] = "\${$object}->{$ADDITIONAL_PROPS} = new \stdClass();\n";
 
         if ($addValidation) {
             $bodyParts[] =

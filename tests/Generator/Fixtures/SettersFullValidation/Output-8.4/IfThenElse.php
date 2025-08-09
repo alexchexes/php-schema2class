@@ -68,7 +68,7 @@ class IfThenElse
     /**
      * Map of name/value pairs for properties not specified in the schema.
      */
-    private object $_additionalProperties;
+    private \stdClass $_additionalProperties;
 
     private ?string $kind;
 
@@ -76,16 +76,18 @@ class IfThenElse
 
     public function __construct(?string $kind, mixed $value = null)
     {
+        $this->_additionalProperties = new \stdClass();
+
         $this->kind = $kind;
         $this->value = $value;
     }
 
     /**
-     * Object or array containing name/value pairs for properties not specified in the schema.
+     * Object (`stdClass`) or array with name/value pairs for properties not specified in the schema.
      *
-     * @param bool $asArray Whether return array instead of `stdClass` object.
+     * @param bool $asArray Whether return an associative array instead of `stdClass` object.
      */
-    public function getAdditionalProperties(bool $asArray = true): array|object
+    public function getAdditionalProperties(bool $asArray = true): \stdClass|array
     {
         return $asArray
             ? json_decode(json_encode($this->_additionalProperties), true)
@@ -95,10 +97,10 @@ class IfThenElse
     /**
      * Allows adding properties not specified in the schema.
      *
-     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     * @param \stdClass|array $additionalProperties Map of property name/value pairs to add.
      * @param bool $validate Whether to revalidate the resulting object.
      */
-    public function withAdditionalProperties(array|object $additionalProperties, bool $validate = true): self
+    public function withAdditionalProperties(\stdClass|array $additionalProperties, bool $validate = true): self
     {
         $clone = clone $this;
         $clone->_additionalProperties = is_array($additionalProperties)
@@ -119,7 +121,7 @@ class IfThenElse
     public function withoutAdditionalProperties(bool $validate = true): self
     {
         $clone = clone $this;
-        $clone->_additionalProperties = new \stdClass;
+        $clone->_additionalProperties = new \stdClass();
         if ($validate) {
             $clone->validate();
         }

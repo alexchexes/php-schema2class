@@ -75,7 +75,7 @@ class MyClass
     /**
      * Map of name/value pairs for properties not specified in the schema.
      *
-     * @var object
+     * @var \stdClass
      */
     private $_additionalProperties;
 
@@ -119,19 +119,24 @@ class MyClass
      */
     public function __construct($inferString, $inferInt, $inferMixed, $inferStringOpt = null, $inferIntOpt = null, $inferMixedOpt = null)
     {
+        $this->_additionalProperties = new \stdClass();
+
         $this->inferString = $inferString;
         $this->inferInt = $inferInt;
         $this->inferMixed = $inferMixed;
         $this->inferStringOpt = $inferStringOpt;
         $this->inferIntOpt = $inferIntOpt;
-        $this->inferMixedOpt = $inferMixedOpt;
+        if ($inferMixedOpt !== null) {
+            $this->inferMixedOpt = $inferMixedOpt;
+            $this->_providedOptionals['inferMixedOpt'] = true;
+        };
     }
 
     /**
-     * Object or array containing name/value pairs for properties not specified in the schema.
+     * Object (`stdClass`) or array with name/value pairs for properties not specified in the schema.
      *
-     * @param bool $asArray Whether return array instead of `stdClass` object.
-     * @return array|object
+     * @param bool $asArray Whether return an associative array instead of `stdClass` object.
+     * @return array|\stdClass
      */
     public function getAdditionalProperties($asArray = true)
     {
@@ -143,7 +148,7 @@ class MyClass
     /**
      * Allows adding properties not specified in the schema.
      *
-     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     * @param \stdClass|array $additionalProperties Map of property name/value pairs to add.
      * @return self
      */
     public function withAdditionalProperties($additionalProperties)
@@ -164,7 +169,7 @@ class MyClass
     public function withoutAdditionalProperties()
     {
         $clone = clone $this;
-        $clone->_additionalProperties = new \stdClass;
+        $clone->_additionalProperties = new \stdClass();
         return $clone;
     }
 

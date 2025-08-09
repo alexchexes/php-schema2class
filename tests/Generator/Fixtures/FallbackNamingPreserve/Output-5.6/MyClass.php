@@ -294,7 +294,7 @@ class MyClass
     /**
      * Map of name/value pairs for properties not specified in the schema.
      *
-     * @var object
+     * @var \stdClass
      */
     private $_additionalProperties;
 
@@ -602,6 +602,8 @@ class MyClass
      */
     public function __construct($_GLOBALS_1, $_GLOBALS, $GLOBALS_1, $_SERVER_1, $_GET_1, $_POST_1, $_FILES_1, $_REQUEST_1, $_SESSION_1, $_ENV_1, $_COOKIE_1, $_php_errormsg, $_http_response_header, $_argc, $_argv, $_input, $_obj, $_includeDefaults, $fromInput, $toArray, $toStdClass, $validateInput, $_schema_1, $schema, $_defaults_1, $defaults, $_providedOptionals_1, $_clone, $__clone, $__construct, $__destruct, $__get, $__set, $__call, $__isset, $__unset, $__sleep, $__wakeup, $__toString, $__invoke, $__debugInfo, $files, $_this, $_validate = null, $_materializeDefaults = null, MyClassTestObj $testObj = null, $__providedOptionals_1 = null, $ensureArgs1 = null, MyClassEnsureArgs2 $ensureArgs2 = null, array $ensureArgs3 = null)
     {
+        $this->_additionalProperties = new \stdClass();
+
         $this->_GLOBALS = $_GLOBALS_1;
         $this->GLOBALS = $_GLOBALS;
         $this->GLOBALS_1 = $GLOBALS_1;
@@ -646,7 +648,10 @@ class MyClass
         $this->files = $files;
         $this->_this = $_this;
         $this->validate = $_validate;
-        $this->materializeDefaults = $_materializeDefaults;
+        if ($_materializeDefaults !== null) {
+            $this->materializeDefaults = $_materializeDefaults;
+            $this->_providedOptionals['materializeDefaults'] = true;
+        };
         $this->testObj = $testObj;
         $this->__providedOptionals = $__providedOptionals_1;
         $this->ensureArgs1 = $ensureArgs1;
@@ -655,10 +660,10 @@ class MyClass
     }
 
     /**
-     * Object or array containing name/value pairs for properties not specified in the schema.
+     * Object (`stdClass`) or array with name/value pairs for properties not specified in the schema.
      *
-     * @param bool $asArray Whether return array instead of `stdClass` object.
-     * @return array|object
+     * @param bool $asArray Whether return an associative array instead of `stdClass` object.
+     * @return array|\stdClass
      */
     public function getAdditionalProperties($asArray = true)
     {
@@ -670,7 +675,7 @@ class MyClass
     /**
      * Allows adding properties not specified in the schema.
      *
-     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     * @param \stdClass|array $additionalProperties Map of property name/value pairs to add.
      * @return self
      */
     public function withAdditionalProperties($additionalProperties)
@@ -691,7 +696,7 @@ class MyClass
     public function withoutAdditionalProperties()
     {
         $clone = clone $this;
-        $clone->_additionalProperties = new \stdClass;
+        $clone->_additionalProperties = new \stdClass();
         return $clone;
     }
 

@@ -20,7 +20,7 @@ class OptionsObject
     /**
      * Map of name/value pairs for properties not specified in the schema.
      *
-     * @var object
+     * @var \stdClass
      */
     private $_additionalProperties;
 
@@ -34,14 +34,16 @@ class OptionsObject
      */
     public function __construct($_output = null)
     {
+        $this->_additionalProperties = new \stdClass();
+
         $this->output = $_output;
     }
 
     /**
-     * Object or array containing name/value pairs for properties not specified in the schema.
+     * Object (`stdClass`) or array with name/value pairs for properties not specified in the schema.
      *
-     * @param bool $asArray Whether return array instead of `stdClass` object.
-     * @return array|object
+     * @param bool $asArray Whether return an associative array instead of `stdClass` object.
+     * @return array|\stdClass
      */
     public function getAdditionalProperties($asArray = true)
     {
@@ -53,7 +55,7 @@ class OptionsObject
     /**
      * Allows adding properties not specified in the schema.
      *
-     * @param array|object $additionalProperties Map of property name/value pairs to add.
+     * @param \stdClass|array $additionalProperties Map of property name/value pairs to add.
      * @return self
      */
     public function withAdditionalProperties($additionalProperties)
@@ -74,7 +76,7 @@ class OptionsObject
     public function withoutAdditionalProperties()
     {
         $clone = clone $this;
-        $clone->_additionalProperties = new \stdClass;
+        $clone->_additionalProperties = new \stdClass();
         return $clone;
     }
 
