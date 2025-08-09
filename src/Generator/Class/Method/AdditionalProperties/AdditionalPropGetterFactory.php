@@ -49,7 +49,7 @@ class AdditionalPropGetterFactory
         $tags = [
             new ParamTag(
                 variableName: ArgumentNames::AS_ARRAY,
-                types: 'bool',
+                types: ['bool'],
                 description: 'Whether return an associative array instead of `stdClass` object.',
             ),
         ];

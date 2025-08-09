@@ -79,4 +79,25 @@ final class SchemaDefinitionsCollectorTest extends TestCase
         $this->assertSame('Address', $definitions['#/definitions/address']->className);
         $this->assertSame('Name', $definitions['#/definitions/address/$defs/name']->className);
     }
+
+    public function testRootEnumReservesClassName(): void
+    {
+        $schema = [
+            'type' => 'string',
+            'enum' => ['foo', 'bar'],
+            'definitions' => [
+                'TargetClass' => ['type' => 'string'],
+            ],
+        ];
+
+        $collector = new DefinitionsCollector(new GeneratorRequest(
+            schema: $schema,
+            spec: new ValidatedSpecificationFilesItem('Ns', 'TargetClass', 'dir'),
+            opts: new SpecificationOptions(),
+        ));
+        $definitions = iterator_to_array($collector->collect($schema));
+
+        $this->assertArrayHasKey('#/definitions/TargetClass', $definitions);
+        $this->assertSame('Ns\\TargetClass_1', $definitions['#/definitions/TargetClass']->classFQN);
+    }
 }
