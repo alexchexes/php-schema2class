@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ns\AdditionalPropertiesAnyRoot_8_4;
+namespace Ns\AdditionalPropertiesRootAny_7_4;
 
 class MyClass
 {
@@ -39,9 +39,15 @@ class MyClass
 
     private ?string $name = null;
 
-    private array|object|null $params = null;
+    /**
+     * @var array|object|null
+     */
+    private $params = null;
 
-    public function __construct(?string $name = null, array|object|null $params = null)
+    /**
+     * @param array|object|null $params
+     */
+    public function __construct(?string $name = null, $params = null)
     {
         $this->_additionalProperties = new \stdClass();
 
@@ -53,8 +59,9 @@ class MyClass
      * Object (`stdClass`) or array with name/value pairs for properties not specified in the schema.
      *
      * @param bool $asArray Whether return an associative array instead of `stdClass` object.
+     * @return array|\stdClass
      */
-    public function getAdditionalProperties(bool $asArray = true): \stdClass|array
+    public function getAdditionalProperties(bool $asArray = true)
     {
         return $asArray
             ? json_decode(json_encode($this->_additionalProperties), true)
@@ -66,7 +73,7 @@ class MyClass
      *
      * @param \stdClass|array $additionalProperties Map of property name/value pairs to add.
      */
-    public function withAdditionalProperties(\stdClass|array $additionalProperties): self
+    public function withAdditionalProperties($additionalProperties): self
     {
         $clone = clone $this;
         $clone->_additionalProperties = is_array($additionalProperties)
@@ -107,12 +114,18 @@ class MyClass
         return $clone;
     }
 
-    public function getParams(): array|object|null
+    /**
+     * @return array|object|null
+     */
+    public function getParams()
     {
         return $this->params ?? null;
     }
 
-    public function withParams(array|object $params): self
+    /**
+     * @param array|object $params
+     */
+    public function withParams($params): self
     {
         $clone = clone $this;
         $clone->params = $params;
@@ -136,8 +149,14 @@ class MyClass
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput(array|object $input, bool $validate = true): MyClass
+    public static function fromInput($input, bool $validate = true): MyClass
     {
+        if (!is_array($input) && !is_object($input)) {
+            throw new \InvalidArgumentException(
+                'Input to fromInput must be array or object, got ' . gettype($input)
+            );
+        }
+
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
@@ -214,7 +233,7 @@ class MyClass
      * @return bool Validation result if `$return` is `true`
      * @throws \InvalidArgumentException
      */
-    public static function validateInput(array|object $input, bool $return = false): bool
+    public static function validateInput($input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;

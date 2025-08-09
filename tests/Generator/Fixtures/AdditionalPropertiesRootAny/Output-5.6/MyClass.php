@@ -1,6 +1,6 @@
 <?php
 
-namespace Ns\AdditionalPropertiesAnyRoot_5_6;
+namespace Ns\AdditionalPropertiesRootAny_5_6;
 
 class MyClass
 {
