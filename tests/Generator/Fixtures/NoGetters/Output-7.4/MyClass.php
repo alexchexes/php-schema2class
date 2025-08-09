@@ -8,8 +8,6 @@ class MyClass
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
     private static array $_schema = [
         'required' => [
@@ -21,6 +19,13 @@ class MyClass
                 'description' => 'this descriptions will be added to the property docblock when generating with "no-getters" option',
             ],
         ],
+    ];
+
+    /**
+     * Mapping of schema property names to this class's property names.
+     */
+    private static array $_namesMap = [
+        'foo' => 'foo',
     ];
 
     /**
@@ -113,6 +118,11 @@ class MyClass
         $foo = $input->{'foo'};
 
         $obj = new self($foo);
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
 
         return $obj;
     }

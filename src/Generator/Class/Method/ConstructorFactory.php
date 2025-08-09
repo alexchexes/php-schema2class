@@ -48,7 +48,7 @@ class ConstructorFactory
 
             if ($property instanceof OptionalPropertyDecorator && $property->isOptionalNullable()) {
                 $keyStr = $property->keyStr();
-                $OPTIONALS = PropertyNames::OPTIONALS;
+                $OPTIONALS = PropertyNames::PROVIDED_OPTIONALS;
                 $bodyParts[] =
                     <<<PHP
                     if (\${$varName} !== null) {

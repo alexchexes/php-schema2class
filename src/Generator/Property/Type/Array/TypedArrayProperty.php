@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Property\Type\Array;
 
-use Helmich\Schema2Class\Generator\Class\Method\FromInputMethodFactory;
+use Helmich\Schema2Class\Generator\Class\ArgumentNames;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\PropertyBuilder;
 use Helmich\Schema2Class\Generator\Property\Type\AbstractProperty;
@@ -91,9 +91,9 @@ class TypedArrayProperty extends AbstractProperty
             return "array_map(fn(\$i) => {$map}, {$expr})";
         }
 
-        $use = ['$' . FromInputMethodFactory::VALIDATE_ARG];
+        $use = ['$' . ArgumentNames::VALIDATE];
         if ($this->request->getClassHasDefaults()) {
-            $use[] = '$' . FromInputMethodFactory::DEFAULTS_ARG;
+            $use[] = '$' . ArgumentNames::MATRLZ_DEFAULTS;
         }
         $useExpr = implode(', ', $use);
         return "array_map(function(\$i) use ({$useExpr}) { return {$map}; }, {$expr})";

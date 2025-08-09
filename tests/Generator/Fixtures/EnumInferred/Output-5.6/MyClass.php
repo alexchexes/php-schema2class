@@ -66,6 +66,20 @@ class MyClass
     ];
 
     /**
+     * Mapping of schema property names to this class's property names.
+     *
+     * @var array
+     */
+    private static $_namesMap = [
+        'inferString' => 'inferString',
+        'inferInt' => 'inferInt',
+        'inferMixed' => 'inferMixed',
+        'inferStringOpt' => 'inferStringOpt',
+        'inferIntOpt' => 'inferIntOpt',
+        'inferMixedOpt' => 'inferMixedOpt',
+    ];
+
+    /**
      * Map of optional nullable property names that were explicitly set
      *
      * @var array<string,true>
@@ -403,7 +417,7 @@ class MyClass
             static::validateInput($input);
         }
 
-        $__providedOptionals = [];
+        $_providedOptionals = [];
         $inferString = $input->{'inferString'};
         $inferInt = (int)$input->{'inferInt'};
         $inferMixed = ($input->{'inferMixed'} !== null ? $input->{'inferMixed'} : null);
@@ -412,7 +426,7 @@ class MyClass
         $inferMixedOpt = null;
         if (property_exists($input, 'inferMixedOpt')) {
             $inferMixedOpt = ($input->{'inferMixedOpt'} !== null ? $input->{'inferMixedOpt'} : null);
-            $__providedOptionals['inferMixedOpt'] = true;
+            $_providedOptionals['inferMixedOpt'] = true;
         }
 
         $obj = new self(
@@ -423,7 +437,12 @@ class MyClass
             $inferIntOpt,
             $inferMixedOpt
         );
-        $obj->_providedOptionals = $__providedOptionals;
+        $obj->_providedOptionals = $_providedOptionals;
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
 
         return $obj;
     }
@@ -515,13 +534,19 @@ class MyClass
     }
 
     /**
-     * Checks if an optional nullable property was explicitly set
+     * Checks if an optional nullable property was explicitly set.
      *
-     * @param string $propertyName Property name to check (exactly as it appears in the schema)
+     * @param string $propertyName Property name to check (exactly as it appears in the schema).
+     * @throws \InvalidArgumentException If property with that name doesn't exist.
      * @return bool
      */
     public function isOptionalProvided(string $propertyName)
     {
-        return array_key_exists($propertyName, $this->_providedOptionals);
+        if (!array_key_exists($propertyName, self::$_namesMap)) {
+            throw new \InvalidArgumentException("Unknown property: {$propertyName}");
+        }
+        return
+            array_key_exists($propertyName, $this->_providedOptionals)
+            || isset($this->{ self::$_namesMap[$propertyName] });
     }
 }

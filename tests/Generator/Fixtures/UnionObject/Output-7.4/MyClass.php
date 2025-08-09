@@ -8,8 +8,6 @@ class MyClass
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
     private static array $_schema = [
         'properties' => [
@@ -114,6 +112,18 @@ class MyClass
                 ],
             ],
         ],
+    ];
+
+    /**
+     * Mapping of schema property names to this class's property names.
+     */
+    private static array $_namesMap = [
+        'objectsUnion' => 'objectsUnion',
+        'refObjectsUnion' => 'refObjectsUnion',
+        'refAndNotRefObjectsUnion' => 'refAndNotRefObjectsUnion',
+        'objAndStringUnion' => 'objAndStringUnion',
+        'unionOfOneObj' => 'unionOfOneObj',
+        'unionOfOneNull' => 'unionOfOneNull',
     ];
 
     /**
@@ -422,7 +432,7 @@ class MyClass
             static::validateInput($input);
         }
 
-        $__providedOptionals = [];
+        $_providedOptionals = [];
         $objectsUnion = isset($input->{'objectsUnion'}) ? ((MyClassObjectsUnionAlternative2::validateInput($input->{'objectsUnion'}, true)) ? MyClassObjectsUnionAlternative2::fromInput($input->{'objectsUnion'}, $validate) : (((MyClassObjectsUnionAlternative1::validateInput($input->{'objectsUnion'}, true)) ? MyClassObjectsUnionAlternative1::fromInput($input->{'objectsUnion'}, $validate) : (null)))) : null;
         $refObjectsUnion = isset($input->{'refObjectsUnion'}) ? ((SomeObj2::validateInput($input->{'refObjectsUnion'}, true)) ? SomeObj2::fromInput($input->{'refObjectsUnion'}, $validate) : (((SomeObj1::validateInput($input->{'refObjectsUnion'}, true)) ? SomeObj1::fromInput($input->{'refObjectsUnion'}, $validate) : (null)))) : null;
         $refAndNotRefObjectsUnion = isset($input->{'refAndNotRefObjectsUnion'}) ? ((MyClassRefAndNotRefObjectsUnionAlternative4::validateInput($input->{'refAndNotRefObjectsUnion'}, true)) ? MyClassRefAndNotRefObjectsUnionAlternative4::fromInput($input->{'refAndNotRefObjectsUnion'}, $validate) : (((SomeObj2::validateInput($input->{'refAndNotRefObjectsUnion'}, true)) ? SomeObj2::fromInput($input->{'refAndNotRefObjectsUnion'}, $validate) : (((MyClassRefAndNotRefObjectsUnionAlternative2::validateInput($input->{'refAndNotRefObjectsUnion'}, true)) ? MyClassRefAndNotRefObjectsUnionAlternative2::fromInput($input->{'refAndNotRefObjectsUnion'}, $validate) : (((SomeObj1::validateInput($input->{'refAndNotRefObjectsUnion'}, true)) ? SomeObj1::fromInput($input->{'refAndNotRefObjectsUnion'}, $validate) : (null)))))))) : null;
@@ -431,7 +441,7 @@ class MyClass
         $unionOfOneNull = null;
         if (property_exists($input, 'unionOfOneNull')) {
             $unionOfOneNull = ($input->{'unionOfOneNull'} !== null ? $input->{'unionOfOneNull'} : null);
-            $__providedOptionals['unionOfOneNull'] = true;
+            $_providedOptionals['unionOfOneNull'] = true;
         }
 
         $obj = new self(
@@ -442,7 +452,12 @@ class MyClass
             $unionOfOneObj,
             $unionOfOneNull
         );
-        $obj->_providedOptionals = $__providedOptionals;
+        $obj->_providedOptionals = $_providedOptionals;
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
 
         return $obj;
     }
@@ -585,13 +600,18 @@ class MyClass
     }
 
     /**
-     * Checks if an optional nullable property was explicitly set
+     * Checks if an optional nullable property was explicitly set.
      *
-     * @param string $propertyName Property name to check (exactly as it appears in the schema)
-     * @return bool
+     * @param string $propertyName Property name to check (exactly as it appears in the schema).
+     * @throws \InvalidArgumentException If property with that name doesn't exist.
      */
     public function isOptionalProvided(string $propertyName): bool
     {
-        return array_key_exists($propertyName, $this->_providedOptionals);
+        if (!array_key_exists($propertyName, self::$_namesMap)) {
+            throw new \InvalidArgumentException("Unknown property: {$propertyName}");
+        }
+        return
+            array_key_exists($propertyName, $this->_providedOptionals)
+            || isset($this->{ self::$_namesMap[$propertyName] });
     }
 }

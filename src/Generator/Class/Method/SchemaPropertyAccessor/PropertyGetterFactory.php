@@ -25,27 +25,15 @@ class PropertyGetterFactory
             return null;
         }
 
-        $propName = $property->propName();
         $methodName = 'get' . $property->methodName();
 
-
         $docBlock = $this->buildDocBlock($property);
-        
-        if ($property instanceof OptionalPropertyDecorator) {
-            if ($this->request->isAtLeastPHP('7.0')) {
-                $body = "return \$this->{$propName} ?? null;";
-            } else {
-                $body = "return isset(\$this->{$propName}) ? \$this->{$propName} : null;";
-            }
-        } else {
-            $body = "return \$this->{$propName};";
-        }
 
         $methodGen = new MethodGenerator(
             name: $methodName,
             parameters: [],
             flags: MethodGenerator::FLAG_PUBLIC,
-            body: $body,
+            body: $this->generateBody($property),
             docBlock: $docBlock,
         );
 
@@ -57,6 +45,23 @@ class PropertyGetterFactory
         }
 
         return $methodGen;
+    }
+
+    private function generateBody(PropertyInterface $property): string
+    {
+        $propName = $property->propName();
+
+        if ($property instanceof OptionalPropertyDecorator) {
+            if ($this->request->isAtLeastPHP('7.0')) {
+                $body = "return \$this->{$propName} ?? null;";
+            } else {
+                $body = "return isset(\$this->{$propName}) ? \$this->{$propName} : null;";
+            }
+        } else {
+            $body = "return \$this->{$propName};";
+        }
+
+        return $body;
     }
 
     private function buildDocBlock(PropertyInterface $property): ?DocBlockGenerator

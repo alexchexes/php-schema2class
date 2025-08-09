@@ -80,6 +80,30 @@ class MyClass
     ];
 
     /**
+     * Mapping of schema property names to this class's property names.
+     *
+     * @var array
+     */
+    private static $_namesMap = [
+        'foo' => 'foo',
+        '_foo' => '_foo',
+        '__foo' => '__foo',
+        'foo_' => 'foo_',
+        'foo__' => 'foo__',
+        '_foo_' => '_foo_',
+        '__foo__' => '__foo__',
+        'foo-bar' => '_foo_bar',
+        'foo bar' => 'foo_bar',
+        'baz qux' => 'baz_qux',
+        '123 qwe' => '_123_qwe',
+        'Город' => 'Gorod',
+        'название юр.лица' => 'nazvanie_iur_litsa',
+        'IP-адрес' => 'IP_adres',
+        '~~tildas~~' => '_tildas',
+        'it\'s "A"' => 'it_s_A',
+    ];
+
+    /**
      * Map of name/value pairs for properties not specified in the schema.
      *
      * @var \stdClass
@@ -778,6 +802,11 @@ class MyClass
             $_tildas,
             $it_s_A
         );
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
 
         return $obj;
     }

@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Property\Type\Array;
 
-use Helmich\Schema2Class\Generator\Class\Method\Serialize\SerializeMethodFactory;
-use Helmich\Schema2Class\Generator\Class\Method\FromInputMethodFactory;
+use Helmich\Schema2Class\Generator\Class\ArgumentNames;
 use Helmich\Schema2Class\Generator\Class\MethodNames;
+use Helmich\Schema2Class\Generator\Class\VariableNames;
 use Helmich\Schema2Class\Generator\GeneratorException;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\PropertyBuilder;
@@ -70,7 +70,7 @@ class ObjectArrayProperty extends AbstractProperty
         $name = $this->propName();
         $keyStr = $this->keyStr();
         $st   = $this->subTypeName();
-        $outputVarName = SerializeMethodFactory::OUTPUT_VAR_NAME;
+        $outputVarName = VariableNames::OUTPUT;
 
         if ($this->itemType instanceof MixedProperty) {
             return "\${$outputVarName}[{$keyStr}] = array_map(fn (\$i) => \$i, \$this->{$name});";
@@ -100,7 +100,7 @@ class ObjectArrayProperty extends AbstractProperty
         $name = $this->propName();
         $keyStr = $this->keyStr();
         $st   = $this->subTypeName();
-        $outputVarName = SerializeMethodFactory::OUTPUT_VAR_NAME;
+        $outputVarName = VariableNames::OUTPUT;
 
         if ($this->itemType instanceof MixedProperty) {
             return "\${$outputVarName}->{{$keyStr}} = array_map(fn (\$i) => \$i, \$this->{$name});";
@@ -176,9 +176,9 @@ class ObjectArrayProperty extends AbstractProperty
     
     private function buildUseClause(): string
     {
-        $vars = ['$' . FromInputMethodFactory::VALIDATE_ARG];
+        $vars = ['$' . ArgumentNames::VALIDATE];
         if ($this->request->getClassHasDefaults()) {
-            $vars[] = '$' . FromInputMethodFactory::DEFAULTS_ARG;
+            $vars[] = '$' . ArgumentNames::MATRLZ_DEFAULTS;
         }
         return implode(', ', $vars);
     }

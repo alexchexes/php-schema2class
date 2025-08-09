@@ -271,6 +271,64 @@ class MyClass
     ];
 
     /**
+     * Mapping of schema property names to this class's property names.
+     *
+     * @var array
+     */
+    private static $_namesMap = [
+        '_GLOBALS' => '_GLOBALS',
+        'GLOBALS' => 'GLOBALS',
+        'GLOBALS_1' => 'GLOBALS1',
+        '_SERVER' => 'SERVER',
+        '_GET' => 'GET',
+        '_POST' => 'POST',
+        '_FILES' => 'FILES',
+        '_REQUEST' => 'REQUEST',
+        '_SESSION' => 'SESSION',
+        '_ENV' => 'ENV',
+        '_COOKIE' => 'COOKIE',
+        'php_errormsg' => 'phpErrormsg',
+        'http_response_header' => 'httpResponseHeader',
+        'argc' => 'argc',
+        'argv' => 'argv',
+        'input' => 'input',
+        'validate' => 'validate',
+        'materializeDefaults' => 'materializeDefaults',
+        'obj' => 'obj',
+        'includeDefaults' => 'includeDefaults',
+        'testObj' => 'testObj',
+        'fromInput' => 'fromInput',
+        'toArray' => 'toArray',
+        'toStdClass' => 'toStdClass',
+        'validateInput' => 'validateInput',
+        '_schema' => '_schema_1',
+        'schema' => 'schema',
+        '_defaults' => '_defaults_1',
+        'defaults' => 'defaults',
+        '_providedOptionals' => 'providedOptionals',
+        '__providedOptionals' => '_providedOptionals_1',
+        'clone' => 'clone',
+        '__clone' => '_clone',
+        '__construct' => 'construct',
+        '__destruct' => 'destruct',
+        '__get' => 'get',
+        '__set' => 'set',
+        '__call' => 'call',
+        '__isset' => 'isset',
+        '__unset' => 'unset',
+        '__sleep' => 'sleep',
+        '__wakeup' => 'wakeup',
+        '__toString' => 'toString',
+        '__invoke' => 'invoke',
+        '__debugInfo' => 'debugInfo',
+        'files' => 'files',
+        'this' => '_this',
+        'ensureArgs1' => 'ensureArgs1',
+        'ensureArgs2' => 'ensureArgs2',
+        'ensureArgs3' => 'ensureArgs3',
+    ];
+
+    /**
      * Default values from the schema
      *
      * @var array
@@ -2244,7 +2302,7 @@ class MyClass
             static::validateInput($input);
         }
 
-        $__providedOptionals = [];
+        $_providedOptionals = [];
         $_GLOBALS_1 = $input->{'_GLOBALS'};
         $_GLOBALS = $input->{'GLOBALS'};
         $GLOBALS1 = $input->{'GLOBALS_1'};
@@ -2292,7 +2350,7 @@ class MyClass
         $_materializeDefaults = null;
         if (property_exists($input, 'materializeDefaults')) {
             $_materializeDefaults = ($input->{'materializeDefaults'} !== null ? $input->{'materializeDefaults'} : null);
-            $__providedOptionals['materializeDefaults'] = true;
+            $_providedOptionals['materializeDefaults'] = true;
         }
         $testObj = isset($input->{'testObj'}) ? MyClassTestObj::fromInput($input->{'testObj'}, $validate, $materializeDefaults) : null;
         $_providedOptionals_1 = isset($input->{'__providedOptionals'}) ? $input->{'__providedOptionals'} : null;
@@ -2352,7 +2410,12 @@ class MyClass
             $ensureArgs2,
             $ensureArgs3
         );
-        $obj->_providedOptionals = $__providedOptionals;
+        $obj->_providedOptionals = $_providedOptionals;
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
 
         return $obj;
     }
@@ -2602,13 +2665,19 @@ class MyClass
     }
 
     /**
-     * Checks if an optional nullable property was explicitly set
+     * Checks if an optional nullable property was explicitly set.
      *
-     * @param string $propertyName Property name to check (exactly as it appears in the schema)
+     * @param string $propertyName Property name to check (exactly as it appears in the schema).
+     * @throws \InvalidArgumentException If property with that name doesn't exist.
      * @return bool
      */
     public function isOptionalProvided(string $propertyName)
     {
-        return array_key_exists($propertyName, $this->_providedOptionals);
+        if (!array_key_exists($propertyName, self::$_namesMap)) {
+            throw new \InvalidArgumentException("Unknown property: {$propertyName}");
+        }
+        return
+            array_key_exists($propertyName, $this->_providedOptionals)
+            || isset($this->{ self::$_namesMap[$propertyName] });
     }
 }

@@ -99,6 +99,23 @@ class MyClass
     ];
 
     /**
+     * Mapping of schema property names to this class's property names.
+     *
+     * @var array
+     */
+    private static $_namesMap = [
+        'foo' => 'foo',
+        'bar' => 'bar',
+        'baz' => 'baz',
+        'qux' => 'qux',
+        'quux' => 'quux',
+        'xyyz' => 'xyyz',
+        'thud' => 'thud',
+        'grox' => 'grox',
+        'gooks' => 'gooks',
+    ];
+
+    /**
      * Default values from the schema
      *
      * @var array
@@ -657,7 +674,7 @@ class MyClass
             static::validateInput($input);
         }
 
-        $__providedOptionals = [];
+        $_providedOptionals = [];
         $foo = $input->{'foo'};
         $quux = $input->{'quux'};
         $thud = $input->{'thud'};
@@ -665,27 +682,32 @@ class MyClass
         $baz = null;
         if (property_exists($input, 'baz')) {
             $baz = ($input->{'baz'} !== null ? $input->{'baz'} : null);
-            $__providedOptionals['baz'] = true;
+            $_providedOptionals['baz'] = true;
         }
         $qux = null;
         if (property_exists($input, 'qux')) {
             $qux = ($input->{'qux'} !== null ? $input->{'qux'} : null);
-            $__providedOptionals['qux'] = true;
+            $_providedOptionals['qux'] = true;
         }
         $xyyz = isset($input->{'xyyz'}) ? $input->{'xyyz'} : null;
         $grox = null;
         if (property_exists($input, 'grox')) {
             $grox = ($input->{'grox'} !== null ? MyClassGrox::fromInput($input->{'grox'}, $validate, $materializeDefaults) : null);
-            $__providedOptionals['grox'] = true;
+            $_providedOptionals['grox'] = true;
         }
         $gooks = null;
         if (property_exists($input, 'gooks')) {
             $gooks = ($input->{'gooks'} !== null ? MyClassGooks::fromInput($input->{'gooks'}, $validate, $materializeDefaults) : null);
-            $__providedOptionals['gooks'] = true;
+            $_providedOptionals['gooks'] = true;
         }
 
         $obj = new self($foo, $quux, $thud, $bar, $baz, $qux, $xyyz, $grox, $gooks);
-        $obj->_providedOptionals = $__providedOptionals;
+        $obj->_providedOptionals = $_providedOptionals;
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
 
         return $obj;
     }
@@ -829,13 +851,19 @@ class MyClass
     }
 
     /**
-     * Checks if an optional nullable property was explicitly set
+     * Checks if an optional nullable property was explicitly set.
      *
-     * @param string $propertyName Property name to check (exactly as it appears in the schema)
+     * @param string $propertyName Property name to check (exactly as it appears in the schema).
+     * @throws \InvalidArgumentException If property with that name doesn't exist.
      * @return bool
      */
     public function isOptionalProvided(string $propertyName)
     {
-        return array_key_exists($propertyName, $this->_providedOptionals);
+        if (!array_key_exists($propertyName, self::$_namesMap)) {
+            throw new \InvalidArgumentException("Unknown property: {$propertyName}");
+        }
+        return
+            array_key_exists($propertyName, $this->_providedOptionals)
+            || isset($this->{ self::$_namesMap[$propertyName] });
     }
 }

@@ -8,8 +8,6 @@ class MyClass
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
     private static array $_schema = [
         'required' => [
@@ -76,9 +74,21 @@ class MyClass
     ];
 
     /**
+     * Mapping of schema property names to this class's property names.
+     */
+    private static array $_namesMap = [
+        'foo' => 'foo',
+        'bar' => 'bar',
+        'baz' => 'baz',
+        'qux' => 'qux',
+        'thud' => 'thud',
+        'grox' => 'grox',
+        'qwert' => 'qwert',
+        'zyx' => 'zyx',
+    ];
+
+    /**
      * Default values from the schema
-     *
-     * @var array
      */
     private static array $_defaults = [
         'foo' => [
@@ -414,13 +424,13 @@ class MyClass
             static::validateInput($input);
         }
 
-        $__providedOptionals = [];
+        $_providedOptionals = [];
         $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
         $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
         $baz = null;
         if (property_exists($input, 'baz')) {
             $baz = ($input->{'baz'} !== null ? $input->{'baz'} : null);
-            $__providedOptionals['baz'] = true;
+            $_providedOptionals['baz'] = true;
         }
         $qux = isset($input->{'qux'}) ? $input->{'qux'} : null;
         $thud = isset($input->{'thud'}) ? $input->{'thud'} : null;
@@ -433,7 +443,12 @@ class MyClass
         $zyx = isset($input->{'zyx'}) ? $input->{'zyx'} : null;
 
         $obj = new self($foo, $bar, $baz, $qux, $thud, $grox, $qwert, $zyx);
-        $obj->_providedOptionals = $__providedOptionals;
+        $obj->_providedOptionals = $_providedOptionals;
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
 
         return $obj;
     }
@@ -585,13 +600,18 @@ class MyClass
     }
 
     /**
-     * Checks if an optional nullable property was explicitly set
+     * Checks if an optional nullable property was explicitly set.
      *
-     * @param string $propertyName Property name to check (exactly as it appears in the schema)
-     * @return bool
+     * @param string $propertyName Property name to check (exactly as it appears in the schema).
+     * @throws \InvalidArgumentException If property with that name doesn't exist.
      */
     public function isOptionalProvided(string $propertyName): bool
     {
-        return array_key_exists($propertyName, $this->_providedOptionals);
+        if (!array_key_exists($propertyName, self::$_namesMap)) {
+            throw new \InvalidArgumentException("Unknown property: {$propertyName}");
+        }
+        return
+            array_key_exists($propertyName, $this->_providedOptionals)
+            || isset($this->{ self::$_namesMap[$propertyName] });
     }
 }

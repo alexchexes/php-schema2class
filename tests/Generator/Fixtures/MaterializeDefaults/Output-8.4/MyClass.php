@@ -8,8 +8,6 @@ class MyClass
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
     private static array $_schema = [
         'type' => 'object',
@@ -220,9 +218,26 @@ class MyClass
     ];
 
     /**
+     * Mapping of schema property names to this class's property names.
+     */
+    private static array $_namesMap = [
+        'foo' => 'foo',
+        'bar' => 'bar',
+        'baz' => 'baz',
+        'quxObj' => 'quxObj',
+        'quxObjNest' => 'quxObjNest',
+        'thudArray' => 'thudArray',
+        'xyyz' => 'xyyz',
+        'buux' => 'buux',
+        'boic' => 'boic',
+        'poox' => 'poox',
+        'arrObjUnion' => 'arrObjUnion',
+        'objArrUnion' => 'objArrUnion',
+        'numKeysDefaults' => 'numKeysDefaults',
+    ];
+
+    /**
      * Default values from the schema
-     *
-     * @var array
      */
     private static array $_defaults = [
         'bar' => [
@@ -762,24 +777,24 @@ class MyClass
             static::validateInput($input);
         }
 
-        $__providedOptionals = [];
+        $_providedOptionals = [];
         $foo = $input->{'foo'};
         $bar = $input->{'bar'};
         $baz = isset($input->{'baz'}) ? MyClassBaz::fromInput($input->{'baz'}, $validate, $materializeDefaults) : null;
         $quxObj = null;
         if (property_exists($input, 'quxObj')) {
             $quxObj = ($input->{'quxObj'} !== null ? MyClassQuxObj::fromInput($input->{'quxObj'}, $validate, $materializeDefaults) : null);
-            $__providedOptionals['quxObj'] = true;
+            $_providedOptionals['quxObj'] = true;
         }
         $quxObjNest = null;
         if (property_exists($input, 'quxObjNest')) {
             $quxObjNest = ($input->{'quxObjNest'} !== null ? MyClassQuxObjNest::fromInput($input->{'quxObjNest'}, $validate, $materializeDefaults) : null);
-            $__providedOptionals['quxObjNest'] = true;
+            $_providedOptionals['quxObjNest'] = true;
         }
         $thudArray = null;
         if (property_exists($input, 'thudArray')) {
             $thudArray = ($input->{'thudArray'} !== null ? $input->{'thudArray'} : null);
-            $__providedOptionals['thudArray'] = true;
+            $_providedOptionals['thudArray'] = true;
         }
         $xyyz = isset($input->{'xyyz'}) ? match (true) {
             is_string($input->{'xyyz'}),
@@ -831,7 +846,12 @@ class MyClass
             $objArrUnion,
             $numKeysDefaults
         );
-        $obj->_providedOptionals = $__providedOptionals;
+        $obj->_providedOptionals = $_providedOptionals;
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
 
         return $obj;
     }
@@ -1090,13 +1110,18 @@ class MyClass
     }
 
     /**
-     * Checks if an optional nullable property was explicitly set
+     * Checks if an optional nullable property was explicitly set.
      *
-     * @param string $propertyName Property name to check (exactly as it appears in the schema)
-     * @return bool
+     * @param string $propertyName Property name to check (exactly as it appears in the schema).
+     * @throws \InvalidArgumentException If property with that name doesn't exist.
      */
     public function isOptionalProvided(string $propertyName): bool
     {
-        return array_key_exists($propertyName, $this->_providedOptionals);
+        if (!array_key_exists($propertyName, self::$_namesMap)) {
+            throw new \InvalidArgumentException("Unknown property: {$propertyName}");
+        }
+        return
+            array_key_exists($propertyName, $this->_providedOptionals)
+            || isset($this->{ self::$_namesMap[$propertyName] });
     }
 }

@@ -2,14 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Ns\AdditionalProps_7_4;
+namespace Ns\AdditionalPropertiesAnyRoot_7_4;
 
 class MyClass
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
     private static array $_schema = [
         'type' => 'object',
@@ -19,11 +17,19 @@ class MyClass
             ],
             'params' => [
                 'type' => 'object',
-                'additionalProperties' => [
-                    
-                ],
             ],
         ],
+        'additionalProperties' => [
+            
+        ],
+    ];
+
+    /**
+     * Mapping of schema property names to this class's property names.
+     */
+    private static array $_namesMap = [
+        'name' => 'name',
+        'params' => 'params',
     ];
 
     /**
@@ -34,14 +40,14 @@ class MyClass
     private ?string $name = null;
 
     /**
-     * @var mixed[]|null
+     * @var array|object|null
      */
-    private ?array $params = null;
+    private $params = null;
 
     /**
-     * @param mixed[]|null $params
+     * @param array|object|null $params
      */
-    public function __construct(?string $name = null, ?array $params = null)
+    public function __construct(?string $name = null, $params = null)
     {
         $this->_additionalProperties = new \stdClass();
 
@@ -109,17 +115,17 @@ class MyClass
     }
 
     /**
-     * @return mixed[]|null
+     * @return array|object|null
      */
-    public function getParams(): ?array
+    public function getParams()
     {
         return $this->params ?? null;
     }
 
     /**
-     * @param mixed[] $params
+     * @param array|object $params
      */
-    public function withParams(array $params): self
+    public function withParams($params): self
     {
         $clone = clone $this;
         $clone->params = $params;
@@ -157,9 +163,14 @@ class MyClass
         }
 
         $name = isset($input->{'name'}) ? $input->{'name'} : null;
-        $params = isset($input->{'params'}) ? (array)$input->{'params'} : null;
+        $params = isset($input->{'params'}) ? $input->{'params'} : null;
 
         $obj = new self($name, $params);
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
 
         return $obj;
     }
@@ -177,7 +188,7 @@ class MyClass
             $output['name'] = $this->name;
         }
         if (isset($this->params)) {
-            $output['params'] = $this->params;
+            $output['params'] = json_decode(json_encode($this->params), true);
         }
 
         return $output;
@@ -196,7 +207,7 @@ class MyClass
             $output->{'name'} = $this->name;
         }
         if (isset($this->params)) {
-            $output->{'params'} = $this->params;
+            $output->{'params'} = json_decode(json_encode($this->params));
         }
 
         return $output;

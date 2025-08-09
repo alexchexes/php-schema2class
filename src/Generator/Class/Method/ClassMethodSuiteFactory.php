@@ -39,7 +39,7 @@ class ClassMethodSuiteFactory
             (new ValidateMethodFactory($this->request))->generate(),
             (new ValidateInputMethodFactory($this->request))->generate(),
             (new CloneMethodFactory($this->schemaProperties))->generate(),
-            (new IsProvidedMethodFactory($this->request, $this->schemaProperties->hasOptionalNullable()))->generate(),
+            (new IsOptionalProvidedMethodFactory($this->request, $this->schemaProperties->hasOptionalNullable()))->generate(),
         ];
 
         return array_values(array_filter($methodGenerators));

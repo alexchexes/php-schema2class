@@ -8,8 +8,6 @@ class MyGenericStringNumberField
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
     private static array $_schema = [
         'additionalProperties' => false,

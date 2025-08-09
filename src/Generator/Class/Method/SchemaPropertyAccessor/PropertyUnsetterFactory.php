@@ -3,8 +3,10 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Class\Method\SchemaPropertyAccessor;
 
+use Helmich\Schema2Class\Generator\Class\ArgumentNames;
 use Helmich\Schema2Class\Generator\Class\MethodNames;
 use Helmich\Schema2Class\Generator\Class\PropertyNames;
+use Helmich\Schema2Class\Generator\Class\VariableNames;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\Decorator\OptionalPropertyDecorator;
 use Helmich\Schema2Class\Generator\Property\Type\PropertyInterface;
@@ -17,9 +19,6 @@ use Laminas\Code\Generator\ParameterGenerator;
 
 class PropertyUnsetterFactory
 {
-    public const CLONE_VAR = 'clone';
-    public const VALIDATE_ARG = 'validate';
-
     private bool $mutating;
     private bool $chainable;
 
@@ -78,7 +77,7 @@ class PropertyUnsetterFactory
         $tags = [];
 
         if ($addValidation && !$this->request->isAtLeastPHP('7.0')) {
-            $tags[] = new ParamTag(self::VALIDATE_ARG, ['bool']);
+            $tags[] = new ParamTag(ArgumentNames::VALIDATE, ['bool']);
         }
 
         if ($this->chainable && !$this->request->isAtLeastPHP('7.0')) {
@@ -100,7 +99,7 @@ class PropertyUnsetterFactory
         if ($addValidation) {
             $type = $this->request->isAtLeastPHP('7.0') ? 'bool' : null;
             $validateParam = new ParameterGenerator(
-                name: self::VALIDATE_ARG,
+                name: ArgumentNames::VALIDATE,
                 type: $type,
                 defaultValue: true,
             );
@@ -112,10 +111,10 @@ class PropertyUnsetterFactory
 
     private function generateBody(PropertyInterface $property, bool $addValidation): string
     {
-        $OPTIONALS = PropertyNames::OPTIONALS;
+        $OPTIONALS = PropertyNames::PROVIDED_OPTIONALS;
         $VALIDATE_SELF = MethodNames::VALIDATE_SELF;
-        $VALIDATE_ARG = self::VALIDATE_ARG;
-        $CLONE_VAR = self::CLONE_VAR;
+        $VALIDATE_ARG = ArgumentNames::VALIDATE;
+        $CLONE_VAR = VariableNames::CLONE;
         $propKey = $property->keyStr();
         $propName = $property->propName();
         $object = $this->mutating ? 'this' : $CLONE_VAR;

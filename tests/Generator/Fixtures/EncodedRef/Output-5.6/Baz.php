@@ -43,6 +43,17 @@ class Baz
     ];
 
     /**
+     * Mapping of schema property names to this class's property names.
+     *
+     * @var array
+     */
+    private static $_namesMap = [
+        'a' => 'a',
+        'b' => 'b',
+        'c' => 'c',
+    ];
+
+    /**
      * Map of name/value pairs for properties not specified in the schema.
      *
      * @var \stdClass
@@ -235,6 +246,11 @@ class Baz
         $c = isset($input->{'c'}) ? BarTest::fromInput($input->{'c'}, $validate) : null;
 
         $obj = new self($a, $b, $c);
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
 
         return $obj;
     }

@@ -29,6 +29,17 @@ class MyClass
     ];
 
     /**
+     * Mapping of schema property names to this class's property names.
+     *
+     * @var array
+     */
+    private static $_namesMap = [
+        'Город' => 'Gorod',
+        'название юр.лица' => 'nazvanieIurLitsa',
+        'IP-адрес' => 'IPAdres',
+    ];
+
+    /**
      * Map of name/value pairs for properties not specified in the schema.
      *
      * @var \stdClass
@@ -218,6 +229,11 @@ class MyClass
         $IPAdres = $input->{'IP-адрес'};
 
         $obj = new self($Gorod, $nazvanieIurLitsa, $IPAdres);
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
 
         return $obj;
     }

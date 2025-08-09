@@ -8,8 +8,6 @@ class BarTest
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
     private static array $_schema = [
         'type' => 'object',
@@ -54,6 +52,13 @@ class BarTest
                 ],
             ],
         ],
+    ];
+
+    /**
+     * Mapping of schema property names to this class's property names.
+     */
+    private static array $_namesMap = [
+        'exampleProp' => 'exampleProp',
     ];
 
     /**
@@ -167,6 +172,11 @@ class BarTest
         $exampleProp = isset($input->{'exampleProp'}) ? ((FooTest_1::validateInput($input->{'exampleProp'}, true)) ? FooTest_1::fromInput($input->{'exampleProp'}, $validate) : (((MoiKlass::validateInput($input->{'exampleProp'}, true)) ? MoiKlass::fromInput($input->{'exampleProp'}, $validate) : (((FooTest::validateInput($input->{'exampleProp'}, true)) ? FooTest::fromInput($input->{'exampleProp'}, $validate) : (null)))))) : null;
 
         $obj = new self($exampleProp);
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
 
         return $obj;
     }

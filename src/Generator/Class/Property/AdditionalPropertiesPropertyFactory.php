@@ -18,10 +18,15 @@ class AdditionalPropertiesPropertyFactory
 {
     public function __construct(
       private GeneratorRequest $request,
+      private bool $additionalsAllowed,
     ) {}
 
-    public function generate(): PropertyGenerator
+    public function generate(): ?PropertyGenerator
     {
+        if (!$this->additionalsAllowed) {
+            return null;
+        }
+
         $propGen = new PropertyGenerator(
             name: PropertyNames::ADDITIONAL_PROPS,
             flags: PropertyGenerator::FLAG_PRIVATE,

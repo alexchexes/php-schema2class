@@ -8,8 +8,6 @@ class Pets
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
     private static array $_schema = [
         'type' => 'object',
@@ -49,6 +47,14 @@ class Pets
                 'default' => false,
             ],
         ],
+    ];
+
+    /**
+     * Mapping of schema property names to this class's property names.
+     */
+    private static array $_namesMap = [
+        'pet' => 'pet',
+        'cat' => 'cat',
     ];
 
     /**
@@ -166,6 +172,11 @@ class Pets
         $cat = isset($input->{'cat'}) ? Cat::fromInput($input->{'cat'}, $validate) : null;
 
         $obj = new self($pet, $cat);
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
 
         return $obj;
     }

@@ -8,8 +8,6 @@ class MyClassRefAndNotRefObjectsUnionAlternative4
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
     private static array $_schema = [
         'properties' => [
@@ -33,6 +31,13 @@ class MyClassRefAndNotRefObjectsUnionAlternative4
                 ],
             ],
         ],
+    ];
+
+    /**
+     * Mapping of schema property names to this class's property names.
+     */
+    private static array $_namesMap = [
+        'accountNumber' => 'accountNumber',
     ];
 
     /**
@@ -132,6 +137,11 @@ class MyClassRefAndNotRefObjectsUnionAlternative4
         $accountNumber = isset($input->{'accountNumber'}) ? $input->{'accountNumber'} : null;
 
         $obj = new self($accountNumber);
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
 
         return $obj;
     }

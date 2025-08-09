@@ -8,8 +8,6 @@ class MyClass
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
     private static array $_schema = [
         'required' => [
@@ -41,6 +39,17 @@ class MyClass
                 'description' => 'Descr for \'state\'',
             ],
         ],
+    ];
+
+    /**
+     * Mapping of schema property names to this class's property names.
+     */
+    private static array $_namesMap = [
+        'street_address' => 'streetAddress',
+        'house_number' => 'houseNumber',
+        'type' => 'type',
+        'city' => 'city',
+        'state' => 'state',
     ];
 
     /**
@@ -247,6 +256,11 @@ class MyClass
         $city = isset($input->{'city'}) ? $input->{'city'} : null;
 
         $obj = new self($streetAddress, $state, $houseNumber, $type, $city);
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
 
         return $obj;
     }

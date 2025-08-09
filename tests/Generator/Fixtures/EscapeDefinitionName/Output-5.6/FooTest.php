@@ -19,6 +19,15 @@ class FooTest
     ];
 
     /**
+     * Mapping of schema property names to this class's property names.
+     *
+     * @var array
+     */
+    private static $_namesMap = [
+        'a' => 'a',
+    ];
+
+    /**
      * Map of name/value pairs for properties not specified in the schema.
      *
      * @var \stdClass
@@ -145,6 +154,11 @@ class FooTest
         $a = isset($input->{'a'}) ? $input->{'a'} : null;
 
         $obj = new self($a);
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
 
         return $obj;
     }

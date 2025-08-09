@@ -8,8 +8,6 @@ class Record
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
     private static array $_schema = [
         'type' => 'object',
@@ -88,6 +86,16 @@ class Record
                 ],
             ],
         ],
+    ];
+
+    /**
+     * Mapping of schema property names to this class's property names.
+     */
+    private static array $_namesMap = [
+        'dataArray' => 'dataArray',
+        'dataArrayNested' => 'dataArrayNested',
+        'dataArrayAnyOf' => 'dataArrayAnyOf',
+        'dataArrayNestedAnyOf' => 'dataArrayNestedAnyOf',
     ];
 
     /**
@@ -318,6 +326,11 @@ class Record
         $dataArrayNestedAnyOf = isset($input->{'dataArrayNestedAnyOf'}) ? array_map(fn($i) => array_map(fn($i) => ((Fio::validateInput($i, true)) ? Fio::fromInput($i, $validate) : (((Phone::validateInput($i, true)) ? Phone::fromInput($i, $validate) : (null)))), $i), $input->{'dataArrayNestedAnyOf'}) : null;
 
         $obj = new self($dataArray, $dataArrayNested, $dataArrayAnyOf, $dataArrayNestedAnyOf);
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
 
         return $obj;
     }

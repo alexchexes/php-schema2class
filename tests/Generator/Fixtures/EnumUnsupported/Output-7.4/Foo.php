@@ -8,8 +8,6 @@ class Foo
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
     private static array $_schema = [
         'type' => 'object',
@@ -59,6 +57,17 @@ class Foo
                 ],
             ],
         ],
+    ];
+
+    /**
+     * Mapping of schema property names to this class's property names.
+     */
+    private static array $_namesMap = [
+        'floatEnum' => 'floatEnum',
+        'floatEnumRef' => 'floatEnumRef',
+        'boolEnum' => 'boolEnum',
+        'boolEnumRef' => 'boolEnumRef',
+        'requiredBoolEnumRef' => 'requiredBoolEnumRef',
     ];
 
     /**
@@ -330,6 +339,11 @@ class Foo
             $boolEnum,
             $boolEnumRef
         );
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
 
         return $obj;
     }

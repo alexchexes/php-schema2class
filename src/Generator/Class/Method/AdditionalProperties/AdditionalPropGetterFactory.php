@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Class\Method\AdditionalProperties;
 
+use Helmich\Schema2Class\Generator\Class\ArgumentNames;
 use Helmich\Schema2Class\Generator\Class\MethodNames;
 use Helmich\Schema2Class\Generator\Class\PropertyNames;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
-use Helmich\Schema2Class\Util\SchemaUtils;
 use Laminas\Code\Generator\DocBlock\Tag\ParamTag;
 use Laminas\Code\Generator\DocBlock\Tag\ReturnTag;
 use Laminas\Code\Generator\DocBlockGenerator;
@@ -15,8 +15,6 @@ use Laminas\Code\Generator\ParameterGenerator;
 
 class AdditionalPropGetterFactory
 {
-    public const AS_ARRAY_ARG = 'asArray';
-
     public function __construct(
         private GeneratorRequest $request,
     ) {}
@@ -25,7 +23,7 @@ class AdditionalPropGetterFactory
     {
         $params = [
             new ParameterGenerator(
-                name: self::AS_ARRAY_ARG,
+                name: ArgumentNames::AS_ARRAY,
                 type: $this->request->isAtLeastPHP('7.0') ? 'bool' : null,
                 defaultValue: true,
             ),
@@ -50,7 +48,7 @@ class AdditionalPropGetterFactory
     {
         $tags = [
             new ParamTag(
-                variableName: self::AS_ARRAY_ARG,
+                variableName: ArgumentNames::AS_ARRAY,
                 types: 'bool',
                 description: 'Whether return an associative array instead of `stdClass` object.',
             ),
@@ -73,7 +71,7 @@ class AdditionalPropGetterFactory
     private function buildBody(): string
     {
         $ADDITIONAL_PROPS = PropertyNames::ADDITIONAL_PROPS;
-        $AS_ARRAY_ARG = self::AS_ARRAY_ARG;
+        $AS_ARRAY_ARG = ArgumentNames::AS_ARRAY;
 
         $body =
             <<<PHP

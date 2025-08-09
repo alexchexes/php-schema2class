@@ -8,8 +8,6 @@ class MyClassNumKeysDefaults
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
     private static array $_schema = [
         'type' => 'object',
@@ -76,9 +74,16 @@ class MyClassNumKeysDefaults
     ];
 
     /**
+     * Mapping of schema property names to this class's property names.
+     */
+    private static array $_namesMap = [
+        '_0',
+        '_1',
+        '_2',
+    ];
+
+    /**
      * Default values from the schema
-     *
-     * @var array
      */
     private static array $_defaults = [
         [
@@ -246,6 +251,11 @@ class MyClassNumKeysDefaults
         $_2 = isset($input->{'2'}) ? $input->{'2'} : null;
 
         $obj = new self($_0, $_1, $_2);
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
 
         return $obj;
     }

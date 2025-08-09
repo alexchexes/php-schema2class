@@ -8,8 +8,6 @@ class NumericKeysObj
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
     private static array $_schema = [
         'type' => 'object',
@@ -29,6 +27,15 @@ class NumericKeysObj
             'a default string for \'1\'',
             'a default string for \'2\'',
         ],
+    ];
+
+    /**
+     * Mapping of schema property names to this class's property names.
+     */
+    private static array $_namesMap = [
+        '_0',
+        '_1',
+        '_2',
     ];
 
     /**
@@ -171,6 +178,11 @@ class NumericKeysObj
         $_2 = isset($input->{'2'}) ? $input->{'2'} : null;
 
         $obj = new self($_0, $_1, $_2);
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
 
         return $obj;
     }

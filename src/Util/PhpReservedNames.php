@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Util;
 
-class ReservedNames
+class PhpReservedNames
 {
     static public function phpPredefined(): array
     {

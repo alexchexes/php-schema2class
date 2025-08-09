@@ -8,8 +8,6 @@ class Qux
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
     private static array $_schema = [
         'type' => 'object',
@@ -67,6 +65,13 @@ class Qux
                 ],
             ],
         ],
+    ];
+
+    /**
+     * Mapping of schema property names to this class's property names.
+     */
+    private static array $_namesMap = [
+        'grox' => 'grox',
     ];
 
     /**
@@ -180,6 +185,11 @@ class Qux
         $grox = isset($input->{'grox'}) ? (((Foo::validateInput($input->{'grox'}, true)) || (Bar::validateInput($input->{'grox'}, true))) ? ((Bar::validateInput($input->{'grox'}, true)) ? Bar::fromInput($input->{'grox'}, $validate) : (((Foo::validateInput($input->{'grox'}, true)) ? Foo::fromInput($input->{'grox'}, $validate) : (null)))) : (((is_array($input->{'grox'})) ? $input->{'grox'} : (((is_string($input->{'grox'})) ? $input->{'grox'} : (null)))))) : null;
 
         $obj = new self($grox);
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
 
         return $obj;
     }

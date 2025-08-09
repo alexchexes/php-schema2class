@@ -11,8 +11,6 @@ class IfThenElse
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
     private static array $_schema = [
         'description' => 'Class generated from this definition should add full re-validation to each property setter as its schema contains conditional validation which might affect any of its properties',
@@ -63,6 +61,14 @@ class IfThenElse
                 'value',
             ],
         ],
+    ];
+
+    /**
+     * Mapping of schema property names to this class's property names.
+     */
+    private static array $_namesMap = [
+        'kind' => 'kind',
+        'value' => 'value',
     ];
 
     /**
@@ -187,6 +193,11 @@ class IfThenElse
         $value = isset($input->{'value'}) ? $input->{'value'} : null;
 
         $obj = new self($kind, $value);
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
 
         return $obj;
     }

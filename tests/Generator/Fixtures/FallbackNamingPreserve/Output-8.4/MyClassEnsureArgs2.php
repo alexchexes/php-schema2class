@@ -8,8 +8,6 @@ class MyClassEnsureArgs2
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
     private static array $_schema = [
         'required' => [
@@ -29,9 +27,15 @@ class MyClassEnsureArgs2
     ];
 
     /**
+     * Mapping of schema property names to this class's property names.
+     */
+    private static array $_namesMap = [
+        'city' => 'city',
+        'street' => 'street',
+    ];
+
+    /**
      * Default values from the schema
-     *
-     * @var array
      */
     private static array $_defaults = [
         'street' => [
@@ -160,6 +164,11 @@ class MyClassEnsureArgs2
         $street = $input->{'street'};
 
         $obj = new self($city, $street);
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
 
         return $obj;
     }

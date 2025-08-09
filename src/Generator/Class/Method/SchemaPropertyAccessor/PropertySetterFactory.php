@@ -3,8 +3,10 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Class\Method\SchemaPropertyAccessor;
 
+use Helmich\Schema2Class\Generator\Class\ArgumentNames;
 use Helmich\Schema2Class\Generator\Class\MethodNames;
 use Helmich\Schema2Class\Generator\Class\PropertyNames;
+use Helmich\Schema2Class\Generator\Class\VariableNames;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\Decorator\OptionalPropertyDecorator;
 use Helmich\Schema2Class\Generator\Property\PropertyQuery;
@@ -20,9 +22,6 @@ use Laminas\Code\Generator\ParameterGenerator;
 
 class PropertySetterFactory
 {
-    public const CLONE_VAR = 'clone';
-    public const VALIDATE_ARG = 'validate';
-
     private bool $mutating;
     private bool $chainable;
 
@@ -109,7 +108,7 @@ class PropertySetterFactory
         }
 
         if ($addValidation && !$this->request->isAtLeastPHP('7.0')) {
-            $tags[] = new ParamTag(self::VALIDATE_ARG, ['bool']);
+            $tags[] = new ParamTag(ArgumentNames::VALIDATE, ['bool']);
         }
 
         if ($this->chainable && !$this->request->isAtLeastPHP('7.0')) {
@@ -140,7 +139,7 @@ class PropertySetterFactory
         if ($addValidation) {
             $type = $this->request->isAtLeastPHP('7.0') ? 'bool' : null;
             $validateParam = new ParameterGenerator(
-                name: self::VALIDATE_ARG,
+                name: ArgumentNames::VALIDATE,
                 type: $type,
                 defaultValue: true,
             );
@@ -157,11 +156,11 @@ class PropertySetterFactory
     ): string
     {
         $newValidatorExpr = $this->request->getOptions()->getNewValidatorExpr();
-        $OPTIONALS = PropertyNames::OPTIONALS;
+        $OPTIONALS = PropertyNames::PROVIDED_OPTIONALS;
         $SCHEMA_PROP = PropertyNames::SCHEMA;
         $VALIDATE_SELF = MethodNames::VALIDATE_SELF;
-        $VALIDATE_ARG = self::VALIDATE_ARG;
-        $CLONE_VAR = self::CLONE_VAR;
+        $VALIDATE_ARG = ArgumentNames::VALIDATE;
+        $CLONE_VAR = VariableNames::CLONE;
         $propKey = $property->keyStr();
         $propName = $property->propName();
         $varName = $property->varName();

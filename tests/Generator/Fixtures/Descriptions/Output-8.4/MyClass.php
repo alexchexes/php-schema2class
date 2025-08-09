@@ -11,8 +11,6 @@ class MyClass
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
     private static array $_schema = [
         'type' => 'object',
@@ -38,6 +36,14 @@ class MyClass
                 'description' => 'Description  of the `Baz` definition',
             ],
         ],
+    ];
+
+    /**
+     * Mapping of schema property names to this class's property names.
+     */
+    private static array $_namesMap = [
+        'foo' => 'foo',
+        'bar' => 'bar',
     ];
 
     /**
@@ -161,6 +167,11 @@ class MyClass
         $bar = isset($input->{'bar'}) ? Baz::fromInput($input->{'bar'}, $validate) : null;
 
         $obj = new self($foo, $bar);
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
 
         return $obj;
     }

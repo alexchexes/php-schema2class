@@ -3,8 +3,10 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Class\Method\AdditionalProperties;
 
+use Helmich\Schema2Class\Generator\Class\ArgumentNames;
 use Helmich\Schema2Class\Generator\Class\MethodNames;
 use Helmich\Schema2Class\Generator\Class\PropertyNames;
+use Helmich\Schema2Class\Generator\Class\VariableNames;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Util\SchemaUtils;
 use Laminas\Code\Generator\DocBlock\Tag\ParamTag;
@@ -15,10 +17,6 @@ use Laminas\Code\Generator\ParameterGenerator;
 
 class AdditionalPropSetterFactory
 {
-    public const INPUT_ARG = 'additionalProperties';
-    public const VALIDATE_ARG = 'validate';
-    public const CLONE_VAR = 'clone';
-
     private bool $mutating;
     private bool $chainable;
 
@@ -67,14 +65,14 @@ class AdditionalPropSetterFactory
     {
         $params = [
             new ParameterGenerator(
-                name: self::INPUT_ARG,
+                name: ArgumentNames::ADDITIONAL_PROPS,
                 type: $this->request->isAtLeastPHP('8.0') ? '\stdClass|array' : null,
             )
         ];
         
         if ($addValidation) {
             $params[] = new ParameterGenerator(
-                name: self::VALIDATE_ARG,
+                name: ArgumentNames::VALIDATE,
                 type: $this->request->isAtLeastPHP('7.0') ? 'bool' : null,
                 defaultValue: true,
             );
@@ -87,7 +85,7 @@ class AdditionalPropSetterFactory
     {
         $tags = [
             new ParamTag(
-                variableName: self::INPUT_ARG,
+                variableName: ArgumentNames::ADDITIONAL_PROPS,
                 types: ['\stdClass', 'array'],
                 description: 'Map of property name/value pairs to add.',
             ),
@@ -95,7 +93,7 @@ class AdditionalPropSetterFactory
 
         if ($addValidation) {
             $tags[] = new ParamTag(
-                variableName: self::VALIDATE_ARG,
+                variableName: ArgumentNames::VALIDATE,
                 types: ['bool'],
                 description: 'Whether to revalidate the resulting object.',
             );
@@ -120,9 +118,9 @@ class AdditionalPropSetterFactory
         $arrayToObjectExpr = $this->request->getOptions()->getArrayToObjectExpr();
         $ADDITIONAL_PROPS = PropertyNames::ADDITIONAL_PROPS;
         $VALIDATE_SELF = MethodNames::VALIDATE_SELF;
-        $VALIDATE_ARG = self::VALIDATE_ARG;
-        $INPUT_ARG = self::INPUT_ARG;
-        $CLONE_VAR = self::CLONE_VAR;
+        $VALIDATE_ARG = ArgumentNames::VALIDATE;
+        $INPUT_ARG = ArgumentNames::ADDITIONAL_PROPS;
+        $CLONE_VAR = VariableNames::CLONE;
         $object = $this->mutating ? 'this' : $CLONE_VAR;
 
         $bodyParts = [];

@@ -11,8 +11,6 @@ class MyClassGooks
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
     private static array $_schema = [
         'type' => 'object',
@@ -28,6 +26,14 @@ class MyClassGooks
         'default' => [
             
         ],
+    ];
+
+    /**
+     * Mapping of schema property names to this class's property names.
+     */
+    private static array $_namesMap = [
+        'a' => 'a',
+        'b' => 'b',
     ];
 
     /**
@@ -145,6 +151,11 @@ class MyClassGooks
         $b = isset($input->{'b'}) ? $input->{'b'} : null;
 
         $obj = new self($a, $b);
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
 
         return $obj;
     }

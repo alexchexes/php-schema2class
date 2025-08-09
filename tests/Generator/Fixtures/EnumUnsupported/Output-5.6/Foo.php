@@ -60,6 +60,19 @@ class Foo
     ];
 
     /**
+     * Mapping of schema property names to this class's property names.
+     *
+     * @var array
+     */
+    private static $_namesMap = [
+        'floatEnum' => 'floatEnum',
+        'floatEnumRef' => 'floatEnumRef',
+        'boolEnum' => 'boolEnum',
+        'boolEnumRef' => 'boolEnumRef',
+        'requiredBoolEnumRef' => 'requiredBoolEnumRef',
+    ];
+
+    /**
      * Map of name/value pairs for properties not specified in the schema.
      *
      * @var \stdClass
@@ -355,6 +368,11 @@ class Foo
             $boolEnum,
             $boolEnumRef
         );
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
 
         return $obj;
     }

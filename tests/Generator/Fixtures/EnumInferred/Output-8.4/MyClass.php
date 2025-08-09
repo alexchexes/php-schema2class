@@ -8,8 +8,6 @@ class MyClass
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
     private static array $_schema = [
         'required' => [
@@ -65,6 +63,18 @@ class MyClass
                 ],
             ],
         ],
+    ];
+
+    /**
+     * Mapping of schema property names to this class's property names.
+     */
+    private static array $_namesMap = [
+        'inferString' => 'inferString',
+        'inferInt' => 'inferInt',
+        'inferMixed' => 'inferMixed',
+        'inferStringOpt' => 'inferStringOpt',
+        'inferIntOpt' => 'inferIntOpt',
+        'inferMixedOpt' => 'inferMixedOpt',
     ];
 
     /**
@@ -300,7 +310,7 @@ class MyClass
             static::validateInput($input);
         }
 
-        $__providedOptionals = [];
+        $_providedOptionals = [];
         $inferString = MyClassInferString::from($input->{'inferString'});
         $inferInt = MyClassInferInt::from($input->{'inferInt'});
         $inferMixed = ($input->{'inferMixed'} !== null ? $input->{'inferMixed'} : null);
@@ -309,7 +319,7 @@ class MyClass
         $inferMixedOpt = null;
         if (property_exists($input, 'inferMixedOpt')) {
             $inferMixedOpt = ($input->{'inferMixedOpt'} !== null ? $input->{'inferMixedOpt'} : null);
-            $__providedOptionals['inferMixedOpt'] = true;
+            $_providedOptionals['inferMixedOpt'] = true;
         }
 
         $obj = new self(
@@ -320,7 +330,12 @@ class MyClass
             $inferIntOpt,
             $inferMixedOpt
         );
-        $obj->_providedOptionals = $__providedOptionals;
+        $obj->_providedOptionals = $_providedOptionals;
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
 
         return $obj;
     }
@@ -412,13 +427,18 @@ class MyClass
     }
 
     /**
-     * Checks if an optional nullable property was explicitly set
+     * Checks if an optional nullable property was explicitly set.
      *
-     * @param string $propertyName Property name to check (exactly as it appears in the schema)
-     * @return bool
+     * @param string $propertyName Property name to check (exactly as it appears in the schema).
+     * @throws \InvalidArgumentException If property with that name doesn't exist.
      */
     public function isOptionalProvided(string $propertyName): bool
     {
-        return array_key_exists($propertyName, $this->_providedOptionals);
+        if (!array_key_exists($propertyName, self::$_namesMap)) {
+            throw new \InvalidArgumentException("Unknown property: {$propertyName}");
+        }
+        return
+            array_key_exists($propertyName, $this->_providedOptionals)
+            || isset($this->{ self::$_namesMap[$propertyName] });
     }
 }

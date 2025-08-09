@@ -8,8 +8,6 @@ class Foo
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
     private static array $_schema = [
         'type' => 'object',
@@ -59,6 +57,16 @@ class Foo
                 ],
             ],
         ],
+    ];
+
+    /**
+     * Mapping of schema property names to this class's property names.
+     */
+    private static array $_namesMap = [
+        'a' => 'a',
+        'b' => 'b',
+        'c' => 'c',
+        'd' => 'd',
     ];
 
     /**
@@ -274,7 +282,7 @@ class Foo
             static::validateInput($input);
         }
 
-        $__providedOptionals = [];
+        $_providedOptionals = [];
         $a = isset($input->{'a'}) ? match (true) {
             in_array($input->{'a'}, array (
           0 => 'a',
@@ -287,12 +295,17 @@ class Foo
         $c = null;
         if (property_exists($input, 'c')) {
             $c = ($input->{'c'} !== null ? $input->{'c'} : null);
-            $__providedOptionals['c'] = true;
+            $_providedOptionals['c'] = true;
         }
         $d = isset($input->{'d'}) ? Bar::fromInput($input->{'d'}, $validate) : null;
 
         $obj = new self($a, $b, $c, $d);
-        $obj->_providedOptionals = $__providedOptionals;
+        $obj->_providedOptionals = $_providedOptionals;
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
 
         return $obj;
     }
@@ -409,13 +422,18 @@ class Foo
     }
 
     /**
-     * Checks if an optional nullable property was explicitly set
+     * Checks if an optional nullable property was explicitly set.
      *
-     * @param string $propertyName Property name to check (exactly as it appears in the schema)
-     * @return bool
+     * @param string $propertyName Property name to check (exactly as it appears in the schema).
+     * @throws \InvalidArgumentException If property with that name doesn't exist.
      */
     public function isOptionalProvided(string $propertyName): bool
     {
-        return array_key_exists($propertyName, $this->_providedOptionals);
+        if (!array_key_exists($propertyName, self::$_namesMap)) {
+            throw new \InvalidArgumentException("Unknown property: {$propertyName}");
+        }
+        return
+            array_key_exists($propertyName, $this->_providedOptionals)
+            || isset($this->{ self::$_namesMap[$propertyName] });
     }
 }

@@ -8,8 +8,6 @@ class MyClass
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
     private static array $_schema = [
         'type' => 'object',
@@ -205,6 +203,38 @@ class MyClass
                 ],
             ],
         ],
+    ];
+
+    /**
+     * Mapping of schema property names to this class's property names.
+     */
+    private static array $_namesMap = [
+        'foo' => 'foo',
+        'bar' => 'bar',
+        'baz' => 'baz',
+        'qux' => 'qux',
+        'quux' => 'quux',
+        'thud' => 'thud',
+        'grox' => 'grox',
+        'nullFoo' => 'nullFoo',
+        'nullBar' => 'nullBar',
+        'nullBaz' => 'nullBaz',
+        'nullQux' => 'nullQux',
+        'nullQuux' => 'nullQuux',
+        'nullThud' => 'nullThud',
+        'optFoo' => 'optFoo',
+        'optBar' => 'optBar',
+        'optBaz' => 'optBaz',
+        'optQux' => 'optQux',
+        'optQuux' => 'optQuux',
+        'optThud' => 'optThud',
+        'optGrox' => 'optGrox',
+        'optNullFoo' => 'optNullFoo',
+        'optNullBar' => 'optNullBar',
+        'optNullBaz' => 'optNullBaz',
+        'optNullQux' => 'optNullQux',
+        'optNullQuux' => 'optNullQuux',
+        'optNullThud' => 'optNullThud',
     ];
 
     /**
@@ -942,7 +972,7 @@ class MyClass
             static::validateInput($input);
         }
 
-        $__providedOptionals = [];
+        $_providedOptionals = [];
         $foo = $input->{'foo'};
         $bar = (str_contains((string)$input->{'bar'}, '.') ? (float)$input->{'bar'} : (int)$input->{'bar'});
         $baz = (int)$input->{'baz'};
@@ -965,37 +995,37 @@ class MyClass
         $optGrox = null;
         if (property_exists($input, 'optGrox')) {
             $optGrox = ($input->{'optGrox'} !== null ? $input->{'optGrox'} : null);
-            $__providedOptionals['optGrox'] = true;
+            $_providedOptionals['optGrox'] = true;
         }
         $optNullFoo = null;
         if (property_exists($input, 'optNullFoo')) {
             $optNullFoo = ($input->{'optNullFoo'} !== null ? $input->{'optNullFoo'} : null);
-            $__providedOptionals['optNullFoo'] = true;
+            $_providedOptionals['optNullFoo'] = true;
         }
         $optNullBar = null;
         if (property_exists($input, 'optNullBar')) {
             $optNullBar = ($input->{'optNullBar'} !== null ? $input->{'optNullBar'} : null);
-            $__providedOptionals['optNullBar'] = true;
+            $_providedOptionals['optNullBar'] = true;
         }
         $optNullBaz = null;
         if (property_exists($input, 'optNullBaz')) {
             $optNullBaz = ($input->{'optNullBaz'} !== null ? $input->{'optNullBaz'} : null);
-            $__providedOptionals['optNullBaz'] = true;
+            $_providedOptionals['optNullBaz'] = true;
         }
         $optNullQux = null;
         if (property_exists($input, 'optNullQux')) {
             $optNullQux = ($input->{'optNullQux'} !== null ? $input->{'optNullQux'} : null);
-            $__providedOptionals['optNullQux'] = true;
+            $_providedOptionals['optNullQux'] = true;
         }
         $optNullQuux = null;
         if (property_exists($input, 'optNullQuux')) {
             $optNullQuux = ($input->{'optNullQuux'} !== null ? MyClassOptNullQuux::fromInput($input->{'optNullQuux'}, $validate) : null);
-            $__providedOptionals['optNullQuux'] = true;
+            $_providedOptionals['optNullQuux'] = true;
         }
         $optNullThud = null;
         if (property_exists($input, 'optNullThud')) {
             $optNullThud = ($input->{'optNullThud'} !== null ? $input->{'optNullThud'} : null);
-            $__providedOptionals['optNullThud'] = true;
+            $_providedOptionals['optNullThud'] = true;
         }
 
         $obj = new self(
@@ -1026,7 +1056,12 @@ class MyClass
             $optNullQuux,
             $optNullThud
         );
-        $obj->_providedOptionals = $__providedOptionals;
+        $obj->_providedOptionals = $_providedOptionals;
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
 
         return $obj;
     }
@@ -1212,13 +1247,18 @@ class MyClass
     }
 
     /**
-     * Checks if an optional nullable property was explicitly set
+     * Checks if an optional nullable property was explicitly set.
      *
-     * @param string $propertyName Property name to check (exactly as it appears in the schema)
-     * @return bool
+     * @param string $propertyName Property name to check (exactly as it appears in the schema).
+     * @throws \InvalidArgumentException If property with that name doesn't exist.
      */
     public function isOptionalProvided(string $propertyName): bool
     {
-        return array_key_exists($propertyName, $this->_providedOptionals);
+        if (!array_key_exists($propertyName, self::$_namesMap)) {
+            throw new \InvalidArgumentException("Unknown property: {$propertyName}");
+        }
+        return
+            array_key_exists($propertyName, $this->_providedOptionals)
+            || isset($this->{ self::$_namesMap[$propertyName] });
     }
 }

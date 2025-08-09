@@ -26,6 +26,16 @@ class MyClassEnsureArgs1Alternative2
     ];
 
     /**
+     * Mapping of schema property names to this class's property names.
+     *
+     * @var array
+     */
+    private static $_namesMap = [
+        'type' => 'type',
+        'accountNumber' => 'accountNumber',
+    ];
+
+    /**
      * Default values from the schema
      *
      * @var array
@@ -203,6 +213,11 @@ class MyClassEnsureArgs1Alternative2
         $accountNumber = $input->{'accountNumber'};
 
         $obj = new self($type, $accountNumber);
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
 
         return $obj;
     }

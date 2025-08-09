@@ -3,8 +3,10 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Property\Type\Composite;
 
+use Helmich\Schema2Class\Generator\Class\ArgumentNames;
 use Helmich\Schema2Class\Generator\Class\Method\FromInputMethodFactory;
 use Helmich\Schema2Class\Generator\Class\Method\Serialize\SerializeMethodFactory;
+use Helmich\Schema2Class\Generator\Class\VariableNames;
 use Helmich\Schema2Class\Generator\GeneratorException;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\MatchGenerator;
@@ -56,7 +58,7 @@ class UnionProperty extends AbstractProperty
 
     public function convertInputToTypeMatch(): string
     {
-        $inputVarName = FromInputMethodFactory::INPUT_ARG;
+        $inputVarName = ArgumentNames::INPUT;
         $accessor = "\${$inputVarName}->{{$this->keyStr()}}";
 
         $match = new MatchGenerator("true");
@@ -86,7 +88,7 @@ class UnionProperty extends AbstractProperty
         $name   = $this->varName();
         $keyStr = $this->keyStr();
     
-        $inputVarName = FromInputMethodFactory::INPUT_ARG;
+        $inputVarName = ArgumentNames::INPUT;
         $accessor = "\${$inputVarName}->{{$keyStr}}";
     
         // Start with a "fallback" that just reassigns the raw value
@@ -158,7 +160,7 @@ class UnionProperty extends AbstractProperty
 
             $match->addArm($discriminator, $mapping);
         }
-        $outputVarName = SerializeMethodFactory::OUTPUT_VAR_NAME;
+        $outputVarName = VariableNames::OUTPUT;
         return "\${$outputVarName}[{$keyStr}] = {$match->generate()};";
     }
 
@@ -175,13 +177,13 @@ class UnionProperty extends AbstractProperty
             $match->addArm($discriminator, $mapping);
         }
 
-        $outputVarName = SerializeMethodFactory::OUTPUT_VAR_NAME;
+        $outputVarName = VariableNames::OUTPUT;
         return "\${$outputVarName}->{{$keyStr}} = {$match->generate()};";
     }
 
     public function convertTypeToArray(): string
     {
-        $outputVarName = SerializeMethodFactory::OUTPUT_VAR_NAME;
+        $outputVarName = VariableNames::OUTPUT;
         if ($this->request->isAtLeastPHP("8.0")) {
             return $this->convertTypeToArrayMatch();
         }
@@ -214,7 +216,7 @@ class UnionProperty extends AbstractProperty
 
     public function convertTypeToStdClass(): string
     {
-        $outputVarName = SerializeMethodFactory::OUTPUT_VAR_NAME;
+        $outputVarName = VariableNames::OUTPUT;
         if ($this->request->isAtLeastPHP("8.0")) {
             return $this->convertTypeToStdClassMatch();
         }

@@ -8,8 +8,6 @@ class MyClass
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
     private static array $_schema = [
         'type' => 'object',
@@ -81,6 +79,21 @@ class MyClass
                 ],
             ],
         ],
+    ];
+
+    /**
+     * Mapping of schema property names to this class's property names.
+     */
+    private static array $_namesMap = [
+        'a' => 'a',
+        'b' => 'b',
+        'c' => 'c',
+        'd' => 'd',
+        'e' => 'e',
+        'f' => 'f',
+        'g' => 'g',
+        'h' => 'h',
+        'i' => 'i',
     ];
 
     /**
@@ -352,7 +365,7 @@ class MyClass
             static::validateInput($input);
         }
 
-        $__providedOptionals = [];
+        $_providedOptionals = [];
         $a = $input->{'a'};
         $b = match (true) {
             is_array($input->{'b'}),
@@ -374,7 +387,7 @@ class MyClass
         $g = null;
         if (property_exists($input, 'g')) {
             $g = ($input->{'g'} !== null ? $input->{'g'} : null);
-            $__providedOptionals['g'] = true;
+            $_providedOptionals['g'] = true;
         }
         $h = null;
         if (property_exists($input, 'h')) {
@@ -383,7 +396,7 @@ class MyClass
             is_string($input->{'h'}) => $input->{'h'},
             default => null,
         } : null);
-            $__providedOptionals['h'] = true;
+            $_providedOptionals['h'] = true;
         }
         $i = null;
         if (property_exists($input, 'i')) {
@@ -393,11 +406,16 @@ class MyClass
             is_array($input->{'i'}) || is_object($input->{'i'}) => $input->{'i'},
             default => null,
         } : null);
-            $__providedOptionals['i'] = true;
+            $_providedOptionals['i'] = true;
         }
 
         $obj = new self($a, $b, $c, $d, $e, $f, $g, $h, $i);
-        $obj->_providedOptionals = $__providedOptionals;
+        $obj->_providedOptionals = $_providedOptionals;
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
 
         return $obj;
     }
@@ -570,13 +588,18 @@ class MyClass
     }
 
     /**
-     * Checks if an optional nullable property was explicitly set
+     * Checks if an optional nullable property was explicitly set.
      *
-     * @param string $propertyName Property name to check (exactly as it appears in the schema)
-     * @return bool
+     * @param string $propertyName Property name to check (exactly as it appears in the schema).
+     * @throws \InvalidArgumentException If property with that name doesn't exist.
      */
     public function isOptionalProvided(string $propertyName): bool
     {
-        return array_key_exists($propertyName, $this->_providedOptionals);
+        if (!array_key_exists($propertyName, self::$_namesMap)) {
+            throw new \InvalidArgumentException("Unknown property: {$propertyName}");
+        }
+        return
+            array_key_exists($propertyName, $this->_providedOptionals)
+            || isset($this->{ self::$_namesMap[$propertyName] });
     }
 }

@@ -29,6 +29,16 @@ class MyClassGooks
     ];
 
     /**
+     * Mapping of schema property names to this class's property names.
+     *
+     * @var array
+     */
+    private static $_namesMap = [
+        'a' => 'a',
+        'b' => 'b',
+    ];
+
+    /**
      * Map of name/value pairs for properties not specified in the schema.
      *
      * @var \stdClass
@@ -203,6 +213,11 @@ class MyClassGooks
         $b = isset($input->{'b'}) ? $input->{'b'} : null;
 
         $obj = new self($a, $b);
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
 
         return $obj;
     }

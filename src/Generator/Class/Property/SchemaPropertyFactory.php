@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class\Generator\Class\Property;
 
 use Helmich\Schema2Class\Generator\GeneratorRequest;
+use Helmich\Schema2Class\Generator\Property\Collection\PropertyCollection;
 use Helmich\Schema2Class\Generator\Property\Decorator\OptionalPropertyDecorator;
 use Helmich\Schema2Class\Generator\Property\PropertyQuery;
 use Helmich\Schema2Class\Generator\Property\Type\PropertyInterface;
@@ -21,15 +22,28 @@ class SchemaPropertyFactory
 {
     public function __construct(
       private GeneratorRequest $request,
+      private PropertyCollection $schemaProperties,
     ) {}
+
+    /**
+     * @return PropertyGenerator[]
+     */
+    public function generateAll(): array
+    {
+        $propertyGenerators = [];
+        foreach ($this->schemaProperties as $property) {
+            $propertyGenerators[] = $this->generateProperty($property);
+        }
+        return $propertyGenerators;
+    }
     
-    public function generate(PropertyInterface $property): PropertyGenerator
+    private function generateProperty(PropertyInterface $property): PropertyGenerator
     {
         $visibility = $this->request->getNoGetters()
             ? PropertyGenerator::FLAG_PUBLIC
             : PropertyGenerator::FLAG_PRIVATE;
 
-        $propertyGen = new PropertyGenerator(
+        $propGen = new PropertyGenerator(
             name: $property->propName(),
             defaultValue: $property->formatValue(null),
             flags: $visibility
@@ -37,12 +51,12 @@ class SchemaPropertyFactory
 
         $typeHint = $property->typeHint();
         if ($this->request->isAtLeastPHP('7.4') && $typeHint !== null) {
-            $propertyGen->setType(TypeGenerator::fromTypeString($typeHint));
+            $propGen->setType(TypeGenerator::fromTypeString($typeHint));
         }
 
         $docBlock = $this->buildDockBlock($property);
         if ($docBlock) {
-            $propertyGen->setDocBlock($docBlock);
+            $propGen->setDocBlock($docBlock);
         }
 
         $isOptional = false;
@@ -50,9 +64,9 @@ class SchemaPropertyFactory
             $isOptional = true;
         }
         // omit default `null` for every required field, unsless default is specified in the schema
-        $propertyGen->omitDefaultValue(!$isOptional);
+        $propGen->omitDefaultValue(!$isOptional);
 
-        return $propertyGen;
+        return $propGen;
     }
 
     private function buildDockBlock(PropertyInterface $property): ?DocBlockGenerator

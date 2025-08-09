@@ -3,8 +3,10 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Class\Method\Serialize;
 
+use Helmich\Schema2Class\Generator\Class\ArgumentNames;
 use Helmich\Schema2Class\Generator\Class\MethodNames;
 use Helmich\Schema2Class\Generator\Class\PropertyNames;
+use Helmich\Schema2Class\Generator\Class\VariableNames;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\Collection\PropertyCollection;
 use Laminas\Code\Generator\DocBlock\Tag\ParamTag;
@@ -27,7 +29,7 @@ class ToStdClassMethodFactory
         $params = [];
         if ($this->defaults) {
             $params[] = new ParameterGenerator(
-                name: SerializeMethodFactory::DEFAULTS_ARG_NAME,
+                name: ArgumentNames::INCL_DEFAULTS,
                 type: 'bool',
                 defaultValue: false
             );
@@ -53,7 +55,7 @@ class ToStdClassMethodFactory
         $tags = [];
         if ($this->defaults) {
             $tags[] = new ParamTag(
-                variableName: SerializeMethodFactory::DEFAULTS_ARG_NAME,
+                variableName: ArgumentNames::INCL_DEFAULTS,
                 types: ['bool'],
                 description: 'Add defaults for missing properties'
             );
@@ -74,7 +76,7 @@ class ToStdClassMethodFactory
     {
         $bodyParts = [];
 
-        $OUTPUT_VAR_NAME = SerializeMethodFactory::OUTPUT_VAR_NAME;
+        $OUTPUT_VAR_NAME = VariableNames::OUTPUT;
 
 
         if ($this->additionalsAllowed) {
@@ -87,7 +89,7 @@ class ToStdClassMethodFactory
         $bodyParts[] = $this->schemaProperties->generateTypeToStdClassConversionCode() . "\n";
 
         if ($this->defaults) {
-            $DEFAULTS_ARG_NAME = SerializeMethodFactory::DEFAULTS_ARG_NAME;
+            $DEFAULTS_ARG_NAME = ArgumentNames::INCL_DEFAULTS;
             $DEFAULTS = PropertyNames::DEFAULTS;
             $arrayToObjectExpr = $this->request->getOptions()->getArrayToObjectExpr();
 

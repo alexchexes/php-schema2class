@@ -8,8 +8,6 @@ class Baz
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
     private static array $_schema = [
         'type' => 'object',
@@ -18,6 +16,13 @@ class Baz
                 'type' => 'string',
             ],
         ],
+    ];
+
+    /**
+     * Mapping of schema property names to this class's property names.
+     */
+    private static array $_namesMap = [
+        'name' => 'name',
     ];
 
     /**
@@ -106,6 +111,11 @@ class Baz
         $name = isset($input->{'name'}) ? $input->{'name'} : null;
 
         $obj = new self($name);
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
 
         return $obj;
     }

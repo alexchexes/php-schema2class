@@ -22,6 +22,15 @@ class Fio
     ];
 
     /**
+     * Mapping of schema property names to this class's property names.
+     *
+     * @var array
+     */
+    private static $_namesMap = [
+        'bar' => 'bar',
+    ];
+
+    /**
      * Map of optional nullable property names that were explicitly set
      *
      * @var array<string,true>
@@ -157,15 +166,20 @@ class Fio
             static::validateInput($input);
         }
 
-        $__providedOptionals = [];
+        $_providedOptionals = [];
         $bar = null;
         if (property_exists($input, 'bar')) {
             $bar = ($input->{'bar'} !== null ? $input->{'bar'} : null);
-            $__providedOptionals['bar'] = true;
+            $_providedOptionals['bar'] = true;
         }
 
         $obj = new self($bar);
-        $obj->_providedOptionals = $__providedOptionals;
+        $obj->_providedOptionals = $_providedOptionals;
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
 
         return $obj;
     }
@@ -239,13 +253,19 @@ class Fio
     }
 
     /**
-     * Checks if an optional nullable property was explicitly set
+     * Checks if an optional nullable property was explicitly set.
      *
-     * @param string $propertyName Property name to check (exactly as it appears in the schema)
+     * @param string $propertyName Property name to check (exactly as it appears in the schema).
+     * @throws \InvalidArgumentException If property with that name doesn't exist.
      * @return bool
      */
     public function isOptionalProvided(string $propertyName)
     {
-        return array_key_exists($propertyName, $this->_providedOptionals);
+        if (!array_key_exists($propertyName, self::$_namesMap)) {
+            throw new \InvalidArgumentException("Unknown property: {$propertyName}");
+        }
+        return
+            array_key_exists($propertyName, $this->_providedOptionals)
+            || isset($this->{ self::$_namesMap[$propertyName] });
     }
 }

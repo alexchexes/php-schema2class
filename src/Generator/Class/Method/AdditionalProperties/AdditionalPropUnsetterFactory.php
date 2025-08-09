@@ -3,8 +3,10 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Class\Method\AdditionalProperties;
 
+use Helmich\Schema2Class\Generator\Class\ArgumentNames;
 use Helmich\Schema2Class\Generator\Class\MethodNames;
 use Helmich\Schema2Class\Generator\Class\PropertyNames;
+use Helmich\Schema2Class\Generator\Class\VariableNames;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Util\SchemaUtils;
 use Laminas\Code\Generator\DocBlock\Tag\ParamTag;
@@ -15,9 +17,6 @@ use Laminas\Code\Generator\ParameterGenerator;
 
 class AdditionalPropUnsetterFactory
 {
-    public const VALIDATE_ARG = 'validate';
-    public const CLONE_VAR = 'clone';
-
     private bool $mutating;
     private bool $chainable;
 
@@ -68,7 +67,7 @@ class AdditionalPropUnsetterFactory
         
         if ($addValidation) {
             $params[] = new ParameterGenerator(
-                name: self::VALIDATE_ARG,
+                name: ArgumentNames::VALIDATE,
                 type: $this->request->isAtLeastPHP('7.0') ? 'bool' : null,
                 defaultValue: true,
             );
@@ -83,7 +82,7 @@ class AdditionalPropUnsetterFactory
 
         if ($addValidation) {
             $tags[] = new ParamTag(
-                variableName: self::VALIDATE_ARG,
+                variableName: ArgumentNames::VALIDATE,
                 types: ['bool'],
                 description: 'Whether to revalidate the resulting object.',
             );
@@ -107,8 +106,8 @@ class AdditionalPropUnsetterFactory
     {
         $ADDITIONAL_PROPS = PropertyNames::ADDITIONAL_PROPS;
         $VALIDATE_SELF = MethodNames::VALIDATE_SELF;
-        $VALIDATE_ARG = self::VALIDATE_ARG;
-        $CLONE_VAR = self::CLONE_VAR;
+        $VALIDATE_ARG = ArgumentNames::VALIDATE;
+        $CLONE_VAR = VariableNames::CLONE;
         $object = $this->mutating ? 'this' : $CLONE_VAR;
 
         $bodyParts = [];

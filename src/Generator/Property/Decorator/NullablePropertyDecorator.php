@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Property\Decorator;
 
+use Helmich\Schema2Class\Generator\Class\ArgumentNames;
 use Helmich\Schema2Class\Generator\Class\Method\FromInputMethodFactory;
+use Helmich\Schema2Class\Generator\Class\VariableNames;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\Type\Primitive\NullProperty;
 use Helmich\Schema2Class\Generator\Property\Type\PropertyInterface;
@@ -106,7 +108,7 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface
     {
         $varName  = $this->inner->varName();
 
-        $inputVarName = FromInputMethodFactory::INPUT_ARG;
+        $inputVarName = ArgumentNames::INPUT;
         $accessor = "\${$inputVarName}->{{$this->keyStr()}}";
 
         $mapped = $this->inner->inputMappingExpr($accessor);

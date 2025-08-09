@@ -3,8 +3,10 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Class\Method;
 
+use Helmich\Schema2Class\Generator\Class\ArgumentNames;
 use Helmich\Schema2Class\Generator\Class\MethodNames;
 use Helmich\Schema2Class\Generator\Class\PropertyNames;
+use Helmich\Schema2Class\Generator\Class\VariableNames;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\Collection\PropertyCollection;
 use Helmich\Schema2Class\Generator\Property\Collection\PropertyCollectionFilterFactory;
@@ -17,23 +19,6 @@ use Laminas\Code\Generator\ParameterGenerator;
 
 class FromInputMethodFactory
 {
-    public const INPUT_ARG = 'input';
-    public const VALIDATE_ARG = 'validate';
-    public const DEFAULTS_ARG = 'materializeDefaults';
-    public const OBJ_VAR = 'obj';
-    static public function OPTIONALS_VAR_NAME() { return '_' . PropertyNames::OPTIONALS; }
-
-    static public function allVarNames()
-    {
-        return [
-            self::INPUT_ARG,
-            self::VALIDATE_ARG,
-            self::DEFAULTS_ARG,
-            self::OBJ_VAR,
-            self::OPTIONALS_VAR_NAME(),
-        ];
-    }
-
     public function __construct(
         private GeneratorRequest $request,
         private PropertyCollection $schemaProperties,
@@ -75,9 +60,12 @@ class FromInputMethodFactory
         }
 
         $parameterGenerators = [
-            new ParameterGenerator(self::INPUT_ARG, $paramType),
             new ParameterGenerator(
-                name: self::VALIDATE_ARG,
+                name: ArgumentNames::INPUT,
+                type: $paramType
+            ),
+            new ParameterGenerator(
+                name: ArgumentNames::VALIDATE,
                 type: $this->request->isAtLeastPHP('7.0') ? 'bool' : null,
                 defaultValue: true
             ),
@@ -85,7 +73,7 @@ class FromInputMethodFactory
 
         if ($this->defaults) {
             $parameterGenerators[] = new ParameterGenerator(
-                name: self::DEFAULTS_ARG,
+                name: ArgumentNames::MATRLZ_DEFAULTS,
                 type: $this->request->isAtLeastPHP('7.0') ? 'bool' : null,
                 defaultValue: false,
             );
@@ -97,16 +85,34 @@ class FromInputMethodFactory
     private function buildDocBlock(): DocBlockGenerator
     {
         $tags = [
-            new ParamTag(self::INPUT_ARG, ['array|object'], 'Input data'),
-            new ParamTag(self::VALIDATE_ARG, ['bool'], 'If `false`, validation against the schema will be skipped.'),
+            new ParamTag(
+                variableName: ArgumentNames::INPUT,
+                types: ['array|object'],
+                description: 'Input data',
+            ),
+            new ParamTag(
+                variableName: ArgumentNames::VALIDATE,
+                types: ['bool'],
+                description: 'If `false`, validation against the schema will be skipped.',
+            ),
         ];
 
         if ($this->defaults) {
-            $tags[] = new ParamTag(self::DEFAULTS_ARG, ['bool'], 'Apply defaults defined in schema when missing');
+            $tags[] = new ParamTag(
+                variableName: ArgumentNames::MATRLZ_DEFAULTS,
+                types: ['bool'],
+                description: 'Apply defaults defined in schema when missing',
+            );
         }
 
-        $tags[] = new ReturnTag([$this->request->getTargetClass()], 'Created instance');
-        $tags[] = new ThrowsTag('\\InvalidArgumentException');
+        $tags[] = new ReturnTag(
+            types: [$this->request->getTargetClass()],
+            description: 'Created instance',
+        );
+
+        $tags[] = new ThrowsTag(
+            types: ['\\InvalidArgumentException']
+        );
 
         $docBlock = new DocBlockGenerator(
             shortDescription: 'Builds a new instance from an input array or object',
@@ -123,7 +129,7 @@ class FromInputMethodFactory
     private function generateBody(): string
     {
         $arrayToObjectExpr = $this->request->getOptions()->getArrayToObjectExpr();
-        $OBJ_VAR_NAME = self::OBJ_VAR;
+        $OBJ_VAR_NAME = VariableNames::OBJ;
 
         $bodyParts = [
             // in target PHP<8 we can't input specify $input type as `array|object` so we add a guard
@@ -142,6 +148,8 @@ class FromInputMethodFactory
             $this->bodyCreateNewInstance(),
             // assign the `_providedOptionals` if needed
             $this->bodyAssignProvidedOptionalsProperty(),
+            // set additional properties if schema allows
+            $this->bodySetAdditionalProperties(),
             // return the instance
             "\nreturn \${$OBJ_VAR_NAME};",
         ];
@@ -162,7 +170,7 @@ class FromInputMethodFactory
      */
     private function bodyInputGuard(): string
     {
-        $INPUT_ARG_NAME = self::INPUT_ARG;
+        $INPUT_ARG = ArgumentNames::INPUT;
 
         if ($this->request->isAtLeastPHP('8.0')) {
             return '';
@@ -172,9 +180,9 @@ class FromInputMethodFactory
 
         $inputGuard =
             <<<PHP
-            if (!is_array(\$$INPUT_ARG_NAME) && !is_object(\$$INPUT_ARG_NAME)) {
+            if (!is_array(\$$INPUT_ARG) && !is_object(\$$INPUT_ARG)) {
                 throw new \InvalidArgumentException(
-                    'Input to {$FROM_INPUT} must be array or object, got ' . gettype(\$$INPUT_ARG_NAME)
+                    'Input to {$FROM_INPUT} must be array or object, got ' . gettype(\$$INPUT_ARG)
                 );
             }\n\n
             PHP;
@@ -196,8 +204,8 @@ class FromInputMethodFactory
      */
     private function bodyInputToObjectConversion(string $arrayToObjectExpr): string
     {
-        $INPUT_ARG_NAME = self::INPUT_ARG;
-        $DEFAULTS_ARG_NAME = self::DEFAULTS_ARG;
+        $INPUT_ARG_NAME = ArgumentNames::INPUT;
+        $DEFAULTS_ARG_NAME = ArgumentNames::MATRLZ_DEFAULTS;
 
         $inputToObjectConversion = '';
 
@@ -248,16 +256,16 @@ class FromInputMethodFactory
         }
 
         // let's accept https://wiki.php.net/rfc/arbitrary_string_interpolation so we don't do this:
-        $DEFAULTS = PropertyNames::DEFAULTS;
-        $INPUT_ARG_NAME = self::INPUT_ARG;
-        $DEFAULTS_ARG_NAME = self::DEFAULTS_ARG;
+        $DEFAULTS_PROP = PropertyNames::DEFAULTS;
+        $INPUT_ARG = ArgumentNames::INPUT;
+        $DEFAULTS_ARG = ArgumentNames::MATRLZ_DEFAULTS;
 
         $materializeDefaultsBlock =
             <<<PHP
-            if (\${$DEFAULTS_ARG_NAME}) {
-                foreach (self::\${$DEFAULTS} as \$__k => \$__v) {
-                    if (!property_exists(\${$INPUT_ARG_NAME}, (string) \$__k)) {
-                        \${$INPUT_ARG_NAME}->{\$__k} = (\$__v['type'] ?? null) === 'object'
+            if (\${$DEFAULTS_ARG}) {
+                foreach (self::\${$DEFAULTS_PROP} as \$__k => \$__v) {
+                    if (!property_exists(\${$INPUT_ARG}, (string) \$__k)) {
+                        \${$INPUT_ARG}->{\$__k} = (\$__v['type'] ?? null) === 'object'
                             ? {$arrayToObjectExpr}(\$__v['default'])
                             : \$__v['default'];
                     }
@@ -279,13 +287,13 @@ class FromInputMethodFactory
     private function bodyInputValidation(): string
     {
         $VALIDATE_INPUT = MethodNames::VALIDATE_INPUT;
-        $INPUT_ARG_NAME = self::INPUT_ARG;
-        $VALIDATE_ARG_NAME = self::VALIDATE_ARG;
+        $INPUT_ARG = ArgumentNames::INPUT;
+        $VALIDATE_ARG = ArgumentNames::VALIDATE;
 
         $inputValidation =
             <<<PHP
-            if (\${$VALIDATE_ARG_NAME}) {
-                static::{$VALIDATE_INPUT}(\${$INPUT_ARG_NAME});
+            if (\${$VALIDATE_ARG}) {
+                static::{$VALIDATE_INPUT}(\${$INPUT_ARG});
             }\n\n
             PHP;
 
@@ -300,7 +308,7 @@ class FromInputMethodFactory
      */
     private function bodyCreateProvidedOptionalsVar(): string
     {
-        $OPTIONALS_VAR_NAME = self::OPTIONALS_VAR_NAME();
+        $OPTIONALS_VAR_NAME = VariableNames::PROVIDED_OPTIONALS;
         return $this->schemaProperties->hasOptionalNullable()
             ? "\${$OPTIONALS_VAR_NAME} = [];\n"
             : '';
@@ -340,7 +348,7 @@ class FromInputMethodFactory
      */
     private function bodyCreateNewInstance(): string
     {
-        $OBJ_VAR_NAME = self::OBJ_VAR;
+        $OBJ_VAR = VariableNames::OBJ;
         $requiredProperties = $this->schemaProperties->filter(PropertyCollectionFilterFactory::onlyRequired());
         $optionalProperties = $this->schemaProperties->filter(PropertyCollectionFilterFactory::onlyOptional());
         $constructorParams = [];
@@ -354,7 +362,7 @@ class FromInputMethodFactory
             $paramsStr = "\n    " . join(",\n    ", $constructorParams) . "\n";
         }
 
-        $createNewInstance = "\${$OBJ_VAR_NAME} = new self({$paramsStr});\n";
+        $createNewInstance = "\${$OBJ_VAR} = new self({$paramsStr});\n";
 
         return $createNewInstance;
     }
@@ -368,12 +376,33 @@ class FromInputMethodFactory
      */
     private function bodyAssignProvidedOptionalsProperty(): string
     {
-        $OPTIONALS = PropertyNames::OPTIONALS;
-        $OBJ_VAR_NAME = self::OBJ_VAR;
-        $OPTIONALS_VAR_NAME = self::OPTIONALS_VAR_NAME();
+        $OBJ_VAR = VariableNames::OBJ;
+        $OPTIONALS_PROP = PropertyNames::PROVIDED_OPTIONALS;
+        $OPTIONALS_VAR = VariableNames::PROVIDED_OPTIONALS;
 
         return $this->schemaProperties->hasOptionalNullable()
-            ? "\${$OBJ_VAR_NAME}->{$OPTIONALS} = \${$OPTIONALS_VAR_NAME};\n"
+            ? "\${$OBJ_VAR}->{$OPTIONALS_PROP} = \${$OPTIONALS_VAR};\n"
             : '';
+    }
+
+    private function bodySetAdditionalProperties(): string
+    {
+        if (!$this->additionalsAllowed) {
+            return '';
+        }
+
+        $ADDIT_PROPS_PROP = PropertyNames::ADDITIONAL_PROPS;
+        $ADDIT_PROPS_VAR = VariableNames::ADDITIONAL_PROPS;
+        $INPUT_ARG = ArgumentNames::INPUT;
+        $NAMES_MAP = PropertyNames::NAMES_MAP;
+        $OBJ_VAR = VariableNames::OBJ;
+
+        return
+            <<<PHP
+            \n\${$ADDIT_PROPS_VAR} = array_diff_key(get_object_vars(\${$INPUT_ARG}), self::\${$NAMES_MAP});
+            if (!empty(\${$ADDIT_PROPS_VAR})) {
+                \${$OBJ_VAR}->{$ADDIT_PROPS_PROP} = (object) \${$ADDIT_PROPS_VAR};
+            }\n
+            PHP;
     }
 }

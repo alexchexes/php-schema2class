@@ -89,6 +89,18 @@ class Record
     ];
 
     /**
+     * Mapping of schema property names to this class's property names.
+     *
+     * @var array
+     */
+    private static $_namesMap = [
+        'dataArray' => 'dataArray',
+        'dataArrayNested' => 'dataArrayNested',
+        'dataArrayAnyOf' => 'dataArrayAnyOf',
+        'dataArrayNestedAnyOf' => 'dataArrayNestedAnyOf',
+    ];
+
+    /**
      * Map of name/value pairs for properties not specified in the schema.
      *
      * @var \stdClass
@@ -341,6 +353,11 @@ class Record
         $dataArrayNestedAnyOf = isset($input->{'dataArrayNestedAnyOf'}) ? array_map(function($i) use ($validate) { return array_map(function($i) use ($validate) { return ((Fio::validateInput($i, true)) ? Fio::fromInput($i, $validate) : (((Phone::validateInput($i, true)) ? Phone::fromInput($i, $validate) : (null)))); }, $i); }, $input->{'dataArrayNestedAnyOf'}) : null;
 
         $obj = new self($dataArray, $dataArrayNested, $dataArrayAnyOf, $dataArrayNestedAnyOf);
+
+        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
+        if (!empty($_additionalProperties)) {
+            $obj->_additionalProperties = (object) $_additionalProperties;
+        }
 
         return $obj;
     }

@@ -25,30 +25,15 @@ class ClassPropertySuiteFactory
      */
     public function generateAll()
     {
-        $validationSchemaFactory = new ValidationSchemaPropertyFactory($this->request, $this->schema);
-        $addPropsPropertyFactory = new AdditionalPropertiesPropertyFactory($this->request, $this->schema);
-        $providedOptionalsFactory = new ProvidedOptionalsPropertyFactory($this->request);
-        $defaultsFactory = new DefaultsPropertyFactory($this->request, $this->defaults);
-        $schemaPropertyFactory = new SchemaPropertyFactory($this->request);
-
-        $propertyGenerators[] = $validationSchemaFactory->generate();
-
-        if ($this->defaults) {
-            $propertyGenerators[] = $defaultsFactory->generate();
-        }
-
-        if ($this->schemaProperties->hasOptionalNullable()) {
-            $propertyGenerators[] = $providedOptionalsFactory->generate();
-        }
-
-        if ($this->additionalsAllowed) {
-            $propertyGenerators[] = $addPropsPropertyFactory->generate();
-        }
+        $propertyGenerators = [
+            (new ValidationSchemaPropertyFactory($this->request, $this->schema))->generate(),
+            (new NamesMapPropertyFactory($this->request, $this->schemaProperties, $this->additionalsAllowed))->generate(),
+            (new DefaultsPropertyFactory($this->request, $this->defaults))->generate(),
+            (new ProvidedOptionalsPropertyFactory($this->request, $this->schemaProperties))->generate(),
+            (new AdditionalPropertiesPropertyFactory($this->request, $this->additionalsAllowed))->generate(),
+            ...(new SchemaPropertyFactory($this->request, $this->schemaProperties))->generateAll(),
+        ];
         
-        foreach ($this->schemaProperties as $schemaProp) {
-            $propertyGenerators[] = $schemaPropertyFactory->generate($schemaProp);
-        }
-
         return array_values(array_filter($propertyGenerators));
     }
 }
