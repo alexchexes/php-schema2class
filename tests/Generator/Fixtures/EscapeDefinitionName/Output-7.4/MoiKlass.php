@@ -128,7 +128,8 @@ class MoiKlass
      */
     public function toArray(): array
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         if (isset($this->c)) {
             $output['c'] = $this->c;
         }
@@ -143,7 +144,8 @@ class MoiKlass
      */
     public function toStdClass(): \stdClass
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         if (isset($this->c)) {
             $output->{'c'} = $this->c;
         }

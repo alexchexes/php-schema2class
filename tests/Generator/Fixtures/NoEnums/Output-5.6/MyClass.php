@@ -151,7 +151,8 @@ class MyClass
      */
     public function toArray()
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         $output['color'] = $this->color;
 
         return $output;
@@ -164,7 +165,8 @@ class MyClass
      */
     public function toStdClass()
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         $output->{'color'} = $this->color;
 
         return $output;

@@ -163,7 +163,8 @@ class Bar
      */
     public function toArray()
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         if (isset($this->b)) {
             $output['b'] = $this->b;
         }
@@ -178,7 +179,8 @@ class Bar
      */
     public function toStdClass()
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         if (isset($this->b)) {
             $output->{'b'} = $this->b;
         }

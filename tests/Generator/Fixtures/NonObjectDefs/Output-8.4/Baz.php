@@ -161,7 +161,8 @@ class Baz
      */
     public function toArray(): array
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         if (isset($this->grox)) {
             $output['grox'] = match (true) {
                 $this->grox instanceof Foo,
@@ -179,7 +180,8 @@ class Baz
      */
     public function toStdClass(): \stdClass
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         if (isset($this->grox)) {
             $output->{'grox'} = match (true) {
                 $this->grox instanceof Foo,

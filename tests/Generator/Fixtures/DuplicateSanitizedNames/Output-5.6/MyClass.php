@@ -188,7 +188,8 @@ class MyClass
      */
     public function toArray()
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         $output['foo-bar'] = $this->_foo_bar;
         $output['foo bar'] = $this->foo_bar;
 
@@ -202,7 +203,8 @@ class MyClass
      */
     public function toStdClass()
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         $output->{'foo-bar'} = $this->_foo_bar;
         $output->{'foo bar'} = $this->foo_bar;
 

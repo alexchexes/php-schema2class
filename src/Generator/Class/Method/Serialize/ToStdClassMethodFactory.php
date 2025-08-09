@@ -76,11 +76,15 @@ class ToStdClassMethodFactory
 
         $OUTPUT_VAR_NAME = SerializeMethodFactory::OUTPUT_VAR_NAME;
 
-        $bodyParts[] =
-            "\${$OUTPUT_VAR_NAME} = new \\stdClass();\n" .
-            $this->schemaProperties->generateTypeToStdClassConversionCode() .
-            "\n";
-        
+
+        if ($this->additionalsAllowed) {
+            $ADDITIONAL_PROPS = PropertyNames::ADDITIONAL_PROPS;
+            $bodyParts[] = "\${$OUTPUT_VAR_NAME} = \$this->{$ADDITIONAL_PROPS};\n\n";
+        } else {
+            $bodyParts[] = "\${$OUTPUT_VAR_NAME} = new \\stdClass();\n";
+        }
+
+        $bodyParts[] = $this->schemaProperties->generateTypeToStdClassConversionCode() . "\n";
 
         if ($this->defaults) {
             $DEFAULTS_ARG_NAME = SerializeMethodFactory::DEFAULTS_ARG_NAME;

@@ -188,7 +188,8 @@ class MyClass
      */
     public function toArray(): array
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         if (isset($this->files)) {
             $output['files'] = array_map(fn (MyClassFilesItem $i) => $i->toArray(), $this->files);
         }
@@ -206,7 +207,8 @@ class MyClass
      */
     public function toStdClass(): \stdClass
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         if (isset($this->files)) {
             $output->{'files'} = array_map(fn (MyClassFilesItem $i) => $i->toStdClass(), $this->files);
         }

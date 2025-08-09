@@ -150,7 +150,8 @@ class MyClassEnsureArgs1Alternative1
      */
     public function toArray(bool $includeDefaults = false): array
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         if (isset($this->type)) {
             $output['type'] = ($this->type)->value;
         }
@@ -174,7 +175,8 @@ class MyClassEnsureArgs1Alternative1
      */
     public function toStdClass(bool $includeDefaults = false): \stdClass
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         if (isset($this->type)) {
             $output->{'type'} = ($this->type)->value;
         }

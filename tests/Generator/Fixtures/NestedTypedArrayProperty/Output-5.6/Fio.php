@@ -177,7 +177,8 @@ class Fio
      */
     public function toArray()
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         if (isset($this->bar) || array_key_exists('bar', $this->_providedOptionals)) {
             $output['bar'] = ($this->bar !== null) ? ($this->bar) : null;
         }
@@ -192,7 +193,8 @@ class Fio
      */
     public function toStdClass()
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         if (isset($this->bar) || array_key_exists('bar', $this->_providedOptionals)) {
             $output->{'bar'} = ($this->bar !== null) ? ($this->bar) : null;
         }

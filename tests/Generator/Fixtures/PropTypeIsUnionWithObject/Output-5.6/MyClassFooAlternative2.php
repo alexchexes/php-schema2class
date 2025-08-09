@@ -148,7 +148,8 @@ class MyClassFooAlternative2
      */
     public function toArray()
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         $output['bar'] = $this->bar;
 
         return $output;
@@ -161,7 +162,8 @@ class MyClassFooAlternative2
      */
     public function toStdClass()
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         $output->{'bar'} = $this->bar;
 
         return $output;

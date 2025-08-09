@@ -157,7 +157,8 @@ class MyClass
      */
     public function toArray(): array
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         $output['Город'] = $this->Gorod;
         $output['название юр.лица'] = $this->nazvanieIurLitsa;
         $output['IP-адрес'] = $this->IPAdres;
@@ -172,7 +173,8 @@ class MyClass
      */
     public function toStdClass(): \stdClass
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         $output->{'Город'} = $this->Gorod;
         $output->{'название юр.лица'} = $this->nazvanieIurLitsa;
         $output->{'IP-адрес'} = $this->IPAdres;

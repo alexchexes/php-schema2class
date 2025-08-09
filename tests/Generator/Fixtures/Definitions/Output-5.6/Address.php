@@ -199,7 +199,8 @@ class Address
      */
     public function toArray()
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         if (isset($this->name)) {
             $output['name'] = $this->name->toArray();
         }
@@ -215,7 +216,8 @@ class Address
      */
     public function toStdClass()
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         if (isset($this->name)) {
             $output->{'name'} = $this->name->toStdClass();
         }

@@ -258,7 +258,8 @@ class MyClassNumKeysDefaults
      */
     public function toArray(bool $includeDefaults = false): array
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         if (isset($this->_0)) {
             $output['0'] = $this->_0;
         }
@@ -288,7 +289,8 @@ class MyClassNumKeysDefaults
      */
     public function toStdClass(bool $includeDefaults = false): \stdClass
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         if (isset($this->_0)) {
             $output->{'0'} = $this->_0;
         }

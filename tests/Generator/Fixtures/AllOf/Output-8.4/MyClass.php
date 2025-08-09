@@ -258,7 +258,8 @@ class MyClass
      */
     public function toArray(): array
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         $output['street_address'] = $this->streetAddress;
         if (isset($this->houseNumber)) {
             $output['house_number'] = $this->houseNumber;
@@ -281,7 +282,8 @@ class MyClass
      */
     public function toStdClass(): \stdClass
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         $output->{'street_address'} = $this->streetAddress;
         if (isset($this->houseNumber)) {
             $output->{'house_number'} = $this->houseNumber;

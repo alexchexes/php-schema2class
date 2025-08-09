@@ -172,7 +172,8 @@ class MyClassEnsureArgs2
      */
     public function toArray(bool $includeDefaults = false): array
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         $output['city'] = $this->city;
         $output['street'] = $this->street;
 
@@ -195,7 +196,8 @@ class MyClassEnsureArgs2
      */
     public function toStdClass(bool $includeDefaults = false): \stdClass
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         $output->{'city'} = $this->city;
         $output->{'street'} = $this->street;
 

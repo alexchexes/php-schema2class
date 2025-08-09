@@ -191,7 +191,8 @@ class MyClass
      */
     public function toArray(bool $includeDefaults = false)
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         if (isset($this->foo)) {
             if ((is_string($this->foo)) || (is_int($this->foo))) {
                 $output['foo'] = $this->foo;
@@ -217,7 +218,8 @@ class MyClass
      */
     public function toStdClass(bool $includeDefaults = false)
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         if (isset($this->foo)) {
             if ((is_string($this->foo)) || (is_int($this->foo))) {
             $output->{'foo'} = $this->foo;

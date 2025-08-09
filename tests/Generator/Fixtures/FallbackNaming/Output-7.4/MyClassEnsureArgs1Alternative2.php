@@ -170,7 +170,8 @@ class MyClassEnsureArgs1Alternative2
      */
     public function toArray(bool $includeDefaults = false): array
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         $output['type'] = $this->type;
         $output['accountNumber'] = $this->accountNumber;
 
@@ -193,7 +194,8 @@ class MyClassEnsureArgs1Alternative2
      */
     public function toStdClass(bool $includeDefaults = false): \stdClass
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         $output->{'type'} = $this->type;
         $output->{'accountNumber'} = $this->accountNumber;
 

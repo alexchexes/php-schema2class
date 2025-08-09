@@ -198,7 +198,8 @@ class IfThenElse
      */
     public function toArray(): array
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         $output['kind'] = $this->kind;
         if (isset($this->value)) {
             $output['value'] = $this->value;
@@ -214,7 +215,8 @@ class IfThenElse
      */
     public function toStdClass(): \stdClass
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         $output->{'kind'} = $this->kind;
         if (isset($this->value)) {
             $output->{'value'} = $this->value;

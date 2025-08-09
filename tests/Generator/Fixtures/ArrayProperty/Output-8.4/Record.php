@@ -153,7 +153,8 @@ class Record
      */
     public function toArray(): array
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         if (isset($this->dataArray)) {
             $output['dataArray'] = array_map(fn(Phone $i): array => $i->toArray(), $this->dataArray);
         }
@@ -168,7 +169,8 @@ class Record
      */
     public function toStdClass(): \stdClass
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         if (isset($this->dataArray)) {
             $output->{'dataArray'} = array_map(fn(Phone $i): object => $i->toStdClass(), $this->dataArray);
         }

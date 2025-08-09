@@ -191,7 +191,8 @@ class Qux
      */
     public function toArray(): array
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         if (isset($this->grox)) {
             if ((is_string($this->grox)) || (is_array($this->grox))) {
                 $output['grox'] = $this->grox;
@@ -210,7 +211,8 @@ class Qux
      */
     public function toStdClass(): \stdClass
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         if (isset($this->grox)) {
             if ((is_string($this->grox)) || (is_array($this->grox))) {
             $output->{'grox'} = $this->grox;

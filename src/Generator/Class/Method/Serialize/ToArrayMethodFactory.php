@@ -76,10 +76,14 @@ class ToArrayMethodFactory
 
         $OUTPUT_VAR_NAME = SerializeMethodFactory::OUTPUT_VAR_NAME;
 
-        $bodyParts[] =
-            "\${$OUTPUT_VAR_NAME} = [];\n" .
-            $this->schemaProperties->generateTypeToArrayConversionCode() .
-            "\n";
+        if ($this->additionalsAllowed) {
+            $ADDITIONAL_PROPS = PropertyNames::ADDITIONAL_PROPS;
+            $bodyParts[] = "\${$OUTPUT_VAR_NAME} = json_decode(json_encode(\$this->{$ADDITIONAL_PROPS}), true);\n\n";
+        } else {
+            $bodyParts[] = "\${$OUTPUT_VAR_NAME} = [];\n";
+        }
+
+        $bodyParts[] = $this->schemaProperties->generateTypeToArrayConversionCode() . "\n";
 
         if ($this->defaults) {
             $DEFAULTS_ARG_NAME = SerializeMethodFactory::DEFAULTS_ARG_NAME;

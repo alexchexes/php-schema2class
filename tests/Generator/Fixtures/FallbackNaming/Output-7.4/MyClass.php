@@ -1397,7 +1397,8 @@ class MyClass
      */
     public function toArray(bool $includeDefaults = false): array
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         $output['_GLOBALS'] = $this->_GLOBALS;
         $output['GLOBALS'] = $this->GLOBALS;
         $output['GLOBALS_1'] = $this->GLOBALS1;
@@ -1486,7 +1487,8 @@ class MyClass
      */
     public function toStdClass(bool $includeDefaults = false): \stdClass
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         $output->{'_GLOBALS'} = $this->_GLOBALS;
         $output->{'GLOBALS'} = $this->GLOBALS;
         $output->{'GLOBALS_1'} = $this->GLOBALS1;

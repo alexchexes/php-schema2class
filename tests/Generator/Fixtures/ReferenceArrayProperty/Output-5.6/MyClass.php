@@ -201,7 +201,8 @@ class MyClass
      */
     public function toArray(bool $includeDefaults = false)
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         if (isset($this->foo)) {
             $output['foo'] = array_map(fn(FooItem $i): array => $i->toArray($includeDefaults), $this->foo);
         }
@@ -225,7 +226,8 @@ class MyClass
      */
     public function toStdClass(bool $includeDefaults = false)
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         if (isset($this->foo)) {
             $output->{'foo'} = array_map(fn(FooItem $i): object => $i->toStdClass($includeDefaults), $this->foo);
         }

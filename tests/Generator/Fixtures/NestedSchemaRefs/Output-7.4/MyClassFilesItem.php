@@ -164,7 +164,8 @@ class MyClassFilesItem
      */
     public function toArray(): array
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         if (isset($this->input)) {
             $output['input'] = $this->input;
         }
@@ -182,7 +183,8 @@ class MyClassFilesItem
      */
     public function toStdClass(): \stdClass
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         if (isset($this->input)) {
             $output->{'input'} = $this->input;
         }

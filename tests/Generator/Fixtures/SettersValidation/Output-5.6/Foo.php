@@ -358,7 +358,8 @@ class Foo
      */
     public function toArray()
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         if (isset($this->a)) {
             if ((in_array($this->a, array (
               0 => 'a',
@@ -387,7 +388,8 @@ class Foo
      */
     public function toStdClass()
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         if (isset($this->a)) {
             if ((in_array($this->a, array (
               0 => 'a',

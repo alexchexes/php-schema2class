@@ -182,7 +182,8 @@ class NumericKeysObj
      */
     public function toArray(): array
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         if (isset($this->_0)) {
             $output['0'] = $this->_0;
         }
@@ -203,7 +204,8 @@ class NumericKeysObj
      */
     public function toStdClass(): \stdClass
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         if (isset($this->_0)) {
             $output->{'0'} = $this->_0;
         }

@@ -186,7 +186,8 @@ class BarTest
      */
     public function toArray()
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         if (isset($this->exampleProp)) {
             if (($this->exampleProp instanceof FooTest) || ($this->exampleProp instanceof MoiKlass) || ($this->exampleProp instanceof FooTest_1)) {
                 $output['exampleProp'] = $this->exampleProp->toArray();
@@ -203,7 +204,8 @@ class BarTest
      */
     public function toStdClass()
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         if (isset($this->exampleProp)) {
             if (($this->exampleProp instanceof FooTest) || ($this->exampleProp instanceof MoiKlass) || ($this->exampleProp instanceof FooTest_1)) {
             $output->{'exampleProp'} = $this->exampleProp->toStdClass();

@@ -121,7 +121,8 @@ class Phone
      */
     public function toArray(): array
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         if (isset($this->foo)) {
             $output['foo'] = $this->foo;
         }
@@ -136,7 +137,8 @@ class Phone
      */
     public function toStdClass(): \stdClass
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         if (isset($this->foo)) {
             $output->{'foo'} = $this->foo;
         }

@@ -332,7 +332,8 @@ class MyClass
      */
     public function toArray(): array
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         $output['inferString'] = ($this->inferString)->value;
         $output['inferInt'] = $this->inferInt->value;
         $output['inferMixed'] = $this->inferMixed;
@@ -356,7 +357,8 @@ class MyClass
      */
     public function toStdClass(): \stdClass
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         $output->{'inferString'} = ($this->inferString)->value;
         $output->{'inferInt'} = $this->inferInt->value;
         $output->{'inferMixed'} = $this->inferMixed;

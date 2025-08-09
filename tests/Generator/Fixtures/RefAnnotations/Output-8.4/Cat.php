@@ -183,7 +183,8 @@ class Cat
      */
     public function toArray(bool $includeDefaults = false): array
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         if (isset($this->hasFur) || array_key_exists('hasFur', $this->_providedOptionals)) {
             $output['hasFur'] = ($this->hasFur !== null) ? ($this->hasFur) : null;
         }
@@ -207,7 +208,8 @@ class Cat
      */
     public function toStdClass(bool $includeDefaults = false): \stdClass
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         if (isset($this->hasFur) || array_key_exists('hasFur', $this->_providedOptionals)) {
             $output->{'hasFur'} = ($this->hasFur !== null) ? ($this->hasFur) : null;
         }

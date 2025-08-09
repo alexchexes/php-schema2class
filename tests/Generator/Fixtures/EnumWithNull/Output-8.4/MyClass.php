@@ -147,7 +147,8 @@ class MyClass
      */
     public function toArray(): array
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         if (isset($this->foo) || array_key_exists('foo', $this->_providedOptionals)) {
             $output['foo'] = ($this->foo !== null) ? (($this->foo)->value) : null;
         }
@@ -162,7 +163,8 @@ class MyClass
      */
     public function toStdClass(): \stdClass
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         if (isset($this->foo) || array_key_exists('foo', $this->_providedOptionals)) {
             $output->{'foo'} = ($this->foo !== null) ? (($this->foo)->value) : null;
         }

@@ -162,7 +162,8 @@ class MyClassBaz
      */
     public function toArray(): array
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         $output['nestedFoo'] = $this->nestedFoo;
 
         return $output;
@@ -175,7 +176,8 @@ class MyClassBaz
      */
     public function toStdClass(): \stdClass
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         $output->{'nestedFoo'} = $this->nestedFoo;
 
         return $output;

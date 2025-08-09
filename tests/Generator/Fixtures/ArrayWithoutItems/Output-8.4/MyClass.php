@@ -409,7 +409,8 @@ class MyClass
      */
     public function toArray(): array
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         $output['a'] = $this->a;
         $output['b'] = match (true) {
             is_array($this->b),
@@ -458,7 +459,8 @@ class MyClass
      */
     public function toStdClass(): \stdClass
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         $output->{'a'} = $this->a;
         $output->{'b'} = match (true) {
             is_array($this->b),

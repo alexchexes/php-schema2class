@@ -215,7 +215,8 @@ class MyClass
      */
     public function toArray()
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         if (isset($this->foobar)) {
             $output['foobar'] = $this->foobar;
         }
@@ -234,7 +235,8 @@ class MyClass
      */
     public function toStdClass()
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         if (isset($this->foobar)) {
             $output->{'foobar'} = $this->foobar;
         }

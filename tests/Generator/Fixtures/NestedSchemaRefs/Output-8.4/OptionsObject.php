@@ -120,7 +120,8 @@ class OptionsObject
      */
     public function toArray(): array
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         if (isset($this->output)) {
             $output['output'] = $this->output;
         }
@@ -135,7 +136,8 @@ class OptionsObject
      */
     public function toStdClass(): \stdClass
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         if (isset($this->output)) {
             $output->{'output'} = $this->output;
         }

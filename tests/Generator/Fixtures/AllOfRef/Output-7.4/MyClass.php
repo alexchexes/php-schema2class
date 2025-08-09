@@ -173,7 +173,8 @@ class MyClass
      */
     public function toArray(): array
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         $output['city'] = $this->city;
         $output['street'] = $this->street;
         $output['country'] = $this->country;
@@ -188,7 +189,8 @@ class MyClass
      */
     public function toStdClass(): \stdClass
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         $output->{'city'} = $this->city;
         $output->{'street'} = $this->street;
         $output->{'country'} = $this->country;

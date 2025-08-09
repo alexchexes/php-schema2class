@@ -143,7 +143,8 @@ class MyClassRefAndNotRefObjectsUnionAlternative4
      */
     public function toArray(): array
     {
-        $output = [];
+        $output = json_decode(json_encode($this->_additionalProperties), true);
+
         if (isset($this->accountNumber)) {
             $output['accountNumber'] = $this->accountNumber;
         }
@@ -158,7 +159,8 @@ class MyClassRefAndNotRefObjectsUnionAlternative4
      */
     public function toStdClass(): \stdClass
     {
-        $output = new \stdClass();
+        $output = $this->_additionalProperties;
+
         if (isset($this->accountNumber)) {
             $output->{'accountNumber'} = $this->accountNumber;
         }
