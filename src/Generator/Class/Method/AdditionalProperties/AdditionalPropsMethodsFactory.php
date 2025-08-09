@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class\Generator\Class\Method\AdditionalProperties;
 
 use Helmich\Schema2Class\Generator\GeneratorRequest;
+use Laminas\Code\Generator\MethodGenerator;
 
 class AdditionalPropsMethodsFactory
 {

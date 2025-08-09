@@ -26,11 +26,7 @@ class NestedObjectProperty extends AbstractProperty
             && is_array($schema["properties"])
             && count($schema["properties"]) > 0;
 
-        $hasAdditionalProperties = isset($schema["additionalProperties"])
-            && is_array($schema["additionalProperties"])
-            && count($schema["additionalProperties"]) > 0;
-
-        return $isObject && $hasProperties && !$hasAdditionalProperties;
+        return $isObject && $hasProperties;
     }
 
     /**
