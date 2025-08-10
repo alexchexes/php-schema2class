@@ -211,7 +211,7 @@ class Baz
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
         if (isset($this->grox)) {
-            if (($this->grox instanceof Foo || $this->grox instanceof Bar)) {
+            if ($this->grox instanceof Foo || $this->grox instanceof Bar) {
                 $output['grox'] = $this->grox->toArray();
             }
         }
@@ -229,8 +229,8 @@ class Baz
         $output = $this->_additionalProperties;
 
         if (isset($this->grox)) {
-            if (($this->grox instanceof Foo || $this->grox instanceof Bar)) {
-            $output->{'grox'} = $this->grox->toStdClass();
+            if ($this->grox instanceof Foo || $this->grox instanceof Bar) {
+                $output->{'grox'} = $this->grox->toStdClass();
             }
         }
 

@@ -1371,7 +1371,10 @@ class MyClass
             ? MyClassEnsureArgs2::fromInput($input->{'ensureArgs2'}, $validate, $materializeDefaults)
             : null;
         $ensureArgs3 = isset($input->{'ensureArgs3'})
-            ? array_map(fn (array|object $i): MyClassEnsureArgs3Item => MyClassEnsureArgs3Item::fromInput($i, $validate, $materializeDefaults), $input->{'ensureArgs3'})
+            ? array_map(
+                fn (array|object $i): MyClassEnsureArgs3Item => MyClassEnsureArgs3Item::fromInput($i, $validate, $materializeDefaults),
+                $input->{'ensureArgs3'}
+            )
             : null;
 
         $obj = new self(

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Helmich\Schema2Class\Generator;
+namespace Helmich\Schema2Class\Generator\Expression;
 
 use Helmich\Schema2Class\Util\StringUtils;
 

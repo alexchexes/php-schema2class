@@ -214,7 +214,10 @@ class BarTest
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
         if (isset($this->exampleProp)) {
-            if (($this->exampleProp instanceof FooTest || $this->exampleProp instanceof MoiKlass || $this->exampleProp instanceof FooTest_1)) {
+            if ($this->exampleProp instanceof FooTest
+                || $this->exampleProp instanceof MoiKlass
+                || $this->exampleProp instanceof FooTest_1
+            ) {
                 $output['exampleProp'] = $this->exampleProp->toArray();
             }
         }
@@ -232,8 +235,11 @@ class BarTest
         $output = $this->_additionalProperties;
 
         if (isset($this->exampleProp)) {
-            if (($this->exampleProp instanceof FooTest || $this->exampleProp instanceof MoiKlass || $this->exampleProp instanceof FooTest_1)) {
-            $output->{'exampleProp'} = $this->exampleProp->toStdClass();
+            if ($this->exampleProp instanceof FooTest
+                || $this->exampleProp instanceof MoiKlass
+                || $this->exampleProp instanceof FooTest_1
+            ) {
+                $output->{'exampleProp'} = $this->exampleProp->toStdClass();
             }
         }
 

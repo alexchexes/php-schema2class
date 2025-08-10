@@ -7,10 +7,11 @@ use Helmich\Schema2Class\Generator\Class\ArgumentNames;
 use Helmich\Schema2Class\Generator\Class\Method\FromInputMethodFactory;
 use Helmich\Schema2Class\Generator\Class\VariableNames;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
+use Helmich\Schema2Class\Generator\Expression\OrGenerator;
 use Helmich\Schema2Class\Generator\Property\Type\Primitive\NullProperty;
 use Helmich\Schema2Class\Generator\Property\Type\PropertyInterface;
 use Helmich\Schema2Class\Generator\Property\Type\Primitive\StringProperty;
-use Helmich\Schema2Class\Generator\TernaryGenerator;
+use Helmich\Schema2Class\Generator\Expression\TernaryGenerator;
 use Helmich\Schema2Class\Writer\WriterInterface;
 use Laminas\Code\Generator\PropertyValueGenerator;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -190,12 +191,12 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface
 
     public function typeAssertionExpr(string $expr): string
     {
-        return "({$expr} === null || {$this->inner->typeAssertionExpr($expr)})";
+        return OrGenerator::make(["{$expr} === null", $this->inner->typeAssertionExpr($expr)]);
     }
 
     public function inputAssertionExpr(string $expr): string
     {
-        return "({$expr} === null || {$this->inner->inputAssertionExpr($expr)})";
+        return OrGenerator::make(["{$expr} === null", $this->inner->inputAssertionExpr($expr)]);
     }
 
     public function inputMappingExpr(string $expr, bool $asserted = false): string

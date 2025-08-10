@@ -512,24 +512,30 @@ class MyClass
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
         if (isset($this->objectsUnion)) {
-            if (($this->objectsUnion instanceof MyClassObjectsUnionAlternative1 || $this->objectsUnion instanceof MyClassObjectsUnionAlternative2)) {
+            if ($this->objectsUnion instanceof MyClassObjectsUnionAlternative1
+                || $this->objectsUnion instanceof MyClassObjectsUnionAlternative2
+            ) {
                 $output['objectsUnion'] = $this->objectsUnion->toArray();
             }
         }
         if (isset($this->refObjectsUnion)) {
-            if (($this->refObjectsUnion instanceof SomeObj1 || $this->refObjectsUnion instanceof SomeObj2)) {
+            if ($this->refObjectsUnion instanceof SomeObj1 || $this->refObjectsUnion instanceof SomeObj2) {
                 $output['refObjectsUnion'] = $this->refObjectsUnion->toArray();
             }
         }
         if (isset($this->refAndNotRefObjectsUnion)) {
-            if (($this->refAndNotRefObjectsUnion instanceof SomeObj1 || $this->refAndNotRefObjectsUnion instanceof MyClassRefAndNotRefObjectsUnionAlternative2 || $this->refAndNotRefObjectsUnion instanceof SomeObj2 || $this->refAndNotRefObjectsUnion instanceof MyClassRefAndNotRefObjectsUnionAlternative4)) {
+            if ($this->refAndNotRefObjectsUnion instanceof SomeObj1
+                || $this->refAndNotRefObjectsUnion instanceof MyClassRefAndNotRefObjectsUnionAlternative2
+                || $this->refAndNotRefObjectsUnion instanceof SomeObj2
+                || $this->refAndNotRefObjectsUnion instanceof MyClassRefAndNotRefObjectsUnionAlternative4
+            ) {
                 $output['refAndNotRefObjectsUnion'] = $this->refAndNotRefObjectsUnion->toArray();
             }
         }
         if (isset($this->objAndStringUnion)) {
-            if (($this->objAndStringUnion instanceof MyClassObjAndStringUnionAlternative1)) {
+            if ($this->objAndStringUnion instanceof MyClassObjAndStringUnionAlternative1) {
                 $output['objAndStringUnion'] = $this->objAndStringUnion->toArray();
-            } else if ((is_string($this->objAndStringUnion))) {
+            } elseif (is_string($this->objAndStringUnion)) {
                 $output['objAndStringUnion'] = $this->objAndStringUnion;
             }
         }
@@ -553,25 +559,31 @@ class MyClass
         $output = $this->_additionalProperties;
 
         if (isset($this->objectsUnion)) {
-            if (($this->objectsUnion instanceof MyClassObjectsUnionAlternative1 || $this->objectsUnion instanceof MyClassObjectsUnionAlternative2)) {
-            $output->{'objectsUnion'} = $this->objectsUnion->toStdClass();
+            if ($this->objectsUnion instanceof MyClassObjectsUnionAlternative1
+                || $this->objectsUnion instanceof MyClassObjectsUnionAlternative2
+            ) {
+                $output->{'objectsUnion'} = $this->objectsUnion->toStdClass();
             }
         }
         if (isset($this->refObjectsUnion)) {
-            if (($this->refObjectsUnion instanceof SomeObj1 || $this->refObjectsUnion instanceof SomeObj2)) {
-            $output->{'refObjectsUnion'} = $this->refObjectsUnion->toStdClass();
+            if ($this->refObjectsUnion instanceof SomeObj1 || $this->refObjectsUnion instanceof SomeObj2) {
+                $output->{'refObjectsUnion'} = $this->refObjectsUnion->toStdClass();
             }
         }
         if (isset($this->refAndNotRefObjectsUnion)) {
-            if (($this->refAndNotRefObjectsUnion instanceof SomeObj1 || $this->refAndNotRefObjectsUnion instanceof MyClassRefAndNotRefObjectsUnionAlternative2 || $this->refAndNotRefObjectsUnion instanceof SomeObj2 || $this->refAndNotRefObjectsUnion instanceof MyClassRefAndNotRefObjectsUnionAlternative4)) {
-            $output->{'refAndNotRefObjectsUnion'} = $this->refAndNotRefObjectsUnion->toStdClass();
+            if ($this->refAndNotRefObjectsUnion instanceof SomeObj1
+                || $this->refAndNotRefObjectsUnion instanceof MyClassRefAndNotRefObjectsUnionAlternative2
+                || $this->refAndNotRefObjectsUnion instanceof SomeObj2
+                || $this->refAndNotRefObjectsUnion instanceof MyClassRefAndNotRefObjectsUnionAlternative4
+            ) {
+                $output->{'refAndNotRefObjectsUnion'} = $this->refAndNotRefObjectsUnion->toStdClass();
             }
         }
         if (isset($this->objAndStringUnion)) {
-            if (($this->objAndStringUnion instanceof MyClassObjAndStringUnionAlternative1)) {
-            $output->{'objAndStringUnion'} = $this->objAndStringUnion->toStdClass();
-            } else if ((is_string($this->objAndStringUnion))) {
-            $output->{'objAndStringUnion'} = $this->objAndStringUnion;
+            if ($this->objAndStringUnion instanceof MyClassObjAndStringUnionAlternative1) {
+                $output->{'objAndStringUnion'} = $this->objAndStringUnion->toStdClass();
+            } elseif (is_string($this->objAndStringUnion)) {
+                $output->{'objAndStringUnion'} = $this->objAndStringUnion;
             }
         }
         if (isset($this->unionOfOneObj)) {

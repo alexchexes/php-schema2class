@@ -213,7 +213,7 @@ class MyClass
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
         if (isset($this->foo)) {
-            if ((is_string($this->foo) || is_int($this->foo))) {
+            if (is_string($this->foo) || is_int($this->foo)) {
                 $output['foo'] = $this->foo;
             }
         }
@@ -240,8 +240,8 @@ class MyClass
         $output = $this->_additionalProperties;
 
         if (isset($this->foo)) {
-            if ((is_string($this->foo) || is_int($this->foo))) {
-            $output->{'foo'} = $this->foo;
+            if (is_string($this->foo) || is_int($this->foo)) {
+                $output->{'foo'} = $this->foo;
             }
         }
 

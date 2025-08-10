@@ -1398,7 +1398,10 @@ class MyClass
             ? MyClassEnsureArgs2::fromInput($input->{'ensureArgs2'}, $validate, $materializeDefaults)
             : null;
         $ensureArgs3 = isset($input->{'ensureArgs3'})
-            ? array_map(fn ($i): MyClassEnsureArgs3Item => MyClassEnsureArgs3Item::fromInput($i, $validate, $materializeDefaults), $input->{'ensureArgs3'})
+            ? array_map(
+                fn ($i): MyClassEnsureArgs3Item => MyClassEnsureArgs3Item::fromInput($i, $validate, $materializeDefaults),
+                $input->{'ensureArgs3'}
+            )
             : null;
 
         $obj = new self(
@@ -1529,9 +1532,11 @@ class MyClass
         $output['files'] = $this->files;
         $output['this'] = $this->_this;
         if (isset($this->ensureArgs1)) {
-            if (($this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative1 || $this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative2)) {
+            if ($this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative1
+                || $this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative2
+            ) {
                 $output['ensureArgs1'] = $this->ensureArgs1->toArray($includeDefaults);
-            } else if ((is_string($this->ensureArgs1))) {
+            } elseif (is_string($this->ensureArgs1)) {
                 $output['ensureArgs1'] = $this->ensureArgs1;
             }
         }
@@ -1619,10 +1624,12 @@ class MyClass
         $output->{'files'} = $this->files;
         $output->{'this'} = $this->_this;
         if (isset($this->ensureArgs1)) {
-            if (($this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative1 || $this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative2)) {
-            $output->{'ensureArgs1'} = $this->ensureArgs1->toStdClass($includeDefaults);
-            } else if ((is_string($this->ensureArgs1))) {
-            $output->{'ensureArgs1'} = $this->ensureArgs1;
+            if ($this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative1
+                || $this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative2
+            ) {
+                $output->{'ensureArgs1'} = $this->ensureArgs1->toStdClass($includeDefaults);
+            } elseif (is_string($this->ensureArgs1)) {
+                $output->{'ensureArgs1'} = $this->ensureArgs1;
             }
         }
         if (isset($this->ensureArgs2)) {

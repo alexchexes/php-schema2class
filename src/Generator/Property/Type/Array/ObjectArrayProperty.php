@@ -6,6 +6,7 @@ namespace Helmich\Schema2Class\Generator\Property\Type\Array;
 use Helmich\Schema2Class\Generator\Class\ArgumentNames;
 use Helmich\Schema2Class\Generator\Class\MethodNames;
 use Helmich\Schema2Class\Generator\Class\VariableNames;
+use Helmich\Schema2Class\Generator\Expression\CallGenerator;
 use Helmich\Schema2Class\Generator\GeneratorException;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\PropertyBuilder;
@@ -200,89 +201,136 @@ class ObjectArrayProperty extends AbstractProperty
     {
         $subExpr = $this->itemType->inputMappingExpr('$i');
 
-        $indReturnExpr = StringUtils::indentCode("return {$subExpr};");
+        $returnExpr = "return {$subExpr};";
+        $callbackBody = mb_strlen($returnExpr) < 50
+            ? " {$returnExpr} "
+            : "\n" . StringUtils::indentCode($returnExpr) . "\n";
 
         if ($this->itemType instanceof MixedProperty) {
-            return match (true) {
-                $this->request->isAtLeastPHP('7.0') => "array_map(fn (\$i) => {$subExpr}, {$expr})",
-                default =>
-                    <<<PHP
-                    array_map(function(\$i) {
-                    {$indReturnExpr}
-                    }, {$expr})
-                    PHP,
-            };
+            if ($this->request->isAtLeastPHP('7.0')) {
+                return CallGenerator::make('array_map', [
+                    "fn (\$i) => {$subExpr}",
+                    $expr,
+                ]);
+            }
+
+            return CallGenerator::make('array_map', [
+                "function(\$i) {{$callbackBody}}",
+                $expr,
+            ]);
         }
 
         $typeHint = $this->subTypeName();
 
         return match (true) {
-            $this->request->isAtLeastPHP('8.0')
-                => "array_map(fn (array|object \$i): {$typeHint} => {$subExpr}, {$expr})",
+            $this->request->isAtLeastPHP('8.0') =>
+                CallGenerator::make('array_map', [
+                    "fn (array|object \$i): {$typeHint} => {$subExpr}",
+                    $expr,
+                ]),
 
-            $this->request->isAtLeastPHP('7.4')
-                => "array_map(fn (\$i): {$typeHint} => {$subExpr}, {$expr})",
+            $this->request->isAtLeastPHP('7.4') =>
+                CallGenerator::make('array_map', [
+                    "fn (\$i): {$typeHint} => {$subExpr}",
+                    $expr,
+                ]),
 
-            $this->request->isAtLeastPHP('7.0')
-                => 
-                    <<<PHP
-                    array_map(function(\$i): {$typeHint} use ({$this->buildUseClause()}) {
-                    {$indReturnExpr}
-                    }, {$expr})
-                    PHP,
+            $this->request->isAtLeastPHP('7.0') =>
+                CallGenerator::make('array_map', [
+                    "function(\$i): {$typeHint} use ({$this->buildUseClause()}) {{$callbackBody}}",
+                    $expr,
+                ]),
 
-            default
-                =>
-                    <<<PHP
-                    array_map(function(\$i) use ({$this->buildUseClause()}) {
-                    {$indReturnExpr}
-                    }, {$expr})
-                    PHP,
+            default =>
+                CallGenerator::make('array_map', [
+                    "function(\$i) use ({$this->buildUseClause()}) {{$callbackBody}}",
+                    $expr,
+                ]),
         };
     }
 
     public function outputMappingExpr(string $expr): string
     {
         if ($this->itemType instanceof MixedProperty) {
-            return "array_map(fn (\$i) => \$i, {$expr})";
+            return CallGenerator::make('array_map', [
+                "fn (\$i) => \$i",
+                $expr,
+            ]);
         }
 
-        $st = $this->subTypeName();
-        $sm = $this->itemType->outputMappingExpr('$i');
+        $subType = $this->subTypeName();
+        $subExpr = $this->itemType->outputMappingExpr('$i');
 
         if ($this->request->isAtLeastPHP('7.4')) {
-            return "array_map(fn ($st \$i) => {$sm}, {$expr})";
+            return CallGenerator::make('array_map', [
+                "fn ($subType \$i) => {$subExpr}",
+                $expr,
+            ]);
         }
-        return "array_map(function($st \$i) { return {$sm} }, {$expr})";
+
+        $returnExpr = "return {$subExpr};";
+        $funcBody = mb_strlen($returnExpr) < 50
+            ? " {$returnExpr} "
+            : "\n" . StringUtils::indentCode($returnExpr) . "\n";
+
+        return CallGenerator::make('array_map', [
+            "function($subType \$i) {{$funcBody}}",
+            $expr,
+        ]);
     }
 
     public function outputMappingExprStdClass(string $expr): string
     {
         if ($this->itemType instanceof MixedProperty) {
-            return "array_map(fn (\$i) => \$i, {$expr})";
+            return CallGenerator::make('array_map', [
+                "fn (\$i) => \$i",
+                $expr,
+            ]);
         }
 
-        $st = $this->subTypeName();
-        $sm = $this->itemType->outputMappingExprStdClass('$i');
+        $subType = $this->subTypeName();
+        $subExpr = $this->itemType->outputMappingExprStdClass('$i');
 
         if ($this->request->isAtLeastPHP('7.4')) {
-            return "array_map(fn ($st \$i) => {$sm}, {$expr})";
+            return CallGenerator::make('array_map', [
+                "fn ($subType \$i) => {$subExpr}",
+                $expr,
+            ]);
         }
-        return "array_map(function($st \$i) { return {$sm} }, {$expr})";
+        
+        $returnExpr = "return {$subExpr};";
+        $funcBody = mb_strlen($returnExpr) < 50
+            ? " {$returnExpr} "
+            : "\n" . StringUtils::indentCode($returnExpr) . "\n";
+
+        return CallGenerator::make('array_map', [
+            "function($subType \$i) {{$funcBody}}",
+            $expr,
+        ]);
     }
 
     public function cloneExpr(string $expr): string
     {
         if ($this->itemType instanceof MixedProperty) {
-            return "array_map(fn (\$i) => \$i, {$expr})";
+            return CallGenerator::make('array_map', [
+                "fn (\$i) => \$i",
+                $expr,
+            ]);
         }
 
         $st = $this->subTypeName();
 
         if ($this->request->isAtLeastPHP('7.4')) {
-            return "array_map(fn ({$st} \$i) => clone \$i, {$expr})";
+            return CallGenerator::make('array_map', [
+                "fn ({$st} \$i) => clone \$i",
+                $expr,
+            ]);
         }
-        return "array_map(function({$st} \$i) { return clone \$i; }, {$expr})";
+
+        return CallGenerator::make('array_map', [
+            "function({$st} \$i) { return clone \$i; }",
+            $expr,
+        ]);
     }
 
     private function subTypeName(): string

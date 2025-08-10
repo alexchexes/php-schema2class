@@ -1,25 +1,18 @@
 <?php
 declare(strict_types=1);
 
-namespace Helmich\Schema2Class\Generator;
+namespace Helmich\Schema2Class\Generator\Expression;
 
 use Helmich\Schema2Class\Util\StringUtils;
 
 class TernaryGenerator
 {
-    public const LENGTH_LIMIT = 85;
-
-    static public function make(string $condition, string $ifTrue, string $ifFalse, bool $parens = true): string
+    static public function make(string $condition, string $ifTrue, string $ifFalse, bool $parens = true, int $lengthToWrap = 85): string
     {
         $result = "{$condition} ? {$ifTrue} : {$ifFalse}";
         $multiline = false;
 
-        if (
-            str_contains($condition, "\n")
-            || str_contains($ifTrue, "\n")
-            || str_contains($ifFalse, "\n")
-            || mb_strlen($result) > self::LENGTH_LIMIT
-        ) {
+        if (str_contains($result, "\n") || mb_strlen($result) > $lengthToWrap) {
             $multiline = true;
             $result = implode("\n", [
                 $condition,

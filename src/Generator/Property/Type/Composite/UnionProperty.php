@@ -9,7 +9,8 @@ use Helmich\Schema2Class\Generator\Class\Method\Serialize\SerializeMethodFactory
 use Helmich\Schema2Class\Generator\Class\VariableNames;
 use Helmich\Schema2Class\Generator\GeneratorException;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
-use Helmich\Schema2Class\Generator\MatchGenerator;
+use Helmich\Schema2Class\Generator\Expression\MatchGenerator;
+use Helmich\Schema2Class\Generator\Expression\OrGenerator;
 use Helmich\Schema2Class\Generator\Property\Type\Primitive\NullProperty;
 use Helmich\Schema2Class\Generator\Property\PropertyBuilder;
 use Helmich\Schema2Class\Generator\Property\Type\AbstractProperty;
@@ -20,7 +21,7 @@ use Helmich\Schema2Class\Generator\Property\Type\Object\NestedObjectProperty;
 use Helmich\Schema2Class\Generator\Property\Type\PropertyInterface;
 use Helmich\Schema2Class\Generator\Property\Type\ReferenceProperty;
 use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeClass;
-use Helmich\Schema2Class\Generator\TernaryGenerator;
+use Helmich\Schema2Class\Generator\Expression\TernaryGenerator;
 use Helmich\Schema2Class\Util\StringUtils;
 use Helmich\Schema2Class\Writer\WriterInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -110,7 +111,7 @@ class UnionProperty extends AbstractProperty
                 || $subProp instanceof ObjectArrayProperty
                 || $subProp instanceof PrimitiveArrayProperty
             ) {
-                $discriminator = "is_array({$accessor}) && ({$discriminator})";
+                $discriminator = "(is_array({$accessor}) && {$discriminator})";
             }
     
             if (! isset($conversions[$assignment])) {
@@ -120,32 +121,43 @@ class UnionProperty extends AbstractProperty
         }
     
         // Turn those into an if/elseif/else chain
-        $ifs      = 0;
         $branches = [];
         $fallback = null;
+
+        $indent = StringUtils::indentCode(...);
     
         foreach ($conversions as $assignment => $info) {
             if ($info["fallback"]) {
                 $fallback = $assignment;
                 continue;
             }
-            $cond = "(" . join(" || ", $info["discriminators"]) . ")";
-            $indAssignment = StringUtils::indentCode($assignment);
-            $branches[] = ($ifs++ > 0 ? "else " : "if ") . "($cond) {\n{$indAssignment}\n}";
+
+            $keyword = count($branches) ? "elseif" : "if";
+            $parenthesizedCondition = OrGenerator::make($info["discriminators"]);
+
+            $branches[] = 
+                <<<PHP
+                {$keyword} {$parenthesizedCondition} {
+                {$indent($assignment)}
+                }
+                PHP;
         }
     
         // Attach the fallback at the end
         if ($fallback !== null) {
             if (count($branches) > 0) {
-                $indFallback = StringUtils::indentCode($fallback);
-                $branches[] = "else {\n$indFallback\n}";
+                $branches[] =
+                    <<<PHP
+                    else {
+                    {$indent($fallback)}
+                    }
+                    PHP;
             } else {
                 $branches[] = $fallback;
             }
         }
     
-        // Join and normalize "}else" → "} else"
-        return str_replace("}\nelse", "} else", join("\n", $branches));
+        return join(" ", $branches);
     }
     
 
@@ -174,7 +186,6 @@ class UnionProperty extends AbstractProperty
         foreach ($this->subProperties as $subProperty) {
             $mapping       = $subProperty->outputMappingExprStdClass("\$this->{$name}");
             $discriminator = $subProperty->typeAssertionExpr("\$this->{$name}");
-
             $match->addArm($discriminator, $mapping);
         }
 
@@ -205,15 +216,21 @@ class UnionProperty extends AbstractProperty
             $conversions[$assignment]["discriminators"][] = $discriminator;
         }
 
-        $ifs      = 0;
+        $indent = StringUtils::indentCode(...);
+
         $branches = [];
         foreach ($conversions as $assignment => $conversion) {
-            $condition  = "(" . join(" || ", $conversion["discriminators"]) . ")";
-            $indAssignment = StringUtils::indentCode($assignment);
-            $branches[] = ($ifs++ > 0 ? "else " : "") . "if ($condition) {\n$indAssignment\n}";
+            $parenthesizedCondition = OrGenerator::make($conversion["discriminators"]);
+            $keyword = count($branches) ? "elseif" : "if";
+            $branches[] =
+                <<<PHP
+                {$keyword} {$parenthesizedCondition} {
+                {$indent($assignment)}
+                }
+                PHP;
         }
 
-        return str_replace("}\nelse", "} else", join("\n", $branches));
+        return join(" ", $branches);
     }
 
     public function convertTypeToStdClass(): string
@@ -239,14 +256,21 @@ class UnionProperty extends AbstractProperty
             $conversions[$assignment]["discriminators"][] = $discriminator;
         }
 
-        $ifs      = 0;
+        $indent = StringUtils::indentCode(...);
+
         $branches = [];
         foreach ($conversions as $assignment => $conversion) {
-            $condition  = "(" . join(" || ", $conversion["discriminators"]) . ")";
-            $branches[] = ($ifs++ > 0 ? "else " : "") . "if ($condition) {\n$assignment\n}";
+            $parenthesizedCondition = OrGenerator::make($conversion["discriminators"]);
+            $keyword = count($branches) ? "elseif" : "if";
+            $branches[] =
+                <<<PHP
+                {$keyword} {$parenthesizedCondition} {
+                {$indent($assignment)}
+                }
+                PHP;
         }
 
-        return str_replace("}\nelse", "} else", join("\n", $branches));
+        return join(" ", $branches);
     }
 
     /**
@@ -367,7 +391,7 @@ class UnionProperty extends AbstractProperty
             $subAssertions[] = $prop->typeAssertionExpr($expr);
         }
 
-        return "(" . join(" || ", $subAssertions) . ")";
+        return OrGenerator::make($subAssertions);
     }
 
     public function inputAssertionExpr(string $expr): string
@@ -378,7 +402,7 @@ class UnionProperty extends AbstractProperty
             $subAssertions[] = $prop->inputAssertionExpr($expr);
         }
 
-        return "(" . join(" || ", $subAssertions) . ")";
+        return OrGenerator::make($subAssertions);
     }
 
     public function inputMappingExpr(string $expr, bool $asserted = false): string

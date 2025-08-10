@@ -286,16 +286,16 @@ class MyClass
     {
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
-        if ((is_string($this->foo) || is_string($this->foo))) {
+        if (is_string($this->foo) || is_string($this->foo)) {
             $output['foo'] = $this->foo;
         }
-        if ((is_string($this->bar) || is_string($this->bar))) {
+        if (is_string($this->bar) || is_string($this->bar)) {
             $output['bar'] = $this->bar;
         }
-        if ((is_string($this->baz) || is_string($this->baz))) {
+        if (is_string($this->baz) || is_string($this->baz)) {
             $output['baz'] = $this->baz;
         }
-        if ((is_string($this->qux) || is_string($this->qux) || is_string($this->qux) || is_string($this->qux))) {
+        if (is_string($this->qux) || is_string($this->qux) || is_string($this->qux) || is_string($this->qux)) {
             $output['qux'] = $this->qux;
         }
 
@@ -311,17 +311,17 @@ class MyClass
     {
         $output = $this->_additionalProperties;
 
-        if ((is_string($this->foo) || is_string($this->foo))) {
-        $output->{'foo'} = $this->foo;
+        if (is_string($this->foo) || is_string($this->foo)) {
+            $output->{'foo'} = $this->foo;
         }
-        if ((is_string($this->bar) || is_string($this->bar))) {
-        $output->{'bar'} = $this->bar;
+        if (is_string($this->bar) || is_string($this->bar)) {
+            $output->{'bar'} = $this->bar;
         }
-        if ((is_string($this->baz) || is_string($this->baz))) {
-        $output->{'baz'} = $this->baz;
+        if (is_string($this->baz) || is_string($this->baz)) {
+            $output->{'baz'} = $this->baz;
         }
-        if ((is_string($this->qux) || is_string($this->qux) || is_string($this->qux) || is_string($this->qux))) {
-        $output->{'qux'} = $this->qux;
+        if (is_string($this->qux) || is_string($this->qux) || is_string($this->qux) || is_string($this->qux)) {
+            $output->{'qux'} = $this->qux;
         }
 
         return $output;

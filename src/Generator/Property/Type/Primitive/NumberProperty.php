@@ -4,8 +4,9 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class\Generator\Property\Type\Primitive;
 
 use Composer\Semver\Semver;
+use Helmich\Schema2Class\Generator\Expression\OrGenerator;
 use Helmich\Schema2Class\Generator\Property\Type\AbstractProperty;
-use Helmich\Schema2Class\Generator\TernaryGenerator;
+use Helmich\Schema2Class\Generator\Expression\TernaryGenerator;
 use Helmich\Schema2Class\Util\EnumUtils;
 use Helmich\Schema2Class\Util\SchemaKeywords;
 
@@ -52,8 +53,8 @@ class NumberProperty extends AbstractProperty
         if (isset($this->schema['enum'])) {
             return EnumUtils::assertionExpr($this->schema['enum'], $expr);
         }
-
-        return "(is_int({$expr}) || is_float({$expr}))";
+        
+        return OrGenerator::make(["is_int({$expr})", "is_float({$expr})"]);
     }
 
     public function inputMappingExpr(string $expr, bool $asserted = false): string

@@ -226,15 +226,15 @@ class MyClass
     {
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
-        if ((is_string($this->foo))) {
+        if (is_string($this->foo)) {
             $output['foo'] = $this->foo;
-        } else if ((is_array($this->foo) || is_object($this->foo))) {
+        } elseif (is_array($this->foo) || is_object($this->foo)) {
             $output['foo'] = json_decode(json_encode($this->foo), true);
         }
         if (isset($this->bar)) {
-            if ((is_string($this->bar))) {
+            if (is_string($this->bar)) {
                 $output['bar'] = $this->bar;
-            } else if ((is_array($this->bar) || is_object($this->bar))) {
+            } elseif (is_array($this->bar) || is_object($this->bar)) {
                 $output['bar'] = json_decode(json_encode($this->bar), true);
             }
         }
@@ -251,16 +251,16 @@ class MyClass
     {
         $output = $this->_additionalProperties;
 
-        if ((is_string($this->foo))) {
-        $output->{'foo'} = $this->foo;
-        } else if ((is_array($this->foo) || is_object($this->foo))) {
-        $output->{'foo'} = json_decode(json_encode($this->foo));
+        if (is_string($this->foo)) {
+            $output->{'foo'} = $this->foo;
+        } elseif (is_array($this->foo) || is_object($this->foo)) {
+            $output->{'foo'} = json_decode(json_encode($this->foo));
         }
         if (isset($this->bar)) {
-            if ((is_string($this->bar))) {
-            $output->{'bar'} = $this->bar;
-            } else if ((is_array($this->bar) || is_object($this->bar))) {
-            $output->{'bar'} = json_decode(json_encode($this->bar));
+            if (is_string($this->bar)) {
+                $output->{'bar'} = $this->bar;
+            } elseif (is_array($this->bar) || is_object($this->bar)) {
+                $output->{'bar'} = json_decode(json_encode($this->bar));
             }
         }
 

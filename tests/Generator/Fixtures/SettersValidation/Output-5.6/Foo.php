@@ -380,7 +380,7 @@ class Foo
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
         if (isset($this->a)) {
-            if ((in_array($this->a, ['a', 'b'], true) || is_array($this->a))) {
+            if (in_array($this->a, ['a', 'b'], true) || is_array($this->a)) {
                 $output['a'] = $this->a;
             }
         }
@@ -407,8 +407,8 @@ class Foo
         $output = $this->_additionalProperties;
 
         if (isset($this->a)) {
-            if ((in_array($this->a, ['a', 'b'], true) || is_array($this->a))) {
-            $output->{'a'} = $this->a;
+            if (in_array($this->a, ['a', 'b'], true) || is_array($this->a)) {
+                $output->{'a'} = $this->a;
             }
         }
         if (isset($this->b)) {

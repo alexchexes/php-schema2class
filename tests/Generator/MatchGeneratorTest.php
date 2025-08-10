@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator;
 
-use Helmich\Schema2Class\Generator\MatchGenerator;
+use Helmich\Schema2Class\Generator\Expression\MatchGenerator;
 use PHPUnit\Framework\TestCase;
 use function PHPUnit\Framework\assertThat;
 use function PHPUnit\Framework\equalTo;
