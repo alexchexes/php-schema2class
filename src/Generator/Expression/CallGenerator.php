@@ -15,15 +15,15 @@ class CallGenerator
      * but suitable for long and complex expressions and the generator needs.
      * 
      * @param string $callee    Expression to call (e.g. `array_map`, `Foo::bar`, `$obj->run`, `$fn`)
-     * @param array<int,string>|array<string,string> $args  Arguments for the `callee` as code strings.  
+     * @param array<int,string>|array<string,string> $arguments  Arguments for the `callee` as code strings.  
      *                                                      Named arguments are supported on PHP 8+,  
      *                                                      pass assoc array like `['limit' => '10', 'strict' => 'true']`
      */
-    public static function make(string $callee, array $args, int $lengthToWrap = 100, string $phpVer = '5.6'): string
+    public static function make(string $callee, array $arguments, int $lengthToWrap = 100, string $phpVer = '5.6'): string
     {
         $named = [];
         $positional = [];
-        foreach ($args as $k => $v) {
+        foreach ($arguments as $k => $v) {
             if (is_string($k)) {
                 if (!Semver::satisfies($phpVer, '>=8.0')) {
                     throw new \InvalidArgumentException("Cannot use named arguments with 'phpVer' < 8.0");
