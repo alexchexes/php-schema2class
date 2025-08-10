@@ -171,10 +171,12 @@ class MyClass
             static::validateInput($input);
         }
 
-        $foo = isset($input->{'foo'}) ? array_map(
-            fn(array|object $i): FooItem => FooItem::fromInput($i, $validate, $materializeDefaults),
-            $input->{'foo'}
-        ) : null;
+        $foo = isset($input->{'foo'})
+            ? array_map(
+                fn(array|object $i): FooItem => FooItem::fromInput($i, $validate, $materializeDefaults),
+                $input->{'foo'}
+            )
+            : null;
 
         $obj = new self($foo);
 

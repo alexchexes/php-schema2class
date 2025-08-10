@@ -255,10 +255,13 @@ class MyClass
             is_string($input->{'baz'}) => $input->{'baz'},
             default => throw new \InvalidArgumentException("could not build property 'baz' from JSON"),
         };
-        $qux = ($input->{'qux'} !== null ? match (true) {
-            is_string($input->{'qux'}) => $input->{'qux'},
-            default => null,
-        } : null);
+        $qux = ($input->{'qux'} !== null
+            ? match (true) {
+                is_string($input->{'qux'}) => $input->{'qux'},
+                default => null,
+            }
+            : null
+        );
 
         $obj = new self($foo, $bar, $baz, $qux);
 

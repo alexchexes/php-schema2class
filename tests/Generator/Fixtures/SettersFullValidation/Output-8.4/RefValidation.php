@@ -221,15 +221,16 @@ class RefValidation
         }
 
         $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
-        $bar = isset($input->{'bar'}) ? match (true) {
-            is_string($input->{'bar'}),
-            in_array($input->{'bar'}, array (
-          0 => 1,
-          1 => 2,
-        ), true) => $input->{'bar'},
-            default => null,
-        } : null;
-        $baz = isset($input->{'baz'}) ? RefValidationBaz::fromInput($input->{'baz'}, $validate) : null;
+        $bar = isset($input->{'bar'})
+            ? match (true) {
+                is_string($input->{'bar'}),
+                in_array($input->{'bar'}, [1, 2], true) => $input->{'bar'},
+                default => null,
+            }
+            : null;
+        $baz = isset($input->{'baz'})
+            ? RefValidationBaz::fromInput($input->{'baz'}, $validate)
+            : null;
 
         $obj = new self($foo, $bar, $baz);
 
@@ -256,10 +257,7 @@ class RefValidation
         if (isset($this->bar)) {
             $output['bar'] = match (true) {
                 is_string($this->bar),
-                in_array($this->bar, array (
-              0 => 1,
-              1 => 2,
-            ), true) => $this->bar,
+                in_array($this->bar, [1, 2], true) => $this->bar,
             };
         }
         if (isset($this->baz)) {
@@ -284,10 +282,7 @@ class RefValidation
         if (isset($this->bar)) {
             $output->{'bar'} = match (true) {
                 is_string($this->bar),
-                in_array($this->bar, array (
-              0 => 1,
-              1 => 2,
-            ), true) => $this->bar,
+                in_array($this->bar, [1, 2], true) => $this->bar,
             };
         }
         if (isset($this->baz)) {
@@ -338,10 +333,7 @@ class RefValidation
         if (isset($this->bar)) {
             $this->bar = match (true) {
                 is_string($this->bar),
-                in_array($this->bar, array (
-              0 => 1,
-              1 => 2,
-            ), true) => $this->bar,
+                in_array($this->bar, [1, 2], true) => $this->bar,
             };
         }
         if (isset($this->baz)) {

@@ -12,6 +12,7 @@ use Helmich\Schema2Class\Generator\Property\PropertyBuilder;
 use Helmich\Schema2Class\Generator\Property\Type\AbstractProperty;
 use Helmich\Schema2Class\Generator\Property\Type\MixedProperty;
 use Helmich\Schema2Class\Generator\Property\Type\PropertyInterface;
+use Helmich\Schema2Class\Util\StringUtils;
 use Helmich\Schema2Class\Writer\WriterInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -160,7 +161,13 @@ class ObjectArrayProperty extends AbstractProperty
         }
 
         $st = $this->subTypeName();
-        return "is_array({$expr}) && count(array_filter({$expr}, function({$st} \$item) {return \$item instanceof {$st};})) === count({$expr})";
+
+        return 
+            <<<PHP
+            is_array({$expr}) && count(array_filter({$expr}, function({$st} \$item) {
+                return \$item instanceof {$st};
+            })) === count({$expr})
+            PHP;
     }
 
     public function inputAssertionExpr(string $expr): string
@@ -171,7 +178,13 @@ class ObjectArrayProperty extends AbstractProperty
 
         $st = $this->subTypeName();
         $VALIDATE_INPUT = MethodNames::VALIDATE_INPUT;
-        return "is_array({$expr}) && count(array_filter({$expr}, function({$st} \$item) {return {$st}::{$VALIDATE_INPUT}(\$item, true)};)) === count({$expr})";
+
+        return 
+            <<<PHP
+            is_array({$expr}) && count(array_filter({$expr}, function({$st} \$item) {
+                return {$st}::{$VALIDATE_INPUT}(\$item, true);
+            })) === count({$expr})
+            PHP;
     }
     
     private function buildUseClause(): string
@@ -185,12 +198,19 @@ class ObjectArrayProperty extends AbstractProperty
 
     public function inputMappingExpr(string $expr, bool $asserted = false): string
     {
-        $sm = $this->itemType->inputMappingExpr('$i');
+        $subExpr = $this->itemType->inputMappingExpr('$i');
+
+        $indReturnExpr = StringUtils::indentCode("return {$subExpr};");
 
         if ($this->itemType instanceof MixedProperty) {
             return match (true) {
-                $this->request->isAtLeastPHP('7.0') => "array_map(fn (\$i) => {$sm}, {$expr})",
-                default => "array_map(function(\$i) { return {$sm}; }, {$expr})",
+                $this->request->isAtLeastPHP('7.0') => "array_map(fn (\$i) => {$subExpr}, {$expr})",
+                default =>
+                    <<<PHP
+                    array_map(function(\$i) {
+                    {$indReturnExpr}
+                    }, {$expr})
+                    PHP,
             };
         }
 
@@ -198,16 +218,26 @@ class ObjectArrayProperty extends AbstractProperty
 
         return match (true) {
             $this->request->isAtLeastPHP('8.0')
-                => "array_map(fn (array|object \$i): {$typeHint} => {$sm}, {$expr})",
+                => "array_map(fn (array|object \$i): {$typeHint} => {$subExpr}, {$expr})",
 
             $this->request->isAtLeastPHP('7.4')
-                => "array_map(fn (\$i): {$typeHint} => {$sm}, {$expr})",
+                => "array_map(fn (\$i): {$typeHint} => {$subExpr}, {$expr})",
 
             $this->request->isAtLeastPHP('7.0')
-                => "array_map(function(\$i): {$typeHint} use ({$this->buildUseClause()}) { return {$sm}; }, {$expr})",
+                => 
+                    <<<PHP
+                    array_map(function(\$i): {$typeHint} use ({$this->buildUseClause()}) {
+                    {$indReturnExpr}
+                    }, {$expr})
+                    PHP,
 
             default
-                => "array_map(function(\$i) use ({$this->buildUseClause()}) { return {$sm}; }, {$expr})",
+                =>
+                    <<<PHP
+                    array_map(function(\$i) use ({$this->buildUseClause()}) {
+                    {$indReturnExpr}
+                    }, {$expr})
+                    PHP,
         };
     }
 

@@ -189,7 +189,9 @@ class MyClass
 
         $number = isset($input->{'number'}) ? $input->{'number'} : null;
         $streetName = isset($input->{'street_name'}) ? $input->{'street_name'} : null;
-        $streetType = isset($input->{'street_type'}) ? MyClassStreetType::from($input->{'street_type'}) : null;
+        $streetType = isset($input->{'street_type'})
+            ? MyClassStreetType::from($input->{'street_type'})
+            : null;
 
         $obj = new self($number, $streetName, $streetType);
 
@@ -217,7 +219,7 @@ class MyClass
             $output['street_name'] = $this->streetName;
         }
         if (isset($this->streetType)) {
-            $output['street_type'] = ($this->streetType)->value;
+            $output['street_type'] = $this->streetType->value;
         }
 
         return $output;
@@ -239,7 +241,7 @@ class MyClass
             $output->{'street_name'} = $this->streetName;
         }
         if (isset($this->streetType)) {
-            $output->{'street_type'} = ($this->streetType)->value;
+            $output->{'street_type'} = $this->streetType->value;
         }
 
         return $output;

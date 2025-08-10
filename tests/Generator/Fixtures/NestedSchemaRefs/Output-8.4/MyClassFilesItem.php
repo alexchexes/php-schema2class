@@ -149,7 +149,9 @@ class MyClassFilesItem
         }
 
         $_input = isset($input->{'input'}) ? $input->{'input'} : null;
-        $options = isset($input->{'options'}) ? OptionsObject::fromInput($input->{'options'}, $validate) : null;
+        $options = isset($input->{'options'})
+            ? OptionsObject::fromInput($input->{'options'}, $validate)
+            : null;
 
         $obj = new self($_input, $options);
 

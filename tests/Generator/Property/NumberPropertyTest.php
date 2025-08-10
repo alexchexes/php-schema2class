@@ -53,7 +53,10 @@ class NumberPropertyTest extends TestCase
         $result = $this->property->convertInputToType();
 
         $expected = <<<'EOCODE'
-$myPropertyName = (str_contains((string)$input->{'myPropertyName'}, '.') ? (float)$input->{'myPropertyName'} : (int)$input->{'myPropertyName'});
+$myPropertyName = (str_contains((string)$input->{'myPropertyName'}, '.')
+    ? (float)$input->{'myPropertyName'}
+    : (int)$input->{'myPropertyName'}
+);
 EOCODE;
 
         assertSame($expected, $result);

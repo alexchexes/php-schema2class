@@ -160,7 +160,7 @@ class MyClass
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
         if (isset($this->foo) || array_key_exists('foo', $this->_providedOptionals)) {
-            $output['foo'] = ($this->foo !== null) ? (($this->foo)->value) : null;
+            $output['foo'] = ($this->foo !== null ? $this->foo->value : null);
         }
 
         return $output;
@@ -176,7 +176,7 @@ class MyClass
         $output = $this->_additionalProperties;
 
         if (isset($this->foo) || array_key_exists('foo', $this->_providedOptionals)) {
-            $output->{'foo'} = ($this->foo !== null) ? (($this->foo)->value) : null;
+            $output->{'foo'} = ($this->foo !== null ? $this->foo->value : null);
         }
 
         return $output;

@@ -1353,16 +1353,26 @@ class MyClass
             $_materializeDefaults = ($input->{'materializeDefaults'} !== null ? $input->{'materializeDefaults'} : null);
             $_providedOptionals['materializeDefaults'] = true;
         }
-        $testObj = isset($input->{'testObj'}) ? MyClassTestObj::fromInput($input->{'testObj'}, $validate, $materializeDefaults) : null;
+        $testObj = isset($input->{'testObj'})
+            ? MyClassTestObj::fromInput($input->{'testObj'}, $validate, $materializeDefaults)
+            : null;
         $_providedOptionals_1 = isset($input->{'__providedOptionals'}) ? $input->{'__providedOptionals'} : null;
-        $ensureArgs1 = isset($input->{'ensureArgs1'}) ? match (true) {
-            MyClassEnsureArgs1Alternative1::validateInput($input->{'ensureArgs1'}, true) => MyClassEnsureArgs1Alternative1::fromInput($input->{'ensureArgs1'}, $validate, $materializeDefaults),
-            MyClassEnsureArgs1Alternative2::validateInput($input->{'ensureArgs1'}, true) => MyClassEnsureArgs1Alternative2::fromInput($input->{'ensureArgs1'}, $validate, $materializeDefaults),
-            is_string($input->{'ensureArgs1'}) => $input->{'ensureArgs1'},
-            default => null,
-        } : null;
-        $ensureArgs2 = isset($input->{'ensureArgs2'}) ? MyClassEnsureArgs2::fromInput($input->{'ensureArgs2'}, $validate, $materializeDefaults) : null;
-        $ensureArgs3 = isset($input->{'ensureArgs3'}) ? array_map(fn (array|object $i): MyClassEnsureArgs3Item => MyClassEnsureArgs3Item::fromInput($i, $validate, $materializeDefaults), $input->{'ensureArgs3'}) : null;
+        $ensureArgs1 = isset($input->{'ensureArgs1'})
+            ? match (true) {
+                MyClassEnsureArgs1Alternative1::validateInput($input->{'ensureArgs1'}, true) =>
+                    MyClassEnsureArgs1Alternative1::fromInput($input->{'ensureArgs1'}, $validate, $materializeDefaults),
+                MyClassEnsureArgs1Alternative2::validateInput($input->{'ensureArgs1'}, true) =>
+                    MyClassEnsureArgs1Alternative2::fromInput($input->{'ensureArgs1'}, $validate, $materializeDefaults),
+                is_string($input->{'ensureArgs1'}) => $input->{'ensureArgs1'},
+                default => null,
+            }
+            : null;
+        $ensureArgs2 = isset($input->{'ensureArgs2'})
+            ? MyClassEnsureArgs2::fromInput($input->{'ensureArgs2'}, $validate, $materializeDefaults)
+            : null;
+        $ensureArgs3 = isset($input->{'ensureArgs3'})
+            ? array_map(fn (array|object $i): MyClassEnsureArgs3Item => MyClassEnsureArgs3Item::fromInput($i, $validate, $materializeDefaults), $input->{'ensureArgs3'})
+            : null;
 
         $obj = new self(
             $_GLOBALS_1,
@@ -1456,7 +1466,7 @@ class MyClass
             $output['validate'] = $this->validate;
         }
         if (isset($this->materializeDefaults) || array_key_exists('materializeDefaults', $this->_providedOptionals)) {
-            $output['materializeDefaults'] = ($this->materializeDefaults !== null) ? ($this->materializeDefaults) : null;
+            $output['materializeDefaults'] = ($this->materializeDefaults !== null ? $this->materializeDefaults : null);
         }
         $output['obj'] = $this->obj;
         $output['includeDefaults'] = $this->includeDefaults;
@@ -1546,7 +1556,7 @@ class MyClass
             $output->{'validate'} = $this->validate;
         }
         if (isset($this->materializeDefaults) || array_key_exists('materializeDefaults', $this->_providedOptionals)) {
-            $output->{'materializeDefaults'} = ($this->materializeDefaults !== null) ? ($this->materializeDefaults) : null;
+            $output->{'materializeDefaults'} = ($this->materializeDefaults !== null ? $this->materializeDefaults : null);
         }
         $output->{'obj'} = $this->obj;
         $output->{'includeDefaults'} = $this->includeDefaults;

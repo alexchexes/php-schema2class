@@ -10,6 +10,7 @@ use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\Type\Primitive\NullProperty;
 use Helmich\Schema2Class\Generator\Property\Type\PropertyInterface;
 use Helmich\Schema2Class\Generator\Property\Type\Primitive\StringProperty;
+use Helmich\Schema2Class\Generator\TernaryGenerator;
 use Helmich\Schema2Class\Writer\WriterInterface;
 use Laminas\Code\Generator\PropertyValueGenerator;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -117,7 +118,7 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface
         $needsGuard = !($this->inner instanceof StringProperty || $this->inner instanceof NullProperty);
 
         $expr = $needsGuard
-            ? "({$accessor} !== null ? {$mapped} : null)"
+            ? TernaryGenerator::make("{$accessor} !== null", "{$mapped}", "null")
             : $mapped;               // clean one-liner for strings/nulls
 
         return "\${$varName} = {$expr};";
@@ -189,12 +190,12 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface
 
     public function typeAssertionExpr(string $expr): string
     {
-        return "(({$expr}) === null) || ({$this->inner->typeAssertionExpr($expr)})";
+        return "({$expr} === null || {$this->inner->typeAssertionExpr($expr)})";
     }
 
     public function inputAssertionExpr(string $expr): string
     {
-        return "(({$expr}) === null) || ({$this->inner->inputAssertionExpr($expr)})";
+        return "({$expr} === null || {$this->inner->inputAssertionExpr($expr)})";
     }
 
     public function inputMappingExpr(string $expr, bool $asserted = false): string
@@ -209,24 +210,24 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface
         }
 
         // Top-level nullable field: we still need the null-guard here.
-        return "({$expr} !== null ? {$inner} : null)";
+        return TernaryGenerator::make("{$expr} !== null", $inner, "null");
     }
 
     public function outputMappingExpr(string $expr): string
     {
         $inner = $this->inner->outputMappingExpr($expr);
-        return "({$expr} !== null) ? ({$inner}) : null";
+        return TernaryGenerator::make("{$expr} !== null", $inner, "null");
     }
 
     public function outputMappingExprStdClass(string $expr): string
     {
         $inner = $this->inner->outputMappingExprStdClass($expr);
-        return "({$expr} !== null) ? ({$inner}) : null";
+        return TernaryGenerator::make("{$expr} !== null", $inner, "null");
     }
 
     public function cloneExpr(string $expr): string
     {
-        return "isset({$expr}) ? (clone {$expr}) : null";
+        return TernaryGenerator::make("isset({$expr})", "clone {$expr}", "null");
     }
 
     public function formatValue(mixed $value): PropertyValueGenerator

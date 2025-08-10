@@ -306,10 +306,12 @@ class Foo
         }
 
         $_providedOptionals = [];
-        $a = isset($input->{'a'}) ? ((is_array($input->{'a'})) ? $input->{'a'} : (((in_array($input->{'a'}, array (
-          0 => 'a',
-          1 => 'b',
-        ), true)) ? $input->{'a'} : (null)))) : null;
+        $a = isset($input->{'a'})
+            ? (is_array($input->{'a'})
+                ? $input->{'a'}
+                : (in_array($input->{'a'}, ['a', 'b'], true) ? $input->{'a'} : null)
+            )
+            : null;
         $b = isset($input->{'b'}) ? $input->{'b'} : null;
         $c = null;
         if (property_exists($input, 'c')) {
@@ -339,10 +341,7 @@ class Foo
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
         if (isset($this->a)) {
-            if ((in_array($this->a, array (
-              0 => 'a',
-              1 => 'b',
-            ), true)) || (is_array($this->a))) {
+            if ((in_array($this->a, ['a', 'b'], true) || is_array($this->a))) {
                 $output['a'] = $this->a;
             }
         }
@@ -350,7 +349,7 @@ class Foo
             $output['b'] = $this->b;
         }
         if (isset($this->c) || array_key_exists('c', $this->_providedOptionals)) {
-            $output['c'] = ($this->c !== null) ? ($this->c) : null;
+            $output['c'] = ($this->c !== null ? $this->c : null);
         }
         if (isset($this->d)) {
             $output['d'] = $this->d->toArray();
@@ -369,10 +368,7 @@ class Foo
         $output = $this->_additionalProperties;
 
         if (isset($this->a)) {
-            if ((in_array($this->a, array (
-              0 => 'a',
-              1 => 'b',
-            ), true)) || (is_array($this->a))) {
+            if ((in_array($this->a, ['a', 'b'], true) || is_array($this->a))) {
             $output->{'a'} = $this->a;
             }
         }
@@ -380,7 +376,7 @@ class Foo
             $output->{'b'} = $this->b;
         }
         if (isset($this->c) || array_key_exists('c', $this->_providedOptionals)) {
-            $output->{'c'} = ($this->c !== null) ? ($this->c) : null;
+            $output->{'c'} = ($this->c !== null ? $this->c : null);
         }
         if (isset($this->d)) {
             $output->{'d'} = $this->d->toStdClass();
@@ -428,10 +424,10 @@ class Foo
     public function __clone()
     {
         if (isset($this->a)) {
-            $this->a = (is_array($this->a) ? $this->a : (in_array($this->a, array (
-              0 => 'a',
-              1 => 'b',
-            ), true) ? $this->a : $this->a));
+            $this->a = (is_array($this->a)
+                ? $this->a
+                : (in_array($this->a, ['a', 'b'], true) ? $this->a : $this->a)
+            );
         }
     }
 

@@ -120,13 +120,7 @@ class MyObject
     public function toArray()
     {
         $output = [];
-        if ((in_array($this->foo, array (
-          0 => 'foo',
-          1 => 'bar',
-        ), true)) || (in_array($this->foo, array (
-          0 => 'baz',
-          1 => 'quz',
-        ), true))) {
+        if ((in_array($this->foo, ['foo', 'bar'], true) || in_array($this->foo, ['baz', 'quz'], true))) {
             $output['foo'] = $this->foo;
         }
 
@@ -141,13 +135,7 @@ class MyObject
     public function toStdClass()
     {
         $output = new \stdClass();
-        if ((in_array($this->foo, array (
-          0 => 'foo',
-          1 => 'bar',
-        ), true)) || (in_array($this->foo, array (
-          0 => 'baz',
-          1 => 'quz',
-        ), true))) {
+        if ((in_array($this->foo, ['foo', 'bar'], true) || in_array($this->foo, ['baz', 'quz'], true))) {
         $output->{'foo'} = $this->foo;
         }
 
@@ -192,12 +180,9 @@ class MyObject
 
     public function __clone()
     {
-        $this->foo = (in_array($this->foo, array (
-          0 => 'baz',
-          1 => 'quz',
-        ), true) ? $this->foo : (in_array($this->foo, array (
-          0 => 'foo',
-          1 => 'bar',
-        ), true) ? $this->foo : $this->foo));
+        $this->foo = (in_array($this->foo, ['baz', 'quz'], true)
+            ? $this->foo
+            : (in_array($this->foo, ['foo', 'bar'], true) ? $this->foo : $this->foo)
+        );
     }
 }

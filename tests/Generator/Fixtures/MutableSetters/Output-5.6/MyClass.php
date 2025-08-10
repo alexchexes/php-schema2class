@@ -252,7 +252,7 @@ class MyClass
         }
         $output['bar'] = $this->bar->toArray();
         if (isset($this->opt) || array_key_exists('opt', $this->_providedOptionals)) {
-            $output['opt'] = ($this->opt !== null) ? ($this->opt) : null;
+            $output['opt'] = ($this->opt !== null ? $this->opt : null);
         }
 
         return $output;
@@ -272,7 +272,7 @@ class MyClass
         }
         $output->{'bar'} = $this->bar->toStdClass();
         if (isset($this->opt) || array_key_exists('opt', $this->_providedOptionals)) {
-            $output->{'opt'} = ($this->opt !== null) ? ($this->opt) : null;
+            $output->{'opt'} = ($this->opt !== null ? $this->opt : null);
         }
 
         return $output;

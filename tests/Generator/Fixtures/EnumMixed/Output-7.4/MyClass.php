@@ -596,7 +596,7 @@ class MyClass
         $output['contradiction2'] = $this->contradiction2;
         $output['nullable'] = $this->nullable;
         if (isset($this->optionalNullable) || array_key_exists('optionalNullable', $this->_providedOptionals)) {
-            $output['optionalNullable'] = ($this->optionalNullable !== null) ? ($this->optionalNullable) : null;
+            $output['optionalNullable'] = ($this->optionalNullable !== null ? $this->optionalNullable : null);
         }
 
         return $output;
@@ -624,7 +624,7 @@ class MyClass
         $output->{'contradiction2'} = $this->contradiction2;
         $output->{'nullable'} = $this->nullable;
         if (isset($this->optionalNullable) || array_key_exists('optionalNullable', $this->_providedOptionals)) {
-            $output->{'optionalNullable'} = ($this->optionalNullable !== null) ? ($this->optionalNullable) : null;
+            $output->{'optionalNullable'} = ($this->optionalNullable !== null ? $this->optionalNullable : null);
         }
 
         return $output;

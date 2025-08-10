@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator;
 
+use Helmich\Schema2Class\Util\StringUtils;
+
 /**
  * Helper to build a `match` expression programmatically.
  * 
@@ -25,18 +27,28 @@ class MatchGenerator
 
     public function generate(): string
     {
-        $code = "match ({$this->subjectExpr}) {\n";
+        $bodyParts = [];
 
         foreach ($this->arms as $returnExpr => $conditionExprs) {
-            $arm  = in_array("default", $conditionExprs)
+            $arm = in_array("default", $conditionExprs)
                 ? "default"
-                : join(",\n    ", $conditionExprs);
-                
-            $code .= "    {$arm} => {$returnExpr},\n";
+                : implode(",\n", $conditionExprs);
+
+            $lastExpr = $conditionExprs[array_key_last($conditionExprs)];
+
+            if (mb_strlen($lastExpr.$returnExpr) > 120) {
+                $returnExprIndented = StringUtils::indentCode($returnExpr);
+                $complete = "{$arm} =>\n{$returnExprIndented},";
+            } else {
+                $complete = "{$arm} => {$returnExpr},";
+            }
+
+            $bodyParts[] = $complete;
         }
 
-        $code .= "}";
+        $body = implode("\n", $bodyParts);
 
-        return $code;
+        $indentedBody = StringUtils::indentCode($body);
+        return "match ({$this->subjectExpr}) {\n{$indentedBody}\n}";
     }
 }

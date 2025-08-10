@@ -435,11 +435,17 @@ class MyClass
         $qux = isset($input->{'qux'}) ? $input->{'qux'} : null;
         $thud = isset($input->{'thud'}) ? $input->{'thud'} : null;
         $grox = isset($input->{'grox'}) ? $input->{'grox'} : null;
-        $qwert = isset($input->{'qwert'}) ? match (true) {
-            is_string($input->{'qwert'}) => $input->{'qwert'},
-            is_int($input->{'qwert'}) || is_float($input->{'qwert'}) => (str_contains((string)$input->{'qwert'}, '.') ? (float)$input->{'qwert'} : (int)$input->{'qwert'}),
-            default => null,
-        } : null;
+        $qwert = isset($input->{'qwert'})
+            ? match (true) {
+                is_string($input->{'qwert'}) => $input->{'qwert'},
+                (is_int($input->{'qwert'}) || is_float($input->{'qwert'})) =>
+                    (str_contains((string)$input->{'qwert'}, '.')
+                        ? (float)$input->{'qwert'}
+                        : (int)$input->{'qwert'}
+                    ),
+                default => null,
+            }
+            : null;
         $zyx = isset($input->{'zyx'}) ? $input->{'zyx'} : null;
 
         $obj = new self($foo, $bar, $baz, $qux, $thud, $grox, $qwert, $zyx);
@@ -470,7 +476,7 @@ class MyClass
             $output['bar'] = $this->bar;
         }
         if (isset($this->baz) || array_key_exists('baz', $this->_providedOptionals)) {
-            $output['baz'] = ($this->baz !== null) ? ($this->baz) : null;
+            $output['baz'] = ($this->baz !== null ? $this->baz : null);
         }
         if (isset($this->qux)) {
             $output['qux'] = $this->qux;
@@ -484,7 +490,7 @@ class MyClass
         if (isset($this->qwert)) {
             $output['qwert'] = match (true) {
                 is_string($this->qwert),
-                is_int($this->qwert) || is_float($this->qwert) => $this->qwert,
+                (is_int($this->qwert) || is_float($this->qwert)) => $this->qwert,
             };
         }
         if (isset($this->zyx)) {
@@ -519,7 +525,7 @@ class MyClass
             $output->{'bar'} = $this->bar;
         }
         if (isset($this->baz) || array_key_exists('baz', $this->_providedOptionals)) {
-            $output->{'baz'} = ($this->baz !== null) ? ($this->baz) : null;
+            $output->{'baz'} = ($this->baz !== null ? $this->baz : null);
         }
         if (isset($this->qux)) {
             $output->{'qux'} = $this->qux;
@@ -533,7 +539,7 @@ class MyClass
         if (isset($this->qwert)) {
             $output->{'qwert'} = match (true) {
                 is_string($this->qwert),
-                is_int($this->qwert) || is_float($this->qwert) => $this->qwert,
+                (is_int($this->qwert) || is_float($this->qwert)) => $this->qwert,
             };
         }
         if (isset($this->zyx)) {
@@ -594,7 +600,7 @@ class MyClass
         if (isset($this->qwert)) {
             $this->qwert = match (true) {
                 is_string($this->qwert),
-                is_int($this->qwert) || is_float($this->qwert) => $this->qwert,
+                (is_int($this->qwert) || is_float($this->qwert)) => $this->qwert,
             };
         }
     }

@@ -88,7 +88,9 @@ class MyGenericStringNumberField
             static::validateInput($input);
         }
 
-        $field = isset($input->{'field'}) ? MyGenericStringNumber::fromInput($input->{'field'}, $validate) : null;
+        $field = isset($input->{'field'})
+            ? MyGenericStringNumber::fromInput($input->{'field'}, $validate)
+            : null;
 
         $obj = new self($field);
 

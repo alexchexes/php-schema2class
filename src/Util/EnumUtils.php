@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class\Util;
 
 use Composer\Semver\Semver;
+use Laminas\Code\Generator\ValueGenerator;
+use Symfony\Component\VarExporter\VarExporter;
 
 final class EnumUtils
 {
@@ -82,7 +84,11 @@ final class EnumUtils
      */
     public static function assertionExpr(array $values, string $expr): string
     {
-        $export = var_export(array_map([self::class, 'normalizeValue'], $values), true);
-        return "in_array({$expr}, {$export}, true)";
+        $normalized = array_map([self::class, 'normalizeValue'], $values);
+        $exported = new ValueGenerator($normalized, ValueGenerator::TYPE_ARRAY_SHORT)
+            ->setOutputMode(ValueGenerator::OUTPUT_SINGLE_LINE)
+            ->generate();
+
+        return "in_array({$expr}, {$exported}, true)";
     }
 }

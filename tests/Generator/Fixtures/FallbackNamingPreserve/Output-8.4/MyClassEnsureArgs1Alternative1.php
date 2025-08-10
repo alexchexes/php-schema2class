@@ -138,7 +138,9 @@ class MyClassEnsureArgs1Alternative1
             static::validateInput($input);
         }
 
-        $type = isset($input->{'type'}) ? MyClassEnsureArgs1Alternative1Type::from($input->{'type'}) : null;
+        $type = isset($input->{'type'})
+            ? MyClassEnsureArgs1Alternative1Type::from($input->{'type'})
+            : null;
 
         $obj = new self($type);
 
@@ -161,7 +163,7 @@ class MyClassEnsureArgs1Alternative1
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
         if (isset($this->type)) {
-            $output['type'] = ($this->type)->value;
+            $output['type'] = $this->type->value;
         }
 
         if ($includeDefaults) {
@@ -186,7 +188,7 @@ class MyClassEnsureArgs1Alternative1
         $output = $this->_additionalProperties;
 
         if (isset($this->type)) {
-            $output->{'type'} = ($this->type)->value;
+            $output->{'type'} = $this->type->value;
         }
 
         if ($includeDefaults) {

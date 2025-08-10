@@ -181,7 +181,18 @@ class BarTest
             static::validateInput($input);
         }
 
-        $exampleProp = isset($input->{'exampleProp'}) ? ((FooTest_1::validateInput($input->{'exampleProp'}, true)) ? FooTest_1::fromInput($input->{'exampleProp'}, $validate) : (((MoiKlass::validateInput($input->{'exampleProp'}, true)) ? MoiKlass::fromInput($input->{'exampleProp'}, $validate) : (((FooTest::validateInput($input->{'exampleProp'}, true)) ? FooTest::fromInput($input->{'exampleProp'}, $validate) : (null)))))) : null;
+        $exampleProp = isset($input->{'exampleProp'})
+            ? (FooTest_1::validateInput($input->{'exampleProp'}, true)
+                ? FooTest_1::fromInput($input->{'exampleProp'}, $validate)
+                : (MoiKlass::validateInput($input->{'exampleProp'}, true)
+                    ? MoiKlass::fromInput($input->{'exampleProp'}, $validate)
+                    : (FooTest::validateInput($input->{'exampleProp'}, true)
+                        ? FooTest::fromInput($input->{'exampleProp'}, $validate)
+                        : null
+                    )
+                )
+            )
+            : null;
 
         $obj = new self($exampleProp);
 
@@ -203,7 +214,7 @@ class BarTest
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
         if (isset($this->exampleProp)) {
-            if (($this->exampleProp instanceof FooTest) || ($this->exampleProp instanceof MoiKlass) || ($this->exampleProp instanceof FooTest_1)) {
+            if (($this->exampleProp instanceof FooTest || $this->exampleProp instanceof MoiKlass || $this->exampleProp instanceof FooTest_1)) {
                 $output['exampleProp'] = $this->exampleProp->toArray();
             }
         }
@@ -221,7 +232,7 @@ class BarTest
         $output = $this->_additionalProperties;
 
         if (isset($this->exampleProp)) {
-            if (($this->exampleProp instanceof FooTest) || ($this->exampleProp instanceof MoiKlass) || ($this->exampleProp instanceof FooTest_1)) {
+            if (($this->exampleProp instanceof FooTest || $this->exampleProp instanceof MoiKlass || $this->exampleProp instanceof FooTest_1)) {
             $output->{'exampleProp'} = $this->exampleProp->toStdClass();
             }
         }
@@ -268,7 +279,13 @@ class BarTest
     public function __clone()
     {
         if (isset($this->exampleProp)) {
-            $this->exampleProp = ($this->exampleProp instanceof FooTest_1 ? $this->exampleProp : ($this->exampleProp instanceof MoiKlass ? $this->exampleProp : ($this->exampleProp instanceof FooTest ? $this->exampleProp : $this->exampleProp)));
+            $this->exampleProp = ($this->exampleProp instanceof FooTest_1
+                ? $this->exampleProp
+                : ($this->exampleProp instanceof MoiKlass
+                    ? $this->exampleProp
+                    : ($this->exampleProp instanceof FooTest ? $this->exampleProp : $this->exampleProp)
+                )
+            );
         }
     }
 }

@@ -6,6 +6,7 @@ namespace Helmich\Schema2Class\Generator\Property\Type\Array;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\Type\AbstractProperty;
 use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeInterface;
+use Helmich\Schema2Class\Util\StringUtils;
 
 /**
  * Property that is array where each item refers to a generated PHP artifact (class, Enum) via `$ref`.
@@ -74,7 +75,9 @@ class ReferenceArrayProperty extends AbstractProperty
         } else {
             $closure = "fn(\$i) => {$innerMap}";
         }
-        return "array_map(\n    {$closure},\n    {$expr}\n)";
+        $indClosure = StringUtils::indentCode($closure);
+        $indExpr = StringUtils::indentCode($expr);
+        return "array_map(\n{$indClosure},\n{$indExpr}\n)";
     }
 
     public function outputMappingExpr(string $expr): string

@@ -172,8 +172,12 @@ class MyClass
             static::validateInput($input);
         }
 
-        $files = isset($input->{'files'}) ? array_map(fn (array|object $i): MyClassFilesItem => MyClassFilesItem::fromInput($i, $validate), $input->{'files'}) : null;
-        $options = isset($input->{'options'}) ? OptionsObject::fromInput($input->{'options'}, $validate) : null;
+        $files = isset($input->{'files'})
+            ? array_map(fn (array|object $i): MyClassFilesItem => MyClassFilesItem::fromInput($i, $validate), $input->{'files'})
+            : null;
+        $options = isset($input->{'options'})
+            ? OptionsObject::fromInput($input->{'options'}, $validate)
+            : null;
 
         $obj = new self($files, $options);
 

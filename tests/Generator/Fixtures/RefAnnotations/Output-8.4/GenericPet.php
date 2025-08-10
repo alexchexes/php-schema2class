@@ -192,7 +192,7 @@ class GenericPet
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
         if (isset($this->hasFur) || array_key_exists('hasFur', $this->_providedOptionals)) {
-            $output['hasFur'] = ($this->hasFur !== null) ? ($this->hasFur) : null;
+            $output['hasFur'] = ($this->hasFur !== null ? $this->hasFur : null);
         }
 
         if ($includeDefaults) {
@@ -217,7 +217,7 @@ class GenericPet
         $output = $this->_additionalProperties;
 
         if (isset($this->hasFur) || array_key_exists('hasFur', $this->_providedOptionals)) {
-            $output->{'hasFur'} = ($this->hasFur !== null) ? ($this->hasFur) : null;
+            $output->{'hasFur'} = ($this->hasFur !== null ? $this->hasFur : null);
         }
 
         if ($includeDefaults) {

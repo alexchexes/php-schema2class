@@ -279,7 +279,7 @@ class MyClass
             $output['house_number'] = $this->houseNumber;
         }
         if (isset($this->type)) {
-            $output['type'] = ($this->type)->value;
+            $output['type'] = $this->type->value;
         }
         if (isset($this->city)) {
             $output['city'] = $this->city;
@@ -303,7 +303,7 @@ class MyClass
             $output->{'house_number'} = $this->houseNumber;
         }
         if (isset($this->type)) {
-            $output->{'type'} = ($this->type)->value;
+            $output->{'type'} = $this->type->value;
         }
         if (isset($this->city)) {
             $output->{'city'} = $this->city;

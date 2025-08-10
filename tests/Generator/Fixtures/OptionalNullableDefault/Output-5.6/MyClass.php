@@ -692,12 +692,18 @@ class MyClass
         $xyyz = isset($input->{'xyyz'}) ? $input->{'xyyz'} : null;
         $grox = null;
         if (property_exists($input, 'grox')) {
-            $grox = ($input->{'grox'} !== null ? MyClassGrox::fromInput($input->{'grox'}, $validate, $materializeDefaults) : null);
+            $grox = ($input->{'grox'} !== null
+                ? MyClassGrox::fromInput($input->{'grox'}, $validate, $materializeDefaults)
+                : null
+            );
             $_providedOptionals['grox'] = true;
         }
         $gooks = null;
         if (property_exists($input, 'gooks')) {
-            $gooks = ($input->{'gooks'} !== null ? MyClassGooks::fromInput($input->{'gooks'}, $validate, $materializeDefaults) : null);
+            $gooks = ($input->{'gooks'} !== null
+                ? MyClassGooks::fromInput($input->{'gooks'}, $validate, $materializeDefaults)
+                : null
+            );
             $_providedOptionals['gooks'] = true;
         }
 
@@ -727,10 +733,10 @@ class MyClass
             $output['bar'] = $this->bar;
         }
         if (isset($this->baz) || array_key_exists('baz', $this->_providedOptionals)) {
-            $output['baz'] = ($this->baz !== null) ? ($this->baz) : null;
+            $output['baz'] = ($this->baz !== null ? $this->baz : null);
         }
         if (isset($this->qux) || array_key_exists('qux', $this->_providedOptionals)) {
-            $output['qux'] = ($this->qux !== null) ? ($this->qux) : null;
+            $output['qux'] = ($this->qux !== null ? $this->qux : null);
         }
         $output['quux'] = $this->quux;
         if (isset($this->xyyz)) {
@@ -738,10 +744,10 @@ class MyClass
         }
         $output['thud'] = $this->thud;
         if (isset($this->grox) || array_key_exists('grox', $this->_providedOptionals)) {
-            $output['grox'] = ($this->grox !== null) ? ($this->grox->toArray($includeDefaults)) : null;
+            $output['grox'] = ($this->grox !== null ? $this->grox->toArray($includeDefaults) : null);
         }
         if (isset($this->gooks) || array_key_exists('gooks', $this->_providedOptionals)) {
-            $output['gooks'] = ($this->gooks !== null) ? ($this->gooks->toArray($includeDefaults)) : null;
+            $output['gooks'] = ($this->gooks !== null ? $this->gooks->toArray($includeDefaults) : null);
         }
 
         if ($includeDefaults) {
@@ -770,10 +776,10 @@ class MyClass
             $output->{'bar'} = $this->bar;
         }
         if (isset($this->baz) || array_key_exists('baz', $this->_providedOptionals)) {
-            $output->{'baz'} = ($this->baz !== null) ? ($this->baz) : null;
+            $output->{'baz'} = ($this->baz !== null ? $this->baz : null);
         }
         if (isset($this->qux) || array_key_exists('qux', $this->_providedOptionals)) {
-            $output->{'qux'} = ($this->qux !== null) ? ($this->qux) : null;
+            $output->{'qux'} = ($this->qux !== null ? $this->qux : null);
         }
         $output->{'quux'} = $this->quux;
         if (isset($this->xyyz)) {
@@ -781,10 +787,10 @@ class MyClass
         }
         $output->{'thud'} = $this->thud;
         if (isset($this->grox) || array_key_exists('grox', $this->_providedOptionals)) {
-            $output->{'grox'} = ($this->grox !== null) ? ($this->grox->toStdClass($includeDefaults)) : null;
+            $output->{'grox'} = ($this->grox !== null ? $this->grox->toStdClass($includeDefaults) : null);
         }
         if (isset($this->gooks) || array_key_exists('gooks', $this->_providedOptionals)) {
-            $output->{'gooks'} = ($this->gooks !== null) ? ($this->gooks->toStdClass($includeDefaults)) : null;
+            $output->{'gooks'} = ($this->gooks !== null ? $this->gooks->toStdClass($includeDefaults) : null);
         }
 
         if ($includeDefaults) {

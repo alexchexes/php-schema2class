@@ -44,7 +44,7 @@ class DateProperty extends AbstractProperty
 
     public function outputMappingExpr(string $expr): string
     {
-        return "({$expr})->format(\\DateTime::ATOM)";
+        return "{$expr}->format(\\DateTime::ATOM)";
     }
 
     public function cloneExpr(string $expr): string

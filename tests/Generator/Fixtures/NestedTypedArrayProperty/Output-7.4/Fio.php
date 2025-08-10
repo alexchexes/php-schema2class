@@ -162,7 +162,7 @@ class Fio
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
         if (isset($this->bar) || array_key_exists('bar', $this->_providedOptionals)) {
-            $output['bar'] = ($this->bar !== null) ? ($this->bar) : null;
+            $output['bar'] = ($this->bar !== null ? $this->bar : null);
         }
 
         return $output;
@@ -178,7 +178,7 @@ class Fio
         $output = $this->_additionalProperties;
 
         if (isset($this->bar) || array_key_exists('bar', $this->_providedOptionals)) {
-            $output->{'bar'} = ($this->bar !== null) ? ($this->bar) : null;
+            $output->{'bar'} = ($this->bar !== null ? $this->bar : null);
         }
 
         return $output;

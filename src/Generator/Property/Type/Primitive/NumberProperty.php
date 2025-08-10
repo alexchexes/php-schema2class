@@ -5,6 +5,7 @@ namespace Helmich\Schema2Class\Generator\Property\Type\Primitive;
 
 use Composer\Semver\Semver;
 use Helmich\Schema2Class\Generator\Property\Type\AbstractProperty;
+use Helmich\Schema2Class\Generator\TernaryGenerator;
 use Helmich\Schema2Class\Util\EnumUtils;
 use Helmich\Schema2Class\Util\SchemaKeywords;
 
@@ -52,7 +53,7 @@ class NumberProperty extends AbstractProperty
             return EnumUtils::assertionExpr($this->schema['enum'], $expr);
         }
 
-        return "is_int({$expr}) || is_float({$expr})";
+        return "(is_int({$expr}) || is_float({$expr}))";
     }
 
     public function inputMappingExpr(string $expr, bool $asserted = false): string
@@ -61,7 +62,7 @@ class NumberProperty extends AbstractProperty
             return $expr;
         }
 
-        return "(str_contains((string){$expr}, '.') ? (float){$expr} : (int){$expr})";
+        return TernaryGenerator::make("str_contains((string){$expr}, '.')", "(float){$expr}", "(int){$expr}");
     }
 
     public function needsValidation(): bool

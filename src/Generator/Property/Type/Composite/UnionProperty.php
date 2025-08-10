@@ -20,6 +20,8 @@ use Helmich\Schema2Class\Generator\Property\Type\Object\NestedObjectProperty;
 use Helmich\Schema2Class\Generator\Property\Type\PropertyInterface;
 use Helmich\Schema2Class\Generator\Property\Type\ReferenceProperty;
 use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeClass;
+use Helmich\Schema2Class\Generator\TernaryGenerator;
+use Helmich\Schema2Class\Util\StringUtils;
 use Helmich\Schema2Class\Writer\WriterInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -127,17 +129,16 @@ class UnionProperty extends AbstractProperty
                 $fallback = $assignment;
                 continue;
             }
-            $cond = "(" . join(") || (", $info["discriminators"]) . ")";
-            $branches[] = ($ifs++ > 0 ? "else " : "if ")
-                . "($cond) {\n"
-                . "    $assignment\n"
-                . "}";
+            $cond = "(" . join(" || ", $info["discriminators"]) . ")";
+            $indAssignment = StringUtils::indentCode($assignment);
+            $branches[] = ($ifs++ > 0 ? "else " : "if ") . "($cond) {\n{$indAssignment}\n}";
         }
     
         // Attach the fallback at the end
         if ($fallback !== null) {
             if (count($branches) > 0) {
-                $branches[] = "else {\n    $fallback\n}";
+                $indFallback = StringUtils::indentCode($fallback);
+                $branches[] = "else {\n$indFallback\n}";
             } else {
                 $branches[] = $fallback;
             }
@@ -207,8 +208,9 @@ class UnionProperty extends AbstractProperty
         $ifs      = 0;
         $branches = [];
         foreach ($conversions as $assignment => $conversion) {
-            $condition  = "(" . join(") || (", $conversion["discriminators"]) . ")";
-            $branches[] = ($ifs++ > 0 ? "else " : "") . "if ($condition) {\n    $assignment\n}";
+            $condition  = "(" . join(" || ", $conversion["discriminators"]) . ")";
+            $indAssignment = StringUtils::indentCode($assignment);
+            $branches[] = ($ifs++ > 0 ? "else " : "") . "if ($condition) {\n$indAssignment\n}";
         }
 
         return str_replace("}\nelse", "} else", join("\n", $branches));
@@ -240,7 +242,7 @@ class UnionProperty extends AbstractProperty
         $ifs      = 0;
         $branches = [];
         foreach ($conversions as $assignment => $conversion) {
-            $condition  = "(" . join(") || (", $conversion["discriminators"]) . ")";
+            $condition  = "(" . join(" || ", $conversion["discriminators"]) . ")";
             $branches[] = ($ifs++ > 0 ? "else " : "") . "if ($condition) {\n$assignment\n}";
         }
 
@@ -365,7 +367,7 @@ class UnionProperty extends AbstractProperty
             $subAssertions[] = $prop->typeAssertionExpr($expr);
         }
 
-        return "(" . join(") || (", $subAssertions) . ")";
+        return "(" . join(" || ", $subAssertions) . ")";
     }
 
     public function inputAssertionExpr(string $expr): string
@@ -376,8 +378,7 @@ class UnionProperty extends AbstractProperty
             $subAssertions[] = $prop->inputAssertionExpr($expr);
         }
 
-        $glue = ") || (";
-        return "(" . implode($glue, $subAssertions) . ")";
+        return "(" . join(" || ", $subAssertions) . ")";
     }
 
     public function inputMappingExpr(string $expr, bool $asserted = false): string
@@ -401,7 +402,7 @@ class UnionProperty extends AbstractProperty
         foreach ($this->subProperties as $subProperty) {
             $assert = $subProperty->inputAssertionExpr($expr);
             $map    = $subProperty->inputMappingExpr($expr);
-            $out    = "(({$assert}) ? {$map} : ({$out}))";
+            $out    = TernaryGenerator::make($assert, $map, $out);
         }
 
         return $out;
@@ -427,7 +428,7 @@ class UnionProperty extends AbstractProperty
         foreach ($this->subProperties as $subProperty) {
             $assert = $subProperty->typeAssertionExpr($expr);
             $map    = $subProperty->outputMappingExpr($expr);
-            $out    = "({$assert}) ? ({$map}) : ({$out})";
+            $out    = TernaryGenerator::make($assert, $map, $out);
         }
 
         return $out;
@@ -453,7 +454,7 @@ class UnionProperty extends AbstractProperty
         foreach ($this->subProperties as $subProperty) {
             $assert = $subProperty->typeAssertionExpr($expr);
             $map    = $subProperty->outputMappingExprStdClass($expr);
-            $out    = "({$assert}) ? ({$map}) : ({$out})";
+            $out    = TernaryGenerator::make($assert, $map, $out);
         }
 
         return $out;
@@ -478,7 +479,7 @@ class UnionProperty extends AbstractProperty
         foreach ($this->subProperties as $subProperty) {
             $assert = $subProperty->typeAssertionExpr($expr);
             $map    = $subProperty->cloneExpr($expr);
-            $out    = "({$assert} ? {$map} : {$out})";
+            $out    = TernaryGenerator::make($assert, $map, $out);
         }
 
         return $out;

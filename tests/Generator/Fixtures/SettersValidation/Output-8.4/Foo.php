@@ -283,14 +283,13 @@ class Foo
         }
 
         $_providedOptionals = [];
-        $a = isset($input->{'a'}) ? match (true) {
-            in_array($input->{'a'}, array (
-          0 => 'a',
-          1 => 'b',
-        ), true),
-            is_array($input->{'a'}) => $input->{'a'},
-            default => null,
-        } : null;
+        $a = isset($input->{'a'})
+            ? match (true) {
+                in_array($input->{'a'}, ['a', 'b'], true),
+                is_array($input->{'a'}) => $input->{'a'},
+                default => null,
+            }
+            : null;
         $b = isset($input->{'b'}) ? $input->{'b'} : null;
         $c = null;
         if (property_exists($input, 'c')) {
@@ -321,10 +320,7 @@ class Foo
 
         if (isset($this->a)) {
             $output['a'] = match (true) {
-                in_array($this->a, array (
-              0 => 'a',
-              1 => 'b',
-            ), true),
+                in_array($this->a, ['a', 'b'], true),
                 is_array($this->a) => $this->a,
             };
         }
@@ -332,7 +328,7 @@ class Foo
             $output['b'] = $this->b;
         }
         if (isset($this->c) || array_key_exists('c', $this->_providedOptionals)) {
-            $output['c'] = ($this->c !== null) ? ($this->c) : null;
+            $output['c'] = ($this->c !== null ? $this->c : null);
         }
         if (isset($this->d)) {
             $output['d'] = $this->d->toArray();
@@ -352,10 +348,7 @@ class Foo
 
         if (isset($this->a)) {
             $output->{'a'} = match (true) {
-                in_array($this->a, array (
-              0 => 'a',
-              1 => 'b',
-            ), true),
+                in_array($this->a, ['a', 'b'], true),
                 is_array($this->a) => $this->a,
             };
         }
@@ -363,7 +356,7 @@ class Foo
             $output->{'b'} = $this->b;
         }
         if (isset($this->c) || array_key_exists('c', $this->_providedOptionals)) {
-            $output->{'c'} = ($this->c !== null) ? ($this->c) : null;
+            $output->{'c'} = ($this->c !== null ? $this->c : null);
         }
         if (isset($this->d)) {
             $output->{'d'} = $this->d->toStdClass();
@@ -412,10 +405,7 @@ class Foo
     {
         if (isset($this->a)) {
             $this->a = match (true) {
-                in_array($this->a, array (
-              0 => 'a',
-              1 => 'b',
-            ), true),
+                in_array($this->a, ['a', 'b'], true),
                 is_array($this->a) => $this->a,
             };
         }
