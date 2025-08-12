@@ -5,6 +5,7 @@ namespace Helmich\Schema2Class\Util;
 
 use Exception;
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use function PHPUnit\Framework\assertThat;
 use function PHPUnit\Framework\equalTo;
@@ -41,7 +42,7 @@ class TypeHintUtilTest extends TestCase
 
     private const EXPECT_EXCEPTION = 'expect-exception-when-this-value-in-array';
 
-    public function testDataProvider()
+    public static function getTestCasesForTypeHintTest()
     {
         $cases = [
             [
@@ -188,7 +189,7 @@ class TypeHintUtilTest extends TestCase
                 foreach ($kindCases as $kind => $expectedResult) {
                     $expectedResultStr = $expectedResult === self::EXPECT_EXCEPTION
                         ? \InvalidArgumentException::class
-                        : var_export($expectedResult, true);
+                        : ($expectedResult === null ? 'null' : var_export($expectedResult, true));
                     
                     // we actually could iterate inputCases on the top level right inside `$cases` foreach loop,
                     // but that would add one more indent level to the whole code and not necessary add more clarity
@@ -208,7 +209,6 @@ class TypeHintUtilTest extends TestCase
                         }
 
                         $caseData = [
-                            'caseName'   => "{$inputTypeString} → {$expectedResultStr} on PHP {$ver} for '{$kind}'{$legacyFlagStr}",
                             'input'      => $inputCase,
                             'ver'        => $ver,
                             'kind'       => $kind,
@@ -216,11 +216,15 @@ class TypeHintUtilTest extends TestCase
                             'expected'   => $expectedResult,
                         ];
 
-                        $data[] = $caseData;
+                        $caseName = "{$inputTypeString} → {$expectedResultStr} on php {$ver} for '{$kind}'{$legacyFlagStr}";
+
+                        $data[$caseName] = $caseData;
                     }
                 }
             }
         }
+
+        // echo "\n---\$data:\n";  print_r($data);  echo "\n---";
 
         return $data;
     }
@@ -257,6 +261,26 @@ class TypeHintUtilTest extends TestCase
         }
 
         return $kindCases;
+    }
+
+    #[DataProvider('getTestCasesForTypeHintTest')]
+    public function testTypeHint(
+        array|string $input,
+        string $ver,
+        string $kind,
+        ?string $legacyflag,
+        string $expected,
+    ): void
+    {
+        if ($expected === self::EXPECT_EXCEPTION) {
+            $this->expectException(\InvalidArgumentException::class);
+            TypeHint::forPhpVer($input, $ver, $kind, $legacyflag);
+        } else {
+            assertThat(
+                TypeHint::forPhpVer($input, $ver, $kind),
+                equalTo($expected)
+            );
+        }
     }
 
     // test: early throws if input has any char except allowed, which are (rough!):
