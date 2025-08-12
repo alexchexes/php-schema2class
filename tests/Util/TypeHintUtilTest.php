@@ -42,7 +42,7 @@ class TypeHintUtilTest extends TestCase
 
     private const EXPECT_EXCEPTION = 'expect-exception-when-this-value-in-array';
 
-    public static function getTestCasesForTypeHintTest()
+    private static function getDataForMainTestCasesSet(): array
     {
         $cases = [
             [
@@ -51,7 +51,7 @@ class TypeHintUtilTest extends TestCase
                     ['bool', 'false'],
                     'bool|true',
                     'true|false',
-                ],                      /* ———> */ 'bool',
+                ], /* ———————————————————> */ 'bool',
                 // Overridees ↓. Each version means "from this version up until newer version specified, but not including it"
                 ['5.6', null],
                 ['7.0', [kind::PROP => null, kind::CONST => null]], // specified kinds override the base
@@ -60,7 +60,9 @@ class TypeHintUtilTest extends TestCase
                 // we don't specify 8.3 here because 'allVersions' expands to it as well.
             ],
             [
-                ['int|null'], /* ———> */ '?int',
+                [
+                    'int|null'
+                ], /* ———————————————————> */ '?int',
                 ['5.6', null],
                 ['7.0',     self::EXPECT_EXCEPTION], // MODE must be specified
                 ['7.0', null, 'flag' => TypeHint::LEGACY_NULLABLE_OMIT_TYPE],
@@ -74,23 +76,39 @@ class TypeHintUtilTest extends TestCase
                     '(', ['(', 'string'],
                     '&', ['&', 'string'],
                     '\\', ['\\', 'string'],
-                ],                         /* ———> */ [self::EXPECT_EXCEPTION],
+                ], /* ———————————————————> */ [self::EXPECT_EXCEPTION],
             ],
         ];
 
-        // Generate test cases for all scalars
+        return $cases;
+    }
+
+    private static function getDataForScalarsTestCases(): array
+    {
+        $cases = [];
         foreach (TypeHint::SCALARS as $type) {
             $cases[] = [
                 [
                     $type,
                     [$type],
-                ],                      /* ———> */ $type,
+                ], /* ———————————————————> */ $type,
                 ['5.6', null],
                 ['7.0', [kind::PROP => null, kind::CONST => null]],
                 ['7.4', [kind::CONST => null]],
                 ['8.2', [kind::CONST => null]],
             ];
         }
+        return $cases;
+    }
+
+    public static function getTestCasesForTypeHintTest()
+    {
+        $cases = array_merge(
+            self::getDataForScalarsTestCases(),
+            self::getDataForMainTestCasesSet(),
+        );
+
+        // Generate test cases for all scalars
 
         $data = [];
 
