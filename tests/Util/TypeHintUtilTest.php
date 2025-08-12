@@ -78,6 +78,20 @@ class TypeHintUtilTest extends TestCase
             ],
         ];
 
+        // Generate test cases for all scalars
+        foreach (TypeHint::SCALARS as $type) {
+            $cases[] = [
+                [
+                    $type,
+                    [$type],
+                ],                      /* ———> */ $type,
+                ['5.6', null],
+                ['7.0', [kind::PROP => null, kind::CONST => null]],
+                ['7.4', [kind::CONST => null]],
+                ['8.2', [kind::CONST => null]],
+            ];
+        }
+
         $data = [];
 
         foreach ($cases as $caseIdx => $case) {
@@ -185,15 +199,16 @@ class TypeHintUtilTest extends TestCase
                 ];
 
                 // now we have "kind cases" normalized for all the vesion cases
+                
+                // we actually could iterate inputCases on the top level right inside `$cases` foreach loop,
+                // but that would add one more indent level to the whole code and not necessary add more clarity
+                foreach ($inputCases as $inputCase) {
 
-                foreach ($kindCases as $kind => $expectedResult) {
-                    $expectedResultStr = $expectedResult === self::EXPECT_EXCEPTION
-                        ? \InvalidArgumentException::class
-                        : ($expectedResult === null ? 'null' : var_export($expectedResult, true));
+                    foreach ($kindCases as $kind => $expectedResult) {
+                        $expectedResultStr = $expectedResult === self::EXPECT_EXCEPTION
+                            ? \InvalidArgumentException::class
+                            : ($expectedResult === null ? 'null' : var_export($expectedResult, true));
                     
-                    // we actually could iterate inputCases on the top level right inside `$cases` foreach loop,
-                    // but that would add one more indent level to the whole code and not necessary add more clarity
-                    foreach ($inputCases as $inputCase) {
                         $caseData = [];
 
                         // create string respresentation of the input type to show in test case names or errors
@@ -269,7 +284,7 @@ class TypeHintUtilTest extends TestCase
         string $ver,
         string $kind,
         ?string $legacyflag,
-        string $expected,
+        ?string $expected,
     ): void
     {
         if ($expected === self::EXPECT_EXCEPTION) {
