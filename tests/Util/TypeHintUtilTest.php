@@ -41,72 +41,227 @@ class TypeHintUtilTest extends TestCase
 
     private const EXPECT_EXCEPTION = 'expect-exception-when-this-value-in-array';
 
-    public function dataProvider()
+    public function testDataProvider()
     {
         $cases = [
             [
-                ['bool', 'false'], /* ———> */ 'bool',
+                [
+                    'bool|false',
+                    ['bool', 'false'],
+                    'bool|true',
+                    'true|false',
+                ],                      /* ———> */ 'bool',
                 // Overridees ↓. Each version means "from this version up until newer version specified, but not including it"
                 ['5.6', null],
-                ['7.0', [kind::PROP => null, kind::CONST => null]], // kinds specified override the initial 'allVersions'   => ['allKinds' => 'bool']
+                ['7.0', [kind::PROP => null, kind::CONST => null]], // specified kinds override the base
                 ['7.4', [kind::CONST => null]],
                 ['8.2', [kind::CONST => null]],
                 // we don't specify 8.3 here because 'allVersions' expands to it as well.
             ],
             [
-                'int|null', /* ———> */ '?int',
+                ['int|null'], /* ———> */ '?int',
                 ['5.6', null],
-                ['7.1',     self::EXPECT_EXCEPTION], // since MODE must be specified
-                ['7.1', null, 'flag' => TypeHint::LEGACY_NULLABLE_OMIT_TYPE],
-                ['7.1', 'int', 'flag' => TypeHint::LEGACY_NULLABLE_DROP_NULL],
+                ['7.0',     self::EXPECT_EXCEPTION], // MODE must be specified
+                ['7.0', null, 'flag' => TypeHint::LEGACY_NULLABLE_OMIT_TYPE],
+                ['7.0', ['int', kind::PROP => null, kind::CONST => null], 'flag' => TypeHint::LEGACY_NULLABLE_DROP_NULL],
+                ['7.1', [kind::CONST => null]],
+            ],
+            [
+                [
+                    '?', ['?', 'string'],
+                    '|', ['|', 'string'],
+                    '(', ['(', 'string'],
+                    '&', ['&', 'string'],
+                    '\\', ['\\', 'string'],
+                ],                         /* ———> */ [self::EXPECT_EXCEPTION],
             ],
         ];
 
+        $data = [];
+
         foreach ($cases as $caseIdx => $case) {
             $caseNum = $caseIdx + 1;
-            $inputType = array_shift($case);
+            $inputCases = array_shift($case);
 
-            // create string respresentation of the input type to show in test case names or errors
-            $inputTypeString = $inputType;
-            if (is_array($inputType)) {
-                $inputTypeString = "['" . implode("', '") . "']";
+            // base data for all versions until overriden and for the "latest specified + 1 until"
+            $baseVersionData = array_shift($case); 
+            $versionCases = $case; // copy the shifted for convenience
+
+            // normalize the "base version data"
+            if (!is_array($baseVersionData)) {
+                $baseVersionData = [$baseVersionData];
             }
 
-            $lastVersionData = array_shift($case);
 
-            $versions = $case;
-
-            // make sure all versions are specified in the ALL_VERS
-            if (array_diff(array_map(fn($verData) => $verData[0], $versions), self::ALL_VERS)) {
-                throw new Exception("Case #{$caseNum} ({$inputTypeString}) is incorrect: ");
-            }
-
-            // sort specified versions semver-aware
-            usort($versions, fn($a, $b) => version_compare($b[0], $a[0]));
-
-            // get the latest specified version
-            $latestSpecifiedVer = $versions[array_key_last($versions)];
-            
-            // normalize data for the "last" (latest specified +1) version
-            if (!is_array($lastVersionData)) {
-                $lastVersionData = [
-                    $lastVersionData, // expected value
+            // if no versions specified except the base, start with the minimal known version
+            if ($versionCases === []) {
+                $versionCases[] = [
+                    self::ALL_VERS[array_key_first(self::ALL_VERS)],
+                    ...$baseVersionData,
                 ];
             }
-            $lastVersionData = [
-                self::ALL_VERS[array_key_last(self::ALL_VERS)], // the next ver after the latest specified for this case
-                ...$lastVersionData,
-            ];
 
-            // now pad the array with data for all versions starting from the lowest specified ending with the latest in ALL_VERS or 
-            foreach ($versions as $versionData) {
-                # code...
+            // make sure all provided versions are listed in the ALL_VERS
+            $providedVersions = array_map(fn($verData) => $verData[0], $versionCases);
+            $unknownVers = array_diff($providedVersions, self::ALL_VERS);
+            if ($unknownVers) {
+                throw new Exception("Incorrect case #{$caseNum}: PHP version not found in the known versions list: " . implode(', ', $unknownVers));
+            }
+
+            // sort version cases (semver-aware)
+            $versionCases = self::sortVersionCases($versionCases);
+
+            // from the ALL_VERS list, get version next after the latest specified in the test version cases
+            $latestSpecifiedVer = $versionCases[array_key_last($versionCases)][0];
+            $verLatestPlus1 = self::getNextKnownVer($latestSpecifiedVer);
+            
+            // if found, append it to the version cases
+            if ($verLatestPlus1) {
+                $versionCases[] = [
+                    $verLatestPlus1, // version
+                    ...$baseVersionData, // data for that version
+                ];
+            }
+            // if not found - then the latest known version is already in the version cases, don't add anything
+
+            // now pad the array with data for all missing versions starting from the lowest specified
+            $providedVersions = array_map(fn($verData) => $verData[0], $versionCases);
+            $missing_vers = array_diff(self::ALL_VERS, $providedVersions);
+            foreach ($missing_vers as $missingVer) {
+                $prevVer = self::getPrevKnownVer($missingVer);
+                $prevVerData = array_find($versionCases, fn($verData) => $verData[0] === $prevVer);
+
+                if ($prevVer && $prevVerData) {
+                    $versionCases[] = [
+                        $missingVer,
+                        ...array_slice($prevVerData, 1),
+                    ];
+                }
+            }
+            // sort array again after padding
+            $versionCases = self::sortVersionCases($versionCases);
+
+            // it's actually needed in the next, inner loop, but place it here to avoid redundant redeclarations
+            $baseKindCases = $baseVersionData[0];
+            $baseKindCases = self::normalizeKindCases($baseKindCases);
+            if (array_diff(self::ALL_KINDS, array_keys($baseKindCases))) {
+                throw new Exception("Incorrect case #{$caseNum}: Expected values specified not for all kinds");
+            }
+
+            // now that we have a complete array of version cases, iterate and build test cases for each:
+            // - Input case
+            //   - Version case
+            //     - Kind of type (arg, return, prop, etc)
+            // Now iterating over elements that look like ['7.0', ['int', kind::CONST => null], 'flag' => ...]
+            foreach ($versionCases as $versionData) {
+                // '7.0'
+                $ver = $versionData[0];
+
+                // 'flag' => ...
+                if (array_key_exists('flag', $versionData)) {
+                    $legacyFlag = $versionData['flag'];
+                } else {
+                    $legacyFlag = $baseVersionData['flag'] ?? null;
+                }
+
+                // ['int', kind::CONST => null]
+                if (array_key_exists(1, $versionData)) {
+                    $kindCases = $versionData[1];
+                } else {
+                    $kindCases = $baseKindCases;
+                }
+                // normalize plain to array
+                $kindCases = self::normalizeKindCases($kindCases);
+
+                // take 'int' from ['int', kind::CONST => null]
+
+                // pad array with value expected for all kinds:
+                // either the string given instead of array or from first numeric-indexed elem
+                // if some "kind" was not provided, fill in with the 'expectedForAllKinds' value
+                $kindCases = [
+                    ...$baseKindCases,
+                    ...$kindCases,
+                ];
+
+                // now we have "kind cases" normalized for all the vesion cases
+
+                foreach ($kindCases as $kind => $expectedResult) {
+                    $expectedResultStr = $expectedResult === self::EXPECT_EXCEPTION
+                        ? \InvalidArgumentException::class
+                        : var_export($expectedResult, true);
+                    
+                    // we actually could iterate inputCases on the top level right inside `$cases` foreach loop,
+                    // but that would add one more indent level to the whole code and not necessary add more clarity
+                    foreach ($inputCases as $inputCase) {
+                        $caseData = [];
+
+                        // create string respresentation of the input type to show in test case names or errors
+                        if (is_array($inputCase)) {
+                            $inputTypeString = "[" . implode(", ", array_map(fn($v)=>var_export($v, true), $inputCase)) . "]";
+                        } else {
+                            $inputTypeString = var_export($inputCase, true);
+                        }
+
+                        $legacyFlagStr = '';
+                        if ($legacyFlag) {
+                            $legacyFlagStr = " with flag '$legacyFlag'";
+                        }
+
+                        $caseData = [
+                            'caseName'   => "{$inputTypeString} → {$expectedResultStr} on PHP {$ver} for '{$kind}'{$legacyFlagStr}",
+                            'input'      => $inputCase,
+                            'ver'        => $ver,
+                            'kind'       => $kind,
+                            'legacyflag' => $legacyFlag,
+                            'expected'   => $expectedResult,
+                        ];
+
+                        $data[] = $caseData;
+                    }
+                }
             }
         }
+
+        return $data;
+    }
+    
+    private static function getNextKnownVer(string $ver): ?string
+    {
+        $k = array_search($ver, self::ALL_VERS, true);
+        return self::ALL_VERS[$k + 1] ?? null;
+    }
+    
+    private static function getPrevKnownVer(string $ver): ?string
+    {
+        $k = array_search($ver, self::ALL_VERS, true);
+        return self::ALL_VERS[$k - 1] ?? null;
+    }
+
+    private static function sortVersionCases(array $versionCases): array
+    {
+        usort($versionCases, static fn($a, $b) => version_compare($a[0], $b[0]));
+        return $versionCases;
+    }
+
+    private static function normalizeKindCases(array|string|null $kindCases): array
+    {
+        $kindCases = is_array($kindCases) ? $kindCases : [$kindCases];
+
+        if (array_key_exists(0, $kindCases)) {
+            $expectedForAll = $kindCases[0];
+            unset($kindCases[0]);
+            $kindCases = [
+                ...array_fill_keys(self::ALL_KINDS, $expectedForAll),
+                ...$kindCases,
+            ];
+        }
+
+        return $kindCases;
     }
 
     // test: early throws if input has any char except allowed, which are (rough!):
     // \ & ? | ( ) and \w+ with unicode except forbidden for identifiers, plus it cannot not start with digit
+    // OR IF THE CHAR THAT CANNOT BE USED STANDALONE PASSED AS ARRAY ELEM, OR IS IN A WRONG PLACE 
 
     public function testPropertyTypingRequiresPhp74()
     {
@@ -223,7 +378,7 @@ class TypeHintUtilTest extends TestCase
         assertThat(TypeHint::forPhpVer('int|string|INT', '7.4', kind::RETURN), equalTo('int|string'));
     }
 
-    private function throwIfVersionIsOlderThan5_6($arg): void
+    private function throwIfVersionIsOlderThan56(): void
     {
         self::expectException(InvalidArgumentException::class);
         TypeHint::forPhpVer('array', '5.4', kind::ARG);
@@ -244,7 +399,7 @@ class TypeHintUtilTest extends TestCase
         assertThat(TypeHint::forPhpVer('void', '7.4', kind::RETURN), equalTo('void'));
     }
 
-    public function testVoidUsedNotForReturnTypeThrows($arg): void
+    public function testVoidUsedNotForReturnTypeThrows(): void
     {
         self::expectException(InvalidArgumentException::class);
         TypeHint::forPhpVer('void', '7.4', kind::ARG);        
@@ -277,13 +432,13 @@ class TypeHintUtilTest extends TestCase
     }
 
 
-    public function testPropertyTypingRequires7_4()
+    public function testPropertyTypingRequires74()
     {
         assertThat(TypeHint::forPhpVer('int', '7.3', kind::PROP), equalTo(null));
         assertThat(TypeHint::forPhpVer('int', '7.4', kind::PROP), equalTo('int'));
     }
 
-    public function testKindsSupportedOnlyIn8_3()
+    public function testKindsSupportedOnlyIn83()
     {
         // 8.3.0	Support for class, interface, trait, and enum constant typing has been added
         assertThat(TypeHint::forPhpVer('int', '8.2', kind::CONST), equalTo(null));
