@@ -123,7 +123,7 @@ class TypeHintUtilTest extends TestCase
                 // - Input case
                 //   - Version case
                 //     - Kind of type (arg, return, prop, etc)
-                // Now iterating over elements that look like ['7.0', ['int', kind::CONST => null], 'flag' => ...] or ['7.0', null]
+                // Now iterating over elements that look like ['7.0', ['int', kind::PROP => null], 'flag' => ...] or ['7.0', null]
                 foreach ($versionCases as $versionData) {
                     // '7.0'
                     $ver = $versionData[0];
@@ -135,7 +135,7 @@ class TypeHintUtilTest extends TestCase
                         $legacyFlag = $baseVersionData['flag'] ?? null;
                     }
 
-                    // ['int', kind::CONST => null]
+                    // ['int', kind::PROP => null]
                     if (array_key_exists(1, $versionData)) {
                         $kindCases = $versionData[1];
                     } else {
@@ -144,7 +144,7 @@ class TypeHintUtilTest extends TestCase
                     // normalize plain to array
                     $kindCases = self::normalizeKindCases($kindCases);
 
-                    // take 'int' from ['int', kind::CONST => null]
+                    // take 'int' from ['int', kind::PROP => null]
 
                     // pad array with value expected for all kinds:
                     // either the string given instead of array or from first numeric-indexed elem
@@ -195,27 +195,6 @@ class TypeHintUtilTest extends TestCase
         // echo "\n---\$data:\n";  print_r($data);  echo "\n---";
 
         return $data;
-    }
-
-    public function test_PRINT_CASE_NAMES(): void
-    {
-        $all = [
-            ...self::booleans(),
-            ...self::scalars(),
-            ...self::nullableScalars(),
-            ...self::nullable(),
-            ...self::standaloneNull(),
-            ...self::neverType(),
-            ...self::voidType(),
-            ...self::invalidInput(),
-            ...self::unions(),
-            ...self::unionSorting(),
-            ...self::redundantAndDuplicate(),
-        ];
-        foreach (array_keys($all) as $caseName) {
-            echo "\n";
-            echo $caseName;
-        }
     }
     
     private static function getNextKnownVer(string $ver): ?string
@@ -624,6 +603,28 @@ class TypeHintUtilTest extends TestCase
             ],
             // tru|bool and other bool-related are provided in a dedicated method
         ]);
+    }
+
+    /** TO REMOVE. ONLY USED TO DEBUG THE TEST ITSELF */
+    public function test_TEMP_PRINT_CASE_NAMES(): void
+    {
+        $all = [
+            ...self::booleans(),
+            ...self::scalars(),
+            ...self::nullableScalars(),
+            ...self::nullable(),
+            ...self::standaloneNull(),
+            ...self::neverType(),
+            ...self::voidType(),
+            ...self::invalidInput(),
+            ...self::unions(),
+            ...self::unionSorting(),
+            ...self::redundantAndDuplicate(),
+        ];
+        foreach (array_keys($all) as $caseName) {
+            echo $caseName;
+            echo "\n";
+        }
     }
 
     /** 
