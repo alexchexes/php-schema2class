@@ -14,7 +14,6 @@ class kind extends TypeHintUtilTest {
     protected const RETURN = TypeHint::KIND_RETURN;
     protected const ARG = TypeHint::KIND_ARG;
     protected const PROP = TypeHint::KIND_PROP;
-    protected const CONST = TypeHint::KIND_CONST;
 }
 
 class TypeHintUtilTest extends TestCase
@@ -23,7 +22,6 @@ class TypeHintUtilTest extends TestCase
         kind::RETURN,
         kind::ARG,
         kind::PROP,
-        kind::CONST,
     ];
 
     private const ALL_VERS = [
@@ -42,74 +40,11 @@ class TypeHintUtilTest extends TestCase
 
     private const EXPECT_EXCEPTION = 'expect-exception-when-this-value-in-array';
 
-    private static function getDataForMainTestCasesSet(): array
+    /** 
+     * Converts data from convenient format to dataProvider format
+     */
+    private static function convertToProviderArray($cases)
     {
-        $cases = [
-            [
-                [
-                    'bool|false',
-                    ['bool', 'false'],
-                    'bool|true',
-                    'true|false',
-                ], /* ———————————————————> */ 'bool',
-                // Overridees ↓. Each version means "from this version up until newer version specified, but not including it"
-                ['5.6', null],
-                ['7.0', [kind::PROP => null, kind::CONST => null]], // specified kinds override the base
-                ['7.4', [kind::CONST => null]],
-                ['8.2', [kind::CONST => null]],
-                // we don't specify 8.3 here because 'allVersions' expands to it as well.
-            ],
-            [
-                [
-                    'int|null'
-                ], /* ———————————————————> */ '?int',
-                ['5.6', null],
-                ['7.0',     self::EXPECT_EXCEPTION], // MODE must be specified
-                ['7.0', null, 'flag' => TypeHint::LEGACY_NULLABLE_OMIT_TYPE],
-                ['7.0', ['int', kind::PROP => null, kind::CONST => null], 'flag' => TypeHint::LEGACY_NULLABLE_DROP_NULL],
-                ['7.1', [kind::CONST => null]],
-            ],
-            [
-                [
-                    '?', ['?', 'string'],
-                    '|', ['|', 'string'],
-                    '(', ['(', 'string'],
-                    '&', ['&', 'string'],
-                    '\\', ['\\', 'string'],
-                ], /* ———————————————————> */ [self::EXPECT_EXCEPTION],
-            ],
-        ];
-
-        return $cases;
-    }
-
-    private static function getDataForScalarsTestCases(): array
-    {
-        $cases = [];
-        foreach (TypeHint::SCALARS as $type) {
-            $cases[] = [
-                [
-                    $type,
-                    [$type],
-                ], /* ———————————————————> */ $type,
-                ['5.6', null],
-                ['7.0', [kind::PROP => null, kind::CONST => null]],
-                ['7.4', [kind::CONST => null]],
-                ['8.2', [kind::CONST => null]],
-            ];
-        }
-        return $cases;
-    }
-
-    public static function getTestCasesForTypeHintTest()
-    {
-        $cases = array_merge(
-            self::getDataForScalarsTestCases(),
-            self::getDataForMainTestCasesSet(),
-        );
-
-        // Generate test cases for all scalars
-
         $data = [];
 
         foreach ($cases as $caseIdx => $case) {
@@ -181,46 +116,46 @@ class TypeHintUtilTest extends TestCase
                 throw new Exception("Incorrect case #{$caseNum}: Expected values specified not for all kinds");
             }
 
-            // now that we have a complete array of version cases, iterate and build test cases for each:
-            // - Input case
-            //   - Version case
-            //     - Kind of type (arg, return, prop, etc)
-            // Now iterating over elements that look like ['7.0', ['int', kind::CONST => null], 'flag' => ...]
-            foreach ($versionCases as $versionData) {
-                // '7.0'
-                $ver = $versionData[0];
+            // iterate input cases on this level to get a bit prettier output when running with -d --enable-pretty-print
+            foreach ($inputCases as $inputCase) {
 
-                // 'flag' => ...
-                if (array_key_exists('flag', $versionData)) {
-                    $legacyFlag = $versionData['flag'];
-                } else {
-                    $legacyFlag = $baseVersionData['flag'] ?? null;
-                }
+                // now that we have a complete array of version cases, iterate and build test cases for each:
+                // - Input case
+                //   - Version case
+                //     - Kind of type (arg, return, prop, etc)
+                // Now iterating over elements that look like ['7.0', ['int', kind::CONST => null], 'flag' => ...] or ['7.0', null]
+                foreach ($versionCases as $versionData) {
+                    // '7.0'
+                    $ver = $versionData[0];
 
-                // ['int', kind::CONST => null]
-                if (array_key_exists(1, $versionData)) {
-                    $kindCases = $versionData[1];
-                } else {
-                    $kindCases = $baseKindCases;
-                }
-                // normalize plain to array
-                $kindCases = self::normalizeKindCases($kindCases);
+                    // 'flag' => ...
+                    if (array_key_exists('flag', $versionData)) {
+                        $legacyFlag = $versionData['flag'];
+                    } else {
+                        $legacyFlag = $baseVersionData['flag'] ?? null;
+                    }
 
-                // take 'int' from ['int', kind::CONST => null]
+                    // ['int', kind::CONST => null]
+                    if (array_key_exists(1, $versionData)) {
+                        $kindCases = $versionData[1];
+                    } else {
+                        $kindCases = $baseKindCases;
+                    }
+                    // normalize plain to array
+                    $kindCases = self::normalizeKindCases($kindCases);
 
-                // pad array with value expected for all kinds:
-                // either the string given instead of array or from first numeric-indexed elem
-                // if some "kind" was not provided, fill in with the 'expectedForAllKinds' value
-                $kindCases = [
-                    ...$baseKindCases,
-                    ...$kindCases,
-                ];
+                    // take 'int' from ['int', kind::CONST => null]
 
-                // now we have "kind cases" normalized for all the vesion cases
+                    // pad array with value expected for all kinds:
+                    // either the string given instead of array or from first numeric-indexed elem
+                    // if some "kind" was not provided, fill in with the 'expectedForAllKinds' value
+                    $kindCases = [
+                        ...$baseKindCases,
+                        ...$kindCases,
+                    ];
+
+                    // now we have "kind cases" normalized for all the vesion cases
                 
-                // we actually could iterate inputCases on the top level right inside `$cases` foreach loop,
-                // but that would add one more indent level to the whole code and not necessary add more clarity
-                foreach ($inputCases as $inputCase) {
 
                     foreach ($kindCases as $kind => $expectedResult) {
                         $expectedResultStr = $expectedResult === self::EXPECT_EXCEPTION
@@ -249,7 +184,7 @@ class TypeHintUtilTest extends TestCase
                             'expected'   => $expectedResult,
                         ];
 
-                        $caseName = "{$inputTypeString} → {$expectedResultStr} on php {$ver} for '{$kind}'{$legacyFlagStr}";
+                        $caseName = "{$inputTypeString} → {$expectedResultStr} for php {$ver} for '{$kind}'{$legacyFlagStr}";
 
                         $data[$caseName] = $caseData;
                     }
@@ -260,6 +195,27 @@ class TypeHintUtilTest extends TestCase
         // echo "\n---\$data:\n";  print_r($data);  echo "\n---";
 
         return $data;
+    }
+
+    public function test_PRINT_CASE_NAMES(): void
+    {
+        $all = [
+            ...self::booleans(),
+            ...self::scalars(),
+            ...self::nullableScalars(),
+            ...self::nullable(),
+            ...self::standaloneNull(),
+            ...self::neverType(),
+            ...self::voidType(),
+            ...self::invalidInput(),
+            ...self::unions(),
+            ...self::unionSorting(),
+            ...self::redundantAndDuplicate(),
+        ];
+        foreach (array_keys($all) as $caseName) {
+            echo "\n";
+            echo $caseName;
+        }
     }
     
     private static function getNextKnownVer(string $ver): ?string
@@ -296,7 +252,394 @@ class TypeHintUtilTest extends TestCase
         return $kindCases;
     }
 
-    #[DataProvider('getTestCasesForTypeHintTest')]
+    /*---------------------------*
+    *       Data Providers       *
+    *----------------------------*/
+
+    public static function booleans(): array
+    {
+        return self::convertToProviderArray([
+            [
+                // input cases
+                [
+                    'bool|false', ['bool', 'false'],
+                    'bool|true', ['bool', 'true'],
+                    'true|false', ['false', 'true'],
+                    'BOOL|FALSE', ['BOOL', 'FALSE'],
+                    'BOOL|TRUE', ['BOOL', 'TRUE'],
+                    'TRUE|FALSE', ['FALSE', 'TRUE'],
+                ], /* ———————————————————> */ 'bool', // ← "base" that is used for all versions until overriden and for versions newer than the latest specified
+                // ↓ Overrides the "base". The expanding rule is "from this version up until newer version specified (but not including it) use this data"
+                ['5.6', null],
+                ['7.0', [kind::PROP => null]], // specified kinds override the base
+                ['7.4'], // we must specify where the 7.0 "rules" end
+            ],
+            [
+                [
+                    '?false',
+                    'false|null',
+                    ['null', 'false'],
+                ], /* ———————————————————> */ '?false',
+                ['5.6', null],
+                ['7.0', self::EXPECT_EXCEPTION], // if no flag specified, expect throw
+                ['7.0', null, 'flag' => TypeHint::LEGACY_NULLABLE_OMIT_TYPE],
+                ['7.0', ['bool', kind::PROP => null], 'flag' => TypeHint::LEGACY_NULLABLE_DROP_NULL],
+                ['7.1', ['?bool', kind::PROP => null]],
+                ['7.4', '?bool'],
+                ['8.2'],
+            ],
+            [
+                [
+                    'false',
+                ], /* ———————————————————> */ 'false',
+                ['5.6', null],
+                ['7.0', ['bool', kind::PROP => null]],
+                ['7.4', 'bool'],
+                ['8.2'],
+            ],
+            [
+                [
+                    'false|string',
+                    ['string', 'false'],
+                ], /* ———————————————————> */ 'string|false',
+                ['5.6', null],
+                ['8.0'],
+            ],
+            [
+                [
+                    'true|string',
+                    ['string', 'true'],
+                ], /* ———————————————————> */ 'string|true',
+                ['5.6', null],
+                ['8.0', 'string|bool'],
+                ['8.2'],
+            ],
+            [
+                [
+                    '?bool|false|null',
+                    ['bool', 'false|null'],
+                ], /* ———————————————————> */ '?bool',
+                ['5.6', null],
+                ['7.0', self::EXPECT_EXCEPTION],
+                ['7.0', null, 'flag' => TypeHint::LEGACY_NULLABLE_OMIT_TYPE],
+                ['7.0', ['bool', kind::PROP => null], 'flag' => TypeHint::LEGACY_NULLABLE_DROP_NULL],
+                ['7.1', [kind::PROP => null]],
+                ['7.4'],
+            ],
+        ]);
+    }
+
+    public static function scalars(): array
+    {
+        $cases = [];
+        foreach (TypeHint::SCALARS as $type) {
+            $cases[] = [
+                [
+                    $type,
+                    strtoupper($type), // 'INT'
+                    [$type],
+                    "$type|" . ucfirst($type) . "|" . strtoupper($type), // 'int|Int|INT'
+                    ["$type|" . ucfirst($type) . "|" . strtoupper($type), $type], // ['int|Int|INT', 'int']
+                ], /* ———————————————————> */ $type,
+                ['5.6', null],
+                ['7.0', [kind::PROP => null]],
+                ['7.4'],
+            ];
+        }
+        return self::convertToProviderArray($cases);
+    }
+
+    public static function nullableScalars(): array
+    {
+        $cases = [];
+        foreach (TypeHint::SCALARS as $type) {
+            $cases[] = [
+                [
+                    "?$type",
+                    "?" . strtoupper($type),
+                    ["?$type"],
+                    "null|$type",
+                    "null|" . strtoupper($type),
+                    ['null', $type],
+                    "$type|" . ucfirst($type) . "|?" . strtoupper($type), // 'int|Int|?INT'
+                    ["$type|" . ucfirst($type) . "|?" . strtoupper($type), "$type"], // ['int|Int|?INT', 'int']
+                ], /* ———————————————————> */ "?$type",
+                ['5.6', null],
+                ['7.0', self::EXPECT_EXCEPTION],
+                ['7.0', null, 'flag' => TypeHint::LEGACY_NULLABLE_OMIT_TYPE],
+                ['7.0', [$type, kind::PROP => null], 'flag' => TypeHint::LEGACY_NULLABLE_DROP_NULL],
+                ['7.1', [kind::PROP => null]],
+                ['7.4'],
+            ];
+        }
+        return self::convertToProviderArray($cases);
+    }
+
+    public static function nullable(): array
+    {
+        return self::convertToProviderArray([
+            [
+                [
+                    'array|null',
+                    '?array|null',
+                    '?array',
+                    ['?array'],
+                    ['ARRAY|NULL'],
+                    ['ARRAY', 'NULL'],
+                    ['?ARRAY', 'ARRAY'],
+                    ['ARRAY|NULL', 'ARRAY'],
+                ], /* ———————————————————> */ '?array',
+                ['5.6', self::EXPECT_EXCEPTION],
+                ['5.6', null, 'flag' => TypeHint::LEGACY_NULLABLE_OMIT_TYPE],
+                ['5.6', ['array', kind::PROP => null], 'flag' => TypeHint::LEGACY_NULLABLE_DROP_NULL],
+                ['7.1', [kind::PROP => null]],
+                ['7.4'],
+            ],
+        ]);
+    }
+
+    public static function standaloneNull(): array
+    {
+        return self::convertToProviderArray([
+            [
+                [
+                    'null', ['null'],
+                    'NULL', ['NULL'],
+                    '?null', ['?null'],
+                    'null|null', ['null', 'null'],
+                    'Null|NULL|null', ['Null', 'NULL', 'null'],
+                ], /* ———————————————————> */ 'null',
+                ['5.6', null],
+                ['8.2'],
+            ],
+        ]);
+    }
+
+    public static function neverType(): array
+    {
+        return self::convertToProviderArray([
+            [
+                [
+                    'never'
+                ], /* ———————————————————> */ [[self::EXPECT_EXCEPTION, kind::RETURN => 'never']],
+                ['5.6', [kind::RETURN => null]],
+                ['7.4', [kind::RETURN => 'void']],
+                ['8.1'],
+            ],
+            [
+                [
+                    'never|null', ['never', 'null'],
+                    'never|string', ['never', 'string'],
+                ], /* ———————————————————> */ self::EXPECT_EXCEPTION,
+            ],
+        ]);
+    }
+
+    public static function voidType(): array
+    {
+        return self::convertToProviderArray([
+            [
+                [
+                    'void'
+                ], /* ———————————————————> */ [[self::EXPECT_EXCEPTION, kind::RETURN => 'void']],
+                ['5.6', [kind::RETURN => null]],
+                ['7.4', [kind::RETURN => 'void']],
+            ],
+            [
+                [
+                    'void|null', ['void', 'null'],
+                    'void|string', ['void', 'string'],
+                ], /* ———————————————————> */ self::EXPECT_EXCEPTION,
+            ],
+        ]);
+    }
+
+    public static function invalidInput(): array
+    {
+        return self::convertToProviderArray([
+            [
+                [
+                    'A&B', '(A&B)', ['(A)', 'B'], '(A)|B', // we don't dupport intersections/DNF yet
+                    ['A', '|', 'B'],
+                    'My Class',
+                    '123Class',
+                    ['123', 'MyClass'],
+                    '? MyClass',
+                    '-', '+',
+                    '&', '(', ')',
+                    '?', ['?', 'array'],
+                    '|', ['|', 'array'],
+                    '||', ['||', 'array'],
+                    'A|', ['A|', 'array'],
+                    '\\', ['\\', 'array'],
+                    'string |array', ['string ', 'array'],
+                    'string?|array', ['string ', '?|array'],
+                ], /* ———————————————————> */ self::EXPECT_EXCEPTION,
+            ],
+        ]);
+    }
+
+    public static function unions(): array
+    {
+        return self::convertToProviderArray([
+            [
+                [
+                    'int|string', ['int', 'string'],
+                ], /* ———————————————————> */ 'string|int',
+                ['5.6', null],
+                ['8.0'],
+            ],
+            [
+                [
+                    'int|null|string',
+                    '?int|string',
+                    ['int', 'null', 'string'],
+                    ['int|string', 'null'],
+                    ['?int', 'string'],
+                ], /* ———————————————————> */ 'string|int|null',
+                ['5.6', null],
+                ['8.0'],
+            ],
+        ]);
+    }
+
+    public static function unionSorting(): array
+    {
+        return self::convertToProviderArray([
+            [
+                [
+                    'B|A|null|int|string',
+                    '?B|A|int|string',
+                    ['?B', 'int', 'string', 'A'],
+                    ['B', 'null|A', 'A|int|string', 'B'],
+                    ['string|B', 'null', 'A|int', 'B|A'],
+                ], /* ———————————————————> */ 'A|B|string|int|null',
+                ['5.6', null],
+                ['8.0'],
+            ],
+            [
+                [
+                    'MyClass_2|null|MyClass_1',
+                    ['MyClass_2', '?MyClass_1'],
+                ], /* ———————————————————> */ 'MyClass_1|MyClass_2|null',
+                ['5.6', null],
+                ['7.2', ['?object', kind::PROP => null]],
+                ['7.4', ['?object']],
+                ['8.0'],
+            ],
+            [
+                [
+                    'array|false|true|float|bool|int|MyObject|object|A|string|null|callable',
+                    ['array', 'false', 'true', 'float', 'bool', 'int', 'MyObject', 'object', 'string', 'null', 'callable'],
+                ], /* ———————————————————> */ 'callable|object|array|string|float|int|bool|null',
+                ['5.6', null],
+                ['8.0'],
+            ],
+        ]);
+    }
+
+    public static function redundantAndDuplicate(): array
+    {
+        return self::convertToProviderArray([
+            [
+                [
+                    'mixed|A|B|callable|object|array|string|float|int|false|null',
+                    ['int|mixed', 'A', 'B', 'callable', 'object', 'array', 'int|string', 'float', 'int', 'false', 'null'],
+                    '?mixed|A|B|callable|object|array|string|float|int|false',
+                ], /* ———————————————————> */ 'mixed',
+                ['5.6', null],
+                ['8.0'],
+            ],
+            [
+                [
+                    'INT|STRING|string|int',
+                    ['INT', 'STRING', 'string', 'int'],
+                    ['INT|STRING', 'string|int'],
+                    ['INT|int', 'string|STRING'],
+                ], /* ———————————————————> */ 'int|string',
+                ['5.6', null],
+                ['8.0'],
+            ],
+            [
+                [
+                    'object|A|B',
+                    ['object', 'A', 'B'],
+                    ['object|A', 'B'],
+                    'OBJECT|A|B',
+                    ['OBJECT', 'A', 'B'],
+                    ['OBJECT|A', 'B'],
+                ], /* ———————————————————> */ 'object',
+                ['5.6', null],
+                ['7.2', [kind::PROP => null]],
+                ['7.4'],
+            ],
+            [
+                [
+                    'object|A|B|null',
+                    '?object|X',
+                    'object|A|?B',
+                    ['object', 'A', 'B', 'null'],
+                    ['object', 'A', 'NULL|B'],
+                    ['?OBJECT', 'A', 'B'],
+                    ['OBJECT', 'A', '?B'],
+                    ['OBJECT|?A', 'B'],
+                ], /* ———————————————————> */ '?object',
+                ['5.6', null],
+                ['7.2', [kind::PROP => null]],
+                ['7.4'],
+            ],
+            [
+                [
+                    'iterable|array|Traversable',
+                    'array|Traversable|iterable',
+                    ['iterable', 'array', 'Traversable'],
+                    ['array', 'Traversable', 'iterable'],
+                    'iterable|array',
+                    ['ITERABLE', 'ARRAY'],
+                    ['ARRAY', 'ITERABLE'],
+                    'ITERABLE|Traversable',
+                    ['ITERABLE', 'Traversable'],
+                    ['Traversable', 'ITERABLE'],
+                ], /* ———————————————————> */ 'iterable',
+                ['5.6', null],
+                ['7.2', [kind::PROP => null]],
+                ['7.4'],
+            ],
+            [
+                [
+                    '?array|iterable|Traversable|A|object|B|int|INT|int|true|bool|false|NULL|null',
+                ], /* ———————————————————> */ 'iterable|object|int|bool|null',
+                ['8.2'],
+            ],
+            [
+                [
+                    'MyClass|Myclass',
+                    'object|MyClass|Myclass',
+                    '?MyClass|Myclass',
+                    'MyClass|null|Myclass',
+                    ['MyClass', 'Myclass'],
+                    ['MyClass', 'MyClass', 'myclass'],
+                    ['MyClass|MyClass', 'myclass'],
+                ], /* ———————————————————> */ self::EXPECT_EXCEPTION, // throw for any non-built-ins with different casing since we cannot decide which one to drop, but php still don't allows such duplicating
+            ],
+            // tru|bool and other bool-related are provided in a dedicated method
+        ]);
+    }
+
+    /** 
+     * Main assertion method
+     */
+    #[DataProvider('booleans')]
+    #[DataProvider('scalars')]
+    #[DataProvider('nullableScalars')]
+    #[DataProvider('nullable')]
+    #[DataProvider('standaloneNull')]
+    #[DataProvider('neverType')]
+    #[DataProvider('voidType')]
+    #[DataProvider('invalidInput')]
+    #[DataProvider('unions')]
+    #[DataProvider('unionSorting')]
+    #[DataProvider('redundantAndDuplicate')]
     public function testTypeHint(
         array|string $input,
         string $ver,
@@ -316,221 +659,9 @@ class TypeHintUtilTest extends TestCase
         }
     }
 
-    // test: early throws if input has any char except allowed, which are (rough!):
-    // \ & ? | ( ) and \w+ with unicode except forbidden for identifiers, plus it cannot not start with digit
-    // OR IF THE CHAR THAT CANNOT BE USED STANDALONE PASSED AS ARRAY ELEM, OR IS IN A WRONG PLACE 
-
-    public function testPropertyTypingRequiresPhp74()
-    {
-        assertThat(TypeHint::forPhpVer('string', '7.3', kind::PROP), equalTo(null));
-        assertThat(TypeHint::forPhpVer('string', '7.4', kind::PROP), equalTo('string'));
-    }
-
-    public function testNullableType()
-    {
-        assertThat(TypeHint::forPhpVer('int|null', '7.0', kind::ARG), equalTo(null));
-        assertThat(TypeHint::forPhpVer('int|null', '7.1', kind::ARG), equalTo('?int'));
-
-        assertThat(TypeHint::forPhpVer('string|null', '7.0', kind::RETURN), equalTo(null));
-        assertThat(TypeHint::forPhpVer('string|null', '7.1', kind::RETURN), equalTo('?string'));
-        assertThat(TypeHint::forPhpVer('string|null', '7.4', kind::RETURN), equalTo('?string'));
-    }
-
-    public function testUnionTypesRequirePhp8()
-    {
-        assertThat(TypeHint::forPhpVer('int|string', '7.4', kind::ARG), equalTo(null));
-        assertThat(TypeHint::forPhpVer('int|string', '8.0', kind::ARG), equalTo('int|string'));
-        assertThat(TypeHint::forPhpVer(['int', 'string'], '7.4', kind::ARG), equalTo(null));
-        assertThat(TypeHint::forPhpVer(['int', 'string'], '7.4', kind::ARG), equalTo(null));
-        assertThat(TypeHint::forPhpVer(['int', 'string'], '8.0', kind::ARG), equalTo('int|string'));
-        assertThat(TypeHint::forPhpVer(['int', 'string'], '8.0', kind::ARG), equalTo('int|string'));
-    }
-
-    public function testUnionTypesAreSortedAndNullLast()
-    {
-        assertThat(TypeHint::forPhpVer('string|int|null', '8.0', kind::RETURN), equalTo('int|string|null'));
-        assertThat(TypeHint::forPhpVer(['int', 'MyClass'], '8.0', kind::ARG), equalTo('MyClass|int'));
-        assertThat(TypeHint::forPhpVer(['string', 'null', 'int'], '8.1', kind::RETURN), equalTo('int|string|null'));
-    }
-
-    public function testMixedType()
-    {
-        assertThat(TypeHint::forPhpVer('mixed', '7.4', kind::ARG), equalTo(null));
-        assertThat(TypeHint::forPhpVer('mixed', '7.4', kind::ARG), equalTo(null));
-        assertThat(TypeHint::forPhpVer('mixed', '7.4', kind::ARG), equalTo(null));
-        assertThat(TypeHint::forPhpVer('mixed', '8.0', kind::ARG), equalTo('mixed'));
-        assertThat(TypeHint::forPhpVer('mixed|null', '8.0', kind::RETURN), equalTo('mixed'));
-        assertThat(TypeHint::forPhpVer('mixed|null', '8.0', kind::RETURN), equalTo('mixed'));
-        assertThat(TypeHint::forPhpVer('mixed|null', '8.1', kind::ARG), equalTo('mixed'));
-    }
-    public function testMixedWithOtherTypesThrows()
-    {
-        self::expectException(\InvalidArgumentException::class);
-        TypeHint::forPhpVer('mixed|string', '8.0', kind::RETURN);
-    }
-
-    public function testLiteralTrueFalseHandling()
-    {
-        // need to revise this. PHP docs say:
-        // 8.2.0	Support for the literal type true has been added.
-        // 8.2.0	The types null and false can now be used standalone.
-        // so in before 8.2 we could use false and null as part of union but not standalone, right?
-
-        assertThat(TypeHint::forPhpVer('?false', '8.1', kind::RETURN), equalTo('?bool'));
-        assertThat(TypeHint::forPhpVer('false', '8.1', kind::ARG), equalTo('bool'));
-        assertThat(TypeHint::forPhpVer('false', '8.1', kind::RETURN), equalTo('bool'));
-        assertThat(TypeHint::forPhpVer('false', '8.2', kind::RETURN), equalTo('false'));
-        assertThat(TypeHint::forPhpVer('false|null', '8.1', kind::RETURN), equalTo('?bool'));
-        assertThat(TypeHint::forPhpVer('false|string', '8.1', kind::RETURN), equalTo('bool|string'));
-        assertThat(TypeHint::forPhpVer('null', '8.2', kind::RETURN), equalTo('null'));
-        assertThat(TypeHint::forPhpVer('true', '8.1', kind::ARG), equalTo('bool'));
-        assertThat(TypeHint::forPhpVer('true|int', '8.1', kind::RETURN), equalTo('bool|int'));
-        assertThat(TypeHint::forPhpVer(['false', 'string'], '8.1', kind::RETURN), equalTo('bool|string'));
-        assertThat(TypeHint::forPhpVer(['true', 'false'], '8.1', kind::RETURN), equalTo('bool'));
-        assertThat(TypeHint::forPhpVer(['true', 'false'], '8.2', kind::RETURN), equalTo('bool'));
-        
-
-
-        // DRAFT TO DETERMINE SHAPE OF CORTESSIAN PRODUCT ↓↓↓
-
-        // test more broad types collapse
-        assertThat(TypeHint::forPhpVer('bool|false', '8.3', kind::RETURN),    equalTo('bool'));
-        assertThat(TypeHint::forPhpVer('bool|false', '8.3', kind::ARG),       equalTo('bool'));
-        assertThat(TypeHint::forPhpVer('bool|false', '8.3', kind::PROP),      equalTo('bool'));
-        assertThat(TypeHint::forPhpVer('bool|false', '8.3', kind::CONST),     equalTo('bool'));
-        assertThat(TypeHint::forPhpVer('bool|false', '8.2', kind::RETURN),    equalTo('bool'));
-        assertThat(TypeHint::forPhpVer('bool|false', '8.2', kind::ARG),       equalTo('bool'));
-        assertThat(TypeHint::forPhpVer('bool|false', '8.2', kind::PROP),      equalTo('bool'));
-        assertThat(TypeHint::forPhpVer('bool|false', '8.2', kind::CONST),     equalTo(null));
-        assertThat(TypeHint::forPhpVer('bool|false', '7.4', kind::RETURN),    equalTo('bool'));
-        assertThat(TypeHint::forPhpVer('bool|false', '7.4', kind::ARG),       equalTo('bool'));
-        assertThat(TypeHint::forPhpVer('bool|false', '7.4', kind::PROP),      equalTo('bool'));
-        assertThat(TypeHint::forPhpVer('bool|false', '7.4', kind::CONST),     equalTo(null));
-        assertThat(TypeHint::forPhpVer('bool|false', '7.0', kind::RETURN),    equalTo('bool'));
-        assertThat(TypeHint::forPhpVer('bool|false', '7.0', kind::ARG),       equalTo('bool'));
-        assertThat(TypeHint::forPhpVer('bool|false', '7.0', kind::PROP),      equalTo(null));
-        assertThat(TypeHint::forPhpVer('bool|false', '7.0', kind::CONST),     equalTo(null));
-        assertThat(TypeHint::forPhpVer('bool|false', '5.6', kind::RETURN),    equalTo(null));
-        assertThat(TypeHint::forPhpVer('bool|false', '5.6', kind::ARG),       equalTo(null));
-        assertThat(TypeHint::forPhpVer('bool|false', '5.6', kind::PROP),      equalTo(null));
-        assertThat(TypeHint::forPhpVer('bool|false', '5.6', kind::CONST),     equalTo(null));
-
-        // DRAFT TO DETERMINE SHAPE OF CORTESSIAN PRODUCT ↑↑↑
-
-
-
-        assertThat(TypeHint::forPhpVer('bool|false|null', '7.4', kind::RETURN), equalTo('?bool'));
-        assertThat(TypeHint::forPhpVer('bool|false|null', '8.2', kind::RETURN), equalTo('?bool'));
-        assertThat(TypeHint::forPhpVer('true|bool', '7.4', kind::RETURN), equalTo('bool'));
-        assertThat(TypeHint::forPhpVer('true|bool', '8.2', kind::RETURN), equalTo('bool'));
-        assertThat(TypeHint::forPhpVer('true|false', '7.4', kind::RETURN), equalTo('bool'));
-        assertThat(TypeHint::forPhpVer('true|false', '8.2', kind::RETURN), equalTo('bool'));
-        assertThat(TypeHint::forPhpVer('true|null|false', '7.4', kind::RETURN), equalTo('?bool'));
-        assertThat(TypeHint::forPhpVer('true|null|false', '8.2', kind::RETURN), equalTo('?bool'));
-        // no nullable types in PHP <=7.0. So we need to drop null, but only when a flag given to ensure it's intentionall, otherwise throw
-        // assertThat(TypeHint::forPhpVer('bool|false|null', '7.0', kind::RETURN), equalTo(bool));
-        assertThat(TypeHint::forPhpVer('bool|false|null', '5.6', kind::RETURN), equalTo(null));
-
-        // Each name-resolved type may only occur once
-        assertThat(TypeHint::forPhpVer('int|string|INT', '7.4', kind::RETURN), equalTo('int|string'));
-    }
-
-    private function throwIfVersionIsOlderThan56(): void
+    public function throwIfVersionIsOlderThan56(): void
     {
         self::expectException(InvalidArgumentException::class);
         TypeHint::forPhpVer('array', '5.4', kind::ARG);
     }
-
-    public function testNeverType()
-    {
-        assertThat(TypeHint::forPhpVer('never', '7.4', kind::RETURN), equalTo('void'));
-        assertThat(TypeHint::forPhpVer('never', '8.0', kind::RETURN), equalTo('void'));
-        assertThat(TypeHint::forPhpVer('never', '8.1', kind::RETURN), equalTo('never'));
-    }
-
-    public function testVoidType()
-    {
-        assertThat(TypeHint::forPhpVer('void', '7.0', kind::RETURN), equalTo(null));
-        assertThat(TypeHint::forPhpVer('void', '7.1', kind::RETURN), equalTo('void'));
-        assertThat(TypeHint::forPhpVer('void', '7.1', kind::RETURN), equalTo('void'));
-        assertThat(TypeHint::forPhpVer('void', '7.4', kind::RETURN), equalTo('void'));
-    }
-
-    public function testVoidUsedNotForReturnTypeThrows(): void
-    {
-        self::expectException(InvalidArgumentException::class);
-        TypeHint::forPhpVer('void', '7.4', kind::ARG);        
-    }
-
-    public function testObjectType()
-    {
-        assertThat(TypeHint::forPhpVer('object', '7.1', kind::ARG), equalTo(null));
-        assertThat(TypeHint::forPhpVer('object', '7.2', kind::ARG), equalTo('object'));
-    }
-
-    public function testStandaloneNull()
-    {
-        assertThat(TypeHint::forPhpVer('null', '8.1', kind::RETURN), equalTo(null));
-        assertThat(TypeHint::forPhpVer('null', '8.2', kind::RETURN), equalTo('null'));
-        assertThat(TypeHint::forPhpVer('null', '8.2', kind::RETURN), equalTo('null'));
-    }
-
-    public function testIntersectionAndDnf()
-    {        
-        assertThat(TypeHint::forPhpVer('A&B', '8.0', kind::ARG), equalTo(null));
-        assertThat(TypeHint::forPhpVer('A&B', '8.1', kind::ARG), equalTo('A&B'));
-        assertThat(TypeHint::forPhpVer('A&B|C', '8.1', kind::ARG), equalTo(null));
-        assertThat(TypeHint::forPhpVer('A&B|C', '8.2', kind::ARG), equalTo('A&B|C')); // not valid? should be (A&B)|C ?
-        assertThat(TypeHint::forPhpVer('A&B', '8.1', kind::RETURN), equalTo('A&B'));
-        assertThat(TypeHint::forPhpVer('A&B|null', '8.1', kind::RETURN), equalTo(null));
-        assertThat(TypeHint::forPhpVer('A&B|null', '8.2', kind::RETURN), equalTo('A&B|null'));
-
-        assertThat(TypeHint::forPhpVer(['T', 'X&Y'], '8.2', kind::ARG), equalTo('T|(X&Y)'));
-    }
-
-
-    public function testPropertyTypingRequires74()
-    {
-        assertThat(TypeHint::forPhpVer('int', '7.3', kind::PROP), equalTo(null));
-        assertThat(TypeHint::forPhpVer('int', '7.4', kind::PROP), equalTo('int'));
-    }
-
-    public function testKindsSupportedOnlyIn83()
-    {
-        // 8.3.0	Support for class, interface, trait, and enum constant typing has been added
-        assertThat(TypeHint::forPhpVer('int', '8.2', kind::CONST), equalTo(null));
-        assertThat(TypeHint::forPhpVer('int', '8.3', kind::CONST), equalTo('int'));
-        // ...
-    }
-
-    public function testPhp5_6SupportedTypes()
-    {
-        // Any class/interface name
-        // 'array'
-        // 'callable'
-        // no nullable types at all
-        // no return types at all
-
-        // we must make sure all are supported in 5.6,
-    }
-    
-    // WE NEED TO FIGURE OUT what do we do with the face that nullables before 7.1 were achieved with syntax like
-    // myfunc(MyClass $obj = null) - i.e. null type should be just removed and we add "= null" separately.
-    // Should our `TypeHint::forPhpVer` remove null type?
-    // Or should we introduce a parameter to control this, and throw if that parameter not added when php ver is <7.1,
-    // type is supported but nullable?
-    // Or should we add separate function that will handle it?
-
-    public function testSyntaxNotSupportedInAnyVersionThrows()
-    {
-        // If someone accidentally passes php-stan type, array shape, or anything else that we don't handle and cannot normalize.
-        // Later we will introduce Annotation-to-hint normalizer and the TypeHint util will be part of it, but here we only test TypeHint which must throw when nonsense is passed.
-    }
-
-    public function testRepeatedTypesCollapsed()
-    {
-        // ... bool|bool should be 'bool', null|NULL -> 'null', etc
-    }
 }
-
-    // ['bool', 'false|null'] !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
