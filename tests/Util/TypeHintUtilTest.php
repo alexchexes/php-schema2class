@@ -606,7 +606,7 @@ class TypeHintUtilTest extends TestCase
     }
 
     /** TO REMOVE. ONLY USED TO DEBUG THE TEST ITSELF */
-    public function test_TEMP_PRINT_CASE_NAMES(): void
+    private function test_TEMP_PRINT_CASE_NAMES(): void
     {
         $all = [
             ...self::booleans(),
