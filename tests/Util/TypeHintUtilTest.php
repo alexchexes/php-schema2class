@@ -605,8 +605,13 @@ class TypeHintUtilTest extends TestCase
         ]);
     }
 
-    /** TO REMOVE. ONLY USED TO DEBUG THE TEST ITSELF */
-    public function test_TEMP_PRINT_CASE_NAMES(): void
+    /**
+     * Helper that prints all generated case names when debugging the test suite.
+     *
+     * PHPUnit executes only public methods that start with `test`, so make this
+     * method private to avoid cluttering the output during normal runs.
+     */
+    private function test_TEMP_PRINT_CASE_NAMES(): void
     {
         $all = [
             ...self::booleans(),
@@ -622,8 +627,7 @@ class TypeHintUtilTest extends TestCase
             ...self::redundantAndDuplicate(),
         ];
         foreach (array_keys($all) as $caseName) {
-            echo $caseName;
-            echo "\n";
+            echo $caseName, "\n";
         }
     }
 
