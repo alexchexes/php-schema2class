@@ -46,6 +46,7 @@ class TypeHintUtilTest extends TestCase
     private static function convertToProviderArray($cases)
     {
         $data = [];
+        $uniqueNames = [];
 
         foreach ($cases as $caseIdx => $case) {
             $caseNum = $caseIdx + 1;
@@ -181,6 +182,10 @@ class TypeHintUtilTest extends TestCase
                         }
 
                         $caseName = "{$inputTypeString} → {$expectedResultStr} for php {$ver} for '{$kind}'{$legacyFlagStr}";
+                        $uniqueName = $caseName;
+                        if (array_key_exists($uniqueName, $uniqueNames)) {
+                            $uniqueName = "$uniqueName (2)"; // avoid overriding
+                        }
 
                         $caseNameLower = mb_strtolower($caseName); // or pretty-printing will split everything by uppercased chars
                         if (array_key_exists($caseNameLower, $data)) {
@@ -189,6 +194,7 @@ class TypeHintUtilTest extends TestCase
 
                         $caseData = [
                             'caseName'          => $caseName,
+                            'uniqueName'        => $uniqueName,
                             'input'             => $inputCase,
                             'ver'               => $ver,
                             'kind'              => $kind,
@@ -253,12 +259,87 @@ class TypeHintUtilTest extends TestCase
     }
 
     /*---------------------------*
-    *       Data Providers       *
+    *        Core harness        *
     *----------------------------*/
-
-    public static function booleans(): array
+     
+    private function assertDataset(string $name, array $cases): void
     {
-        return self::convertToProviderArray([
+        $flatCases = self::convertToProviderArray($cases);
+
+        // Re-key the flat list into nested [ver][kind|flag][input] => ['ok' => string] or ['ex' => class]
+        [$expectedMap, $actualMap] = $this->buildMaps($flatCases);
+
+        // Stable ordering helps diffs
+        $this->ksortDeep($expectedMap);
+        $this->ksortDeep($actualMap);
+
+        $this->assertSame(count($flatCases), count($expectedMap), "Test is incorrect");
+        $this->assertSame(count($flatCases), count($actualMap), "Test is incorrect");
+
+        // keep assertion count meaningful: 1 per combination, also substract 3 auxiliary assertions,
+        // and perform it here (not before maps assertion) to keep count the same when map assertion fails
+        $this->addToAssertionCount(count($flatCases) - 3);
+
+        $this->assertSame(
+            $expectedMap,
+            $actualMap,
+            "Fail in '$name'."
+        );
+    }
+
+    /**
+     * @return array{0: array, 1: array}
+     */
+    private function buildMaps(array $flatCases): array
+    {
+        $expected = [];
+        $actual   = [];
+
+        foreach ($flatCases as $case) {
+            $uniqueName  = $case['uniqueName'];
+
+            // expected
+            if ($case['exceptionClass']) {
+                $expected[$uniqueName] = ['ex' => $case['exceptionClass']];
+            } else {
+                $expected[$uniqueName] = ['ok' => $case['expected']]; // expected is already a string or null
+            }
+
+            // actual
+            try {
+                $res = TypeHint::forPhpVer($case['input'], $case['ver'], $case['kind'], $case['legacyflag']);
+                $actual[$uniqueName] = ['ok' => $res];
+            } catch (\Throwable $e) {
+                $actual[$uniqueName] = ['ex' => $e::class];
+            }
+        }
+
+        return [$expected, $actual];
+    }
+
+    private function ksortDeep(array &$a): void
+    {
+        ksort($a);
+        foreach ($a as &$v) {
+            if (is_array($v)) {
+                $this->ksortDeep($v);
+            }
+        }
+    }
+
+    public function testThrowIfVersionIsOlderThan56(): void
+    {
+        self::expectException(InvalidArgumentException::class);
+        TypeHint::forPhpVer('array', '5.4', kind::ARG);
+    }
+
+    /*------------------------*
+    *        Test sets        *
+    *-------------------------*/
+
+    public function testBooleans(): void
+    {
+        $this->assertDataset(__METHOD__, [
             [
                 // input cases
                 [
@@ -329,7 +410,7 @@ class TypeHintUtilTest extends TestCase
         ]);
     }
 
-    public static function scalars(): array
+    public function testScalarsOnly(): void
     {
         $cases = [];
         foreach (TypeHint::SCALARS as $type) {
@@ -346,10 +427,10 @@ class TypeHintUtilTest extends TestCase
                 ['7.4'],
             ];
         }
-        return self::convertToProviderArray($cases);
+        $this->assertDataset(__METHOD__, $cases);
     }
 
-    public static function nullableScalars(): array
+    public function testNullableScalars(): void
     {
         $cases = [];
         foreach (TypeHint::SCALARS as $type) {
@@ -372,12 +453,12 @@ class TypeHintUtilTest extends TestCase
                 ['7.4'],
             ];
         }
-        return self::convertToProviderArray($cases);
+        $this->assertDataset(__METHOD__, $cases);
     }
 
-    public static function nullable(): array
+    public function testNullablesOnly(): void
     {
-        return self::convertToProviderArray([
+        $this->assertDataset(__METHOD__, [
             [
                 [
                     'array|null',
@@ -401,9 +482,9 @@ class TypeHintUtilTest extends TestCase
         ]);
     }
 
-    public static function standaloneNull(): array
+    public function testStandaloneNull(): void
     {
-        return self::convertToProviderArray([
+        $this->assertDataset(__METHOD__, [
             [
                 [
                     'null', ['null'],
@@ -418,9 +499,9 @@ class TypeHintUtilTest extends TestCase
         ]);
     }
 
-    public static function neverType(): array
+    public function testNeverType(): void
     {
-        return self::convertToProviderArray([
+        $this->assertDataset(__METHOD__, [
             [
                 [
                     'never'
@@ -438,9 +519,9 @@ class TypeHintUtilTest extends TestCase
         ]);
     }
 
-    public static function voidType(): array
+    public function testVoidType(): void
     {
-        return self::convertToProviderArray([
+        $this->assertDataset(__METHOD__, [
             [
                 [
                     'void'
@@ -457,9 +538,9 @@ class TypeHintUtilTest extends TestCase
         ]);
     }
 
-    public static function unions(): array
+    public function testUnionsAll(): void
     {
-        return self::convertToProviderArray([
+        $this->assertDataset(__METHOD__, [
             [
                 [
                     'int|string', ['int', 'string'],
@@ -481,9 +562,9 @@ class TypeHintUtilTest extends TestCase
         ]);
     }
 
-    public static function unionSorting(): array
+    public function testUnionSorting(): void
     {
-        return self::convertToProviderArray([
+        $this->assertDataset(__METHOD__, [
             [
                 [
                     'B|A|null|int|string',
@@ -526,9 +607,9 @@ class TypeHintUtilTest extends TestCase
         ]);
     }
 
-    public static function redundantAndDuplicate(): array
+    public function testRedundantAndDuplicate(): void
     {
-        return self::convertToProviderArray([
+        $this->assertDataset(__METHOD__, [
             [
                 [
                     'mixed|A|B|callable|object|array|string|float|int|false|null',
@@ -614,9 +695,9 @@ class TypeHintUtilTest extends TestCase
         ]);
     }
 
-    public static function invalidInput(): array
+    public function testInvalidInput(): void
     {
-        return self::convertToProviderArray([
+        $this->assertDataset(__METHOD__, [
             [
                 [
                     'A&B', '(A&B)', ['(A)', 'B'], '(A)|B', // we don't dupport intersections/DNF yet
@@ -641,54 +722,5 @@ class TypeHintUtilTest extends TestCase
                 ], /* ———————————————————> */ self::EXPECT_EXCEPTION,
             ],
         ]);
-    }
-
-    /** 
-     * Main assertion method
-     */
-    #[DataProvider('booleans')]
-    #[DataProvider('scalars')]
-    #[DataProvider('nullableScalars')]
-    #[DataProvider('nullable')]
-    #[DataProvider('standaloneNull')]
-    #[DataProvider('neverType')]
-    #[DataProvider('voidType')]
-    #[DataProvider('unions')]
-    #[DataProvider('unionSorting')]
-    #[DataProvider('redundantAndDuplicate')]
-    #[DataProvider('invalidInput')]
-    public function testTypeHint(
-        string $caseName,
-        array|string $input,
-        string $ver,
-        string $kind,
-        ?string $legacyflag,
-        ?string $expected,
-        ?string $exceptionClass,
-    ): void
-    {
-        $message = "Case: {$caseName}";
-
-        if ($exceptionClass) {
-            try {
-                $result = TypeHint::forPhpVer($input, $ver, $kind, $legacyflag);
-                $this->fail("{$message}\nExpected {$exceptionClass} exception, but got this: " . self::exportVar($result));
-            } catch (\InvalidArgumentException $e) {
-                $this->addToAssertionCount(1);
-            }
-        } else {
-            try {
-                $result = TypeHint::forPhpVer($input, $ver, $kind, $legacyflag);
-            } catch (\Throwable $e) {
-                throw new Exception("{$message}\nUtil threw unexpected " . $e::class . ": {$e->getMessage()}", 0, $e);
-            }
-            assertThat($result, equalTo($expected), $message);
-        }
-    }
-
-    public function throwIfVersionIsOlderThan56(): void
-    {
-        self::expectException(InvalidArgumentException::class);
-        TypeHint::forPhpVer('array', '5.4', kind::ARG);
     }
 }
