@@ -11,57 +11,84 @@ class TypeHint
     public const KIND_ARG = 'arg';
     public const KIND_PROP = 'prop';
 
+    public const ALL_KINDS = [
+        self::KIND_RETURN,
+        self::KIND_ARG,
+        self::KIND_PROP,
+    ];
+
     public const LEGACY_NULLABLE_OMIT_TYPE = 'omit-type';
     public const LEGACY_NULLABLE_DROP_NULL = 'drop-null';
+
+    public const LEGACY_FLAGS = [
+        self::LEGACY_NULLABLE_OMIT_TYPE,
+        self::LEGACY_NULLABLE_DROP_NULL,
+    ];
 
     /** @var string[] */
     public const SCALARS = ['int', 'float', 'string', 'bool'];
 
     /** Built in types that are recognized case-insensitively */
     private const BUILTIN_TYPES = [
-        'static', 'self', 'parent',
-        'callable', 'iterable', 'object', 'array',
-        'string', 'float', 'int', 'bool',
-        'true', 'false',
+        'static',
+        'self',
+        'parent',
+
+        'callable',
+        'iterable',
+        'object',
+        'array',
+
+        'string',
+        'float',
+        'int',
+        'bool',
+
+        'true',
+        'false',
+
         'null',
-        'mixed', 'void', 'never',
+
+        'mixed',
+        'void',
+        'never',
     ];
 
     /** Order for union types */
     private const SORT_ORDER = [
-        'static' => 0,
-        'self' => 1,
-        'parent' => 2,
+        'static'    => 0,
+        'self'      => 1,
+        'parent'    => 2,
         // 3 is reserved for class-like types
-        'callable' => 4,
-        'iterable' => 5,
-        'object' => 6,
-        'array' => 7,
-        'string' => 8,
-        'float' => 9,
-        'int' => 10,
-        'bool' => 11,
-        'true' => 12,
-        'false' => 13,
-        'null' => 14,
+        'callable'  => 4,
+        'iterable'  => 5,
+        'object'    => 6,
+        'array'     => 7,
+        'string'    => 8,
+        'float'     => 9,
+        'int'       => 10,
+        'bool'      => 11,
+        'true'      => 12,
+        'false'     => 13,
+        'null'      => 14,
     ];
 
-    /** Minimal PHP versions for built in types */
+    /** Minimal PHP versions for built in types used STANDALONE (`false` has special handling) */
     private const MIN_VERSION = [
-        'int' => ['arg' => '7.0', 'return' => '7.0', 'prop' => '7.4'],
-        'float' => ['arg' => '7.0', 'return' => '7.0', 'prop' => '7.4'],
-        'string' => ['arg' => '7.0', 'return' => '7.0', 'prop' => '7.4'],
-        'bool' => ['arg' => '7.0', 'return' => '7.0', 'prop' => '7.4'],
-        'true' => ['arg' => '8.2', 'return' => '8.2', 'prop' => '8.2'],
-        'false' => ['arg' => '8.2', 'return' => '8.2', 'prop' => '8.2'],
-        'array' => ['arg' => '5.0', 'return' => '7.0', 'prop' => '7.4'],
-        'callable' => ['arg' => '5.6', 'return' => '7.0', 'prop' => '7.4'],
-        'iterable' => ['arg' => '7.2', 'return' => '7.2', 'prop' => '7.4'],
-        'object' => ['arg' => '7.2', 'return' => '7.2', 'prop' => '7.4'],
-        'mixed' => ['arg' => '8.0', 'return' => '8.0', 'prop' => '8.0'],
-        'void' => ['return' => '7.4'],
-        'never' => ['return' => '8.1'],
-        'null' => ['arg' => '8.2', 'return' => '8.2', 'prop' => '8.2'],
+        'int'       => [self::KIND_ARG => '7.0', self::KIND_RETURN => '7.0', self::KIND_PROP => '7.4'],
+        'float'     => [self::KIND_ARG => '7.0', self::KIND_RETURN => '7.0', self::KIND_PROP => '7.4'],
+        'string'    => [self::KIND_ARG => '7.0', self::KIND_RETURN => '7.0', self::KIND_PROP => '7.4'],
+        'bool'      => [self::KIND_ARG => '7.0', self::KIND_RETURN => '7.0', self::KIND_PROP => '7.4'],
+        'true'      => [self::KIND_ARG => '8.2', self::KIND_RETURN => '8.2', self::KIND_PROP => '8.2'],
+        'false'     => [self::KIND_ARG => '8.2', self::KIND_RETURN => '8.2', self::KIND_PROP => '8.2'],
+        'array'     => [self::KIND_ARG => '5.0', self::KIND_RETURN => '7.0', self::KIND_PROP => '7.4'],
+        'callable'  => [self::KIND_ARG => '5.6', self::KIND_RETURN => '7.0', self::KIND_PROP => '7.4'],
+        'iterable'  => [self::KIND_ARG => '7.2', self::KIND_RETURN => '7.2', self::KIND_PROP => '7.4'],
+        'object'    => [self::KIND_ARG => '7.2', self::KIND_RETURN => '7.2', self::KIND_PROP => '7.4'],
+        'mixed'     => [self::KIND_ARG => '8.0', self::KIND_RETURN => '8.0', self::KIND_PROP => '8.0'],
+        'void'      => [self::KIND_RETURN => '7.4'],
+        'never'     => [self::KIND_RETURN => '8.1'],
+        'null'      => [self::KIND_ARG => '8.2', self::KIND_RETURN => '8.2', self::KIND_PROP => '8.2'],
     ];
 
     /**
@@ -74,41 +101,34 @@ class TypeHint
      */
     public static function forPhpVer(array|string $input, string $phpVersion, string $kind, ?string $legacyFlag = null): ?string
     {
+        if (!in_array($kind, self::ALL_KINDS)) {
+            throw new InvalidArgumentException("Unsupported kind: {$kind}");
+        }
+        if ($legacyFlag !== null && !in_array($legacyFlag, self::LEGACY_FLAGS)) {
+            throw new InvalidArgumentException("Unknown legacy flag: {$legacyFlag}");
+        }
         if (version_compare($phpVersion, '5.6', '<')) {
-            throw new InvalidArgumentException('Unsupported PHP version');
+            throw new InvalidArgumentException("Unsupported PHP version: {$phpVersion}");
         }
 
         $types = self::parseInput($input);
-        $types = self::normalizeTypes($types);
 
-        if ($kind === self::KIND_PROP && version_compare($phpVersion, '7.4', '<')) {
-            // typed properties are not supported, but validate input first
-            return null;
-        }
-
+        $types = self::canonicalizeCaseAndDeduplicate($types);
         $types = self::removeRedundantTypes($types);
 
         // map true/false to bool for older PHP versions
-        if (version_compare($phpVersion, '8.2', '<')) {
-            foreach ($types as &$t) {
-                $lt = strtolower($t);
-                if ($lt === 'true' || $lt === 'false') {
-                    $t = 'bool';
-                }
-            }
-            unset($t);
-            $types = self::normalizeTypes($types);
-            $types = self::removeRedundantTypes($types);
+        $types = self::mapLiteralBools($types, $phpVersion);
+
+        if ($types === []) {
+            return null;
         }
 
-        // handle special cases first
-        $lower = array_map('strtolower', $types);
-        if (in_array('never', $lower, true)) {
+        if (in_array('never', $types, true)) {
             if (count($types) > 1) {
-                throw new InvalidArgumentException('never cannot be combined');
+                throw new InvalidArgumentException("'never' cannot be combined");
             }
             if ($kind !== self::KIND_RETURN) {
-                throw new InvalidArgumentException('never can be used only as return type');
+                throw new InvalidArgumentException("'never' can be used only as return type. Attempt to use as: {$kind} type");
             }
             if (version_compare($phpVersion, '8.1', '>=')) {
                 return 'never';
@@ -118,49 +138,35 @@ class TypeHint
             }
             return null;
         }
-        if (in_array('void', $lower, true)) {
+        if (in_array('void', $types, true)) {
             if (count($types) > 1) {
-                throw new InvalidArgumentException('void cannot be combined');
+                throw new InvalidArgumentException("'void' cannot be combined");
             }
             if ($kind !== self::KIND_RETURN) {
-                throw new InvalidArgumentException('void can be used only as return type');
+                throw new InvalidArgumentException("'void' can be used only as return type. Attempt to use as: {$kind} type");
             }
             if (version_compare($phpVersion, '7.4', '>=')) {
                 return 'void';
             }
             return null;
         }
-        if (in_array('mixed', $lower, true)) {
-            if (!self::isSupported('mixed', $phpVersion, $kind)) {
+        if (in_array('mixed', $types, true)) {
+            if (!self::isSupported('mixed', $types, $phpVersion, $kind)) {
                 return null;
             }
             return 'mixed';
         }
-
-        // check each type for support
-        $types = array_values(array_filter($types, function (string $t) use ($phpVersion, $kind): bool {
-            $lt = strtolower($t);
-            if ($lt === 'null') {
-                return true; // handled later
-            }
-            if (self::isBuiltin($lt)) {
-                return self::isSupported($lt, $phpVersion, $kind);
-            }
-            // class-like names
-            if ($kind === self::KIND_RETURN && version_compare($phpVersion, '7.0', '<')) {
-                return false;
-            }
-            // KIND_ARG has no additional restrictions
-            return true;
-        }));
-
-        if ($types === []) {
+        
+        // after basic input validation, return null if the PHP ver doesn't support types for the given kind
+        if ($kind === self::KIND_PROP && version_compare($phpVersion, '7.4', '<')) {
+            return null;
+        }
+        if ($kind === self::KIND_RETURN && version_compare($phpVersion, '7.0', '<')) {
             return null;
         }
 
-        $lower = array_map('strtolower', $types);
-        $hasNull = in_array('null', $lower, true);
-        $nonNull = array_values(array_filter($types, fn($t) => strtolower($t) !== 'null'));
+        $hasNull = in_array('null', $types, true);
+        $nonNull = self::removeNulls($types);
 
         if (count($nonNull) > 1 && version_compare($phpVersion, '8.0', '<')) {
             $allClassLike = true;
@@ -173,20 +179,23 @@ class TypeHint
             if ($allClassLike && version_compare($phpVersion, '7.2', '>=')) {
                 $nonNull = ['object'];
                 $types = $hasNull ? ['object', 'null'] : ['object'];
-                $lower = array_map('strtolower', $types);
-                $hasNull = in_array('null', $lower, true);
             } else {
                 return null;
             }
         }
 
-        if ($nonNull === []) {
-            // only null
+        if ($hasNull && $nonNull === []) {
+            // standalone null
             return version_compare($phpVersion, '8.2', '>=') ? 'null' : null;
         }
 
         if (count($nonNull) === 1) {
             $type = $nonNull[0];
+
+            if (!self::isSupported($type, $types, $phpVersion, $kind)) {
+                return null;
+            }
+
             if (!$hasNull) {
                 return $type;
             }
@@ -203,19 +212,14 @@ class TypeHint
             if ($legacyFlag === self::LEGACY_NULLABLE_DROP_NULL) {
                 return $type;
             }
-            throw new InvalidArgumentException('Nullable types are not supported');
-        }
-
-        // Union types (>1 non-null)
-        if (version_compare($phpVersion, '8.0', '<')) {
-            return null;
+            throw new InvalidArgumentException("PHP {$phpVersion} doesn't support nullable type hints, and \$legacyFlag is not provided.");
         }
 
         // ensure all non-null types supported
         foreach ($nonNull as $t) {
-            $lt = strtolower($t);
-            if (self::isBuiltin($lt)) {
-                if (!self::isSupported($lt, $phpVersion, $kind)) {
+            $lower = strtolower($t);
+            if (self::isBuiltin($lower)) {
+                if (!self::isSupported($lower, $types, $phpVersion, $kind)) {
                     return null;
                 }
             } else {
@@ -239,25 +243,26 @@ class TypeHint
         $types = [];
         foreach ($input as $piece) {
             if (!is_string($piece)) {
-                throw new InvalidArgumentException('Invalid type declaration');
+                throw new InvalidArgumentException('Invalid type of type to parse. Variable gettype: ' . gettype($piece));
             }
             $parts = explode('|', $piece);
             foreach ($parts as $p) {
                 if ($p === '') {
-                    throw new InvalidArgumentException('Invalid type declaration');
+                    throw new InvalidArgumentException('Type resolved to an empty string');
                 }
                 if (preg_match('/\s/', $p)) {
-                    throw new InvalidArgumentException('Whitespace not allowed');
+                    throw new InvalidArgumentException("Type contains whitespace: {$p}");
                 }
                 if ($p[0] === '?') {
+                    $saved = $p;
                     $p = substr($p, 1);
                     if ($p === '' || preg_match('/\s/', $p)) {
-                        throw new InvalidArgumentException('Invalid nullable type');
+                        throw new InvalidArgumentException("Invalid nullable type: {$saved}");
                     }
                     $types[] = 'null';
                 }
-                if (!preg_match('/^[A-Za-z_][A-Za-z0-9_]*$/', $p)) {
-                    throw new InvalidArgumentException('Invalid type');
+                if (!preg_match('/^(?:\\\)?[A-Za-z_][A-Za-z0-9_]*(?:\\\[A-Za-z_][A-Za-z0-9_])*$/', $p)) {
+                    throw new InvalidArgumentException("Illegal charachters found in type: {$p}");
                 }
                 $types[] = $p;
             }
@@ -266,22 +271,26 @@ class TypeHint
     }
 
     /** @param array<string> $types */
-    private static function normalizeTypes(array $types): array
+    private static function canonicalizeCaseAndDeduplicate(array $types): array
     {
         $result = [];
         $lowerMap = [];
+
         foreach ($types as $t) {
             $lower = strtolower($t);
             $canonical = self::isBuiltin($lower) ? $lower : $t;
+
             if (isset($lowerMap[$lower])) {
                 if (!self::isBuiltin($lower) && $lowerMap[$lower] !== $t) {
-                    throw new InvalidArgumentException('Duplicate types with different case');
+                    throw new InvalidArgumentException("Duplicate user-defined type with different case: {$t}");
                 }
                 continue;
             }
+
             $lowerMap[$lower] = $canonical;
             $result[] = $canonical;
         }
+
         return $result;
     }
 
@@ -328,10 +337,35 @@ class TypeHint
                 return $lt !== 'true' && $lt !== 'false';
             }));
             $types[] = 'bool';
-            $types = self::normalizeTypes($types);
+            $types = self::canonicalizeCaseAndDeduplicate($types);
             $lower = array_map('strtolower', $types);
         }
 
+        return $types;
+    }
+
+    /** 
+     * Expects already normalized array of types, when 'null' is lowercase
+     */
+    private static function removeNulls(array $types): array
+    {
+        return array_values(array_filter($types, fn($t) => $t !== 'null'));
+    }
+
+    private static function mapLiteralBools(array $types, string $phpVersion): array
+    {
+        $nonNull = self::removeNulls($types);
+
+        if (version_compare($phpVersion, '8.2', '<')) {
+            foreach ($types as &$t) {
+                $lt = strtolower($t);
+                if ($lt === 'true' || ($lt === 'false' && count($nonNull) === 1)) {
+                    $t = 'bool';
+                }
+            }
+            $types = self::canonicalizeCaseAndDeduplicate($types);
+            $types = self::removeRedundantTypes($types);
+        }
         return $types;
     }
 
@@ -340,31 +374,38 @@ class TypeHint
         return in_array($lower, self::BUILTIN_TYPES, true);
     }
 
-    private static function isSupported(string $type, string $phpVersion, string $kind): bool
+    private static function isSupported(string $type, array $types, string $phpVersion, string $kind): bool
     {
-        $min = self::MIN_VERSION[$type][$kind] ?? null;
-        if ($min === null) {
+        $nonNull = self::removeNulls($types);
+
+        if ($type === 'false' && count($nonNull) > 1 && version_compare($phpVersion, '8.0', '>=')) {
+            // false in unions supported since 8.0
             return true;
         }
-        return version_compare($phpVersion, $min, '>=');
+        
+        $minVer = self::MIN_VERSION[$type][$kind] ?? null;
+        if ($minVer === null) {
+            return true;
+        }
+        return version_compare($phpVersion, $minVer, '>=');
     }
 
     /** @param array<string> $types */
     private static function sortTypes(array $types): array
     {
         usort($types, function (string $a, string $b): int {
-            $la = strtolower($a);
-            $lb = strtolower($b);
-            $ia = self::SORT_ORDER[$la] ?? 3; // class-like default
-            $ib = self::SORT_ORDER[$lb] ?? 3;
-            if ($ia === $ib) {
+            $lowerA = strtolower($a);
+            $lowerB = strtolower($b);
+            $indexA = self::SORT_ORDER[$lowerA] ?? 3; // class-like default
+            $indexB = self::SORT_ORDER[$lowerB] ?? 3;
+            if ($indexA === $indexB) {
                 $cmp = strcasecmp($a, $b);
                 if ($cmp === 0) {
                     return strcmp($a, $b);
                 }
                 return $cmp;
             }
-            return $ia <=> $ib;
+            return $indexA <=> $indexB;
         });
         return $types;
     }

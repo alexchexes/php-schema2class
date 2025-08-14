@@ -97,7 +97,9 @@ class TypeHintUtilTest extends TestCase
             $missing_vers = array_diff(self::ALL_VERS, $providedVersions);
             foreach ($missing_vers as $missingVer) {
                 $prevVer = self::getPrevKnownVer($missingVer);
-                $prevVerData = array_find($versionCases, fn($verData) => $verData[0] === $prevVer);
+                // we do 'array_find' but since there can be multiple version-case entries for the same
+                // php ver (with different flags, for example), we use 'array_reverse' to get the last one
+                $prevVerData = array_find(array_reverse($versionCases), fn($verData) => $verData[0] === $prevVer);
 
                 if ($prevVer && $prevVerData) {
                     $versionCases[] = [
@@ -153,46 +155,53 @@ class TypeHintUtilTest extends TestCase
                         ...$baseKindCases,
                         ...$kindCases,
                     ];
-
+            
                     // now we have "kind cases" normalized for all the vesion cases
-                
 
                     foreach ($kindCases as $kind => $expectedResult) {
-                        $expectedResultStr = $expectedResult === self::EXPECT_EXCEPTION
-                            ? \InvalidArgumentException::class
-                            : ($expectedResult === null ? 'null' : var_export($expectedResult, true));
+                        $exceptionClass = null;
+
+                        if ($expectedResult === self::EXPECT_EXCEPTION) {
+                            $expectedResult = null;
+                            $exceptionClass = \InvalidArgumentException::class;
+                            $exceptionClass = $exceptionClass;
+                            $expectedResultStr = $exceptionClass;
+                        } else {
+                            $expectedResultStr = self::exportVar($expectedResult);
+                        }
                     
                         $caseData = [];
 
                         // create string respresentation of the input type to show in test case names or errors
-                        if (is_array($inputCase)) {
-                            $inputTypeString = "[" . implode(", ", array_map(fn($v)=>var_export($v, true), $inputCase)) . "]";
-                        } else {
-                            $inputTypeString = var_export($inputCase, true);
-                        }
+                        $inputTypeString = self::exportVar($inputCase);
 
                         $legacyFlagStr = '';
                         if ($legacyFlag) {
                             $legacyFlagStr = " with flag '$legacyFlag'";
                         }
 
-                        $caseData = [
-                            'input'      => $inputCase,
-                            'ver'        => $ver,
-                            'kind'       => $kind,
-                            'legacyflag' => $legacyFlag,
-                            'expected'   => $expectedResult,
-                        ];
-
                         $caseName = "{$inputTypeString} → {$expectedResultStr} for php {$ver} for '{$kind}'{$legacyFlagStr}";
 
-                        $data[$caseName] = $caseData;
+                        $caseNameLower = mb_strtolower($caseName); // or pretty-printing will split everything by uppercased chars
+                        if (array_key_exists($caseNameLower, $data)) {
+                            $caseNameLower = "$caseNameLower (2)"; // avoid overriding
+                        }
+
+                        $caseData = [
+                            'caseName'          => $caseName,
+                            'input'             => $inputCase,
+                            'ver'               => $ver,
+                            'kind'              => $kind,
+                            'legacyflag'        => $legacyFlag,
+                            'expected'          => $expectedResult,
+                            'exceptionClass'   => $exceptionClass,
+                        ];
+
+                        $data[$caseNameLower] = $caseData;
                     }
                 }
             }
         }
-
-        // echo "\n---\$data:\n";  print_r($data);  echo "\n---";
 
         return $data;
     }
@@ -209,9 +218,13 @@ class TypeHintUtilTest extends TestCase
         return self::ALL_VERS[$k - 1] ?? null;
     }
 
-    private static function sortVersionCases(array $versionCases): array
+    private static function sortVersionCases(array $versionCases, bool $descending = false): array
     {
-        usort($versionCases, static fn($a, $b) => version_compare($a[0], $b[0]));
+        $sortFn = $descending
+            ? static fn($verDataA, $verDataB) => version_compare($verDataB[0], $verDataA[0])
+            : static fn($verDataA, $verDataB) => version_compare($verDataA[0], $verDataB[0]);
+
+        usort($versionCases, $sortFn(...));
         return $versionCases;
     }
 
@@ -229,6 +242,14 @@ class TypeHintUtilTest extends TestCase
         }
 
         return $kindCases;
+    }
+
+    private static function exportVar(mixed $var): string
+    {
+        if (is_array($var)) {
+            return "[" . implode(", ", array_map(fn ($v) => self::exportVar($v), $var)) . "]";
+        } 
+        return $var === null ? 'null' : var_export($var, true);
     }
 
     /*---------------------------*
@@ -260,7 +281,7 @@ class TypeHintUtilTest extends TestCase
                     ['null', 'false'],
                 ], /* ———————————————————> */ '?false',
                 ['5.6', null],
-                ['7.0', self::EXPECT_EXCEPTION], // if no flag specified, expect throw
+                ['7.0', [self::EXPECT_EXCEPTION, kind::PROP => null]], // if no flag specified, must throw (except when kind is PROP)
                 ['7.0', null, 'flag' => TypeHint::LEGACY_NULLABLE_OMIT_TYPE],
                 ['7.0', ['bool', kind::PROP => null], 'flag' => TypeHint::LEGACY_NULLABLE_DROP_NULL],
                 ['7.1', ['?bool', kind::PROP => null]],
@@ -299,7 +320,7 @@ class TypeHintUtilTest extends TestCase
                     ['bool', 'false|null'],
                 ], /* ———————————————————> */ '?bool',
                 ['5.6', null],
-                ['7.0', self::EXPECT_EXCEPTION],
+                ['7.0', [self::EXPECT_EXCEPTION, kind::PROP => null]],
                 ['7.0', null, 'flag' => TypeHint::LEGACY_NULLABLE_OMIT_TYPE],
                 ['7.0', ['bool', kind::PROP => null], 'flag' => TypeHint::LEGACY_NULLABLE_DROP_NULL],
                 ['7.1', [kind::PROP => null]],
@@ -344,7 +365,7 @@ class TypeHintUtilTest extends TestCase
                     ["$type|" . ucfirst($type) . "|?" . strtoupper($type), "$type"], // ['int|Int|?INT', 'int']
                 ], /* ———————————————————> */ "?$type",
                 ['5.6', null],
-                ['7.0', self::EXPECT_EXCEPTION],
+                ['7.0', [self::EXPECT_EXCEPTION, kind::PROP => null]],
                 ['7.0', null, 'flag' => TypeHint::LEGACY_NULLABLE_OMIT_TYPE],
                 ['7.0', [$type, kind::PROP => null], 'flag' => TypeHint::LEGACY_NULLABLE_DROP_NULL],
                 ['7.1', [kind::PROP => null]],
@@ -368,9 +389,12 @@ class TypeHintUtilTest extends TestCase
                     ['?ARRAY', 'ARRAY'],
                     ['ARRAY|NULL', 'ARRAY'],
                 ], /* ———————————————————> */ '?array',
-                ['5.6', self::EXPECT_EXCEPTION],
+                ['5.6', [self::EXPECT_EXCEPTION, kind::PROP => null, kind::RETURN => null]],
                 ['5.6', null, 'flag' => TypeHint::LEGACY_NULLABLE_OMIT_TYPE],
-                ['5.6', ['array', kind::PROP => null], 'flag' => TypeHint::LEGACY_NULLABLE_DROP_NULL],
+                ['5.6', ['array', kind::PROP => null, kind::RETURN => null], 'flag' => TypeHint::LEGACY_NULLABLE_DROP_NULL],
+                ['7.0', [self::EXPECT_EXCEPTION, kind::PROP => null]],
+                ['7.0', null, 'flag' => TypeHint::LEGACY_NULLABLE_OMIT_TYPE],
+                ['7.0', ['array', kind::PROP => null], 'flag' => TypeHint::LEGACY_NULLABLE_DROP_NULL],
                 ['7.1', [kind::PROP => null]],
                 ['7.4'],
             ],
@@ -433,31 +457,6 @@ class TypeHintUtilTest extends TestCase
         ]);
     }
 
-    public static function invalidInput(): array
-    {
-        return self::convertToProviderArray([
-            [
-                [
-                    'A&B', '(A&B)', ['(A)', 'B'], '(A)|B', // we don't dupport intersections/DNF yet
-                    ['A', '|', 'B'],
-                    'My Class',
-                    '123Class',
-                    ['123', 'MyClass'],
-                    '? MyClass',
-                    '-', '+',
-                    '&', '(', ')',
-                    '?', ['?', 'array'],
-                    '|', ['|', 'array'],
-                    '||', ['||', 'array'],
-                    'A|', ['A|', 'array'],
-                    '\\', ['\\', 'array'],
-                    'string |array', ['string ', 'array'],
-                    'string?|array', ['string ', '?|array'],
-                ], /* ———————————————————> */ self::EXPECT_EXCEPTION,
-            ],
-        ]);
-    }
-
     public static function unions(): array
     {
         return self::convertToProviderArray([
@@ -498,9 +497,19 @@ class TypeHintUtilTest extends TestCase
             ],
             [
                 [
-                    'MyClass_2|null|MyClass_1',
-                    ['MyClass_2', '?MyClass_1'],
-                ], /* ———————————————————> */ 'MyClass_1|MyClass_2|null',
+                    '?\B|B|int|\C|string',
+                    ['?B', 'int', 'string', '\C', '\B'],
+                    ['\B', 'null|B', 'B|int|string|\C', '\B'],
+                    ['string|\B', 'null', '\C|int', '\B|B'],
+                ], /* ———————————————————> */ '\B|\C|B|string|int|null',
+                ['5.6', null],
+                ['8.0'],
+            ],
+            [
+                [
+                    'MyClass_2|null|MyClass_1|\Q',
+                    ['MyClass_2|\Q', '?MyClass_1'],
+                ], /* ———————————————————> */ '\Q|MyClass_1|MyClass_2|null',
                 ['5.6', null],
                 ['7.2', ['?object', kind::PROP => null]],
                 ['7.4', ['?object']],
@@ -508,8 +517,8 @@ class TypeHintUtilTest extends TestCase
             ],
             [
                 [
-                    'array|false|true|float|bool|int|MyObject|object|A|string|null|callable',
-                    ['array', 'false', 'true', 'float', 'bool', 'int', 'MyObject', 'object', 'string', 'null', 'callable'],
+                    'array|false|true|float|bool|int|MyObject|object|A|\B|string|null|callable',
+                    ['array', 'false', 'true', 'float', 'bool', 'int', 'MyObject', 'object', 'A', '\B', 'string', 'null', 'callable'],
                 ], /* ———————————————————> */ 'callable|object|array|string|float|int|bool|null',
                 ['5.6', null],
                 ['8.0'],
@@ -535,7 +544,7 @@ class TypeHintUtilTest extends TestCase
                     ['INT', 'STRING', 'string', 'int'],
                     ['INT|STRING', 'string|int'],
                     ['INT|int', 'string|STRING'],
-                ], /* ———————————————————> */ 'int|string',
+                ], /* ———————————————————> */ 'string|int',
                 ['5.6', null],
                 ['8.0'],
             ],
@@ -605,30 +614,33 @@ class TypeHintUtilTest extends TestCase
         ]);
     }
 
-    /**
-     * Helper that prints all generated case names when debugging the test suite.
-     *
-     * PHPUnit executes only public methods that start with `test`, so make this
-     * method private to avoid cluttering the output during normal runs.
-     */
-    private function test_TEMP_PRINT_CASE_NAMES(): void
+    public static function invalidInput(): array
     {
-        $all = [
-            ...self::booleans(),
-            ...self::scalars(),
-            ...self::nullableScalars(),
-            ...self::nullable(),
-            ...self::standaloneNull(),
-            ...self::neverType(),
-            ...self::voidType(),
-            ...self::invalidInput(),
-            ...self::unions(),
-            ...self::unionSorting(),
-            ...self::redundantAndDuplicate(),
-        ];
-        foreach (array_keys($all) as $caseName) {
-            echo $caseName, "\n";
-        }
+        return self::convertToProviderArray([
+            [
+                [
+                    'A&B', '(A&B)', ['(A)', 'B'], '(A)|B', // we don't dupport intersections/DNF yet
+                    ['A', '|', 'B'],
+                    'My Class',
+                    '123Class',
+                    ['123', 'MyClass'],
+                    '? MyClass',
+                    '-', '+',
+                    '&', '(', ')',
+                    '?', ['?', 'array'],
+                    '|', ['|', 'array'],
+                    '||', ['||', 'array'],
+                    'A|', ['A|', 'array'],
+                    '\\', ['\\', 'array'],
+                    '\|MyClass',
+                    'A\\\B',
+                    '\\\MyClass',
+                    'MyClass\\',
+                    'string |array', ['string ', 'array'],
+                    'string?|array', ['string ', '?|array'],
+                ], /* ———————————————————> */ self::EXPECT_EXCEPTION,
+            ],
+        ]);
     }
 
     /** 
@@ -641,26 +653,36 @@ class TypeHintUtilTest extends TestCase
     #[DataProvider('standaloneNull')]
     #[DataProvider('neverType')]
     #[DataProvider('voidType')]
-    #[DataProvider('invalidInput')]
     #[DataProvider('unions')]
     #[DataProvider('unionSorting')]
     #[DataProvider('redundantAndDuplicate')]
+    #[DataProvider('invalidInput')]
     public function testTypeHint(
+        string $caseName,
         array|string $input,
         string $ver,
         string $kind,
         ?string $legacyflag,
         ?string $expected,
+        ?string $exceptionClass,
     ): void
     {
-        if ($expected === self::EXPECT_EXCEPTION) {
-            $this->expectException(\InvalidArgumentException::class);
-            TypeHint::forPhpVer($input, $ver, $kind, $legacyflag);
+        $message = "Case: {$caseName}";
+
+        if ($exceptionClass) {
+            try {
+                $result = TypeHint::forPhpVer($input, $ver, $kind, $legacyflag);
+                $this->fail("{$message}\nExpected {$exceptionClass} exception, but got this: " . self::exportVar($result));
+            } catch (\InvalidArgumentException $e) {
+                $this->addToAssertionCount(1);
+            }
         } else {
-            assertThat(
-                TypeHint::forPhpVer($input, $ver, $kind),
-                equalTo($expected)
-            );
+            try {
+                $result = TypeHint::forPhpVer($input, $ver, $kind, $legacyflag);
+            } catch (\Throwable $e) {
+                throw new Exception("{$message}\nUtil threw unexpected " . $e::class . ": {$e->getMessage()}", 0, $e);
+            }
+            assertThat($result, equalTo($expected), $message);
         }
     }
 
