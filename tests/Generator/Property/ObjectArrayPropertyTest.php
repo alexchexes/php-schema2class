@@ -61,8 +61,8 @@ class ObjectArrayPropertyTest extends TestCase
 
         $expected = <<<'EOCODE'
 $myPropertyName = array_map(
-    fn (array|object $i): FooMyPropertyNameItem => FooMyPropertyNameItem::fromInput($i, $validate),
-    $input->{'myPropertyName'}
+    fn (object|array $i): FooMyPropertyNameItem => FooMyPropertyNameItem::fromInput($i, $validate),
+    $input->{'myPropertyName'},
 );
 EOCODE;
 

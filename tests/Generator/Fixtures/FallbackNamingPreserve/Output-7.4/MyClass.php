@@ -1400,7 +1400,7 @@ class MyClass
         $ensureArgs3 = isset($input->{'ensureArgs3'})
             ? array_map(
                 fn ($i): MyClassEnsureArgs3Item => MyClassEnsureArgs3Item::fromInput($i, $validate, $materializeDefaults),
-                $input->{'ensureArgs3'}
+                $input->{'ensureArgs3'},
             )
             : null;
 

@@ -205,9 +205,10 @@ class MyClass
         }
 
         $files = isset($input->{'files'})
-            ? array_map(function($i) use ($validate) {
-                return MyClassFilesItem::fromInput($i, $validate);
-            }, $input->{'files'})
+            ? array_map(
+                function($i) use ($validate) { return MyClassFilesItem::fromInput($i, $validate); },
+                $input->{'files'}
+            )
             : null;
         $options = isset($input->{'options'})
             ? OptionsObject::fromInput($input->{'options'}, $validate)
@@ -257,12 +258,7 @@ class MyClass
         $output = $this->_additionalProperties;
 
         if (isset($this->files)) {
-            $output->{'files'} = array_map(
-                function(MyClassFilesItem $i) {
-                    return $i->toStdClass();
-                },
-                $this->files
-            );
+            $output->{'files'} = array_map(function(MyClassFilesItem $i) { return $i->toStdClass(); }, $this->files);
         }
         if (isset($this->options)) {
             $output->{'options'} = $this->options->toStdClass();

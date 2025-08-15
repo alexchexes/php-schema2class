@@ -14,14 +14,19 @@ class ArrayMapGenerator
         string $mapExpr,
         string $arrayExpr,
         string $phpVer,
-        array $useVars = [],
+        ?array $useVars = [],
         array|string|null $itemType = null,
         array|string|null $returnType = null,
         int $lengthToWrap = 100,
     ): string
     {
-        $itemType = TypeHint::typeHintForPhpVer($itemType, $phpVer, TypeHint::TYPE_KIND_ARG);
-        $returnType = TypeHint::typeHintForPhpVer($returnType, $phpVer, TypeHint::TYPE_KIND_RETURN);
+        if ($itemType) {
+            $itemType = TypeHint::forPhpVer($itemType, $phpVer, TypeHint::KIND_ARG, TypeHint::LEGACY_NULLABLE_DROP_NULL);
+        }
+        
+        if ($returnType) {
+            $returnType = TypeHint::forPhpVer($returnType, $phpVer, TypeHint::KIND_RETURN, TypeHint::LEGACY_NULLABLE_DROP_NULL);
+        }
 
         if ($itemType) {
             $itemType = "{$itemType} ";
@@ -32,30 +37,42 @@ class ArrayMapGenerator
         }
 
         if (Semver::satisfies($phpVer, '>=7.4')) {
-            CallGenerator::make(
+            return CallGenerator::make(
                 callee: 'array_map',
                 arguments: [
                     "fn ({$itemType}{$itemParam}){$returnType} => {$mapExpr}",
                     $arrayExpr,
                 ],
                 lengthToWrap: $lengthToWrap,
+                phpVer: $phpVer,
             );
         }
-        
-        $returnExpr = "return {$mapExpr};";
-        $callbackBody = mb_strlen($returnExpr) < 50
-            ? " {$returnExpr} "
-            : "\n" . StringUtils::indentCode($returnExpr) . "\n";
 
-        $use = self::buildUseClause($useVars);
+        $useClause = '';
+        if ($useVars) {
+            $useClause = self::buildUseClause($useVars);
+        }
+        
+        $buildCallBackExpr = fn(string $callbackBody): string =>
+            "function({$itemType}{$itemParam}){$useClause}{$returnType} {{$callbackBody}}";
+
+        $returnExpr = "return {$mapExpr};";
+        $callbackExpr = $buildCallBackExpr(" {$returnExpr} ");
+
+        if (mb_strlen($callbackExpr) > $lengthToWrap) {
+            $callbackExpr = $buildCallBackExpr(
+                "\n" . StringUtils::indentCode($returnExpr) . "\n"
+            );
+        }
 
         return CallGenerator::make(
             callee: 'array_map',
             arguments: [
-                "function({$itemType}{$itemParam}){$returnType} {$use}{{$callbackBody}}",
+                $callbackExpr,
                 $arrayExpr,
             ],
             lengthToWrap: $lengthToWrap,
+            phpVer: $phpVer,
         );
     }
 
@@ -64,11 +81,15 @@ class ArrayMapGenerator
         if ($useVars === []) {
             return '';
         }
+
         $joined = implode(', ', $useVars);
+
         if (mb_strlen($joined) > 50) {
             $joined = implode(",\n", $useVars);
-            return "use (\n{$joined}\n) ";
+            $indented = StringUtils::indentCode($joined);
+            return " use (\n{$indented}\n)";
         }
-        return "use ({$joined}) ";
+
+        return " use ({$joined})";
     }
 }

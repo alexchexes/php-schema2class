@@ -174,8 +174,8 @@ class MyClass
 
         $files = isset($input->{'files'})
             ? array_map(
-                fn (array|object $i): MyClassFilesItem => MyClassFilesItem::fromInput($i, $validate),
-                $input->{'files'}
+                fn (object|array $i): MyClassFilesItem => MyClassFilesItem::fromInput($i, $validate),
+                $input->{'files'},
             )
             : null;
         $options = isset($input->{'options'})
