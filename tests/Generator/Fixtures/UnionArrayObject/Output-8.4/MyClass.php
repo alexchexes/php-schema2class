@@ -538,7 +538,7 @@ class MyClass
                 )) === count($this->arrayOfObjectsUnion)) =>
                     array_map(
                         fn (MyClassArrayOfObjectsUnionAlternative1Item $i) => $i->toArray(),
-                        $this->arrayOfObjectsUnionAlternative1,
+                        $this->arrayOfObjectsUnion,
                     ),
                 (is_array($this->arrayOfObjectsUnion) && count(array_filter(
                     $this->arrayOfObjectsUnion,
@@ -546,7 +546,7 @@ class MyClass
                 )) === count($this->arrayOfObjectsUnion)) =>
                     array_map(
                         fn (MyClassArrayOfObjectsUnionAlternative2Item $i) => $i->toArray(),
-                        $this->arrayOfObjectsUnionAlternative2,
+                        $this->arrayOfObjectsUnion,
                     ),
             };
         }
@@ -558,7 +558,7 @@ class MyClass
                 )) === count($this->refArrayOfObjectsUnion)) =>
                     array_map(
                         fn (MyClassRefArrayOfObjectsUnionAlternative1Item $i) => $i->toArray(),
-                        $this->refArrayOfObjectsUnionAlternative1,
+                        $this->refArrayOfObjectsUnion,
                     ),
                 (is_array($this->refArrayOfObjectsUnion) && count(array_filter(
                     $this->refArrayOfObjectsUnion,
@@ -566,7 +566,7 @@ class MyClass
                 )) === count($this->refArrayOfObjectsUnion)) =>
                     array_map(
                         fn (MyClassRefArrayOfObjectsUnionAlternative2Item $i) => $i->toArray(),
-                        $this->refArrayOfObjectsUnionAlternative2,
+                        $this->refArrayOfObjectsUnion,
                     ),
             };
         }
@@ -578,7 +578,7 @@ class MyClass
                 )) === count($this->refAndNotRefArrayOfObjectsUnion)) =>
                     array_map(
                         fn (MyClassRefAndNotRefArrayOfObjectsUnionAlternative1Item $i) => $i->toArray(),
-                        $this->refAndNotRefArrayOfObjectsUnionAlternative1,
+                        $this->refAndNotRefArrayOfObjectsUnion,
                     ),
                 (is_array($this->refAndNotRefArrayOfObjectsUnion) && count(array_filter(
                     $this->refAndNotRefArrayOfObjectsUnion,
@@ -586,7 +586,7 @@ class MyClass
                 )) === count($this->refAndNotRefArrayOfObjectsUnion)) =>
                     array_map(
                         fn (MyClassRefAndNotRefArrayOfObjectsUnionAlternative2Item $i) => $i->toArray(),
-                        $this->refAndNotRefArrayOfObjectsUnionAlternative2,
+                        $this->refAndNotRefArrayOfObjectsUnion,
                     ),
                 (is_array($this->refAndNotRefArrayOfObjectsUnion) && count(array_filter(
                     $this->refAndNotRefArrayOfObjectsUnion,
@@ -594,7 +594,7 @@ class MyClass
                 )) === count($this->refAndNotRefArrayOfObjectsUnion)) =>
                     array_map(
                         fn (MyClassRefAndNotRefArrayOfObjectsUnionAlternative3Item $i) => $i->toArray(),
-                        $this->refAndNotRefArrayOfObjectsUnionAlternative3,
+                        $this->refAndNotRefArrayOfObjectsUnion,
                     ),
                 (is_array($this->refAndNotRefArrayOfObjectsUnion) && count(array_filter(
                     $this->refAndNotRefArrayOfObjectsUnion,
@@ -602,7 +602,7 @@ class MyClass
                 )) === count($this->refAndNotRefArrayOfObjectsUnion)) =>
                     array_map(
                         fn (MyClassRefAndNotRefArrayOfObjectsUnionAlternative4Item $i) => $i->toArray(),
-                        $this->refAndNotRefArrayOfObjectsUnionAlternative4,
+                        $this->refAndNotRefArrayOfObjectsUnion,
                     ),
             };
         }
@@ -614,7 +614,7 @@ class MyClass
                 )) === count($this->arrayOfObjAndStringUnion)) =>
                     array_map(
                         fn (MyClassArrayOfObjAndStringUnionAlternative1Item $i) => $i->toArray(),
-                        $this->arrayOfObjAndStringUnionAlternative1,
+                        $this->arrayOfObjAndStringUnion,
                     ),
                 is_string($this->arrayOfObjAndStringUnion) => $this->arrayOfObjAndStringUnion,
             };
@@ -646,7 +646,7 @@ class MyClass
                 )) === count($this->arrayOfObjectsUnion)) =>
                     array_map(
                         fn (MyClassArrayOfObjectsUnionAlternative1Item $i) => $i->toStdClass(),
-                        $this->arrayOfObjectsUnionAlternative1,
+                        $this->arrayOfObjectsUnion,
                     ),
                 (is_array($this->arrayOfObjectsUnion) && count(array_filter(
                     $this->arrayOfObjectsUnion,
@@ -654,7 +654,7 @@ class MyClass
                 )) === count($this->arrayOfObjectsUnion)) =>
                     array_map(
                         fn (MyClassArrayOfObjectsUnionAlternative2Item $i) => $i->toStdClass(),
-                        $this->arrayOfObjectsUnionAlternative2,
+                        $this->arrayOfObjectsUnion,
                     ),
             };
         }
@@ -666,7 +666,7 @@ class MyClass
                 )) === count($this->refArrayOfObjectsUnion)) =>
                     array_map(
                         fn (MyClassRefArrayOfObjectsUnionAlternative1Item $i) => $i->toStdClass(),
-                        $this->refArrayOfObjectsUnionAlternative1,
+                        $this->refArrayOfObjectsUnion,
                     ),
                 (is_array($this->refArrayOfObjectsUnion) && count(array_filter(
                     $this->refArrayOfObjectsUnion,
@@ -674,7 +674,7 @@ class MyClass
                 )) === count($this->refArrayOfObjectsUnion)) =>
                     array_map(
                         fn (MyClassRefArrayOfObjectsUnionAlternative2Item $i) => $i->toStdClass(),
-                        $this->refArrayOfObjectsUnionAlternative2,
+                        $this->refArrayOfObjectsUnion,
                     ),
             };
         }
@@ -686,7 +686,7 @@ class MyClass
                 )) === count($this->refAndNotRefArrayOfObjectsUnion)) =>
                     array_map(
                         fn (MyClassRefAndNotRefArrayOfObjectsUnionAlternative1Item $i) => $i->toStdClass(),
-                        $this->refAndNotRefArrayOfObjectsUnionAlternative1,
+                        $this->refAndNotRefArrayOfObjectsUnion,
                     ),
                 (is_array($this->refAndNotRefArrayOfObjectsUnion) && count(array_filter(
                     $this->refAndNotRefArrayOfObjectsUnion,
@@ -694,7 +694,7 @@ class MyClass
                 )) === count($this->refAndNotRefArrayOfObjectsUnion)) =>
                     array_map(
                         fn (MyClassRefAndNotRefArrayOfObjectsUnionAlternative2Item $i) => $i->toStdClass(),
-                        $this->refAndNotRefArrayOfObjectsUnionAlternative2,
+                        $this->refAndNotRefArrayOfObjectsUnion,
                     ),
                 (is_array($this->refAndNotRefArrayOfObjectsUnion) && count(array_filter(
                     $this->refAndNotRefArrayOfObjectsUnion,
@@ -702,7 +702,7 @@ class MyClass
                 )) === count($this->refAndNotRefArrayOfObjectsUnion)) =>
                     array_map(
                         fn (MyClassRefAndNotRefArrayOfObjectsUnionAlternative3Item $i) => $i->toStdClass(),
-                        $this->refAndNotRefArrayOfObjectsUnionAlternative3,
+                        $this->refAndNotRefArrayOfObjectsUnion,
                     ),
                 (is_array($this->refAndNotRefArrayOfObjectsUnion) && count(array_filter(
                     $this->refAndNotRefArrayOfObjectsUnion,
@@ -710,7 +710,7 @@ class MyClass
                 )) === count($this->refAndNotRefArrayOfObjectsUnion)) =>
                     array_map(
                         fn (MyClassRefAndNotRefArrayOfObjectsUnionAlternative4Item $i) => $i->toStdClass(),
-                        $this->refAndNotRefArrayOfObjectsUnionAlternative4,
+                        $this->refAndNotRefArrayOfObjectsUnion,
                     ),
             };
         }
@@ -722,7 +722,7 @@ class MyClass
                 )) === count($this->arrayOfObjAndStringUnion)) =>
                     array_map(
                         fn (MyClassArrayOfObjAndStringUnionAlternative1Item $i) => $i->toStdClass(),
-                        $this->arrayOfObjAndStringUnionAlternative1,
+                        $this->arrayOfObjAndStringUnion,
                     ),
                 is_string($this->arrayOfObjAndStringUnion) => $this->arrayOfObjAndStringUnion,
             };

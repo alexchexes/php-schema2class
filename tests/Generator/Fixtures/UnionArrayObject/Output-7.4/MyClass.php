@@ -548,7 +548,7 @@ class MyClass
             ) {
                 $output['arrayOfObjectsUnion'] = array_map(
                     fn (MyClassArrayOfObjectsUnionAlternative1Item $i) => $i->toArray(),
-                    $this->arrayOfObjectsUnionAlternative1,
+                    $this->arrayOfObjectsUnion,
                 );
             } elseif ((is_array($this->arrayOfObjectsUnion) && count(array_filter(
                 $this->arrayOfObjectsUnion,
@@ -557,7 +557,7 @@ class MyClass
             ) {
                 $output['arrayOfObjectsUnion'] = array_map(
                     fn (MyClassArrayOfObjectsUnionAlternative2Item $i) => $i->toArray(),
-                    $this->arrayOfObjectsUnionAlternative2,
+                    $this->arrayOfObjectsUnion,
                 );
             }
         }
@@ -569,7 +569,7 @@ class MyClass
             ) {
                 $output['refArrayOfObjectsUnion'] = array_map(
                     fn (MyClassRefArrayOfObjectsUnionAlternative1Item $i) => $i->toArray(),
-                    $this->refArrayOfObjectsUnionAlternative1,
+                    $this->refArrayOfObjectsUnion,
                 );
             } elseif ((is_array($this->refArrayOfObjectsUnion) && count(array_filter(
                 $this->refArrayOfObjectsUnion,
@@ -578,7 +578,7 @@ class MyClass
             ) {
                 $output['refArrayOfObjectsUnion'] = array_map(
                     fn (MyClassRefArrayOfObjectsUnionAlternative2Item $i) => $i->toArray(),
-                    $this->refArrayOfObjectsUnionAlternative2,
+                    $this->refArrayOfObjectsUnion,
                 );
             }
         }
@@ -590,7 +590,7 @@ class MyClass
             ) {
                 $output['refAndNotRefArrayOfObjectsUnion'] = array_map(
                     fn (MyClassRefAndNotRefArrayOfObjectsUnionAlternative1Item $i) => $i->toArray(),
-                    $this->refAndNotRefArrayOfObjectsUnionAlternative1,
+                    $this->refAndNotRefArrayOfObjectsUnion,
                 );
             } elseif ((is_array($this->refAndNotRefArrayOfObjectsUnion) && count(array_filter(
                 $this->refAndNotRefArrayOfObjectsUnion,
@@ -599,7 +599,7 @@ class MyClass
             ) {
                 $output['refAndNotRefArrayOfObjectsUnion'] = array_map(
                     fn (MyClassRefAndNotRefArrayOfObjectsUnionAlternative2Item $i) => $i->toArray(),
-                    $this->refAndNotRefArrayOfObjectsUnionAlternative2,
+                    $this->refAndNotRefArrayOfObjectsUnion,
                 );
             } elseif ((is_array($this->refAndNotRefArrayOfObjectsUnion) && count(array_filter(
                 $this->refAndNotRefArrayOfObjectsUnion,
@@ -608,7 +608,7 @@ class MyClass
             ) {
                 $output['refAndNotRefArrayOfObjectsUnion'] = array_map(
                     fn (MyClassRefAndNotRefArrayOfObjectsUnionAlternative3Item $i) => $i->toArray(),
-                    $this->refAndNotRefArrayOfObjectsUnionAlternative3,
+                    $this->refAndNotRefArrayOfObjectsUnion,
                 );
             } elseif ((is_array($this->refAndNotRefArrayOfObjectsUnion) && count(array_filter(
                 $this->refAndNotRefArrayOfObjectsUnion,
@@ -617,7 +617,7 @@ class MyClass
             ) {
                 $output['refAndNotRefArrayOfObjectsUnion'] = array_map(
                     fn (MyClassRefAndNotRefArrayOfObjectsUnionAlternative4Item $i) => $i->toArray(),
-                    $this->refAndNotRefArrayOfObjectsUnionAlternative4,
+                    $this->refAndNotRefArrayOfObjectsUnion,
                 );
             }
         }
@@ -629,7 +629,7 @@ class MyClass
             ) {
                 $output['arrayOfObjAndStringUnion'] = array_map(
                     fn (MyClassArrayOfObjAndStringUnionAlternative1Item $i) => $i->toArray(),
-                    $this->arrayOfObjAndStringUnionAlternative1,
+                    $this->arrayOfObjAndStringUnion,
                 );
             } elseif (is_string($this->arrayOfObjAndStringUnion)) {
                 $output['arrayOfObjAndStringUnion'] = $this->arrayOfObjAndStringUnion;
@@ -662,7 +662,7 @@ class MyClass
             ) {
                 $output->{'arrayOfObjectsUnion'} = array_map(
                     fn (MyClassArrayOfObjectsUnionAlternative1Item $i) => $i->toStdClass(),
-                    $this->arrayOfObjectsUnionAlternative1,
+                    $this->arrayOfObjectsUnion,
                 );
             } elseif ((is_array($this->arrayOfObjectsUnion) && count(array_filter(
                 $this->arrayOfObjectsUnion,
@@ -671,7 +671,7 @@ class MyClass
             ) {
                 $output->{'arrayOfObjectsUnion'} = array_map(
                     fn (MyClassArrayOfObjectsUnionAlternative2Item $i) => $i->toStdClass(),
-                    $this->arrayOfObjectsUnionAlternative2,
+                    $this->arrayOfObjectsUnion,
                 );
             }
         }
@@ -683,7 +683,7 @@ class MyClass
             ) {
                 $output->{'refArrayOfObjectsUnion'} = array_map(
                     fn (MyClassRefArrayOfObjectsUnionAlternative1Item $i) => $i->toStdClass(),
-                    $this->refArrayOfObjectsUnionAlternative1,
+                    $this->refArrayOfObjectsUnion,
                 );
             } elseif ((is_array($this->refArrayOfObjectsUnion) && count(array_filter(
                 $this->refArrayOfObjectsUnion,
@@ -692,7 +692,7 @@ class MyClass
             ) {
                 $output->{'refArrayOfObjectsUnion'} = array_map(
                     fn (MyClassRefArrayOfObjectsUnionAlternative2Item $i) => $i->toStdClass(),
-                    $this->refArrayOfObjectsUnionAlternative2,
+                    $this->refArrayOfObjectsUnion,
                 );
             }
         }
@@ -704,7 +704,7 @@ class MyClass
             ) {
                 $output->{'refAndNotRefArrayOfObjectsUnion'} = array_map(
                     fn (MyClassRefAndNotRefArrayOfObjectsUnionAlternative1Item $i) => $i->toStdClass(),
-                    $this->refAndNotRefArrayOfObjectsUnionAlternative1,
+                    $this->refAndNotRefArrayOfObjectsUnion,
                 );
             } elseif ((is_array($this->refAndNotRefArrayOfObjectsUnion) && count(array_filter(
                 $this->refAndNotRefArrayOfObjectsUnion,
@@ -713,7 +713,7 @@ class MyClass
             ) {
                 $output->{'refAndNotRefArrayOfObjectsUnion'} = array_map(
                     fn (MyClassRefAndNotRefArrayOfObjectsUnionAlternative2Item $i) => $i->toStdClass(),
-                    $this->refAndNotRefArrayOfObjectsUnionAlternative2,
+                    $this->refAndNotRefArrayOfObjectsUnion,
                 );
             } elseif ((is_array($this->refAndNotRefArrayOfObjectsUnion) && count(array_filter(
                 $this->refAndNotRefArrayOfObjectsUnion,
@@ -722,7 +722,7 @@ class MyClass
             ) {
                 $output->{'refAndNotRefArrayOfObjectsUnion'} = array_map(
                     fn (MyClassRefAndNotRefArrayOfObjectsUnionAlternative3Item $i) => $i->toStdClass(),
-                    $this->refAndNotRefArrayOfObjectsUnionAlternative3,
+                    $this->refAndNotRefArrayOfObjectsUnion,
                 );
             } elseif ((is_array($this->refAndNotRefArrayOfObjectsUnion) && count(array_filter(
                 $this->refAndNotRefArrayOfObjectsUnion,
@@ -731,7 +731,7 @@ class MyClass
             ) {
                 $output->{'refAndNotRefArrayOfObjectsUnion'} = array_map(
                     fn (MyClassRefAndNotRefArrayOfObjectsUnionAlternative4Item $i) => $i->toStdClass(),
-                    $this->refAndNotRefArrayOfObjectsUnionAlternative4,
+                    $this->refAndNotRefArrayOfObjectsUnion,
                 );
             }
         }
@@ -743,7 +743,7 @@ class MyClass
             ) {
                 $output->{'arrayOfObjAndStringUnion'} = array_map(
                     fn (MyClassArrayOfObjAndStringUnionAlternative1Item $i) => $i->toStdClass(),
-                    $this->arrayOfObjAndStringUnionAlternative1,
+                    $this->arrayOfObjAndStringUnion,
                 );
             } elseif (is_string($this->arrayOfObjAndStringUnion)) {
                 $output->{'arrayOfObjAndStringUnion'} = $this->arrayOfObjAndStringUnion;

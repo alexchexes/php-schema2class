@@ -193,6 +193,9 @@ class ObjectArrayProperty extends AbstractProperty
         );
     }
 
+    /** 
+     * In this property, these ouput mapping methods used when generating anyOf/oneOf
+     */
     public function outputMappingExpr(string $expr): string
     {
         $innerExpr = $this->itemType->outputMappingExpr('$i');
@@ -207,8 +210,6 @@ class ObjectArrayProperty extends AbstractProperty
 
     private function buildSerializeMappingExpr(string $expr, string $innerExpr): string
     {
-        $name = $this->propName();
-
         if ($this->itemType instanceof MixedProperty) {
             return ArrayMapGenerator::make(
                 arrayExpr: $expr,
@@ -224,7 +225,7 @@ class ObjectArrayProperty extends AbstractProperty
         }
 
         return ArrayMapGenerator::make(
-            arrayExpr: "\$this->{$name}",
+            arrayExpr: $expr,
             itemParam: '$i',
             mapExpr: $innerExpr,
             itemType: $this->subTypeName(),
