@@ -60,7 +60,7 @@ class ArrayMapGenerator
         $returnExpr = "return {$mapExpr};";
         $callbackExpr = $buildCallBackExpr(" {$returnExpr} ");
 
-        if (mb_strlen($callbackExpr) >= $lengthToWrap) {
+        if (mb_strlen($mapExpr) > 30 || mb_strlen($callbackExpr) >= $lengthToWrap) {
             $forceMultiline = false; // let CallGenerator decide on the wrapping style
             $callbackExpr = $buildCallBackExpr(
                 "\n" . StringUtils::indentCode($returnExpr) . "\n"

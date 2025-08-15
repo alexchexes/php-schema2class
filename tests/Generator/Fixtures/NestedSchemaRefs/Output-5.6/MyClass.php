@@ -205,10 +205,9 @@ class MyClass
         }
 
         $files = isset($input->{'files'})
-            ? array_map(
-                function($i) use ($validate) { return MyClassFilesItem::fromInput($i, $validate); },
-                $input->{'files'}
-            )
+            ? array_map(function($i) use ($validate) {
+                return MyClassFilesItem::fromInput($i, $validate);
+            }, $input->{'files'})
             : null;
         $options = isset($input->{'options'})
             ? OptionsObject::fromInput($input->{'options'}, $validate)
@@ -295,7 +294,7 @@ class MyClass
         $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
-            $errors = array_map(function($e) {
+            $errors = array_map(function(array $e) {
                 return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];
             }, $validator->getErrors());
             throw new \InvalidArgumentException(join(".\n", $errors));

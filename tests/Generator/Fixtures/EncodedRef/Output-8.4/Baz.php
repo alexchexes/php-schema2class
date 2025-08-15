@@ -271,9 +271,10 @@ class Baz
         $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
-            $errors = array_map(function(array $e): string {
-                return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];
-            }, $validator->getErrors());
+            $errors = array_map(
+                fn (array $e): string => ($e["property"] ? $e["property"] . ": " : "") . $e["message"],
+                $validator->getErrors(),
+            );
             throw new \InvalidArgumentException(join(".\n", $errors));
         }
 
