@@ -7,8 +7,8 @@ use Helmich\Schema2Class\Util\StringUtils;
 
 class OrGenerator
 {
-    /** 
-     * @param array<int,string> $conditions operands/conditions
+    /**
+     * @param array<int,mixed> $conditions operands/conditions
      * @param bool $parens Whether to wrap the resulting expression with parenthesis
      */
     public static function make(array $conditions, bool $parens = true, int $lengthToWrap = 100): string
