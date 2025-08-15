@@ -2,45 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Ns\TypedArrayProperty_8_4;
+namespace Ns\ObjectArrayProperty_8_4;
 
-class MyClass
+class MyClassFooItem
 {
     /**
      * Schema used to validate input for creating instances of this class
      */
     private static array $_schema = [
         'properties' => [
-            'foo' => [
-                'type' => 'array',
-                'items' => [
-                    'properties' => [
-                        'name' => [
-                            'type' => 'string',
-                            'default' => 'a string',
-                        ],
-                    ],
-                ],
-                'default' => [
-                    [
-                        'name' => 'foo',
-                    ],
-                ],
-                'minItems' => 1,
-                'maxItems' => 1,
-            ],
-            'bar' => [
-                'type' => 'array',
-                'items' => [
-                    'properties' => [
-                        'name' => [
-                            'type' => 'string',
-                        ],
-                    ],
-                ],
-                'default' => [
-                    
-                ],
+            'name' => [
+                'type' => 'string',
+                'default' => 'a string',
             ],
         ],
     ];
@@ -49,27 +22,15 @@ class MyClass
      * Mapping of schema property names to this class's property names.
      */
     private static array $_namesMap = [
-        'foo' => 'foo',
-        'bar' => 'bar',
+        'name' => 'name',
     ];
 
     /**
      * Default values from the schema
      */
     private static array $_defaults = [
-        'foo' => [
-            'default' => [
-                [
-                    'name' => 'foo',
-                ],
-            ],
-            'type' => 'array',
-        ],
-        'bar' => [
-            'default' => [
-                
-            ],
-            'type' => 'array',
+        'name' => [
+            'default' => 'a string',
         ],
     ];
 
@@ -78,26 +39,13 @@ class MyClass
      */
     private \stdClass $_additionalProperties;
 
-    /**
-     * @var MyClassFooItem[]|null
-     */
-    private ?array $foo = null;
+    private ?string $name = null;
 
-    /**
-     * @var MyClassBarItem[]|null
-     */
-    private ?array $bar = null;
-
-    /**
-     * @param MyClassFooItem[]|null $foo
-     * @param MyClassBarItem[]|null $bar
-     */
-    public function __construct(?array $foo = null, ?array $bar = null)
+    public function __construct(?string $name = null)
     {
         $this->_additionalProperties = new \stdClass();
 
-        $this->foo = $foo;
-        $this->bar = $bar;
+        $this->name = $name;
     }
 
     /**
@@ -137,72 +85,23 @@ class MyClass
         return $clone;
     }
 
-    /**
-     * @return MyClassFooItem[]|null
-     */
-    public function getFoo(): ?array
+    public function getName(): ?string
     {
-        return $this->foo ?? null;
+        return $this->name ?? null;
     }
 
-    /**
-     * @param MyClassFooItem[] $foo
-     */
-    public function withFoo(array $foo, bool $validate = true): self
+    public function withName(string $name): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($foo, self::$_schema['properties']['foo']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
-        $clone->foo = $foo;
+        $clone->name = $name;
 
         return $clone;
     }
 
-    public function withoutFoo(): self
+    public function withoutName(): self
     {
         $clone = clone $this;
-        unset($clone->foo);
-
-        return $clone;
-    }
-
-    /**
-     * @return MyClassBarItem[]|null
-     */
-    public function getBar(): ?array
-    {
-        return $this->bar ?? null;
-    }
-
-    /**
-     * @param MyClassBarItem[] $bar
-     */
-    public function withBar(array $bar, bool $validate = true): self
-    {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($bar, self::$_schema['properties']['bar']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
-        $clone = clone $this;
-        $clone->bar = $bar;
-
-        return $clone;
-    }
-
-    public function withoutBar(): self
-    {
-        $clone = clone $this;
-        unset($clone->bar);
+        unset($clone->name);
 
         return $clone;
     }
@@ -213,10 +112,10 @@ class MyClass
      * @param array|object $input Input data
      * @param bool $validate If `false`, validation against the schema will be skipped.
      * @param bool $materializeDefaults Apply defaults defined in schema when missing
-     * @return MyClass Created instance
+     * @return MyClassFooItem Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput(array|object $input, bool $validate = true, bool $materializeDefaults = false): MyClass
+    public static function fromInput(array|object $input, bool $validate = true, bool $materializeDefaults = false): MyClassFooItem
     {
         $input = is_array($input)
             ? \JsonSchema\Validator::arrayToObjectRecursive($input)
@@ -236,20 +135,9 @@ class MyClass
             static::validateInput($input);
         }
 
-        $foo = isset($input->{'foo'})
-            ? array_map(
-                fn (object|array $i): MyClassFooItem => MyClassFooItem::fromInput($i, $validate, $materializeDefaults),
-                $input->{'foo'},
-            )
-            : null;
-        $bar = isset($input->{'bar'})
-            ? array_map(
-                fn (object|array $i): MyClassBarItem => MyClassBarItem::fromInput($i, $validate, $materializeDefaults),
-                $input->{'bar'},
-            )
-            : null;
+        $name = isset($input->{'name'}) ? $input->{'name'} : null;
 
-        $obj = new self($foo, $bar);
+        $obj = new self($name);
 
         $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
         if (!empty($_additionalProperties)) {
@@ -269,11 +157,8 @@ class MyClass
     {
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
-        if (isset($this->foo)) {
-            $output['foo'] = array_map(fn (MyClassFooItem $i) => $i->toArray($includeDefaults), $this->foo);
-        }
-        if (isset($this->bar)) {
-            $output['bar'] = array_map(fn (MyClassBarItem $i) => $i->toArray($includeDefaults), $this->bar);
+        if (isset($this->name)) {
+            $output['name'] = $this->name;
         }
 
         if ($includeDefaults) {
@@ -297,11 +182,8 @@ class MyClass
     {
         $output = $this->_additionalProperties;
 
-        if (isset($this->foo)) {
-            $output->{'foo'} = array_map(fn (MyClassFooItem $i) => $i->toStdClass($includeDefaults), $this->foo);
-        }
-        if (isset($this->bar)) {
-            $output->{'bar'} = array_map(fn (MyClassBarItem $i) => $i->toStdClass($includeDefaults), $this->bar);
+        if (isset($this->name)) {
+            $output->{'name'} = $this->name;
         }
 
         if ($includeDefaults) {
@@ -352,15 +234,5 @@ class MyClass
         }
 
         return $validator->isValid();
-    }
-
-    public function __clone()
-    {
-        if (isset($this->foo)) {
-            $this->foo = array_map(fn (MyClassFooItem $i) => clone $i, $this->foo);
-        }
-        if (isset($this->bar)) {
-            $this->bar = array_map(fn (MyClassBarItem $i) => clone $i, $this->bar);
-        }
     }
 }

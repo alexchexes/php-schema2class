@@ -1,15 +1,15 @@
 <?php
 
-namespace Ns\TypedArrayProperty_5_6;
+declare(strict_types=1);
+
+namespace Ns\ObjectArrayProperty_8_4;
 
 class MyClassBarItem
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
-    private static $_schema = [
+    private static array $_schema = [
         'properties' => [
             'name' => [
                 'type' => 'string',
@@ -19,29 +19,19 @@ class MyClassBarItem
 
     /**
      * Mapping of schema property names to this class's property names.
-     *
-     * @var array
      */
-    private static $_namesMap = [
+    private static array $_namesMap = [
         'name' => 'name',
     ];
 
     /**
      * Map of name/value pairs for properties not specified in the schema.
-     *
-     * @var \stdClass
      */
-    private $_additionalProperties;
+    private \stdClass $_additionalProperties;
 
-    /**
-     * @var string|null
-     */
-    private $name = null;
+    private ?string $name = null;
 
-    /**
-     * @param string|null $name
-     */
-    public function __construct($name = null)
+    public function __construct(?string $name = null)
     {
         $this->_additionalProperties = new \stdClass();
 
@@ -52,9 +42,8 @@ class MyClassBarItem
      * Object (`stdClass`) or array with name/value pairs for properties not specified in the schema.
      *
      * @param bool $asArray Whether return an associative array instead of `stdClass` object.
-     * @return array|\stdClass
      */
-    public function getAdditionalProperties($asArray = true)
+    public function getAdditionalProperties(bool $asArray = true): \stdClass|array
     {
         return $asArray
             ? json_decode(json_encode($this->_additionalProperties), true)
@@ -65,9 +54,8 @@ class MyClassBarItem
      * Allows adding properties not specified in the schema.
      *
      * @param \stdClass|array $additionalProperties Map of property name/value pairs to add.
-     * @return self
      */
-    public function withAdditionalProperties($additionalProperties)
+    public function withAdditionalProperties(\stdClass|array $additionalProperties): self
     {
         $clone = clone $this;
         $clone->_additionalProperties = is_array($additionalProperties)
@@ -79,49 +67,28 @@ class MyClassBarItem
 
     /**
      * Removes all extra properties not specified in the schema.
-     *
-     * @return self
      */
-    public function withoutAdditionalProperties()
+    public function withoutAdditionalProperties(): self
     {
         $clone = clone $this;
         $clone->_additionalProperties = new \stdClass();
         return $clone;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getName()
+    public function getName(): ?string
     {
-        return isset($this->name) ? $this->name : null;
+        return $this->name ?? null;
     }
 
-    /**
-     * @param string $name
-     * @param bool $validate
-     * @return self
-     */
-    public function withName($name, $validate = true)
+    public function withName(string $name): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($name, self::$_schema['properties']['name']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->name = $name;
 
         return $clone;
     }
 
-    /**
-     * @return self
-     */
-    public function withoutName()
+    public function withoutName(): self
     {
         $clone = clone $this;
         unset($clone->name);
@@ -137,14 +104,8 @@ class MyClassBarItem
      * @return MyClassBarItem Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput($input, $validate = true)
+    public static function fromInput(array|object $input, bool $validate = true): MyClassBarItem
     {
-        if (!is_array($input) && !is_object($input)) {
-            throw new \InvalidArgumentException(
-                'Input to fromInput must be array or object, got ' . gettype($input)
-            );
-        }
-
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
@@ -167,7 +128,7 @@ class MyClassBarItem
      *
      * @return array Converted array
      */
-    public function toArray()
+    public function toArray(): array
     {
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
@@ -183,7 +144,7 @@ class MyClassBarItem
      *
      * @return \stdClass Converted object
      */
-    public function toStdClass()
+    public function toStdClass(): \stdClass
     {
         $output = $this->_additionalProperties;
 
@@ -201,7 +162,7 @@ class MyClassBarItem
      * @return bool Validation result if `$return` is `true`
      * @throws \InvalidArgumentException
      */
-    public function validate($return = false)
+    public function validate(bool $return = false): bool
     {
         return self::validateInput($this->toStdClass(), $return);
     }
@@ -214,16 +175,17 @@ class MyClassBarItem
      * @return bool Validation result if `$return` is `true`
      * @throws \InvalidArgumentException
      */
-    public static function validateInput($input, $return = false)
+    public static function validateInput(array|object $input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
-            $errors = array_map(function(array $e) {
-                return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];
-            }, $validator->getErrors());
+            $errors = array_map(
+                fn (array $e): string => ($e["property"] ? $e["property"] . ": " : "") . $e["message"],
+                $validator->getErrors(),
+            );
             throw new \InvalidArgumentException(join(".\n", $errors));
         }
 

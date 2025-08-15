@@ -1,6 +1,6 @@
 <?php
 
-namespace Ns\TypedArrayProperty_5_6;
+namespace Ns\ObjectArrayProperty_5_6;
 
 class MyClass
 {
