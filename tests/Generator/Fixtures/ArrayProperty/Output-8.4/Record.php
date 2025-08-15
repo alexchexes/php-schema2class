@@ -142,10 +142,7 @@ class Record
         }
 
         $dataArray = isset($input->{'dataArray'})
-            ? array_map(
-                fn(array|object $i): Phone => Phone::fromInput($i, $validate),
-                $input->{'dataArray'}
-            )
+            ? array_map(fn (object|array $i): Phone => Phone::fromInput($i, $validate), $input->{'dataArray'})
             : null;
 
         $obj = new self($dataArray);
@@ -168,7 +165,7 @@ class Record
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
         if (isset($this->dataArray)) {
-            $output['dataArray'] = array_map(fn(Phone $i): array => $i->toArray(), $this->dataArray);
+            $output['dataArray'] = array_map(fn (Phone $i): array => $i->toArray(), $this->dataArray);
         }
 
         return $output;
@@ -184,7 +181,7 @@ class Record
         $output = $this->_additionalProperties;
 
         if (isset($this->dataArray)) {
-            $output->{'dataArray'} = array_map(fn(Phone $i): object => $i->toStdClass(), $this->dataArray);
+            $output->{'dataArray'} = array_map(fn (Phone $i): object => $i->toStdClass(), $this->dataArray);
         }
 
         return $output;

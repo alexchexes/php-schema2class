@@ -1,66 +1,49 @@
 <?php
 
-namespace Ns\RefList_5_6;
+declare(strict_types=1);
 
-class MyClass
+namespace Ns\ReferenceArrayProperty_8_4;
+
+class BarItem
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
-    private static $_schema = [
-        'required' => [
-            'foo_bar',
-        ],
+    private static array $_schema = [
         'properties' => [
-            'foo' => [
-                'type' => 'array',
-                'items' => [
-                    '$ref' => '#/properties/address',
-                ],
+            'name' => [
+                'type' => 'string',
             ],
         ],
     ];
 
     /**
      * Mapping of schema property names to this class's property names.
-     *
-     * @var array
      */
-    private static $_namesMap = [
-        'foo' => 'foo',
+    private static array $_namesMap = [
+        'name' => 'name',
     ];
 
     /**
      * Map of name/value pairs for properties not specified in the schema.
-     *
-     * @var \stdClass
      */
-    private $_additionalProperties;
+    private \stdClass $_additionalProperties;
 
-    /**
-     * @var \Helmich\Schema2Class\Example\CustomerAddress[]|null
-     */
-    private $foo = null;
+    private ?string $name = null;
 
-    /**
-     * @param \Helmich\Schema2Class\Example\CustomerAddress[]|null $foo
-     */
-    public function __construct(array $foo = null)
+    public function __construct(?string $name = null)
     {
         $this->_additionalProperties = new \stdClass();
 
-        $this->foo = $foo;
+        $this->name = $name;
     }
 
     /**
      * Object (`stdClass`) or array with name/value pairs for properties not specified in the schema.
      *
      * @param bool $asArray Whether return an associative array instead of `stdClass` object.
-     * @return array|\stdClass
      */
-    public function getAdditionalProperties($asArray = true)
+    public function getAdditionalProperties(bool $asArray = true): \stdClass|array
     {
         return $asArray
             ? json_decode(json_encode($this->_additionalProperties), true)
@@ -71,9 +54,8 @@ class MyClass
      * Allows adding properties not specified in the schema.
      *
      * @param \stdClass|array $additionalProperties Map of property name/value pairs to add.
-     * @return self
      */
-    public function withAdditionalProperties($additionalProperties)
+    public function withAdditionalProperties(\stdClass|array $additionalProperties): self
     {
         $clone = clone $this;
         $clone->_additionalProperties = is_array($additionalProperties)
@@ -85,46 +67,31 @@ class MyClass
 
     /**
      * Removes all extra properties not specified in the schema.
-     *
-     * @return self
      */
-    public function withoutAdditionalProperties()
+    public function withoutAdditionalProperties(): self
     {
         $clone = clone $this;
         $clone->_additionalProperties = new \stdClass();
         return $clone;
     }
 
-    /**
-     * @return \Helmich\Schema2Class\Example\CustomerAddress[]|null
-     */
-    public function getFoo()
+    public function getName(): ?string
     {
-        return isset($this->foo) ? $this->foo : null;
+        return $this->name ?? null;
     }
 
-    /**
-     * @param \Helmich\Schema2Class\Example\CustomerAddress[] $foo
-     * @param bool $validate
-     * @return self
-     */
-    public function withFoo(array $foo, $validate = true)
+    public function withName(string $name): self
     {
         $clone = clone $this;
-        $clone->foo = $foo;
-        if ($validate) {
-            $clone->validate();
-        }
+        $clone->name = $name;
+
         return $clone;
     }
 
-    /**
-     * @return self
-     */
-    public function withoutFoo()
+    public function withoutName(): self
     {
         $clone = clone $this;
-        unset($clone->foo);
+        unset($clone->name);
 
         return $clone;
     }
@@ -134,29 +101,19 @@ class MyClass
      *
      * @param array|object $input Input data
      * @param bool $validate If `false`, validation against the schema will be skipped.
-     * @return MyClass Created instance
+     * @return BarItem Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput($input, $validate = true)
+    public static function fromInput(array|object $input, bool $validate = true): BarItem
     {
-        if (!is_array($input) && !is_object($input)) {
-            throw new \InvalidArgumentException(
-                'Input to fromInput must be array or object, got ' . gettype($input)
-            );
-        }
-
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $foo = isset($input->{'foo'})
-            ? array_map(function($i) use ($validate) {
-                return \Helmich\Schema2Class\Example\CustomerAddress::fromInput($i, $validate);
-            }, $input->{'foo'})
-            : null;
+        $name = isset($input->{'name'}) ? $input->{'name'} : null;
 
-        $obj = new self($foo);
+        $obj = new self($name);
 
         $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
         if (!empty($_additionalProperties)) {
@@ -171,15 +128,12 @@ class MyClass
      *
      * @return array Converted array
      */
-    public function toArray()
+    public function toArray(): array
     {
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
-        if (isset($this->foo)) {
-            $output['foo'] = array_map(
-                function(\Helmich\Schema2Class\Example\CustomerAddress $i) { return $i->toArray(); },
-                $this->foo
-            );
+        if (isset($this->name)) {
+            $output['name'] = $this->name;
         }
 
         return $output;
@@ -190,15 +144,12 @@ class MyClass
      *
      * @return \stdClass Converted object
      */
-    public function toStdClass()
+    public function toStdClass(): \stdClass
     {
         $output = $this->_additionalProperties;
 
-        if (isset($this->foo)) {
-            $output->{'foo'} = array_map(
-                function(\Helmich\Schema2Class\Example\CustomerAddress $i) { return $i->toStdClass(); },
-                $this->foo
-            );
+        if (isset($this->name)) {
+            $output->{'name'} = $this->name;
         }
 
         return $output;
@@ -211,7 +162,7 @@ class MyClass
      * @return bool Validation result if `$return` is `true`
      * @throws \InvalidArgumentException
      */
-    public function validate($return = false)
+    public function validate(bool $return = false): bool
     {
         return self::validateInput($this->toStdClass(), $return);
     }
@@ -224,16 +175,17 @@ class MyClass
      * @return bool Validation result if `$return` is `true`
      * @throws \InvalidArgumentException
      */
-    public static function validateInput($input, $return = false)
+    public static function validateInput(array|object $input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
-            $errors = array_map(function(array $e) {
-                return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];
-            }, $validator->getErrors());
+            $errors = array_map(
+                fn (array $e): string => ($e["property"] ? $e["property"] . ": " : "") . $e["message"],
+                $validator->getErrors(),
+            );
             throw new \InvalidArgumentException(join(".\n", $errors));
         }
 

@@ -3,8 +3,13 @@ declare(strict_types=1);
 
 namespace Helmich\Schema2Class\Generator\Property\Type\Array;
 
+use Helmich\Schema2Class\Generator\Class\ArgumentNames;
+use Helmich\Schema2Class\Generator\Expression\ArrayMapGenerator;
+use Helmich\Schema2Class\Generator\Expression\ArrowFunctionGenerator;
+use Helmich\Schema2Class\Generator\Expression\CallGenerator;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\Type\AbstractProperty;
+use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeClass;
 use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeInterface;
 use Helmich\Schema2Class\Util\StringUtils;
 
@@ -23,15 +28,19 @@ class ReferenceArrayProperty extends AbstractProperty
 
     public static function canHandleSchema(array $schema): bool
     {
-        return isset($schema['type']) && $schema['type'] === 'array' && isset($schema['items']['$ref']);
+        return isset($schema['type'])
+            && $schema['type'] === 'array'
+            && isset($schema['items']['$ref']);
     }
 
     public function typeAnnotation(): string
     {
         $inner = $this->refType->typeAnnotation();
+
         if (str_contains($inner, "|")) {
             return "({$inner})[]";
         }
+
         return $inner . '[]';
     }
 
@@ -42,66 +51,112 @@ class ReferenceArrayProperty extends AbstractProperty
 
     public function typeAssertionExpr(string $expr): string
     {
-        $typeHint = $this->refType->typeHint();
-        $assertExpr = $this->refType->typeAssertionExpr('$i');
+        $arrayMap = ArrayMapGenerator::make(
+            arrayExpr: $expr,
+            itemParam: '$i',
+            itemType: $this->refType->typeHint(),
+            mapExpr: $this->refType->typeAssertionExpr('$i'),
+            returnType: 'bool',
+            phpVer: $this->request->getTargetPHPVersion(),
+        );
 
-        $map = "array_map(fn({$typeHint} \$i): bool => {$assertExpr}, {$expr})";
+        $reduceCallback = ArrowFunctionGenerator::make(
+            parameters: ['$carry' => 'bool', '$item' => 'bool'],
+            expr: '$carry && $item',
+            phpVer: $this->request->getTargetPHPVersion(),
+            returnType: 'bool',
+        );
 
-        return "array_reduce($map, fn(bool \$carry, bool \$item): bool => \$carry && \$item, true)";
+        return CallGenerator::make(
+            callee: 'array_reduce',
+            arguments: [$arrayMap, $reduceCallback, 'true'],
+            phpVer: $this->request->getTargetPHPVersion(),
+        );
     }
 
     public function inputAssertionExpr(string $expr): string
     {
-        // Build the inner assertion closure: use union hint only on PHP ≥8.0;
-        // on 7.4+, drop the hint so `fn($i)` stays valid.
-        $innerAssert = $this->refType->inputAssertionExpr('$i');
-        if ($this->request->isAtLeastPHP("8.0")) {
-            $hint = $this->refType->serializedInputTypeHint();
-            $map  = "array_map(fn({$hint} \$i): bool => {$innerAssert}, {$expr})";
-        } else {
-            $map  = "array_map(fn(\$i): bool => {$innerAssert}, {$expr})";
-        }
-        return "array_reduce({$map}, fn(bool \$carry, bool \$item): bool => \$carry && \$item, true)";
+        $arrayMap = ArrayMapGenerator::make(
+            arrayExpr: $expr,
+            itemParam: '$i',
+            itemType: $this->refType->serializedInputTypeHint(),
+            mapExpr: $this->refType->inputAssertionExpr('$i'),
+            returnType: 'bool',
+            phpVer: $this->request->getTargetPHPVersion(),
+        );
+
+        $reduceCallback = ArrowFunctionGenerator::make(
+            parameters: ['$carry' => 'bool', '$item' => 'bool'],
+            expr: '$carry && $item',
+            phpVer: $this->request->getTargetPHPVersion(),
+            returnType: 'bool',
+        );
+
+        return CallGenerator::make(
+            callee: 'array_reduce',
+            arguments: [$arrayMap, $reduceCallback, 'true'],
+            phpVer: $this->request->getTargetPHPVersion(),
+        );
     }
 
     public function inputMappingExpr(string $expr, bool $asserted = false): string
     {
-        // Build the mapping closure: drop union type hints for PHP < 8.0
-        $innerMap = $this->refType->inputMappingExpr('$i');
-        if ($this->request->isAtLeastPHP("8.0")) {
-            $hint = $this->refType->serializedInputTypeHint();
-            $returnHint = $this->refType->typeHint();
-            $closure = "fn({$hint} \$i): {$returnHint} => {$innerMap}";
-        } else {
-            $closure = "fn(\$i) => {$innerMap}";
+        $useVars = [];
+        if ($this->refType instanceof ReferencedTypeClass) {
+            $useVars = ['$' . ArgumentNames::VALIDATE];
+            if ($this->request->getClassHasDefaults()) {
+                $useVars[] = '$' . ArgumentNames::MATRLZ_DEFAULTS;
+            }
         }
-        $indClosure = StringUtils::indentCode($closure);
-        $indExpr = StringUtils::indentCode($expr);
-        return "array_map(\n{$indClosure},\n{$indExpr}\n)";
+        
+        return ArrayMapGenerator::make(
+            arrayExpr: $expr,
+            itemParam: '$i',
+            itemType: $this->refType->serializedInputTypeHint(),
+            mapExpr: $this->refType->inputMappingExpr('$i'),
+            returnType: $this->refType->typeHint(),
+            phpVer: $this->request->getTargetPHPVersion(),
+            useVars: $useVars,
+        );
     }
 
     public function outputMappingExpr(string $expr): string
     {
-        $typeHint = $this->refType->typeHint();
-        $serializedTypeHint = $this->refType->serializedTypeHint();
-        $outputMappingExpr = $this->refType->outputMappingExpr('$i');
-
-        return "array_map(fn({$typeHint} \$i): {$serializedTypeHint} => {$outputMappingExpr}, {$expr})";
+        $useVars = [];
+        if ($this->refType instanceof ReferencedTypeClass && $this->request->getClassHasDefaults()) {
+            $useVars[] = '$' . ArgumentNames::INCL_DEFAULTS;
+        }
+        return ArrayMapGenerator::make(
+            arrayExpr: $expr,
+            itemParam: '$i',
+            itemType: $this->refType->typeHint(),
+            mapExpr: $this->refType->outputMappingExpr('$i'),
+            returnType: $this->refType->serializedTypeHint(),
+            phpVer: $this->request->getTargetPHPVersion(),
+            useVars: $useVars,
+        );
     }
 
     public function outputMappingExprStdClass(string $expr): string
     {
-        $typeHint = $this->refType->typeHint();
-        $serializedTypeHint = $this->refType->serializedTypeHintStdClass();
-        $outputMappingExpr = $this->refType->outputMappingExprStdClass('$i');
-
-        return "array_map(fn({$typeHint} \$i): {$serializedTypeHint} => {$outputMappingExpr}, {$expr})";
+        $useVars = [];
+        if ($this->refType instanceof ReferencedTypeClass && $this->request->getClassHasDefaults()) {
+            $useVars[] = '$' . ArgumentNames::INCL_DEFAULTS;
+        }
+        return ArrayMapGenerator::make(
+            arrayExpr: $expr,
+            itemParam: '$i',
+            itemType: $this->refType->typeHint(),
+            mapExpr: $this->refType->outputMappingExprStdClass('$i'),
+            returnType: $this->refType->serializedTypeHintStdClass(),
+            phpVer: $this->request->getTargetPHPVersion(),
+            useVars: $useVars,
+        );
     }
 
     public function needsValidation(): bool
     {
-        // Arrays with referenced types always require validation since PHP
-        // cannot enforce element types.
+        // Typed arrays always require validation since their type-hint is just 'array'
         return true;
     }
 }

@@ -22,6 +22,12 @@ class MyClass
                     ],
                 ],
             ],
+            'bar' => [
+                'type' => 'array',
+                'items' => [
+                    '$ref' => '#/definitions/BarItem',
+                ],
+            ],
         ],
         'definitions' => [
             'FooItem' => [
@@ -29,6 +35,13 @@ class MyClass
                     'name' => [
                         'type' => 'string',
                         'default' => 'a string',
+                    ],
+                ],
+            ],
+            'BarItem' => [
+                'properties' => [
+                    'name' => [
+                        'type' => 'string',
                     ],
                 ],
             ],
@@ -40,6 +53,7 @@ class MyClass
      */
     private static array $_namesMap = [
         'foo' => 'foo',
+        'bar' => 'bar',
     ];
 
     /**
@@ -67,13 +81,20 @@ class MyClass
     private ?array $foo = null;
 
     /**
-     * @param FooItem[]|null $foo
+     * @var BarItem[]|null
      */
-    public function __construct(?array $foo = null)
+    private ?array $bar = null;
+
+    /**
+     * @param FooItem[]|null $foo
+     * @param BarItem[]|null $bar
+     */
+    public function __construct(?array $foo = null, ?array $bar = null)
     {
         $this->_additionalProperties = new \stdClass();
 
         $this->foo = $foo;
+        $this->bar = $bar;
     }
 
     /**
@@ -143,6 +164,35 @@ class MyClass
     }
 
     /**
+     * @return BarItem[]|null
+     */
+    public function getBar(): ?array
+    {
+        return $this->bar ?? null;
+    }
+
+    /**
+     * @param BarItem[] $bar
+     */
+    public function withBar(array $bar, bool $validate = true): self
+    {
+        $clone = clone $this;
+        $clone->bar = $bar;
+        if ($validate) {
+            $clone->validate();
+        }
+        return $clone;
+    }
+
+    public function withoutBar(): self
+    {
+        $clone = clone $this;
+        unset($clone->bar);
+
+        return $clone;
+    }
+
+    /**
      * Builds a new instance from an input array or object
      *
      * @param array|object $input Input data
@@ -173,12 +223,18 @@ class MyClass
 
         $foo = isset($input->{'foo'})
             ? array_map(
-                fn(array|object $i): FooItem => FooItem::fromInput($i, $validate, $materializeDefaults),
-                $input->{'foo'}
+                fn (object|array $i): FooItem => FooItem::fromInput($i, $validate, $materializeDefaults),
+                $input->{'foo'},
+            )
+            : null;
+        $bar = isset($input->{'bar'})
+            ? array_map(
+                fn (object|array $i): BarItem => BarItem::fromInput($i, $validate, $materializeDefaults),
+                $input->{'bar'},
             )
             : null;
 
-        $obj = new self($foo);
+        $obj = new self($foo, $bar);
 
         $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
         if (!empty($_additionalProperties)) {
@@ -199,7 +255,10 @@ class MyClass
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
         if (isset($this->foo)) {
-            $output['foo'] = array_map(fn(FooItem $i): array => $i->toArray($includeDefaults), $this->foo);
+            $output['foo'] = array_map(fn (FooItem $i): array => $i->toArray($includeDefaults), $this->foo);
+        }
+        if (isset($this->bar)) {
+            $output['bar'] = array_map(fn (BarItem $i): array => $i->toArray($includeDefaults), $this->bar);
         }
 
         if ($includeDefaults) {
@@ -224,7 +283,10 @@ class MyClass
         $output = $this->_additionalProperties;
 
         if (isset($this->foo)) {
-            $output->{'foo'} = array_map(fn(FooItem $i): object => $i->toStdClass($includeDefaults), $this->foo);
+            $output->{'foo'} = array_map(fn (FooItem $i): object => $i->toStdClass($includeDefaults), $this->foo);
+        }
+        if (isset($this->bar)) {
+            $output->{'bar'} = array_map(fn (BarItem $i): object => $i->toStdClass($includeDefaults), $this->bar);
         }
 
         if ($includeDefaults) {

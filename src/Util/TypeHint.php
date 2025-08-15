@@ -262,7 +262,7 @@ class TypeHint
                     }
                     $types[] = 'null';
                 }
-                if (!preg_match('/^(?:\\\)?[A-Za-z_][A-Za-z0-9_]*(?:\\\[A-Za-z_][A-Za-z0-9_])*$/', $p)) {
+                if (!preg_match('/^(?:\\\)?[A-Za-z_][A-Za-z0-9_]*(?:\\\[A-Za-z_][A-Za-z0-9_]*)*$/', $p)) {
                     throw new InvalidArgumentException("Illegal charachters found in type: {$p}");
                 }
                 $types[] = $p;

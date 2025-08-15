@@ -585,9 +585,9 @@ class TypeHintUtilTest extends TestCase
             ],
             [
                 [
-                    'MyClass_2|null|MyClass_1|\Q',
-                    ['MyClass_2|\Q', '?MyClass_1'],
-                ], /* ———————————————————> */ '\Q|MyClass_1|MyClass_2|null',
+                    'Class2|null|Class1|\MyNs\MySubNs\MyClass',
+                    ['Class2|\MyNs\MySubNs\MyClass', '?Class1'],
+                ], /* ———————————————————> */ '\MyNs\MySubNs\MyClass|Class1|Class2|null',
                 ['5.6', null],
                 ['7.2', ['?object', kind::PROP => null]],
                 ['7.4', ['?object']],

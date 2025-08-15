@@ -315,16 +315,13 @@ class Record
         }
 
         $dataArray = isset($input->{'dataArray'})
-            ? array_map(
-                fn($i) => Phone::fromInput($i, $validate),
-                $input->{'dataArray'}
-            )
+            ? array_map(fn ($i): Phone => Phone::fromInput($i, $validate), $input->{'dataArray'})
             : null;
         $dataArrayNested = isset($input->{'dataArrayNested'})
-            ? array_map(fn ($i) => array_map(
-                fn($i) => Phone::fromInput($i, $validate),
-                $i
-            ), $input->{'dataArrayNested'})
+            ? array_map(
+                fn ($i) => array_map(fn ($i): Phone => Phone::fromInput($i, $validate), $i),
+                $input->{'dataArrayNested'},
+            )
             : null;
         $dataArrayAnyOf = isset($input->{'dataArrayAnyOf'})
             ? array_map(fn ($i) => (Fio::validateInput($i, true)
@@ -362,10 +359,10 @@ class Record
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
         if (isset($this->dataArray)) {
-            $output['dataArray'] = array_map(fn(Phone $i): array => $i->toArray(), $this->dataArray);
+            $output['dataArray'] = array_map(fn (Phone $i): array => $i->toArray(), $this->dataArray);
         }
         if (isset($this->dataArrayNested)) {
-            $output['dataArrayNested'] = array_map(fn ($i) => array_map(fn(Phone $i): array => $i->toArray(), $i), $this->dataArrayNested);
+            $output['dataArrayNested'] = array_map(fn ($i) => array_map(fn (Phone $i): array => $i->toArray(), $i), $this->dataArrayNested);
         }
         if (isset($this->dataArrayAnyOf)) {
             $output['dataArrayAnyOf'] = array_map(
@@ -393,11 +390,11 @@ class Record
         $output = $this->_additionalProperties;
 
         if (isset($this->dataArray)) {
-            $output->{'dataArray'} = array_map(fn(Phone $i): object => $i->toStdClass(), $this->dataArray);
+            $output->{'dataArray'} = array_map(fn (Phone $i): object => $i->toStdClass(), $this->dataArray);
         }
         if (isset($this->dataArrayNested)) {
             $output->{'dataArrayNested'} = array_map(
-                fn ($i) => array_map(fn(Phone $i): object => $i->toStdClass(), $i),
+                fn ($i) => array_map(fn (Phone $i): object => $i->toStdClass(), $i),
                 $this->dataArrayNested,
             );
         }

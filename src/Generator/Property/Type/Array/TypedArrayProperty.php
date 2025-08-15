@@ -133,7 +133,7 @@ class TypedArrayProperty extends AbstractProperty
 
     public function needsValidation(): bool
     {
-        // Typed arrays have `array` PHP type so run-time check of each element is needed.
+        // Typed arrays always require validation since their type-hint is just 'array'
         return true;
     }
 }

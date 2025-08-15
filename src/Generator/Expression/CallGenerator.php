@@ -19,7 +19,13 @@ class CallGenerator
      *                                                      Named arguments are supported on PHP 8+,  
      *                                                      pass assoc array like `['limit' => '10', 'strict' => 'true']`
      */
-    public static function make(string $callee, array $arguments, int $lengthToWrap = 100, string $phpVer = '5.6', bool $forceMultiline = false): string
+    public static function make(
+        string $callee,
+        array $arguments,
+        string $phpVer,
+        int $lengthToWrap = 100,
+        bool $forceMultiline = false
+    ): string
     {
         $named = [];
         $positional = [];

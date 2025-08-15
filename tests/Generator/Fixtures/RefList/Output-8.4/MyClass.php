@@ -133,8 +133,8 @@ class MyClass
 
         $foo = isset($input->{'foo'})
             ? array_map(
-                fn(array|object $i): \Helmich\Schema2Class\Example\CustomerAddress => \Helmich\Schema2Class\Example\CustomerAddress::fromInput($i, $validate),
-                $input->{'foo'}
+                fn (object|array $i): \Helmich\Schema2Class\Example\CustomerAddress => \Helmich\Schema2Class\Example\CustomerAddress::fromInput($i, $validate),
+                $input->{'foo'},
             )
             : null;
 
@@ -158,7 +158,10 @@ class MyClass
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
         if (isset($this->foo)) {
-            $output['foo'] = array_map(fn(\Helmich\Schema2Class\Example\CustomerAddress $i): array => $i->toArray(), $this->foo);
+            $output['foo'] = array_map(
+                fn (\Helmich\Schema2Class\Example\CustomerAddress $i): array => $i->toArray(),
+                $this->foo,
+            );
         }
 
         return $output;
@@ -174,7 +177,10 @@ class MyClass
         $output = $this->_additionalProperties;
 
         if (isset($this->foo)) {
-            $output->{'foo'} = array_map(fn(\Helmich\Schema2Class\Example\CustomerAddress $i): object => $i->toStdClass(), $this->foo);
+            $output->{'foo'} = array_map(
+                fn (\Helmich\Schema2Class\Example\CustomerAddress $i): object => $i->toStdClass(),
+                $this->foo,
+            );
         }
 
         return $output;

@@ -20,79 +20,40 @@ class ArrayMapGenerator
         int $lengthToWrap = 100,
     ): string
     {
-        if ($itemType) {
-            $itemType = TypeHint::forPhpVer($itemType, $phpVer, TypeHint::KIND_ARG, TypeHint::LEGACY_NULLABLE_DROP_NULL);
-        }
-        
-        if ($returnType) {
-            $returnType = TypeHint::forPhpVer($returnType, $phpVer, TypeHint::KIND_RETURN, TypeHint::LEGACY_NULLABLE_DROP_NULL);
-        }
+        $callback = ArrowFunctionGenerator::make(
+            parameters: [$itemParam => $itemType],
+            expr: $mapExpr,
+            phpVer: $phpVer,
+            useVars: $useVars,
+            returnType: $returnType,
+            lengthToWrap: $lengthToWrap,
+        );
 
-        if ($itemType) {
-            $itemType = "{$itemType} ";
-        }
+        $forceMultiline = false;
 
-        if ($returnType) {
-            $returnType = ": {$returnType}";
-        }
-
-        if (Semver::satisfies($phpVer, '>=7.4')) {
-            return CallGenerator::make(
-                callee: 'array_map',
-                arguments: [
-                    "fn ({$itemType}{$itemParam}){$returnType} => {$mapExpr}",
-                    $arrayExpr,
-                ],
-                lengthToWrap: $lengthToWrap,
-                phpVer: $phpVer,
-            );
+        if (!Semver::satisfies($phpVer, '>=7.4')) {
+            // when arrows are not supported, make it multiline by default so it will look like this:
+            // array_map(
+            //     function($i) { return $expr },
+            //     $array
+            // )
+            $forceMultiline = true;
         }
 
-        $useClause = '';
-        if ($useVars) {
-            $useClause = self::buildUseClause($useVars);
-        }
-
-        $forceMultiline = true;
-        $buildCallBackExpr = fn(string $callbackBody): string =>
-            "function({$itemType}{$itemParam}){$useClause}{$returnType} {{$callbackBody}}";
-
-        $returnExpr = "return {$mapExpr};";
-        $callbackExpr = $buildCallBackExpr(" {$returnExpr} ");
-
-        if (mb_strlen($mapExpr) > 30 || mb_strlen($callbackExpr) >= $lengthToWrap) {
-            $forceMultiline = false; // let CallGenerator decide on the wrapping style
-            $callbackExpr = $buildCallBackExpr(
-                "\n" . StringUtils::indentCode($returnExpr) . "\n"
-            );
+        if (mb_strlen($mapExpr) > 30 || str_contains($callback, "\n")) {
+            // but if it's too long/complex, let the CallGenerator decide on the wrapping style
+            $forceMultiline = false;
         }
 
         return CallGenerator::make(
             callee: 'array_map',
             arguments: [
-                $callbackExpr,
+                $callback,
                 $arrayExpr,
             ],
-            lengthToWrap: $lengthToWrap,
             phpVer: $phpVer,
+            lengthToWrap: $lengthToWrap,
             forceMultiline: $forceMultiline,
         );
-    }
-
-    public static function buildUseClause(array $useVars = []): string
-    {
-        if ($useVars === []) {
-            return '';
-        }
-
-        $joined = implode(', ', $useVars);
-
-        if (mb_strlen($joined) > 40) {
-            $joined = implode(",\n", $useVars);
-            $indented = StringUtils::indentCode($joined);
-            return " use (\n{$indented}\n)";
-        }
-
-        return " use ({$joined})";
     }
 }

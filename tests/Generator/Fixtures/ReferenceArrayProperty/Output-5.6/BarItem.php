@@ -1,8 +1,8 @@
 <?php
 
-namespace Ns\RefList_5_6;
+namespace Ns\ReferenceArrayProperty_5_6;
 
-class MyClass
+class BarItem
 {
     /**
      * Schema used to validate input for creating instances of this class
@@ -10,15 +10,9 @@ class MyClass
      * @var array
      */
     private static $_schema = [
-        'required' => [
-            'foo_bar',
-        ],
         'properties' => [
-            'foo' => [
-                'type' => 'array',
-                'items' => [
-                    '$ref' => '#/properties/address',
-                ],
+            'name' => [
+                'type' => 'string',
             ],
         ],
     ];
@@ -29,7 +23,7 @@ class MyClass
      * @var array
      */
     private static $_namesMap = [
-        'foo' => 'foo',
+        'name' => 'name',
     ];
 
     /**
@@ -40,18 +34,18 @@ class MyClass
     private $_additionalProperties;
 
     /**
-     * @var \Helmich\Schema2Class\Example\CustomerAddress[]|null
+     * @var string|null
      */
-    private $foo = null;
+    private $name = null;
 
     /**
-     * @param \Helmich\Schema2Class\Example\CustomerAddress[]|null $foo
+     * @param string|null $name
      */
-    public function __construct(array $foo = null)
+    public function __construct($name = null)
     {
         $this->_additionalProperties = new \stdClass();
 
-        $this->foo = $foo;
+        $this->name = $name;
     }
 
     /**
@@ -96,35 +90,41 @@ class MyClass
     }
 
     /**
-     * @return \Helmich\Schema2Class\Example\CustomerAddress[]|null
+     * @return string|null
      */
-    public function getFoo()
+    public function getName()
     {
-        return isset($this->foo) ? $this->foo : null;
+        return isset($this->name) ? $this->name : null;
     }
 
     /**
-     * @param \Helmich\Schema2Class\Example\CustomerAddress[] $foo
+     * @param string $name
      * @param bool $validate
      * @return self
      */
-    public function withFoo(array $foo, $validate = true)
+    public function withName($name, $validate = true)
     {
-        $clone = clone $this;
-        $clone->foo = $foo;
         if ($validate) {
-            $clone->validate();
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($name, self::$_schema['properties']['name']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
+
+        $clone = clone $this;
+        $clone->name = $name;
+
         return $clone;
     }
 
     /**
      * @return self
      */
-    public function withoutFoo()
+    public function withoutName()
     {
         $clone = clone $this;
-        unset($clone->foo);
+        unset($clone->name);
 
         return $clone;
     }
@@ -134,7 +134,7 @@ class MyClass
      *
      * @param array|object $input Input data
      * @param bool $validate If `false`, validation against the schema will be skipped.
-     * @return MyClass Created instance
+     * @return BarItem Created instance
      * @throws \InvalidArgumentException
      */
     public static function fromInput($input, $validate = true)
@@ -150,13 +150,9 @@ class MyClass
             static::validateInput($input);
         }
 
-        $foo = isset($input->{'foo'})
-            ? array_map(function($i) use ($validate) {
-                return \Helmich\Schema2Class\Example\CustomerAddress::fromInput($i, $validate);
-            }, $input->{'foo'})
-            : null;
+        $name = isset($input->{'name'}) ? $input->{'name'} : null;
 
-        $obj = new self($foo);
+        $obj = new self($name);
 
         $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
         if (!empty($_additionalProperties)) {
@@ -175,11 +171,8 @@ class MyClass
     {
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
-        if (isset($this->foo)) {
-            $output['foo'] = array_map(
-                function(\Helmich\Schema2Class\Example\CustomerAddress $i) { return $i->toArray(); },
-                $this->foo
-            );
+        if (isset($this->name)) {
+            $output['name'] = $this->name;
         }
 
         return $output;
@@ -194,11 +187,8 @@ class MyClass
     {
         $output = $this->_additionalProperties;
 
-        if (isset($this->foo)) {
-            $output->{'foo'} = array_map(
-                function(\Helmich\Schema2Class\Example\CustomerAddress $i) { return $i->toStdClass(); },
-                $this->foo
-            );
+        if (isset($this->name)) {
+            $output->{'name'} = $this->name;
         }
 
         return $output;
