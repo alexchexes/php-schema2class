@@ -278,22 +278,8 @@ class UnionProperty extends AbstractProperty
      */
     public function generateSubTypes(WriterInterface $writer, OutputInterface $output): void
     {
-        $def = $this->schema;
-
-        foreach ($def["oneOf"] as $i => $subDef) {
-            $propertyTypeName = $this->subTypeName($i);
-
-            $isObject = (isset($subDef["type"]) && $subDef["type"] === "object") || isset($subDef["properties"]);
-            $isEnum   = isset($subDef["enum"]);
-
-            if ($isObject || $isEnum) {
-                $req = $this->request
-                    ->withSchema($subDef)
-                    ->withClass($propertyTypeName);
-
-                $generator = $this->request->getSchemaToClassFactory()->build($writer, $output);
-                $generator->schemaToClass($this->propagateRootDefinitions($req));
-            }
+        foreach ($this->subProperties as $subProperty) {
+            $subProperty->generateSubTypes($writer, $output);
         }
     }
 
@@ -520,10 +506,6 @@ class UnionProperty extends AbstractProperty
         return parent::allowsNull();
     }
 
-    private function subTypeName(int $idx = 0): string
-    {
-        return $this->request->getTargetClass() . $this->nameForClass . "Alternative" . ($idx + 1);
-    }
 
     public function needsValidation(): bool
     {

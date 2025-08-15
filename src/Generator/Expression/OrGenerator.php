@@ -7,8 +7,8 @@ use Helmich\Schema2Class\Util\StringUtils;
 
 class OrGenerator
 {
-    /** 
-     * @param array<int,string> $conditions operands/conditions
+    /**
+     * @param list<mixed> $conditions operands/conditions
      * @param bool $parens Whether to wrap the resulting expression with parenthesis
      */
     public static function make(array $conditions, bool $parens = true, int $lengthToWrap = 100): string
@@ -17,12 +17,11 @@ class OrGenerator
             throw new \InvalidArgumentException("Attempt to generate OR expression without conditions");
         }
         foreach ($conditions as $k => $cond) {
+            /** @var mixed $cond */
             $n = $k + 1;
             $type = gettype($cond);
-            if (empty($cond)) {
-                throw new \InvalidArgumentException("Condition #{$n} is empty: {$cond} ($type)");
-            } elseif (!is_string($cond)) {
-                throw new \InvalidArgumentException("Condition #{$n} is not string: {$cond} ($type)");
+            if (!is_string($cond) || $cond === '') {
+                throw new \InvalidArgumentException("Condition #{$n} is not a non-empty string: {$cond} ($type)");
             }
         }
 
