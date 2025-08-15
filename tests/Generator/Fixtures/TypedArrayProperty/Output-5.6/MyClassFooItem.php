@@ -1,55 +1,63 @@
 <?php
 
-declare(strict_types=1);
+namespace Ns\TypedArrayProperty_5_6;
 
-namespace Ns\NestedTypedArrayProperty_7_4;
-
-class Fio
+class MyClassFooItem
 {
     /**
      * Schema used to validate input for creating instances of this class
+     *
+     * @var array
      */
-    private static array $_schema = [
-        'type' => 'object',
+    private static $_schema = [
         'properties' => [
-            'bar' => [
-                'type' => [
-                    'null',
-                    'string',
-                ],
+            'name' => [
+                'type' => 'string',
+                'default' => 'a string',
             ],
         ],
     ];
 
     /**
      * Mapping of schema property names to this class's property names.
+     *
+     * @var array
      */
-    private static array $_namesMap = [
-        'bar' => 'bar',
+    private static $_namesMap = [
+        'name' => 'name',
     ];
 
     /**
-     * Map of optional nullable property names that were explicitly set
+     * Default values from the schema
      *
-     * @var array<string,true>
+     * @var array
      */
-    private array $_providedOptionals = [];
+    private static $_defaults = [
+        'name' => [
+            'default' => 'a string',
+        ],
+    ];
 
     /**
      * Map of name/value pairs for properties not specified in the schema.
+     *
+     * @var \stdClass
      */
-    private \stdClass $_additionalProperties;
+    private $_additionalProperties;
 
-    private ?string $bar = null;
+    /**
+     * @var string|null
+     */
+    private $name = null;
 
-    public function __construct(?string $bar = null)
+    /**
+     * @param string|null $name
+     */
+    public function __construct($name = null)
     {
         $this->_additionalProperties = new \stdClass();
 
-        if ($bar !== null) {
-            $this->bar = $bar;
-            $this->_providedOptionals['bar'] = true;
-        };
+        $this->name = $name;
     }
 
     /**
@@ -58,7 +66,7 @@ class Fio
      * @param bool $asArray Whether return an associative array instead of `stdClass` object.
      * @return array|\stdClass
      */
-    public function getAdditionalProperties(bool $asArray = true)
+    public function getAdditionalProperties($asArray = true)
     {
         return $asArray
             ? json_decode(json_encode($this->_additionalProperties), true)
@@ -69,8 +77,9 @@ class Fio
      * Allows adding properties not specified in the schema.
      *
      * @param \stdClass|array $additionalProperties Map of property name/value pairs to add.
+     * @return self
      */
-    public function withAdditionalProperties($additionalProperties): self
+    public function withAdditionalProperties($additionalProperties)
     {
         $clone = clone $this;
         $clone->_additionalProperties = is_array($additionalProperties)
@@ -82,33 +91,52 @@ class Fio
 
     /**
      * Removes all extra properties not specified in the schema.
+     *
+     * @return self
      */
-    public function withoutAdditionalProperties(): self
+    public function withoutAdditionalProperties()
     {
         $clone = clone $this;
         $clone->_additionalProperties = new \stdClass();
         return $clone;
     }
 
-    public function getBar(): ?string
+    /**
+     * @return string|null
+     */
+    public function getName()
     {
-        return $this->bar ?? null;
+        return isset($this->name) ? $this->name : null;
     }
 
-    public function withBar(?string $bar): self
+    /**
+     * @param string $name
+     * @param bool $validate
+     * @return self
+     */
+    public function withName($name, $validate = true)
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($name, self::$_schema['properties']['name']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
-        $clone->bar = $bar;
-        $clone->_providedOptionals['bar'] = true;
+        $clone->name = $name;
 
         return $clone;
     }
 
-    public function withoutBar(): self
+    /**
+     * @return self
+     */
+    public function withoutName()
     {
         $clone = clone $this;
-        unset($clone->bar);
-        unset($clone->_providedOptionals['bar']);
+        unset($clone->name);
 
         return $clone;
     }
@@ -118,10 +146,11 @@ class Fio
      *
      * @param array|object $input Input data
      * @param bool $validate If `false`, validation against the schema will be skipped.
-     * @return Fio Created instance
+     * @param bool $materializeDefaults Apply defaults defined in schema when missing
+     * @return MyClassFooItem Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput($input, bool $validate = true): Fio
+    public static function fromInput($input, $validate = true, $materializeDefaults = false)
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
@@ -129,20 +158,27 @@ class Fio
             );
         }
 
-        $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
+        $input = is_array($input)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($input)
+            : ($materializeDefaults ? clone $input : $input);
+
+        if ($materializeDefaults) {
+            foreach (self::$_defaults as $__k => $__v) {
+                if (!property_exists($input, (string) $__k)) {
+                    $input->{$__k} = ($__v['type'] ?? null) === 'object'
+                        ? \JsonSchema\Validator::arrayToObjectRecursive($__v['default'])
+                        : $__v['default'];
+                }
+            }
+        }
+
         if ($validate) {
             static::validateInput($input);
         }
 
-        $_providedOptionals = [];
-        $bar = null;
-        if (property_exists($input, 'bar')) {
-            $bar = ($input->{'bar'} !== null ? $input->{'bar'} : null);
-            $_providedOptionals['bar'] = true;
-        }
+        $name = isset($input->{'name'}) ? $input->{'name'} : null;
 
-        $obj = new self($bar);
-        $obj->_providedOptionals = $_providedOptionals;
+        $obj = new self($name);
 
         $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
         if (!empty($_additionalProperties)) {
@@ -155,14 +191,23 @@ class Fio
     /**
      * Converts this object to array that can be JSON-serialized
      *
+     * @param bool $includeDefaults Add defaults for missing properties
      * @return array Converted array
      */
-    public function toArray(): array
+    public function toArray(bool $includeDefaults = false)
     {
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
-        if (isset($this->bar) || array_key_exists('bar', $this->_providedOptionals)) {
-            $output['bar'] = ($this->bar !== null ? $this->bar : null);
+        if (isset($this->name)) {
+            $output['name'] = $this->name;
+        }
+
+        if ($includeDefaults) {
+            foreach (self::$_defaults as $k => $v) {
+                if (!array_key_exists($k, $output)) {
+                    $output[$k] = $v['default'];
+                }
+            }
         }
 
         return $output;
@@ -171,14 +216,25 @@ class Fio
     /**
      * Converts this object to a stdClass that can be JSON-serialized
      *
+     * @param bool $includeDefaults Add defaults for missing properties
      * @return \stdClass Converted object
      */
-    public function toStdClass(): \stdClass
+    public function toStdClass(bool $includeDefaults = false)
     {
         $output = $this->_additionalProperties;
 
-        if (isset($this->bar) || array_key_exists('bar', $this->_providedOptionals)) {
-            $output->{'bar'} = ($this->bar !== null ? $this->bar : null);
+        if (isset($this->name)) {
+            $output->{'name'} = $this->name;
+        }
+
+        if ($includeDefaults) {
+            foreach (self::$_defaults as $k => $v) {
+                if (!property_exists($output, (string) $k)) {
+                    $output->{$k} = (isset($v['type']) && $v['type'] === 'object')
+                       ? \JsonSchema\Validator::arrayToObjectRecursive($v['default'])
+                       : $v['default'];
+                }
+            }
         }
 
         return $output;
@@ -191,7 +247,7 @@ class Fio
      * @return bool Validation result if `$return` is `true`
      * @throws \InvalidArgumentException
      */
-    public function validate(bool $return = false): bool
+    public function validate($return = false)
     {
         return self::validateInput($this->toStdClass(), $return);
     }
@@ -204,36 +260,19 @@ class Fio
      * @return bool Validation result if `$return` is `true`
      * @throws \InvalidArgumentException
      */
-    public static function validateInput($input, bool $return = false): bool
+    public static function validateInput($input, $return = false)
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
-            $errors = array_map(
-                fn (array $e): string => ($e["property"] ? $e["property"] . ": " : "") . $e["message"],
-                $validator->getErrors(),
-            );
+            $errors = array_map(function(array $e) {
+                return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];
+            }, $validator->getErrors());
             throw new \InvalidArgumentException(join(".\n", $errors));
         }
 
         return $validator->isValid();
-    }
-
-    /**
-     * Checks if an optional nullable property was explicitly set.
-     *
-     * @param string $propertyName Property name to check (exactly as it appears in the schema).
-     * @throws \InvalidArgumentException If property with that name doesn't exist.
-     */
-    public function isOptionalProvided(string $propertyName): bool
-    {
-        if (!array_key_exists($propertyName, self::$_namesMap)) {
-            throw new \InvalidArgumentException("Unknown property: {$propertyName}");
-        }
-        return
-            array_key_exists($propertyName, $this->_providedOptionals)
-            || isset($this->{ self::$_namesMap[$propertyName] });
     }
 }

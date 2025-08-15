@@ -12,6 +12,7 @@ use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\PropertyBuilder;
 use Helmich\Schema2Class\Generator\Property\Type\AbstractProperty;
 use Helmich\Schema2Class\Generator\Property\Type\MixedProperty;
+use Helmich\Schema2Class\Generator\Property\Type\Object\NestedObjectProperty;
 use Helmich\Schema2Class\Generator\Property\Type\PropertyInterface;
 use Helmich\Schema2Class\Writer\WriterInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -28,7 +29,7 @@ class ObjectArrayProperty extends AbstractProperty
     public function __construct(string $key, array $schema, GeneratorRequest $generatorRequest)
     {
         $this->itemSchema = $schema["additionalProperties"] ?? $schema["items"];
-
+        
         $this->itemType = PropertyBuilder::buildPropertyFromSchema(
             req: $generatorRequest,
             name: $key . "Item",
@@ -64,50 +65,6 @@ class ObjectArrayProperty extends AbstractProperty
             ((isset($itemSchema["type"]) && $itemSchema["type"] === "object") || isset($itemSchema["properties"]))
             && $hasProps
         );
-    }
-
-    private function buildSerializeMappingExpr(string $method): string
-    {
-        $name = $this->propName();
-
-        if ($this->itemType instanceof MixedProperty) {
-            return ArrayMapGenerator::make(
-                itemParam: '$i',
-                mapExpr: '$i',
-                arrayExpr: "\$this->{$name}",
-                phpVer: $this->request->getTargetPHPVersion(),
-            );
-        }
-
-        $st = $this->subTypeName();
-        $inclDefaultsArg = $this->request->getClassHasDefaults()
-            ? '$' . ArgumentNames::INCL_DEFAULTS
-            : '';
-
-        return ArrayMapGenerator::make(
-            itemParam: '$i',
-            mapExpr: "\$i->{$method}({$inclDefaultsArg})",
-            arrayExpr: "\$this->{$name}",
-            itemType: $st,
-            useVars: $inclDefaultsArg ? [$inclDefaultsArg] : null,
-            phpVer: $this->request->getTargetPHPVersion(),
-        );
-    }
-
-    public function convertTypeToArray(): string
-    {
-        $OUTPUT_VAR = VariableNames::OUTPUT;
-        $arrMapExpr = $this->buildSerializeMappingExpr(MethodNames::TO_ARRAY);
-
-        return "\${$OUTPUT_VAR}[{$this->keyStr()}] = {$arrMapExpr};";
-    }
-
-    public function convertTypeToStdClass(): string
-    {
-        $OUTPUT_VAR = VariableNames::OUTPUT;
-        $arrMapExpr = $this->buildSerializeMappingExpr(MethodNames::TO_STD_CLASS);
-
-        return "\${$OUTPUT_VAR}->{{$this->keyStr()}} = {$arrMapExpr};";
     }
 
     /**
@@ -170,106 +127,92 @@ class ObjectArrayProperty extends AbstractProperty
             PHP;
     }
 
-    private function getVarsForUseClause(): array
-    {
-        $vars = ['$' . ArgumentNames::VALIDATE];
-        if ($this->request->getClassHasDefaults()) {
-            $vars[] = '$' . ArgumentNames::MATRLZ_DEFAULTS;
-        }
-        return $vars;
-    }
-
     public function inputMappingExpr(string $expr, bool $asserted = false): string
     {
         $subExpr = $this->itemType->inputMappingExpr('$i');
 
         if ($this->itemType instanceof MixedProperty) {
             return ArrayMapGenerator::make(
+                arrayExpr: $expr,
                 itemParam: '$i',
                 mapExpr: $subExpr,
-                arrayExpr: $expr,
                 phpVer: $this->request->getTargetPHPVersion(),
             );
         }
 
-        $itemType = 'array|object';
-        $returnType = $this->subTypeName();
-        
+        $useVars = ['$' . ArgumentNames::VALIDATE];
+        if ($this->request->getClassHasDefaults()) {
+            $useVars[] = '$' . ArgumentNames::MATRLZ_DEFAULTS;
+        }
+
         return ArrayMapGenerator::make(
+            arrayExpr: $expr,
             itemParam: '$i',
             mapExpr: $subExpr,
-            arrayExpr: $expr,
-            itemType: $itemType,
-            useVars: $this->getVarsForUseClause(),
-            returnType: $returnType,
+            itemType: 'array|object',
+            returnType: $this->subTypeName(),
             phpVer: $this->request->getTargetPHPVersion(),
+            useVars: $useVars,
         );
     }
 
     public function outputMappingExpr(string $expr): string
     {
-        if ($this->itemType instanceof MixedProperty) {
-            return ArrayMapGenerator::make(
-                itemParam: '$i',
-                mapExpr: '$i',
-                arrayExpr: $expr,
-                phpVer: $this->request->getTargetPHPVersion(),
-            );
-        }
-
-        $subExpr = $this->itemType->outputMappingExpr('$i');
-        $subType = $this->subTypeName();
-
-        return ArrayMapGenerator::make(
-            itemParam: '$i',
-            mapExpr: $subExpr,
-            arrayExpr: $expr,
-            itemType: $subType,
-            phpVer: $this->request->getTargetPHPVersion(),
-        );
+        $innerExpr = $this->itemType->outputMappingExpr('$i');
+        return $this->buildSerializeMappingExpr($expr, $innerExpr);
     }
 
     public function outputMappingExprStdClass(string $expr): string
     {
+        $innerExpr = $this->itemType->outputMappingExprStdClass('$i');
+        return $this->buildSerializeMappingExpr($expr, $innerExpr);
+    }
+
+    private function buildSerializeMappingExpr(string $expr, string $innerExpr): string
+    {
+        $name = $this->propName();
+
         if ($this->itemType instanceof MixedProperty) {
             return ArrayMapGenerator::make(
+                arrayExpr: $expr,
                 itemParam: '$i',
                 mapExpr: '$i',
-                arrayExpr: $expr,
                 phpVer: $this->request->getTargetPHPVersion(),
             );
         }
-
-        $subExpr = $this->itemType->outputMappingExprStdClass('$i');
-        $subType = $this->subTypeName();
         
+        $useVars = [];
+        if ($this->request->getClassHasDefaults()) {
+            $useVars[] = '$' . ArgumentNames::INCL_DEFAULTS;
+        }
+
         return ArrayMapGenerator::make(
+            arrayExpr: "\$this->{$name}",
             itemParam: '$i',
-            mapExpr: $subExpr,
-            arrayExpr: $expr,
-            itemType: $subType,
+            mapExpr: $innerExpr,
+            itemType: $this->subTypeName(),
             phpVer: $this->request->getTargetPHPVersion(),
+            useVars: $useVars,
         );
     }
+
 
     public function cloneExpr(string $expr): string
     {
         if ($this->itemType instanceof MixedProperty) {
             return ArrayMapGenerator::make(
+                arrayExpr: $expr,
                 itemParam: '$i',
                 mapExpr: '$i',
-                arrayExpr: $expr,
                 phpVer: $this->request->getTargetPHPVersion(),
             );
         }
 
-        $subType = $this->subTypeName();
-
         return ArrayMapGenerator::make(
+            arrayExpr: $expr,
             itemParam: '$i',
             mapExpr: 'clone $i',
-            arrayExpr: $expr,
-            itemType: $subType,
+            itemType: $this->subTypeName(),
             phpVer: $this->request->getTargetPHPVersion(),
         );
     }

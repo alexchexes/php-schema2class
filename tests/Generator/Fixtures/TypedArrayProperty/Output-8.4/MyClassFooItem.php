@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Ns\NestedTypedArrayProperty_8_4;
+namespace Ns\TypedArrayProperty_8_4;
 
-class Phone
+class MyClassFooItem
 {
     /**
      * Schema used to validate input for creating instances of this class
      */
     private static array $_schema = [
-        'type' => 'object',
         'properties' => [
-            'foo' => [
+            'name' => [
                 'type' => 'string',
+                'default' => 'a string',
             ],
         ],
     ];
@@ -22,7 +22,16 @@ class Phone
      * Mapping of schema property names to this class's property names.
      */
     private static array $_namesMap = [
-        'foo' => 'foo',
+        'name' => 'name',
+    ];
+
+    /**
+     * Default values from the schema
+     */
+    private static array $_defaults = [
+        'name' => [
+            'default' => 'a string',
+        ],
     ];
 
     /**
@@ -30,13 +39,13 @@ class Phone
      */
     private \stdClass $_additionalProperties;
 
-    private ?string $foo = null;
+    private ?string $name = null;
 
-    public function __construct(?string $foo = null)
+    public function __construct(?string $name = null)
     {
         $this->_additionalProperties = new \stdClass();
 
-        $this->foo = $foo;
+        $this->name = $name;
     }
 
     /**
@@ -76,23 +85,23 @@ class Phone
         return $clone;
     }
 
-    public function getFoo(): ?string
+    public function getName(): ?string
     {
-        return $this->foo ?? null;
+        return $this->name ?? null;
     }
 
-    public function withFoo(string $foo): self
+    public function withName(string $name): self
     {
         $clone = clone $this;
-        $clone->foo = $foo;
+        $clone->name = $name;
 
         return $clone;
     }
 
-    public function withoutFoo(): self
+    public function withoutName(): self
     {
         $clone = clone $this;
-        unset($clone->foo);
+        unset($clone->name);
 
         return $clone;
     }
@@ -102,19 +111,33 @@ class Phone
      *
      * @param array|object $input Input data
      * @param bool $validate If `false`, validation against the schema will be skipped.
-     * @return Phone Created instance
+     * @param bool $materializeDefaults Apply defaults defined in schema when missing
+     * @return MyClassFooItem Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput(array|object $input, bool $validate = true): Phone
+    public static function fromInput(array|object $input, bool $validate = true, bool $materializeDefaults = false): MyClassFooItem
     {
-        $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
+        $input = is_array($input)
+            ? \JsonSchema\Validator::arrayToObjectRecursive($input)
+            : ($materializeDefaults ? clone $input : $input);
+
+        if ($materializeDefaults) {
+            foreach (self::$_defaults as $__k => $__v) {
+                if (!property_exists($input, (string) $__k)) {
+                    $input->{$__k} = ($__v['type'] ?? null) === 'object'
+                        ? \JsonSchema\Validator::arrayToObjectRecursive($__v['default'])
+                        : $__v['default'];
+                }
+            }
+        }
+
         if ($validate) {
             static::validateInput($input);
         }
 
-        $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
+        $name = isset($input->{'name'}) ? $input->{'name'} : null;
 
-        $obj = new self($foo);
+        $obj = new self($name);
 
         $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
         if (!empty($_additionalProperties)) {
@@ -127,14 +150,23 @@ class Phone
     /**
      * Converts this object to array that can be JSON-serialized
      *
+     * @param bool $includeDefaults Add defaults for missing properties
      * @return array Converted array
      */
-    public function toArray(): array
+    public function toArray(bool $includeDefaults = false): array
     {
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
-        if (isset($this->foo)) {
-            $output['foo'] = $this->foo;
+        if (isset($this->name)) {
+            $output['name'] = $this->name;
+        }
+
+        if ($includeDefaults) {
+            foreach (self::$_defaults as $k => $v) {
+                if (!array_key_exists($k, $output)) {
+                    $output[$k] = $v['default'];
+                }
+            }
         }
 
         return $output;
@@ -143,14 +175,25 @@ class Phone
     /**
      * Converts this object to a stdClass that can be JSON-serialized
      *
+     * @param bool $includeDefaults Add defaults for missing properties
      * @return \stdClass Converted object
      */
-    public function toStdClass(): \stdClass
+    public function toStdClass(bool $includeDefaults = false): \stdClass
     {
         $output = $this->_additionalProperties;
 
-        if (isset($this->foo)) {
-            $output->{'foo'} = $this->foo;
+        if (isset($this->name)) {
+            $output->{'name'} = $this->name;
+        }
+
+        if ($includeDefaults) {
+            foreach (self::$_defaults as $k => $v) {
+                if (!property_exists($output, (string) $k)) {
+                    $output->{$k} = (isset($v['type']) && $v['type'] === 'object')
+                       ? \JsonSchema\Validator::arrayToObjectRecursive($v['default'])
+                       : $v['default'];
+                }
+            }
         }
 
         return $output;

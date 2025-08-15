@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ns\NestedTypedArrayProperty_8_4;
+namespace Ns\ReferenceArrayPropertyNested_8_4;
 
 class Record
 {

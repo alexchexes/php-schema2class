@@ -2,14 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Ns\ReferenceArrayProperty_8_4;
+namespace Ns\ReferenceArrayPropertyDef_8_4;
 
-class MyClass
+class Record
 {
     /**
      * Schema used to validate input for creating instances of this class
      */
     private static array $_schema = [
+        'type' => 'object',
         'properties' => [
             'foo' => [
                 'type' => 'array',
@@ -209,10 +210,10 @@ class MyClass
      * @param array|object $input Input data
      * @param bool $validate If `false`, validation against the schema will be skipped.
      * @param bool $materializeDefaults Apply defaults defined in schema when missing
-     * @return MyClass Created instance
+     * @return Record Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput(array|object $input, bool $validate = true, bool $materializeDefaults = false): MyClass
+    public static function fromInput(array|object $input, bool $validate = true, bool $materializeDefaults = false): Record
     {
         $input = is_array($input)
             ? \JsonSchema\Validator::arrayToObjectRecursive($input)

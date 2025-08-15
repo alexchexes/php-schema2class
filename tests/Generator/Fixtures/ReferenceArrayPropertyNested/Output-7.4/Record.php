@@ -1,15 +1,15 @@
 <?php
 
-namespace Ns\NestedTypedArrayProperty_5_6;
+declare(strict_types=1);
+
+namespace Ns\ReferenceArrayPropertyNested_7_4;
 
 class Record
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
-    private static $_schema = [
+    private static array $_schema = [
         'type' => 'object',
         'properties' => [
             'dataArray' => [
@@ -90,10 +90,8 @@ class Record
 
     /**
      * Mapping of schema property names to this class's property names.
-     *
-     * @var array
      */
-    private static $_namesMap = [
+    private static array $_namesMap = [
         'dataArray' => 'dataArray',
         'dataArrayNested' => 'dataArrayNested',
         'dataArrayAnyOf' => 'dataArrayAnyOf',
@@ -102,30 +100,28 @@ class Record
 
     /**
      * Map of name/value pairs for properties not specified in the schema.
-     *
-     * @var \stdClass
      */
-    private $_additionalProperties;
+    private \stdClass $_additionalProperties;
 
     /**
      * @var Phone[]|null
      */
-    private $dataArray = null;
+    private ?array $dataArray = null;
 
     /**
      * @var Phone[][]|null
      */
-    private $dataArrayNested = null;
+    private ?array $dataArrayNested = null;
 
     /**
      * @var (Phone|Fio)[]|null
      */
-    private $dataArrayAnyOf = null;
+    private ?array $dataArrayAnyOf = null;
 
     /**
      * @var ((Phone|Fio)[])[]|null
      */
-    private $dataArrayNestedAnyOf = null;
+    private ?array $dataArrayNestedAnyOf = null;
 
     /**
      * @param Phone[]|null $dataArray
@@ -133,7 +129,7 @@ class Record
      * @param (Phone|Fio)[]|null $dataArrayAnyOf
      * @param ((Phone|Fio)[])[]|null $dataArrayNestedAnyOf
      */
-    public function __construct(array $dataArray = null, array $dataArrayNested = null, array $dataArrayAnyOf = null, array $dataArrayNestedAnyOf = null)
+    public function __construct(?array $dataArray = null, ?array $dataArrayNested = null, ?array $dataArrayAnyOf = null, ?array $dataArrayNestedAnyOf = null)
     {
         $this->_additionalProperties = new \stdClass();
 
@@ -149,7 +145,7 @@ class Record
      * @param bool $asArray Whether return an associative array instead of `stdClass` object.
      * @return array|\stdClass
      */
-    public function getAdditionalProperties($asArray = true)
+    public function getAdditionalProperties(bool $asArray = true)
     {
         return $asArray
             ? json_decode(json_encode($this->_additionalProperties), true)
@@ -160,9 +156,8 @@ class Record
      * Allows adding properties not specified in the schema.
      *
      * @param \stdClass|array $additionalProperties Map of property name/value pairs to add.
-     * @return self
      */
-    public function withAdditionalProperties($additionalProperties)
+    public function withAdditionalProperties($additionalProperties): self
     {
         $clone = clone $this;
         $clone->_additionalProperties = is_array($additionalProperties)
@@ -174,10 +169,8 @@ class Record
 
     /**
      * Removes all extra properties not specified in the schema.
-     *
-     * @return self
      */
-    public function withoutAdditionalProperties()
+    public function withoutAdditionalProperties(): self
     {
         $clone = clone $this;
         $clone->_additionalProperties = new \stdClass();
@@ -187,17 +180,15 @@ class Record
     /**
      * @return Phone[]|null
      */
-    public function getDataArray()
+    public function getDataArray(): ?array
     {
-        return isset($this->dataArray) ? $this->dataArray : null;
+        return $this->dataArray ?? null;
     }
 
     /**
      * @param Phone[] $dataArray
-     * @param bool $validate
-     * @return self
      */
-    public function withDataArray(array $dataArray, $validate = true)
+    public function withDataArray(array $dataArray, bool $validate = true): self
     {
         $clone = clone $this;
         $clone->dataArray = $dataArray;
@@ -207,10 +198,7 @@ class Record
         return $clone;
     }
 
-    /**
-     * @return self
-     */
-    public function withoutDataArray()
+    public function withoutDataArray(): self
     {
         $clone = clone $this;
         unset($clone->dataArray);
@@ -221,17 +209,15 @@ class Record
     /**
      * @return Phone[][]|null
      */
-    public function getDataArrayNested()
+    public function getDataArrayNested(): ?array
     {
-        return isset($this->dataArrayNested) ? $this->dataArrayNested : null;
+        return $this->dataArrayNested ?? null;
     }
 
     /**
      * @param Phone[][] $dataArrayNested
-     * @param bool $validate
-     * @return self
      */
-    public function withDataArrayNested(array $dataArrayNested, $validate = true)
+    public function withDataArrayNested(array $dataArrayNested, bool $validate = true): self
     {
         $clone = clone $this;
         $clone->dataArrayNested = $dataArrayNested;
@@ -241,10 +227,7 @@ class Record
         return $clone;
     }
 
-    /**
-     * @return self
-     */
-    public function withoutDataArrayNested()
+    public function withoutDataArrayNested(): self
     {
         $clone = clone $this;
         unset($clone->dataArrayNested);
@@ -255,17 +238,15 @@ class Record
     /**
      * @return (Phone|Fio)[]|null
      */
-    public function getDataArrayAnyOf()
+    public function getDataArrayAnyOf(): ?array
     {
-        return isset($this->dataArrayAnyOf) ? $this->dataArrayAnyOf : null;
+        return $this->dataArrayAnyOf ?? null;
     }
 
     /**
      * @param (Phone|Fio)[] $dataArrayAnyOf
-     * @param bool $validate
-     * @return self
      */
-    public function withDataArrayAnyOf(array $dataArrayAnyOf, $validate = true)
+    public function withDataArrayAnyOf(array $dataArrayAnyOf, bool $validate = true): self
     {
         $clone = clone $this;
         $clone->dataArrayAnyOf = $dataArrayAnyOf;
@@ -275,10 +256,7 @@ class Record
         return $clone;
     }
 
-    /**
-     * @return self
-     */
-    public function withoutDataArrayAnyOf()
+    public function withoutDataArrayAnyOf(): self
     {
         $clone = clone $this;
         unset($clone->dataArrayAnyOf);
@@ -289,17 +267,15 @@ class Record
     /**
      * @return ((Phone|Fio)[])[]|null
      */
-    public function getDataArrayNestedAnyOf()
+    public function getDataArrayNestedAnyOf(): ?array
     {
-        return isset($this->dataArrayNestedAnyOf) ? $this->dataArrayNestedAnyOf : null;
+        return $this->dataArrayNestedAnyOf ?? null;
     }
 
     /**
      * @param ((Phone|Fio)[])[] $dataArrayNestedAnyOf
-     * @param bool $validate
-     * @return self
      */
-    public function withDataArrayNestedAnyOf(array $dataArrayNestedAnyOf, $validate = true)
+    public function withDataArrayNestedAnyOf(array $dataArrayNestedAnyOf, bool $validate = true): self
     {
         $clone = clone $this;
         $clone->dataArrayNestedAnyOf = $dataArrayNestedAnyOf;
@@ -309,10 +285,7 @@ class Record
         return $clone;
     }
 
-    /**
-     * @return self
-     */
-    public function withoutDataArrayNestedAnyOf()
+    public function withoutDataArrayNestedAnyOf(): self
     {
         $clone = clone $this;
         unset($clone->dataArrayNestedAnyOf);
@@ -328,7 +301,7 @@ class Record
      * @return Record Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput($input, $validate = true)
+    public static function fromInput($input, bool $validate = true): Record
     {
         if (!is_array($input) && !is_object($input)) {
             throw new \InvalidArgumentException(
@@ -342,34 +315,28 @@ class Record
         }
 
         $dataArray = isset($input->{'dataArray'})
-            ? array_map(function($i) use ($validate) {
-                return Phone::fromInput($i, $validate);
-            }, $input->{'dataArray'})
+            ? array_map(fn ($i): Phone => Phone::fromInput($i, $validate), $input->{'dataArray'})
             : null;
         $dataArrayNested = isset($input->{'dataArrayNested'})
-            ? array_map(function($i) use ($validate) {
-                return array_map(function($i) use ($validate) {
-                    return Phone::fromInput($i, $validate);
-                }, $i);
-            }, $input->{'dataArrayNested'})
+            ? array_map(
+                fn ($i) => array_map(fn ($i): Phone => Phone::fromInput($i, $validate), $i),
+                $input->{'dataArrayNested'},
+            )
             : null;
         $dataArrayAnyOf = isset($input->{'dataArrayAnyOf'})
-            ? array_map(function($i) use ($validate) {
-                return (Fio::validateInput($i, true)
-                    ? Fio::fromInput($i, $validate)
-                    : (Phone::validateInput($i, true) ? Phone::fromInput($i, $validate) : null)
-                );
-            }, $input->{'dataArrayAnyOf'})
+            ? array_map(fn ($i) => (Fio::validateInput($i, true)
+                ? Fio::fromInput($i, $validate)
+                : (Phone::validateInput($i, true) ? Phone::fromInput($i, $validate) : null)
+            ), $input->{'dataArrayAnyOf'})
             : null;
         $dataArrayNestedAnyOf = isset($input->{'dataArrayNestedAnyOf'})
-            ? array_map(function($i) use ($validate) {
-                return array_map(function($i) use ($validate) {
-                    return (Fio::validateInput($i, true)
-                        ? Fio::fromInput($i, $validate)
-                        : (Phone::validateInput($i, true) ? Phone::fromInput($i, $validate) : null)
-                    );
-                }, $i);
-            }, $input->{'dataArrayNestedAnyOf'})
+            ? array_map(
+                fn ($i) => array_map(fn ($i) => (Fio::validateInput($i, true)
+                    ? Fio::fromInput($i, $validate)
+                    : (Phone::validateInput($i, true) ? Phone::fromInput($i, $validate) : null)
+                ), $i),
+                $input->{'dataArrayNestedAnyOf'},
+            )
             : null;
 
         $obj = new self($dataArray, $dataArrayNested, $dataArrayAnyOf, $dataArrayNestedAnyOf);
@@ -387,35 +354,27 @@ class Record
      *
      * @return array Converted array
      */
-    public function toArray()
+    public function toArray(): array
     {
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
         if (isset($this->dataArray)) {
-            $output['dataArray'] = array_map(
-                function(Phone $i) { return $i->toArray(); },
-                $this->dataArray
-            );
+            $output['dataArray'] = array_map(fn (Phone $i): array => $i->toArray(), $this->dataArray);
         }
         if (isset($this->dataArrayNested)) {
-            $output['dataArrayNested'] = array_map(function($i) {
-                return array_map(
-                    function(Phone $i) { return $i->toArray(); },
-                    $i
-                );
-            }, $this->dataArrayNested);
+            $output['dataArrayNested'] = array_map(fn ($i) => array_map(fn (Phone $i): array => $i->toArray(), $i), $this->dataArrayNested);
         }
         if (isset($this->dataArrayAnyOf)) {
-            $output['dataArrayAnyOf'] = array_map(function($i) {
-                return ($i instanceof Fio ? $i->toArray() : ($i instanceof Phone ? $i->toArray() : null));
-            }, $this->dataArrayAnyOf);
+            $output['dataArrayAnyOf'] = array_map(
+                fn ($i) => ($i instanceof Fio ? $i->toArray() : ($i instanceof Phone ? $i->toArray() : null)),
+                $this->dataArrayAnyOf,
+            );
         }
         if (isset($this->dataArrayNestedAnyOf)) {
-            $output['dataArrayNestedAnyOf'] = array_map(function($i) {
-                return array_map(function($i) {
-                    return ($i instanceof Fio ? $i->toArray() : ($i instanceof Phone ? $i->toArray() : null));
-                }, $i);
-            }, $this->dataArrayNestedAnyOf);
+            $output['dataArrayNestedAnyOf'] = array_map(fn ($i) => array_map(
+                fn ($i) => ($i instanceof Fio ? $i->toArray() : ($i instanceof Phone ? $i->toArray() : null)),
+                $i,
+            ), $this->dataArrayNestedAnyOf);
         }
 
         return $output;
@@ -426,41 +385,33 @@ class Record
      *
      * @return \stdClass Converted object
      */
-    public function toStdClass()
+    public function toStdClass(): \stdClass
     {
         $output = $this->_additionalProperties;
 
         if (isset($this->dataArray)) {
-            $output->{'dataArray'} = array_map(
-                function(Phone $i) { return $i->toStdClass(); },
-                $this->dataArray
-            );
+            $output->{'dataArray'} = array_map(fn (Phone $i): object => $i->toStdClass(), $this->dataArray);
         }
         if (isset($this->dataArrayNested)) {
-            $output->{'dataArrayNested'} = array_map(function($i) {
-                return array_map(
-                    function(Phone $i) { return $i->toStdClass(); },
-                    $i
-                );
-            }, $this->dataArrayNested);
+            $output->{'dataArrayNested'} = array_map(
+                fn ($i) => array_map(fn (Phone $i): object => $i->toStdClass(), $i),
+                $this->dataArrayNested,
+            );
         }
         if (isset($this->dataArrayAnyOf)) {
-            $output->{'dataArrayAnyOf'} = array_map(function($i) {
-                return ($i instanceof Fio
-                    ? $i->toStdClass()
-                    : ($i instanceof Phone ? $i->toStdClass() : null)
-                );
-            }, $this->dataArrayAnyOf);
+            $output->{'dataArrayAnyOf'} = array_map(fn ($i) => ($i instanceof Fio
+                ? $i->toStdClass()
+                : ($i instanceof Phone ? $i->toStdClass() : null)
+            ), $this->dataArrayAnyOf);
         }
         if (isset($this->dataArrayNestedAnyOf)) {
-            $output->{'dataArrayNestedAnyOf'} = array_map(function($i) {
-                return array_map(function($i) {
-                    return ($i instanceof Fio
-                        ? $i->toStdClass()
-                        : ($i instanceof Phone ? $i->toStdClass() : null)
-                    );
-                }, $i);
-            }, $this->dataArrayNestedAnyOf);
+            $output->{'dataArrayNestedAnyOf'} = array_map(
+                fn ($i) => array_map(fn ($i) => ($i instanceof Fio
+                    ? $i->toStdClass()
+                    : ($i instanceof Phone ? $i->toStdClass() : null)
+                ), $i),
+                $this->dataArrayNestedAnyOf,
+            );
         }
 
         return $output;
@@ -473,7 +424,7 @@ class Record
      * @return bool Validation result if `$return` is `true`
      * @throws \InvalidArgumentException
      */
-    public function validate($return = false)
+    public function validate(bool $return = false): bool
     {
         return self::validateInput($this->toStdClass(), $return);
     }
@@ -486,16 +437,17 @@ class Record
      * @return bool Validation result if `$return` is `true`
      * @throws \InvalidArgumentException
      */
-    public static function validateInput($input, $return = false)
+    public static function validateInput($input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
-            $errors = array_map(function(array $e) {
-                return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];
-            }, $validator->getErrors());
+            $errors = array_map(
+                fn (array $e): string => ($e["property"] ? $e["property"] . ": " : "") . $e["message"],
+                $validator->getErrors(),
+            );
             throw new \InvalidArgumentException(join(".\n", $errors));
         }
 
@@ -505,22 +457,19 @@ class Record
     public function __clone()
     {
         if (isset($this->dataArrayNested)) {
-            $this->dataArrayNested = array_map(
-                function($i) { return $i; },
-                $this->dataArrayNested
-            );
+            $this->dataArrayNested = array_map(fn ($i) => $i, $this->dataArrayNested);
         }
         if (isset($this->dataArrayAnyOf)) {
-            $this->dataArrayAnyOf = array_map(function($i) {
-                return ($i instanceof Fio ? $i : ($i instanceof Phone ? $i : $i));
-            }, $this->dataArrayAnyOf);
+            $this->dataArrayAnyOf = array_map(
+                fn ($i) => ($i instanceof Fio ? $i : ($i instanceof Phone ? $i : $i)),
+                $this->dataArrayAnyOf,
+            );
         }
         if (isset($this->dataArrayNestedAnyOf)) {
-            $this->dataArrayNestedAnyOf = array_map(function($i) {
-                return array_map(function($i) {
-                    return ($i instanceof Fio ? $i : ($i instanceof Phone ? $i : $i));
-                }, $i);
-            }, $this->dataArrayNestedAnyOf);
+            $this->dataArrayNestedAnyOf = array_map(
+                fn ($i) => array_map(fn ($i) => ($i instanceof Fio ? $i : ($i instanceof Phone ? $i : $i)), $i),
+                $this->dataArrayNestedAnyOf,
+            );
         }
     }
 }

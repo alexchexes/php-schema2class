@@ -1,0 +1,28 @@
+{
+  "properties": {
+    "foo": {
+      "type": "array",
+      "items": {
+        "properties": {
+          "name": { "type": "string", "default": "a string" }
+        }
+      },
+      "default": [
+        {
+          "name": "foo"
+        }
+      ],
+      "minItems": 1,
+      "maxItems": 1
+    },
+    "bar": {
+      "type": "array",
+      "items": {
+        "properties": {
+          "name": { "type": "string" }
+        }
+      },
+      "default": []
+    }
+  }
+}

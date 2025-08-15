@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ns\ArrayProperty_8_4;
+namespace Ns\ReferenceArrayPropertyNested_7_4;
 
 class Phone
 {
@@ -43,8 +43,9 @@ class Phone
      * Object (`stdClass`) or array with name/value pairs for properties not specified in the schema.
      *
      * @param bool $asArray Whether return an associative array instead of `stdClass` object.
+     * @return array|\stdClass
      */
-    public function getAdditionalProperties(bool $asArray = true): \stdClass|array
+    public function getAdditionalProperties(bool $asArray = true)
     {
         return $asArray
             ? json_decode(json_encode($this->_additionalProperties), true)
@@ -56,7 +57,7 @@ class Phone
      *
      * @param \stdClass|array $additionalProperties Map of property name/value pairs to add.
      */
-    public function withAdditionalProperties(\stdClass|array $additionalProperties): self
+    public function withAdditionalProperties($additionalProperties): self
     {
         $clone = clone $this;
         $clone->_additionalProperties = is_array($additionalProperties)
@@ -105,8 +106,14 @@ class Phone
      * @return Phone Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput(array|object $input, bool $validate = true): Phone
+    public static function fromInput($input, bool $validate = true): Phone
     {
+        if (!is_array($input) && !is_object($input)) {
+            throw new \InvalidArgumentException(
+                'Input to fromInput must be array or object, got ' . gettype($input)
+            );
+        }
+
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
@@ -176,7 +183,7 @@ class Phone
      * @return bool Validation result if `$return` is `true`
      * @throws \InvalidArgumentException
      */
-    public static function validateInput(array|object $input, bool $return = false): bool
+    public static function validateInput($input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;

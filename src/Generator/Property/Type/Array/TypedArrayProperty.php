@@ -8,6 +8,7 @@ use Helmich\Schema2Class\Generator\Expression\ArrayMapGenerator;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\PropertyBuilder;
 use Helmich\Schema2Class\Generator\Property\Type\AbstractProperty;
+use Helmich\Schema2Class\Generator\Property\Type\Object\NestedObjectProperty;
 use Helmich\Schema2Class\Generator\Property\Type\PropertyInterface;
 use Helmich\Schema2Class\Writer\WriterInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -103,21 +104,31 @@ class TypedArrayProperty extends AbstractProperty
 
     public function outputMappingExpr(string $expr): string
     {
+        $useVars = [];
+        if ($this->itemType instanceof NestedObjectProperty && $this->request->getClassHasDefaults()) {
+            $useVars[] = '$' . ArgumentNames::INCL_DEFAULTS;
+        }
         return ArrayMapGenerator::make(
             arrayExpr: $expr,
             itemParam: '$i',
             mapExpr: $this->itemType->outputMappingExpr('$i'),
             phpVer: $this->request->getTargetPHPVersion(),
+            useVars: $useVars,
         );
     }
 
     public function outputMappingExprStdClass(string $expr): string
     {
+        $useVars = [];
+        if ($this->itemType instanceof NestedObjectProperty && $this->request->getClassHasDefaults()) {
+            $useVars[] = '$' . ArgumentNames::INCL_DEFAULTS;
+        }
         return ArrayMapGenerator::make(
             arrayExpr: $expr,
             itemParam: '$i',
             mapExpr: $this->itemType->outputMappingExprStdClass('$i'),
             phpVer: $this->request->getTargetPHPVersion(),
+            useVars: $useVars,
         );
     }
 

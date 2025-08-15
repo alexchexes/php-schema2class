@@ -2,17 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Ns\NestedTypedArrayProperty_7_4;
+namespace Ns\TypedArrayProperty_8_4;
 
-class Phone
+class MyClassBarItem
 {
     /**
      * Schema used to validate input for creating instances of this class
      */
     private static array $_schema = [
-        'type' => 'object',
         'properties' => [
-            'foo' => [
+            'name' => [
                 'type' => 'string',
             ],
         ],
@@ -22,7 +21,7 @@ class Phone
      * Mapping of schema property names to this class's property names.
      */
     private static array $_namesMap = [
-        'foo' => 'foo',
+        'name' => 'name',
     ];
 
     /**
@@ -30,22 +29,21 @@ class Phone
      */
     private \stdClass $_additionalProperties;
 
-    private ?string $foo = null;
+    private ?string $name = null;
 
-    public function __construct(?string $foo = null)
+    public function __construct(?string $name = null)
     {
         $this->_additionalProperties = new \stdClass();
 
-        $this->foo = $foo;
+        $this->name = $name;
     }
 
     /**
      * Object (`stdClass`) or array with name/value pairs for properties not specified in the schema.
      *
      * @param bool $asArray Whether return an associative array instead of `stdClass` object.
-     * @return array|\stdClass
      */
-    public function getAdditionalProperties(bool $asArray = true)
+    public function getAdditionalProperties(bool $asArray = true): \stdClass|array
     {
         return $asArray
             ? json_decode(json_encode($this->_additionalProperties), true)
@@ -57,7 +55,7 @@ class Phone
      *
      * @param \stdClass|array $additionalProperties Map of property name/value pairs to add.
      */
-    public function withAdditionalProperties($additionalProperties): self
+    public function withAdditionalProperties(\stdClass|array $additionalProperties): self
     {
         $clone = clone $this;
         $clone->_additionalProperties = is_array($additionalProperties)
@@ -77,23 +75,23 @@ class Phone
         return $clone;
     }
 
-    public function getFoo(): ?string
+    public function getName(): ?string
     {
-        return $this->foo ?? null;
+        return $this->name ?? null;
     }
 
-    public function withFoo(string $foo): self
+    public function withName(string $name): self
     {
         $clone = clone $this;
-        $clone->foo = $foo;
+        $clone->name = $name;
 
         return $clone;
     }
 
-    public function withoutFoo(): self
+    public function withoutName(): self
     {
         $clone = clone $this;
-        unset($clone->foo);
+        unset($clone->name);
 
         return $clone;
     }
@@ -103,25 +101,19 @@ class Phone
      *
      * @param array|object $input Input data
      * @param bool $validate If `false`, validation against the schema will be skipped.
-     * @return Phone Created instance
+     * @return MyClassBarItem Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput($input, bool $validate = true): Phone
+    public static function fromInput(array|object $input, bool $validate = true): MyClassBarItem
     {
-        if (!is_array($input) && !is_object($input)) {
-            throw new \InvalidArgumentException(
-                'Input to fromInput must be array or object, got ' . gettype($input)
-            );
-        }
-
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
+        $name = isset($input->{'name'}) ? $input->{'name'} : null;
 
-        $obj = new self($foo);
+        $obj = new self($name);
 
         $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
         if (!empty($_additionalProperties)) {
@@ -140,8 +132,8 @@ class Phone
     {
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
-        if (isset($this->foo)) {
-            $output['foo'] = $this->foo;
+        if (isset($this->name)) {
+            $output['name'] = $this->name;
         }
 
         return $output;
@@ -156,8 +148,8 @@ class Phone
     {
         $output = $this->_additionalProperties;
 
-        if (isset($this->foo)) {
-            $output->{'foo'} = $this->foo;
+        if (isset($this->name)) {
+            $output->{'name'} = $this->name;
         }
 
         return $output;
@@ -183,7 +175,7 @@ class Phone
      * @return bool Validation result if `$return` is `true`
      * @throws \InvalidArgumentException
      */
-    public static function validateInput($input, bool $return = false): bool
+    public static function validateInput(array|object $input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ns\ReferenceArrayProperty_8_4;
+namespace Ns\TypedArrayProperty_8_4;
 
 class MyClass
 {
@@ -14,7 +14,12 @@ class MyClass
             'foo' => [
                 'type' => 'array',
                 'items' => [
-                    '$ref' => '#/definitions/FooItem',
+                    'properties' => [
+                        'name' => [
+                            'type' => 'string',
+                            'default' => 'a string',
+                        ],
+                    ],
                 ],
                 'default' => [
                     [
@@ -27,27 +32,14 @@ class MyClass
             'bar' => [
                 'type' => 'array',
                 'items' => [
-                    '$ref' => '#/definitions/BarItem',
+                    'properties' => [
+                        'name' => [
+                            'type' => 'string',
+                        ],
+                    ],
                 ],
                 'default' => [
                     
-                ],
-            ],
-        ],
-        'definitions' => [
-            'FooItem' => [
-                'properties' => [
-                    'name' => [
-                        'type' => 'string',
-                        'default' => 'a string',
-                    ],
-                ],
-            ],
-            'BarItem' => [
-                'properties' => [
-                    'name' => [
-                        'type' => 'string',
-                    ],
                 ],
             ],
         ],
@@ -87,18 +79,18 @@ class MyClass
     private \stdClass $_additionalProperties;
 
     /**
-     * @var FooItem[]|null
+     * @var MyClassFooItem[]|null
      */
     private ?array $foo = null;
 
     /**
-     * @var BarItem[]|null
+     * @var MyClassBarItem[]|null
      */
     private ?array $bar = null;
 
     /**
-     * @param FooItem[]|null $foo
-     * @param BarItem[]|null $bar
+     * @param MyClassFooItem[]|null $foo
+     * @param MyClassBarItem[]|null $bar
      */
     public function __construct(?array $foo = null, ?array $bar = null)
     {
@@ -146,7 +138,7 @@ class MyClass
     }
 
     /**
-     * @return FooItem[]|null
+     * @return MyClassFooItem[]|null
      */
     public function getFoo(): ?array
     {
@@ -154,15 +146,21 @@ class MyClass
     }
 
     /**
-     * @param FooItem[] $foo
+     * @param MyClassFooItem[] $foo
      */
     public function withFoo(array $foo, bool $validate = true): self
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($foo, self::$_schema['properties']['foo']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
         $clone->foo = $foo;
-        if ($validate) {
-            $clone->validate();
-        }
+
         return $clone;
     }
 
@@ -175,7 +173,7 @@ class MyClass
     }
 
     /**
-     * @return BarItem[]|null
+     * @return MyClassBarItem[]|null
      */
     public function getBar(): ?array
     {
@@ -183,15 +181,21 @@ class MyClass
     }
 
     /**
-     * @param BarItem[] $bar
+     * @param MyClassBarItem[] $bar
      */
     public function withBar(array $bar, bool $validate = true): self
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($bar, self::$_schema['properties']['bar']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
         $clone->bar = $bar;
-        if ($validate) {
-            $clone->validate();
-        }
+
         return $clone;
     }
 
@@ -234,13 +238,13 @@ class MyClass
 
         $foo = isset($input->{'foo'})
             ? array_map(
-                fn (object|array $i): FooItem => FooItem::fromInput($i, $validate, $materializeDefaults),
+                fn (object|array $i): MyClassFooItem => MyClassFooItem::fromInput($i, $validate, $materializeDefaults),
                 $input->{'foo'},
             )
             : null;
         $bar = isset($input->{'bar'})
             ? array_map(
-                fn (object|array $i): BarItem => BarItem::fromInput($i, $validate, $materializeDefaults),
+                fn (object|array $i): MyClassBarItem => MyClassBarItem::fromInput($i, $validate, $materializeDefaults),
                 $input->{'bar'},
             )
             : null;
@@ -266,10 +270,10 @@ class MyClass
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
         if (isset($this->foo)) {
-            $output['foo'] = array_map(fn (FooItem $i): array => $i->toArray($includeDefaults), $this->foo);
+            $output['foo'] = array_map(fn (MyClassFooItem $i) => $i->toArray($includeDefaults), $this->foo);
         }
         if (isset($this->bar)) {
-            $output['bar'] = array_map(fn (BarItem $i): array => $i->toArray($includeDefaults), $this->bar);
+            $output['bar'] = array_map(fn (MyClassBarItem $i) => $i->toArray($includeDefaults), $this->bar);
         }
 
         if ($includeDefaults) {
@@ -294,10 +298,10 @@ class MyClass
         $output = $this->_additionalProperties;
 
         if (isset($this->foo)) {
-            $output->{'foo'} = array_map(fn (FooItem $i): object => $i->toStdClass($includeDefaults), $this->foo);
+            $output->{'foo'} = array_map(fn (MyClassFooItem $i) => $i->toStdClass($includeDefaults), $this->foo);
         }
         if (isset($this->bar)) {
-            $output->{'bar'} = array_map(fn (BarItem $i): object => $i->toStdClass($includeDefaults), $this->bar);
+            $output->{'bar'} = array_map(fn (MyClassBarItem $i) => $i->toStdClass($includeDefaults), $this->bar);
         }
 
         if ($includeDefaults) {
@@ -348,5 +352,15 @@ class MyClass
         }
 
         return $validator->isValid();
+    }
+
+    public function __clone()
+    {
+        if (isset($this->foo)) {
+            $this->foo = array_map(fn (MyClassFooItem $i) => clone $i, $this->foo);
+        }
+        if (isset($this->bar)) {
+            $this->bar = array_map(fn (MyClassBarItem $i) => clone $i, $this->bar);
+        }
     }
 }

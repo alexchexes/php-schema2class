@@ -7,11 +7,14 @@
         {
           "name": "foo"
         }
-      ]
+      ],
+      "minItems": 1,
+      "maxItems": 1
     },
     "bar": {
       "type": "array",
-      "items": { "$ref": "#/definitions/BarItem" }
+      "items": { "$ref": "#/definitions/BarItem" },
+      "default": []
     }
   },
   "definitions": {

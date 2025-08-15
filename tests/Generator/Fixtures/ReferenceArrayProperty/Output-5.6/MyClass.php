@@ -21,11 +21,16 @@ class MyClass
                         'name' => 'foo',
                     ],
                 ],
+                'minItems' => 1,
+                'maxItems' => 1,
             ],
             'bar' => [
                 'type' => 'array',
                 'items' => [
                     '$ref' => '#/definitions/BarItem',
+                ],
+                'default' => [
+                    
                 ],
             ],
         ],
@@ -69,6 +74,12 @@ class MyClass
                 [
                     'name' => 'foo',
                 ],
+            ],
+            'type' => 'array',
+        ],
+        'bar' => [
+            'default' => [
+                
             ],
             'type' => 'array',
         ],

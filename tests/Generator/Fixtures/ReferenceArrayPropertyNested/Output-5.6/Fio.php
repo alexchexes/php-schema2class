@@ -1,33 +1,21 @@
 <?php
 
-declare(strict_types=1);
+namespace Ns\ReferenceArrayPropertyNested_5_6;
 
-namespace Ns\ArrayProperty_8_4;
-
-class Record
+class Fio
 {
     /**
      * Schema used to validate input for creating instances of this class
+     *
+     * @var array
      */
-    private static array $_schema = [
+    private static $_schema = [
         'type' => 'object',
         'properties' => [
-            'dataArray' => [
-                'type' => 'array',
-                'items' => [
-                    '$ref' => '#/definitions/Phone',
-                ],
-                'minItems' => 1,
-                'maxItems' => 1,
-            ],
-        ],
-        'definitions' => [
-            'Phone' => [
-                'type' => 'object',
-                'properties' => [
-                    'foo' => [
-                        'type' => 'string',
-                    ],
+            'bar' => [
+                'type' => [
+                    'null',
+                    'string',
                 ],
             ],
         ],
@@ -35,37 +23,52 @@ class Record
 
     /**
      * Mapping of schema property names to this class's property names.
+     *
+     * @var array
      */
-    private static array $_namesMap = [
-        'dataArray' => 'dataArray',
+    private static $_namesMap = [
+        'bar' => 'bar',
     ];
 
     /**
+     * Map of optional nullable property names that were explicitly set
+     *
+     * @var array<string,true>
+     */
+    private $_providedOptionals = [];
+
+    /**
      * Map of name/value pairs for properties not specified in the schema.
+     *
+     * @var \stdClass
      */
-    private \stdClass $_additionalProperties;
+    private $_additionalProperties;
 
     /**
-     * @var Phone[]|null
+     * @var string|null
      */
-    private ?array $dataArray = null;
+    private $bar = null;
 
     /**
-     * @param Phone[]|null $dataArray
+     * @param string|null $bar
      */
-    public function __construct(?array $dataArray = null)
+    public function __construct($bar = null)
     {
         $this->_additionalProperties = new \stdClass();
 
-        $this->dataArray = $dataArray;
+        if ($bar !== null) {
+            $this->bar = $bar;
+            $this->_providedOptionals['bar'] = true;
+        };
     }
 
     /**
      * Object (`stdClass`) or array with name/value pairs for properties not specified in the schema.
      *
      * @param bool $asArray Whether return an associative array instead of `stdClass` object.
+     * @return array|\stdClass
      */
-    public function getAdditionalProperties(bool $asArray = true): \stdClass|array
+    public function getAdditionalProperties($asArray = true)
     {
         return $asArray
             ? json_decode(json_encode($this->_additionalProperties), true)
@@ -76,8 +79,9 @@ class Record
      * Allows adding properties not specified in the schema.
      *
      * @param \stdClass|array $additionalProperties Map of property name/value pairs to add.
+     * @return self
      */
-    public function withAdditionalProperties(\stdClass|array $additionalProperties): self
+    public function withAdditionalProperties($additionalProperties)
     {
         $clone = clone $this;
         $clone->_additionalProperties = is_array($additionalProperties)
@@ -89,8 +93,10 @@ class Record
 
     /**
      * Removes all extra properties not specified in the schema.
+     *
+     * @return self
      */
-    public function withoutAdditionalProperties(): self
+    public function withoutAdditionalProperties()
     {
         $clone = clone $this;
         $clone->_additionalProperties = new \stdClass();
@@ -98,30 +104,43 @@ class Record
     }
 
     /**
-     * @return Phone[]|null
+     * @return string|null
      */
-    public function getDataArray(): ?array
+    public function getBar()
     {
-        return $this->dataArray ?? null;
+        return isset($this->bar) ? $this->bar : null;
     }
 
     /**
-     * @param Phone[] $dataArray
+     * @param string|null $bar
+     * @param bool $validate
+     * @return self
      */
-    public function withDataArray(array $dataArray, bool $validate = true): self
+    public function withBar($bar, $validate = true)
     {
-        $clone = clone $this;
-        $clone->dataArray = $dataArray;
         if ($validate) {
-            $clone->validate();
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($bar, self::$_schema['properties']['bar']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
         }
+
+        $clone = clone $this;
+        $clone->bar = $bar;
+        $clone->_providedOptionals['bar'] = true;
+
         return $clone;
     }
 
-    public function withoutDataArray(): self
+    /**
+     * @return self
+     */
+    public function withoutBar()
     {
         $clone = clone $this;
-        unset($clone->dataArray);
+        unset($clone->bar);
+        unset($clone->_providedOptionals['bar']);
 
         return $clone;
     }
@@ -131,21 +150,31 @@ class Record
      *
      * @param array|object $input Input data
      * @param bool $validate If `false`, validation against the schema will be skipped.
-     * @return Record Created instance
+     * @return Fio Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput(array|object $input, bool $validate = true): Record
+    public static function fromInput($input, $validate = true)
     {
+        if (!is_array($input) && !is_object($input)) {
+            throw new \InvalidArgumentException(
+                'Input to fromInput must be array or object, got ' . gettype($input)
+            );
+        }
+
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $dataArray = isset($input->{'dataArray'})
-            ? array_map(fn (object|array $i): Phone => Phone::fromInput($i, $validate), $input->{'dataArray'})
-            : null;
+        $_providedOptionals = [];
+        $bar = null;
+        if (property_exists($input, 'bar')) {
+            $bar = ($input->{'bar'} !== null ? $input->{'bar'} : null);
+            $_providedOptionals['bar'] = true;
+        }
 
-        $obj = new self($dataArray);
+        $obj = new self($bar);
+        $obj->_providedOptionals = $_providedOptionals;
 
         $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
         if (!empty($_additionalProperties)) {
@@ -160,12 +189,12 @@ class Record
      *
      * @return array Converted array
      */
-    public function toArray(): array
+    public function toArray()
     {
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
-        if (isset($this->dataArray)) {
-            $output['dataArray'] = array_map(fn (Phone $i): array => $i->toArray(), $this->dataArray);
+        if (isset($this->bar) || array_key_exists('bar', $this->_providedOptionals)) {
+            $output['bar'] = ($this->bar !== null ? $this->bar : null);
         }
 
         return $output;
@@ -176,12 +205,12 @@ class Record
      *
      * @return \stdClass Converted object
      */
-    public function toStdClass(): \stdClass
+    public function toStdClass()
     {
         $output = $this->_additionalProperties;
 
-        if (isset($this->dataArray)) {
-            $output->{'dataArray'} = array_map(fn (Phone $i): object => $i->toStdClass(), $this->dataArray);
+        if (isset($this->bar) || array_key_exists('bar', $this->_providedOptionals)) {
+            $output->{'bar'} = ($this->bar !== null ? $this->bar : null);
         }
 
         return $output;
@@ -194,7 +223,7 @@ class Record
      * @return bool Validation result if `$return` is `true`
      * @throws \InvalidArgumentException
      */
-    public function validate(bool $return = false): bool
+    public function validate($return = false)
     {
         return self::validateInput($this->toStdClass(), $return);
     }
@@ -207,20 +236,36 @@ class Record
      * @return bool Validation result if `$return` is `true`
      * @throws \InvalidArgumentException
      */
-    public static function validateInput(array|object $input, bool $return = false): bool
+    public static function validateInput($input, $return = false)
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
-            $errors = array_map(
-                fn (array $e): string => ($e["property"] ? $e["property"] . ": " : "") . $e["message"],
-                $validator->getErrors(),
-            );
+            $errors = array_map(function(array $e) {
+                return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];
+            }, $validator->getErrors());
             throw new \InvalidArgumentException(join(".\n", $errors));
         }
 
         return $validator->isValid();
+    }
+
+    /**
+     * Checks if an optional nullable property was explicitly set.
+     *
+     * @param string $propertyName Property name to check (exactly as it appears in the schema).
+     * @throws \InvalidArgumentException If property with that name doesn't exist.
+     * @return bool
+     */
+    public function isOptionalProvided(string $propertyName)
+    {
+        if (!array_key_exists($propertyName, self::$_namesMap)) {
+            throw new \InvalidArgumentException("Unknown property: {$propertyName}");
+        }
+        return
+            array_key_exists($propertyName, $this->_providedOptionals)
+            || isset($this->{ self::$_namesMap[$propertyName] });
     }
 }
