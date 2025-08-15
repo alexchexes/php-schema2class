@@ -1,0 +1,57 @@
+{
+  "properties": {
+    "arrayOfUnions": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          { "type": "string" },
+          { "type": "number" }
+        ]
+      }
+    },
+    "arrayOfRefUnions": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          { "$ref": "#/definitions/SomeStr" },
+          { "$ref": "#/definitions/SomeNumber" }
+        ]
+      }
+    },
+    "arrayOfRefAndNotRefUnions": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          { "$ref": "#/definitions/SomeStr" },
+          { "type": "string" },
+          { "$ref": "#/definitions/SomeNumber" },
+          { "type": "number" }
+        ]
+      }
+    },
+    "arrayOfUnionOfTypedArrayAndString": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          { "type": "string" }
+        ]
+      }
+    },
+    "arrayOfUnionWithOneType": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          { "type": "string" }
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "SomeStr": { "type": "string" },
+    "SomeNumber": { "type": "number" }
+  }
+}

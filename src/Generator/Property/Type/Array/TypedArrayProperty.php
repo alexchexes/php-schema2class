@@ -39,7 +39,11 @@ class TypedArrayProperty extends AbstractProperty
 
     public static function canHandleSchema(array $schema): bool
     {
-        if (!(isset($schema['type']) && $schema['type'] === 'array') || !isset($schema['items']) || !is_array($schema['items'])) {
+        if (
+            !(isset($schema['type']) && $schema['type'] === 'array')
+            || !isset($schema['items'])
+            || !is_array($schema['items'])
+        ) {
             return false;
         }
 
@@ -48,7 +52,10 @@ class TypedArrayProperty extends AbstractProperty
         }
 
         $items = $schema['items'];
-        if (isset($items['type']) && in_array($items['type'], ['string', 'integer', 'number', 'boolean'], true)) {
+        if (
+            isset($items['type'])
+            && in_array($items['type'], ['string', 'integer', 'number', 'boolean'], true)
+        ) {
             return false;
         }
         if (isset($items['$ref'])) {
