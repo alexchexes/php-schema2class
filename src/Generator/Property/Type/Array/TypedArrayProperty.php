@@ -84,12 +84,18 @@ class TypedArrayProperty extends AbstractProperty
         return 'array';
     }
 
+    /** 
+     * Used when array items are unions whose alternatives are themselves arrays of unions or arrays
+     */
     public function typeAssertionExpr(string $expr): string
     {
         $innerAssertExpr = $this->itemType->typeAssertionExpr('$i');
         return $this->buildAssertionExpr($expr, $innerAssertExpr);
     }
 
+    /** 
+     * Used when array items are unions whose alternatives are themselves arrays of unions or arrays
+     */
     public function inputAssertionExpr(string $expr): string
     {
         $innerAssertExpr = $this->itemType->inputAssertionExpr('$i');

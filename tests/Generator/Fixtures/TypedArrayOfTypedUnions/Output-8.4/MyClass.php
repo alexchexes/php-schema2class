@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ns\TypedArrayOfUnions_8_4;
+namespace Ns\TypedArrayOfTypedUnions_8_4;
 
 class MyClass
 {
@@ -16,10 +16,33 @@ class MyClass
                 'items' => [
                     'oneOf' => [
                         [
-                            'type' => 'string',
+                            'type' => 'array',
+                            'items' => [
+                                'oneOf' => [
+                                    [
+                                        'type' => 'string',
+                                    ],
+                                    [
+                                        'type' => 'number',
+                                    ],
+                                ],
+                            ],
                         ],
                         [
-                            'type' => 'number',
+                            'oneOf' => [
+                                [
+                                    'type' => 'array',
+                                    'items' => [
+                                        'type' => 'string',
+                                    ],
+                                ],
+                                [
+                                    'type' => 'array',
+                                    'items' => [
+                                        'type' => 'number',
+                                    ],
+                                ],
+                            ],
                         ],
                     ],
                 ],
@@ -29,10 +52,10 @@ class MyClass
                 'items' => [
                     'oneOf' => [
                         [
-                            '$ref' => '#/definitions/SomeStr',
+                            '$ref' => '#/definitions/ArrayOfOneOfs',
                         ],
                         [
-                            '$ref' => '#/definitions/SomeNumber',
+                            '$ref' => '#/definitions/OneOfArrays',
                         ],
                     ],
                 ],
@@ -42,28 +65,54 @@ class MyClass
                 'items' => [
                     'oneOf' => [
                         [
-                            '$ref' => '#/definitions/SomeStr',
+                            '$ref' => '#/definitions/ArrayOfOneOfs',
                         ],
                         [
-                            'type' => 'string',
+                            'type' => 'array',
+                            'items' => [
+                                'oneOf' => [
+                                    [
+                                        'type' => 'string',
+                                    ],
+                                    [
+                                        'type' => 'number',
+                                    ],
+                                ],
+                            ],
                         ],
                         [
-                            '$ref' => '#/definitions/SomeNumber',
+                            '$ref' => '#/definitions/OneOfArrays',
                         ],
                         [
-                            'type' => 'number',
+                            'oneOf' => [
+                                [
+                                    'type' => 'array',
+                                    'items' => [
+                                        'type' => 'string',
+                                    ],
+                                ],
+                                [
+                                    'type' => 'array',
+                                    'items' => [
+                                        'type' => 'number',
+                                    ],
+                                ],
+                            ],
                         ],
                     ],
                 ],
             ],
-            'arrayOfUnionOfTypedArrayAndString' => [
+            'arrayOfUnionOfStringAndArray' => [
                 'type' => 'array',
                 'items' => [
                     'oneOf' => [
                         [
                             'type' => 'array',
                             'items' => [
-                                'type' => 'string',
+                                'type' => 'array',
+                                'items' => [
+                                    'type' => 'string',
+                                ],
                             ],
                         ],
                         [
@@ -75,20 +124,42 @@ class MyClass
             'arrayOfUnionWithOneType' => [
                 'type' => 'array',
                 'items' => [
-                    'oneOf' => [
-                        [
-                            'type' => 'string',
-                        ],
+                    'type' => 'array',
+                    'items' => [
+                        'type' => 'string',
                     ],
                 ],
             ],
         ],
         'definitions' => [
-            'SomeStr' => [
-                'type' => 'string',
+            'ArrayOfOneOfs' => [
+                'type' => 'array',
+                'items' => [
+                    'oneOf' => [
+                        [
+                            'type' => 'string',
+                        ],
+                        [
+                            'type' => 'number',
+                        ],
+                    ],
+                ],
             ],
-            'SomeNumber' => [
-                'type' => 'number',
+            'OneOfArrays' => [
+                'oneOf' => [
+                    [
+                        'type' => 'array',
+                        'items' => [
+                            'type' => 'string',
+                        ],
+                    ],
+                    [
+                        'type' => 'array',
+                        'items' => [
+                            'type' => 'number',
+                        ],
+                    ],
+                ],
             ],
         ],
     ];
@@ -100,7 +171,7 @@ class MyClass
         'arrayOfUnions' => 'arrayOfUnions',
         'arrayOfRefUnions' => 'arrayOfRefUnions',
         'arrayOfRefAndNotRefUnions' => 'arrayOfRefAndNotRefUnions',
-        'arrayOfUnionOfTypedArrayAndString' => 'arrayOfUnionOfTypedArrayAndString',
+        'arrayOfUnionOfStringAndArray' => 'arrayOfUnionOfStringAndArray',
         'arrayOfUnionWithOneType' => 'arrayOfUnionWithOneType',
     ];
 
@@ -110,45 +181,45 @@ class MyClass
     private \stdClass $_additionalProperties;
 
     /**
-     * @var (string|int|float)[]|null
+     * @var ((string|int|float)[]|string[]|float[])[]|null
      */
     private ?array $arrayOfUnions = null;
 
     /**
-     * @var (string|int|float)[]|null
+     * @var ((string|int|float)[]|string[]|float[])[]|null
      */
     private ?array $arrayOfRefUnions = null;
 
     /**
-     * @var (string|int|float)[]|null
+     * @var ((string|int|float)[]|string[]|float[])[]|null
      */
     private ?array $arrayOfRefAndNotRefUnions = null;
 
     /**
-     * @var (string[]|string)[]|null
+     * @var (string[][]|string)[]|null
      */
-    private ?array $arrayOfUnionOfTypedArrayAndString = null;
+    private ?array $arrayOfUnionOfStringAndArray = null;
 
     /**
-     * @var string[]|null
+     * @var string[][]|null
      */
     private ?array $arrayOfUnionWithOneType = null;
 
     /**
-     * @param (string|int|float)[]|null $arrayOfUnions
-     * @param (string|int|float)[]|null $arrayOfRefUnions
-     * @param (string|int|float)[]|null $arrayOfRefAndNotRefUnions
-     * @param (string[]|string)[]|null $arrayOfUnionOfTypedArrayAndString
-     * @param string[]|null $arrayOfUnionWithOneType
+     * @param ((string|int|float)[]|string[]|float[])[]|null $arrayOfUnions
+     * @param ((string|int|float)[]|string[]|float[])[]|null $arrayOfRefUnions
+     * @param ((string|int|float)[]|string[]|float[])[]|null $arrayOfRefAndNotRefUnions
+     * @param (string[][]|string)[]|null $arrayOfUnionOfStringAndArray
+     * @param string[][]|null $arrayOfUnionWithOneType
      */
-    public function __construct(?array $arrayOfUnions = null, ?array $arrayOfRefUnions = null, ?array $arrayOfRefAndNotRefUnions = null, ?array $arrayOfUnionOfTypedArrayAndString = null, ?array $arrayOfUnionWithOneType = null)
+    public function __construct(?array $arrayOfUnions = null, ?array $arrayOfRefUnions = null, ?array $arrayOfRefAndNotRefUnions = null, ?array $arrayOfUnionOfStringAndArray = null, ?array $arrayOfUnionWithOneType = null)
     {
         $this->_additionalProperties = new \stdClass();
 
         $this->arrayOfUnions = $arrayOfUnions;
         $this->arrayOfRefUnions = $arrayOfRefUnions;
         $this->arrayOfRefAndNotRefUnions = $arrayOfRefAndNotRefUnions;
-        $this->arrayOfUnionOfTypedArrayAndString = $arrayOfUnionOfTypedArrayAndString;
+        $this->arrayOfUnionOfStringAndArray = $arrayOfUnionOfStringAndArray;
         $this->arrayOfUnionWithOneType = $arrayOfUnionWithOneType;
     }
 
@@ -190,7 +261,7 @@ class MyClass
     }
 
     /**
-     * @return (string|int|float)[]|null
+     * @return ((string|int|float)[]|string[]|float[])[]|null
      */
     public function getArrayOfUnions(): ?array
     {
@@ -198,7 +269,7 @@ class MyClass
     }
 
     /**
-     * @param (string|int|float)[] $arrayOfUnions
+     * @param ((string|int|float)[]|string[]|float[])[] $arrayOfUnions
      */
     public function withArrayOfUnions(array $arrayOfUnions, bool $validate = true): self
     {
@@ -225,7 +296,7 @@ class MyClass
     }
 
     /**
-     * @return (string|int|float)[]|null
+     * @return ((string|int|float)[]|string[]|float[])[]|null
      */
     public function getArrayOfRefUnions(): ?array
     {
@@ -233,7 +304,7 @@ class MyClass
     }
 
     /**
-     * @param (string|int|float)[] $arrayOfRefUnions
+     * @param ((string|int|float)[]|string[]|float[])[] $arrayOfRefUnions
      */
     public function withArrayOfRefUnions(array $arrayOfRefUnions, bool $validate = true): self
     {
@@ -254,7 +325,7 @@ class MyClass
     }
 
     /**
-     * @return (string|int|float)[]|null
+     * @return ((string|int|float)[]|string[]|float[])[]|null
      */
     public function getArrayOfRefAndNotRefUnions(): ?array
     {
@@ -262,7 +333,7 @@ class MyClass
     }
 
     /**
-     * @param (string|int|float)[] $arrayOfRefAndNotRefUnions
+     * @param ((string|int|float)[]|string[]|float[])[] $arrayOfRefAndNotRefUnions
      */
     public function withArrayOfRefAndNotRefUnions(array $arrayOfRefAndNotRefUnions, bool $validate = true): self
     {
@@ -283,42 +354,42 @@ class MyClass
     }
 
     /**
-     * @return (string[]|string)[]|null
+     * @return (string[][]|string)[]|null
      */
-    public function getArrayOfUnionOfTypedArrayAndString(): ?array
+    public function getArrayOfUnionOfStringAndArray(): ?array
     {
-        return $this->arrayOfUnionOfTypedArrayAndString ?? null;
+        return $this->arrayOfUnionOfStringAndArray ?? null;
     }
 
     /**
-     * @param (string[]|string)[] $arrayOfUnionOfTypedArrayAndString
+     * @param (string[][]|string)[] $arrayOfUnionOfStringAndArray
      */
-    public function withArrayOfUnionOfTypedArrayAndString(array $arrayOfUnionOfTypedArrayAndString, bool $validate = true): self
+    public function withArrayOfUnionOfStringAndArray(array $arrayOfUnionOfStringAndArray, bool $validate = true): self
     {
         if ($validate) {
             $validator = new \JsonSchema\Validator();
-            $validator->validate($arrayOfUnionOfTypedArrayAndString, self::$_schema['properties']['arrayOfUnionOfTypedArrayAndString']);
+            $validator->validate($arrayOfUnionOfStringAndArray, self::$_schema['properties']['arrayOfUnionOfStringAndArray']);
             if (!$validator->isValid()) {
                 throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
             }
         }
 
         $clone = clone $this;
-        $clone->arrayOfUnionOfTypedArrayAndString = $arrayOfUnionOfTypedArrayAndString;
+        $clone->arrayOfUnionOfStringAndArray = $arrayOfUnionOfStringAndArray;
 
         return $clone;
     }
 
-    public function withoutArrayOfUnionOfTypedArrayAndString(): self
+    public function withoutArrayOfUnionOfStringAndArray(): self
     {
         $clone = clone $this;
-        unset($clone->arrayOfUnionOfTypedArrayAndString);
+        unset($clone->arrayOfUnionOfStringAndArray);
 
         return $clone;
     }
 
     /**
-     * @return string[]|null
+     * @return string[][]|null
      */
     public function getArrayOfUnionWithOneType(): ?array
     {
@@ -326,7 +397,7 @@ class MyClass
     }
 
     /**
-     * @param string[] $arrayOfUnionWithOneType
+     * @param string[][] $arrayOfUnionWithOneType
      */
     public function withArrayOfUnionWithOneType(array $arrayOfUnionWithOneType, bool $validate = true): self
     {
@@ -369,31 +440,59 @@ class MyClass
 
         $arrayOfUnions = isset($input->{'arrayOfUnions'})
             ? array_map(fn ($i) => match (true) {
-                is_string($i) => $i,
-                (is_int($i) || is_float($i)) => (str_contains((string)$i, '.') ? (float)$i : (int)$i),
+                (is_array($i)
+                    && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || (is_int($i) || is_float($i)))))) =>
+                    array_map(fn ($i) => match (true) {
+                        is_string($i) => $i,
+                        (is_int($i) || is_float($i)) => (str_contains((string)$i, '.') ? (float)$i : (int)$i),
+                        default => null,
+                    }, $i),
+                (is_array($i) || is_array($i)) => match (true) {
+                    is_array($i) => $i,
+                    default => null,
+                },
                 default => null,
             }, $input->{'arrayOfUnions'})
             : null;
         $arrayOfRefUnions = isset($input->{'arrayOfRefUnions'})
             ? array_map(fn ($i) => match (true) {
-                is_string($i) => $i,
-                (is_int($i) || is_float($i)) => (str_contains((string)$i, '.') ? (float)$i : (int)$i),
+                (is_array($i)
+                    && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || (is_int($i) || is_float($i)))))) =>
+                    array_map(fn ($i) => match (true) {
+                        is_string($i) => $i,
+                        (is_int($i) || is_float($i)) => (str_contains((string)$i, '.') ? (float)$i : (int)$i),
+                        default => null,
+                    }, $i),
+                (is_array($i) || is_array($i)) => match (true) {
+                    is_array($i) => $i,
+                    default => null,
+                },
                 default => null,
             }, $input->{'arrayOfRefUnions'})
             : null;
         $arrayOfRefAndNotRefUnions = isset($input->{'arrayOfRefAndNotRefUnions'})
             ? array_map(fn ($i) => match (true) {
-                is_string($i) => $i,
-                (is_int($i) || is_float($i)) => (str_contains((string)$i, '.') ? (float)$i : (int)$i),
+                (is_array($i)
+                    && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || (is_int($i) || is_float($i)))))) =>
+                    array_map(fn ($i) => match (true) {
+                        is_string($i) => $i,
+                        (is_int($i) || is_float($i)) => (str_contains((string)$i, '.') ? (float)$i : (int)$i),
+                        default => null,
+                    }, $i),
+                (is_array($i) || is_array($i)) => match (true) {
+                    is_array($i) => $i,
+                    default => null,
+                },
                 default => null,
             }, $input->{'arrayOfRefAndNotRefUnions'})
             : null;
-        $arrayOfUnionOfTypedArrayAndString = isset($input->{'arrayOfUnionOfTypedArrayAndString'})
+        $arrayOfUnionOfStringAndArray = isset($input->{'arrayOfUnionOfStringAndArray'})
             ? array_map(fn ($i) => match (true) {
-                is_array($i),
+                (is_array($i)
+                    && count($i) === count(array_filter($i, fn ($i) => is_array($i)))) => array_map(fn ($i) => $i, $i),
                 is_string($i) => $i,
                 default => null,
-            }, $input->{'arrayOfUnionOfTypedArrayAndString'})
+            }, $input->{'arrayOfUnionOfStringAndArray'})
             : null;
         $arrayOfUnionWithOneType = isset($input->{'arrayOfUnionWithOneType'})
             ? array_map(fn ($i) => $i, $input->{'arrayOfUnionWithOneType'})
@@ -403,7 +502,7 @@ class MyClass
             $arrayOfUnions,
             $arrayOfRefUnions,
             $arrayOfRefAndNotRefUnions,
-            $arrayOfUnionOfTypedArrayAndString,
+            $arrayOfUnionOfStringAndArray,
             $arrayOfUnionWithOneType
         );
 
@@ -427,30 +526,58 @@ class MyClass
         if (isset($this->arrayOfUnions)) {
             $output['arrayOfUnions'] = array_map(fn ($i) => match (true) {
                 default => null,
-                is_string($i),
-                (is_int($i) || is_float($i)) => $i,
+                (is_array($i)
+                    && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || (is_int($i) || is_float($i)))))) =>
+                    array_map(fn ($i) => match (true) {
+                        default => null,
+                        is_string($i),
+                        (is_int($i) || is_float($i)) => $i,
+                    }, $i),
+                (is_array($i) || is_array($i)) => match (true) {
+                    default => null,
+                    is_array($i) => $i,
+                },
             }, $this->arrayOfUnions);
         }
         if (isset($this->arrayOfRefUnions)) {
             $output['arrayOfRefUnions'] = array_map(fn ($i) => match (true) {
                 default => null,
-                is_string($i),
-                (is_int($i) || is_float($i)) => $i,
+                (is_array($i)
+                    && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || (is_int($i) || is_float($i)))))) =>
+                    array_map(fn ($i) => match (true) {
+                        default => null,
+                        is_string($i),
+                        (is_int($i) || is_float($i)) => $i,
+                    }, $i),
+                (is_array($i) || is_array($i)) => match (true) {
+                    default => null,
+                    is_array($i) => $i,
+                },
             }, $this->arrayOfRefUnions);
         }
         if (isset($this->arrayOfRefAndNotRefUnions)) {
             $output['arrayOfRefAndNotRefUnions'] = array_map(fn ($i) => match (true) {
                 default => null,
-                is_string($i),
-                (is_int($i) || is_float($i)) => $i,
+                (is_array($i)
+                    && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || (is_int($i) || is_float($i)))))) =>
+                    array_map(fn ($i) => match (true) {
+                        default => null,
+                        is_string($i),
+                        (is_int($i) || is_float($i)) => $i,
+                    }, $i),
+                (is_array($i) || is_array($i)) => match (true) {
+                    default => null,
+                    is_array($i) => $i,
+                },
             }, $this->arrayOfRefAndNotRefUnions);
         }
-        if (isset($this->arrayOfUnionOfTypedArrayAndString)) {
-            $output['arrayOfUnionOfTypedArrayAndString'] = array_map(fn ($i) => match (true) {
+        if (isset($this->arrayOfUnionOfStringAndArray)) {
+            $output['arrayOfUnionOfStringAndArray'] = array_map(fn ($i) => match (true) {
                 default => null,
-                is_array($i),
+                (is_array($i)
+                    && count($i) === count(array_filter($i, fn ($i) => is_array($i)))) => array_map(fn ($i) => $i, $i),
                 is_string($i) => $i,
-            }, $this->arrayOfUnionOfTypedArrayAndString);
+            }, $this->arrayOfUnionOfStringAndArray);
         }
         if (isset($this->arrayOfUnionWithOneType)) {
             $output['arrayOfUnionWithOneType'] = array_map(fn ($i) => $i, $this->arrayOfUnionWithOneType);
@@ -471,30 +598,58 @@ class MyClass
         if (isset($this->arrayOfUnions)) {
             $output->{'arrayOfUnions'} = array_map(fn ($i) => match (true) {
                 default => null,
-                is_string($i),
-                (is_int($i) || is_float($i)) => $i,
+                (is_array($i)
+                    && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || (is_int($i) || is_float($i)))))) =>
+                    array_map(fn ($i) => match (true) {
+                        default => null,
+                        is_string($i),
+                        (is_int($i) || is_float($i)) => $i,
+                    }, $i),
+                (is_array($i) || is_array($i)) => match (true) {
+                    default => null,
+                    is_array($i) => $i,
+                },
             }, $this->arrayOfUnions);
         }
         if (isset($this->arrayOfRefUnions)) {
             $output->{'arrayOfRefUnions'} = array_map(fn ($i) => match (true) {
                 default => null,
-                is_string($i),
-                (is_int($i) || is_float($i)) => $i,
+                (is_array($i)
+                    && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || (is_int($i) || is_float($i)))))) =>
+                    array_map(fn ($i) => match (true) {
+                        default => null,
+                        is_string($i),
+                        (is_int($i) || is_float($i)) => $i,
+                    }, $i),
+                (is_array($i) || is_array($i)) => match (true) {
+                    default => null,
+                    is_array($i) => $i,
+                },
             }, $this->arrayOfRefUnions);
         }
         if (isset($this->arrayOfRefAndNotRefUnions)) {
             $output->{'arrayOfRefAndNotRefUnions'} = array_map(fn ($i) => match (true) {
                 default => null,
-                is_string($i),
-                (is_int($i) || is_float($i)) => $i,
+                (is_array($i)
+                    && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || (is_int($i) || is_float($i)))))) =>
+                    array_map(fn ($i) => match (true) {
+                        default => null,
+                        is_string($i),
+                        (is_int($i) || is_float($i)) => $i,
+                    }, $i),
+                (is_array($i) || is_array($i)) => match (true) {
+                    default => null,
+                    is_array($i) => $i,
+                },
             }, $this->arrayOfRefAndNotRefUnions);
         }
-        if (isset($this->arrayOfUnionOfTypedArrayAndString)) {
-            $output->{'arrayOfUnionOfTypedArrayAndString'} = array_map(fn ($i) => match (true) {
+        if (isset($this->arrayOfUnionOfStringAndArray)) {
+            $output->{'arrayOfUnionOfStringAndArray'} = array_map(fn ($i) => match (true) {
                 default => null,
-                is_array($i),
+                (is_array($i)
+                    && count($i) === count(array_filter($i, fn ($i) => is_array($i)))) => array_map(fn ($i) => $i, $i),
                 is_string($i) => $i,
-            }, $this->arrayOfUnionOfTypedArrayAndString);
+            }, $this->arrayOfUnionOfStringAndArray);
         }
         if (isset($this->arrayOfUnionWithOneType)) {
             $output->{'arrayOfUnionWithOneType'} = array_map(fn ($i) => $i, $this->arrayOfUnionWithOneType);
@@ -544,27 +699,49 @@ class MyClass
     {
         if (isset($this->arrayOfUnions)) {
             $this->arrayOfUnions = array_map(fn ($i) => match (true) {
-                is_string($i),
-                (is_int($i) || is_float($i)) => $i,
+                (is_array($i)
+                    && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || (is_int($i) || is_float($i)))))) =>
+                    array_map(fn ($i) => match (true) {
+                        is_string($i),
+                        (is_int($i) || is_float($i)) => $i,
+                    }, $i),
+                (is_array($i) || is_array($i)) => match (true) {
+                    is_array($i) => $i,
+                },
             }, $this->arrayOfUnions);
         }
         if (isset($this->arrayOfRefUnions)) {
             $this->arrayOfRefUnions = array_map(fn ($i) => match (true) {
-                is_string($i),
-                (is_int($i) || is_float($i)) => $i,
+                (is_array($i)
+                    && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || (is_int($i) || is_float($i)))))) =>
+                    array_map(fn ($i) => match (true) {
+                        is_string($i),
+                        (is_int($i) || is_float($i)) => $i,
+                    }, $i),
+                (is_array($i) || is_array($i)) => match (true) {
+                    is_array($i) => $i,
+                },
             }, $this->arrayOfRefUnions);
         }
         if (isset($this->arrayOfRefAndNotRefUnions)) {
             $this->arrayOfRefAndNotRefUnions = array_map(fn ($i) => match (true) {
-                is_string($i),
-                (is_int($i) || is_float($i)) => $i,
+                (is_array($i)
+                    && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || (is_int($i) || is_float($i)))))) =>
+                    array_map(fn ($i) => match (true) {
+                        is_string($i),
+                        (is_int($i) || is_float($i)) => $i,
+                    }, $i),
+                (is_array($i) || is_array($i)) => match (true) {
+                    is_array($i) => $i,
+                },
             }, $this->arrayOfRefAndNotRefUnions);
         }
-        if (isset($this->arrayOfUnionOfTypedArrayAndString)) {
-            $this->arrayOfUnionOfTypedArrayAndString = array_map(fn ($i) => match (true) {
-                is_array($i),
+        if (isset($this->arrayOfUnionOfStringAndArray)) {
+            $this->arrayOfUnionOfStringAndArray = array_map(fn ($i) => match (true) {
+                (is_array($i)
+                    && count($i) === count(array_filter($i, fn ($i) => is_array($i)))) => array_map(fn ($i) => $i, $i),
                 is_string($i) => $i,
-            }, $this->arrayOfUnionOfTypedArrayAndString);
+            }, $this->arrayOfUnionOfStringAndArray);
         }
         if (isset($this->arrayOfUnionWithOneType)) {
             $this->arrayOfUnionWithOneType = array_map(fn ($i) => $i, $this->arrayOfUnionWithOneType);
