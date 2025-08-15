@@ -5,7 +5,6 @@ namespace Helmich\Schema2Class\Generator\Property\Type\Array;
 
 use Helmich\Schema2Class\Generator\Class\ArgumentNames;
 use Helmich\Schema2Class\Generator\Class\MethodNames;
-use Helmich\Schema2Class\Generator\Class\VariableNames;
 use Helmich\Schema2Class\Generator\Expression\ArrayMapGenerator;
 use Helmich\Schema2Class\Generator\Expression\ArrowFunctionGenerator;
 use Helmich\Schema2Class\Generator\Expression\CallGenerator;
@@ -14,8 +13,8 @@ use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\PropertyBuilder;
 use Helmich\Schema2Class\Generator\Property\Type\AbstractProperty;
 use Helmich\Schema2Class\Generator\Property\Type\MixedProperty;
-use Helmich\Schema2Class\Generator\Property\Type\Object\NestedObjectProperty;
 use Helmich\Schema2Class\Generator\Property\Type\PropertyInterface;
+use Helmich\Schema2Class\Util\StringUtils;
 use Helmich\Schema2Class\Writer\WriterInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -103,48 +102,31 @@ class ObjectArrayProperty extends AbstractProperty
 
     public function typeAssertionExpr(string $expr): string
     {
-        if ($this->itemType instanceof MixedProperty) {
-            return "is_array({$expr})";
-        }
+        $innerAssertExpr = "\$item instanceof {$this->subTypeName()}";
 
-        $subClass = $this->subTypeName();
-        $phpVer = $this->request->getTargetPHPVersion();
-
-        $filterCallback = ArrowFunctionGenerator::make(
-            parameters: ['$item' => $subClass],
-            expr: "\$item instanceof {$subClass}",
-            phpVer: $phpVer,
-            returnType: 'bool',
-        );
-
-        $arrayFilter = CallGenerator::make(
-            callee: 'array_filter',
-            arguments: [$expr, $filterCallback],
-            phpVer: $phpVer,
-        );
-
-        $countExpr = CallGenerator::make(
-            callee: 'count',
-            arguments: [$arrayFilter],
-            phpVer: $phpVer,
-        );
-
-        return "(is_array({$expr}) && {$countExpr} === count({$expr}))";
+        return $this->buildAssertionExpr($expr, $innerAssertExpr);
     }
 
     public function inputAssertionExpr(string $expr): string
+    {
+        $VALIDATE_INPUT = MethodNames::VALIDATE_INPUT;
+        $innerAssertExpr = "{$this->subTypeName()}::{$VALIDATE_INPUT}(\$item, true)";
+
+        return $this->buildAssertionExpr($expr, $innerAssertExpr);
+    }
+
+    private function buildAssertionExpr(string $expr, string $innerAssertExpr): string
     {
         if ($this->itemType instanceof MixedProperty) {
             return "is_array({$expr})";
         }
 
         $subClass = $this->subTypeName();
-        $VALIDATE_INPUT = MethodNames::VALIDATE_INPUT;
         $phpVer = $this->request->getTargetPHPVersion();
 
         $filterCallback = ArrowFunctionGenerator::make(
             parameters: ['$item' => $subClass],
-            expr: "{$subClass}::{$VALIDATE_INPUT}(\$item, true)",
+            expr: $innerAssertExpr,
             phpVer: $phpVer,
             returnType: 'bool',
         );
@@ -161,7 +143,9 @@ class ObjectArrayProperty extends AbstractProperty
             phpVer: $phpVer,
         );
 
-        return "(is_array({$expr}) && {$countExpr} === count({$expr}))";
+        $countExprInd = StringUtils::indentCode("&& count({$expr}) === {$countExpr}");
+
+        return "(is_array({$expr})\n{$countExprInd})";
     }
 
     public function inputMappingExpr(string $expr, bool $asserted = false): string
