@@ -2,31 +2,37 @@
 
 declare(strict_types=1);
 
-namespace Ns\UnionObject_8_4;
+namespace Ns\UnionArrayObject_8_4;
 
-class MyClassObjectsUnionAlternative2
+class MyClassUnionOfOneArrayOfObjectsItem
 {
     /**
      * Schema used to validate input for creating instances of this class
      */
     private static array $_schema = [
         'properties' => [
-            'accountNumber' => [
+            'name' => [
                 'type' => 'string',
             ],
         ],
         'definitions' => [
-            'SomeObj1' => [
-                'properties' => [
-                    'a' => [
-                        'type' => 'string',
+            'ArrayOfObjects1' => [
+                'type' => 'array',
+                'items' => [
+                    'properties' => [
+                        'name' => [
+                            'type' => 'string',
+                        ],
                     ],
                 ],
             ],
-            'SomeObj2' => [
-                'properties' => [
-                    'a' => [
-                        'type' => 'string',
+            'ArrayOfObjects2' => [
+                'type' => 'array',
+                'items' => [
+                    'properties' => [
+                        'accountNumber' => [
+                            'type' => 'string',
+                        ],
                     ],
                 ],
             ],
@@ -37,7 +43,7 @@ class MyClassObjectsUnionAlternative2
      * Mapping of schema property names to this class's property names.
      */
     private static array $_namesMap = [
-        'accountNumber' => 'accountNumber',
+        'name' => 'name',
     ];
 
     /**
@@ -45,13 +51,13 @@ class MyClassObjectsUnionAlternative2
      */
     private \stdClass $_additionalProperties;
 
-    private ?string $accountNumber = null;
+    private ?string $name = null;
 
-    public function __construct(?string $accountNumber = null)
+    public function __construct(?string $name = null)
     {
         $this->_additionalProperties = new \stdClass();
 
-        $this->accountNumber = $accountNumber;
+        $this->name = $name;
     }
 
     /**
@@ -91,23 +97,23 @@ class MyClassObjectsUnionAlternative2
         return $clone;
     }
 
-    public function getAccountNumber(): ?string
+    public function getName(): ?string
     {
-        return $this->accountNumber ?? null;
+        return $this->name ?? null;
     }
 
-    public function withAccountNumber(string $accountNumber): self
+    public function withName(string $name): self
     {
         $clone = clone $this;
-        $clone->accountNumber = $accountNumber;
+        $clone->name = $name;
 
         return $clone;
     }
 
-    public function withoutAccountNumber(): self
+    public function withoutName(): self
     {
         $clone = clone $this;
-        unset($clone->accountNumber);
+        unset($clone->name);
 
         return $clone;
     }
@@ -117,19 +123,19 @@ class MyClassObjectsUnionAlternative2
      *
      * @param array|object $input Input data
      * @param bool $validate If `false`, validation against the schema will be skipped.
-     * @return MyClassObjectsUnionAlternative2 Created instance
+     * @return MyClassUnionOfOneArrayOfObjectsItem Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput(array|object $input, bool $validate = true): MyClassObjectsUnionAlternative2
+    public static function fromInput(array|object $input, bool $validate = true): MyClassUnionOfOneArrayOfObjectsItem
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $accountNumber = isset($input->{'accountNumber'}) ? $input->{'accountNumber'} : null;
+        $name = isset($input->{'name'}) ? $input->{'name'} : null;
 
-        $obj = new self($accountNumber);
+        $obj = new self($name);
 
         $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
         if (!empty($_additionalProperties)) {
@@ -148,8 +154,8 @@ class MyClassObjectsUnionAlternative2
     {
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
-        if (isset($this->accountNumber)) {
-            $output['accountNumber'] = $this->accountNumber;
+        if (isset($this->name)) {
+            $output['name'] = $this->name;
         }
 
         return $output;
@@ -164,8 +170,8 @@ class MyClassObjectsUnionAlternative2
     {
         $output = $this->_additionalProperties;
 
-        if (isset($this->accountNumber)) {
-            $output->{'accountNumber'} = $this->accountNumber;
+        if (isset($this->name)) {
+            $output->{'name'} = $this->name;
         }
 
         return $output;

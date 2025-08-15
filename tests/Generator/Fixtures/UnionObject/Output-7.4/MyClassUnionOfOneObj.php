@@ -19,14 +19,14 @@ class MyClassUnionOfOneObj
             'SomeObj1' => [
                 'properties' => [
                     'a' => [
-                        'type' => 'string a',
+                        'type' => 'string',
                     ],
                 ],
             ],
             'SomeObj2' => [
                 'properties' => [
                     'a' => [
-                        'type' => 'string b',
+                        'type' => 'string',
                     ],
                 ],
             ],

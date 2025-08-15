@@ -12,7 +12,7 @@ class SomeObj2
     private static array $_schema = [
         'properties' => [
             'a' => [
-                'type' => 'string b',
+                'type' => 'string',
             ],
         ],
     ];
@@ -29,15 +29,9 @@ class SomeObj2
      */
     private \stdClass $_additionalProperties;
 
-    /**
-     * @var mixed
-     */
-    private $a = null;
+    private ?string $a = null;
 
-    /**
-     * @param mixed $a
-     */
-    public function __construct($a = null)
+    public function __construct(?string $a = null)
     {
         $this->_additionalProperties = new \stdClass();
 
@@ -82,18 +76,12 @@ class SomeObj2
         return $clone;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getA()
+    public function getA(): ?string
     {
         return $this->a ?? null;
     }
 
-    /**
-     * @param mixed $a
-     */
-    public function withA($a): self
+    public function withA(string $a): self
     {
         $clone = clone $this;
         $clone->a = $a;
