@@ -7,6 +7,8 @@ use Helmich\Schema2Class\Generator\Class\ArgumentNames;
 use Helmich\Schema2Class\Generator\Class\MethodNames;
 use Helmich\Schema2Class\Generator\Class\VariableNames;
 use Helmich\Schema2Class\Generator\Expression\ArrayMapGenerator;
+use Helmich\Schema2Class\Generator\Expression\ArrowFunctionGenerator;
+use Helmich\Schema2Class\Generator\Expression\CallGenerator;
 use Helmich\Schema2Class\Generator\GeneratorException;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\PropertyBuilder;
@@ -59,10 +61,15 @@ class ObjectArrayProperty extends AbstractProperty
             return false;
         }
 
-        $hasProps = isset($itemSchema["properties"]) && is_array($itemSchema["properties"]) && count($itemSchema["properties"]) > 0;
+        $hasProps = isset($itemSchema["properties"])
+            && is_array($itemSchema["properties"])
+            && count($itemSchema["properties"]) > 0;
 
         return (
-            ((isset($itemSchema["type"]) && $itemSchema["type"] === "object") || isset($itemSchema["properties"]))
+            (
+                (isset($itemSchema["type"]) && $itemSchema["type"] === "object")
+                || isset($itemSchema["properties"])
+            )
             && $hasProps
         );
     }
@@ -100,14 +107,29 @@ class ObjectArrayProperty extends AbstractProperty
             return "is_array({$expr})";
         }
 
-        $st = $this->subTypeName();
+        $subClass = $this->subTypeName();
+        $phpVer = $this->request->getTargetPHPVersion();
 
-        return 
-            <<<PHP
-            is_array({$expr}) && count(array_filter({$expr}, function({$st} \$item) {
-                return \$item instanceof {$st};
-            })) === count({$expr})
-            PHP;
+        $filterCallback = ArrowFunctionGenerator::make(
+            parameters: ['$item' => $subClass],
+            expr: "\$item instanceof {$subClass}",
+            phpVer: $phpVer,
+            returnType: 'bool',
+        );
+
+        $arrayFilter = CallGenerator::make(
+            callee: 'array_filter',
+            arguments: [$expr, $filterCallback],
+            phpVer: $phpVer,
+        );
+
+        $countExpr = CallGenerator::make(
+            callee: 'count',
+            arguments: [$arrayFilter],
+            phpVer: $phpVer,
+        );
+
+        return "(is_array({$expr}) && {$countExpr} === count({$expr}))";
     }
 
     public function inputAssertionExpr(string $expr): string
@@ -116,15 +138,30 @@ class ObjectArrayProperty extends AbstractProperty
             return "is_array({$expr})";
         }
 
-        $st = $this->subTypeName();
+        $subClass = $this->subTypeName();
         $VALIDATE_INPUT = MethodNames::VALIDATE_INPUT;
+        $phpVer = $this->request->getTargetPHPVersion();
 
-        return 
-            <<<PHP
-            is_array({$expr}) && count(array_filter({$expr}, function({$st} \$item) {
-                return {$st}::{$VALIDATE_INPUT}(\$item, true);
-            })) === count({$expr})
-            PHP;
+        $filterCallback = ArrowFunctionGenerator::make(
+            parameters: ['$item' => $subClass],
+            expr: "{$subClass}::{$VALIDATE_INPUT}(\$item, true)",
+            phpVer: $phpVer,
+            returnType: 'bool',
+        );
+
+        $arrayFilter = CallGenerator::make(
+            callee: 'array_filter',
+            arguments: [$expr, $filterCallback],
+            phpVer: $phpVer,
+        );
+
+        $countExpr = CallGenerator::make(
+            callee: 'count',
+            arguments: [$arrayFilter],
+            phpVer: $phpVer,
+        );
+
+        return "(is_array({$expr}) && {$countExpr} === count({$expr}))";
     }
 
     public function inputMappingExpr(string $expr, bool $asserted = false): string
@@ -180,7 +217,7 @@ class ObjectArrayProperty extends AbstractProperty
                 phpVer: $this->request->getTargetPHPVersion(),
             );
         }
-        
+
         $useVars = [];
         if ($this->request->getClassHasDefaults()) {
             $useVars[] = '$' . ArgumentNames::INCL_DEFAULTS;
