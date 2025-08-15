@@ -7,7 +7,7 @@ use Helmich\Schema2Class\Util\StringUtils;
 
 class OrGenerator
 {
-    /** 
+    /**
      * @param array<int,string> $conditions operands/conditions
      * @param bool $parens Whether to wrap the resulting expression with parenthesis
      */
@@ -17,12 +17,9 @@ class OrGenerator
             throw new \InvalidArgumentException("Attempt to generate OR expression without conditions");
         }
         foreach ($conditions as $k => $cond) {
-            $n = $k + 1;
-            $type = gettype($cond);
-            if (empty($cond)) {
-                throw new \InvalidArgumentException("Condition #{$n} is empty: {$cond} ($type)");
-            } elseif (!is_string($cond)) {
-                throw new \InvalidArgumentException("Condition #{$n} is not string: {$cond} ($type)");
+            if ($cond === '') {
+                $n = $k + 1;
+                throw new \InvalidArgumentException("Condition #{$n} is empty");
             }
         }
 

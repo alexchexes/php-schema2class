@@ -9,12 +9,12 @@ use Helmich\Schema2Class\Util\TypeHint;
 
 class ArrowFunctionGenerator
 {
-    /** 
-     * @param string|array<string,string>[] $parameters  Array of callback params expressions, for example:
+    /**
+     * @param string|array<int, string>|array<string, string|null> $parameters  Array of callback params expressions, for example:
      * ```
      * ['$k', '$v', '...$rest']
      * ```
-     * or 
+     * or
      * ```
      * [
      *  '$k' => 'string',
@@ -22,8 +22,8 @@ class ArrowFunctionGenerator
      *  '...$rest' => null,
      * ]
      * ```
-     * If array key is integer, its value used as param, and no type hint added.  
-     * If array key is NOT integer, it is used as param, and value used as type hint. Use `null` to exclude type hint in that case.  
+     * If array key is integer, its value used as param, and no type hint added.
+     * If array key is NOT integer, it is used as param, and value used as type hint. Use `null` to exclude type hint in that case.
      */
     public static function make(
         string|array $parameters,
