@@ -156,7 +156,7 @@ class MyClassFooAlternative2
     }
 
     /**
-     * Converts this object back to a simple array that can be JSON-serialized
+     * Converts this object to array that can be JSON-serialized
      *
      * @return array Converted array
      */

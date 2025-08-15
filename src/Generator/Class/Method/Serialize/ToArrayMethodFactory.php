@@ -63,7 +63,7 @@ class ToArrayMethodFactory
         $tags[] = new ReturnTag(['array'], 'Converted array');
 
         $docBlock = new DocBlockGenerator(
-            shortDescription: 'Converts this object back to a simple array that can be JSON-serialized',
+            shortDescription: 'Converts this object to array that can be JSON-serialized',
             longDescription: null,
             tags: $tags
         );
