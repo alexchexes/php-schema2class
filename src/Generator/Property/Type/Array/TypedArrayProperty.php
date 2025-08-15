@@ -85,13 +85,13 @@ class TypedArrayProperty extends AbstractProperty
     }
 
     public function typeAssertionExpr(string $expr): string
-    {    
+    {
         $innerAssertExpr = $this->itemType->typeAssertionExpr('$i');
         return $this->buildAssertionExpr($expr, $innerAssertExpr);
     }
 
     public function inputAssertionExpr(string $expr): string
-    {    
+    {
         $innerAssertExpr = $this->itemType->inputAssertionExpr('$i');
         return $this->buildAssertionExpr($expr, $innerAssertExpr);
     }
