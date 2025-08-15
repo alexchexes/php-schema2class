@@ -25,11 +25,17 @@ class ArrayMapGeneratorTest extends TestCase
                 ],
                 'expectedByVer' => [
                     '5.6' => <<<'CODE'
-array_map(function($i) use ($var1, $var2) { return $i->fromInput(); }, $this->foo)
+array_map(
+    function($i) use ($var1, $var2) { return $i->fromInput(); },
+    $this->foo
+)
 CODE,
 
                     '7.0' => <<<'CODE'
-array_map(function($i) use ($var1, $var2) { return $i->fromInput(); }, $this->foo)
+array_map(
+    function($i) use ($var1, $var2) { return $i->fromInput(); },
+    $this->foo
+)
 CODE,
 
                     '7.4' => <<<'CODE'
@@ -52,10 +58,9 @@ CODE,
                 ],
                 'expectedByVer' => [
                     '5.6' => <<<'CODE'
-array_map(
-    function(array $i) use ($var1, $var2) { return SomeVeryLongClassNameToTestWrapping::fromInput($i); },
-    $this->foo
-)
+array_map(function(array $i) use ($var1, $var2) {
+    return SomeVeryLongClassNameToTestWrapping::fromInput($i);
+}, $this->foo)
 CODE,
 
                     '7.0' => <<<'CODE'

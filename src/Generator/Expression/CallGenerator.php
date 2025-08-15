@@ -19,7 +19,7 @@ class CallGenerator
      *                                                      Named arguments are supported on PHP 8+,  
      *                                                      pass assoc array like `['limit' => '10', 'strict' => 'true']`
      */
-    public static function make(string $callee, array $arguments, int $lengthToWrap = 100, string $phpVer = '5.6'): string
+    public static function make(string $callee, array $arguments, int $lengthToWrap = 100, string $phpVer = '5.6', bool $forceMultiline = false): string
     {
         $named = [];
         $positional = [];
@@ -38,28 +38,30 @@ class CallGenerator
         }
 
         $argsToRender = array_merge($named, $positional);
+        
+        if (!$forceMultiline) {
+            $result = "{$callee}(" . implode(', ', $argsToRender) . ")";
 
-        $result = "{$callee}(" . implode(', ', $argsToRender) . ")";
+            // determine multiline style: if the first arg is something like multiline callback or array
+            // which last line is sole "}" or "]", and there's no more than one additional arg - keep it concise
+            $rest = $argsToRender;
+            $first = array_shift($rest);
+            $linesOfFirst = explode("\n", $first);
+            if (
+                count($rest) <= 1 // only do this when there's one arg remaining
+                && mb_strlen($linesOfFirst[array_key_last($linesOfFirst)]) === 1 // the ending "}" or "]"
+            ) {
+                $makeMultiline = false;
+            } else {
+                $makeMultiline = str_contains($result, "\n") || mb_strlen($result) >= $lengthToWrap;
+            }
 
-        // determine multiline style: if the first arg is something like multiline callback or array
-        // which last line is sole "}" or "]", and the remaining args string is short - keep it concise
-        $rest = $argsToRender;
-        $first = array_shift($rest);
-        $linesOfFirst = explode("\n", $first);
-        $restAsString = implode(", ", $rest);
-        if (
-            mb_strlen($restAsString) < $lengthToWrap // only do this when the remaining args string is short
-            && mb_strlen($linesOfFirst[array_key_last($linesOfFirst)]) === 1 // the ending "}" or "]"
-        ) {
-            $makeMultiline = false;
-        } else {
-            $makeMultiline = str_contains($result, "\n") || mb_strlen($result) >= $lengthToWrap;
+            if (!$makeMultiline) {
+                return $result;
+            }
         }
-
-
-        if (!$makeMultiline) {
-            return $result;
-        }
+        
+        // multiline
 
         $argsBlock = implode(",\n", $argsToRender);
         if (Semver::satisfies($phpVer, '>=7.3')) {

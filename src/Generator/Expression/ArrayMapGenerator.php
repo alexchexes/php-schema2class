@@ -52,14 +52,16 @@ class ArrayMapGenerator
         if ($useVars) {
             $useClause = self::buildUseClause($useVars);
         }
-        
+
+        $forceMultiline = true;
         $buildCallBackExpr = fn(string $callbackBody): string =>
             "function({$itemType}{$itemParam}){$useClause}{$returnType} {{$callbackBody}}";
 
         $returnExpr = "return {$mapExpr};";
         $callbackExpr = $buildCallBackExpr(" {$returnExpr} ");
 
-        if (mb_strlen($callbackExpr) > $lengthToWrap) {
+        if (mb_strlen($callbackExpr) >= $lengthToWrap) {
+            $forceMultiline = false; // let CallGenerator decide on the wrapping style
             $callbackExpr = $buildCallBackExpr(
                 "\n" . StringUtils::indentCode($returnExpr) . "\n"
             );
@@ -73,6 +75,7 @@ class ArrayMapGenerator
             ],
             lengthToWrap: $lengthToWrap,
             phpVer: $phpVer,
+            forceMultiline: $forceMultiline,
         );
     }
 
@@ -84,7 +87,7 @@ class ArrayMapGenerator
 
         $joined = implode(', ', $useVars);
 
-        if (mb_strlen($joined) > 50) {
+        if (mb_strlen($joined) > 40) {
             $joined = implode(",\n", $useVars);
             $indented = StringUtils::indentCode($joined);
             return " use (\n{$indented}\n)";

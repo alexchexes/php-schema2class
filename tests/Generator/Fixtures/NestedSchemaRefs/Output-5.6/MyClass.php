@@ -235,9 +235,7 @@ class MyClass
 
         if (isset($this->files)) {
             $output['files'] = array_map(
-                function(MyClassFilesItem $i) {
-                    return $i->toArray();
-                },
+                function(MyClassFilesItem $i) { return $i->toArray(); },
                 $this->files
             );
         }
@@ -258,7 +256,10 @@ class MyClass
         $output = $this->_additionalProperties;
 
         if (isset($this->files)) {
-            $output->{'files'} = array_map(function(MyClassFilesItem $i) { return $i->toStdClass(); }, $this->files);
+            $output->{'files'} = array_map(
+                function(MyClassFilesItem $i) { return $i->toStdClass(); },
+                $this->files
+            );
         }
         if (isset($this->options)) {
             $output->{'options'} = $this->options->toStdClass();
@@ -306,7 +307,10 @@ class MyClass
     public function __clone()
     {
         if (isset($this->files)) {
-            $this->files = array_map(function(MyClassFilesItem $i) { return clone $i; }, $this->files);
+            $this->files = array_map(
+                function(MyClassFilesItem $i) { return clone $i; },
+                $this->files
+            );
         }
     }
 }

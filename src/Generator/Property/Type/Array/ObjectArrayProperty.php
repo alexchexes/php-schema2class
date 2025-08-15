@@ -66,60 +66,48 @@ class ObjectArrayProperty extends AbstractProperty
         );
     }
 
-    public function convertTypeToArray(): string
+    private function buildSerializeMappingExpr(string $method): string
     {
         $name = $this->propName();
-        $keyStr = $this->keyStr();
-        $st   = $this->subTypeName();
-        $outputVarName = VariableNames::OUTPUT;
 
         if ($this->itemType instanceof MixedProperty) {
-            return "\${$outputVarName}[{$keyStr}] = array_map(fn (\$i) => \$i, \$this->{$name});";
-        }
-
-        $TO_ARRAY = MethodNames::TO_ARRAY;
-        $inclDefaultsArg = $this->request->getClassHasDefaults() ? '$includeDefaults' : '';
-        
-        if ($this->request->isAtLeastPHP('7.4')) {
-            return "\${$outputVarName}[{$keyStr}] = array_map(fn ($st \$i) => \$i->{$TO_ARRAY}({$inclDefaultsArg}), \$this->{$name});";
-        }
-
-        $useExpr = $inclDefaultsArg ? "use ({$inclDefaultsArg}) " : '';
-        return
-            <<<PHP
-            \${$outputVarName}[{$keyStr}] = array_map(
-                function($st \$i) $useExpr{
-                    return \$i->{$TO_ARRAY}({$inclDefaultsArg});
-                },
-                \$this->{$name}
+            return ArrayMapGenerator::make(
+                itemParam: '$i',
+                mapExpr: '$i',
+                arrayExpr: "\$this->{$name}",
+                phpVer: $this->request->getTargetPHPVersion(),
             );
-            PHP;
-    }
-
-    public function convertTypeToStdClass(): string
-    {
-        $name = $this->propName();
-        $keyStr = $this->keyStr();
-        $st   = $this->subTypeName();
-        $outputVarName = VariableNames::OUTPUT;
-
-        if ($this->itemType instanceof MixedProperty) {
-            return "\${$outputVarName}->{{$keyStr}} = array_map(fn (\$i) => \$i, \$this->{$name});";
         }
 
-        $TO_STD_CLASS = MethodNames::TO_STD_CLASS;
-        $inclDefaultsArg = $this->request->getClassHasDefaults() ? '$includeDefaults' : '';
-        
-        $arrMapExpr = ArrayMapGenerator::make(
+        $st = $this->subTypeName();
+        $inclDefaultsArg = $this->request->getClassHasDefaults()
+            ? '$' . ArgumentNames::INCL_DEFAULTS
+            : '';
+
+        return ArrayMapGenerator::make(
             itemParam: '$i',
-            mapExpr: "\$i->{$TO_STD_CLASS}({$inclDefaultsArg})",
+            mapExpr: "\$i->{$method}({$inclDefaultsArg})",
             arrayExpr: "\$this->{$name}",
             itemType: $st,
             useVars: $inclDefaultsArg ? [$inclDefaultsArg] : null,
             phpVer: $this->request->getTargetPHPVersion(),
         );
+    }
 
-        return "\${$outputVarName}->{{$keyStr}} = {$arrMapExpr};";
+    public function convertTypeToArray(): string
+    {
+        $OUTPUT_VAR = VariableNames::OUTPUT;
+        $arrMapExpr = $this->buildSerializeMappingExpr(MethodNames::TO_ARRAY);
+
+        return "\${$OUTPUT_VAR}[{$this->keyStr()}] = {$arrMapExpr};";
+    }
+
+    public function convertTypeToStdClass(): string
+    {
+        $OUTPUT_VAR = VariableNames::OUTPUT;
+        $arrMapExpr = $this->buildSerializeMappingExpr(MethodNames::TO_STD_CLASS);
+
+        return "\${$OUTPUT_VAR}->{{$this->keyStr()}} = {$arrMapExpr};";
     }
 
     /**
