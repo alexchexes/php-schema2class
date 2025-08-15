@@ -5,11 +5,14 @@ namespace Helmich\Schema2Class\Generator\Property\Type\Array;
 
 use Helmich\Schema2Class\Generator\Class\ArgumentNames;
 use Helmich\Schema2Class\Generator\Expression\ArrayMapGenerator;
+use Helmich\Schema2Class\Generator\Expression\ArrowFunctionGenerator;
+use Helmich\Schema2Class\Generator\Expression\CallGenerator;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\PropertyBuilder;
 use Helmich\Schema2Class\Generator\Property\Type\AbstractProperty;
 use Helmich\Schema2Class\Generator\Property\Type\Object\NestedObjectProperty;
 use Helmich\Schema2Class\Generator\Property\Type\PropertyInterface;
+use Helmich\Schema2Class\Util\StringUtils;
 use Helmich\Schema2Class\Writer\WriterInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -76,14 +79,40 @@ class TypedArrayProperty extends AbstractProperty
 
     public function typeAssertionExpr(string $expr): string
     {
-        $inner = $this->itemType->typeAssertionExpr('$i');
-        return "is_array({$expr}) && count(array_filter({$expr}, fn(\$i) => {$inner})) === count({$expr})";
+        $innerAssertExpr = $this->itemType->typeAssertionExpr('$i');
+        return $this->buildAssertionExpr($expr, $innerAssertExpr);
     }
 
     public function inputAssertionExpr(string $expr): string
     {
-        $inner = $this->itemType->inputAssertionExpr('$i');
-        return "is_array({$expr}) && count(array_filter({$expr}, fn(\$i) => {$inner})) === count({$expr})";
+        $innerAssertExpr = $this->itemType->inputAssertionExpr('$i');
+        return $this->buildAssertionExpr($expr, $innerAssertExpr);
+    }
+
+    private function buildAssertionExpr(string $expr, string $innerAssertExpr): string
+    {
+        $phpVer = $this->request->getTargetPHPVersion();
+
+        $filterCallback = ArrowFunctionGenerator::make(
+            parameters: '$i',
+            expr: $innerAssertExpr,
+            phpVer: $phpVer,
+        );
+
+        $arrayFilter = CallGenerator::make(
+            callee: 'array_filter',
+            arguments: [$expr, $filterCallback],
+            phpVer: $phpVer,
+        );
+
+        $countExpr = CallGenerator::make(
+            callee: 'count',
+            arguments: [$arrayFilter],
+            phpVer: $phpVer,
+        );
+        
+        $ind = StringUtils::indentCode(...);
+        return "(is_array({$expr})\n{$ind("&& count({$expr}) === {$countExpr}")})";
     }
 
     public function inputMappingExpr(string $expr, bool $asserted = false): string

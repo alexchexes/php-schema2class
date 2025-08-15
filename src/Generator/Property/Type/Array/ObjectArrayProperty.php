@@ -100,6 +100,9 @@ class ObjectArrayProperty extends AbstractProperty
         return "array";
     }
 
+    /** 
+     * In this property, this method used only when generating anyOf/oneOf
+     */
     public function typeAssertionExpr(string $expr): string
     {
         $innerAssertExpr = "\$item instanceof {$this->subTypeName()}";
@@ -107,6 +110,9 @@ class ObjectArrayProperty extends AbstractProperty
         return $this->buildAssertionExpr($expr, $innerAssertExpr);
     }
 
+    /** 
+     * In this property, this method used only when generating anyOf/oneOf
+     */
     public function inputAssertionExpr(string $expr): string
     {
         $VALIDATE_INPUT = MethodNames::VALIDATE_INPUT;
@@ -143,9 +149,8 @@ class ObjectArrayProperty extends AbstractProperty
             phpVer: $phpVer,
         );
 
-        $countExprInd = StringUtils::indentCode("&& count({$expr}) === {$countExpr}");
-
-        return "(is_array({$expr})\n{$countExprInd})";
+        $ind = StringUtils::indentCode(...);
+        return "(is_array({$expr})\n{$ind("&& count({$expr}) === {$countExpr}")})";
     }
 
     public function inputMappingExpr(string $expr, bool $asserted = false): string
@@ -178,7 +183,7 @@ class ObjectArrayProperty extends AbstractProperty
     }
 
     /** 
-     * In this property, these ouput mapping methods used when generating anyOf/oneOf
+     * In this property, these ouput mapping methods used only when generating anyOf/oneOf
      */
     public function outputMappingExpr(string $expr): string
     {
