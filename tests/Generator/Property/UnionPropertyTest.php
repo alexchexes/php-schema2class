@@ -168,6 +168,12 @@ EOCODE;
                     ['required' => ['bar'], 'properties' => ['bar' => ['type' => 'date-time']]]
                 ]],
             ],
+            'arrays of objects' => [
+                ['oneOf' => [
+                    ['type' => 'array', 'items' => ['properties' => ['foo' => ['type' => 'int']]]],
+                    ['type' => 'array', 'items' => ['properties' => ['bar' => ['type' => 'string']]]],
+                ]],
+            ],
         ];
     }
 

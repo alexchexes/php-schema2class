@@ -9,8 +9,8 @@ use Helmich\Schema2Class\Util\TypeHint;
 
 class ArrowFunctionGenerator
 {
-    /** 
-     * @param string|array<string,string>[] $parameters  Array of callback params expressions, for example:
+    /**
+     * @param string|array<int,string>|array<string,string|null> $parameters Array of callback params expressions, for example:
      * ```
      * ['$k', '$v', '...$rest']
      * ```
