@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class\Generator\Property\Type\Array;
 
 use Helmich\Schema2Class\Generator\Class\ArgumentNames;
+use Helmich\Schema2Class\Generator\Expression\ArrayMapGenerator;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\PropertyBuilder;
 use Helmich\Schema2Class\Generator\Property\Type\AbstractProperty;
@@ -86,44 +87,48 @@ class TypedArrayProperty extends AbstractProperty
 
     public function inputMappingExpr(string $expr, bool $asserted = false): string
     {
-        $map = $this->itemType->inputMappingExpr('$i');
-        if ($this->request->isAtLeastPHP('7.4')) {
-            return "array_map(fn(\$i) => {$map}, {$expr})";
-        }
-
-        $use = ['$' . ArgumentNames::VALIDATE];
+        $useVars = ['$' . ArgumentNames::VALIDATE];
         if ($this->request->getClassHasDefaults()) {
-            $use[] = '$' . ArgumentNames::MATRLZ_DEFAULTS;
+            $useVars[] = '$' . ArgumentNames::MATRLZ_DEFAULTS;
         }
-        $useExpr = implode(', ', $use);
-        return "array_map(function(\$i) use ({$useExpr}) { return {$map}; }, {$expr})";
+        
+        return ArrayMapGenerator::make(
+            arrayExpr: $expr,
+            itemParam: '$i',
+            mapExpr: $this->itemType->inputMappingExpr('$i'),
+            useVars: $useVars,
+            phpVer: $this->request->getTargetPHPVersion(),
+        );
     }
 
     public function outputMappingExpr(string $expr): string
     {
-        $map = $this->itemType->outputMappingExpr('$i');
-        if ($this->request->isAtLeastPHP('7.4')) {
-            return "array_map(fn(\$i) => {$map}, {$expr})";
-        }
-        return "array_map(function(\$i) { return {$map}; }, {$expr})";
+        return ArrayMapGenerator::make(
+            arrayExpr: $expr,
+            itemParam: '$i',
+            mapExpr: $this->itemType->outputMappingExpr('$i'),
+            phpVer: $this->request->getTargetPHPVersion(),
+        );
     }
 
     public function outputMappingExprStdClass(string $expr): string
     {
-        $map = $this->itemType->outputMappingExprStdClass('$i');
-        if ($this->request->isAtLeastPHP('7.4')) {
-            return "array_map(fn(\$i) => {$map}, {$expr})";
-        }
-        return "array_map(function(\$i) { return {$map}; }, {$expr})";
+        return ArrayMapGenerator::make(
+            arrayExpr: $expr,
+            itemParam: '$i',
+            mapExpr: $this->itemType->outputMappingExprStdClass('$i'),
+            phpVer: $this->request->getTargetPHPVersion(),
+        );
     }
 
     public function cloneExpr(string $expr): string
     {
-        $map = $this->itemType->cloneExpr('$i');
-        if ($this->request->isAtLeastPHP('7.4')) {
-            return "array_map(fn(\$i) => {$map}, {$expr})";
-        }
-        return "array_map(function(\$i) { return {$map}; }, {$expr})";
+        return ArrayMapGenerator::make(
+            arrayExpr: $expr,
+            itemParam: '$i',
+            mapExpr: $this->itemType->cloneExpr('$i'),
+            phpVer: $this->request->getTargetPHPVersion(),
+        );
     }
 
     public function needsValidation(): bool

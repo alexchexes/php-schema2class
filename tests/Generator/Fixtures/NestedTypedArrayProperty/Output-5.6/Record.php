@@ -348,22 +348,30 @@ class Record
             )
             : null;
         $dataArrayNested = isset($input->{'dataArrayNested'})
-            ? array_map(function($i) use ($validate) { return array_map(
-                fn($i) => Phone::fromInput($i, $validate),
-                $i
-            ); }, $input->{'dataArrayNested'})
+            ? array_map(function($i) use ($validate) {
+                return array_map(
+                    fn($i) => Phone::fromInput($i, $validate),
+                    $i
+                );
+            }, $input->{'dataArrayNested'})
             : null;
         $dataArrayAnyOf = isset($input->{'dataArrayAnyOf'})
-            ? array_map(function($i) use ($validate) { return (Fio::validateInput($i, true)
-                ? Fio::fromInput($i, $validate)
-                : (Phone::validateInput($i, true) ? Phone::fromInput($i, $validate) : null)
-            ); }, $input->{'dataArrayAnyOf'})
+            ? array_map(function($i) use ($validate) {
+                return (Fio::validateInput($i, true)
+                    ? Fio::fromInput($i, $validate)
+                    : (Phone::validateInput($i, true) ? Phone::fromInput($i, $validate) : null)
+                );
+            }, $input->{'dataArrayAnyOf'})
             : null;
         $dataArrayNestedAnyOf = isset($input->{'dataArrayNestedAnyOf'})
-            ? array_map(function($i) use ($validate) { return array_map(function($i) use ($validate) { return (Fio::validateInput($i, true)
-                ? Fio::fromInput($i, $validate)
-                : (Phone::validateInput($i, true) ? Phone::fromInput($i, $validate) : null)
-            ); }, $i); }, $input->{'dataArrayNestedAnyOf'})
+            ? array_map(function($i) use ($validate) {
+                return array_map(function($i) use ($validate) {
+                    return (Fio::validateInput($i, true)
+                        ? Fio::fromInput($i, $validate)
+                        : (Phone::validateInput($i, true) ? Phone::fromInput($i, $validate) : null)
+                    );
+                }, $i);
+            }, $input->{'dataArrayNestedAnyOf'})
             : null;
 
         $obj = new self($dataArray, $dataArrayNested, $dataArrayAnyOf, $dataArrayNestedAnyOf);
@@ -389,13 +397,21 @@ class Record
             $output['dataArray'] = array_map(fn(Phone $i): array => $i->toArray(), $this->dataArray);
         }
         if (isset($this->dataArrayNested)) {
-            $output['dataArrayNested'] = array_map(function($i) { return array_map(fn(Phone $i): array => $i->toArray(), $i); }, $this->dataArrayNested);
+            $output['dataArrayNested'] = array_map(function($i) {
+                return array_map(fn(Phone $i): array => $i->toArray(), $i);
+            }, $this->dataArrayNested);
         }
         if (isset($this->dataArrayAnyOf)) {
-            $output['dataArrayAnyOf'] = array_map(function($i) { return ($i instanceof Fio ? $i->toArray() : ($i instanceof Phone ? $i->toArray() : null)); }, $this->dataArrayAnyOf);
+            $output['dataArrayAnyOf'] = array_map(function($i) {
+                return ($i instanceof Fio ? $i->toArray() : ($i instanceof Phone ? $i->toArray() : null));
+            }, $this->dataArrayAnyOf);
         }
         if (isset($this->dataArrayNestedAnyOf)) {
-            $output['dataArrayNestedAnyOf'] = array_map(function($i) { return array_map(function($i) { return ($i instanceof Fio ? $i->toArray() : ($i instanceof Phone ? $i->toArray() : null)); }, $i); }, $this->dataArrayNestedAnyOf);
+            $output['dataArrayNestedAnyOf'] = array_map(function($i) {
+                return array_map(function($i) {
+                    return ($i instanceof Fio ? $i->toArray() : ($i instanceof Phone ? $i->toArray() : null));
+                }, $i);
+            }, $this->dataArrayNestedAnyOf);
         }
 
         return $output;
@@ -414,19 +430,27 @@ class Record
             $output->{'dataArray'} = array_map(fn(Phone $i): object => $i->toStdClass(), $this->dataArray);
         }
         if (isset($this->dataArrayNested)) {
-            $output->{'dataArrayNested'} = array_map(function($i) { return array_map(fn(Phone $i): object => $i->toStdClass(), $i); }, $this->dataArrayNested);
+            $output->{'dataArrayNested'} = array_map(function($i) {
+                return array_map(fn(Phone $i): object => $i->toStdClass(), $i);
+            }, $this->dataArrayNested);
         }
         if (isset($this->dataArrayAnyOf)) {
-            $output->{'dataArrayAnyOf'} = array_map(function($i) { return ($i instanceof Fio
-                ? $i->toStdClass()
-                : ($i instanceof Phone ? $i->toStdClass() : null)
-            ); }, $this->dataArrayAnyOf);
+            $output->{'dataArrayAnyOf'} = array_map(function($i) {
+                return ($i instanceof Fio
+                    ? $i->toStdClass()
+                    : ($i instanceof Phone ? $i->toStdClass() : null)
+                );
+            }, $this->dataArrayAnyOf);
         }
         if (isset($this->dataArrayNestedAnyOf)) {
-            $output->{'dataArrayNestedAnyOf'} = array_map(function($i) { return array_map(function($i) { return ($i instanceof Fio
-                ? $i->toStdClass()
-                : ($i instanceof Phone ? $i->toStdClass() : null)
-            ); }, $i); }, $this->dataArrayNestedAnyOf);
+            $output->{'dataArrayNestedAnyOf'} = array_map(function($i) {
+                return array_map(function($i) {
+                    return ($i instanceof Fio
+                        ? $i->toStdClass()
+                        : ($i instanceof Phone ? $i->toStdClass() : null)
+                    );
+                }, $i);
+            }, $this->dataArrayNestedAnyOf);
         }
 
         return $output;
@@ -471,13 +495,22 @@ class Record
     public function __clone()
     {
         if (isset($this->dataArrayNested)) {
-            $this->dataArrayNested = array_map(function($i) { return $i; }, $this->dataArrayNested);
+            $this->dataArrayNested = array_map(
+                function($i) { return $i; },
+                $this->dataArrayNested
+            );
         }
         if (isset($this->dataArrayAnyOf)) {
-            $this->dataArrayAnyOf = array_map(function($i) { return ($i instanceof Fio ? $i : ($i instanceof Phone ? $i : $i)); }, $this->dataArrayAnyOf);
+            $this->dataArrayAnyOf = array_map(function($i) {
+                return ($i instanceof Fio ? $i : ($i instanceof Phone ? $i : $i));
+            }, $this->dataArrayAnyOf);
         }
         if (isset($this->dataArrayNestedAnyOf)) {
-            $this->dataArrayNestedAnyOf = array_map(function($i) { return array_map(function($i) { return ($i instanceof Fio ? $i : ($i instanceof Phone ? $i : $i)); }, $i); }, $this->dataArrayNestedAnyOf);
+            $this->dataArrayNestedAnyOf = array_map(function($i) {
+                return array_map(function($i) {
+                    return ($i instanceof Fio ? $i : ($i instanceof Phone ? $i : $i));
+                }, $i);
+            }, $this->dataArrayNestedAnyOf);
         }
     }
 }

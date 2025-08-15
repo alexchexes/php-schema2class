@@ -10,9 +10,9 @@ use Helmich\Schema2Class\Util\TypeHint;
 class ArrayMapGenerator
 {
     public static function make(
+        string $arrayExpr,
         string $itemParam,
         string $mapExpr,
-        string $arrayExpr,
         string $phpVer,
         ?array $useVars = [],
         array|string|null $itemType = null,

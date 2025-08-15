@@ -163,7 +163,7 @@ class MyClass
         }
 
         $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
-        $bar = isset($input->{'bar'}) ? array_map(fn($i) => $i, $input->{'bar'}) : null;
+        $bar = isset($input->{'bar'}) ? array_map(fn ($i) => $i, $input->{'bar'}) : null;
 
         $obj = new self($foo, $bar);
 
@@ -188,7 +188,7 @@ class MyClass
             $output['foo'] = $this->foo;
         }
         if (isset($this->bar)) {
-            $output['bar'] = array_map(fn($i) => json_decode(json_encode($i), true), $this->bar);
+            $output['bar'] = array_map(fn ($i) => json_decode(json_encode($i), true), $this->bar);
         }
 
         return $output;
@@ -207,7 +207,7 @@ class MyClass
             $output->{'foo'} = $this->foo;
         }
         if (isset($this->bar)) {
-            $output->{'bar'} = array_map(fn($i) => json_decode(json_encode($i)), $this->bar);
+            $output->{'bar'} = array_map(fn ($i) => json_decode(json_encode($i)), $this->bar);
         }
 
         return $output;
@@ -253,7 +253,7 @@ class MyClass
     public function __clone()
     {
         if (isset($this->bar)) {
-            $this->bar = array_map(fn($i) => $i, $this->bar);
+            $this->bar = array_map(fn ($i) => $i, $this->bar);
         }
     }
 }
