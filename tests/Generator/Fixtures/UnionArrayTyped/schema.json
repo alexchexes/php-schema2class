@@ -1,0 +1,63 @@
+{
+  "properties": {
+    "unionOfTypedArrays": {
+      "oneOf": [
+        {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        {
+          "type": "array",
+          "items": { "type": "number" }
+        }
+      ]
+    },
+    "refUnionOfTypedArrays": {
+      "oneOf": [
+        { "$ref": "#/definitions/TypedArrayStr" },
+        { "$ref": "#/definitions/TypedArrayNumber" }
+      ]
+    },
+    "refAndNotRefUnionOfTypedArrays": {
+      "oneOf": [
+        { "$ref": "#/definitions/TypedArrayStr" },
+        {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        { "$ref": "#/definitions/TypedArrayNumber" },
+        {
+          "type": "array",
+          "items": { "type": "number" }
+        }
+      ]
+    },
+    "unionOfTypedArrayAndString": {
+      "oneOf": [
+        {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        { "type": "string" }
+      ]
+    },
+    "unionOfOneTypedArray": {
+      "oneOf": [
+        {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      ]
+    }
+  },
+  "definitions": {
+    "TypedArrayStr": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "TypedArrayNumber": {
+      "type": "array",
+      "items": { "type": "number" }
+    }
+  }
+}
