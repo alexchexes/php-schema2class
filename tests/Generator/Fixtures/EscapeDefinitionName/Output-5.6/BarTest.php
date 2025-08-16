@@ -289,7 +289,7 @@ class BarTest
                 || $this->exampleProp instanceof MoiKlass
                 || $this->exampleProp instanceof FooTest_1
             )
-                ? $this->exampleProp
+                ? clone $this->exampleProp
                 : $this->exampleProp
             );
         }

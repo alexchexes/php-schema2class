@@ -279,5 +279,8 @@ class MyClass
         if (isset($this->files)) {
             $this->files = array_map(fn (MyClassFilesItem $i) => clone $i, $this->files);
         }
+        if (isset($this->options)) {
+            $this->options = clone $this->options;
+        }
     }
 }

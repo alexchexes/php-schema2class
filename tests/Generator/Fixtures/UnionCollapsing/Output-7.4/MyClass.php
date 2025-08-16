@@ -354,12 +354,4 @@ class MyClass
 
         return $validator->isValid();
     }
-
-    public function __clone()
-    {
-        $this->foo = ((is_string($this->foo)) ? $this->foo : $this->foo);
-        $this->bar = ((is_string($this->bar)) ? $this->bar : $this->bar);
-        $this->baz = ((is_string($this->baz)) ? $this->baz : $this->baz);
-        $this->qux = ((is_string($this->qux)) ? $this->qux : $this->qux);
-    }
 }

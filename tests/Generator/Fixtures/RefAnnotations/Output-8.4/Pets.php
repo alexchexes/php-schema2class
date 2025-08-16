@@ -255,4 +255,14 @@ class Pets
 
         return $validator->isValid();
     }
+
+    public function __clone()
+    {
+        if (isset($this->pet)) {
+            $this->pet = clone $this->pet;
+        }
+        if (isset($this->cat)) {
+            $this->cat = clone $this->cat;
+        }
+    }
 }

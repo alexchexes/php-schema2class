@@ -309,7 +309,7 @@ class Qux
                 ? $this->grox
                 : ((($this->grox instanceof Foo || $this->grox instanceof Bar))
                     ? (($this->grox instanceof Foo || $this->grox instanceof Bar)
-                        ? $this->grox
+                        ? clone $this->grox
                         : $this->grox
                     )
                     : $this->grox

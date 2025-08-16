@@ -6,6 +6,7 @@ namespace Helmich\Schema2Class\Generator\Property\Type;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeInterface;
 use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeEnum;
+use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeClass;
 
 /**
  * Property that refers to a generated PHP artifact (class, Enum) via `$ref`.
@@ -58,6 +59,13 @@ class ReferenceProperty extends AbstractProperty
     public function outputMappingExprStdClass(string $expr): string
     {
         return $this->refType->outputMappingExprStdClass($expr);
+    }
+
+    public function cloneExpr(string $expr): string
+    {
+        return $this->refType instanceof ReferencedTypeClass
+            ? "clone {$expr}"
+            : $expr;
     }
 
     public function needsValidation(): bool

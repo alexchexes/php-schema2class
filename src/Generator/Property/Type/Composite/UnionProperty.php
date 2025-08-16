@@ -453,6 +453,9 @@ class UnionProperty extends AbstractProperty
 
         $out = "null";
         foreach (array_reverse($conversions) as $map => $asserts) {
+            if ($map === $out) {
+                continue;
+            }
             $conditions = array_values(array_unique($asserts));
             $cond = OrGenerator::make($conditions);
             $out = TernaryGenerator::make($cond, $map, $out);
@@ -490,6 +493,9 @@ class UnionProperty extends AbstractProperty
 
         $out = "null";
         foreach (array_reverse($conversions) as $map => $asserts) {
+            if ($map === $out) {
+                continue;
+            }
             $conditions = array_values(array_unique($asserts));
             $cond = OrGenerator::make($conditions);
             $out = TernaryGenerator::make($cond, $map, $out);
@@ -527,6 +533,9 @@ class UnionProperty extends AbstractProperty
 
         $out = "null";
         foreach (array_reverse($conversions) as $map => $asserts) {
+            if ($map === $out) {
+                continue;
+            }
             $conditions = array_values(array_unique($asserts));
             $cond = OrGenerator::make($conditions);
             $out = TernaryGenerator::make($cond, $map, $out);
@@ -563,6 +572,9 @@ class UnionProperty extends AbstractProperty
 
         $out = $expr;
         foreach (array_reverse($conversions) as $map => $asserts) {
+            if ($map === $out) {
+                continue;
+            }
             $conditions = array_values(array_unique($asserts));
             $cond = OrGenerator::make($conditions);
             $out = TernaryGenerator::make($cond, $map, $out);

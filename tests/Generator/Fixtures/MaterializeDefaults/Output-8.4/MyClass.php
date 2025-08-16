@@ -1084,22 +1084,26 @@ class MyClass
         }
         if (isset($this->xyyz)) {
             $this->xyyz = match (true) {
-                is_string($this->xyyz) || $this->xyyz instanceof ObjDef || is_array($this->xyyz) => $this->xyyz,
+                is_string($this->xyyz) || is_array($this->xyyz) => $this->xyyz,
+                $this->xyyz instanceof ObjDef => clone $this->xyyz,
             };
         }
         if (isset($this->buux)) {
             $this->buux = match (true) {
-                is_string($this->buux) || is_array($this->buux) || $this->buux instanceof ObjDef => $this->buux,
+                is_string($this->buux) || is_array($this->buux) => $this->buux,
+                $this->buux instanceof ObjDef => clone $this->buux,
             };
         }
         if (isset($this->boic)) {
             $this->boic = match (true) {
-                is_string($this->boic) || is_array($this->boic) || $this->boic instanceof ObjDef => $this->boic,
+                is_string($this->boic) || is_array($this->boic) => $this->boic,
+                $this->boic instanceof ObjDef => clone $this->boic,
             };
         }
         if (isset($this->poox)) {
             $this->poox = match (true) {
-                is_string($this->poox) || $this->poox instanceof NumericKeysObj => $this->poox,
+                is_string($this->poox) => $this->poox,
+                $this->poox instanceof NumericKeysObj => clone $this->poox,
             };
         }
         if (isset($this->arrObjUnion)) {

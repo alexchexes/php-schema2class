@@ -237,4 +237,11 @@ class Address
 
         return $validator->isValid();
     }
+
+    public function __clone()
+    {
+        if (isset($this->name)) {
+            $this->name = clone $this->name;
+        }
+    }
 }

@@ -163,4 +163,11 @@ class MyGenericStringNumberField
 
         return $validator->isValid();
     }
+
+    public function __clone()
+    {
+        if (isset($this->field)) {
+            $this->field = clone $this->field;
+        }
+    }
 }

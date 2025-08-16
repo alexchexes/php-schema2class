@@ -167,4 +167,9 @@ class MyClass
 
         return $validator->isValid();
     }
+
+    public function __clone()
+    {
+        $this->value = clone $this->value;
+    }
 }

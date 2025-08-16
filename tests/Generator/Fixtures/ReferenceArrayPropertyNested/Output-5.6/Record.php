@@ -506,13 +506,13 @@ class Record
         }
         if (isset($this->dataArrayAnyOf)) {
             $this->dataArrayAnyOf = array_map(function($i) {
-                return (($i instanceof Phone || $i instanceof Fio) ? $i : $i);
+                return (($i instanceof Phone || $i instanceof Fio) ? clone $i : $i);
             }, $this->dataArrayAnyOf);
         }
         if (isset($this->dataArrayNestedAnyOf)) {
             $this->dataArrayNestedAnyOf = array_map(function($i) {
                 return array_map(function($i) {
-                    return (($i instanceof Phone || $i instanceof Fio) ? $i : $i);
+                    return (($i instanceof Phone || $i instanceof Fio) ? clone $i : $i);
                 }, $i);
             }, $this->dataArrayNestedAnyOf);
         }

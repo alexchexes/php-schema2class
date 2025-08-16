@@ -2672,7 +2672,7 @@ class MyClass
                 || $this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative2
             )
                 ? clone $this->ensureArgs1
-                : ((is_string($this->ensureArgs1)) ? $this->ensureArgs1 : $this->ensureArgs1)
+                : $this->ensureArgs1
             );
         }
         if (isset($this->ensureArgs2)) {

@@ -299,4 +299,11 @@ class MyClass
 
         return $validator->isValid();
     }
+
+    public function __clone()
+    {
+        if (isset($this->bar)) {
+            $this->bar = clone $this->bar;
+        }
+    }
 }
