@@ -393,8 +393,9 @@ class MyClass
             : null;
         $unionOfTypedArrayAndString = isset($input->{'unionOfTypedArrayAndString'})
             ? match (true) {
-                is_array($input->{'unionOfTypedArrayAndString'}),
-                is_string($input->{'unionOfTypedArrayAndString'}) => $input->{'unionOfTypedArrayAndString'},
+                is_array($input->{'unionOfTypedArrayAndString'})
+                    || is_string($input->{'unionOfTypedArrayAndString'}) =>
+                    $input->{'unionOfTypedArrayAndString'},
                 default => null,
             }
             : null;
@@ -442,8 +443,8 @@ class MyClass
         }
         if (isset($this->unionOfTypedArrayAndString)) {
             $output['unionOfTypedArrayAndString'] = match (true) {
-                is_array($this->unionOfTypedArrayAndString),
-                is_string($this->unionOfTypedArrayAndString) => $this->unionOfTypedArrayAndString,
+                is_array($this->unionOfTypedArrayAndString) || is_string($this->unionOfTypedArrayAndString) =>
+                    $this->unionOfTypedArrayAndString,
             };
         }
         if (isset($this->unionOfOneTypedArray)) {
@@ -479,8 +480,8 @@ class MyClass
         }
         if (isset($this->unionOfTypedArrayAndString)) {
             $output->{'unionOfTypedArrayAndString'} = match (true) {
-                is_array($this->unionOfTypedArrayAndString),
-                is_string($this->unionOfTypedArrayAndString) => $this->unionOfTypedArrayAndString,
+                is_array($this->unionOfTypedArrayAndString) || is_string($this->unionOfTypedArrayAndString) =>
+                    $this->unionOfTypedArrayAndString,
             };
         }
         if (isset($this->unionOfOneTypedArray)) {
@@ -546,8 +547,8 @@ class MyClass
         }
         if (isset($this->unionOfTypedArrayAndString)) {
             $this->unionOfTypedArrayAndString = match (true) {
-                is_array($this->unionOfTypedArrayAndString),
-                is_string($this->unionOfTypedArrayAndString) => $this->unionOfTypedArrayAndString,
+                is_array($this->unionOfTypedArrayAndString) || is_string($this->unionOfTypedArrayAndString) =>
+                    $this->unionOfTypedArrayAndString,
             };
         }
     }

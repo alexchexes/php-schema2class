@@ -324,16 +324,16 @@ class Record
             )
             : null;
         $dataArrayAnyOf = isset($input->{'dataArrayAnyOf'})
-            ? array_map(fn ($i) => (Fio::validateInput($i, true)
-                ? Fio::fromInput($i, $validate)
-                : (Phone::validateInput($i, true) ? Phone::fromInput($i, $validate) : null)
+            ? array_map(fn ($i) => ((Phone::validateInput($i, true))
+                ? Phone::fromInput($i, $validate)
+                : ((Fio::validateInput($i, true)) ? Fio::fromInput($i, $validate) : null)
             ), $input->{'dataArrayAnyOf'})
             : null;
         $dataArrayNestedAnyOf = isset($input->{'dataArrayNestedAnyOf'})
             ? array_map(
-                fn ($i) => array_map(fn ($i) => (Fio::validateInput($i, true)
-                    ? Fio::fromInput($i, $validate)
-                    : (Phone::validateInput($i, true) ? Phone::fromInput($i, $validate) : null)
+                fn ($i) => array_map(fn ($i) => ((Phone::validateInput($i, true))
+                    ? Phone::fromInput($i, $validate)
+                    : ((Fio::validateInput($i, true)) ? Fio::fromInput($i, $validate) : null)
                 ), $i),
                 $input->{'dataArrayNestedAnyOf'},
             )
@@ -366,15 +366,15 @@ class Record
         }
         if (isset($this->dataArrayAnyOf)) {
             $output['dataArrayAnyOf'] = array_map(
-                fn ($i) => ($i instanceof Fio ? $i->toArray() : ($i instanceof Phone ? $i->toArray() : null)),
+                fn ($i) => (($i instanceof Phone || $i instanceof Fio) ? $i->toArray() : null),
                 $this->dataArrayAnyOf,
             );
         }
         if (isset($this->dataArrayNestedAnyOf)) {
-            $output['dataArrayNestedAnyOf'] = array_map(fn ($i) => array_map(
-                fn ($i) => ($i instanceof Fio ? $i->toArray() : ($i instanceof Phone ? $i->toArray() : null)),
-                $i,
-            ), $this->dataArrayNestedAnyOf);
+            $output['dataArrayNestedAnyOf'] = array_map(
+                fn ($i) => array_map(fn ($i) => (($i instanceof Phone || $i instanceof Fio) ? $i->toArray() : null), $i),
+                $this->dataArrayNestedAnyOf,
+            );
         }
 
         return $output;
@@ -399,17 +399,14 @@ class Record
             );
         }
         if (isset($this->dataArrayAnyOf)) {
-            $output->{'dataArrayAnyOf'} = array_map(fn ($i) => ($i instanceof Fio
-                ? $i->toStdClass()
-                : ($i instanceof Phone ? $i->toStdClass() : null)
-            ), $this->dataArrayAnyOf);
+            $output->{'dataArrayAnyOf'} = array_map(
+                fn ($i) => (($i instanceof Phone || $i instanceof Fio) ? $i->toStdClass() : null),
+                $this->dataArrayAnyOf,
+            );
         }
         if (isset($this->dataArrayNestedAnyOf)) {
             $output->{'dataArrayNestedAnyOf'} = array_map(
-                fn ($i) => array_map(fn ($i) => ($i instanceof Fio
-                    ? $i->toStdClass()
-                    : ($i instanceof Phone ? $i->toStdClass() : null)
-                ), $i),
+                fn ($i) => array_map(fn ($i) => (($i instanceof Phone || $i instanceof Fio) ? $i->toStdClass() : null), $i),
                 $this->dataArrayNestedAnyOf,
             );
         }
@@ -460,14 +457,11 @@ class Record
             $this->dataArrayNested = array_map(fn ($i) => $i, $this->dataArrayNested);
         }
         if (isset($this->dataArrayAnyOf)) {
-            $this->dataArrayAnyOf = array_map(
-                fn ($i) => ($i instanceof Fio ? $i : ($i instanceof Phone ? $i : $i)),
-                $this->dataArrayAnyOf,
-            );
+            $this->dataArrayAnyOf = array_map(fn ($i) => (($i instanceof Phone || $i instanceof Fio) ? $i : $i), $this->dataArrayAnyOf);
         }
         if (isset($this->dataArrayNestedAnyOf)) {
             $this->dataArrayNestedAnyOf = array_map(
-                fn ($i) => array_map(fn ($i) => ($i instanceof Fio ? $i : ($i instanceof Phone ? $i : $i)), $i),
+                fn ($i) => array_map(fn ($i) => (($i instanceof Phone || $i instanceof Fio) ? $i : $i), $i),
                 $this->dataArrayNestedAnyOf,
             );
         }

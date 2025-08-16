@@ -413,22 +413,24 @@ class MyClass
         }
 
         $arrayOfObjectsUnion = isset($input->{'arrayOfObjectsUnion'})
-            ? ((is_array($input->{'arrayOfObjectsUnion'})
+            ? (((is_array($input->{'arrayOfObjectsUnion'})
                 && count($input->{'arrayOfObjectsUnion'}) === count(array_filter(
                     $input->{'arrayOfObjectsUnion'},
-                    fn (MyClassArrayOfObjectsUnionAlternative2Item $item): bool => MyClassArrayOfObjectsUnionAlternative2Item::validateInput($item, true),
+                    fn (MyClassArrayOfObjectsUnionAlternative1Item $item): bool => MyClassArrayOfObjectsUnionAlternative1Item::validateInput($item, true),
                 )))
+            )
                 ? array_map(
-                    fn ($i): MyClassArrayOfObjectsUnionAlternative2Item => MyClassArrayOfObjectsUnionAlternative2Item::fromInput($i, $validate),
+                    fn ($i): MyClassArrayOfObjectsUnionAlternative1Item => MyClassArrayOfObjectsUnionAlternative1Item::fromInput($i, $validate),
                     $input->{'arrayOfObjectsUnion'},
                 )
-                : ((is_array($input->{'arrayOfObjectsUnion'})
+                : (((is_array($input->{'arrayOfObjectsUnion'})
                     && count($input->{'arrayOfObjectsUnion'}) === count(array_filter(
                         $input->{'arrayOfObjectsUnion'},
-                        fn (MyClassArrayOfObjectsUnionAlternative1Item $item): bool => MyClassArrayOfObjectsUnionAlternative1Item::validateInput($item, true),
+                        fn (MyClassArrayOfObjectsUnionAlternative2Item $item): bool => MyClassArrayOfObjectsUnionAlternative2Item::validateInput($item, true),
                     )))
+                )
                     ? array_map(
-                        fn ($i): MyClassArrayOfObjectsUnionAlternative1Item => MyClassArrayOfObjectsUnionAlternative1Item::fromInput($i, $validate),
+                        fn ($i): MyClassArrayOfObjectsUnionAlternative2Item => MyClassArrayOfObjectsUnionAlternative2Item::fromInput($i, $validate),
                         $input->{'arrayOfObjectsUnion'},
                     )
                     : null
@@ -436,22 +438,24 @@ class MyClass
             )
             : null;
         $refArrayOfObjectsUnion = isset($input->{'refArrayOfObjectsUnion'})
-            ? ((is_array($input->{'refArrayOfObjectsUnion'})
+            ? (((is_array($input->{'refArrayOfObjectsUnion'})
                 && count($input->{'refArrayOfObjectsUnion'}) === count(array_filter(
                     $input->{'refArrayOfObjectsUnion'},
-                    fn (MyClassRefArrayOfObjectsUnionAlternative2Item $item): bool => MyClassRefArrayOfObjectsUnionAlternative2Item::validateInput($item, true),
+                    fn (MyClassRefArrayOfObjectsUnionAlternative1Item $item): bool => MyClassRefArrayOfObjectsUnionAlternative1Item::validateInput($item, true),
                 )))
+            )
                 ? array_map(
-                    fn ($i): MyClassRefArrayOfObjectsUnionAlternative2Item => MyClassRefArrayOfObjectsUnionAlternative2Item::fromInput($i, $validate),
+                    fn ($i): MyClassRefArrayOfObjectsUnionAlternative1Item => MyClassRefArrayOfObjectsUnionAlternative1Item::fromInput($i, $validate),
                     $input->{'refArrayOfObjectsUnion'},
                 )
-                : ((is_array($input->{'refArrayOfObjectsUnion'})
+                : (((is_array($input->{'refArrayOfObjectsUnion'})
                     && count($input->{'refArrayOfObjectsUnion'}) === count(array_filter(
                         $input->{'refArrayOfObjectsUnion'},
-                        fn (MyClassRefArrayOfObjectsUnionAlternative1Item $item): bool => MyClassRefArrayOfObjectsUnionAlternative1Item::validateInput($item, true),
+                        fn (MyClassRefArrayOfObjectsUnionAlternative2Item $item): bool => MyClassRefArrayOfObjectsUnionAlternative2Item::validateInput($item, true),
                     )))
+                )
                     ? array_map(
-                        fn ($i): MyClassRefArrayOfObjectsUnionAlternative1Item => MyClassRefArrayOfObjectsUnionAlternative1Item::fromInput($i, $validate),
+                        fn ($i): MyClassRefArrayOfObjectsUnionAlternative2Item => MyClassRefArrayOfObjectsUnionAlternative2Item::fromInput($i, $validate),
                         $input->{'refArrayOfObjectsUnion'},
                     )
                     : null
@@ -459,40 +463,44 @@ class MyClass
             )
             : null;
         $refAndNotRefArrayOfObjectsUnion = isset($input->{'refAndNotRefArrayOfObjectsUnion'})
-            ? ((is_array($input->{'refAndNotRefArrayOfObjectsUnion'})
+            ? (((is_array($input->{'refAndNotRefArrayOfObjectsUnion'})
                 && count($input->{'refAndNotRefArrayOfObjectsUnion'}) === count(array_filter(
                     $input->{'refAndNotRefArrayOfObjectsUnion'},
-                    fn (MyClassRefAndNotRefArrayOfObjectsUnionAlternative4Item $item): bool => MyClassRefAndNotRefArrayOfObjectsUnionAlternative4Item::validateInput($item, true),
+                    fn (MyClassRefAndNotRefArrayOfObjectsUnionAlternative1Item $item): bool => MyClassRefAndNotRefArrayOfObjectsUnionAlternative1Item::validateInput($item, true),
                 )))
+            )
                 ? array_map(
-                    fn ($i): MyClassRefAndNotRefArrayOfObjectsUnionAlternative4Item => MyClassRefAndNotRefArrayOfObjectsUnionAlternative4Item::fromInput($i, $validate),
+                    fn ($i): MyClassRefAndNotRefArrayOfObjectsUnionAlternative1Item => MyClassRefAndNotRefArrayOfObjectsUnionAlternative1Item::fromInput($i, $validate),
                     $input->{'refAndNotRefArrayOfObjectsUnion'},
                 )
-                : ((is_array($input->{'refAndNotRefArrayOfObjectsUnion'})
+                : (((is_array($input->{'refAndNotRefArrayOfObjectsUnion'})
                     && count($input->{'refAndNotRefArrayOfObjectsUnion'}) === count(array_filter(
                         $input->{'refAndNotRefArrayOfObjectsUnion'},
-                        fn (MyClassRefAndNotRefArrayOfObjectsUnionAlternative3Item $item): bool => MyClassRefAndNotRefArrayOfObjectsUnionAlternative3Item::validateInput($item, true),
+                        fn (MyClassRefAndNotRefArrayOfObjectsUnionAlternative2Item $item): bool => MyClassRefAndNotRefArrayOfObjectsUnionAlternative2Item::validateInput($item, true),
                     )))
+                )
                     ? array_map(
-                        fn ($i): MyClassRefAndNotRefArrayOfObjectsUnionAlternative3Item => MyClassRefAndNotRefArrayOfObjectsUnionAlternative3Item::fromInput($i, $validate),
+                        fn ($i): MyClassRefAndNotRefArrayOfObjectsUnionAlternative2Item => MyClassRefAndNotRefArrayOfObjectsUnionAlternative2Item::fromInput($i, $validate),
                         $input->{'refAndNotRefArrayOfObjectsUnion'},
                     )
-                    : ((is_array($input->{'refAndNotRefArrayOfObjectsUnion'})
+                    : (((is_array($input->{'refAndNotRefArrayOfObjectsUnion'})
                         && count($input->{'refAndNotRefArrayOfObjectsUnion'}) === count(array_filter(
                             $input->{'refAndNotRefArrayOfObjectsUnion'},
-                            fn (MyClassRefAndNotRefArrayOfObjectsUnionAlternative2Item $item): bool => MyClassRefAndNotRefArrayOfObjectsUnionAlternative2Item::validateInput($item, true),
+                            fn (MyClassRefAndNotRefArrayOfObjectsUnionAlternative3Item $item): bool => MyClassRefAndNotRefArrayOfObjectsUnionAlternative3Item::validateInput($item, true),
                         )))
+                    )
                         ? array_map(
-                            fn ($i): MyClassRefAndNotRefArrayOfObjectsUnionAlternative2Item => MyClassRefAndNotRefArrayOfObjectsUnionAlternative2Item::fromInput($i, $validate),
+                            fn ($i): MyClassRefAndNotRefArrayOfObjectsUnionAlternative3Item => MyClassRefAndNotRefArrayOfObjectsUnionAlternative3Item::fromInput($i, $validate),
                             $input->{'refAndNotRefArrayOfObjectsUnion'},
                         )
-                        : ((is_array($input->{'refAndNotRefArrayOfObjectsUnion'})
+                        : (((is_array($input->{'refAndNotRefArrayOfObjectsUnion'})
                             && count($input->{'refAndNotRefArrayOfObjectsUnion'}) === count(array_filter(
                                 $input->{'refAndNotRefArrayOfObjectsUnion'},
-                                fn (MyClassRefAndNotRefArrayOfObjectsUnionAlternative1Item $item): bool => MyClassRefAndNotRefArrayOfObjectsUnionAlternative1Item::validateInput($item, true),
+                                fn (MyClassRefAndNotRefArrayOfObjectsUnionAlternative4Item $item): bool => MyClassRefAndNotRefArrayOfObjectsUnionAlternative4Item::validateInput($item, true),
                             )))
+                        )
                             ? array_map(
-                                fn ($i): MyClassRefAndNotRefArrayOfObjectsUnionAlternative1Item => MyClassRefAndNotRefArrayOfObjectsUnionAlternative1Item::fromInput($i, $validate),
+                                fn ($i): MyClassRefAndNotRefArrayOfObjectsUnionAlternative4Item => MyClassRefAndNotRefArrayOfObjectsUnionAlternative4Item::fromInput($i, $validate),
                                 $input->{'refAndNotRefArrayOfObjectsUnion'},
                             )
                             : null
@@ -502,17 +510,18 @@ class MyClass
             )
             : null;
         $arrayOfObjAndStringUnion = isset($input->{'arrayOfObjAndStringUnion'})
-            ? (is_string($input->{'arrayOfObjAndStringUnion'})
-                ? $input->{'arrayOfObjAndStringUnion'}
-                : ((is_array($input->{'arrayOfObjAndStringUnion'})
-                    && count($input->{'arrayOfObjAndStringUnion'}) === count(array_filter(
-                        $input->{'arrayOfObjAndStringUnion'},
-                        fn (MyClassArrayOfObjAndStringUnionAlternative1Item $item): bool => MyClassArrayOfObjAndStringUnionAlternative1Item::validateInput($item, true),
-                    )))
-                    ? array_map(
-                        fn ($i): MyClassArrayOfObjAndStringUnionAlternative1Item => MyClassArrayOfObjAndStringUnionAlternative1Item::fromInput($i, $validate),
-                        $input->{'arrayOfObjAndStringUnion'},
-                    )
+            ? (((is_array($input->{'arrayOfObjAndStringUnion'})
+                && count($input->{'arrayOfObjAndStringUnion'}) === count(array_filter(
+                    $input->{'arrayOfObjAndStringUnion'},
+                    fn (MyClassArrayOfObjAndStringUnionAlternative1Item $item): bool => MyClassArrayOfObjAndStringUnionAlternative1Item::validateInput($item, true),
+                )))
+            )
+                ? array_map(
+                    fn ($i): MyClassArrayOfObjAndStringUnionAlternative1Item => MyClassArrayOfObjAndStringUnionAlternative1Item::fromInput($i, $validate),
+                    $input->{'arrayOfObjAndStringUnion'},
+                )
+                : ((is_string($input->{'arrayOfObjAndStringUnion'}))
+                    ? $input->{'arrayOfObjAndStringUnion'}
                     : null
                 )
             )
@@ -826,22 +835,24 @@ class MyClass
     public function __clone()
     {
         if (isset($this->arrayOfObjectsUnion)) {
-            $this->arrayOfObjectsUnion = ((is_array($this->arrayOfObjectsUnion)
+            $this->arrayOfObjectsUnion = (((is_array($this->arrayOfObjectsUnion)
                 && count($this->arrayOfObjectsUnion) === count(array_filter(
                     $this->arrayOfObjectsUnion,
-                    fn (MyClassArrayOfObjectsUnionAlternative2Item $item): bool => $item instanceof MyClassArrayOfObjectsUnionAlternative2Item,
+                    fn (MyClassArrayOfObjectsUnionAlternative1Item $item): bool => $item instanceof MyClassArrayOfObjectsUnionAlternative1Item,
                 )))
+            )
                 ? array_map(
-                    fn (MyClassArrayOfObjectsUnionAlternative2Item $i) => clone $i,
+                    fn (MyClassArrayOfObjectsUnionAlternative1Item $i) => clone $i,
                     $this->arrayOfObjectsUnion,
                 )
-                : ((is_array($this->arrayOfObjectsUnion)
+                : (((is_array($this->arrayOfObjectsUnion)
                     && count($this->arrayOfObjectsUnion) === count(array_filter(
                         $this->arrayOfObjectsUnion,
-                        fn (MyClassArrayOfObjectsUnionAlternative1Item $item): bool => $item instanceof MyClassArrayOfObjectsUnionAlternative1Item,
+                        fn (MyClassArrayOfObjectsUnionAlternative2Item $item): bool => $item instanceof MyClassArrayOfObjectsUnionAlternative2Item,
                     )))
+                )
                     ? array_map(
-                        fn (MyClassArrayOfObjectsUnionAlternative1Item $i) => clone $i,
+                        fn (MyClassArrayOfObjectsUnionAlternative2Item $i) => clone $i,
                         $this->arrayOfObjectsUnion,
                     )
                     : $this->arrayOfObjectsUnion
@@ -849,22 +860,24 @@ class MyClass
             );
         }
         if (isset($this->refArrayOfObjectsUnion)) {
-            $this->refArrayOfObjectsUnion = ((is_array($this->refArrayOfObjectsUnion)
+            $this->refArrayOfObjectsUnion = (((is_array($this->refArrayOfObjectsUnion)
                 && count($this->refArrayOfObjectsUnion) === count(array_filter(
                     $this->refArrayOfObjectsUnion,
-                    fn (MyClassRefArrayOfObjectsUnionAlternative2Item $item): bool => $item instanceof MyClassRefArrayOfObjectsUnionAlternative2Item,
+                    fn (MyClassRefArrayOfObjectsUnionAlternative1Item $item): bool => $item instanceof MyClassRefArrayOfObjectsUnionAlternative1Item,
                 )))
+            )
                 ? array_map(
-                    fn (MyClassRefArrayOfObjectsUnionAlternative2Item $i) => clone $i,
+                    fn (MyClassRefArrayOfObjectsUnionAlternative1Item $i) => clone $i,
                     $this->refArrayOfObjectsUnion,
                 )
-                : ((is_array($this->refArrayOfObjectsUnion)
+                : (((is_array($this->refArrayOfObjectsUnion)
                     && count($this->refArrayOfObjectsUnion) === count(array_filter(
                         $this->refArrayOfObjectsUnion,
-                        fn (MyClassRefArrayOfObjectsUnionAlternative1Item $item): bool => $item instanceof MyClassRefArrayOfObjectsUnionAlternative1Item,
+                        fn (MyClassRefArrayOfObjectsUnionAlternative2Item $item): bool => $item instanceof MyClassRefArrayOfObjectsUnionAlternative2Item,
                     )))
+                )
                     ? array_map(
-                        fn (MyClassRefArrayOfObjectsUnionAlternative1Item $i) => clone $i,
+                        fn (MyClassRefArrayOfObjectsUnionAlternative2Item $i) => clone $i,
                         $this->refArrayOfObjectsUnion,
                     )
                     : $this->refArrayOfObjectsUnion
@@ -872,40 +885,44 @@ class MyClass
             );
         }
         if (isset($this->refAndNotRefArrayOfObjectsUnion)) {
-            $this->refAndNotRefArrayOfObjectsUnion = ((is_array($this->refAndNotRefArrayOfObjectsUnion)
+            $this->refAndNotRefArrayOfObjectsUnion = (((is_array($this->refAndNotRefArrayOfObjectsUnion)
                 && count($this->refAndNotRefArrayOfObjectsUnion) === count(array_filter(
                     $this->refAndNotRefArrayOfObjectsUnion,
-                    fn (MyClassRefAndNotRefArrayOfObjectsUnionAlternative4Item $item): bool => $item instanceof MyClassRefAndNotRefArrayOfObjectsUnionAlternative4Item,
+                    fn (MyClassRefAndNotRefArrayOfObjectsUnionAlternative1Item $item): bool => $item instanceof MyClassRefAndNotRefArrayOfObjectsUnionAlternative1Item,
                 )))
+            )
                 ? array_map(
-                    fn (MyClassRefAndNotRefArrayOfObjectsUnionAlternative4Item $i) => clone $i,
+                    fn (MyClassRefAndNotRefArrayOfObjectsUnionAlternative1Item $i) => clone $i,
                     $this->refAndNotRefArrayOfObjectsUnion,
                 )
-                : ((is_array($this->refAndNotRefArrayOfObjectsUnion)
+                : (((is_array($this->refAndNotRefArrayOfObjectsUnion)
                     && count($this->refAndNotRefArrayOfObjectsUnion) === count(array_filter(
                         $this->refAndNotRefArrayOfObjectsUnion,
-                        fn (MyClassRefAndNotRefArrayOfObjectsUnionAlternative3Item $item): bool => $item instanceof MyClassRefAndNotRefArrayOfObjectsUnionAlternative3Item,
+                        fn (MyClassRefAndNotRefArrayOfObjectsUnionAlternative2Item $item): bool => $item instanceof MyClassRefAndNotRefArrayOfObjectsUnionAlternative2Item,
                     )))
+                )
                     ? array_map(
-                        fn (MyClassRefAndNotRefArrayOfObjectsUnionAlternative3Item $i) => clone $i,
+                        fn (MyClassRefAndNotRefArrayOfObjectsUnionAlternative2Item $i) => clone $i,
                         $this->refAndNotRefArrayOfObjectsUnion,
                     )
-                    : ((is_array($this->refAndNotRefArrayOfObjectsUnion)
+                    : (((is_array($this->refAndNotRefArrayOfObjectsUnion)
                         && count($this->refAndNotRefArrayOfObjectsUnion) === count(array_filter(
                             $this->refAndNotRefArrayOfObjectsUnion,
-                            fn (MyClassRefAndNotRefArrayOfObjectsUnionAlternative2Item $item): bool => $item instanceof MyClassRefAndNotRefArrayOfObjectsUnionAlternative2Item,
+                            fn (MyClassRefAndNotRefArrayOfObjectsUnionAlternative3Item $item): bool => $item instanceof MyClassRefAndNotRefArrayOfObjectsUnionAlternative3Item,
                         )))
+                    )
                         ? array_map(
-                            fn (MyClassRefAndNotRefArrayOfObjectsUnionAlternative2Item $i) => clone $i,
+                            fn (MyClassRefAndNotRefArrayOfObjectsUnionAlternative3Item $i) => clone $i,
                             $this->refAndNotRefArrayOfObjectsUnion,
                         )
-                        : ((is_array($this->refAndNotRefArrayOfObjectsUnion)
+                        : (((is_array($this->refAndNotRefArrayOfObjectsUnion)
                             && count($this->refAndNotRefArrayOfObjectsUnion) === count(array_filter(
                                 $this->refAndNotRefArrayOfObjectsUnion,
-                                fn (MyClassRefAndNotRefArrayOfObjectsUnionAlternative1Item $item): bool => $item instanceof MyClassRefAndNotRefArrayOfObjectsUnionAlternative1Item,
+                                fn (MyClassRefAndNotRefArrayOfObjectsUnionAlternative4Item $item): bool => $item instanceof MyClassRefAndNotRefArrayOfObjectsUnionAlternative4Item,
                             )))
+                        )
                             ? array_map(
-                                fn (MyClassRefAndNotRefArrayOfObjectsUnionAlternative1Item $i) => clone $i,
+                                fn (MyClassRefAndNotRefArrayOfObjectsUnionAlternative4Item $i) => clone $i,
                                 $this->refAndNotRefArrayOfObjectsUnion,
                             )
                             : $this->refAndNotRefArrayOfObjectsUnion
@@ -915,17 +932,18 @@ class MyClass
             );
         }
         if (isset($this->arrayOfObjAndStringUnion)) {
-            $this->arrayOfObjAndStringUnion = (is_string($this->arrayOfObjAndStringUnion)
-                ? $this->arrayOfObjAndStringUnion
-                : ((is_array($this->arrayOfObjAndStringUnion)
-                    && count($this->arrayOfObjAndStringUnion) === count(array_filter(
-                        $this->arrayOfObjAndStringUnion,
-                        fn (MyClassArrayOfObjAndStringUnionAlternative1Item $item): bool => $item instanceof MyClassArrayOfObjAndStringUnionAlternative1Item,
-                    )))
-                    ? array_map(
-                        fn (MyClassArrayOfObjAndStringUnionAlternative1Item $i) => clone $i,
-                        $this->arrayOfObjAndStringUnion,
-                    )
+            $this->arrayOfObjAndStringUnion = (((is_array($this->arrayOfObjAndStringUnion)
+                && count($this->arrayOfObjAndStringUnion) === count(array_filter(
+                    $this->arrayOfObjAndStringUnion,
+                    fn (MyClassArrayOfObjAndStringUnionAlternative1Item $item): bool => $item instanceof MyClassArrayOfObjAndStringUnionAlternative1Item,
+                )))
+            )
+                ? array_map(
+                    fn (MyClassArrayOfObjAndStringUnionAlternative1Item $i) => clone $i,
+                    $this->arrayOfObjAndStringUnion,
+                )
+                : ((is_string($this->arrayOfObjAndStringUnion))
+                    ? $this->arrayOfObjAndStringUnion
                     : $this->arrayOfObjAndStringUnion
                 )
             );

@@ -103,8 +103,7 @@ class MyObject
     {
         $output = [];
         $output['foo'] = match (true) {
-            $this->foo instanceof A,
-            $this->foo instanceof B => $this->foo->value,
+            $this->foo instanceof A || $this->foo instanceof B => $this->foo->value,
         };
 
         return $output;
@@ -119,8 +118,7 @@ class MyObject
     {
         $output = new \stdClass();
         $output->{'foo'} = match (true) {
-            $this->foo instanceof A,
-            $this->foo instanceof B => $this->foo->value,
+            $this->foo instanceof A || $this->foo instanceof B => $this->foo->value,
         };
 
         return $output;
@@ -166,8 +164,7 @@ class MyObject
     public function __clone()
     {
         $this->foo = match (true) {
-            $this->foo instanceof A,
-            $this->foo instanceof B => $this->foo,
+            $this->foo instanceof A || $this->foo instanceof B => $this->foo,
         };
     }
 }

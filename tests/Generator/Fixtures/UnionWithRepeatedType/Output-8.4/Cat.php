@@ -222,16 +222,14 @@ class Cat
         if (isset($this->hasFur) || array_key_exists('hasFur', $this->_providedOptionals)) {
             $output['hasFur'] = ($this->hasFur !== null
                 ? match (true) {
-                    default => null,
                     ($this->hasFur === null || is_bool($this->hasFur)) => ($this->hasFur !== null ? $this->hasFur : null),
                     ($this->hasFur === null
                         || (is_string($this->hasFur) || (is_int($this->hasFur) || is_float($this->hasFur)))
                     ) =>
                         ($this->hasFur !== null
                             ? match (true) {
+                                is_string($this->hasFur) || (is_int($this->hasFur) || is_float($this->hasFur)) => $this->hasFur,
                                 default => null,
-                                is_string($this->hasFur),
-                                (is_int($this->hasFur) || is_float($this->hasFur)) => $this->hasFur,
                             }
                             : null
                         ),
@@ -240,11 +238,13 @@ class Cat
                         || is_bool($this->hasFur)
                     ) =>
                         match (true) {
+                            is_string($this->hasFur)
+                                || (is_int($this->hasFur) || is_float($this->hasFur))
+                                || is_bool($this->hasFur) =>
+                                $this->hasFur,
                             default => null,
-                            is_string($this->hasFur),
-                            (is_int($this->hasFur) || is_float($this->hasFur)),
-                            is_bool($this->hasFur) => $this->hasFur,
                         },
+                    default => null,
                 }
                 : null
             );
@@ -265,16 +265,14 @@ class Cat
         if (isset($this->hasFur) || array_key_exists('hasFur', $this->_providedOptionals)) {
             $output->{'hasFur'} = ($this->hasFur !== null
                 ? match (true) {
-                    default => null,
                     ($this->hasFur === null || is_bool($this->hasFur)) => ($this->hasFur !== null ? $this->hasFur : null),
                     ($this->hasFur === null
                         || (is_string($this->hasFur) || (is_int($this->hasFur) || is_float($this->hasFur)))
                     ) =>
                         ($this->hasFur !== null
                             ? match (true) {
+                                is_string($this->hasFur) || (is_int($this->hasFur) || is_float($this->hasFur)) => $this->hasFur,
                                 default => null,
-                                is_string($this->hasFur),
-                                (is_int($this->hasFur) || is_float($this->hasFur)) => $this->hasFur,
                             }
                             : null
                         ),
@@ -283,11 +281,13 @@ class Cat
                         || is_bool($this->hasFur)
                     ) =>
                         match (true) {
+                            is_string($this->hasFur)
+                                || (is_int($this->hasFur) || is_float($this->hasFur))
+                                || is_bool($this->hasFur) =>
+                                $this->hasFur,
                             default => null,
-                            is_string($this->hasFur),
-                            (is_int($this->hasFur) || is_float($this->hasFur)),
-                            is_bool($this->hasFur) => $this->hasFur,
                         },
+                    default => null,
                 }
                 : null
             );
@@ -337,19 +337,20 @@ class Cat
     {
         if (isset($this->hasFur)) {
             $this->hasFur = match (true) {
-                ($this->hasFur === null || is_bool($this->hasFur)),
-                ($this->hasFur === null
-                    || (is_string($this->hasFur) || (is_int($this->hasFur) || is_float($this->hasFur)))
-                ) =>
+                ($this->hasFur === null || is_bool($this->hasFur))
+                    || ($this->hasFur === null
+                        || (is_string($this->hasFur) || (is_int($this->hasFur) || is_float($this->hasFur)))
+                    ) =>
                     (isset($this->hasFur) ? clone $this->hasFur : null),
                 (is_string($this->hasFur)
                     || (is_int($this->hasFur) || is_float($this->hasFur))
                     || is_bool($this->hasFur)
                 ) =>
                     match (true) {
-                        is_string($this->hasFur),
-                        (is_int($this->hasFur) || is_float($this->hasFur)),
-                        is_bool($this->hasFur) => $this->hasFur,
+                        is_string($this->hasFur)
+                            || (is_int($this->hasFur) || is_float($this->hasFur))
+                            || is_bool($this->hasFur) =>
+                            $this->hasFur,
                     },
             };
         }

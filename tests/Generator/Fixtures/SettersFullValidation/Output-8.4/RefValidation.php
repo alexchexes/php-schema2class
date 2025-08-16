@@ -223,8 +223,7 @@ class RefValidation
         $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
         $bar = isset($input->{'bar'})
             ? match (true) {
-                is_string($input->{'bar'}),
-                in_array($input->{'bar'}, [1, 2], true) => $input->{'bar'},
+                is_string($input->{'bar'}) || in_array($input->{'bar'}, [1, 2], true) => $input->{'bar'},
                 default => null,
             }
             : null;
@@ -256,8 +255,7 @@ class RefValidation
         }
         if (isset($this->bar)) {
             $output['bar'] = match (true) {
-                is_string($this->bar),
-                in_array($this->bar, [1, 2], true) => $this->bar,
+                is_string($this->bar) || in_array($this->bar, [1, 2], true) => $this->bar,
             };
         }
         if (isset($this->baz)) {
@@ -281,8 +279,7 @@ class RefValidation
         }
         if (isset($this->bar)) {
             $output->{'bar'} = match (true) {
-                is_string($this->bar),
-                in_array($this->bar, [1, 2], true) => $this->bar,
+                is_string($this->bar) || in_array($this->bar, [1, 2], true) => $this->bar,
             };
         }
         if (isset($this->baz)) {
@@ -333,8 +330,7 @@ class RefValidation
     {
         if (isset($this->bar)) {
             $this->bar = match (true) {
-                is_string($this->bar),
-                in_array($this->bar, [1, 2], true) => $this->bar,
+                is_string($this->bar) || in_array($this->bar, [1, 2], true) => $this->bar,
             };
         }
         if (isset($this->baz)) {

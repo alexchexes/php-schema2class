@@ -381,42 +381,26 @@ class MyClass
         }
 
         $unionOfTypedArrays = isset($input->{'unionOfTypedArrays'})
-            ? (is_array($input->{'unionOfTypedArrays'})
-                ? $input->{'unionOfTypedArrays'}
-                : (is_array($input->{'unionOfTypedArrays'}) ? $input->{'unionOfTypedArrays'} : null)
-            )
+            ? ((is_array($input->{'unionOfTypedArrays'})) ? $input->{'unionOfTypedArrays'} : null)
             : null;
         $refUnionOfTypedArrays = isset($input->{'refUnionOfTypedArrays'})
-            ? (is_array($input->{'refUnionOfTypedArrays'})
+            ? ((is_array($input->{'refUnionOfTypedArrays'}))
                 ? $input->{'refUnionOfTypedArrays'}
-                : (is_array($input->{'refUnionOfTypedArrays'})
-                    ? $input->{'refUnionOfTypedArrays'}
-                    : null
-                )
+                : null
             )
             : null;
         $refAndNotRefUnionOfTypedArrays = isset($input->{'refAndNotRefUnionOfTypedArrays'})
-            ? (is_array($input->{'refAndNotRefUnionOfTypedArrays'})
+            ? ((is_array($input->{'refAndNotRefUnionOfTypedArrays'}))
                 ? $input->{'refAndNotRefUnionOfTypedArrays'}
-                : (is_array($input->{'refAndNotRefUnionOfTypedArrays'})
-                    ? $input->{'refAndNotRefUnionOfTypedArrays'}
-                    : (is_array($input->{'refAndNotRefUnionOfTypedArrays'})
-                        ? $input->{'refAndNotRefUnionOfTypedArrays'}
-                        : (is_array($input->{'refAndNotRefUnionOfTypedArrays'})
-                            ? $input->{'refAndNotRefUnionOfTypedArrays'}
-                            : null
-                        )
-                    )
-                )
+                : null
             )
             : null;
         $unionOfTypedArrayAndString = isset($input->{'unionOfTypedArrayAndString'})
-            ? (is_string($input->{'unionOfTypedArrayAndString'})
+            ? ((is_array($input->{'unionOfTypedArrayAndString'})
+                || is_string($input->{'unionOfTypedArrayAndString'})
+            )
                 ? $input->{'unionOfTypedArrayAndString'}
-                : (is_array($input->{'unionOfTypedArrayAndString'})
-                    ? $input->{'unionOfTypedArrayAndString'}
-                    : null
-                )
+                : null
             )
             : null;
         $unionOfOneTypedArray = isset($input->{'unionOfOneTypedArray'}) ? $input->{'unionOfOneTypedArray'} : null;
@@ -447,21 +431,17 @@ class MyClass
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
         if (isset($this->unionOfTypedArrays)) {
-            if (is_array($this->unionOfTypedArrays) || is_array($this->unionOfTypedArrays)) {
+            if (is_array($this->unionOfTypedArrays)) {
                 $output['unionOfTypedArrays'] = $this->unionOfTypedArrays;
             }
         }
         if (isset($this->refUnionOfTypedArrays)) {
-            if (is_array($this->refUnionOfTypedArrays) || is_array($this->refUnionOfTypedArrays)) {
+            if (is_array($this->refUnionOfTypedArrays)) {
                 $output['refUnionOfTypedArrays'] = $this->refUnionOfTypedArrays;
             }
         }
         if (isset($this->refAndNotRefUnionOfTypedArrays)) {
-            if (is_array($this->refAndNotRefUnionOfTypedArrays)
-                || is_array($this->refAndNotRefUnionOfTypedArrays)
-                || is_array($this->refAndNotRefUnionOfTypedArrays)
-                || is_array($this->refAndNotRefUnionOfTypedArrays)
-            ) {
+            if (is_array($this->refAndNotRefUnionOfTypedArrays)) {
                 $output['refAndNotRefUnionOfTypedArrays'] = $this->refAndNotRefUnionOfTypedArrays;
             }
         }
@@ -487,21 +467,17 @@ class MyClass
         $output = $this->_additionalProperties;
 
         if (isset($this->unionOfTypedArrays)) {
-            if (is_array($this->unionOfTypedArrays) || is_array($this->unionOfTypedArrays)) {
+            if (is_array($this->unionOfTypedArrays)) {
                 $output->{'unionOfTypedArrays'} = $this->unionOfTypedArrays;
             }
         }
         if (isset($this->refUnionOfTypedArrays)) {
-            if (is_array($this->refUnionOfTypedArrays) || is_array($this->refUnionOfTypedArrays)) {
+            if (is_array($this->refUnionOfTypedArrays)) {
                 $output->{'refUnionOfTypedArrays'} = $this->refUnionOfTypedArrays;
             }
         }
         if (isset($this->refAndNotRefUnionOfTypedArrays)) {
-            if (is_array($this->refAndNotRefUnionOfTypedArrays)
-                || is_array($this->refAndNotRefUnionOfTypedArrays)
-                || is_array($this->refAndNotRefUnionOfTypedArrays)
-                || is_array($this->refAndNotRefUnionOfTypedArrays)
-            ) {
+            if (is_array($this->refAndNotRefUnionOfTypedArrays)) {
                 $output->{'refAndNotRefUnionOfTypedArrays'} = $this->refAndNotRefUnionOfTypedArrays;
             }
         }
@@ -557,45 +533,27 @@ class MyClass
     public function __clone()
     {
         if (isset($this->unionOfTypedArrays)) {
-            $this->unionOfTypedArrays = (is_array($this->unionOfTypedArrays)
+            $this->unionOfTypedArrays = ((is_array($this->unionOfTypedArrays))
                 ? $this->unionOfTypedArrays
-                : (is_array($this->unionOfTypedArrays)
-                    ? $this->unionOfTypedArrays
-                    : $this->unionOfTypedArrays
-                )
+                : $this->unionOfTypedArrays
             );
         }
         if (isset($this->refUnionOfTypedArrays)) {
-            $this->refUnionOfTypedArrays = (is_array($this->refUnionOfTypedArrays)
+            $this->refUnionOfTypedArrays = ((is_array($this->refUnionOfTypedArrays))
                 ? $this->refUnionOfTypedArrays
-                : (is_array($this->refUnionOfTypedArrays)
-                    ? $this->refUnionOfTypedArrays
-                    : $this->refUnionOfTypedArrays
-                )
+                : $this->refUnionOfTypedArrays
             );
         }
         if (isset($this->refAndNotRefUnionOfTypedArrays)) {
-            $this->refAndNotRefUnionOfTypedArrays = (is_array($this->refAndNotRefUnionOfTypedArrays)
+            $this->refAndNotRefUnionOfTypedArrays = ((is_array($this->refAndNotRefUnionOfTypedArrays))
                 ? $this->refAndNotRefUnionOfTypedArrays
-                : (is_array($this->refAndNotRefUnionOfTypedArrays)
-                    ? $this->refAndNotRefUnionOfTypedArrays
-                    : (is_array($this->refAndNotRefUnionOfTypedArrays)
-                        ? $this->refAndNotRefUnionOfTypedArrays
-                        : (is_array($this->refAndNotRefUnionOfTypedArrays)
-                            ? $this->refAndNotRefUnionOfTypedArrays
-                            : $this->refAndNotRefUnionOfTypedArrays
-                        )
-                    )
-                )
+                : $this->refAndNotRefUnionOfTypedArrays
             );
         }
         if (isset($this->unionOfTypedArrayAndString)) {
-            $this->unionOfTypedArrayAndString = (is_string($this->unionOfTypedArrayAndString)
+            $this->unionOfTypedArrayAndString = ((is_array($this->unionOfTypedArrayAndString) || is_string($this->unionOfTypedArrayAndString))
                 ? $this->unionOfTypedArrayAndString
-                : (is_array($this->unionOfTypedArrayAndString)
-                    ? $this->unionOfTypedArrayAndString
-                    : $this->unionOfTypedArrayAndString
-                )
+                : $this->unionOfTypedArrayAndString
             );
         }
     }

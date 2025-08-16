@@ -489,8 +489,7 @@ class MyClass
         }
         if (isset($this->qwert)) {
             $output['qwert'] = match (true) {
-                is_string($this->qwert),
-                (is_int($this->qwert) || is_float($this->qwert)) => $this->qwert,
+                is_string($this->qwert) || (is_int($this->qwert) || is_float($this->qwert)) => $this->qwert,
             };
         }
         if (isset($this->zyx)) {
@@ -538,8 +537,7 @@ class MyClass
         }
         if (isset($this->qwert)) {
             $output->{'qwert'} = match (true) {
-                is_string($this->qwert),
-                (is_int($this->qwert) || is_float($this->qwert)) => $this->qwert,
+                is_string($this->qwert) || (is_int($this->qwert) || is_float($this->qwert)) => $this->qwert,
             };
         }
         if (isset($this->zyx)) {
@@ -600,8 +598,7 @@ class MyClass
     {
         if (isset($this->qwert)) {
             $this->qwert = match (true) {
-                is_string($this->qwert),
-                (is_int($this->qwert) || is_float($this->qwert)) => $this->qwert,
+                is_string($this->qwert) || (is_int($this->qwert) || is_float($this->qwert)) => $this->qwert,
             };
         }
     }
