@@ -244,4 +244,20 @@ class MyClass
 
         return $validator->isValid();
     }
+
+    public function __clone()
+    {
+        if (isset($this->foo)) {
+            $this->foo = match (true) {
+                is_object($this->foo) => clone $this->foo,
+                default => $this->foo,
+            };
+        }
+        if (isset($this->encoded)) {
+            $this->encoded = match (true) {
+                is_object($this->encoded) => clone $this->encoded,
+                default => $this->encoded,
+            };
+        }
+    }
 }

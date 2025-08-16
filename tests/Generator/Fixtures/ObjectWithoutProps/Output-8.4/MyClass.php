@@ -217,4 +217,18 @@ class MyClass
 
         return $validator->isValid();
     }
+
+    public function __clone()
+    {
+        if (isset($this->foo)) {
+            $this->foo = match (true) {
+                is_object($this->foo) => clone $this->foo,
+                default => $this->foo,
+            };
+        }
+        $this->bar = match (true) {
+            is_object($this->bar) => clone $this->bar,
+            default => $this->bar,
+        };
+    }
 }

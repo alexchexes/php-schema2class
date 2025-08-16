@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class\Generator\Property\Type\Object;
 
 use Composer\Semver\Semver;
+use Helmich\Schema2Class\Generator\Expression\MatchGenerator;
 use Helmich\Schema2Class\Generator\Property\Type\AbstractProperty;
 
 /**
@@ -46,6 +47,19 @@ class RawObjectProperty extends AbstractProperty
     public function outputMappingExprStdClass(string $expr): string
     {
         return 'json_decode(json_encode(' . $expr . '))';
+    }
+
+    public function cloneExpr(string $expr): string
+    {
+        if ($this->request->isAtLeastPHP('8.0')) {
+            $match = new MatchGenerator('true');
+            $match->addArm('is_object(' . $expr . ')', 'clone ' . $expr);
+            $match->addArm('default', $expr);
+
+            return $match->generate();
+        }
+
+        return 'is_object(' . $expr . ') ? clone ' . $expr . ' : ' . $expr;
     }
 
     public function needsValidation(): bool

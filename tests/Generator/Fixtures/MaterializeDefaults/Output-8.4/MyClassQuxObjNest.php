@@ -291,4 +291,14 @@ class MyClassQuxObjNest
 
         return $validator->isValid();
     }
+
+    public function __clone()
+    {
+        if (isset($this->a)) {
+            $this->a = match (true) {
+                is_object($this->a) => clone $this->a,
+                default => $this->a,
+            };
+        }
+    }
 }

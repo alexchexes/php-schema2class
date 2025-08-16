@@ -401,11 +401,6 @@ class Foo
 
     public function __clone()
     {
-        if (isset($this->a)) {
-            $this->a = match (true) {
-                in_array($this->a, ['a', 'b'], true) || is_array($this->a) => $this->a,
-            };
-        }
         if (isset($this->d)) {
             $this->d = clone $this->d;
         }

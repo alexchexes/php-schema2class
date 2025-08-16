@@ -458,17 +458,10 @@ class Record
             $this->dataArrayNested = array_map(fn ($i) => $i, $this->dataArrayNested);
         }
         if (isset($this->dataArrayAnyOf)) {
-            $this->dataArrayAnyOf = array_map(fn ($i) => match (true) {
-                $i instanceof Phone || $i instanceof Fio => clone $i,
-            }, $this->dataArrayAnyOf);
+            $this->dataArrayAnyOf = array_map(fn ($i) => clone $i, $this->dataArrayAnyOf);
         }
         if (isset($this->dataArrayNestedAnyOf)) {
-            $this->dataArrayNestedAnyOf = array_map(
-                fn ($i) => array_map(fn ($i) => match (true) {
-                    $i instanceof Phone || $i instanceof Fio => clone $i,
-                }, $i),
-                $this->dataArrayNestedAnyOf,
-            );
+            $this->dataArrayNestedAnyOf = array_map(fn ($i) => array_map(fn ($i) => clone $i, $i), $this->dataArrayNestedAnyOf);
         }
     }
 }

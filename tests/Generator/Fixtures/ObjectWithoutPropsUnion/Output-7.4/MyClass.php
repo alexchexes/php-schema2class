@@ -289,4 +289,18 @@ class MyClass
 
         return $validator->isValid();
     }
+
+    public function __clone()
+    {
+        $this->foo = ((is_array($this->foo) || is_object($this->foo))
+            ? is_object($this->foo) ? clone $this->foo : $this->foo
+            : $this->foo
+        );
+        if (isset($this->bar)) {
+            $this->bar = ((is_array($this->bar) || is_object($this->bar))
+                ? is_object($this->bar) ? clone $this->bar : $this->bar
+                : $this->bar
+            );
+        }
+    }
 }

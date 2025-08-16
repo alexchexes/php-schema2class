@@ -249,12 +249,7 @@ class BarTest
     public function __clone()
     {
         if (isset($this->exampleProp)) {
-            $this->exampleProp = match (true) {
-                $this->exampleProp instanceof FooTest
-                    || $this->exampleProp instanceof MoiKlass
-                    || $this->exampleProp instanceof FooTest_1 =>
-                    clone $this->exampleProp,
-            };
+            $this->exampleProp = clone $this->exampleProp;
         }
     }
 }

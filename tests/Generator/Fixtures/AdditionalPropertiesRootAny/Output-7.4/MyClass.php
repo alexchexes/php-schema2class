@@ -249,4 +249,11 @@ class MyClass
 
         return $validator->isValid();
     }
+
+    public function __clone()
+    {
+        if (isset($this->params)) {
+            $this->params = is_object($this->params) ? clone $this->params : $this->params;
+        }
+    }
 }

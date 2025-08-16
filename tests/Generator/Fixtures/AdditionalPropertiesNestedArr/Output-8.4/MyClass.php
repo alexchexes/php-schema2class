@@ -253,7 +253,10 @@ class MyClass
     public function __clone()
     {
         if (isset($this->bar)) {
-            $this->bar = array_map(fn ($i) => $i, $this->bar);
+            $this->bar = array_map(fn ($i) => match (true) {
+                is_object($i) => clone $i,
+                default => $i,
+            }, $this->bar);
         }
     }
 }
