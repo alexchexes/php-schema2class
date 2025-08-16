@@ -242,9 +242,7 @@ class Baz
     public function __clone()
     {
         if (isset($this->grox)) {
-            $this->grox = match (true) {
-                $this->grox instanceof Foo || $this->grox instanceof Bar => clone $this->grox,
-            };
+            $this->grox = clone $this->grox;
         }
     }
 }

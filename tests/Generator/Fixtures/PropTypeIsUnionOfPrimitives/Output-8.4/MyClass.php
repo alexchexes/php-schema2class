@@ -765,16 +765,6 @@ class MyClass
 
     public function __clone()
     {
-        $this->foo = match (true) {
-            is_string($this->foo) || (is_int($this->foo) || is_float($this->foo)) || is_bool($this->foo) => $this->foo,
-        };
-        $this->bar = match (true) {
-            is_string($this->bar)
-                || (is_int($this->bar) || is_float($this->bar))
-                || is_bool($this->bar)
-                || is_array($this->bar) =>
-                $this->bar,
-        };
         $this->baz = match (true) {
             is_string($this->baz) || (is_int($this->baz) || is_float($this->baz)) || is_bool($this->baz) => $this->baz,
             is_array($this->baz) || is_object($this->baz) => json_decode(json_encode($this->baz), is_array($this->baz)),
@@ -795,23 +785,6 @@ class MyClass
                 $this->thud,
             is_array($this->thud) || is_object($this->thud) => json_decode(json_encode($this->thud), is_array($this->thud)),
         };
-        if (isset($this->optFoo)) {
-            $this->optFoo = match (true) {
-                is_string($this->optFoo)
-                    || (is_int($this->optFoo) || is_float($this->optFoo))
-                    || is_bool($this->optFoo) =>
-                    $this->optFoo,
-            };
-        }
-        if (isset($this->optBar)) {
-            $this->optBar = match (true) {
-                is_string($this->optBar)
-                    || (is_int($this->optBar) || is_float($this->optBar))
-                    || is_bool($this->optBar)
-                    || is_array($this->optBar) =>
-                    $this->optBar,
-            };
-        }
         if (isset($this->optBaz)) {
             $this->optBaz = match (true) {
                 is_string($this->optBaz)

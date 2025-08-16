@@ -564,25 +564,13 @@ class MyClass
     public function __clone()
     {
         if (isset($this->objectsUnion)) {
-            $this->objectsUnion = match (true) {
-                $this->objectsUnion instanceof MyClassObjectsUnionAlternative1
-                    || $this->objectsUnion instanceof MyClassObjectsUnionAlternative2 =>
-                    clone $this->objectsUnion,
-            };
+            $this->objectsUnion = clone $this->objectsUnion;
         }
         if (isset($this->refObjectsUnion)) {
-            $this->refObjectsUnion = match (true) {
-                $this->refObjectsUnion instanceof SomeObj1 || $this->refObjectsUnion instanceof SomeObj2 => clone $this->refObjectsUnion,
-            };
+            $this->refObjectsUnion = clone $this->refObjectsUnion;
         }
         if (isset($this->refAndNotRefObjectsUnion)) {
-            $this->refAndNotRefObjectsUnion = match (true) {
-                $this->refAndNotRefObjectsUnion instanceof SomeObj1
-                    || $this->refAndNotRefObjectsUnion instanceof MyClassRefAndNotRefObjectsUnionAlternative2
-                    || $this->refAndNotRefObjectsUnion instanceof SomeObj2
-                    || $this->refAndNotRefObjectsUnion instanceof MyClassRefAndNotRefObjectsUnionAlternative4 =>
-                    clone $this->refAndNotRefObjectsUnion,
-            };
+            $this->refAndNotRefObjectsUnion = clone $this->refAndNotRefObjectsUnion;
         }
         if (isset($this->objAndStringUnion)) {
             $this->objAndStringUnion = match (true) {

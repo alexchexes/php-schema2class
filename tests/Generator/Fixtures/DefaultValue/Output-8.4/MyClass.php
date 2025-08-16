@@ -594,15 +594,6 @@ class MyClass
         return $validator->isValid();
     }
 
-    public function __clone()
-    {
-        if (isset($this->qwert)) {
-            $this->qwert = match (true) {
-                is_string($this->qwert) || (is_int($this->qwert) || is_float($this->qwert)) => $this->qwert,
-            };
-        }
-    }
-
     /**
      * Checks if an optional nullable property was explicitly set.
      *

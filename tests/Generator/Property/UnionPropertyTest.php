@@ -14,6 +14,8 @@ use PHPUnit\Framework\TestCase;
 use function PHPUnit\Framework\assertSame;
 use function PHPUnit\Framework\assertTrue;
 use function PHPUnit\Framework\assertFalse;
+use function PHPUnit\Framework\assertNull;
+
 use Helmich\Schema2Class\Generator\Definition\Definition;
 use Helmich\Schema2Class\Generator\Property\Type\Composite\UnionProperty;
 use Helmich\Schema2Class\Generator\ReferenceLookup\DefinitionsReferenceLookup;
@@ -102,13 +104,23 @@ EOCODE;
     public function testCloneProperty()
     {
         $expected = <<<'EOCODE'
-$this->myPropertyName = match (true) {
-    $this->myPropertyName instanceof FooMyPropertyNameAlternative1
-        || $this->myPropertyName instanceof FooMyPropertyNameAlternative2 =>
-        clone $this->myPropertyName,
-};
+$this->myPropertyName = clone $this->myPropertyName;
 EOCODE;
         assertSame($expected, $this->property->cloneAssignment());
+    }
+
+    public function testClonePropertyWithOnlyIdentityMappings(): void
+    {
+        $prop = new UnionProperty(
+            'foo',
+            ['anyOf' => [
+                ['type' => 'string'],
+                ['type' => 'string'],
+            ]],
+            $this->generatorRequest,
+        );
+
+        assertNull($prop->cloneAssignment());
     }
 
     public function testAllowsNullIfSubPropertyAllowsNull(): void

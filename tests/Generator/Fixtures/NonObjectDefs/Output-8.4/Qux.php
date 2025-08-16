@@ -286,10 +286,7 @@ class Qux
         if (isset($this->grox)) {
             $this->grox = match (true) {
                 is_string($this->grox) || is_array($this->grox) => $this->grox,
-                ($this->grox instanceof Foo || $this->grox instanceof Bar) =>
-                    match (true) {
-                        $this->grox instanceof Foo || $this->grox instanceof Bar => clone $this->grox,
-                    },
+                ($this->grox instanceof Foo || $this->grox instanceof Bar) => clone $this->grox,
             };
         }
     }
