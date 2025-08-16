@@ -187,10 +187,7 @@ class MyClass
 
         $foo = $input->{'foo'};
         $bar = isset($input->{'bar'})
-            ? ((is_string($input->{'bar'}) || is_array($input->{'bar'}) || is_object($input->{'bar'}))
-                ? $input->{'bar'}
-                : null
-            )
+            ? ((is_string($input->{'bar'}) || is_object($input->{'bar'})) ? $input->{'bar'} : null)
             : null;
 
         $obj = new self($foo, $bar);
@@ -214,13 +211,13 @@ class MyClass
 
         if (is_string($this->foo)) {
             $output['foo'] = $this->foo;
-        } elseif (is_array($this->foo) || is_object($this->foo)) {
+        } elseif (is_object($this->foo)) {
             $output['foo'] = json_decode(json_encode($this->foo), true);
         }
         if (isset($this->bar)) {
             if (is_string($this->bar)) {
                 $output['bar'] = $this->bar;
-            } elseif (is_array($this->bar) || is_object($this->bar)) {
+            } elseif (is_object($this->bar)) {
                 $output['bar'] = json_decode(json_encode($this->bar), true);
             }
         }
@@ -239,13 +236,13 @@ class MyClass
 
         if (is_string($this->foo)) {
             $output->{'foo'} = $this->foo;
-        } elseif (is_array($this->foo) || is_object($this->foo)) {
+        } elseif (is_object($this->foo)) {
             $output->{'foo'} = json_decode(json_encode($this->foo));
         }
         if (isset($this->bar)) {
             if (is_string($this->bar)) {
                 $output->{'bar'} = $this->bar;
-            } elseif (is_array($this->bar) || is_object($this->bar)) {
+            } elseif (is_object($this->bar)) {
                 $output->{'bar'} = json_decode(json_encode($this->bar));
             }
         }
@@ -292,15 +289,9 @@ class MyClass
 
     public function __clone()
     {
-        $this->foo = ((is_string($this->foo) || is_array($this->foo) || is_object($this->foo))
-            ? $this->foo
-            : $this->foo
-        );
+        $this->foo = ((is_string($this->foo) || is_object($this->foo)) ? $this->foo : $this->foo);
         if (isset($this->bar)) {
-            $this->bar = ((is_string($this->bar) || is_array($this->bar) || is_object($this->bar))
-                ? $this->bar
-                : $this->bar
-            );
+            $this->bar = ((is_string($this->bar) || is_object($this->bar)) ? $this->bar : $this->bar);
         }
     }
 }

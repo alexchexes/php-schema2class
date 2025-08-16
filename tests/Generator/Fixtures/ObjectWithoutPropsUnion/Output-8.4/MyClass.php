@@ -141,12 +141,12 @@ class MyClass
         }
 
         $foo = match (true) {
-            is_string($input->{'foo'}) || is_array($input->{'foo'}) || is_object($input->{'foo'}) => $input->{'foo'},
+            is_string($input->{'foo'}) || is_object($input->{'foo'}) => $input->{'foo'},
             default => throw new \InvalidArgumentException("could not build property 'foo' from JSON"),
         };
         $bar = isset($input->{'bar'})
             ? match (true) {
-                is_string($input->{'bar'}) || is_array($input->{'bar'}) || is_object($input->{'bar'}) => $input->{'bar'},
+                is_string($input->{'bar'}) || is_object($input->{'bar'}) => $input->{'bar'},
                 default => null,
             }
             : null;
@@ -172,12 +172,12 @@ class MyClass
 
         $output['foo'] = match (true) {
             is_string($this->foo) => $this->foo,
-            is_array($this->foo) || is_object($this->foo) => json_decode(json_encode($this->foo), true),
+            is_object($this->foo) => json_decode(json_encode($this->foo), true),
         };
         if (isset($this->bar)) {
             $output['bar'] = match (true) {
                 is_string($this->bar) => $this->bar,
-                is_array($this->bar) || is_object($this->bar) => json_decode(json_encode($this->bar), true),
+                is_object($this->bar) => json_decode(json_encode($this->bar), true),
             };
         }
 
@@ -195,12 +195,12 @@ class MyClass
 
         $output->{'foo'} = match (true) {
             is_string($this->foo) => $this->foo,
-            is_array($this->foo) || is_object($this->foo) => json_decode(json_encode($this->foo)),
+            is_object($this->foo) => json_decode(json_encode($this->foo)),
         };
         if (isset($this->bar)) {
             $output->{'bar'} = match (true) {
                 is_string($this->bar) => $this->bar,
-                is_array($this->bar) || is_object($this->bar) => json_decode(json_encode($this->bar)),
+                is_object($this->bar) => json_decode(json_encode($this->bar)),
             };
         }
 
@@ -247,11 +247,11 @@ class MyClass
     public function __clone()
     {
         $this->foo = match (true) {
-            is_string($this->foo) || is_array($this->foo) || is_object($this->foo) => $this->foo,
+            is_string($this->foo) || is_object($this->foo) => $this->foo,
         };
         if (isset($this->bar)) {
             $this->bar = match (true) {
-                is_string($this->bar) || is_array($this->bar) || is_object($this->bar) => $this->bar,
+                is_string($this->bar) || is_object($this->bar) => $this->bar,
             };
         }
     }

@@ -492,10 +492,7 @@ class MyClass
         $i = null;
         if (property_exists($input, 'i')) {
             $i = ($input->{'i'} !== null
-                ? ((is_array($input->{'i'})
-                    || is_string($input->{'i'})
-                    || is_array($input->{'i'}) || is_object($input->{'i'})
-                )
+                ? ((is_array($input->{'i'}) || is_string($input->{'i'}) || is_object($input->{'i'}))
                     ? $input->{'i'}
                     : null
                 )
@@ -553,10 +550,7 @@ class MyClass
             $output['i'] = ($this->i !== null
                 ? ((is_array($this->i) || is_string($this->i))
                     ? $this->i
-                    : ((is_array($this->i) || is_object($this->i))
-                        ? json_decode(json_encode($this->i), true)
-                        : null
-                    )
+                    : ((is_object($this->i)) ? json_decode(json_encode($this->i), true) : null)
                 )
                 : null
             );
@@ -603,10 +597,7 @@ class MyClass
             $output->{'i'} = ($this->i !== null
                 ? ((is_array($this->i) || is_string($this->i))
                     ? $this->i
-                    : ((is_array($this->i) || is_object($this->i))
-                        ? json_decode(json_encode($this->i))
-                        : null
-                    )
+                    : ((is_object($this->i)) ? json_decode(json_encode($this->i)) : null)
                 )
                 : null
             );
@@ -663,7 +654,7 @@ class MyClass
             $this->h = ((is_array($this->h) || is_string($this->h)) ? $this->h : $this->h);
         }
         if (isset($this->i)) {
-            $this->i = ((is_array($this->i) || is_string($this->i) || is_array($this->i) || is_object($this->i))
+            $this->i = ((is_array($this->i) || is_string($this->i) || is_object($this->i))
                 ? $this->i
                 : $this->i
             );
