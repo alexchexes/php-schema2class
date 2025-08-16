@@ -640,32 +640,18 @@ class MyClass
                 : $this->objectsUnion
             );
         }
-        if (isset($this->refObjectsUnion)) {
-            $this->refObjectsUnion = (($this->refObjectsUnion instanceof SomeObj1 || $this->refObjectsUnion instanceof SomeObj2)
-                ? $this->refObjectsUnion
-                : $this->refObjectsUnion
-            );
-        }
         if (isset($this->refAndNotRefObjectsUnion)) {
-            $this->refAndNotRefObjectsUnion = (($this->refAndNotRefObjectsUnion instanceof SomeObj1
-                || $this->refAndNotRefObjectsUnion instanceof SomeObj2
+            $this->refAndNotRefObjectsUnion = (($this->refAndNotRefObjectsUnion instanceof MyClassRefAndNotRefObjectsUnionAlternative2
+                || $this->refAndNotRefObjectsUnion instanceof MyClassRefAndNotRefObjectsUnionAlternative4
             )
-                ? $this->refAndNotRefObjectsUnion
-                : (($this->refAndNotRefObjectsUnion instanceof MyClassRefAndNotRefObjectsUnionAlternative2
-                    || $this->refAndNotRefObjectsUnion instanceof MyClassRefAndNotRefObjectsUnionAlternative4
-                )
-                    ? clone $this->refAndNotRefObjectsUnion
-                    : $this->refAndNotRefObjectsUnion
-                )
+                ? clone $this->refAndNotRefObjectsUnion
+                : $this->refAndNotRefObjectsUnion
             );
         }
         if (isset($this->objAndStringUnion)) {
             $this->objAndStringUnion = (($this->objAndStringUnion instanceof MyClassObjAndStringUnionAlternative1)
                 ? clone $this->objAndStringUnion
-                : ((is_string($this->objAndStringUnion))
-                    ? $this->objAndStringUnion
-                    : $this->objAndStringUnion
-                )
+                : $this->objAndStringUnion
             );
         }
         if (isset($this->unionOfOneObj)) {

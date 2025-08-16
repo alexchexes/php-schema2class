@@ -557,6 +557,16 @@ class UnionProperty extends AbstractProperty
         $conversions = [];
         foreach ($this->subProperties as $subProperty) {
             $map = $subProperty->cloneExpr($expr);
+
+            // If cloning a sub-property does not transform the expression at all
+            // (e.g. for scalar types), avoid wrapping it into a redundant ternary
+            // expression. Such a ternary would have identical branches and cause
+            // TernaryGenerator to throw. Skipping the entry here keeps the
+            // original expression as the default fall-back.
+            if ($map === $expr) {
+                continue;
+            }
+
             $assert = $subProperty->typeAssertionExpr($expr);
             $conversions[$map][] = $assert;
         }

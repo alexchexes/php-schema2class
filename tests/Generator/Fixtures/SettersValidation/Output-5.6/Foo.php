@@ -460,13 +460,6 @@ class Foo
         return $validator->isValid();
     }
 
-    public function __clone()
-    {
-        if (isset($this->a)) {
-            $this->a = ((in_array($this->a, ['a', 'b'], true) || is_array($this->a)) ? $this->a : $this->a);
-        }
-    }
-
     /**
      * Checks if an optional nullable property was explicitly set.
      *

@@ -261,14 +261,4 @@ class Baz
 
         return $validator->isValid();
     }
-
-    public function __clone()
-    {
-        if (isset($this->grox)) {
-            $this->grox = (($this->grox instanceof Foo || $this->grox instanceof Bar)
-                ? $this->grox
-                : $this->grox
-            );
-        }
-    }
 }
