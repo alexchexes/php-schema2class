@@ -281,17 +281,4 @@ class BarTest
 
         return $validator->isValid();
     }
-
-    public function __clone()
-    {
-        if (isset($this->exampleProp)) {
-            $this->exampleProp = (($this->exampleProp instanceof FooTest
-                || $this->exampleProp instanceof MoiKlass
-                || $this->exampleProp instanceof FooTest_1
-            )
-                ? $this->exampleProp
-                : $this->exampleProp
-            );
-        }
-    }
 }

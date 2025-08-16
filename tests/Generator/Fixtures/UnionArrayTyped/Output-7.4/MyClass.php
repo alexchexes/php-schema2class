@@ -529,32 +529,4 @@ class MyClass
 
         return $validator->isValid();
     }
-
-    public function __clone()
-    {
-        if (isset($this->unionOfTypedArrays)) {
-            $this->unionOfTypedArrays = ((is_array($this->unionOfTypedArrays))
-                ? $this->unionOfTypedArrays
-                : $this->unionOfTypedArrays
-            );
-        }
-        if (isset($this->refUnionOfTypedArrays)) {
-            $this->refUnionOfTypedArrays = ((is_array($this->refUnionOfTypedArrays))
-                ? $this->refUnionOfTypedArrays
-                : $this->refUnionOfTypedArrays
-            );
-        }
-        if (isset($this->refAndNotRefUnionOfTypedArrays)) {
-            $this->refAndNotRefUnionOfTypedArrays = ((is_array($this->refAndNotRefUnionOfTypedArrays))
-                ? $this->refAndNotRefUnionOfTypedArrays
-                : $this->refAndNotRefUnionOfTypedArrays
-            );
-        }
-        if (isset($this->unionOfTypedArrayAndString)) {
-            $this->unionOfTypedArrayAndString = ((is_array($this->unionOfTypedArrayAndString) || is_string($this->unionOfTypedArrayAndString))
-                ? $this->unionOfTypedArrayAndString
-                : $this->unionOfTypedArrayAndString
-            );
-        }
-    }
 }
