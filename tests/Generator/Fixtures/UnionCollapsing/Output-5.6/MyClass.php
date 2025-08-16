@@ -311,16 +311,7 @@ class MyClass
         $bar = $input->{'bar'};
         $baz = $input->{'baz'};
         $qux = ($input->{'qux'} !== null
-            ? (is_string($input->{'qux'})
-                ? $input->{'qux'}
-                : (is_string($input->{'qux'})
-                    ? $input->{'qux'}
-                    : (is_string($input->{'qux'})
-                        ? $input->{'qux'}
-                        : (is_string($input->{'qux'}) ? $input->{'qux'} : null)
-                    )
-                )
-            )
+            ? ((is_string($input->{'qux'})) ? $input->{'qux'} : null)
             : null
         );
 
@@ -343,16 +334,16 @@ class MyClass
     {
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
-        if (is_string($this->foo) || is_string($this->foo)) {
+        if (is_string($this->foo)) {
             $output['foo'] = $this->foo;
         }
-        if (is_string($this->bar) || is_string($this->bar)) {
+        if (is_string($this->bar)) {
             $output['bar'] = $this->bar;
         }
-        if (is_string($this->baz) || is_string($this->baz)) {
+        if (is_string($this->baz)) {
             $output['baz'] = $this->baz;
         }
-        if (is_string($this->qux) || is_string($this->qux) || is_string($this->qux) || is_string($this->qux)) {
+        if (is_string($this->qux)) {
             $output['qux'] = $this->qux;
         }
 
@@ -368,16 +359,16 @@ class MyClass
     {
         $output = $this->_additionalProperties;
 
-        if (is_string($this->foo) || is_string($this->foo)) {
+        if (is_string($this->foo)) {
             $output->{'foo'} = $this->foo;
         }
-        if (is_string($this->bar) || is_string($this->bar)) {
+        if (is_string($this->bar)) {
             $output->{'bar'} = $this->bar;
         }
-        if (is_string($this->baz) || is_string($this->baz)) {
+        if (is_string($this->baz)) {
             $output->{'baz'} = $this->baz;
         }
-        if (is_string($this->qux) || is_string($this->qux) || is_string($this->qux) || is_string($this->qux)) {
+        if (is_string($this->qux)) {
             $output->{'qux'} = $this->qux;
         }
 
@@ -418,31 +409,5 @@ class MyClass
         }
 
         return $validator->isValid();
-    }
-
-    public function __clone()
-    {
-        $this->foo = (is_string($this->foo)
-            ? $this->foo
-            : (is_string($this->foo) ? $this->foo : $this->foo)
-        );
-        $this->bar = (is_string($this->bar)
-            ? $this->bar
-            : (is_string($this->bar) ? $this->bar : $this->bar)
-        );
-        $this->baz = (is_string($this->baz)
-            ? $this->baz
-            : (is_string($this->baz) ? $this->baz : $this->baz)
-        );
-        $this->qux = (is_string($this->qux)
-            ? $this->qux
-            : (is_string($this->qux)
-                ? $this->qux
-                : (is_string($this->qux)
-                    ? $this->qux
-                    : (is_string($this->qux) ? $this->qux : $this->qux)
-                )
-            )
-        );
     }
 }

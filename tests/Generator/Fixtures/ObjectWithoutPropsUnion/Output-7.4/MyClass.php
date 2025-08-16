@@ -187,9 +187,9 @@ class MyClass
 
         $foo = $input->{'foo'};
         $bar = isset($input->{'bar'})
-            ? (is_array($input->{'bar'}) || is_object($input->{'bar'})
+            ? ((is_string($input->{'bar'}) || is_array($input->{'bar'}) || is_object($input->{'bar'}))
                 ? $input->{'bar'}
-                : (is_string($input->{'bar'}) ? $input->{'bar'} : null)
+                : null
             )
             : null;
 
@@ -288,19 +288,5 @@ class MyClass
         }
 
         return $validator->isValid();
-    }
-
-    public function __clone()
-    {
-        $this->foo = (is_array($this->foo) || is_object($this->foo)
-            ? $this->foo
-            : (is_string($this->foo) ? $this->foo : $this->foo)
-        );
-        if (isset($this->bar)) {
-            $this->bar = (is_array($this->bar) || is_object($this->bar)
-                ? $this->bar
-                : (is_string($this->bar) ? $this->bar : $this->bar)
-            );
-        }
     }
 }

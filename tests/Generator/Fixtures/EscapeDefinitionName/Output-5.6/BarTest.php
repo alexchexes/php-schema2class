@@ -182,11 +182,11 @@ class BarTest
         }
 
         $exampleProp = isset($input->{'exampleProp'})
-            ? (FooTest_1::validateInput($input->{'exampleProp'}, true)
+            ? ((FooTest_1::validateInput($input->{'exampleProp'}, true))
                 ? FooTest_1::fromInput($input->{'exampleProp'}, $validate)
-                : (MoiKlass::validateInput($input->{'exampleProp'}, true)
+                : ((MoiKlass::validateInput($input->{'exampleProp'}, true))
                     ? MoiKlass::fromInput($input->{'exampleProp'}, $validate)
-                    : (FooTest::validateInput($input->{'exampleProp'}, true)
+                    : ((FooTest::validateInput($input->{'exampleProp'}, true))
                         ? FooTest::fromInput($input->{'exampleProp'}, $validate)
                         : null
                     )
@@ -280,18 +280,5 @@ class BarTest
         }
 
         return $validator->isValid();
-    }
-
-    public function __clone()
-    {
-        if (isset($this->exampleProp)) {
-            $this->exampleProp = ($this->exampleProp instanceof FooTest_1
-                ? $this->exampleProp
-                : ($this->exampleProp instanceof MoiKlass
-                    ? $this->exampleProp
-                    : ($this->exampleProp instanceof FooTest ? $this->exampleProp : $this->exampleProp)
-                )
-            );
-        }
     }
 }

@@ -47,6 +47,7 @@ Now it:
 - Handles URL-encoded references
 - Handles definition descriptions and/or top-level schema description and adds it to a class' PHPDoc
 - Generates a `toStdClass()` method returning an object representation of the instance
+- Removes redundant `is_array` checks in generated union property methods
 
 ### Better support for older PHP versions:
 

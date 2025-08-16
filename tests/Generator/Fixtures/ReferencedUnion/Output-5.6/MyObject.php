@@ -177,12 +177,4 @@ class MyObject
 
         return $validator->isValid();
     }
-
-    public function __clone()
-    {
-        $this->foo = (in_array($this->foo, ['baz', 'quz'], true)
-            ? $this->foo
-            : (in_array($this->foo, ['foo', 'bar'], true) ? $this->foo : $this->foo)
-        );
-    }
 }

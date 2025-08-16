@@ -104,20 +104,24 @@ class UnionProperty extends AbstractProperty
             $mapping       = $subProp->inputMappingExpr($accessor, asserted: true);
             $assignment    = "\${$name} = {$mapping};";
             $discriminator = $subProp->inputAssertionExpr($accessor);
-    
+
             // If this arm is an "array" type, prefix its test with is_array(...)
             if (
                 $subProp instanceof ReferenceArrayProperty
                 || $subProp instanceof ObjectArrayProperty
                 || $subProp instanceof PrimitiveArrayProperty
             ) {
-                $discriminator = "(is_array({$accessor}) && {$discriminator})";
+                if (!str_contains($discriminator, "is_array({$accessor})")) {
+                    $discriminator = "(is_array({$accessor}) && {$discriminator})";
+                }
             }
-    
+
             if (! isset($conversions[$assignment])) {
                 $conversions[$assignment] = ["discriminators" => [], "fallback" => false];
             }
-            $conversions[$assignment]["discriminators"][] = $discriminator;
+            if (!in_array($discriminator, $conversions[$assignment]["discriminators"], true)) {
+                $conversions[$assignment]["discriminators"][] = $discriminator;
+            }
         }
     
         // Turn those into an if/elseif/else chain
@@ -213,7 +217,9 @@ class UnionProperty extends AbstractProperty
                 $conversions[$assignment] = ["discriminators" => []];
             }
 
-            $conversions[$assignment]["discriminators"][] = $discriminator;
+            if (!in_array($discriminator, $conversions[$assignment]["discriminators"], true)) {
+                $conversions[$assignment]["discriminators"][] = $discriminator;
+            }
         }
 
         $indent = StringUtils::indentCode(...);
@@ -253,7 +259,9 @@ class UnionProperty extends AbstractProperty
                 $conversions[$assignment] = ["discriminators" => []];
             }
 
-            $conversions[$assignment]["discriminators"][] = $discriminator;
+            if (!in_array($discriminator, $conversions[$assignment]["discriminators"], true)) {
+                $conversions[$assignment]["discriminators"][] = $discriminator;
+            }
         }
 
         $indent = StringUtils::indentCode(...);
@@ -374,10 +382,11 @@ class UnionProperty extends AbstractProperty
         $subAssertions = [];
 
         foreach ($this->subProperties as $prop) {
-            $subAssertions[] = $prop->typeAssertionExpr($expr);
+            $assert = $prop->typeAssertionExpr($expr);
+            $subAssertions[$assert] = true;
         }
 
-        return OrGenerator::make($subAssertions);
+        return OrGenerator::make(array_keys($subAssertions));
     }
 
     public function inputAssertionExpr(string $expr): string
@@ -385,10 +394,11 @@ class UnionProperty extends AbstractProperty
         $subAssertions = [];
 
         foreach ($this->subProperties as $prop) {
-            $subAssertions[] = $prop->inputAssertionExpr($expr);
+            $assert = $prop->inputAssertionExpr($expr);
+            $subAssertions[$assert] = true;
         }
 
-        return OrGenerator::make($subAssertions);
+        return OrGenerator::make(array_keys($subAssertions));
     }
 
     public function inputMappingExpr(string $expr, bool $asserted = false): string
@@ -407,12 +417,23 @@ class UnionProperty extends AbstractProperty
             return $match->generate();
         }
 
-        $out = "null";
+        $groups = [];
 
         foreach ($this->subProperties as $subProperty) {
             $assert = $subProperty->inputAssertionExpr($expr);
             $map    = $subProperty->inputMappingExpr($expr);
-            $out    = TernaryGenerator::make($assert, $map, $out);
+
+            if (!isset($groups[$map])) {
+                $groups[$map] = [];
+            }
+            if (!in_array($assert, $groups[$map], true)) {
+                $groups[$map][] = $assert;
+            }
+        }
+
+        $out = "null";
+        foreach ($groups as $map => $asserts) {
+            $out = TernaryGenerator::make(OrGenerator::make($asserts), $map, $out);
         }
 
         return $out;
@@ -433,12 +454,23 @@ class UnionProperty extends AbstractProperty
             return $match->generate();
         }
 
-        $out = "null";
+        $groups = [];
 
         foreach ($this->subProperties as $subProperty) {
             $assert = $subProperty->typeAssertionExpr($expr);
             $map    = $subProperty->outputMappingExpr($expr);
-            $out    = TernaryGenerator::make($assert, $map, $out);
+
+            if (!isset($groups[$map])) {
+                $groups[$map] = [];
+            }
+            if (!in_array($assert, $groups[$map], true)) {
+                $groups[$map][] = $assert;
+            }
+        }
+
+        $out = "null";
+        foreach ($groups as $map => $asserts) {
+            $out = TernaryGenerator::make(OrGenerator::make($asserts), $map, $out);
         }
 
         return $out;
@@ -459,12 +491,23 @@ class UnionProperty extends AbstractProperty
             return $match->generate();
         }
 
-        $out = "null";
+        $groups = [];
 
         foreach ($this->subProperties as $subProperty) {
             $assert = $subProperty->typeAssertionExpr($expr);
             $map    = $subProperty->outputMappingExprStdClass($expr);
-            $out    = TernaryGenerator::make($assert, $map, $out);
+
+            if (!isset($groups[$map])) {
+                $groups[$map] = [];
+            }
+            if (!in_array($assert, $groups[$map], true)) {
+                $groups[$map][] = $assert;
+            }
+        }
+
+        $out = "null";
+        foreach ($groups as $map => $asserts) {
+            $out = TernaryGenerator::make(OrGenerator::make($asserts), $map, $out);
         }
 
         return $out;
@@ -484,12 +527,26 @@ class UnionProperty extends AbstractProperty
             return $match->generate();
         }
 
-        $out = $expr;
+        $groups = [];
 
         foreach ($this->subProperties as $subProperty) {
             $assert = $subProperty->typeAssertionExpr($expr);
             $map    = $subProperty->cloneExpr($expr);
-            $out    = TernaryGenerator::make($assert, $map, $out);
+
+            if (!isset($groups[$map])) {
+                $groups[$map] = [];
+            }
+            if (!in_array($assert, $groups[$map], true)) {
+                $groups[$map][] = $assert;
+            }
+        }
+
+        $out = $expr;
+        foreach ($groups as $map => $asserts) {
+            if ($map === $expr) {
+                continue;
+            }
+            $out = TernaryGenerator::make(OrGenerator::make($asserts), $map, $out);
         }
 
         return $out;
