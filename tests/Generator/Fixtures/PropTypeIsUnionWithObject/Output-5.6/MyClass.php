@@ -243,9 +243,6 @@ class MyClass
 
     public function __clone()
     {
-        $this->foo = ((is_string($this->foo))
-            ? $this->foo
-            : (($this->foo instanceof MyClassFooAlternative2) ? clone $this->foo : $this->foo)
-        );
+        $this->foo = (($this->foo instanceof MyClassFooAlternative2) ? clone $this->foo : $this->foo);
     }
 }

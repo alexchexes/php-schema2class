@@ -447,11 +447,14 @@ class UnionProperty extends AbstractProperty
         $conversions = [];
         foreach ($this->subProperties as $subProperty) {
             $map = $subProperty->inputMappingExpr($expr);
+            if ($map === 'null') {
+                continue;
+            }
             $assert = $subProperty->inputAssertionExpr($expr);
             $conversions[$map][] = $assert;
         }
 
-        $out = "null";
+        $out = 'null';
         foreach (array_reverse($conversions) as $map => $asserts) {
             $conditions = array_values(array_unique($asserts));
             $cond = OrGenerator::make($conditions);
@@ -484,11 +487,14 @@ class UnionProperty extends AbstractProperty
         $conversions = [];
         foreach ($this->subProperties as $subProperty) {
             $map = $subProperty->outputMappingExpr($expr);
+            if ($map === 'null') {
+                continue;
+            }
             $assert = $subProperty->typeAssertionExpr($expr);
             $conversions[$map][] = $assert;
         }
 
-        $out = "null";
+        $out = 'null';
         foreach (array_reverse($conversions) as $map => $asserts) {
             $conditions = array_values(array_unique($asserts));
             $cond = OrGenerator::make($conditions);
@@ -521,11 +527,14 @@ class UnionProperty extends AbstractProperty
         $conversions = [];
         foreach ($this->subProperties as $subProperty) {
             $map = $subProperty->outputMappingExprStdClass($expr);
+            if ($map === 'null') {
+                continue;
+            }
             $assert = $subProperty->typeAssertionExpr($expr);
             $conversions[$map][] = $assert;
         }
 
-        $out = "null";
+        $out = 'null';
         foreach (array_reverse($conversions) as $map => $asserts) {
             $conditions = array_values(array_unique($asserts));
             $cond = OrGenerator::make($conditions);
@@ -557,6 +566,9 @@ class UnionProperty extends AbstractProperty
         $conversions = [];
         foreach ($this->subProperties as $subProperty) {
             $map = $subProperty->cloneExpr($expr);
+            if ($map === $expr) {
+                continue;
+            }
             $assert = $subProperty->typeAssertionExpr($expr);
             $conversions[$map][] = $assert;
         }
