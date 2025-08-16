@@ -328,11 +328,6 @@ class RefValidation
 
     public function __clone()
     {
-        if (isset($this->bar)) {
-            $this->bar = match (true) {
-                is_string($this->bar) || in_array($this->bar, [1, 2], true) => $this->bar,
-            };
-        }
         if (isset($this->baz)) {
             $this->baz = clone $this->baz;
         }

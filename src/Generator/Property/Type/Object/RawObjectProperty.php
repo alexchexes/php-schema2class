@@ -48,6 +48,11 @@ class RawObjectProperty extends AbstractProperty
         return 'json_decode(json_encode(' . $expr . '))';
     }
 
+    public function cloneExpr(string $expr): string
+    {
+        return 'json_decode(json_encode(' . $expr . '))';
+    }
+
     public function needsValidation(): bool
     {
         // Schema places no restrictions beyond "object", so PHP type hints are

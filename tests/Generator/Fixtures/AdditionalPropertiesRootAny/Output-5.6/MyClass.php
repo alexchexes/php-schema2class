@@ -282,4 +282,11 @@ class MyClass
 
         return $validator->isValid();
     }
+
+    public function __clone()
+    {
+        if (isset($this->params)) {
+            $this->params = json_decode(json_encode($this->params));
+        }
+    }
 }

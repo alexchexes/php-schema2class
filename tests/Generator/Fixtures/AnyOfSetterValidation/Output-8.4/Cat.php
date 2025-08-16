@@ -236,13 +236,4 @@ class Cat
 
         return $validator->isValid();
     }
-
-    public function __clone()
-    {
-        if (isset($this->hasFur)) {
-            $this->hasFur = match (true) {
-                in_array($this->hasFur, ['a', 'b'], true) || is_array($this->hasFur) => $this->hasFur,
-            };
-        }
-    }
 }

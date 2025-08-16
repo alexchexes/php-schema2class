@@ -209,13 +209,4 @@ class MyClass
 
         return $validator->isValid();
     }
-
-    public function __clone()
-    {
-        if (isset($this->foo)) {
-            $this->foo = match (true) {
-                is_string($this->foo) || (is_int($this->foo) || is_float($this->foo)) => $this->foo,
-            };
-        }
-    }
 }

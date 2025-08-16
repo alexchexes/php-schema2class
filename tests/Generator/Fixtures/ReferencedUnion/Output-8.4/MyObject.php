@@ -160,11 +160,4 @@ class MyObject
 
         return $validator->isValid();
     }
-
-    public function __clone()
-    {
-        $this->foo = match (true) {
-            $this->foo instanceof A || $this->foo instanceof B => $this->foo,
-        };
-    }
 }

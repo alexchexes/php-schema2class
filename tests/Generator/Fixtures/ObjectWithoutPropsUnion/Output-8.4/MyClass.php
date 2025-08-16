@@ -247,11 +247,13 @@ class MyClass
     public function __clone()
     {
         $this->foo = match (true) {
-            is_string($this->foo) || is_array($this->foo) || is_object($this->foo) => $this->foo,
+            is_string($this->foo) => $this->foo,
+            is_array($this->foo) || is_object($this->foo) => json_decode(json_encode($this->foo)),
         };
         if (isset($this->bar)) {
             $this->bar = match (true) {
-                is_string($this->bar) || is_array($this->bar) || is_object($this->bar) => $this->bar,
+                is_string($this->bar) => $this->bar,
+                is_array($this->bar) || is_object($this->bar) => json_decode(json_encode($this->bar)),
             };
         }
     }
