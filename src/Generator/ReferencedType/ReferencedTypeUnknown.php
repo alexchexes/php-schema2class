@@ -61,9 +61,19 @@ readonly class ReferencedTypeUnknown implements ReferencedTypeInterface
         return "true";
     }
 
+    public function typeAssertionConditions(string $expr): array
+    {
+        return [$this->typeAssertionExpr($expr)];
+    }
+
     public function inputAssertionExpr(string $expr): string
     {
         return "true";
+    }
+
+    public function inputAssertionConditions(string $expr): array
+    {
+        return [$this->inputAssertionExpr($expr)];
     }
 
     public function inputMappingExpr(string $expr, bool $asserted = false): string

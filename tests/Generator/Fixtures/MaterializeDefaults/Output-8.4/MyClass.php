@@ -835,17 +835,13 @@ class MyClass
             : null;
         $arrObjUnion = isset($input->{'arrObjUnion'})
             ? match (true) {
-                is_array($input->{'arrObjUnion'})
-                    || is_array($input->{'arrObjUnion'}) || is_object($input->{'arrObjUnion'}) =>
-                    $input->{'arrObjUnion'},
+                is_array($input->{'arrObjUnion'}) || is_object($input->{'arrObjUnion'}) => $input->{'arrObjUnion'},
                 default => null,
             }
             : null;
         $objArrUnion = isset($input->{'objArrUnion'})
             ? match (true) {
-                is_array($input->{'objArrUnion'})
-                    || is_array($input->{'objArrUnion'}) || is_object($input->{'objArrUnion'}) =>
-                    $input->{'objArrUnion'},
+                is_array($input->{'objArrUnion'}) || is_object($input->{'objArrUnion'}) => $input->{'objArrUnion'},
                 default => null,
             }
             : null;

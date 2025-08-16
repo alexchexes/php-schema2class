@@ -43,6 +43,21 @@ class RawObjectProperty extends AbstractProperty
         return 'is_array(' . $expr . ') || is_object(' . $expr . ')';
     }
 
+    public function typeAssertionConditions(string $expr): array
+    {
+        return ['is_array(' . $expr . ')', 'is_object(' . $expr . ')'];
+    }
+
+    public function inputAssertionExpr(string $expr): string
+    {
+        return $this->typeAssertionExpr($expr);
+    }
+
+    public function inputAssertionConditions(string $expr): array
+    {
+        return $this->typeAssertionConditions($expr);
+    }
+
     public function outputMappingExpr(string $expr): string
     {
         return 'json_decode(json_encode(' . $expr . '), true)';

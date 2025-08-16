@@ -86,6 +86,11 @@ readonly class ReferencedTypeEnum implements ReferencedTypeInterface
         return EnumUtils::assertionExpr($this->schema['enum'], $expr);
     }
 
+    public function typeAssertionConditions(string $expr): array
+    {
+        return [$this->typeAssertionExpr($expr)];
+    }
+
     public function inputAssertionExpr(string $expr): string
     {
         if ($this->canUseNativeEnum()) {
@@ -93,6 +98,11 @@ readonly class ReferencedTypeEnum implements ReferencedTypeInterface
         }
 
         return EnumUtils::assertionExpr($this->schema['enum'], $expr);
+    }
+
+    public function inputAssertionConditions(string $expr): array
+    {
+        return [$this->inputAssertionExpr($expr)];
     }
 
     public function inputMappingExpr(string $expr, bool $asserted = false): string

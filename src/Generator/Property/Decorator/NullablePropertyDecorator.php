@@ -191,12 +191,22 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface
 
     public function typeAssertionExpr(string $expr): string
     {
-        return OrGenerator::make(["{$expr} === null", $this->inner->typeAssertionExpr($expr)]);
+        return OrGenerator::make($this->typeAssertionConditions($expr));
     }
 
     public function inputAssertionExpr(string $expr): string
     {
-        return OrGenerator::make(["{$expr} === null", $this->inner->inputAssertionExpr($expr)]);
+        return OrGenerator::make($this->inputAssertionConditions($expr));
+    }
+
+    public function typeAssertionConditions(string $expr): array
+    {
+        return array_merge(["{$expr} === null"], $this->inner->typeAssertionConditions($expr));
+    }
+
+    public function inputAssertionConditions(string $expr): array
+    {
+        return array_merge(["{$expr} === null"], $this->inner->inputAssertionConditions($expr));
     }
 
     public function inputMappingExpr(string $expr, bool $asserted = false): string

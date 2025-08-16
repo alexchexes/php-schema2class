@@ -492,10 +492,7 @@ class MyClass
         $i = null;
         if (property_exists($input, 'i')) {
             $i = ($input->{'i'} !== null
-                ? ((is_array($input->{'i'})
-                    || is_string($input->{'i'})
-                    || is_array($input->{'i'}) || is_object($input->{'i'})
-                )
+                ? ((is_array($input->{'i'}) || is_string($input->{'i'}) || is_object($input->{'i'}))
                     ? $input->{'i'}
                     : null
                 )
