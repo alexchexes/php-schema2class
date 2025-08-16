@@ -1108,12 +1108,16 @@ class MyClass
         }
         if (isset($this->arrObjUnion)) {
             $this->arrObjUnion = match (true) {
-                is_array($this->arrObjUnion) || is_array($this->arrObjUnion) || is_object($this->arrObjUnion) => $this->arrObjUnion,
+                is_array($this->arrObjUnion) => $this->arrObjUnion,
+                is_array($this->arrObjUnion) || is_object($this->arrObjUnion) =>
+                    json_decode(json_encode($this->arrObjUnion), is_array($this->arrObjUnion)),
             };
         }
         if (isset($this->objArrUnion)) {
             $this->objArrUnion = match (true) {
-                is_array($this->objArrUnion) || is_array($this->objArrUnion) || is_object($this->objArrUnion) => $this->objArrUnion,
+                is_array($this->objArrUnion) => $this->objArrUnion,
+                is_array($this->objArrUnion) || is_object($this->objArrUnion) =>
+                    json_decode(json_encode($this->objArrUnion), is_array($this->objArrUnion)),
             };
         }
         if (isset($this->numKeysDefaults)) {

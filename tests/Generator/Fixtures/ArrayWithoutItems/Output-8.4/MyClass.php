@@ -587,7 +587,8 @@ class MyClass
         }
         if (isset($this->i)) {
             $this->i = match (true) {
-                is_array($this->i) || is_string($this->i) || is_array($this->i) || is_object($this->i) => $this->i,
+                is_array($this->i) || is_string($this->i) => $this->i,
+                is_array($this->i) || is_object($this->i) => json_decode(json_encode($this->i), is_array($this->i)),
             };
         }
     }

@@ -776,27 +776,24 @@ class MyClass
                 $this->bar,
         };
         $this->baz = match (true) {
-            is_string($this->baz)
-                || (is_int($this->baz) || is_float($this->baz))
-                || is_bool($this->baz)
-                || is_array($this->baz) || is_object($this->baz) =>
-                $this->baz,
+            is_string($this->baz) || (is_int($this->baz) || is_float($this->baz)) || is_bool($this->baz) => $this->baz,
+            is_array($this->baz) || is_object($this->baz) => json_decode(json_encode($this->baz), is_array($this->baz)),
         };
         $this->qux = match (true) {
             is_string($this->qux)
                 || (is_int($this->qux) || is_float($this->qux))
                 || is_bool($this->qux)
-                || is_array($this->qux)
-                || is_array($this->qux) || is_object($this->qux) =>
+                || is_array($this->qux) =>
                 $this->qux,
+            is_array($this->qux) || is_object($this->qux) => json_decode(json_encode($this->qux), is_array($this->qux)),
         };
         $this->thud = match (true) {
             is_string($this->thud)
                 || (is_int($this->thud) || is_float($this->thud))
                 || is_bool($this->thud)
-                || is_array($this->thud)
-                || is_array($this->thud) || is_object($this->thud) =>
+                || is_array($this->thud) =>
                 $this->thud,
+            is_array($this->thud) || is_object($this->thud) => json_decode(json_encode($this->thud), is_array($this->thud)),
         };
         if (isset($this->optFoo)) {
             $this->optFoo = match (true) {
@@ -819,9 +816,9 @@ class MyClass
             $this->optBaz = match (true) {
                 is_string($this->optBaz)
                     || (is_int($this->optBaz) || is_float($this->optBaz))
-                    || is_bool($this->optBaz)
-                    || is_array($this->optBaz) || is_object($this->optBaz) =>
+                    || is_bool($this->optBaz) =>
                     $this->optBaz,
+                is_array($this->optBaz) || is_object($this->optBaz) => json_decode(json_encode($this->optBaz), is_array($this->optBaz)),
             };
         }
         if (isset($this->optQux)) {
@@ -829,9 +826,9 @@ class MyClass
                 is_string($this->optQux)
                     || (is_int($this->optQux) || is_float($this->optQux))
                     || is_bool($this->optQux)
-                    || is_array($this->optQux)
-                    || is_array($this->optQux) || is_object($this->optQux) =>
+                    || is_array($this->optQux) =>
                     $this->optQux,
+                is_array($this->optQux) || is_object($this->optQux) => json_decode(json_encode($this->optQux), is_array($this->optQux)),
             };
         }
         if (isset($this->optThud)) {
@@ -839,9 +836,9 @@ class MyClass
                 is_string($this->optThud)
                     || (is_int($this->optThud) || is_float($this->optThud))
                     || is_bool($this->optThud)
-                    || is_array($this->optThud)
-                    || is_array($this->optThud) || is_object($this->optThud) =>
+                    || is_array($this->optThud) =>
                     $this->optThud,
+                is_array($this->optThud) || is_object($this->optThud) => json_decode(json_encode($this->optThud), is_array($this->optThud)),
             };
         }
     }
