@@ -417,7 +417,8 @@ class MyClass
             is_string($input->{'baz'})
                 || (is_int($input->{'baz'}) || is_float($input->{'baz'}))
                 || is_bool($input->{'baz'})
-                || is_array($input->{'baz'}) || is_object($input->{'baz'}) =>
+                || is_array($input->{'baz'})
+                || is_object($input->{'baz'}) =>
                 $input->{'baz'},
             default => throw new \InvalidArgumentException("could not build property 'baz' from JSON"),
         };
@@ -426,16 +427,13 @@ class MyClass
                 || (is_int($input->{'qux'}) || is_float($input->{'qux'}))
                 || is_bool($input->{'qux'})
                 || is_array($input->{'qux'})
-                || is_array($input->{'qux'}) || is_object($input->{'qux'}) =>
+                || is_object($input->{'qux'}) =>
                 $input->{'qux'},
             default => throw new \InvalidArgumentException("could not build property 'qux' from JSON"),
         };
         $thud = ($input->{'thud'} !== null
             ? match (true) {
-                is_string($input->{'thud'})
-                    || is_array($input->{'thud'})
-                    || is_array($input->{'thud'}) || is_object($input->{'thud'}) =>
-                    $input->{'thud'},
+                is_string($input->{'thud'}) || is_array($input->{'thud'}) || is_object($input->{'thud'}) => $input->{'thud'},
                 (is_int($input->{'thud'}) || is_float($input->{'thud'})) =>
                     (str_contains((string)$input->{'thud'}, '.')
                         ? (float)$input->{'thud'}
@@ -484,10 +482,7 @@ class MyClass
             : null;
         $optQux = isset($input->{'optQux'})
             ? match (true) {
-                is_string($input->{'optQux'})
-                    || is_array($input->{'optQux'})
-                    || is_array($input->{'optQux'}) || is_object($input->{'optQux'}) =>
-                    $input->{'optQux'},
+                is_string($input->{'optQux'}) || is_array($input->{'optQux'}) || is_object($input->{'optQux'}) => $input->{'optQux'},
                 (is_int($input->{'optQux'}) || is_float($input->{'optQux'})) =>
                     (str_contains((string)$input->{'optQux'}, '.')
                         ? (float)$input->{'optQux'}
@@ -501,10 +496,7 @@ class MyClass
         if (property_exists($input, 'optThud')) {
             $optThud = ($input->{'optThud'} !== null
                 ? match (true) {
-                    is_string($input->{'optThud'})
-                        || is_array($input->{'optThud'})
-                        || is_array($input->{'optThud'}) || is_object($input->{'optThud'}) =>
-                        $input->{'optThud'},
+                    is_string($input->{'optThud'}) || is_array($input->{'optThud'}) || is_object($input->{'optThud'}) => $input->{'optThud'},
                     (is_int($input->{'optThud'}) || is_float($input->{'optThud'})) =>
                         (str_contains((string)$input->{'optThud'}, '.')
                             ? (float)$input->{'optThud'}
@@ -569,7 +561,7 @@ class MyClass
                 || is_bool($this->qux)
                 || is_array($this->qux) =>
                 $this->qux,
-            is_array($this->qux) || is_object($this->qux) => json_decode(json_encode($this->qux), true),
+            is_object($this->qux) => json_decode(json_encode($this->qux), true),
         };
         $output['thud'] = match (true) {
             is_string($this->thud)
@@ -577,7 +569,7 @@ class MyClass
                 || is_bool($this->thud)
                 || is_array($this->thud) =>
                 $this->thud,
-            is_array($this->thud) || is_object($this->thud) => json_decode(json_encode($this->thud), true),
+            is_object($this->thud) => json_decode(json_encode($this->thud), true),
         };
         if (isset($this->optFoo)) {
             $output['optFoo'] = match (true) {
@@ -612,7 +604,7 @@ class MyClass
                     || is_bool($this->optQux)
                     || is_array($this->optQux) =>
                     $this->optQux,
-                is_array($this->optQux) || is_object($this->optQux) => json_decode(json_encode($this->optQux), true),
+                is_object($this->optQux) => json_decode(json_encode($this->optQux), true),
             };
         }
         if (isset($this->optThud) || array_key_exists('optThud', $this->_providedOptionals)) {
@@ -623,7 +615,7 @@ class MyClass
                         || is_bool($this->optThud)
                         || is_array($this->optThud) =>
                         $this->optThud,
-                    is_array($this->optThud) || is_object($this->optThud) => json_decode(json_encode($this->optThud), true),
+                    is_object($this->optThud) => json_decode(json_encode($this->optThud), true),
                     default => null,
                 }
                 : null
@@ -662,7 +654,7 @@ class MyClass
                 || is_bool($this->qux)
                 || is_array($this->qux) =>
                 $this->qux,
-            is_array($this->qux) || is_object($this->qux) => json_decode(json_encode($this->qux)),
+            is_object($this->qux) => json_decode(json_encode($this->qux)),
         };
         $output->{'thud'} = match (true) {
             is_string($this->thud)
@@ -670,7 +662,7 @@ class MyClass
                 || is_bool($this->thud)
                 || is_array($this->thud) =>
                 $this->thud,
-            is_array($this->thud) || is_object($this->thud) => json_decode(json_encode($this->thud)),
+            is_object($this->thud) => json_decode(json_encode($this->thud)),
         };
         if (isset($this->optFoo)) {
             $output->{'optFoo'} = match (true) {
@@ -705,7 +697,7 @@ class MyClass
                     || is_bool($this->optQux)
                     || is_array($this->optQux) =>
                     $this->optQux,
-                is_array($this->optQux) || is_object($this->optQux) => json_decode(json_encode($this->optQux)),
+                is_object($this->optQux) => json_decode(json_encode($this->optQux)),
             };
         }
         if (isset($this->optThud) || array_key_exists('optThud', $this->_providedOptionals)) {
@@ -716,7 +708,7 @@ class MyClass
                         || is_bool($this->optThud)
                         || is_array($this->optThud) =>
                         $this->optThud,
-                    is_array($this->optThud) || is_object($this->optThud) => json_decode(json_encode($this->optThud)),
+                    is_object($this->optThud) => json_decode(json_encode($this->optThud)),
                     default => null,
                 }
                 : null
@@ -779,7 +771,8 @@ class MyClass
             is_string($this->baz)
                 || (is_int($this->baz) || is_float($this->baz))
                 || is_bool($this->baz)
-                || is_array($this->baz) || is_object($this->baz) =>
+                || is_array($this->baz)
+                || is_object($this->baz) =>
                 $this->baz,
         };
         $this->qux = match (true) {
@@ -787,7 +780,7 @@ class MyClass
                 || (is_int($this->qux) || is_float($this->qux))
                 || is_bool($this->qux)
                 || is_array($this->qux)
-                || is_array($this->qux) || is_object($this->qux) =>
+                || is_object($this->qux) =>
                 $this->qux,
         };
         $this->thud = match (true) {
@@ -795,7 +788,7 @@ class MyClass
                 || (is_int($this->thud) || is_float($this->thud))
                 || is_bool($this->thud)
                 || is_array($this->thud)
-                || is_array($this->thud) || is_object($this->thud) =>
+                || is_object($this->thud) =>
                 $this->thud,
         };
         if (isset($this->optFoo)) {
@@ -820,7 +813,8 @@ class MyClass
                 is_string($this->optBaz)
                     || (is_int($this->optBaz) || is_float($this->optBaz))
                     || is_bool($this->optBaz)
-                    || is_array($this->optBaz) || is_object($this->optBaz) =>
+                    || is_array($this->optBaz)
+                    || is_object($this->optBaz) =>
                     $this->optBaz,
             };
         }
@@ -830,7 +824,7 @@ class MyClass
                     || (is_int($this->optQux) || is_float($this->optQux))
                     || is_bool($this->optQux)
                     || is_array($this->optQux)
-                    || is_array($this->optQux) || is_object($this->optQux) =>
+                    || is_object($this->optQux) =>
                     $this->optQux,
             };
         }
@@ -840,7 +834,7 @@ class MyClass
                     || (is_int($this->optThud) || is_float($this->optThud))
                     || is_bool($this->optThud)
                     || is_array($this->optThud)
-                    || is_array($this->optThud) || is_object($this->optThud) =>
+                    || is_object($this->optThud) =>
                     $this->optThud,
             };
         }
