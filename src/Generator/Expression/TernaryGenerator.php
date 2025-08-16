@@ -9,6 +9,13 @@ class TernaryGenerator
 {
     static public function make(string $condition, string $ifTrue, string $ifFalse, bool $parens = true, int $lengthToWrap = 85): string
     {
+        if ($condition === '') {
+            throw new \InvalidArgumentException("Empty condition");
+        }
+        if ($ifTrue === $ifFalse) {
+            throw new \InvalidArgumentException("Expressions for 'ifTrue' and 'ifFalse' are identical: {$ifTrue}");
+        }
+
         $result = "{$condition} ? {$ifTrue} : {$ifFalse}";
         $multiline = false;
 
