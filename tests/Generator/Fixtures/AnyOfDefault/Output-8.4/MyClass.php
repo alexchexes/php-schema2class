@@ -174,8 +174,7 @@ class MyClass
 
         if (isset($this->foo)) {
             $output['foo'] = match (true) {
-                is_string($this->foo),
-                is_int($this->foo) => $this->foo,
+                is_string($this->foo) || is_int($this->foo) => $this->foo,
             };
         }
 
@@ -202,8 +201,7 @@ class MyClass
 
         if (isset($this->foo)) {
             $output->{'foo'} = match (true) {
-                is_string($this->foo),
-                is_int($this->foo) => $this->foo,
+                is_string($this->foo) || is_int($this->foo) => $this->foo,
             };
         }
 
@@ -261,8 +259,7 @@ class MyClass
     {
         if (isset($this->foo)) {
             $this->foo = match (true) {
-                is_string($this->foo),
-                is_int($this->foo) => $this->foo,
+                is_string($this->foo) || is_int($this->foo) => $this->foo,
             };
         }
     }

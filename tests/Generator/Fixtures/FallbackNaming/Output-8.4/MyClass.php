@@ -1506,8 +1506,9 @@ class MyClass
         $output['this'] = $this->_this;
         if (isset($this->ensureArgs1)) {
             $output['ensureArgs1'] = match (true) {
-                $this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative1,
-                $this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative2 => $this->ensureArgs1->toArray($includeDefaults),
+                $this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative1
+                    || $this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative2 =>
+                    $this->ensureArgs1->toArray($includeDefaults),
                 is_string($this->ensureArgs1) => $this->ensureArgs1,
             };
         }
@@ -1596,8 +1597,9 @@ class MyClass
         $output->{'this'} = $this->_this;
         if (isset($this->ensureArgs1)) {
             $output->{'ensureArgs1'} = match (true) {
-                $this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative1,
-                $this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative2 => $this->ensureArgs1->toStdClass($includeDefaults),
+                $this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative1
+                    || $this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative2 =>
+                    $this->ensureArgs1->toStdClass($includeDefaults),
                 is_string($this->ensureArgs1) => $this->ensureArgs1,
             };
         }
@@ -1665,8 +1667,9 @@ class MyClass
         }
         if (isset($this->ensureArgs1)) {
             $this->ensureArgs1 = match (true) {
-                $this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative1,
-                $this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative2 => clone $this->ensureArgs1,
+                $this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative1
+                    || $this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative2 =>
+                    clone $this->ensureArgs1,
                 is_string($this->ensureArgs1) => $this->ensureArgs1,
             };
         }

@@ -361,17 +361,15 @@ class Record
         }
         if (isset($this->dataArrayAnyOf)) {
             $output['dataArrayAnyOf'] = array_map(fn ($i) => match (true) {
+                $i instanceof Phone || $i instanceof Fio => $i->toArray(),
                 default => null,
-                $i instanceof Phone,
-                $i instanceof Fio => $i->toArray(),
             }, $this->dataArrayAnyOf);
         }
         if (isset($this->dataArrayNestedAnyOf)) {
             $output['dataArrayNestedAnyOf'] = array_map(
                 fn ($i) => array_map(fn ($i) => match (true) {
+                    $i instanceof Phone || $i instanceof Fio => $i->toArray(),
                     default => null,
-                    $i instanceof Phone,
-                    $i instanceof Fio => $i->toArray(),
                 }, $i),
                 $this->dataArrayNestedAnyOf,
             );
@@ -400,17 +398,15 @@ class Record
         }
         if (isset($this->dataArrayAnyOf)) {
             $output->{'dataArrayAnyOf'} = array_map(fn ($i) => match (true) {
+                $i instanceof Phone || $i instanceof Fio => $i->toStdClass(),
                 default => null,
-                $i instanceof Phone,
-                $i instanceof Fio => $i->toStdClass(),
             }, $this->dataArrayAnyOf);
         }
         if (isset($this->dataArrayNestedAnyOf)) {
             $output->{'dataArrayNestedAnyOf'} = array_map(
                 fn ($i) => array_map(fn ($i) => match (true) {
+                    $i instanceof Phone || $i instanceof Fio => $i->toStdClass(),
                     default => null,
-                    $i instanceof Phone,
-                    $i instanceof Fio => $i->toStdClass(),
                 }, $i),
                 $this->dataArrayNestedAnyOf,
             );
@@ -463,15 +459,13 @@ class Record
         }
         if (isset($this->dataArrayAnyOf)) {
             $this->dataArrayAnyOf = array_map(fn ($i) => match (true) {
-                $i instanceof Phone,
-                $i instanceof Fio => $i,
+                $i instanceof Phone || $i instanceof Fio => $i,
             }, $this->dataArrayAnyOf);
         }
         if (isset($this->dataArrayNestedAnyOf)) {
             $this->dataArrayNestedAnyOf = array_map(
                 fn ($i) => array_map(fn ($i) => match (true) {
-                    $i instanceof Phone,
-                    $i instanceof Fio => $i,
+                    $i instanceof Phone || $i instanceof Fio => $i,
                 }, $i),
                 $this->dataArrayNestedAnyOf,
             );

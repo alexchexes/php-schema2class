@@ -155,12 +155,15 @@ class MyClass
         }
 
         $foo = isset($input->{'foo'})
-            ? ((is_int($input->{'foo'}) || is_float($input->{'foo'}))
-                ? (str_contains((string)$input->{'foo'}, '.')
-                    ? (float)$input->{'foo'}
-                    : (int)$input->{'foo'}
+            ? ((is_string($input->{'foo'}))
+                ? $input->{'foo'}
+                : (((is_int($input->{'foo'}) || is_float($input->{'foo'})))
+                    ? (str_contains((string)$input->{'foo'}, '.')
+                        ? (float)$input->{'foo'}
+                        : (int)$input->{'foo'}
+                    )
+                    : null
                 )
-                : (is_string($input->{'foo'}) ? $input->{'foo'} : null)
             )
             : null;
 
@@ -249,9 +252,9 @@ class MyClass
     public function __clone()
     {
         if (isset($this->foo)) {
-            $this->foo = ((is_int($this->foo) || is_float($this->foo))
+            $this->foo = ((is_string($this->foo) || (is_int($this->foo) || is_float($this->foo)))
                 ? $this->foo
-                : (is_string($this->foo) ? $this->foo : $this->foo)
+                : $this->foo
             );
         }
     }

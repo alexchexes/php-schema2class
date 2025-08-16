@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ns\ArrayWithoutItems_8_4;
+namespace Ns\ArrayWithoutItems_7_4;
 
 class MyClass
 {
@@ -110,23 +110,45 @@ class MyClass
 
     private array $a;
 
-    private string|array $b;
+    /**
+     * @var array|string
+     */
+    private $b;
 
     private ?array $c;
 
-    private string|array|null $d;
+    /**
+     * @var array|string|null
+     */
+    private $d;
 
     private ?array $e = null;
 
-    private string|array|null $f = null;
+    /**
+     * @var array|string|null
+     */
+    private $f = null;
 
     private ?array $g = null;
 
-    private string|array|null $h = null;
+    /**
+     * @var array|string|null
+     */
+    private $h = null;
 
-    private string|array|object|null $i = null;
+    /**
+     * @var array|string|object|null
+     */
+    private $i = null;
 
-    public function __construct(array $a, string|array $b, ?array $c, string|array|null $d, ?array $e = null, string|array|null $f = null, ?array $g = null, string|array|null $h = null, string|array|object|null $i = null)
+    /**
+     * @param array|string $b
+     * @param array|string|null $d
+     * @param array|string|null $f
+     * @param array|string|null $h
+     * @param array|string|object|null $i
+     */
+    public function __construct(array $a, $b, ?array $c, $d, ?array $e = null, $f = null, ?array $g = null, $h = null, $i = null)
     {
         $this->_additionalProperties = new \stdClass();
 
@@ -154,8 +176,9 @@ class MyClass
      * Object (`stdClass`) or array with name/value pairs for properties not specified in the schema.
      *
      * @param bool $asArray Whether return an associative array instead of `stdClass` object.
+     * @return array|\stdClass
      */
-    public function getAdditionalProperties(bool $asArray = true): \stdClass|array
+    public function getAdditionalProperties(bool $asArray = true)
     {
         return $asArray
             ? json_decode(json_encode($this->_additionalProperties), true)
@@ -167,7 +190,7 @@ class MyClass
      *
      * @param \stdClass|array $additionalProperties Map of property name/value pairs to add.
      */
-    public function withAdditionalProperties(\stdClass|array $additionalProperties): self
+    public function withAdditionalProperties($additionalProperties): self
     {
         $clone = clone $this;
         $clone->_additionalProperties = is_array($additionalProperties)
@@ -200,13 +223,27 @@ class MyClass
         return $clone;
     }
 
-    public function getB(): string|array
+    /**
+     * @return array|string
+     */
+    public function getB()
     {
         return $this->b;
     }
 
-    public function withB(string|array $b): self
+    /**
+     * @param array|string $b
+     */
+    public function withB($b, bool $validate = true): self
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($b, self::$_schema['properties']['b']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
         $clone->b = $b;
 
@@ -226,13 +263,27 @@ class MyClass
         return $clone;
     }
 
-    public function getD(): string|array|null
+    /**
+     * @return array|string|null
+     */
+    public function getD()
     {
         return $this->d;
     }
 
-    public function withD(string|array|null $d): self
+    /**
+     * @param array|string|null $d
+     */
+    public function withD($d, bool $validate = true): self
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($d, self::$_schema['properties']['d']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
         $clone->d = $d;
 
@@ -260,13 +311,27 @@ class MyClass
         return $clone;
     }
 
-    public function getF(): string|array|null
+    /**
+     * @return array|string|null
+     */
+    public function getF()
     {
         return $this->f ?? null;
     }
 
-    public function withF(string|array $f): self
+    /**
+     * @param array|string $f
+     */
+    public function withF($f, bool $validate = true): self
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($f, self::$_schema['properties']['f']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
         $clone->f = $f;
 
@@ -304,13 +369,27 @@ class MyClass
         return $clone;
     }
 
-    public function getH(): string|array|null
+    /**
+     * @return array|string|null
+     */
+    public function getH()
     {
         return $this->h ?? null;
     }
 
-    public function withH(string|array|null $h): self
+    /**
+     * @param array|string|null $h
+     */
+    public function withH($h, bool $validate = true): self
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($h, self::$_schema['properties']['h']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
         $clone->h = $h;
         $clone->_providedOptionals['h'] = true;
@@ -327,13 +406,27 @@ class MyClass
         return $clone;
     }
 
-    public function getI(): string|array|object|null
+    /**
+     * @return array|string|object|null
+     */
+    public function getI()
     {
         return $this->i ?? null;
     }
 
-    public function withI(string|array|object|null $i): self
+    /**
+     * @param array|string|object|null $i
+     */
+    public function withI($i, bool $validate = true): self
     {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($i, self::$_schema['properties']['i']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
         $clone = clone $this;
         $clone->i = $i;
         $clone->_providedOptionals['i'] = true;
@@ -358,8 +451,14 @@ class MyClass
      * @return MyClass Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput(array|object $input, bool $validate = true): MyClass
+    public static function fromInput($input, bool $validate = true): MyClass
     {
+        if (!is_array($input) && !is_object($input)) {
+            throw new \InvalidArgumentException(
+                'Input to fromInput must be array or object, got ' . gettype($input)
+            );
+        }
+
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
@@ -367,24 +466,15 @@ class MyClass
 
         $_providedOptionals = [];
         $a = $input->{'a'};
-        $b = match (true) {
-            is_array($input->{'b'}) || is_string($input->{'b'}) => $input->{'b'},
-            default => throw new \InvalidArgumentException("could not build property 'b' from JSON"),
-        };
+        $b = $input->{'b'};
         $c = ($input->{'c'} !== null ? $input->{'c'} : null);
         $d = ($input->{'d'} !== null
-            ? match (true) {
-                is_array($input->{'d'}) || is_string($input->{'d'}) => $input->{'d'},
-                default => null,
-            }
+            ? ((is_array($input->{'d'}) || is_string($input->{'d'})) ? $input->{'d'} : null)
             : null
         );
         $e = isset($input->{'e'}) ? $input->{'e'} : null;
         $f = isset($input->{'f'})
-            ? match (true) {
-                is_array($input->{'f'}) || is_string($input->{'f'}) => $input->{'f'},
-                default => null,
-            }
+            ? ((is_array($input->{'f'}) || is_string($input->{'f'})) ? $input->{'f'} : null)
             : null;
         $g = null;
         if (property_exists($input, 'g')) {
@@ -394,10 +484,7 @@ class MyClass
         $h = null;
         if (property_exists($input, 'h')) {
             $h = ($input->{'h'} !== null
-                ? match (true) {
-                    is_array($input->{'h'}) || is_string($input->{'h'}) => $input->{'h'},
-                    default => null,
-                }
+                ? ((is_array($input->{'h'}) || is_string($input->{'h'})) ? $input->{'h'} : null)
                 : null
             );
             $_providedOptionals['h'] = true;
@@ -405,13 +492,13 @@ class MyClass
         $i = null;
         if (property_exists($input, 'i')) {
             $i = ($input->{'i'} !== null
-                ? match (true) {
-                    is_array($input->{'i'})
-                        || is_string($input->{'i'})
-                        || is_array($input->{'i'}) || is_object($input->{'i'}) =>
-                        $input->{'i'},
-                    default => null,
-                }
+                ? ((is_array($input->{'i'})
+                    || is_string($input->{'i'})
+                    || is_array($input->{'i'}) || is_object($input->{'i'})
+                )
+                    ? $input->{'i'}
+                    : null
+                )
                 : null
             );
             $_providedOptionals['i'] = true;
@@ -438,40 +525,39 @@ class MyClass
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
         $output['a'] = $this->a;
-        $output['b'] = match (true) {
-            is_array($this->b) || is_string($this->b) => $this->b,
-        };
+        if (is_array($this->b) || is_string($this->b)) {
+            $output['b'] = $this->b;
+        }
         $output['c'] = $this->c;
-        $output['d'] = match (true) {
-            is_array($this->d) || is_string($this->d) => $this->d,
-        };
+        if (is_array($this->d) || is_string($this->d)) {
+            $output['d'] = $this->d;
+        }
         if (isset($this->e)) {
             $output['e'] = $this->e;
         }
         if (isset($this->f)) {
-            $output['f'] = match (true) {
-                is_array($this->f) || is_string($this->f) => $this->f,
-            };
+            if (is_array($this->f) || is_string($this->f)) {
+                $output['f'] = $this->f;
+            }
         }
         if (isset($this->g) || array_key_exists('g', $this->_providedOptionals)) {
             $output['g'] = ($this->g !== null ? $this->g : null);
         }
         if (isset($this->h) || array_key_exists('h', $this->_providedOptionals)) {
             $output['h'] = ($this->h !== null
-                ? match (true) {
-                    is_array($this->h) || is_string($this->h) => $this->h,
-                    default => null,
-                }
+                ? ((is_array($this->h) || is_string($this->h)) ? $this->h : null)
                 : null
             );
         }
         if (isset($this->i) || array_key_exists('i', $this->_providedOptionals)) {
             $output['i'] = ($this->i !== null
-                ? match (true) {
-                    is_array($this->i) || is_string($this->i) => $this->i,
-                    is_array($this->i) || is_object($this->i) => json_decode(json_encode($this->i), true),
-                    default => null,
-                }
+                ? ((is_array($this->i) || is_string($this->i))
+                    ? $this->i
+                    : ((is_array($this->i) || is_object($this->i))
+                        ? json_decode(json_encode($this->i), true)
+                        : null
+                    )
+                )
                 : null
             );
         }
@@ -489,40 +575,39 @@ class MyClass
         $output = $this->_additionalProperties;
 
         $output->{'a'} = $this->a;
-        $output->{'b'} = match (true) {
-            is_array($this->b) || is_string($this->b) => $this->b,
-        };
+        if (is_array($this->b) || is_string($this->b)) {
+            $output->{'b'} = $this->b;
+        }
         $output->{'c'} = $this->c;
-        $output->{'d'} = match (true) {
-            is_array($this->d) || is_string($this->d) => $this->d,
-        };
+        if (is_array($this->d) || is_string($this->d)) {
+            $output->{'d'} = $this->d;
+        }
         if (isset($this->e)) {
             $output->{'e'} = $this->e;
         }
         if (isset($this->f)) {
-            $output->{'f'} = match (true) {
-                is_array($this->f) || is_string($this->f) => $this->f,
-            };
+            if (is_array($this->f) || is_string($this->f)) {
+                $output->{'f'} = $this->f;
+            }
         }
         if (isset($this->g) || array_key_exists('g', $this->_providedOptionals)) {
             $output->{'g'} = ($this->g !== null ? $this->g : null);
         }
         if (isset($this->h) || array_key_exists('h', $this->_providedOptionals)) {
             $output->{'h'} = ($this->h !== null
-                ? match (true) {
-                    is_array($this->h) || is_string($this->h) => $this->h,
-                    default => null,
-                }
+                ? ((is_array($this->h) || is_string($this->h)) ? $this->h : null)
                 : null
             );
         }
         if (isset($this->i) || array_key_exists('i', $this->_providedOptionals)) {
             $output->{'i'} = ($this->i !== null
-                ? match (true) {
-                    is_array($this->i) || is_string($this->i) => $this->i,
-                    is_array($this->i) || is_object($this->i) => json_decode(json_encode($this->i)),
-                    default => null,
-                }
+                ? ((is_array($this->i) || is_string($this->i))
+                    ? $this->i
+                    : ((is_array($this->i) || is_object($this->i))
+                        ? json_decode(json_encode($this->i))
+                        : null
+                    )
+                )
                 : null
             );
         }
@@ -550,7 +635,7 @@ class MyClass
      * @return bool Validation result if `$return` is `true`
      * @throws \InvalidArgumentException
      */
-    public static function validateInput(array|object $input, bool $return = false): bool
+    public static function validateInput($input, bool $return = false): bool
     {
         $validator = new \JsonSchema\Validator();
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
@@ -569,26 +654,19 @@ class MyClass
 
     public function __clone()
     {
-        $this->b = match (true) {
-            is_array($this->b) || is_string($this->b) => $this->b,
-        };
-        $this->d = match (true) {
-            is_array($this->d) || is_string($this->d) => $this->d,
-        };
+        $this->b = ((is_array($this->b) || is_string($this->b)) ? $this->b : $this->b);
+        $this->d = ((is_array($this->d) || is_string($this->d)) ? $this->d : $this->d);
         if (isset($this->f)) {
-            $this->f = match (true) {
-                is_array($this->f) || is_string($this->f) => $this->f,
-            };
+            $this->f = ((is_array($this->f) || is_string($this->f)) ? $this->f : $this->f);
         }
         if (isset($this->h)) {
-            $this->h = match (true) {
-                is_array($this->h) || is_string($this->h) => $this->h,
-            };
+            $this->h = ((is_array($this->h) || is_string($this->h)) ? $this->h : $this->h);
         }
         if (isset($this->i)) {
-            $this->i = match (true) {
-                is_array($this->i) || is_string($this->i) || is_array($this->i) || is_object($this->i) => $this->i,
-            };
+            $this->i = ((is_array($this->i) || is_string($this->i) || is_array($this->i) || is_object($this->i))
+                ? $this->i
+                : $this->i
+            );
         }
     }
 

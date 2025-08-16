@@ -1383,14 +1383,11 @@ class MyClass
             : null;
         $_providedOptionals_1 = isset($input->{'__providedOptionals'}) ? $input->{'__providedOptionals'} : null;
         $ensureArgs1 = isset($input->{'ensureArgs1'})
-            ? (is_string($input->{'ensureArgs1'})
-                ? $input->{'ensureArgs1'}
-                : (MyClassEnsureArgs1Alternative2::validateInput($input->{'ensureArgs1'}, true)
+            ? ((MyClassEnsureArgs1Alternative1::validateInput($input->{'ensureArgs1'}, true))
+                ? MyClassEnsureArgs1Alternative1::fromInput($input->{'ensureArgs1'}, $validate, $materializeDefaults)
+                : ((MyClassEnsureArgs1Alternative2::validateInput($input->{'ensureArgs1'}, true))
                     ? MyClassEnsureArgs1Alternative2::fromInput($input->{'ensureArgs1'}, $validate, $materializeDefaults)
-                    : (MyClassEnsureArgs1Alternative1::validateInput($input->{'ensureArgs1'}, true)
-                        ? MyClassEnsureArgs1Alternative1::fromInput($input->{'ensureArgs1'}, $validate, $materializeDefaults)
-                        : null
-                    )
+                    : ((is_string($input->{'ensureArgs1'})) ? $input->{'ensureArgs1'} : null)
                 )
             )
             : null;
@@ -1695,15 +1692,11 @@ class MyClass
             $this->testObj = clone $this->testObj;
         }
         if (isset($this->ensureArgs1)) {
-            $this->ensureArgs1 = (is_string($this->ensureArgs1)
-                ? $this->ensureArgs1
-                : ($this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative2
-                    ? clone $this->ensureArgs1
-                    : ($this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative1
-                        ? clone $this->ensureArgs1
-                        : $this->ensureArgs1
-                    )
-                )
+            $this->ensureArgs1 = (($this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative1
+                || $this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative2
+            )
+                ? clone $this->ensureArgs1
+                : ((is_string($this->ensureArgs1)) ? $this->ensureArgs1 : $this->ensureArgs1)
             );
         }
         if (isset($this->ensureArgs2)) {
