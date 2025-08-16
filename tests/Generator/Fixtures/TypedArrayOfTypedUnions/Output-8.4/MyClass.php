@@ -447,7 +447,7 @@ class MyClass
                         (is_int($i) || is_float($i)) => (str_contains((string)$i, '.') ? (float)$i : (int)$i),
                         default => null,
                     }, $i),
-                (is_array($i) || is_array($i)) => match (true) {
+                (is_array($i)) => match (true) {
                     is_array($i) => $i,
                     default => null,
                 },
@@ -463,7 +463,7 @@ class MyClass
                         (is_int($i) || is_float($i)) => (str_contains((string)$i, '.') ? (float)$i : (int)$i),
                         default => null,
                     }, $i),
-                (is_array($i) || is_array($i)) => match (true) {
+                (is_array($i)) => match (true) {
                     is_array($i) => $i,
                     default => null,
                 },
@@ -479,7 +479,7 @@ class MyClass
                         (is_int($i) || is_float($i)) => (str_contains((string)$i, '.') ? (float)$i : (int)$i),
                         default => null,
                     }, $i),
-                (is_array($i) || is_array($i)) => match (true) {
+                (is_array($i)) => match (true) {
                     is_array($i) => $i,
                     default => null,
                 },
@@ -531,7 +531,7 @@ class MyClass
                         is_string($i) || (is_int($i) || is_float($i)) => $i,
                         default => null,
                     }, $i),
-                (is_array($i) || is_array($i)) => match (true) {
+                (is_array($i)) => match (true) {
                     is_array($i) => $i,
                     default => null,
                 },
@@ -546,7 +546,7 @@ class MyClass
                         is_string($i) || (is_int($i) || is_float($i)) => $i,
                         default => null,
                     }, $i),
-                (is_array($i) || is_array($i)) => match (true) {
+                (is_array($i)) => match (true) {
                     is_array($i) => $i,
                     default => null,
                 },
@@ -561,7 +561,7 @@ class MyClass
                         is_string($i) || (is_int($i) || is_float($i)) => $i,
                         default => null,
                     }, $i),
-                (is_array($i) || is_array($i)) => match (true) {
+                (is_array($i)) => match (true) {
                     is_array($i) => $i,
                     default => null,
                 },
@@ -600,7 +600,7 @@ class MyClass
                         is_string($i) || (is_int($i) || is_float($i)) => $i,
                         default => null,
                     }, $i),
-                (is_array($i) || is_array($i)) => match (true) {
+                (is_array($i)) => match (true) {
                     is_array($i) => $i,
                     default => null,
                 },
@@ -615,7 +615,7 @@ class MyClass
                         is_string($i) || (is_int($i) || is_float($i)) => $i,
                         default => null,
                     }, $i),
-                (is_array($i) || is_array($i)) => match (true) {
+                (is_array($i)) => match (true) {
                     is_array($i) => $i,
                     default => null,
                 },
@@ -630,7 +630,7 @@ class MyClass
                         is_string($i) || (is_int($i) || is_float($i)) => $i,
                         default => null,
                     }, $i),
-                (is_array($i) || is_array($i)) => match (true) {
+                (is_array($i)) => match (true) {
                     is_array($i) => $i,
                     default => null,
                 },
@@ -696,7 +696,7 @@ class MyClass
                 (is_array($i)
                     && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || (is_int($i) || is_float($i)))))) =>
                     array_map(fn ($i) => $i, $i),
-                (is_array($i) || is_array($i)) => $i,
+                (is_array($i)) => $i,
             }, $this->arrayOfUnions);
         }
         if (isset($this->arrayOfRefUnions)) {
@@ -704,7 +704,7 @@ class MyClass
                 (is_array($i)
                     && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || (is_int($i) || is_float($i)))))) =>
                     array_map(fn ($i) => $i, $i),
-                (is_array($i) || is_array($i)) => $i,
+                (is_array($i)) => $i,
             }, $this->arrayOfRefUnions);
         }
         if (isset($this->arrayOfRefAndNotRefUnions)) {
@@ -712,7 +712,7 @@ class MyClass
                 (is_array($i)
                     && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || (is_int($i) || is_float($i)))))) =>
                     array_map(fn ($i) => $i, $i),
-                (is_array($i) || is_array($i)) => $i,
+                (is_array($i)) => $i,
             }, $this->arrayOfRefAndNotRefUnions);
         }
         if (isset($this->arrayOfUnionOfStringAndArray)) {

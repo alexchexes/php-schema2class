@@ -417,7 +417,8 @@ class MyClass
             is_string($input->{'baz'})
                 || (is_int($input->{'baz'}) || is_float($input->{'baz'}))
                 || is_bool($input->{'baz'})
-                || is_array($input->{'baz'}) || is_object($input->{'baz'}) =>
+                || is_array($input->{'baz'})
+                || is_object($input->{'baz'}) =>
                 $input->{'baz'},
             default => throw new \InvalidArgumentException("could not build property 'baz' from JSON"),
         };
@@ -426,16 +427,13 @@ class MyClass
                 || (is_int($input->{'qux'}) || is_float($input->{'qux'}))
                 || is_bool($input->{'qux'})
                 || is_array($input->{'qux'})
-                || is_array($input->{'qux'}) || is_object($input->{'qux'}) =>
+                || is_object($input->{'qux'}) =>
                 $input->{'qux'},
             default => throw new \InvalidArgumentException("could not build property 'qux' from JSON"),
         };
         $thud = ($input->{'thud'} !== null
             ? match (true) {
-                is_string($input->{'thud'})
-                    || is_array($input->{'thud'})
-                    || is_array($input->{'thud'}) || is_object($input->{'thud'}) =>
-                    $input->{'thud'},
+                is_string($input->{'thud'}) || is_array($input->{'thud'}) || is_object($input->{'thud'}) => $input->{'thud'},
                 (is_int($input->{'thud'}) || is_float($input->{'thud'})) =>
                     (str_contains((string)$input->{'thud'}, '.')
                         ? (float)$input->{'thud'}
@@ -484,10 +482,7 @@ class MyClass
             : null;
         $optQux = isset($input->{'optQux'})
             ? match (true) {
-                is_string($input->{'optQux'})
-                    || is_array($input->{'optQux'})
-                    || is_array($input->{'optQux'}) || is_object($input->{'optQux'}) =>
-                    $input->{'optQux'},
+                is_string($input->{'optQux'}) || is_array($input->{'optQux'}) || is_object($input->{'optQux'}) => $input->{'optQux'},
                 (is_int($input->{'optQux'}) || is_float($input->{'optQux'})) =>
                     (str_contains((string)$input->{'optQux'}, '.')
                         ? (float)$input->{'optQux'}
@@ -501,10 +496,7 @@ class MyClass
         if (property_exists($input, 'optThud')) {
             $optThud = ($input->{'optThud'} !== null
                 ? match (true) {
-                    is_string($input->{'optThud'})
-                        || is_array($input->{'optThud'})
-                        || is_array($input->{'optThud'}) || is_object($input->{'optThud'}) =>
-                        $input->{'optThud'},
+                    is_string($input->{'optThud'}) || is_array($input->{'optThud'}) || is_object($input->{'optThud'}) => $input->{'optThud'},
                     (is_int($input->{'optThud'}) || is_float($input->{'optThud'})) =>
                         (str_contains((string)$input->{'optThud'}, '.')
                             ? (float)$input->{'optThud'}

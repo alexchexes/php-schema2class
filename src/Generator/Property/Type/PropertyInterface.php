@@ -117,6 +117,36 @@ interface PropertyInterface extends TypeExpressionInterface
     public function convertTypeToStdClass(): string;
 
     /**
+     * Returns a list of individual assertion expressions that must all be
+     * satisfied for {@see inputAssertionExpr()} to hold.
+     *
+     * Implementations may return multiple expressions when their assertion is
+     * composed of several OR'ed conditions.  Each element should be a standalone
+     * PHP expression without surrounding parentheses.
+     *
+     * The default implementation in {@see AbstractProperty} returns an array
+     * containing the result of {@see inputAssertionExpr()}.
+     *
+     * @return list<string>
+     */
+    public function inputAssertionConditions(string $expr): array;
+
+    /**
+     * Returns a list of individual assertion expressions that must all be
+     * satisfied for {@see typeAssertionExpr()} to hold.
+     *
+     * Implementations may return multiple expressions when their assertion is
+     * composed of several OR'ed conditions.  Each element should be a standalone
+     * PHP expression without surrounding parentheses.
+     *
+     * The default implementation in {@see AbstractProperty} returns an array
+     * containing the result of {@see typeAssertionExpr()}.
+     *
+     * @return list<string>
+     */
+    public function typeAssertionConditions(string $expr): array;
+
+    /**
      * Generates additional PHP classes or enums required by this property.
      *
      * For example nested object definitions or union arms may be emitted as

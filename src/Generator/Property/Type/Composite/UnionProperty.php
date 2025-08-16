@@ -65,8 +65,8 @@ class UnionProperty extends AbstractProperty
         $accessor = "\${$inputVarName}->{{$this->keyStr()}}";
         $arms = [];
         foreach ($this->subProperties as $subProperty) {
-            $mapping       = $subProperty->inputMappingExpr($accessor, asserted: true);
-            $discriminator = $subProperty->inputAssertionExpr($accessor);
+            $mapping    = $subProperty->inputMappingExpr($accessor, asserted: true);
+            $conditions = $subProperty->inputAssertionConditions($accessor);
 
             if (
                 $subProperty instanceof ReferenceArrayProperty
@@ -74,17 +74,19 @@ class UnionProperty extends AbstractProperty
                 || $subProperty instanceof PrimitiveArrayProperty
             ) {
                 $isArrayCheck = "is_array({$accessor})";
-                if (!str_contains($discriminator, $isArrayCheck)) {
-                    $discriminator = "({$isArrayCheck} && {$discriminator})";
+                if (!in_array($isArrayCheck, $conditions, true)) {
+                    $conditions[] = $isArrayCheck;
                 }
             }
 
-            $arms[$mapping][] = $discriminator;
+            foreach ($conditions as $cond) {
+                $arms[$mapping][] = $cond;
+            }
         }
 
         $match = new MatchGenerator("true");
-        foreach ($arms as $mapping => $discriminators) {
-            $conditions = array_values(array_unique($discriminators));
+        foreach ($arms as $mapping => $conds) {
+            $conditions = array_values(array_unique($conds));
             $match->addArm(OrGenerator::make($conditions, parens: false), $mapping);
         }
 
@@ -117,10 +119,10 @@ class UnionProperty extends AbstractProperty
     
         // Build up per‑arm conversions
         foreach ($this->subProperties as $subProp) {
-            $mapping       = $subProp->inputMappingExpr($accessor, asserted: true);
-            $assignment    = "\${$name} = {$mapping};";
-            $discriminator = $subProp->inputAssertionExpr($accessor);
-    
+            $mapping    = $subProp->inputMappingExpr($accessor, asserted: true);
+            $assignment = "\${$name} = {$mapping};";
+            $conditions = $subProp->inputAssertionConditions($accessor);
+
             // If this arm is an "array" type, ensure its test guards against non-arrays
             if (
                 $subProp instanceof ReferenceArrayProperty
@@ -128,15 +130,18 @@ class UnionProperty extends AbstractProperty
                 || $subProp instanceof PrimitiveArrayProperty
             ) {
                 $isArrayCheck = "is_array({$accessor})";
-                if (!str_contains($discriminator, $isArrayCheck)) {
-                    $discriminator = "({$isArrayCheck} && {$discriminator})";
+                if (!in_array($isArrayCheck, $conditions, true)) {
+                    $conditions[] = $isArrayCheck;
                 }
             }
-    
+
             if (! isset($conversions[$assignment])) {
                 $conversions[$assignment] = ["discriminators" => [], "fallback" => false];
             }
-            $conversions[$assignment]["discriminators"][] = $discriminator;
+            $conversions[$assignment]["discriminators"] = array_merge(
+                $conversions[$assignment]["discriminators"],
+                $conditions
+            );
         }
     
         // Turn those into an if/elseif/else chain
@@ -188,14 +193,16 @@ class UnionProperty extends AbstractProperty
         $arms  = [];
 
         foreach ($this->subProperties as $subProperty) {
-            $mapping       = $subProperty->outputMappingExpr("\$this->{$name}");
-            $discriminator = $subProperty->typeAssertionExpr("\$this->{$name}");
-            $arms[$mapping][] = $discriminator;
+            $mapping    = $subProperty->outputMappingExpr("\$this->{$name}");
+            $conditions = $subProperty->typeAssertionConditions("\$this->{$name}");
+            foreach ($conditions as $cond) {
+                $arms[$mapping][] = $cond;
+            }
         }
 
         $match = new MatchGenerator("true");
-        foreach ($arms as $mapping => $discriminators) {
-            $conditions = array_values(array_unique($discriminators));
+        foreach ($arms as $mapping => $conds) {
+            $conditions = array_values(array_unique($conds));
             $match->addArm(OrGenerator::make($conditions, parens: false), $mapping);
         }
         $outputVarName = VariableNames::OUTPUT;
@@ -209,14 +216,16 @@ class UnionProperty extends AbstractProperty
         $arms  = [];
 
         foreach ($this->subProperties as $subProperty) {
-            $mapping       = $subProperty->outputMappingExprStdClass("\$this->{$name}");
-            $discriminator = $subProperty->typeAssertionExpr("\$this->{$name}");
-            $arms[$mapping][] = $discriminator;
+            $mapping    = $subProperty->outputMappingExprStdClass("\$this->{$name}");
+            $conditions = $subProperty->typeAssertionConditions("\$this->{$name}");
+            foreach ($conditions as $cond) {
+                $arms[$mapping][] = $cond;
+            }
         }
 
         $match = new MatchGenerator("true");
-        foreach ($arms as $mapping => $discriminators) {
-            $conditions = array_values(array_unique($discriminators));
+        foreach ($arms as $mapping => $conds) {
+            $conditions = array_values(array_unique($conds));
             $match->addArm(OrGenerator::make($conditions, parens: false), $mapping);
         }
 
@@ -236,15 +245,18 @@ class UnionProperty extends AbstractProperty
         $conversions = [];
 
         foreach ($this->subProperties as $subProperty) {
-            $mapping       = $subProperty->outputMappingExpr("\$this->{$name}");
-            $assignment    = "\${$outputVarName}[{$keyStr}] = {$mapping};";
-            $discriminator = $subProperty->typeAssertionExpr("\$this->{$name}");
+            $mapping    = $subProperty->outputMappingExpr("\$this->{$name}");
+            $assignment = "\${$outputVarName}[{$keyStr}] = {$mapping};";
+            $conditions = $subProperty->typeAssertionConditions("\$this->{$name}");
 
             if (!isset($conversions[$assignment])) {
                 $conversions[$assignment] = ["discriminators" => []];
             }
 
-            $conversions[$assignment]["discriminators"][] = $discriminator;
+            $conversions[$assignment]["discriminators"] = array_merge(
+                $conversions[$assignment]["discriminators"],
+                $conditions
+            );
         }
 
         $indent = StringUtils::indentCode(...);
@@ -277,15 +289,18 @@ class UnionProperty extends AbstractProperty
         $conversions = [];
 
         foreach ($this->subProperties as $subProperty) {
-            $mapping       = $subProperty->outputMappingExprStdClass("\$this->{$name}");
-            $assignment    = "\${$outputVarName}->{{$keyStr}} = {$mapping};";
-            $discriminator = $subProperty->typeAssertionExpr("\$this->{$name}");
+            $mapping    = $subProperty->outputMappingExprStdClass("\$this->{$name}");
+            $assignment = "\${$outputVarName}->{{$keyStr}} = {$mapping};";
+            $conditions = $subProperty->typeAssertionConditions("\$this->{$name}");
 
             if (!isset($conversions[$assignment])) {
                 $conversions[$assignment] = ["discriminators" => []];
             }
 
-            $conversions[$assignment]["discriminators"][] = $discriminator;
+            $conversions[$assignment]["discriminators"] = array_merge(
+                $conversions[$assignment]["discriminators"],
+                $conditions
+            );
         }
 
         $indent = StringUtils::indentCode(...);
@@ -404,24 +419,28 @@ class UnionProperty extends AbstractProperty
 
     public function typeAssertionExpr(string $expr): string
     {
-        $subAssertions = [];
+        $conditions = [];
 
         foreach ($this->subProperties as $prop) {
-            $subAssertions[] = $prop->typeAssertionExpr($expr);
+            $conditions = array_merge($conditions, $prop->typeAssertionConditions($expr));
         }
 
-        return OrGenerator::make($subAssertions);
+        $conditions = array_values(array_unique($conditions));
+
+        return OrGenerator::make($conditions);
     }
 
     public function inputAssertionExpr(string $expr): string
     {
-        $subAssertions = [];
+        $conditions = [];
 
         foreach ($this->subProperties as $prop) {
-            $subAssertions[] = $prop->inputAssertionExpr($expr);
+            $conditions = array_merge($conditions, $prop->inputAssertionConditions($expr));
         }
 
-        return OrGenerator::make($subAssertions);
+        $conditions = array_values(array_unique($conditions));
+
+        return OrGenerator::make($conditions);
     }
 
     public function inputMappingExpr(string $expr, bool $asserted = false): string
@@ -429,9 +448,11 @@ class UnionProperty extends AbstractProperty
         if ($this->request->isAtLeastPHP("8.0")) {
             $arms = [];
             foreach ($this->subProperties as $subProperty) {
-                $map = $subProperty->inputMappingExpr($expr);
-                $assert = $subProperty->inputAssertionExpr($expr);
-                $arms[$map][] = $assert;
+                $map       = $subProperty->inputMappingExpr($expr);
+                $conds     = $subProperty->inputAssertionConditions($expr);
+                foreach ($conds as $cond) {
+                    $arms[$map][] = $cond;
+                }
             }
 
             $match = new MatchGenerator("true");
@@ -446,9 +467,9 @@ class UnionProperty extends AbstractProperty
 
         $conversions = [];
         foreach ($this->subProperties as $subProperty) {
-            $map = $subProperty->inputMappingExpr($expr);
-            $assert = $subProperty->inputAssertionExpr($expr);
-            $conversions[$map][] = $assert;
+            $map   = $subProperty->inputMappingExpr($expr);
+            $conds = $subProperty->inputAssertionConditions($expr);
+            $conversions[$map] = array_merge($conversions[$map] ?? [], $conds);
         }
 
         $out = "null";
@@ -466,9 +487,11 @@ class UnionProperty extends AbstractProperty
         if ($this->request->isAtLeastPHP("8.0")) {
             $arms = [];
             foreach ($this->subProperties as $subProperty) {
-                $map = $subProperty->outputMappingExpr($expr);
-                $assert = $subProperty->typeAssertionExpr($expr);
-                $arms[$map][] = $assert;
+                $map    = $subProperty->outputMappingExpr($expr);
+                $conds  = $subProperty->typeAssertionConditions($expr);
+                foreach ($conds as $cond) {
+                    $arms[$map][] = $cond;
+                }
             }
 
             $match = new MatchGenerator("true");
@@ -483,9 +506,9 @@ class UnionProperty extends AbstractProperty
 
         $conversions = [];
         foreach ($this->subProperties as $subProperty) {
-            $map = $subProperty->outputMappingExpr($expr);
-            $assert = $subProperty->typeAssertionExpr($expr);
-            $conversions[$map][] = $assert;
+            $map   = $subProperty->outputMappingExpr($expr);
+            $conds = $subProperty->typeAssertionConditions($expr);
+            $conversions[$map] = array_merge($conversions[$map] ?? [], $conds);
         }
 
         $out = "null";
@@ -503,9 +526,11 @@ class UnionProperty extends AbstractProperty
         if ($this->request->isAtLeastPHP("8.0")) {
             $arms = [];
             foreach ($this->subProperties as $subProperty) {
-                $map = $subProperty->outputMappingExprStdClass($expr);
-                $assert = $subProperty->typeAssertionExpr($expr);
-                $arms[$map][] = $assert;
+                $map   = $subProperty->outputMappingExprStdClass($expr);
+                $conds = $subProperty->typeAssertionConditions($expr);
+                foreach ($conds as $cond) {
+                    $arms[$map][] = $cond;
+                }
             }
 
             $match = new MatchGenerator("true");
@@ -529,8 +554,8 @@ class UnionProperty extends AbstractProperty
                 continue;
             }
 
-            $assert = $subProperty->typeAssertionExpr($expr);
-            $conversions[$map][] = $assert;
+            $conds = $subProperty->typeAssertionConditions($expr);
+            $conversions[$map] = array_merge($conversions[$map] ?? [], $conds);
         }
 
         if ($conversions === []) {
@@ -552,9 +577,11 @@ class UnionProperty extends AbstractProperty
         if ($this->request->isAtLeastPHP("8.0")) {
             $arms = [];
             foreach ($this->subProperties as $subProperty) {
-                $map = $subProperty->cloneExpr($expr);
-                $assert = $subProperty->typeAssertionExpr($expr);
-                $arms[$map][] = $assert;
+                $map   = $subProperty->cloneExpr($expr);
+                $conds = $subProperty->typeAssertionConditions($expr);
+                foreach ($conds as $cond) {
+                    $arms[$map][] = $cond;
+                }
             }
 
             if (count($arms) === 1) {
@@ -585,8 +612,8 @@ class UnionProperty extends AbstractProperty
                 continue;
             }
 
-            $assert = $subProperty->typeAssertionExpr($expr);
-            $conversions[$map][] = $assert;
+            $conds = $subProperty->typeAssertionConditions($expr);
+            $conversions[$map] = array_merge($conversions[$map] ?? [], $conds);
         }
 
         if ($conversions === []) {

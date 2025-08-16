@@ -406,10 +406,7 @@ class MyClass
         if (property_exists($input, 'i')) {
             $i = ($input->{'i'} !== null
                 ? match (true) {
-                    is_array($input->{'i'})
-                        || is_string($input->{'i'})
-                        || is_array($input->{'i'}) || is_object($input->{'i'}) =>
-                        $input->{'i'},
+                    is_array($input->{'i'}) || is_string($input->{'i'}) || is_object($input->{'i'}) => $input->{'i'},
                     default => null,
                 }
                 : null
