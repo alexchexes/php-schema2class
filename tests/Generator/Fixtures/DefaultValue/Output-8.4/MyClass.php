@@ -438,7 +438,7 @@ class MyClass
         $qwert = isset($input->{'qwert'})
             ? match (true) {
                 is_string($input->{'qwert'}) => $input->{'qwert'},
-                (is_int($input->{'qwert'}) || is_float($input->{'qwert'})) =>
+                is_int($input->{'qwert'}) || is_float($input->{'qwert'}) =>
                     (str_contains((string)$input->{'qwert'}, '.')
                         ? (float)$input->{'qwert'}
                         : (int)$input->{'qwert'}
@@ -489,7 +489,7 @@ class MyClass
         }
         if (isset($this->qwert)) {
             $output['qwert'] = match (true) {
-                is_string($this->qwert) || (is_int($this->qwert) || is_float($this->qwert)) => $this->qwert,
+                is_string($this->qwert) || is_int($this->qwert) || is_float($this->qwert) => $this->qwert,
             };
         }
         if (isset($this->zyx)) {
@@ -537,7 +537,7 @@ class MyClass
         }
         if (isset($this->qwert)) {
             $output->{'qwert'} = match (true) {
-                is_string($this->qwert) || (is_int($this->qwert) || is_float($this->qwert)) => $this->qwert,
+                is_string($this->qwert) || is_int($this->qwert) || is_float($this->qwert) => $this->qwert,
             };
         }
         if (isset($this->zyx)) {
@@ -598,7 +598,7 @@ class MyClass
     {
         if (isset($this->qwert)) {
             $this->qwert = match (true) {
-                is_string($this->qwert) || (is_int($this->qwert) || is_float($this->qwert)) => $this->qwert,
+                is_string($this->qwert) || is_int($this->qwert) || is_float($this->qwert) => $this->qwert,
             };
         }
     }

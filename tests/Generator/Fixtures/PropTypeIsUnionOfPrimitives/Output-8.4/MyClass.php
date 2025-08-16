@@ -400,14 +400,14 @@ class MyClass
         $_providedOptionals = [];
         $foo = match (true) {
             is_string($input->{'foo'})
-                || (is_int($input->{'foo'}) || is_float($input->{'foo'}))
+                || is_int($input->{'foo'}) || is_float($input->{'foo'})
                 || is_bool($input->{'foo'}) =>
                 $input->{'foo'},
             default => throw new \InvalidArgumentException("could not build property 'foo' from JSON"),
         };
         $bar = match (true) {
             is_string($input->{'bar'})
-                || (is_int($input->{'bar'}) || is_float($input->{'bar'}))
+                || is_int($input->{'bar'}) || is_float($input->{'bar'})
                 || is_bool($input->{'bar'})
                 || is_array($input->{'bar'}) =>
                 $input->{'bar'},
@@ -415,28 +415,26 @@ class MyClass
         };
         $baz = match (true) {
             is_string($input->{'baz'})
-                || (is_int($input->{'baz'}) || is_float($input->{'baz'}))
+                || is_int($input->{'baz'}) || is_float($input->{'baz'})
                 || is_bool($input->{'baz'})
-                || is_array($input->{'baz'}) || is_object($input->{'baz'}) =>
+                || is_array($input->{'baz'})
+                || is_object($input->{'baz'}) =>
                 $input->{'baz'},
             default => throw new \InvalidArgumentException("could not build property 'baz' from JSON"),
         };
         $qux = match (true) {
             is_string($input->{'qux'})
-                || (is_int($input->{'qux'}) || is_float($input->{'qux'}))
+                || is_int($input->{'qux'}) || is_float($input->{'qux'})
                 || is_bool($input->{'qux'})
                 || is_array($input->{'qux'})
-                || is_array($input->{'qux'}) || is_object($input->{'qux'}) =>
+                || is_object($input->{'qux'}) =>
                 $input->{'qux'},
             default => throw new \InvalidArgumentException("could not build property 'qux' from JSON"),
         };
         $thud = ($input->{'thud'} !== null
             ? match (true) {
-                is_string($input->{'thud'})
-                    || is_array($input->{'thud'})
-                    || is_array($input->{'thud'}) || is_object($input->{'thud'}) =>
-                    $input->{'thud'},
-                (is_int($input->{'thud'}) || is_float($input->{'thud'})) =>
+                is_string($input->{'thud'}) || is_array($input->{'thud'}) || is_object($input->{'thud'}) => $input->{'thud'},
+                is_int($input->{'thud'}) || is_float($input->{'thud'}) =>
                     (str_contains((string)$input->{'thud'}, '.')
                         ? (float)$input->{'thud'}
                         : (int)$input->{'thud'}
@@ -449,7 +447,7 @@ class MyClass
         $optFoo = isset($input->{'optFoo'})
             ? match (true) {
                 is_string($input->{'optFoo'}) => $input->{'optFoo'},
-                (is_int($input->{'optFoo'}) || is_float($input->{'optFoo'})) =>
+                is_int($input->{'optFoo'}) || is_float($input->{'optFoo'}) =>
                     (str_contains((string)$input->{'optFoo'}, '.')
                         ? (float)$input->{'optFoo'}
                         : (int)$input->{'optFoo'}
@@ -461,7 +459,7 @@ class MyClass
         $optBar = isset($input->{'optBar'})
             ? match (true) {
                 is_string($input->{'optBar'}) || is_array($input->{'optBar'}) => $input->{'optBar'},
-                (is_int($input->{'optBar'}) || is_float($input->{'optBar'})) =>
+                is_int($input->{'optBar'}) || is_float($input->{'optBar'}) =>
                     (str_contains((string)$input->{'optBar'}, '.')
                         ? (float)$input->{'optBar'}
                         : (int)$input->{'optBar'}
@@ -473,7 +471,7 @@ class MyClass
         $optBaz = isset($input->{'optBaz'})
             ? match (true) {
                 is_string($input->{'optBaz'}) || is_array($input->{'optBaz'}) || is_object($input->{'optBaz'}) => $input->{'optBaz'},
-                (is_int($input->{'optBaz'}) || is_float($input->{'optBaz'})) =>
+                is_int($input->{'optBaz'}) || is_float($input->{'optBaz'}) =>
                     (str_contains((string)$input->{'optBaz'}, '.')
                         ? (float)$input->{'optBaz'}
                         : (int)$input->{'optBaz'}
@@ -484,11 +482,8 @@ class MyClass
             : null;
         $optQux = isset($input->{'optQux'})
             ? match (true) {
-                is_string($input->{'optQux'})
-                    || is_array($input->{'optQux'})
-                    || is_array($input->{'optQux'}) || is_object($input->{'optQux'}) =>
-                    $input->{'optQux'},
-                (is_int($input->{'optQux'}) || is_float($input->{'optQux'})) =>
+                is_string($input->{'optQux'}) || is_array($input->{'optQux'}) || is_object($input->{'optQux'}) => $input->{'optQux'},
+                is_int($input->{'optQux'}) || is_float($input->{'optQux'}) =>
                     (str_contains((string)$input->{'optQux'}, '.')
                         ? (float)$input->{'optQux'}
                         : (int)$input->{'optQux'}
@@ -501,11 +496,8 @@ class MyClass
         if (property_exists($input, 'optThud')) {
             $optThud = ($input->{'optThud'} !== null
                 ? match (true) {
-                    is_string($input->{'optThud'})
-                        || is_array($input->{'optThud'})
-                        || is_array($input->{'optThud'}) || is_object($input->{'optThud'}) =>
-                        $input->{'optThud'},
-                    (is_int($input->{'optThud'}) || is_float($input->{'optThud'})) =>
+                    is_string($input->{'optThud'}) || is_array($input->{'optThud'}) || is_object($input->{'optThud'}) => $input->{'optThud'},
+                    is_int($input->{'optThud'}) || is_float($input->{'optThud'}) =>
                         (str_contains((string)$input->{'optThud'}, '.')
                             ? (float)$input->{'optThud'}
                             : (int)$input->{'optThud'}
@@ -550,22 +542,22 @@ class MyClass
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
         $output['foo'] = match (true) {
-            is_string($this->foo) || (is_int($this->foo) || is_float($this->foo)) || is_bool($this->foo) => $this->foo,
+            is_string($this->foo) || is_int($this->foo) || is_float($this->foo) || is_bool($this->foo) => $this->foo,
         };
         $output['bar'] = match (true) {
             is_string($this->bar)
-                || (is_int($this->bar) || is_float($this->bar))
+                || is_int($this->bar) || is_float($this->bar)
                 || is_bool($this->bar)
                 || is_array($this->bar) =>
                 $this->bar,
         };
         $output['baz'] = match (true) {
-            is_string($this->baz) || (is_int($this->baz) || is_float($this->baz)) || is_bool($this->baz) => $this->baz,
+            is_string($this->baz) || is_int($this->baz) || is_float($this->baz) || is_bool($this->baz) => $this->baz,
             is_array($this->baz) || is_object($this->baz) => json_decode(json_encode($this->baz), true),
         };
         $output['qux'] = match (true) {
             is_string($this->qux)
-                || (is_int($this->qux) || is_float($this->qux))
+                || is_int($this->qux) || is_float($this->qux)
                 || is_bool($this->qux)
                 || is_array($this->qux) =>
                 $this->qux,
@@ -573,7 +565,7 @@ class MyClass
         };
         $output['thud'] = match (true) {
             is_string($this->thud)
-                || (is_int($this->thud) || is_float($this->thud))
+                || is_int($this->thud) || is_float($this->thud)
                 || is_bool($this->thud)
                 || is_array($this->thud) =>
                 $this->thud,
@@ -582,7 +574,7 @@ class MyClass
         if (isset($this->optFoo)) {
             $output['optFoo'] = match (true) {
                 is_string($this->optFoo)
-                    || (is_int($this->optFoo) || is_float($this->optFoo))
+                    || is_int($this->optFoo) || is_float($this->optFoo)
                     || is_bool($this->optFoo) =>
                     $this->optFoo,
             };
@@ -590,7 +582,7 @@ class MyClass
         if (isset($this->optBar)) {
             $output['optBar'] = match (true) {
                 is_string($this->optBar)
-                    || (is_int($this->optBar) || is_float($this->optBar))
+                    || is_int($this->optBar) || is_float($this->optBar)
                     || is_bool($this->optBar)
                     || is_array($this->optBar) =>
                     $this->optBar,
@@ -599,7 +591,7 @@ class MyClass
         if (isset($this->optBaz)) {
             $output['optBaz'] = match (true) {
                 is_string($this->optBaz)
-                    || (is_int($this->optBaz) || is_float($this->optBaz))
+                    || is_int($this->optBaz) || is_float($this->optBaz)
                     || is_bool($this->optBaz) =>
                     $this->optBaz,
                 is_array($this->optBaz) || is_object($this->optBaz) => json_decode(json_encode($this->optBaz), true),
@@ -608,7 +600,7 @@ class MyClass
         if (isset($this->optQux)) {
             $output['optQux'] = match (true) {
                 is_string($this->optQux)
-                    || (is_int($this->optQux) || is_float($this->optQux))
+                    || is_int($this->optQux) || is_float($this->optQux)
                     || is_bool($this->optQux)
                     || is_array($this->optQux) =>
                     $this->optQux,
@@ -619,7 +611,7 @@ class MyClass
             $output['optThud'] = ($this->optThud !== null
                 ? match (true) {
                     is_string($this->optThud)
-                        || (is_int($this->optThud) || is_float($this->optThud))
+                        || is_int($this->optThud) || is_float($this->optThud)
                         || is_bool($this->optThud)
                         || is_array($this->optThud) =>
                         $this->optThud,
@@ -643,22 +635,22 @@ class MyClass
         $output = $this->_additionalProperties;
 
         $output->{'foo'} = match (true) {
-            is_string($this->foo) || (is_int($this->foo) || is_float($this->foo)) || is_bool($this->foo) => $this->foo,
+            is_string($this->foo) || is_int($this->foo) || is_float($this->foo) || is_bool($this->foo) => $this->foo,
         };
         $output->{'bar'} = match (true) {
             is_string($this->bar)
-                || (is_int($this->bar) || is_float($this->bar))
+                || is_int($this->bar) || is_float($this->bar)
                 || is_bool($this->bar)
                 || is_array($this->bar) =>
                 $this->bar,
         };
         $output->{'baz'} = match (true) {
-            is_string($this->baz) || (is_int($this->baz) || is_float($this->baz)) || is_bool($this->baz) => $this->baz,
+            is_string($this->baz) || is_int($this->baz) || is_float($this->baz) || is_bool($this->baz) => $this->baz,
             is_array($this->baz) || is_object($this->baz) => json_decode(json_encode($this->baz)),
         };
         $output->{'qux'} = match (true) {
             is_string($this->qux)
-                || (is_int($this->qux) || is_float($this->qux))
+                || is_int($this->qux) || is_float($this->qux)
                 || is_bool($this->qux)
                 || is_array($this->qux) =>
                 $this->qux,
@@ -666,7 +658,7 @@ class MyClass
         };
         $output->{'thud'} = match (true) {
             is_string($this->thud)
-                || (is_int($this->thud) || is_float($this->thud))
+                || is_int($this->thud) || is_float($this->thud)
                 || is_bool($this->thud)
                 || is_array($this->thud) =>
                 $this->thud,
@@ -675,7 +667,7 @@ class MyClass
         if (isset($this->optFoo)) {
             $output->{'optFoo'} = match (true) {
                 is_string($this->optFoo)
-                    || (is_int($this->optFoo) || is_float($this->optFoo))
+                    || is_int($this->optFoo) || is_float($this->optFoo)
                     || is_bool($this->optFoo) =>
                     $this->optFoo,
             };
@@ -683,7 +675,7 @@ class MyClass
         if (isset($this->optBar)) {
             $output->{'optBar'} = match (true) {
                 is_string($this->optBar)
-                    || (is_int($this->optBar) || is_float($this->optBar))
+                    || is_int($this->optBar) || is_float($this->optBar)
                     || is_bool($this->optBar)
                     || is_array($this->optBar) =>
                     $this->optBar,
@@ -692,7 +684,7 @@ class MyClass
         if (isset($this->optBaz)) {
             $output->{'optBaz'} = match (true) {
                 is_string($this->optBaz)
-                    || (is_int($this->optBaz) || is_float($this->optBaz))
+                    || is_int($this->optBaz) || is_float($this->optBaz)
                     || is_bool($this->optBaz) =>
                     $this->optBaz,
                 is_array($this->optBaz) || is_object($this->optBaz) => json_decode(json_encode($this->optBaz)),
@@ -701,7 +693,7 @@ class MyClass
         if (isset($this->optQux)) {
             $output->{'optQux'} = match (true) {
                 is_string($this->optQux)
-                    || (is_int($this->optQux) || is_float($this->optQux))
+                    || is_int($this->optQux) || is_float($this->optQux)
                     || is_bool($this->optQux)
                     || is_array($this->optQux) =>
                     $this->optQux,
@@ -712,7 +704,7 @@ class MyClass
             $output->{'optThud'} = ($this->optThud !== null
                 ? match (true) {
                     is_string($this->optThud)
-                        || (is_int($this->optThud) || is_float($this->optThud))
+                        || is_int($this->optThud) || is_float($this->optThud)
                         || is_bool($this->optThud)
                         || is_array($this->optThud) =>
                         $this->optThud,
@@ -766,42 +758,43 @@ class MyClass
     public function __clone()
     {
         $this->foo = match (true) {
-            is_string($this->foo) || (is_int($this->foo) || is_float($this->foo)) || is_bool($this->foo) => $this->foo,
+            is_string($this->foo) || is_int($this->foo) || is_float($this->foo) || is_bool($this->foo) => $this->foo,
         };
         $this->bar = match (true) {
             is_string($this->bar)
-                || (is_int($this->bar) || is_float($this->bar))
+                || is_int($this->bar) || is_float($this->bar)
                 || is_bool($this->bar)
                 || is_array($this->bar) =>
                 $this->bar,
         };
         $this->baz = match (true) {
             is_string($this->baz)
-                || (is_int($this->baz) || is_float($this->baz))
+                || is_int($this->baz) || is_float($this->baz)
                 || is_bool($this->baz)
-                || is_array($this->baz) || is_object($this->baz) =>
+                || is_array($this->baz)
+                || is_object($this->baz) =>
                 $this->baz,
         };
         $this->qux = match (true) {
             is_string($this->qux)
-                || (is_int($this->qux) || is_float($this->qux))
+                || is_int($this->qux) || is_float($this->qux)
                 || is_bool($this->qux)
                 || is_array($this->qux)
-                || is_array($this->qux) || is_object($this->qux) =>
+                || is_object($this->qux) =>
                 $this->qux,
         };
         $this->thud = match (true) {
             is_string($this->thud)
-                || (is_int($this->thud) || is_float($this->thud))
+                || is_int($this->thud) || is_float($this->thud)
                 || is_bool($this->thud)
                 || is_array($this->thud)
-                || is_array($this->thud) || is_object($this->thud) =>
+                || is_object($this->thud) =>
                 $this->thud,
         };
         if (isset($this->optFoo)) {
             $this->optFoo = match (true) {
                 is_string($this->optFoo)
-                    || (is_int($this->optFoo) || is_float($this->optFoo))
+                    || is_int($this->optFoo) || is_float($this->optFoo)
                     || is_bool($this->optFoo) =>
                     $this->optFoo,
             };
@@ -809,7 +802,7 @@ class MyClass
         if (isset($this->optBar)) {
             $this->optBar = match (true) {
                 is_string($this->optBar)
-                    || (is_int($this->optBar) || is_float($this->optBar))
+                    || is_int($this->optBar) || is_float($this->optBar)
                     || is_bool($this->optBar)
                     || is_array($this->optBar) =>
                     $this->optBar,
@@ -818,29 +811,30 @@ class MyClass
         if (isset($this->optBaz)) {
             $this->optBaz = match (true) {
                 is_string($this->optBaz)
-                    || (is_int($this->optBaz) || is_float($this->optBaz))
+                    || is_int($this->optBaz) || is_float($this->optBaz)
                     || is_bool($this->optBaz)
-                    || is_array($this->optBaz) || is_object($this->optBaz) =>
+                    || is_array($this->optBaz)
+                    || is_object($this->optBaz) =>
                     $this->optBaz,
             };
         }
         if (isset($this->optQux)) {
             $this->optQux = match (true) {
                 is_string($this->optQux)
-                    || (is_int($this->optQux) || is_float($this->optQux))
+                    || is_int($this->optQux) || is_float($this->optQux)
                     || is_bool($this->optQux)
                     || is_array($this->optQux)
-                    || is_array($this->optQux) || is_object($this->optQux) =>
+                    || is_object($this->optQux) =>
                     $this->optQux,
             };
         }
         if (isset($this->optThud)) {
             $this->optThud = match (true) {
                 is_string($this->optThud)
-                    || (is_int($this->optThud) || is_float($this->optThud))
+                    || is_int($this->optThud) || is_float($this->optThud)
                     || is_bool($this->optThud)
                     || is_array($this->optThud)
-                    || is_array($this->optThud) || is_object($this->optThud) =>
+                    || is_object($this->optThud) =>
                     $this->optThud,
             };
         }

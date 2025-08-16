@@ -440,14 +440,14 @@ class MyClass
 
         $arrayOfUnions = isset($input->{'arrayOfUnions'})
             ? array_map(fn ($i) => match (true) {
-                (is_array($i)
-                    && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || (is_int($i) || is_float($i)))))) =>
+                is_array($i)
+                    && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || is_int($i) || is_float($i)))) =>
                     array_map(fn ($i) => match (true) {
                         is_string($i) => $i,
-                        (is_int($i) || is_float($i)) => (str_contains((string)$i, '.') ? (float)$i : (int)$i),
+                        is_int($i) || is_float($i) => (str_contains((string)$i, '.') ? (float)$i : (int)$i),
                         default => null,
                     }, $i),
-                (is_array($i) || is_array($i)) => match (true) {
+                is_array($i) => match (true) {
                     is_array($i) => $i,
                     default => null,
                 },
@@ -456,14 +456,14 @@ class MyClass
             : null;
         $arrayOfRefUnions = isset($input->{'arrayOfRefUnions'})
             ? array_map(fn ($i) => match (true) {
-                (is_array($i)
-                    && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || (is_int($i) || is_float($i)))))) =>
+                is_array($i)
+                    && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || is_int($i) || is_float($i)))) =>
                     array_map(fn ($i) => match (true) {
                         is_string($i) => $i,
-                        (is_int($i) || is_float($i)) => (str_contains((string)$i, '.') ? (float)$i : (int)$i),
+                        is_int($i) || is_float($i) => (str_contains((string)$i, '.') ? (float)$i : (int)$i),
                         default => null,
                     }, $i),
-                (is_array($i) || is_array($i)) => match (true) {
+                is_array($i) => match (true) {
                     is_array($i) => $i,
                     default => null,
                 },
@@ -472,14 +472,14 @@ class MyClass
             : null;
         $arrayOfRefAndNotRefUnions = isset($input->{'arrayOfRefAndNotRefUnions'})
             ? array_map(fn ($i) => match (true) {
-                (is_array($i)
-                    && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || (is_int($i) || is_float($i)))))) =>
+                is_array($i)
+                    && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || is_int($i) || is_float($i)))) =>
                     array_map(fn ($i) => match (true) {
                         is_string($i) => $i,
-                        (is_int($i) || is_float($i)) => (str_contains((string)$i, '.') ? (float)$i : (int)$i),
+                        is_int($i) || is_float($i) => (str_contains((string)$i, '.') ? (float)$i : (int)$i),
                         default => null,
                     }, $i),
-                (is_array($i) || is_array($i)) => match (true) {
+                is_array($i) => match (true) {
                     is_array($i) => $i,
                     default => null,
                 },
@@ -488,8 +488,8 @@ class MyClass
             : null;
         $arrayOfUnionOfStringAndArray = isset($input->{'arrayOfUnionOfStringAndArray'})
             ? array_map(fn ($i) => match (true) {
-                (is_array($i)
-                    && count($i) === count(array_filter($i, fn ($i) => is_array($i)))) => array_map(fn ($i) => $i, $i),
+                is_array($i)
+                    && count($i) === count(array_filter($i, fn ($i) => is_array($i))) => array_map(fn ($i) => $i, $i),
                 is_string($i) => $i,
                 default => null,
             }, $input->{'arrayOfUnionOfStringAndArray'})
@@ -525,13 +525,13 @@ class MyClass
 
         if (isset($this->arrayOfUnions)) {
             $output['arrayOfUnions'] = array_map(fn ($i) => match (true) {
-                (is_array($i)
-                    && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || (is_int($i) || is_float($i)))))) =>
+                is_array($i)
+                    && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || is_int($i) || is_float($i)))) =>
                     array_map(fn ($i) => match (true) {
-                        is_string($i) || (is_int($i) || is_float($i)) => $i,
+                        is_string($i) || is_int($i) || is_float($i) => $i,
                         default => null,
                     }, $i),
-                (is_array($i) || is_array($i)) => match (true) {
+                is_array($i) => match (true) {
                     is_array($i) => $i,
                     default => null,
                 },
@@ -540,13 +540,13 @@ class MyClass
         }
         if (isset($this->arrayOfRefUnions)) {
             $output['arrayOfRefUnions'] = array_map(fn ($i) => match (true) {
-                (is_array($i)
-                    && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || (is_int($i) || is_float($i)))))) =>
+                is_array($i)
+                    && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || is_int($i) || is_float($i)))) =>
                     array_map(fn ($i) => match (true) {
-                        is_string($i) || (is_int($i) || is_float($i)) => $i,
+                        is_string($i) || is_int($i) || is_float($i) => $i,
                         default => null,
                     }, $i),
-                (is_array($i) || is_array($i)) => match (true) {
+                is_array($i) => match (true) {
                     is_array($i) => $i,
                     default => null,
                 },
@@ -555,13 +555,13 @@ class MyClass
         }
         if (isset($this->arrayOfRefAndNotRefUnions)) {
             $output['arrayOfRefAndNotRefUnions'] = array_map(fn ($i) => match (true) {
-                (is_array($i)
-                    && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || (is_int($i) || is_float($i)))))) =>
+                is_array($i)
+                    && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || is_int($i) || is_float($i)))) =>
                     array_map(fn ($i) => match (true) {
-                        is_string($i) || (is_int($i) || is_float($i)) => $i,
+                        is_string($i) || is_int($i) || is_float($i) => $i,
                         default => null,
                     }, $i),
-                (is_array($i) || is_array($i)) => match (true) {
+                is_array($i) => match (true) {
                     is_array($i) => $i,
                     default => null,
                 },
@@ -570,8 +570,8 @@ class MyClass
         }
         if (isset($this->arrayOfUnionOfStringAndArray)) {
             $output['arrayOfUnionOfStringAndArray'] = array_map(fn ($i) => match (true) {
-                (is_array($i)
-                    && count($i) === count(array_filter($i, fn ($i) => is_array($i)))) => array_map(fn ($i) => $i, $i),
+                is_array($i)
+                    && count($i) === count(array_filter($i, fn ($i) => is_array($i))) => array_map(fn ($i) => $i, $i),
                 is_string($i) => $i,
                 default => null,
             }, $this->arrayOfUnionOfStringAndArray);
@@ -594,13 +594,13 @@ class MyClass
 
         if (isset($this->arrayOfUnions)) {
             $output->{'arrayOfUnions'} = array_map(fn ($i) => match (true) {
-                (is_array($i)
-                    && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || (is_int($i) || is_float($i)))))) =>
+                is_array($i)
+                    && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || is_int($i) || is_float($i)))) =>
                     array_map(fn ($i) => match (true) {
-                        is_string($i) || (is_int($i) || is_float($i)) => $i,
+                        is_string($i) || is_int($i) || is_float($i) => $i,
                         default => null,
                     }, $i),
-                (is_array($i) || is_array($i)) => match (true) {
+                is_array($i) => match (true) {
                     is_array($i) => $i,
                     default => null,
                 },
@@ -609,13 +609,13 @@ class MyClass
         }
         if (isset($this->arrayOfRefUnions)) {
             $output->{'arrayOfRefUnions'} = array_map(fn ($i) => match (true) {
-                (is_array($i)
-                    && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || (is_int($i) || is_float($i)))))) =>
+                is_array($i)
+                    && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || is_int($i) || is_float($i)))) =>
                     array_map(fn ($i) => match (true) {
-                        is_string($i) || (is_int($i) || is_float($i)) => $i,
+                        is_string($i) || is_int($i) || is_float($i) => $i,
                         default => null,
                     }, $i),
-                (is_array($i) || is_array($i)) => match (true) {
+                is_array($i) => match (true) {
                     is_array($i) => $i,
                     default => null,
                 },
@@ -624,13 +624,13 @@ class MyClass
         }
         if (isset($this->arrayOfRefAndNotRefUnions)) {
             $output->{'arrayOfRefAndNotRefUnions'} = array_map(fn ($i) => match (true) {
-                (is_array($i)
-                    && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || (is_int($i) || is_float($i)))))) =>
+                is_array($i)
+                    && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || is_int($i) || is_float($i)))) =>
                     array_map(fn ($i) => match (true) {
-                        is_string($i) || (is_int($i) || is_float($i)) => $i,
+                        is_string($i) || is_int($i) || is_float($i) => $i,
                         default => null,
                     }, $i),
-                (is_array($i) || is_array($i)) => match (true) {
+                is_array($i) => match (true) {
                     is_array($i) => $i,
                     default => null,
                 },
@@ -639,8 +639,8 @@ class MyClass
         }
         if (isset($this->arrayOfUnionOfStringAndArray)) {
             $output->{'arrayOfUnionOfStringAndArray'} = array_map(fn ($i) => match (true) {
-                (is_array($i)
-                    && count($i) === count(array_filter($i, fn ($i) => is_array($i)))) => array_map(fn ($i) => $i, $i),
+                is_array($i)
+                    && count($i) === count(array_filter($i, fn ($i) => is_array($i))) => array_map(fn ($i) => $i, $i),
                 is_string($i) => $i,
                 default => null,
             }, $this->arrayOfUnionOfStringAndArray);
@@ -693,44 +693,44 @@ class MyClass
     {
         if (isset($this->arrayOfUnions)) {
             $this->arrayOfUnions = array_map(fn ($i) => match (true) {
-                (is_array($i)
-                    && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || (is_int($i) || is_float($i)))))) =>
+                is_array($i)
+                    && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || is_int($i) || is_float($i)))) =>
                     array_map(fn ($i) => match (true) {
-                        is_string($i) || (is_int($i) || is_float($i)) => $i,
+                        is_string($i) || is_int($i) || is_float($i) => $i,
                     }, $i),
-                (is_array($i) || is_array($i)) => match (true) {
+                is_array($i) => match (true) {
                     is_array($i) => $i,
                 },
             }, $this->arrayOfUnions);
         }
         if (isset($this->arrayOfRefUnions)) {
             $this->arrayOfRefUnions = array_map(fn ($i) => match (true) {
-                (is_array($i)
-                    && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || (is_int($i) || is_float($i)))))) =>
+                is_array($i)
+                    && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || is_int($i) || is_float($i)))) =>
                     array_map(fn ($i) => match (true) {
-                        is_string($i) || (is_int($i) || is_float($i)) => $i,
+                        is_string($i) || is_int($i) || is_float($i) => $i,
                     }, $i),
-                (is_array($i) || is_array($i)) => match (true) {
+                is_array($i) => match (true) {
                     is_array($i) => $i,
                 },
             }, $this->arrayOfRefUnions);
         }
         if (isset($this->arrayOfRefAndNotRefUnions)) {
             $this->arrayOfRefAndNotRefUnions = array_map(fn ($i) => match (true) {
-                (is_array($i)
-                    && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || (is_int($i) || is_float($i)))))) =>
+                is_array($i)
+                    && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || is_int($i) || is_float($i)))) =>
                     array_map(fn ($i) => match (true) {
-                        is_string($i) || (is_int($i) || is_float($i)) => $i,
+                        is_string($i) || is_int($i) || is_float($i) => $i,
                     }, $i),
-                (is_array($i) || is_array($i)) => match (true) {
+                is_array($i) => match (true) {
                     is_array($i) => $i,
                 },
             }, $this->arrayOfRefAndNotRefUnions);
         }
         if (isset($this->arrayOfUnionOfStringAndArray)) {
             $this->arrayOfUnionOfStringAndArray = array_map(fn ($i) => match (true) {
-                (is_array($i)
-                    && count($i) === count(array_filter($i, fn ($i) => is_array($i)))) => array_map(fn ($i) => $i, $i),
+                is_array($i)
+                    && count($i) === count(array_filter($i, fn ($i) => is_array($i))) => array_map(fn ($i) => $i, $i),
                 is_string($i) => $i,
             }, $this->arrayOfUnionOfStringAndArray);
         }
