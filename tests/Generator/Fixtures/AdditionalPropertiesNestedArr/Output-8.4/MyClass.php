@@ -253,7 +253,12 @@ class MyClass
     public function __clone()
     {
         if (isset($this->bar)) {
-            $this->bar = array_map(fn ($i) => $i, $this->bar);
+            $this->bar = array_map(
+                fn ($i) => is_array($i)
+                            ? json_decode(json_encode($i), true)
+                            : json_decode(json_encode($i)),
+                $this->bar,
+            );
         }
     }
 }

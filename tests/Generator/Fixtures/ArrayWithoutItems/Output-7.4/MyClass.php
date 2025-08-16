@@ -652,6 +652,18 @@ class MyClass
         return $validator->isValid();
     }
 
+    public function __clone()
+    {
+        if (isset($this->i)) {
+            $this->i = ((is_array($this->i) || is_object($this->i))
+                ? is_array($this->i)
+                            ? json_decode(json_encode($this->i), true)
+                            : json_decode(json_encode($this->i))
+                : $this->i
+            );
+        }
+    }
+
     /**
      * Checks if an optional nullable property was explicitly set.
      *

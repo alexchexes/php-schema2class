@@ -291,4 +291,13 @@ class MyClassQuxObjNest
 
         return $validator->isValid();
     }
+
+    public function __clone()
+    {
+        if (isset($this->a)) {
+            $this->a = is_array($this->a)
+                        ? json_decode(json_encode($this->a), true)
+                        : json_decode(json_encode($this->a));
+        }
+    }
 }

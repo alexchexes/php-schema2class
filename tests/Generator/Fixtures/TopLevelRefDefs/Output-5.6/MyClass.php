@@ -287,4 +287,18 @@ class MyClass
 
         return $validator->isValid();
     }
+
+    public function __clone()
+    {
+        if (isset($this->foo)) {
+            $this->foo = is_array($this->foo)
+                        ? json_decode(json_encode($this->foo), true)
+                        : json_decode(json_encode($this->foo));
+        }
+        if (isset($this->encoded)) {
+            $this->encoded = is_array($this->encoded)
+                        ? json_decode(json_encode($this->encoded), true)
+                        : json_decode(json_encode($this->encoded));
+        }
+    }
 }

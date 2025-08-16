@@ -551,10 +551,18 @@ class UnionProperty extends AbstractProperty
     {
         if ($this->request->isAtLeastPHP("8.0")) {
             $arms = [];
+            $allIdentity = true;
             foreach ($this->subProperties as $subProperty) {
                 $map = $subProperty->cloneExpr($expr);
                 $assert = $subProperty->typeAssertionExpr($expr);
                 $arms[$map][] = $assert;
+                if ($map !== $expr) {
+                    $allIdentity = false;
+                }
+            }
+
+            if ($allIdentity) {
+                return $expr;
             }
 
             $match = new MatchGenerator("true");
