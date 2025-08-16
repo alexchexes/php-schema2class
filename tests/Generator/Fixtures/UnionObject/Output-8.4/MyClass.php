@@ -572,15 +572,14 @@ class MyClass
         }
         if (isset($this->refObjectsUnion)) {
             $this->refObjectsUnion = match (true) {
-                $this->refObjectsUnion instanceof SomeObj1 || $this->refObjectsUnion instanceof SomeObj2 => $this->refObjectsUnion,
+                $this->refObjectsUnion instanceof SomeObj1 || $this->refObjectsUnion instanceof SomeObj2 => clone $this->refObjectsUnion,
             };
         }
         if (isset($this->refAndNotRefObjectsUnion)) {
             $this->refAndNotRefObjectsUnion = match (true) {
                 $this->refAndNotRefObjectsUnion instanceof SomeObj1
-                    || $this->refAndNotRefObjectsUnion instanceof SomeObj2 =>
-                    $this->refAndNotRefObjectsUnion,
-                $this->refAndNotRefObjectsUnion instanceof MyClassRefAndNotRefObjectsUnionAlternative2
+                    || $this->refAndNotRefObjectsUnion instanceof MyClassRefAndNotRefObjectsUnionAlternative2
+                    || $this->refAndNotRefObjectsUnion instanceof SomeObj2
                     || $this->refAndNotRefObjectsUnion instanceof MyClassRefAndNotRefObjectsUnionAlternative4 =>
                     clone $this->refAndNotRefObjectsUnion,
             };

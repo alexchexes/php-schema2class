@@ -652,24 +652,6 @@ class MyClass
         return $validator->isValid();
     }
 
-    public function __clone()
-    {
-        $this->b = ((is_array($this->b) || is_string($this->b)) ? $this->b : $this->b);
-        $this->d = ((is_array($this->d) || is_string($this->d)) ? $this->d : $this->d);
-        if (isset($this->f)) {
-            $this->f = ((is_array($this->f) || is_string($this->f)) ? $this->f : $this->f);
-        }
-        if (isset($this->h)) {
-            $this->h = ((is_array($this->h) || is_string($this->h)) ? $this->h : $this->h);
-        }
-        if (isset($this->i)) {
-            $this->i = ((is_array($this->i) || is_string($this->i) || is_array($this->i) || is_object($this->i))
-                ? $this->i
-                : $this->i
-            );
-        }
-    }
-
     /**
      * Checks if an optional nullable property was explicitly set.
      *

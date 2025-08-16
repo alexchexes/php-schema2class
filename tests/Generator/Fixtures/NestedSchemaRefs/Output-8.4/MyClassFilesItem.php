@@ -237,4 +237,11 @@ class MyClassFilesItem
 
         return $validator->isValid();
     }
+
+    public function __clone()
+    {
+        if (isset($this->options)) {
+            $this->options = clone $this->options;
+        }
+    }
 }

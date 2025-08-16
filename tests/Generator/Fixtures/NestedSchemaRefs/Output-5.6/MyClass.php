@@ -311,5 +311,8 @@ class MyClass
                 $this->files
             );
         }
+        if (isset($this->options)) {
+            $this->options = clone $this->options;
+        }
     }
 }

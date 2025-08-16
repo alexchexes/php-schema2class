@@ -197,4 +197,11 @@ class MyClass
 
         return $validator->isValid();
     }
+
+    public function __clone()
+    {
+        if (isset($this->address)) {
+            $this->address = clone $this->address;
+        }
+    }
 }

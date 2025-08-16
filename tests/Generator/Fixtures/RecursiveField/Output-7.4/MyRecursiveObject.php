@@ -154,4 +154,11 @@ class MyRecursiveObject
 
         return $validator->isValid();
     }
+
+    public function __clone()
+    {
+        if (isset($this->MyRecursiveObject)) {
+            $this->MyRecursiveObject = clone $this->MyRecursiveObject;
+        }
+    }
 }

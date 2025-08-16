@@ -280,4 +280,17 @@ class Baz
 
         return $validator->isValid();
     }
+
+    public function __clone()
+    {
+        if (isset($this->a)) {
+            $this->a = clone $this->a;
+        }
+        if (isset($this->b)) {
+            $this->b = clone $this->b;
+        }
+        if (isset($this->c)) {
+            $this->c = clone $this->c;
+        }
+    }
 }

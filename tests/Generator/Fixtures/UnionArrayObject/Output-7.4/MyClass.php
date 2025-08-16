@@ -942,10 +942,7 @@ class MyClass
                     fn (MyClassArrayOfObjAndStringUnionAlternative1Item $i) => clone $i,
                     $this->arrayOfObjAndStringUnion,
                 )
-                : ((is_string($this->arrayOfObjAndStringUnion))
-                    ? $this->arrayOfObjAndStringUnion
-                    : $this->arrayOfObjAndStringUnion
-                )
+                : $this->arrayOfObjAndStringUnion
             );
         }
         if (isset($this->unionOfOneArrayOfObjects)) {

@@ -294,15 +294,12 @@ class Qux
     public function __clone()
     {
         if (isset($this->grox)) {
-            $this->grox = ((is_string($this->grox) || is_array($this->grox))
-                ? $this->grox
-                : ((($this->grox instanceof Foo || $this->grox instanceof Bar))
-                    ? (($this->grox instanceof Foo || $this->grox instanceof Bar)
-                        ? $this->grox
-                        : $this->grox
-                    )
+            $this->grox = ((($this->grox instanceof Foo || $this->grox instanceof Bar))
+                ? (($this->grox instanceof Foo || $this->grox instanceof Bar)
+                    ? clone $this->grox
                     : $this->grox
                 )
+                : $this->grox
             );
         }
     }

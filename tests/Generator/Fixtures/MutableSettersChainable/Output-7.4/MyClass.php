@@ -284,6 +284,11 @@ class MyClass
         return $validator->isValid();
     }
 
+    public function __clone()
+    {
+        $this->bar = clone $this->bar;
+    }
+
     /**
      * Checks if an optional nullable property was explicitly set.
      *

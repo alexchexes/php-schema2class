@@ -521,11 +521,23 @@ class UnionProperty extends AbstractProperty
         $conversions = [];
         foreach ($this->subProperties as $subProperty) {
             $map = $subProperty->outputMappingExprStdClass($expr);
+            if ($map === 'null') {
+                // Mapping to `null` does not need a dedicated branch as it is the
+                // default output when no other condition matches. Skipping such
+                // branches also prevents generating ternaries with identical
+                // expressions for both outcomes.
+                continue;
+            }
+
             $assert = $subProperty->typeAssertionExpr($expr);
             $conversions[$map][] = $assert;
         }
 
-        $out = "null";
+        if ($conversions === []) {
+            return 'null';
+        }
+
+        $out = 'null';
         foreach (array_reverse($conversions) as $map => $asserts) {
             $conditions = array_values(array_unique($asserts));
             $cond = OrGenerator::make($conditions);
@@ -557,8 +569,20 @@ class UnionProperty extends AbstractProperty
         $conversions = [];
         foreach ($this->subProperties as $subProperty) {
             $map = $subProperty->cloneExpr($expr);
+            if ($map === $expr) {
+                // Identity mapping does not require a conditional branch. If the
+                // expression does not need to be transformed, it can safely fall
+                // through to the default case, avoiding ternaries where both
+                // branches are identical.
+                continue;
+            }
+
             $assert = $subProperty->typeAssertionExpr($expr);
             $conversions[$map][] = $assert;
+        }
+
+        if ($conversions === []) {
+            return $expr;
         }
 
         $out = $expr;
