@@ -107,13 +107,16 @@ class UnionProperty extends AbstractProperty
     
             // If this arm is an "array" type, prefix its test with is_array(...)
             if (
-                $subProp instanceof ReferenceArrayProperty
-                || $subProp instanceof ObjectArrayProperty
-                || $subProp instanceof PrimitiveArrayProperty
+                (
+                    $subProp instanceof ReferenceArrayProperty
+                    || $subProp instanceof ObjectArrayProperty
+                    || $subProp instanceof PrimitiveArrayProperty
+                )
+                && !str_contains($discriminator, "is_array({$accessor})")
             ) {
                 $discriminator = "(is_array({$accessor}) && {$discriminator})";
             }
-    
+
             if (! isset($conversions[$assignment])) {
                 $conversions[$assignment] = ["discriminators" => [], "fallback" => false];
             }
@@ -133,7 +136,8 @@ class UnionProperty extends AbstractProperty
             }
 
             $keyword = count($branches) ? "elseif" : "if";
-            $parenthesizedCondition = OrGenerator::make($info["discriminators"]);
+            $conds = array_values(array_unique($info["discriminators"]));
+            $parenthesizedCondition = OrGenerator::make($conds);
 
             $branches[] = 
                 <<<PHP
@@ -220,7 +224,8 @@ class UnionProperty extends AbstractProperty
 
         $branches = [];
         foreach ($conversions as $assignment => $conversion) {
-            $parenthesizedCondition = OrGenerator::make($conversion["discriminators"]);
+            $conds = array_values(array_unique($conversion["discriminators"]));
+            $parenthesizedCondition = OrGenerator::make($conds);
             $keyword = count($branches) ? "elseif" : "if";
             $branches[] =
                 <<<PHP
@@ -260,7 +265,8 @@ class UnionProperty extends AbstractProperty
 
         $branches = [];
         foreach ($conversions as $assignment => $conversion) {
-            $parenthesizedCondition = OrGenerator::make($conversion["discriminators"]);
+            $conds = array_values(array_unique($conversion["discriminators"]));
+            $parenthesizedCondition = OrGenerator::make($conds);
             $keyword = count($branches) ? "elseif" : "if";
             $branches[] =
                 <<<PHP
@@ -377,6 +383,8 @@ class UnionProperty extends AbstractProperty
             $subAssertions[] = $prop->typeAssertionExpr($expr);
         }
 
+        $subAssertions = array_values(array_unique($subAssertions));
+
         return OrGenerator::make($subAssertions);
     }
 
@@ -387,6 +395,8 @@ class UnionProperty extends AbstractProperty
         foreach ($this->subProperties as $prop) {
             $subAssertions[] = $prop->inputAssertionExpr($expr);
         }
+
+        $subAssertions = array_values(array_unique($subAssertions));
 
         return OrGenerator::make($subAssertions);
     }
@@ -401,18 +411,29 @@ class UnionProperty extends AbstractProperty
                 $map    = $subProperty->inputMappingExpr($expr);
                 $match->addArm($assert, $map);
             }
-            
+
             $match->addArm("default", "null");
 
             return $match->generate();
         }
 
-        $out = "null";
+        $conversions = [];
 
         foreach ($this->subProperties as $subProperty) {
             $assert = $subProperty->inputAssertionExpr($expr);
             $map    = $subProperty->inputMappingExpr($expr);
-            $out    = TernaryGenerator::make($assert, $map, $out);
+
+            if (!isset($conversions[$map])) {
+                $conversions[$map] = [];
+            }
+            $conversions[$map][] = $assert;
+        }
+
+        $out = "null";
+        foreach ($conversions as $map => $asserts) {
+            $conds = array_values(array_unique($asserts));
+            $condition = OrGenerator::make($conds);
+            $out = TernaryGenerator::make($condition, $map, $out);
         }
 
         return $out;
@@ -484,12 +505,31 @@ class UnionProperty extends AbstractProperty
             return $match->generate();
         }
 
-        $out = $expr;
+        $conversions = [];
 
         foreach ($this->subProperties as $subProperty) {
             $assert = $subProperty->typeAssertionExpr($expr);
             $map    = $subProperty->cloneExpr($expr);
-            $out    = TernaryGenerator::make($assert, $map, $out);
+
+            if ($map === $expr) {
+                continue;
+            }
+
+            if (!isset($conversions[$map])) {
+                $conversions[$map] = [];
+            }
+            $conversions[$map][] = $assert;
+        }
+
+        if ($conversions === []) {
+            return $expr;
+        }
+
+        $out = $expr;
+        foreach ($conversions as $map => $asserts) {
+            $conds = array_values(array_unique($asserts));
+            $condition = OrGenerator::make($conds);
+            $out = TernaryGenerator::make($condition, $map, $out);
         }
 
         return $out;

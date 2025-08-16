@@ -307,9 +307,9 @@ class Foo
 
         $_providedOptionals = [];
         $a = isset($input->{'a'})
-            ? (is_array($input->{'a'})
+            ? ((in_array($input->{'a'}, ['a', 'b'], true) || is_array($input->{'a'}))
                 ? $input->{'a'}
-                : (in_array($input->{'a'}, ['a', 'b'], true) ? $input->{'a'} : null)
+                : null
             )
             : null;
         $b = isset($input->{'b'}) ? $input->{'b'} : null;
@@ -420,16 +420,6 @@ class Foo
         }
 
         return $validator->isValid();
-    }
-
-    public function __clone()
-    {
-        if (isset($this->a)) {
-            $this->a = (is_array($this->a)
-                ? $this->a
-                : (in_array($this->a, ['a', 'b'], true) ? $this->a : $this->a)
-            );
-        }
     }
 
     /**

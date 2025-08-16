@@ -170,9 +170,9 @@ class Baz
         }
 
         $grox = isset($input->{'grox'})
-            ? (Bar::validateInput($input->{'grox'}, true)
+            ? ((Bar::validateInput($input->{'grox'}, true))
                 ? Bar::fromInput($input->{'grox'}, $validate)
-                : (Foo::validateInput($input->{'grox'}, true)
+                : ((Foo::validateInput($input->{'grox'}, true))
                     ? Foo::fromInput($input->{'grox'}, $validate)
                     : null
                 )
@@ -260,15 +260,5 @@ class Baz
         }
 
         return $validator->isValid();
-    }
-
-    public function __clone()
-    {
-        if (isset($this->grox)) {
-            $this->grox = ($this->grox instanceof Bar
-                ? $this->grox
-                : ($this->grox instanceof Foo ? $this->grox : $this->grox)
-            );
-        }
     }
 }

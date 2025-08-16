@@ -183,18 +183,15 @@ class Qux
         }
 
         $grox = isset($input->{'grox'})
-            ? ((Foo::validateInput($input->{'grox'}, true) || Bar::validateInput($input->{'grox'}, true))
-                ? (Bar::validateInput($input->{'grox'}, true)
+            ? (((Foo::validateInput($input->{'grox'}, true) || Bar::validateInput($input->{'grox'}, true)))
+                ? ((Bar::validateInput($input->{'grox'}, true))
                     ? Bar::fromInput($input->{'grox'}, $validate)
-                    : (Foo::validateInput($input->{'grox'}, true)
+                    : ((Foo::validateInput($input->{'grox'}, true))
                         ? Foo::fromInput($input->{'grox'}, $validate)
                         : null
                     )
                 )
-                : (is_array($input->{'grox'})
-                    ? $input->{'grox'}
-                    : (is_string($input->{'grox'}) ? $input->{'grox'} : null)
-                )
+                : ((is_string($input->{'grox'}) || is_array($input->{'grox'})) ? $input->{'grox'} : null)
             )
             : null;
 
@@ -289,21 +286,5 @@ class Qux
         }
 
         return $validator->isValid();
-    }
-
-    public function __clone()
-    {
-        if (isset($this->grox)) {
-            $this->grox = (($this->grox instanceof Foo || $this->grox instanceof Bar)
-                ? ($this->grox instanceof Bar
-                    ? $this->grox
-                    : ($this->grox instanceof Foo ? $this->grox : $this->grox)
-                )
-                : (is_array($this->grox)
-                    ? $this->grox
-                    : (is_string($this->grox) ? $this->grox : $this->grox)
-                )
-            );
-        }
     }
 }

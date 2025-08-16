@@ -355,18 +355,18 @@ class Record
             : null;
         $dataArrayAnyOf = isset($input->{'dataArrayAnyOf'})
             ? array_map(function($i) use ($validate) {
-                return (Fio::validateInput($i, true)
+                return ((Fio::validateInput($i, true))
                     ? Fio::fromInput($i, $validate)
-                    : (Phone::validateInput($i, true) ? Phone::fromInput($i, $validate) : null)
+                    : ((Phone::validateInput($i, true)) ? Phone::fromInput($i, $validate) : null)
                 );
             }, $input->{'dataArrayAnyOf'})
             : null;
         $dataArrayNestedAnyOf = isset($input->{'dataArrayNestedAnyOf'})
             ? array_map(function($i) use ($validate) {
                 return array_map(function($i) use ($validate) {
-                    return (Fio::validateInput($i, true)
+                    return ((Fio::validateInput($i, true))
                         ? Fio::fromInput($i, $validate)
-                        : (Phone::validateInput($i, true) ? Phone::fromInput($i, $validate) : null)
+                        : ((Phone::validateInput($i, true)) ? Phone::fromInput($i, $validate) : null)
                     );
                 }, $i);
             }, $input->{'dataArrayNestedAnyOf'})
@@ -511,15 +511,17 @@ class Record
             );
         }
         if (isset($this->dataArrayAnyOf)) {
-            $this->dataArrayAnyOf = array_map(function($i) {
-                return ($i instanceof Fio ? $i : ($i instanceof Phone ? $i : $i));
-            }, $this->dataArrayAnyOf);
+            $this->dataArrayAnyOf = array_map(
+                function($i) { return $i; },
+                $this->dataArrayAnyOf
+            );
         }
         if (isset($this->dataArrayNestedAnyOf)) {
             $this->dataArrayNestedAnyOf = array_map(function($i) {
-                return array_map(function($i) {
-                    return ($i instanceof Fio ? $i : ($i instanceof Phone ? $i : $i));
-                }, $i);
+                return array_map(
+                    function($i) { return $i; },
+                    $i
+                );
             }, $this->dataArrayNestedAnyOf);
         }
     }
