@@ -569,25 +569,10 @@ class MyClass
 
     public function __clone()
     {
-        $this->b = match (true) {
-            is_array($this->b) || is_string($this->b) => $this->b,
-        };
-        $this->d = match (true) {
-            is_array($this->d) || is_string($this->d) => $this->d,
-        };
-        if (isset($this->f)) {
-            $this->f = match (true) {
-                is_array($this->f) || is_string($this->f) => $this->f,
-            };
-        }
-        if (isset($this->h)) {
-            $this->h = match (true) {
-                is_array($this->h) || is_string($this->h) => $this->h,
-            };
-        }
         if (isset($this->i)) {
             $this->i = match (true) {
-                is_array($this->i) || is_string($this->i) || is_array($this->i) || is_object($this->i) => $this->i,
+                is_array($this->i) || is_string($this->i) => $this->i,
+                is_array($this->i) || is_object($this->i) => json_decode(json_encode($this->i), is_array($this->i)),
             };
         }
     }

@@ -557,6 +557,13 @@ class UnionProperty extends AbstractProperty
                 $arms[$map][] = $assert;
             }
 
+            if (count($arms) === 1) {
+                $only = array_key_first($arms);
+                if ($only === $expr) {
+                    return $expr;
+                }
+            }
+
             $match = new MatchGenerator("true");
             foreach ($arms as $map => $asserts) {
                 $conditions = array_values(array_unique($asserts));

@@ -695,36 +695,24 @@ class MyClass
             $this->arrayOfUnions = array_map(fn ($i) => match (true) {
                 (is_array($i)
                     && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || (is_int($i) || is_float($i)))))) =>
-                    array_map(fn ($i) => match (true) {
-                        is_string($i) || (is_int($i) || is_float($i)) => $i,
-                    }, $i),
-                (is_array($i) || is_array($i)) => match (true) {
-                    is_array($i) => $i,
-                },
+                    array_map(fn ($i) => $i, $i),
+                (is_array($i) || is_array($i)) => $i,
             }, $this->arrayOfUnions);
         }
         if (isset($this->arrayOfRefUnions)) {
             $this->arrayOfRefUnions = array_map(fn ($i) => match (true) {
                 (is_array($i)
                     && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || (is_int($i) || is_float($i)))))) =>
-                    array_map(fn ($i) => match (true) {
-                        is_string($i) || (is_int($i) || is_float($i)) => $i,
-                    }, $i),
-                (is_array($i) || is_array($i)) => match (true) {
-                    is_array($i) => $i,
-                },
+                    array_map(fn ($i) => $i, $i),
+                (is_array($i) || is_array($i)) => $i,
             }, $this->arrayOfRefUnions);
         }
         if (isset($this->arrayOfRefAndNotRefUnions)) {
             $this->arrayOfRefAndNotRefUnions = array_map(fn ($i) => match (true) {
                 (is_array($i)
                     && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || (is_int($i) || is_float($i)))))) =>
-                    array_map(fn ($i) => match (true) {
-                        is_string($i) || (is_int($i) || is_float($i)) => $i,
-                    }, $i),
-                (is_array($i) || is_array($i)) => match (true) {
-                    is_array($i) => $i,
-                },
+                    array_map(fn ($i) => $i, $i),
+                (is_array($i) || is_array($i)) => $i,
             }, $this->arrayOfRefAndNotRefUnions);
         }
         if (isset($this->arrayOfUnionOfStringAndArray)) {

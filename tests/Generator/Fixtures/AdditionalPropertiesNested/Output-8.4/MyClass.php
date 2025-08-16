@@ -226,4 +226,11 @@ class MyClass
 
         return $validator->isValid();
     }
+
+    public function __clone()
+    {
+        if (isset($this->bar)) {
+            $this->bar = json_decode(json_encode($this->bar), is_array($this->bar));
+        }
+    }
 }

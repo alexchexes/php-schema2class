@@ -346,12 +346,7 @@ class Cat
                     || (is_int($this->hasFur) || is_float($this->hasFur))
                     || is_bool($this->hasFur)
                 ) =>
-                    match (true) {
-                        is_string($this->hasFur)
-                            || (is_int($this->hasFur) || is_float($this->hasFur))
-                            || is_bool($this->hasFur) =>
-                            $this->hasFur,
-                    },
+                    $this->hasFur,
             };
         }
     }
