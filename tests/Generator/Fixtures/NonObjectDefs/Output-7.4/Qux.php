@@ -185,7 +185,7 @@ class Qux
         $grox = isset($input->{'grox'})
             ? ((is_string($input->{'grox'}) || is_array($input->{'grox'}))
                 ? $input->{'grox'}
-                : (((Foo::validateInput($input->{'grox'}, true) || Bar::validateInput($input->{'grox'}, true)))
+                : ((Foo::validateInput($input->{'grox'}, true) || Bar::validateInput($input->{'grox'}, true))
                     ? ((Foo::validateInput($input->{'grox'}, true))
                         ? Foo::fromInput($input->{'grox'}, $validate)
                         : ((Bar::validateInput($input->{'grox'}, true))
@@ -220,7 +220,7 @@ class Qux
         if (isset($this->grox)) {
             if (is_string($this->grox) || is_array($this->grox)) {
                 $output['grox'] = $this->grox;
-            } elseif (($this->grox instanceof Foo || $this->grox instanceof Bar)) {
+            } elseif ($this->grox instanceof Foo || $this->grox instanceof Bar) {
                 $output['grox'] = (($this->grox instanceof Foo || $this->grox instanceof Bar)
                     ? $this->grox->toArray()
                     : null
@@ -243,7 +243,7 @@ class Qux
         if (isset($this->grox)) {
             if (is_string($this->grox) || is_array($this->grox)) {
                 $output->{'grox'} = $this->grox;
-            } elseif (($this->grox instanceof Foo || $this->grox instanceof Bar)) {
+            } elseif ($this->grox instanceof Foo || $this->grox instanceof Bar) {
                 $output->{'grox'} = (($this->grox instanceof Foo || $this->grox instanceof Bar)
                     ? $this->grox->toStdClass()
                     : null
@@ -294,7 +294,7 @@ class Qux
     public function __clone()
     {
         if (isset($this->grox)) {
-            $this->grox = ((($this->grox instanceof Foo || $this->grox instanceof Bar))
+            $this->grox = (($this->grox instanceof Foo || $this->grox instanceof Bar)
                 ? (($this->grox instanceof Foo || $this->grox instanceof Bar)
                     ? clone $this->grox
                     : $this->grox

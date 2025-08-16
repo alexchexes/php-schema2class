@@ -140,6 +140,16 @@ abstract class AbstractProperty implements PropertyInterface
         return $this->typeAssertionExpr($expr);
     }
 
+    public function typeAssertionExprs(string $expr): array
+    {
+        return [ $this->typeAssertionExpr($expr) ];
+    }
+
+    public function inputAssertionExprs(string $expr): array
+    {
+        return [ $this->inputAssertionExpr($expr) ];
+    }
+
     public function inputMappingExpr(string $expr, bool $asserted = false): string
     {
         return $expr;

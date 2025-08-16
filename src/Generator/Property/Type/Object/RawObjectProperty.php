@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class\Generator\Property\Type\Object;
 
 use Composer\Semver\Semver;
+use Helmich\Schema2Class\Generator\Expression\OrGenerator;
 use Helmich\Schema2Class\Generator\Expression\TernaryGenerator;
 use Helmich\Schema2Class\Generator\Property\Type\AbstractProperty;
 
@@ -40,7 +41,17 @@ class RawObjectProperty extends AbstractProperty
 
     public function typeAssertionExpr(string $expr): string
     {
-        return 'is_array(' . $expr . ') || is_object(' . $expr . ')';
+        return OrGenerator::make($this->typeAssertionExprs($expr), parens: false);
+    }
+
+    public function typeAssertionExprs(string $expr): array
+    {
+        return ['is_array(' . $expr . ')', 'is_object(' . $expr . ')'];
+    }
+
+    public function inputAssertionExprs(string $expr): array
+    {
+        return $this->typeAssertionExprs($expr);
     }
 
     public function outputMappingExpr(string $expr): string

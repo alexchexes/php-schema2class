@@ -32,12 +32,34 @@ interface TypeExpressionInterface
      *                      or accessor like `$this->property`
      */
     public function typeAssertionExpr(string $expr): string;
+
+    /**
+     * Returns the individual conditions that make up the
+     * {@see typeAssertionExpr} boolean expression.
+     *
+     * Implementations typically return an array of simple checks that are
+     * combined with logical OR. Consumers may use these atomic expressions to
+     * build complex conditionals while avoiding duplicated checks.
+     *
+     * @param string $expr  Expression referencing the value being asserted.
+     * @return list<string>
+     */
+    public function typeAssertionExprs(string $expr): array;
     
     /**
      * Generates a boolean expression that checks whether a raw input value can
      * be converted to this property type.
      */
     public function inputAssertionExpr(string $expr): string;
+
+    /**
+     * Returns the individual conditions that make up the
+     * {@see inputAssertionExpr} boolean expression.
+     *
+     * @param string $expr  Expression referencing the input being asserted.
+     * @return list<string>
+     */
+    public function inputAssertionExprs(string $expr): array;
     
     /**
      * Generates an expression that maps an input value to the internal PHP value representation.

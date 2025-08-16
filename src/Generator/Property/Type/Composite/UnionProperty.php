@@ -54,6 +54,31 @@ class UnionProperty extends AbstractProperty
         parent::__construct($key, $schema, $generatorRequest);
     }
 
+    /**
+     * Deduplicate discriminator conditions across all mapping arms while
+     * preserving their evaluation order. Conditions that already appeared in
+     * previous arms are removed from subsequent ones to avoid redundant checks.
+     *
+     * @param array<string,list<string>> $arms
+     * @return array<string,list<string>>
+     */
+    private function deduplicateConditions(array $arms): array
+    {
+        $used = [];
+        $out = [];
+        foreach ($arms as $mapping => $conds) {
+            $conds = array_values(array_unique($conds));
+            $conds = array_values(array_diff($conds, $used));
+            if ($conds === []) {
+                continue;
+            }
+            $used = array_merge($used, $conds);
+            $out[$mapping] = $conds;
+        }
+
+        return $out;
+    }
+
     public static function canHandleSchema(array $schema): bool
     {
         return isset($schema["oneOf"]) || isset($schema["anyOf"]);
@@ -66,7 +91,7 @@ class UnionProperty extends AbstractProperty
         $arms = [];
         foreach ($this->subProperties as $subProperty) {
             $mapping       = $subProperty->inputMappingExpr($accessor, asserted: true);
-            $discriminator = $subProperty->inputAssertionExpr($accessor);
+            $discriminators = $subProperty->inputAssertionExprs($accessor);
 
             if (
                 $subProperty instanceof ReferenceArrayProperty
@@ -74,17 +99,18 @@ class UnionProperty extends AbstractProperty
                 || $subProperty instanceof PrimitiveArrayProperty
             ) {
                 $isArrayCheck = "is_array({$accessor})";
-                if (!str_contains($discriminator, $isArrayCheck)) {
-                    $discriminator = "({$isArrayCheck} && {$discriminator})";
+                if (!in_array($isArrayCheck, $discriminators, true)) {
+                    $discriminators[] = $isArrayCheck;
                 }
             }
 
-            $arms[$mapping][] = $discriminator;
+            $arms[$mapping] = array_merge($arms[$mapping] ?? [], $discriminators);
         }
 
+        $arms = $this->deduplicateConditions($arms);
+
         $match = new MatchGenerator("true");
-        foreach ($arms as $mapping => $discriminators) {
-            $conditions = array_values(array_unique($discriminators));
+        foreach ($arms as $mapping => $conditions) {
             $match->addArm(OrGenerator::make($conditions, parens: false), $mapping);
         }
 
@@ -114,13 +140,13 @@ class UnionProperty extends AbstractProperty
         $conversions = [
             "\${$name} = {$accessor};" => ["discriminators" => [], "fallback" => true],
         ];
-    
+
         // Build up per‑arm conversions
         foreach ($this->subProperties as $subProp) {
             $mapping       = $subProp->inputMappingExpr($accessor, asserted: true);
             $assignment    = "\${$name} = {$mapping};";
-            $discriminator = $subProp->inputAssertionExpr($accessor);
-    
+            $discriminators = $subProp->inputAssertionExprs($accessor);
+
             // If this arm is an "array" type, ensure its test guards against non-arrays
             if (
                 $subProp instanceof ReferenceArrayProperty
@@ -128,15 +154,18 @@ class UnionProperty extends AbstractProperty
                 || $subProp instanceof PrimitiveArrayProperty
             ) {
                 $isArrayCheck = "is_array({$accessor})";
-                if (!str_contains($discriminator, $isArrayCheck)) {
-                    $discriminator = "({$isArrayCheck} && {$discriminator})";
+                if (!in_array($isArrayCheck, $discriminators, true)) {
+                    $discriminators[] = $isArrayCheck;
                 }
             }
-    
+
             if (! isset($conversions[$assignment])) {
                 $conversions[$assignment] = ["discriminators" => [], "fallback" => false];
             }
-            $conversions[$assignment]["discriminators"][] = $discriminator;
+            $conversions[$assignment]["discriminators"] = array_merge(
+                $conversions[$assignment]["discriminators"],
+                $discriminators,
+            );
         }
     
         // Turn those into an if/elseif/else chain
@@ -145,17 +174,23 @@ class UnionProperty extends AbstractProperty
 
         $indent = StringUtils::indentCode(...);
     
+        $conditionArms = [];
         foreach ($conversions as $assignment => $info) {
             if ($info["fallback"]) {
                 $fallback = $assignment;
                 continue;
             }
 
+            $conditionArms[$assignment] = $info["discriminators"];
+        }
+
+        $conditionArms = $this->deduplicateConditions($conditionArms);
+
+        foreach ($conditionArms as $assignment => $conditions) {
             $keyword = count($branches) ? "elseif" : "if";
-            $conditions = array_values(array_unique($info["discriminators"]));
             $parenthesizedCondition = OrGenerator::make($conditions);
 
-            $branches[] = 
+            $branches[] =
                 <<<PHP
                 {$keyword} {$parenthesizedCondition} {
                 {$indent($assignment)}
@@ -189,13 +224,14 @@ class UnionProperty extends AbstractProperty
 
         foreach ($this->subProperties as $subProperty) {
             $mapping       = $subProperty->outputMappingExpr("\$this->{$name}");
-            $discriminator = $subProperty->typeAssertionExpr("\$this->{$name}");
-            $arms[$mapping][] = $discriminator;
+            $discriminators = $subProperty->typeAssertionExprs("\$this->{$name}");
+            $arms[$mapping] = array_merge($arms[$mapping] ?? [], $discriminators);
         }
 
+        $arms = $this->deduplicateConditions($arms);
+
         $match = new MatchGenerator("true");
-        foreach ($arms as $mapping => $discriminators) {
-            $conditions = array_values(array_unique($discriminators));
+        foreach ($arms as $mapping => $conditions) {
             $match->addArm(OrGenerator::make($conditions, parens: false), $mapping);
         }
         $outputVarName = VariableNames::OUTPUT;
@@ -210,13 +246,14 @@ class UnionProperty extends AbstractProperty
 
         foreach ($this->subProperties as $subProperty) {
             $mapping       = $subProperty->outputMappingExprStdClass("\$this->{$name}");
-            $discriminator = $subProperty->typeAssertionExpr("\$this->{$name}");
-            $arms[$mapping][] = $discriminator;
+            $discriminators = $subProperty->typeAssertionExprs("\$this->{$name}");
+            $arms[$mapping] = array_merge($arms[$mapping] ?? [], $discriminators);
         }
 
+        $arms = $this->deduplicateConditions($arms);
+
         $match = new MatchGenerator("true");
-        foreach ($arms as $mapping => $discriminators) {
-            $conditions = array_values(array_unique($discriminators));
+        foreach ($arms as $mapping => $conditions) {
             $match->addArm(OrGenerator::make($conditions, parens: false), $mapping);
         }
 
@@ -238,20 +275,28 @@ class UnionProperty extends AbstractProperty
         foreach ($this->subProperties as $subProperty) {
             $mapping       = $subProperty->outputMappingExpr("\$this->{$name}");
             $assignment    = "\${$outputVarName}[{$keyStr}] = {$mapping};";
-            $discriminator = $subProperty->typeAssertionExpr("\$this->{$name}");
+            $discriminators = $subProperty->typeAssertionExprs("\$this->{$name}");
 
             if (!isset($conversions[$assignment])) {
                 $conversions[$assignment] = ["discriminators" => []];
             }
 
-            $conversions[$assignment]["discriminators"][] = $discriminator;
+            $conversions[$assignment]["discriminators"] = array_merge(
+                $conversions[$assignment]["discriminators"],
+                $discriminators,
+            );
         }
 
         $indent = StringUtils::indentCode(...);
 
+        $conditionArms = [];
+        foreach ($conversions as $assignment => $info) {
+            $conditionArms[$assignment] = $info['discriminators'];
+        }
+        $conditionArms = $this->deduplicateConditions($conditionArms);
+
         $branches = [];
-        foreach ($conversions as $assignment => $conversion) {
-            $conditions = array_values(array_unique($conversion["discriminators"]));
+        foreach ($conditionArms as $assignment => $conditions) {
             $parenthesizedCondition = OrGenerator::make($conditions);
             $keyword = count($branches) ? "elseif" : "if";
             $branches[] =
@@ -279,20 +324,28 @@ class UnionProperty extends AbstractProperty
         foreach ($this->subProperties as $subProperty) {
             $mapping       = $subProperty->outputMappingExprStdClass("\$this->{$name}");
             $assignment    = "\${$outputVarName}->{{$keyStr}} = {$mapping};";
-            $discriminator = $subProperty->typeAssertionExpr("\$this->{$name}");
+            $discriminators = $subProperty->typeAssertionExprs("\$this->{$name}");
 
             if (!isset($conversions[$assignment])) {
                 $conversions[$assignment] = ["discriminators" => []];
             }
 
-            $conversions[$assignment]["discriminators"][] = $discriminator;
+            $conversions[$assignment]["discriminators"] = array_merge(
+                $conversions[$assignment]["discriminators"],
+                $discriminators,
+            );
         }
 
         $indent = StringUtils::indentCode(...);
 
+        $conditionArms = [];
+        foreach ($conversions as $assignment => $info) {
+            $conditionArms[$assignment] = $info['discriminators'];
+        }
+        $conditionArms = $this->deduplicateConditions($conditionArms);
+
         $branches = [];
-        foreach ($conversions as $assignment => $conversion) {
-            $conditions = array_values(array_unique($conversion["discriminators"]));
+        foreach ($conditionArms as $assignment => $conditions) {
             $parenthesizedCondition = OrGenerator::make($conditions);
             $keyword = count($branches) ? "elseif" : "if";
             $branches[] =
@@ -404,24 +457,30 @@ class UnionProperty extends AbstractProperty
 
     public function typeAssertionExpr(string $expr): string
     {
-        $subAssertions = [];
-
-        foreach ($this->subProperties as $prop) {
-            $subAssertions[] = $prop->typeAssertionExpr($expr);
-        }
-
-        return OrGenerator::make($subAssertions);
+        return OrGenerator::make($this->typeAssertionExprs($expr));
     }
 
     public function inputAssertionExpr(string $expr): string
     {
-        $subAssertions = [];
+        return OrGenerator::make($this->inputAssertionExprs($expr));
+    }
 
+    public function typeAssertionExprs(string $expr): array
+    {
+        $conditions = [];
         foreach ($this->subProperties as $prop) {
-            $subAssertions[] = $prop->inputAssertionExpr($expr);
+            $conditions = array_merge($conditions, $prop->typeAssertionExprs($expr));
         }
+        return array_values(array_unique($conditions));
+    }
 
-        return OrGenerator::make($subAssertions);
+    public function inputAssertionExprs(string $expr): array
+    {
+        $conditions = [];
+        foreach ($this->subProperties as $prop) {
+            $conditions = array_merge($conditions, $prop->inputAssertionExprs($expr));
+        }
+        return array_values(array_unique($conditions));
     }
 
     public function inputMappingExpr(string $expr, bool $asserted = false): string
@@ -430,13 +489,14 @@ class UnionProperty extends AbstractProperty
             $arms = [];
             foreach ($this->subProperties as $subProperty) {
                 $map = $subProperty->inputMappingExpr($expr);
-                $assert = $subProperty->inputAssertionExpr($expr);
-                $arms[$map][] = $assert;
+                $asserts = $subProperty->inputAssertionExprs($expr);
+                $arms[$map] = array_merge($arms[$map] ?? [], $asserts);
             }
 
+            $arms = $this->deduplicateConditions($arms);
+
             $match = new MatchGenerator("true");
-            foreach ($arms as $map => $asserts) {
-                $conditions = array_values(array_unique($asserts));
+            foreach ($arms as $map => $conditions) {
                 $match->addArm(OrGenerator::make($conditions, parens: false), $map);
             }
             $match->addArm("default", "null");
@@ -447,13 +507,18 @@ class UnionProperty extends AbstractProperty
         $conversions = [];
         foreach ($this->subProperties as $subProperty) {
             $map = $subProperty->inputMappingExpr($expr);
-            $assert = $subProperty->inputAssertionExpr($expr);
-            $conversions[$map][] = $assert;
+            $asserts = $subProperty->inputAssertionExprs($expr);
+            $conversions[$map] = array_merge($conversions[$map] ?? [], $asserts);
         }
 
-        $out = "null";
-        foreach (array_reverse($conversions) as $map => $asserts) {
-            $conditions = array_values(array_unique($asserts));
+        $conversions = $this->deduplicateConditions($conversions);
+
+        if ($conversions === []) {
+            return 'null';
+        }
+
+        $out = 'null';
+        foreach (array_reverse($conversions) as $map => $conditions) {
             $cond = OrGenerator::make($conditions);
             $out = TernaryGenerator::make($cond, $map, $out);
         }
@@ -467,13 +532,14 @@ class UnionProperty extends AbstractProperty
             $arms = [];
             foreach ($this->subProperties as $subProperty) {
                 $map = $subProperty->outputMappingExpr($expr);
-                $assert = $subProperty->typeAssertionExpr($expr);
-                $arms[$map][] = $assert;
+                $asserts = $subProperty->typeAssertionExprs($expr);
+                $arms[$map] = array_merge($arms[$map] ?? [], $asserts);
             }
 
+            $arms = $this->deduplicateConditions($arms);
+
             $match = new MatchGenerator("true");
-            foreach ($arms as $map => $asserts) {
-                $conditions = array_values(array_unique($asserts));
+            foreach ($arms as $map => $conditions) {
                 $match->addArm(OrGenerator::make($conditions, parens: false), $map);
             }
             $match->addArm("default", "null");
@@ -484,13 +550,14 @@ class UnionProperty extends AbstractProperty
         $conversions = [];
         foreach ($this->subProperties as $subProperty) {
             $map = $subProperty->outputMappingExpr($expr);
-            $assert = $subProperty->typeAssertionExpr($expr);
-            $conversions[$map][] = $assert;
+            $asserts = $subProperty->typeAssertionExprs($expr);
+            $conversions[$map] = array_merge($conversions[$map] ?? [], $asserts);
         }
 
+        $conversions = $this->deduplicateConditions($conversions);
+
         $out = "null";
-        foreach (array_reverse($conversions) as $map => $asserts) {
-            $conditions = array_values(array_unique($asserts));
+        foreach (array_reverse($conversions) as $map => $conditions) {
             $cond = OrGenerator::make($conditions);
             $out = TernaryGenerator::make($cond, $map, $out);
         }
@@ -504,13 +571,14 @@ class UnionProperty extends AbstractProperty
             $arms = [];
             foreach ($this->subProperties as $subProperty) {
                 $map = $subProperty->outputMappingExprStdClass($expr);
-                $assert = $subProperty->typeAssertionExpr($expr);
-                $arms[$map][] = $assert;
+                $asserts = $subProperty->typeAssertionExprs($expr);
+                $arms[$map] = array_merge($arms[$map] ?? [], $asserts);
             }
 
+            $arms = $this->deduplicateConditions($arms);
+
             $match = new MatchGenerator("true");
-            foreach ($arms as $map => $asserts) {
-                $conditions = array_values(array_unique($asserts));
+            foreach ($arms as $map => $conditions) {
                 $match->addArm(OrGenerator::make($conditions, parens: false), $map);
             }
             $match->addArm("default", "null");
@@ -522,24 +590,21 @@ class UnionProperty extends AbstractProperty
         foreach ($this->subProperties as $subProperty) {
             $map = $subProperty->outputMappingExprStdClass($expr);
             if ($map === 'null') {
-                // Mapping to `null` does not need a dedicated branch as it is the
-                // default output when no other condition matches. Skipping such
-                // branches also prevents generating ternaries with identical
-                // expressions for both outcomes.
                 continue;
             }
 
-            $assert = $subProperty->typeAssertionExpr($expr);
-            $conversions[$map][] = $assert;
+            $asserts = $subProperty->typeAssertionExprs($expr);
+            $conversions[$map] = array_merge($conversions[$map] ?? [], $asserts);
         }
+
+        $conversions = $this->deduplicateConditions($conversions);
 
         if ($conversions === []) {
             return 'null';
         }
 
         $out = 'null';
-        foreach (array_reverse($conversions) as $map => $asserts) {
-            $conditions = array_values(array_unique($asserts));
+        foreach (array_reverse($conversions) as $map => $conditions) {
             $cond = OrGenerator::make($conditions);
             $out = TernaryGenerator::make($cond, $map, $out);
         }
@@ -553,8 +618,8 @@ class UnionProperty extends AbstractProperty
             $arms = [];
             foreach ($this->subProperties as $subProperty) {
                 $map = $subProperty->cloneExpr($expr);
-                $assert = $subProperty->typeAssertionExpr($expr);
-                $arms[$map][] = $assert;
+                $asserts = $subProperty->typeAssertionExprs($expr);
+                $arms[$map] = array_merge($arms[$map] ?? [], $asserts);
             }
 
             if (count($arms) === 1) {
@@ -565,9 +630,10 @@ class UnionProperty extends AbstractProperty
                 return $map;
             }
 
+            $arms = $this->deduplicateConditions($arms);
+
             $match = new MatchGenerator("true");
-            foreach ($arms as $map => $asserts) {
-                $conditions = array_values(array_unique($asserts));
+            foreach ($arms as $map => $conditions) {
                 $match->addArm(OrGenerator::make($conditions, parens: false), $map);
             }
 
@@ -585,17 +651,18 @@ class UnionProperty extends AbstractProperty
                 continue;
             }
 
-            $assert = $subProperty->typeAssertionExpr($expr);
-            $conversions[$map][] = $assert;
+            $asserts = $subProperty->typeAssertionExprs($expr);
+            $conversions[$map] = array_merge($conversions[$map] ?? [], $asserts);
         }
+
+        $conversions = $this->deduplicateConditions($conversions);
 
         if ($conversions === []) {
             return $expr;
         }
 
         $out = $expr;
-        foreach (array_reverse($conversions) as $map => $asserts) {
-            $conditions = array_values(array_unique($asserts));
+        foreach (array_reverse($conversions) as $map => $conditions) {
             $cond = OrGenerator::make($conditions);
             $out = TernaryGenerator::make($cond, $map, $out);
         }

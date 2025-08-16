@@ -42,11 +42,25 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator
             : $this->inner->typeAssertionExpr($expr);
     }
 
+    public function typeAssertionExprs(string $expr): array
+    {
+        return $this->allowsNull()
+            ? parent::typeAssertionExprs($expr)
+            : $this->inner->typeAssertionExprs($expr);
+    }
+
     public function inputAssertionExpr(string $expr): string
     {
         return $this->allowsNull()
             ? parent::inputAssertionExpr($expr)
             : $this->inner->inputAssertionExpr($expr);
+    }
+
+    public function inputAssertionExprs(string $expr): array
+    {
+        return $this->allowsNull()
+            ? parent::inputAssertionExprs($expr)
+            : $this->inner->inputAssertionExprs($expr);
     }
 
     public function inputMappingExpr(string $expr, bool $asserted = false): string

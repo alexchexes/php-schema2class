@@ -94,4 +94,14 @@ readonly class ReferencedTypeClass implements ReferencedTypeInterface
         $TO_STD_CLASS = MethodNames::TO_STD_CLASS;
         return "{$expr}->{$TO_STD_CLASS}({$inclDefaultsArg})";
     }
+
+    public function typeAssertionExprs(string $expr): array
+    {
+        return [ $this->typeAssertionExpr($expr) ];
+    }
+
+    public function inputAssertionExprs(string $expr): array
+    {
+        return [ $this->inputAssertionExpr($expr) ];
+    }
 }

@@ -123,4 +123,14 @@ readonly class ReferencedTypeEnum implements ReferencedTypeInterface
         return $this->canUseNativeEnum();
     }
 
+    public function typeAssertionExprs(string $expr): array
+    {
+        return [ $this->typeAssertionExpr($expr) ];
+    }
+
+    public function inputAssertionExprs(string $expr): array
+    {
+        return [ $this->inputAssertionExpr($expr) ];
+    }
+
 }
