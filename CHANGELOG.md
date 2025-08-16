@@ -42,6 +42,7 @@ Now it:
 - Deterministic resolution of class property, accessor method and temporary variable names via a unified resolver, allowing case-sensitive properties and avoiding collisions with reserved names.
 - Option `mutableSetters` allows generating mutable `setX()` methods (optionally chainable).
 - Skips emitting empty `__construct` or `__clone` methods.
+- Removes redundant type-check branches for union properties combining array and object alternatives.
 - Prints a notice when skipping `definitions` that do not describe an object.
 - Validates written files with `php -l` to ensure generated code is syntactically correct.
 - Handles URL-encoded references

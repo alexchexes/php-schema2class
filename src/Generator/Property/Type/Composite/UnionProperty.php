@@ -17,7 +17,9 @@ use Helmich\Schema2Class\Generator\Property\Type\AbstractProperty;
 use Helmich\Schema2Class\Generator\Property\Type\Array\ObjectArrayProperty;
 use Helmich\Schema2Class\Generator\Property\Type\Array\PrimitiveArrayProperty;
 use Helmich\Schema2Class\Generator\Property\Type\Array\ReferenceArrayProperty;
+use Helmich\Schema2Class\Generator\Property\Type\Array\TypedArrayProperty;
 use Helmich\Schema2Class\Generator\Property\Type\Object\NestedObjectProperty;
+use Helmich\Schema2Class\Generator\Property\Type\Object\RawObjectProperty;
 use Helmich\Schema2Class\Generator\Property\Type\PropertyInterface;
 use Helmich\Schema2Class\Generator\Property\Type\ReferenceProperty;
 use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeClass;
@@ -51,6 +53,27 @@ class UnionProperty extends AbstractProperty
             return PropertyBuilder::buildPropertyFromSchema($generatorRequest, "{$key}Alternative" . ($idx + 1), $subSchema, true);
         }, array_keys($schema["oneOf"]));
 
+        $hasArray = false;
+        foreach ($this->subProperties as $subProperty) {
+            if (
+                $subProperty instanceof PrimitiveArrayProperty
+                || $subProperty instanceof ObjectArrayProperty
+                || $subProperty instanceof ReferenceArrayProperty
+                || $subProperty instanceof TypedArrayProperty
+            ) {
+                $hasArray = true;
+                break;
+            }
+        }
+
+        if ($hasArray) {
+            foreach ($this->subProperties as $subProperty) {
+                if ($subProperty instanceof RawObjectProperty) {
+                    $subProperty->allowArrays(false);
+                }
+            }
+        }
+
         parent::__construct($key, $schema, $generatorRequest);
     }
 
@@ -72,6 +95,7 @@ class UnionProperty extends AbstractProperty
                 $subProperty instanceof ReferenceArrayProperty
                 || $subProperty instanceof ObjectArrayProperty
                 || $subProperty instanceof PrimitiveArrayProperty
+                || $subProperty instanceof TypedArrayProperty
             ) {
                 $isArrayCheck = "is_array({$accessor})";
                 if (!str_contains($discriminator, $isArrayCheck)) {
@@ -126,6 +150,7 @@ class UnionProperty extends AbstractProperty
                 $subProp instanceof ReferenceArrayProperty
                 || $subProp instanceof ObjectArrayProperty
                 || $subProp instanceof PrimitiveArrayProperty
+                || $subProp instanceof TypedArrayProperty
             ) {
                 $isArrayCheck = "is_array({$accessor})";
                 if (!str_contains($discriminator, $isArrayCheck)) {

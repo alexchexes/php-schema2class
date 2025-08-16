@@ -12,6 +12,8 @@ use Helmich\Schema2Class\Generator\Property\Type\AbstractProperty;
  */
 class RawObjectProperty extends AbstractProperty
 {
+    private bool $allowArrays = true;
+
     public static function canHandleSchema(array $schema): bool
     {
         $isObject = (isset($schema['type']) && $schema['type'] === 'object');
@@ -27,20 +29,22 @@ class RawObjectProperty extends AbstractProperty
 
     public function typeAnnotation(): string
     {
-        return 'array|object';
+        return $this->allowArrays ? 'array|object' : 'object';
     }
 
     public function typeHint(): ?string
     {
         if (Semver::satisfies($this->request->getTargetPHPVersion(), '>=8.0')) {
-            return 'array|object';
+            return $this->allowArrays ? 'array|object' : 'object';
         }
         return null;
     }
 
     public function typeAssertionExpr(string $expr): string
     {
-        return 'is_array(' . $expr . ') || is_object(' . $expr . ')';
+        return $this->allowArrays
+            ? 'is_array(' . $expr . ') || is_object(' . $expr . ')'
+            : 'is_object(' . $expr . ')';
     }
 
     public function outputMappingExpr(string $expr): string
@@ -58,7 +62,10 @@ class RawObjectProperty extends AbstractProperty
         // TODO: in fact, when such object stored as array, it can contain nested objects (that's
         // why we deep-clone it in that case too), but they will be converted to arrays as well.
         // Gotta rethink raw objects handling maintaining both consistency and convenience.
-        return "json_decode(json_encode({$expr}), is_array({$expr}))";
+        if ($this->allowArrays) {
+            return "json_decode(json_encode({$expr}), is_array({$expr}))";
+        }
+        return "json_decode(json_encode({$expr}))";
     }
 
     public function needsValidation(): bool
@@ -66,5 +73,10 @@ class RawObjectProperty extends AbstractProperty
         // Schema places no restrictions beyond "object", so PHP type hints are
         // sufficient (or validation would be meaningless for PHP < 8).
         return false;
+    }
+
+    public function allowArrays(bool $allow): void
+    {
+        $this->allowArrays = $allow;
     }
 }
