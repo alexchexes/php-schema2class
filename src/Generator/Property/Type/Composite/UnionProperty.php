@@ -84,7 +84,7 @@ class UnionProperty extends AbstractProperty
 
         $match = new MatchGenerator("true");
         foreach ($arms as $mapping => $discriminators) {
-            $conditions = array_values(array_unique($discriminators));
+            $conditions = self::uniqueConditions($discriminators);
             $match->addArm(OrGenerator::make($conditions, parens: false), $mapping);
         }
 
@@ -152,7 +152,7 @@ class UnionProperty extends AbstractProperty
             }
 
             $keyword = count($branches) ? "elseif" : "if";
-            $conditions = array_values(array_unique($info["discriminators"]));
+            $conditions = self::uniqueConditions($info["discriminators"]);
             $parenthesizedCondition = OrGenerator::make($conditions);
 
             $branches[] = 
@@ -195,7 +195,7 @@ class UnionProperty extends AbstractProperty
 
         $match = new MatchGenerator("true");
         foreach ($arms as $mapping => $discriminators) {
-            $conditions = array_values(array_unique($discriminators));
+            $conditions = self::uniqueConditions($discriminators);
             $match->addArm(OrGenerator::make($conditions, parens: false), $mapping);
         }
         $outputVarName = VariableNames::OUTPUT;
@@ -216,7 +216,7 @@ class UnionProperty extends AbstractProperty
 
         $match = new MatchGenerator("true");
         foreach ($arms as $mapping => $discriminators) {
-            $conditions = array_values(array_unique($discriminators));
+            $conditions = self::uniqueConditions($discriminators);
             $match->addArm(OrGenerator::make($conditions, parens: false), $mapping);
         }
 
@@ -251,7 +251,7 @@ class UnionProperty extends AbstractProperty
 
         $branches = [];
         foreach ($conversions as $assignment => $conversion) {
-            $conditions = array_values(array_unique($conversion["discriminators"]));
+            $conditions = self::uniqueConditions($conversion["discriminators"]);
             $parenthesizedCondition = OrGenerator::make($conditions);
             $keyword = count($branches) ? "elseif" : "if";
             $branches[] =
@@ -292,7 +292,7 @@ class UnionProperty extends AbstractProperty
 
         $branches = [];
         foreach ($conversions as $assignment => $conversion) {
-            $conditions = array_values(array_unique($conversion["discriminators"]));
+            $conditions = self::uniqueConditions($conversion["discriminators"]);
             $parenthesizedCondition = OrGenerator::make($conditions);
             $keyword = count($branches) ? "elseif" : "if";
             $branches[] =
@@ -436,7 +436,7 @@ class UnionProperty extends AbstractProperty
 
             $match = new MatchGenerator("true");
             foreach ($arms as $map => $asserts) {
-                $conditions = array_values(array_unique($asserts));
+                $conditions = self::uniqueConditions($asserts);
                 $match->addArm(OrGenerator::make($conditions, parens: false), $map);
             }
             $match->addArm("default", "null");
@@ -453,7 +453,7 @@ class UnionProperty extends AbstractProperty
 
         $out = "null";
         foreach (array_reverse($conversions) as $map => $asserts) {
-            $conditions = array_values(array_unique($asserts));
+            $conditions = self::uniqueConditions($asserts);
             $cond = OrGenerator::make($conditions);
             $out = TernaryGenerator::make($cond, $map, $out);
         }
@@ -473,7 +473,7 @@ class UnionProperty extends AbstractProperty
 
             $match = new MatchGenerator("true");
             foreach ($arms as $map => $asserts) {
-                $conditions = array_values(array_unique($asserts));
+                $conditions = self::uniqueConditions($asserts);
                 $match->addArm(OrGenerator::make($conditions, parens: false), $map);
             }
             $match->addArm("default", "null");
@@ -490,7 +490,7 @@ class UnionProperty extends AbstractProperty
 
         $out = "null";
         foreach (array_reverse($conversions) as $map => $asserts) {
-            $conditions = array_values(array_unique($asserts));
+            $conditions = self::uniqueConditions($asserts);
             $cond = OrGenerator::make($conditions);
             $out = TernaryGenerator::make($cond, $map, $out);
         }
@@ -510,7 +510,7 @@ class UnionProperty extends AbstractProperty
 
             $match = new MatchGenerator("true");
             foreach ($arms as $map => $asserts) {
-                $conditions = array_values(array_unique($asserts));
+                $conditions = self::uniqueConditions($asserts);
                 $match->addArm(OrGenerator::make($conditions, parens: false), $map);
             }
             $match->addArm("default", "null");
@@ -527,7 +527,7 @@ class UnionProperty extends AbstractProperty
 
         $out = "null";
         foreach (array_reverse($conversions) as $map => $asserts) {
-            $conditions = array_values(array_unique($asserts));
+            $conditions = self::uniqueConditions($asserts);
             $cond = OrGenerator::make($conditions);
             $out = TernaryGenerator::make($cond, $map, $out);
         }
@@ -547,7 +547,7 @@ class UnionProperty extends AbstractProperty
 
             $match = new MatchGenerator("true");
             foreach ($arms as $map => $asserts) {
-                $conditions = array_values(array_unique($asserts));
+                $conditions = self::uniqueConditions($asserts);
                 $match->addArm(OrGenerator::make($conditions, parens: false), $map);
             }
 
@@ -563,12 +563,28 @@ class UnionProperty extends AbstractProperty
 
         $out = $expr;
         foreach (array_reverse($conversions) as $map => $asserts) {
-            $conditions = array_values(array_unique($asserts));
+            $conditions = self::uniqueConditions($asserts);
             $cond = OrGenerator::make($conditions);
             $out = TernaryGenerator::make($cond, $map, $out);
         }
 
         return $out;
+    }
+
+    /**
+     * Remove duplicate conditions while trimming whitespace.
+     *
+     * @param string[] $conds
+     * @return string[]
+     */
+    private static function uniqueConditions(array $conds): array
+    {
+        $out = [];
+        foreach ($conds as $c) {
+            $trim = trim($c);
+            $out[$trim] = $trim;
+        }
+        return array_values($out);
     }
 
     public function allowsNull(): bool

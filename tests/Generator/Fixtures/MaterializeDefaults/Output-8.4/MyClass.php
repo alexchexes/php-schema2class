@@ -835,17 +835,13 @@ class MyClass
             : null;
         $arrObjUnion = isset($input->{'arrObjUnion'})
             ? match (true) {
-                is_array($input->{'arrObjUnion'})
-                    || is_array($input->{'arrObjUnion'}) || is_object($input->{'arrObjUnion'}) =>
-                    $input->{'arrObjUnion'},
+                is_array($input->{'arrObjUnion'}) || is_object($input->{'arrObjUnion'}) => $input->{'arrObjUnion'},
                 default => null,
             }
             : null;
         $objArrUnion = isset($input->{'objArrUnion'})
             ? match (true) {
-                is_array($input->{'objArrUnion'})
-                    || is_array($input->{'objArrUnion'}) || is_object($input->{'objArrUnion'}) =>
-                    $input->{'objArrUnion'},
+                is_array($input->{'objArrUnion'}) || is_object($input->{'objArrUnion'}) => $input->{'objArrUnion'},
                 default => null,
             }
             : null;
@@ -929,13 +925,13 @@ class MyClass
         if (isset($this->arrObjUnion)) {
             $output['arrObjUnion'] = match (true) {
                 is_array($this->arrObjUnion) => $this->arrObjUnion,
-                is_array($this->arrObjUnion) || is_object($this->arrObjUnion) => json_decode(json_encode($this->arrObjUnion), true),
+                is_object($this->arrObjUnion) => json_decode(json_encode($this->arrObjUnion), true),
             };
         }
         if (isset($this->objArrUnion)) {
             $output['objArrUnion'] = match (true) {
                 is_array($this->objArrUnion) => $this->objArrUnion,
-                is_array($this->objArrUnion) || is_object($this->objArrUnion) => json_decode(json_encode($this->objArrUnion), true),
+                is_object($this->objArrUnion) => json_decode(json_encode($this->objArrUnion), true),
             };
         }
         if (isset($this->numKeysDefaults)) {
@@ -1004,13 +1000,13 @@ class MyClass
         if (isset($this->arrObjUnion)) {
             $output->{'arrObjUnion'} = match (true) {
                 is_array($this->arrObjUnion) => $this->arrObjUnion,
-                is_array($this->arrObjUnion) || is_object($this->arrObjUnion) => json_decode(json_encode($this->arrObjUnion)),
+                is_object($this->arrObjUnion) => json_decode(json_encode($this->arrObjUnion)),
             };
         }
         if (isset($this->objArrUnion)) {
             $output->{'objArrUnion'} = match (true) {
                 is_array($this->objArrUnion) => $this->objArrUnion,
-                is_array($this->objArrUnion) || is_object($this->objArrUnion) => json_decode(json_encode($this->objArrUnion)),
+                is_object($this->objArrUnion) => json_decode(json_encode($this->objArrUnion)),
             };
         }
         if (isset($this->numKeysDefaults)) {
@@ -1104,12 +1100,12 @@ class MyClass
         }
         if (isset($this->arrObjUnion)) {
             $this->arrObjUnion = match (true) {
-                is_array($this->arrObjUnion) || is_array($this->arrObjUnion) || is_object($this->arrObjUnion) => $this->arrObjUnion,
+                is_array($this->arrObjUnion) || is_object($this->arrObjUnion) => $this->arrObjUnion,
             };
         }
         if (isset($this->objArrUnion)) {
             $this->objArrUnion = match (true) {
-                is_array($this->objArrUnion) || is_array($this->objArrUnion) || is_object($this->objArrUnion) => $this->objArrUnion,
+                is_array($this->objArrUnion) || is_object($this->objArrUnion) => $this->objArrUnion,
             };
         }
         if (isset($this->numKeysDefaults)) {
