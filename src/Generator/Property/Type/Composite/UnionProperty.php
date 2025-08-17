@@ -59,251 +59,92 @@ class UnionProperty extends AbstractProperty
         return isset($schema["oneOf"]) || isset($schema["anyOf"]);
     }
 
-    public function convertInputToTypeMatch(): string
-    {
-        $inputVarName = ArgumentNames::INPUT;
-        $accessor = "\${$inputVarName}->{{$this->keyStr()}}";
-        $arms = [];
-        foreach ($this->subProperties as $subProperty) {
-            $mapping       = $subProperty->inputMappingExpr($accessor, asserted: true);
-            $discriminator = $subProperty->inputAssertionExpr($accessor);
-
-            if (
-                $subProperty instanceof ReferenceArrayProperty
-                || $subProperty instanceof ObjectArrayProperty
-                || $subProperty instanceof PrimitiveArrayProperty
-            ) {
-                $isArrayCheck = "is_array({$accessor})";
-                if (!str_contains($discriminator, $isArrayCheck)) {
-                    $discriminator = "({$isArrayCheck} && {$discriminator})";
-                }
-            }
-
-            $arms[$mapping][] = $discriminator;
-        }
-
-        $match = new MatchGenerator("true");
-        foreach ($arms as $mapping => $discriminators) {
-            $conditions = array_values(array_unique($discriminators));
-            $match->addArm(OrGenerator::make($conditions, parens: false), $mapping);
-        }
-
-        $match->addArm(
-            "default",
-            "throw new \\InvalidArgumentException(\"could not build property '{$this->key()}' from JSON\")"
-        );
-
-        // assign into the camel‑cased local variable
-        return "\${$this->varName()} = {$match->generate()};";
-    }
-
     public function convertInputToType(): string
     {
-        // PHP 8+ uses match() which already guards correctly
-        if ($this->request->isAtLeastPHP("8.0")) {
-            return $this->convertInputToTypeMatch();
-        }
-    
         $name   = $this->varName();
         $keyStr = $this->keyStr();
-    
         $inputVarName = ArgumentNames::INPUT;
         $accessor = "\${$inputVarName}->{{$keyStr}}";
-    
-        // Start with a "fallback" that just reassigns the raw value
-        $conversions = [
-            "\${$name} = {$accessor};" => ["discriminators" => [], "fallback" => true],
-        ];
-    
-        // Build up per‑arm conversions
-        foreach ($this->subProperties as $subProp) {
-            $mapping       = $subProp->inputMappingExpr($accessor, asserted: true);
-            $assignment    = "\${$name} = {$mapping};";
-            $discriminator = $subProp->inputAssertionExpr($accessor);
-    
-            // If this arm is an "array" type, ensure its test guards against non-arrays
-            if (
-                $subProp instanceof ReferenceArrayProperty
-                || $subProp instanceof ObjectArrayProperty
-                || $subProp instanceof PrimitiveArrayProperty
-            ) {
-                $isArrayCheck = "is_array({$accessor})";
-                if (!str_contains($discriminator, $isArrayCheck)) {
-                    $discriminator = "({$isArrayCheck} && {$discriminator})";
-                }
-            }
-    
-            if (! isset($conversions[$assignment])) {
-                $conversions[$assignment] = ["discriminators" => [], "fallback" => false];
-            }
-            $conversions[$assignment]["discriminators"][] = $discriminator;
-        }
-    
-        // Turn those into an if/elseif/else chain
-        $branches = [];
-        $fallback = null;
 
-        $indent = StringUtils::indentCode(...);
-    
-        foreach ($conversions as $assignment => $info) {
-            if ($info["fallback"]) {
-                $fallback = $assignment;
-                continue;
-            }
+        $skipMap = $this->request->isAtLeastPHP('8.0') ? null : fn(string $map): bool => $map === $accessor;
 
-            $keyword = count($branches) ? "elseif" : "if";
-            $conditions = array_values(array_unique($info["discriminators"]));
-            $parenthesizedCondition = OrGenerator::make($conditions);
+        $conversions = $this->collectConversions(
+            mappingFn: fn(PropertyInterface $sub): string => $sub->inputMappingExpr($accessor, asserted: true),
+            assertFn: function (PropertyInterface $sub) use ($accessor): string {
+                $discriminator = $sub->inputAssertionExpr($accessor);
 
-            $branches[] = 
-                <<<PHP
-                {$keyword} {$parenthesizedCondition} {
-                {$indent($assignment)}
-                }
-                PHP;
-        }
-    
-        // Attach the fallback at the end
-        if ($fallback !== null) {
-            if (count($branches) > 0) {
-                $branches[] =
-                    <<<PHP
-                    else {
-                    {$indent($fallback)}
+                if (
+                    $sub instanceof ReferenceArrayProperty
+                    || $sub instanceof ObjectArrayProperty
+                    || $sub instanceof PrimitiveArrayProperty
+                ) {
+                    $isArrayCheck = "is_array({$accessor})";
+                    if (!str_contains($discriminator, $isArrayCheck)) {
+                        $discriminator = "({$isArrayCheck} && {$discriminator})";
                     }
-                    PHP;
-            } else {
-                $branches[] = $fallback;
-            }
-        }
-    
-        return join(" ", $branches);
-    }
-    
+                }
 
-    private function convertTypeToArrayMatch(): string
-    {
-        $name   = $this->propName();
-        $keyStr = $this->keyStr();
-        $arms  = [];
+                return $discriminator;
+            },
+            skipMapFn: $skipMap
+        );
 
-        foreach ($this->subProperties as $subProperty) {
-            $mapping       = $subProperty->outputMappingExpr("\$this->{$name}");
-            $discriminator = $subProperty->typeAssertionExpr("\$this->{$name}");
-            $arms[$mapping][] = $discriminator;
+        if ($this->request->isAtLeastPHP('8.0')) {
+            $match = $this->renderMatch(
+                $conversions,
+                "throw new \\InvalidArgumentException(\"could not build property '{$this->key()}' from JSON\")"
+            );
+            return "\${$name} = {$match};";
         }
 
-        $match = new MatchGenerator("true");
-        foreach ($arms as $mapping => $discriminators) {
-            $conditions = array_values(array_unique($discriminators));
-            $match->addArm(OrGenerator::make($conditions, parens: false), $mapping);
-        }
-        $outputVarName = VariableNames::OUTPUT;
-        return "\${$outputVarName}[{$keyStr}] = {$match->generate()};";
-    }
-
-    private function convertTypeToStdClassMatch(): string
-    {
-        $name   = $this->propName();
-        $keyStr = $this->keyStr();
-        $arms  = [];
-
-        foreach ($this->subProperties as $subProperty) {
-            $mapping       = $subProperty->outputMappingExprStdClass("\$this->{$name}");
-            $discriminator = $subProperty->typeAssertionExpr("\$this->{$name}");
-            $arms[$mapping][] = $discriminator;
-        }
-
-        $match = new MatchGenerator("true");
-        foreach ($arms as $mapping => $discriminators) {
-            $conditions = array_values(array_unique($discriminators));
-            $match->addArm(OrGenerator::make($conditions, parens: false), $mapping);
-        }
-
-        $outputVarName = VariableNames::OUTPUT;
-        return "\${$outputVarName}->{{$keyStr}} = {$match->generate()};";
+        $fallback = "\${$name} = {$accessor};";
+        return $this->renderIfChain(
+            $conversions,
+            fn(string $map): string => "\${$name} = {$map};",
+            $fallback
+        );
     }
 
     public function convertTypeToArray(): string
     {
-        $outputVarName = VariableNames::OUTPUT;
-        if ($this->request->isAtLeastPHP("8.0")) {
-            return $this->convertTypeToArrayMatch();
-        }
-
         $name   = $this->propName();
         $keyStr = $this->keyStr();
-        $conversions = [];
+        $conversions = $this->collectConversions(
+            mappingFn: fn(PropertyInterface $sub): string => $sub->outputMappingExpr("\$this->{$name}"),
+            assertFn: fn(PropertyInterface $sub): string => $sub->typeAssertionExpr("\$this->{$name}")
+        );
 
-        foreach ($this->subProperties as $subProperty) {
-            $mapping       = $subProperty->outputMappingExpr("\$this->{$name}");
-            $assignment    = "\${$outputVarName}[{$keyStr}] = {$mapping};";
-            $discriminator = $subProperty->typeAssertionExpr("\$this->{$name}");
-
-            if (!isset($conversions[$assignment])) {
-                $conversions[$assignment] = ["discriminators" => []];
-            }
-
-            $conversions[$assignment]["discriminators"][] = $discriminator;
+        $outputVarName = VariableNames::OUTPUT;
+        if ($this->request->isAtLeastPHP('8.0')) {
+            $match = $this->renderMatch($conversions, null);
+            return "\${$outputVarName}[{$keyStr}] = {$match};";
         }
 
-        $indent = StringUtils::indentCode(...);
-
-        $branches = [];
-        foreach ($conversions as $assignment => $conversion) {
-            $conditions = array_values(array_unique($conversion["discriminators"]));
-            $parenthesizedCondition = OrGenerator::make($conditions);
-            $keyword = count($branches) ? "elseif" : "if";
-            $branches[] =
-                <<<PHP
-                {$keyword} {$parenthesizedCondition} {
-                {$indent($assignment)}
-                }
-                PHP;
-        }
-
-        return join(" ", $branches);
+        return $this->renderIfChain(
+            $conversions,
+            fn(string $map): string => "\${$outputVarName}[{$keyStr}] = {$map};"
+        );
     }
 
     public function convertTypeToStdClass(): string
     {
-        $outputVarName = VariableNames::OUTPUT;
-        if ($this->request->isAtLeastPHP("8.0")) {
-            return $this->convertTypeToStdClassMatch();
-        }
-
         $name   = $this->propName();
         $keyStr = $this->keyStr();
-        $conversions = [];
+        $conversions = $this->collectConversions(
+            mappingFn: fn(PropertyInterface $sub): string => $sub->outputMappingExprStdClass("\$this->{$name}"),
+            assertFn: fn(PropertyInterface $sub): string => $sub->typeAssertionExpr("\$this->{$name}")
+        );
 
-        foreach ($this->subProperties as $subProperty) {
-            $mapping       = $subProperty->outputMappingExprStdClass("\$this->{$name}");
-            $assignment    = "\${$outputVarName}->{{$keyStr}} = {$mapping};";
-            $discriminator = $subProperty->typeAssertionExpr("\$this->{$name}");
-
-            if (!isset($conversions[$assignment])) {
-                $conversions[$assignment] = ["discriminators" => []];
-            }
-
-            $conversions[$assignment]["discriminators"][] = $discriminator;
+        $outputVarName = VariableNames::OUTPUT;
+        if ($this->request->isAtLeastPHP('8.0')) {
+            $match = $this->renderMatch($conversions, null);
+            return "\${$outputVarName}->{{$keyStr}} = {$match};";
         }
 
-        $indent = StringUtils::indentCode(...);
-
-        $branches = [];
-        foreach ($conversions as $assignment => $conversion) {
-            $conditions = array_values(array_unique($conversion["discriminators"]));
-            $parenthesizedCondition = OrGenerator::make($conditions);
-            $keyword = count($branches) ? "elseif" : "if";
-            $branches[] =
-                <<<PHP
-                {$keyword} {$parenthesizedCondition} {
-                {$indent($assignment)}
-                }
-                PHP;
-        }
-
-        return join(" ", $branches);
+        return $this->renderIfChain(
+            $conversions,
+            fn(string $map): string => "\${$outputVarName}->{{$keyStr}} = {$map};"
+        );
     }
 
     /**
@@ -426,180 +267,171 @@ class UnionProperty extends AbstractProperty
 
     public function inputMappingExpr(string $expr, bool $asserted = false): string
     {
-        if ($this->request->isAtLeastPHP("8.0")) {
-            $arms = [];
-            foreach ($this->subProperties as $subProperty) {
-                $map = $subProperty->inputMappingExpr($expr);
-                $assert = $subProperty->inputAssertionExpr($expr);
-                $arms[$map][] = $assert;
-            }
+        $conversions = $this->collectConversions(
+            mappingFn: fn(PropertyInterface $sub): string => $sub->inputMappingExpr($expr),
+            assertFn: fn(PropertyInterface $sub): string => $sub->inputAssertionExpr($expr)
+        );
 
-            $match = new MatchGenerator("true");
-            foreach ($arms as $map => $asserts) {
-                $conditions = array_values(array_unique($asserts));
-                $match->addArm(OrGenerator::make($conditions, parens: false), $map);
-            }
-            $match->addArm("default", "null");
-
-            return $match->generate();
+        if ($this->request->isAtLeastPHP('8.0')) {
+            return $this->renderMatch($conversions, 'null');
         }
 
-        $conversions = [];
-        foreach ($this->subProperties as $subProperty) {
-            $map = $subProperty->inputMappingExpr($expr);
-            $assert = $subProperty->inputAssertionExpr($expr);
-            $conversions[$map][] = $assert;
-        }
-
-        $out = "null";
-        foreach (array_reverse($conversions) as $map => $asserts) {
-            $conditions = array_values(array_unique($asserts));
-            $cond = OrGenerator::make($conditions);
-            $out = TernaryGenerator::make($cond, $map, $out);
-        }
-
-        return $out;
+        return $this->renderTernaries($conversions, 'null');
     }
 
     public function outputMappingExpr(string $expr): string
     {
-        if ($this->request->isAtLeastPHP("8.0")) {
-            $arms = [];
-            foreach ($this->subProperties as $subProperty) {
-                $map = $subProperty->outputMappingExpr($expr);
-                $assert = $subProperty->typeAssertionExpr($expr);
-                $arms[$map][] = $assert;
-            }
+        $conversions = $this->collectConversions(
+            mappingFn: fn(PropertyInterface $sub): string => $sub->outputMappingExpr($expr),
+            assertFn: fn(PropertyInterface $sub): string => $sub->typeAssertionExpr($expr)
+        );
 
-            $match = new MatchGenerator("true");
-            foreach ($arms as $map => $asserts) {
-                $conditions = array_values(array_unique($asserts));
-                $match->addArm(OrGenerator::make($conditions, parens: false), $map);
-            }
-            $match->addArm("default", "null");
-
-            return $match->generate();
+        if ($this->request->isAtLeastPHP('8.0')) {
+            return $this->renderMatch($conversions, 'null');
         }
 
-        $conversions = [];
-        foreach ($this->subProperties as $subProperty) {
-            $map = $subProperty->outputMappingExpr($expr);
-            $assert = $subProperty->typeAssertionExpr($expr);
-            $conversions[$map][] = $assert;
-        }
-
-        $out = "null";
-        foreach (array_reverse($conversions) as $map => $asserts) {
-            $conditions = array_values(array_unique($asserts));
-            $cond = OrGenerator::make($conditions);
-            $out = TernaryGenerator::make($cond, $map, $out);
-        }
-
-        return $out;
+        return $this->renderTernaries($conversions, 'null');
     }
 
     public function outputMappingExprStdClass(string $expr): string
     {
-        if ($this->request->isAtLeastPHP("8.0")) {
-            $arms = [];
-            foreach ($this->subProperties as $subProperty) {
-                $map = $subProperty->outputMappingExprStdClass($expr);
-                $assert = $subProperty->typeAssertionExpr($expr);
-                $arms[$map][] = $assert;
-            }
+        $skipNull = $this->request->isAtLeastPHP('8.0') ? null : fn(string $map): bool => $map === 'null';
 
-            $match = new MatchGenerator("true");
-            foreach ($arms as $map => $asserts) {
-                $conditions = array_values(array_unique($asserts));
-                $match->addArm(OrGenerator::make($conditions, parens: false), $map);
-            }
-            $match->addArm("default", "null");
+        $conversions = $this->collectConversions(
+            mappingFn: fn(PropertyInterface $sub): string => $sub->outputMappingExprStdClass($expr),
+            assertFn: fn(PropertyInterface $sub): string => $sub->typeAssertionExpr($expr),
+            skipMapFn: $skipNull
+        );
 
-            return $match->generate();
-        }
-
-        $conversions = [];
-        foreach ($this->subProperties as $subProperty) {
-            $map = $subProperty->outputMappingExprStdClass($expr);
-            if ($map === 'null') {
-                // Mapping to `null` does not need a dedicated branch as it is the
-                // default output when no other condition matches. Skipping such
-                // branches also prevents generating ternaries with identical
-                // expressions for both outcomes.
-                continue;
-            }
-
-            $assert = $subProperty->typeAssertionExpr($expr);
-            $conversions[$map][] = $assert;
+        if ($this->request->isAtLeastPHP('8.0')) {
+            return $this->renderMatch($conversions, 'null');
         }
 
         if ($conversions === []) {
             return 'null';
         }
 
-        $out = 'null';
-        foreach (array_reverse($conversions) as $map => $asserts) {
-            $conditions = array_values(array_unique($asserts));
-            $cond = OrGenerator::make($conditions);
-            $out = TernaryGenerator::make($cond, $map, $out);
-        }
-
-        return $out;
+        return $this->renderTernaries($conversions, 'null');
     }
 
     public function cloneExpr(string $expr): string
     {
-        if ($this->request->isAtLeastPHP("8.0")) {
-            $arms = [];
-            foreach ($this->subProperties as $subProperty) {
-                $map = $subProperty->cloneExpr($expr);
-                $assert = $subProperty->typeAssertionExpr($expr);
-                $arms[$map][] = $assert;
-            }
+        $skipMap = $this->request->isAtLeastPHP('8.0') ? null : fn(string $map): bool => $map === $expr;
 
-            if (count($arms) === 1) {
-                $map = array_key_first($arms);
+        $conversions = $this->collectConversions(
+            mappingFn: fn(PropertyInterface $sub): string => $sub->cloneExpr($expr),
+            assertFn: fn(PropertyInterface $sub): string => $sub->typeAssertionExpr($expr),
+            skipMapFn: $skipMap
+        );
+
+        if ($this->request->isAtLeastPHP('8.0')) {
+            if (count($conversions) === 1) {
+                $map = array_key_first($conversions);
                 if ($map === $expr) {
                     return $expr;
                 }
                 return $map;
             }
 
-            $match = new MatchGenerator("true");
-            foreach ($arms as $map => $asserts) {
-                $conditions = array_values(array_unique($asserts));
-                $match->addArm(OrGenerator::make($conditions, parens: false), $map);
-            }
-
-            return $match->generate();
-        }
-
-        $conversions = [];
-        foreach ($this->subProperties as $subProperty) {
-            $map = $subProperty->cloneExpr($expr);
-            if ($map === $expr) {
-                // Identity mapping does not require a conditional branch. If the
-                // expression does not need to be transformed, it can safely fall
-                // through to the default case, avoiding ternaries where both
-                // branches are identical.
-                continue;
-            }
-
-            $assert = $subProperty->typeAssertionExpr($expr);
-            $conversions[$map][] = $assert;
+            return $this->renderMatch($conversions, null);
         }
 
         if ($conversions === []) {
             return $expr;
         }
 
-        $out = $expr;
+        return $this->renderTernaries($conversions, $expr);
+    }
+
+    /**
+     * @param callable(PropertyInterface):string $mappingFn
+     * @param callable(PropertyInterface):string $assertFn
+     * @param (callable(string):bool)|null $skipMapFn
+     * @return array<string,string[]>
+     */
+    private function collectConversions(
+        callable $mappingFn,
+        callable $assertFn,
+        ?callable $skipMapFn = null
+    ): array {
+        $conversions = [];
+        foreach ($this->subProperties as $subProperty) {
+            $map = $mappingFn($subProperty);
+            if ($skipMapFn !== null && $skipMapFn($map)) {
+                continue;
+            }
+            $assert = $assertFn($subProperty);
+            $conversions[$map][] = $assert;
+        }
+        return $conversions;
+    }
+
+    /**
+     * @param array<string,string[]> $conversions
+     */
+    private function renderMatch(array $conversions, ?string $default): string
+    {
+        $match = new MatchGenerator('true');
+        foreach ($conversions as $map => $asserts) {
+            $conditions = array_values(array_unique($asserts));
+            $match->addArm(OrGenerator::make($conditions, parens: false), $map);
+        }
+        if ($default !== null) {
+            $match->addArm('default', $default);
+        }
+        return $match->generate();
+    }
+
+    /**
+     * @param array<string,string[]> $conversions
+     * @param callable(string):string $assignmentFormatter
+     */
+    private function renderIfChain(
+        array $conversions,
+        callable $assignmentFormatter,
+        ?string $fallback = null
+    ): string {
+        $indent = StringUtils::indentCode(...);
+
+        $branches = [];
+        foreach ($conversions as $map => $asserts) {
+            $conditions = array_values(array_unique($asserts));
+            $parenthesizedCondition = OrGenerator::make($conditions);
+            $assignment = $assignmentFormatter($map);
+            $keyword = count($branches) ? 'elseif' : 'if';
+            $branches[] = <<<PHP
+                {$keyword} {$parenthesizedCondition} {
+                {$indent($assignment)}
+                }
+                PHP;
+        }
+
+        if ($fallback !== null) {
+            if (count($branches) > 0) {
+                $branches[] = <<<PHP
+                    else {
+                    {$indent($fallback)}
+                    }
+                    PHP;
+            } else {
+                $branches[] = $fallback;
+            }
+        }
+
+        return join(' ', $branches);
+    }
+
+    /**
+     * @param array<string,string[]> $conversions
+     */
+    private function renderTernaries(array $conversions, string $default): string
+    {
+        $out = $default;
         foreach (array_reverse($conversions) as $map => $asserts) {
             $conditions = array_values(array_unique($asserts));
             $cond = OrGenerator::make($conditions);
             $out = TernaryGenerator::make($cond, $map, $out);
         }
-
         return $out;
     }
 
