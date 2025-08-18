@@ -36,6 +36,7 @@ class UnionProperty extends AbstractProperty
 {
     /** @var PropertyInterface[] */
     private array $subProperties;
+    private bool $hasArraySubtype = false;
 
     public function __construct(string $key, array $schema, GeneratorRequest $generatorRequest)
     {
@@ -50,6 +51,17 @@ class UnionProperty extends AbstractProperty
             $subSchema = $subSchemas[$idx];
             return PropertyBuilder::buildPropertyFromSchema($generatorRequest, "{$key}Alternative" . ($idx + 1), $subSchema, true);
         }, array_keys($schema["oneOf"]));
+
+        foreach ($this->subProperties as $subProperty) {
+            if (
+                $subProperty instanceof ReferenceArrayProperty
+                || $subProperty instanceof ObjectArrayProperty
+                || $subProperty instanceof PrimitiveArrayProperty
+            ) {
+                $this->hasArraySubtype = true;
+                break;
+            }
+        }
 
         parent::__construct($key, $schema, $generatorRequest);
     }
@@ -79,6 +91,14 @@ class UnionProperty extends AbstractProperty
                     if (!str_contains($discriminator, $isArrayCheck)) {
                         $discriminator = "({$isArrayCheck} && {$discriminator})";
                     }
+                } elseif (
+                    $sub instanceof NestedObjectProperty
+                    || ($sub instanceof ReferenceProperty && $sub->getRefType() instanceof ReferencedTypeClass)
+                ) {
+                    $isObjCheck = $this->hasArraySubtype
+                        ? "is_object({$accessor})"
+                        : "(is_object({$accessor}) || is_array({$accessor}))";
+                    $discriminator = "({$isObjCheck} && {$discriminator})";
                 }
 
                 return $discriminator;
@@ -254,20 +274,53 @@ class UnionProperty extends AbstractProperty
     {
         $arms = $this->collectArms(
             mappingFn: fn(PropertyInterface $sub): string => $sub->inputMappingExpr($expr),
-            assertFn: fn(PropertyInterface $sub): string => $sub->inputAssertionExpr($expr)
+            assertFn: function (PropertyInterface $sub) use ($expr): string {
+                $discriminator = $sub->inputAssertionExpr($expr);
+
+                if (
+                    $sub instanceof ReferenceArrayProperty
+                    || $sub instanceof ObjectArrayProperty
+                    || $sub instanceof PrimitiveArrayProperty
+                ) {
+                    $isArrayCheck = "is_array({$expr})";
+                    if (!str_contains($discriminator, $isArrayCheck)) {
+                        $discriminator = "({$isArrayCheck} && {$discriminator})";
+                    }
+                } elseif (
+                    $sub instanceof NestedObjectProperty
+                    || ($sub instanceof ReferenceProperty && $sub->getRefType() instanceof ReferencedTypeClass)
+                ) {
+                    $isObjCheck = $this->hasArraySubtype
+                        ? "is_object({$expr})"
+                        : "(is_object({$expr}) || is_array({$expr}))";
+                    $discriminator = "({$isObjCheck} && {$discriminator})";
+                }
+
+                return $discriminator;
+            },
+            skipMapFn: fn(string $map): bool => $map === $expr,
         );
 
-        return $this->renderConditionalExpr($arms, 'null');
+        if ($arms === []) {
+            return $expr;
+        }
+
+        return $this->renderConditionalExpr($arms, $expr);
     }
 
     public function outputMappingExpr(string $expr): string
     {
         $arms = $this->collectArms(
             mappingFn: fn(PropertyInterface $sub): string => $sub->outputMappingExpr($expr),
-            assertFn: fn(PropertyInterface $sub): string => $sub->typeAssertionExpr($expr)
+            assertFn: fn(PropertyInterface $sub): string => $sub->typeAssertionExpr($expr),
+            skipMapFn: fn(string $map): bool => $map === $expr,
         );
 
-        return $this->renderConditionalExpr($arms, 'null');
+        if ($arms === []) {
+            return $expr;
+        }
+
+        return $this->renderConditionalExpr($arms, $expr);
     }
 
     public function outputMappingExprStdClass(string $expr): string
@@ -275,14 +328,14 @@ class UnionProperty extends AbstractProperty
         $arms = $this->collectArms(
             mappingFn: fn(PropertyInterface $sub): string => $sub->outputMappingExprStdClass($expr),
             assertFn: fn(PropertyInterface $sub): string => $sub->typeAssertionExpr($expr),
-            skipMapFn: fn(string $map) => $map === 'null'
+            skipMapFn: fn(string $map): bool => $map === $expr,
         );
 
         if ($arms === []) {
-            return 'null';
+            return $expr;
         }
 
-        return $this->renderConditionalExpr($arms, 'null');
+        return $this->renderConditionalExpr($arms, $expr);
     }
 
     public function cloneExpr(string $expr): string

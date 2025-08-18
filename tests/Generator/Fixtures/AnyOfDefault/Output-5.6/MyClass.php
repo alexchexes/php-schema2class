@@ -186,10 +186,7 @@ class MyClass
         }
 
         $foo = isset($input->{'foo'})
-            ? ((is_string($input->{'foo'}))
-                ? $input->{'foo'}
-                : ((is_int($input->{'foo'})) ? (int)$input->{'foo'} : null)
-            )
+            ? ((is_int($input->{'foo'})) ? (int)$input->{'foo'} : $input->{'foo'})
             : null;
 
         $obj = new self($foo);

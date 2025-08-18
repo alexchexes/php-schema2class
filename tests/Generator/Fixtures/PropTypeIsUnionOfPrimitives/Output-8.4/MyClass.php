@@ -432,86 +432,71 @@ class MyClass
         };
         $thud = ($input->{'thud'} !== null
             ? match (true) {
-                is_string($input->{'thud'})
-                    || is_array($input->{'thud'})
-                    || is_array($input->{'thud'}) || is_object($input->{'thud'}) =>
-                    $input->{'thud'},
                 (is_int($input->{'thud'}) || is_float($input->{'thud'})) =>
                     (str_contains((string)$input->{'thud'}, '.')
                         ? (float)$input->{'thud'}
                         : (int)$input->{'thud'}
                     ),
                 is_bool($input->{'thud'}) => (bool)$input->{'thud'},
-                default => null,
+                default => $input->{'thud'},
             }
             : null
         );
         $optFoo = isset($input->{'optFoo'})
             ? match (true) {
-                is_string($input->{'optFoo'}) => $input->{'optFoo'},
                 (is_int($input->{'optFoo'}) || is_float($input->{'optFoo'})) =>
                     (str_contains((string)$input->{'optFoo'}, '.')
                         ? (float)$input->{'optFoo'}
                         : (int)$input->{'optFoo'}
                     ),
                 is_bool($input->{'optFoo'}) => (bool)$input->{'optFoo'},
-                default => null,
+                default => $input->{'optFoo'},
             }
             : null;
         $optBar = isset($input->{'optBar'})
             ? match (true) {
-                is_string($input->{'optBar'}) || is_array($input->{'optBar'}) => $input->{'optBar'},
                 (is_int($input->{'optBar'}) || is_float($input->{'optBar'})) =>
                     (str_contains((string)$input->{'optBar'}, '.')
                         ? (float)$input->{'optBar'}
                         : (int)$input->{'optBar'}
                     ),
                 is_bool($input->{'optBar'}) => (bool)$input->{'optBar'},
-                default => null,
+                default => $input->{'optBar'},
             }
             : null;
         $optBaz = isset($input->{'optBaz'})
             ? match (true) {
-                is_string($input->{'optBaz'}) || is_array($input->{'optBaz'}) || is_object($input->{'optBaz'}) => $input->{'optBaz'},
                 (is_int($input->{'optBaz'}) || is_float($input->{'optBaz'})) =>
                     (str_contains((string)$input->{'optBaz'}, '.')
                         ? (float)$input->{'optBaz'}
                         : (int)$input->{'optBaz'}
                     ),
                 is_bool($input->{'optBaz'}) => (bool)$input->{'optBaz'},
-                default => null,
+                default => $input->{'optBaz'},
             }
             : null;
         $optQux = isset($input->{'optQux'})
             ? match (true) {
-                is_string($input->{'optQux'})
-                    || is_array($input->{'optQux'})
-                    || is_array($input->{'optQux'}) || is_object($input->{'optQux'}) =>
-                    $input->{'optQux'},
                 (is_int($input->{'optQux'}) || is_float($input->{'optQux'})) =>
                     (str_contains((string)$input->{'optQux'}, '.')
                         ? (float)$input->{'optQux'}
                         : (int)$input->{'optQux'}
                     ),
                 is_bool($input->{'optQux'}) => (bool)$input->{'optQux'},
-                default => null,
+                default => $input->{'optQux'},
             }
             : null;
         $optThud = null;
         if (property_exists($input, 'optThud')) {
             $optThud = ($input->{'optThud'} !== null
                 ? match (true) {
-                    is_string($input->{'optThud'})
-                        || is_array($input->{'optThud'})
-                        || is_array($input->{'optThud'}) || is_object($input->{'optThud'}) =>
-                        $input->{'optThud'},
                     (is_int($input->{'optThud'}) || is_float($input->{'optThud'})) =>
                         (str_contains((string)$input->{'optThud'}, '.')
                             ? (float)$input->{'optThud'}
                             : (int)$input->{'optThud'}
                         ),
                     is_bool($input->{'optThud'}) => (bool)$input->{'optThud'},
-                    default => null,
+                    default => $input->{'optThud'},
                 }
                 : null
             );
@@ -618,13 +603,8 @@ class MyClass
         if (isset($this->optThud) || array_key_exists('optThud', $this->_providedOptionals)) {
             $output['optThud'] = ($this->optThud !== null
                 ? match (true) {
-                    is_string($this->optThud)
-                        || (is_int($this->optThud) || is_float($this->optThud))
-                        || is_bool($this->optThud)
-                        || is_array($this->optThud) =>
-                        $this->optThud,
                     is_array($this->optThud) || is_object($this->optThud) => json_decode(json_encode($this->optThud), true),
-                    default => null,
+                    default => $this->optThud,
                 }
                 : null
             );
@@ -711,13 +691,8 @@ class MyClass
         if (isset($this->optThud) || array_key_exists('optThud', $this->_providedOptionals)) {
             $output->{'optThud'} = ($this->optThud !== null
                 ? match (true) {
-                    is_string($this->optThud)
-                        || (is_int($this->optThud) || is_float($this->optThud))
-                        || is_bool($this->optThud)
-                        || is_array($this->optThud) =>
-                        $this->optThud,
                     is_array($this->optThud) || is_object($this->optThud) => json_decode(json_encode($this->optThud)),
-                    default => null,
+                    default => $this->optThud,
                 }
                 : null
             );

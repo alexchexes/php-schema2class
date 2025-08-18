@@ -253,10 +253,7 @@ class MyClass
         $foo = $input->{'foo'};
         $bar = $input->{'bar'};
         $baz = $input->{'baz'};
-        $qux = ($input->{'qux'} !== null
-            ? ((is_string($input->{'qux'})) ? $input->{'qux'} : null)
-            : null
-        );
+        $qux = ($input->{'qux'} !== null ? $input->{'qux'} : null);
 
         $obj = new self($foo, $bar, $baz, $qux);
 

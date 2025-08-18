@@ -433,7 +433,7 @@ class MyClass
                         fn ($i): MyClassArrayOfObjectsUnionAlternative2Item => MyClassArrayOfObjectsUnionAlternative2Item::fromInput($i, $validate),
                         $input->{'arrayOfObjectsUnion'},
                     )
-                    : null
+                    : $input->{'arrayOfObjectsUnion'}
                 )
             )
             : null;
@@ -458,7 +458,7 @@ class MyClass
                         fn ($i): MyClassRefArrayOfObjectsUnionAlternative2Item => MyClassRefArrayOfObjectsUnionAlternative2Item::fromInput($i, $validate),
                         $input->{'refArrayOfObjectsUnion'},
                     )
-                    : null
+                    : $input->{'refArrayOfObjectsUnion'}
                 )
             )
             : null;
@@ -503,7 +503,7 @@ class MyClass
                                 fn ($i): MyClassRefAndNotRefArrayOfObjectsUnionAlternative4Item => MyClassRefAndNotRefArrayOfObjectsUnionAlternative4Item::fromInput($i, $validate),
                                 $input->{'refAndNotRefArrayOfObjectsUnion'},
                             )
-                            : null
+                            : $input->{'refAndNotRefArrayOfObjectsUnion'}
                         )
                     )
                 )
@@ -520,10 +520,7 @@ class MyClass
                     fn ($i): MyClassArrayOfObjAndStringUnionAlternative1Item => MyClassArrayOfObjAndStringUnionAlternative1Item::fromInput($i, $validate),
                     $input->{'arrayOfObjAndStringUnion'},
                 )
-                : ((is_string($input->{'arrayOfObjAndStringUnion'}))
-                    ? $input->{'arrayOfObjAndStringUnion'}
-                    : null
-                )
+                : $input->{'arrayOfObjAndStringUnion'}
             )
             : null;
         $unionOfOneArrayOfObjects = isset($input->{'unionOfOneArrayOfObjects'})

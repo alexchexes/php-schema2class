@@ -318,17 +318,17 @@ class Record
             : null;
         $dataArrayAnyOf = isset($input->{'dataArrayAnyOf'})
             ? array_map(fn ($i) => match (true) {
-                Phone::validateInput($i, true) => Phone::fromInput($i, $validate),
-                Fio::validateInput($i, true) => Fio::fromInput($i, $validate),
-                default => null,
+                ((is_object($i) || is_array($i)) && Phone::validateInput($i, true)) => Phone::fromInput($i, $validate),
+                ((is_object($i) || is_array($i)) && Fio::validateInput($i, true)) => Fio::fromInput($i, $validate),
+                default => $i,
             }, $input->{'dataArrayAnyOf'})
             : null;
         $dataArrayNestedAnyOf = isset($input->{'dataArrayNestedAnyOf'})
             ? array_map(
                 fn ($i) => array_map(fn ($i) => match (true) {
-                    Phone::validateInput($i, true) => Phone::fromInput($i, $validate),
-                    Fio::validateInput($i, true) => Fio::fromInput($i, $validate),
-                    default => null,
+                    ((is_object($i) || is_array($i)) && Phone::validateInput($i, true)) => Phone::fromInput($i, $validate),
+                    ((is_object($i) || is_array($i)) && Fio::validateInput($i, true)) => Fio::fromInput($i, $validate),
+                    default => $i,
                 }, $i),
                 $input->{'dataArrayNestedAnyOf'},
             )
@@ -362,14 +362,14 @@ class Record
         if (isset($this->dataArrayAnyOf)) {
             $output['dataArrayAnyOf'] = array_map(fn ($i) => match (true) {
                 $i instanceof Phone || $i instanceof Fio => $i->toArray(),
-                default => null,
+                default => $i,
             }, $this->dataArrayAnyOf);
         }
         if (isset($this->dataArrayNestedAnyOf)) {
             $output['dataArrayNestedAnyOf'] = array_map(
                 fn ($i) => array_map(fn ($i) => match (true) {
                     $i instanceof Phone || $i instanceof Fio => $i->toArray(),
-                    default => null,
+                    default => $i,
                 }, $i),
                 $this->dataArrayNestedAnyOf,
             );
@@ -399,14 +399,14 @@ class Record
         if (isset($this->dataArrayAnyOf)) {
             $output->{'dataArrayAnyOf'} = array_map(fn ($i) => match (true) {
                 $i instanceof Phone || $i instanceof Fio => $i->toStdClass(),
-                default => null,
+                default => $i,
             }, $this->dataArrayAnyOf);
         }
         if (isset($this->dataArrayNestedAnyOf)) {
             $output->{'dataArrayNestedAnyOf'} = array_map(
                 fn ($i) => array_map(fn ($i) => match (true) {
                     $i instanceof Phone || $i instanceof Fio => $i->toStdClass(),
-                    default => null,
+                    default => $i,
                 }, $i),
                 $this->dataArrayNestedAnyOf,
             );

@@ -56,9 +56,9 @@ class UnionPropertyTest extends TestCase
 
         $expected = <<<'EOCODE'
 $myPropertyName = match (true) {
-    FooMyPropertyNameAlternative1::validateInput($input->{'myPropertyName'}, true) =>
+    ((is_object($input->{'myPropertyName'}) || is_array($input->{'myPropertyName'})) && FooMyPropertyNameAlternative1::validateInput($input->{'myPropertyName'}, true)) =>
         FooMyPropertyNameAlternative1::fromInput($input->{'myPropertyName'}, $validate),
-    FooMyPropertyNameAlternative2::validateInput($input->{'myPropertyName'}, true) =>
+    ((is_object($input->{'myPropertyName'}) || is_array($input->{'myPropertyName'})) && FooMyPropertyNameAlternative2::validateInput($input->{'myPropertyName'}, true)) =>
         FooMyPropertyNameAlternative2::fromInput($input->{'myPropertyName'}, $validate),
     default => throw new \InvalidArgumentException("could not build property 'myPropertyName' from JSON"),
 };

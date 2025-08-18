@@ -380,28 +380,13 @@ class MyClass
             static::validateInput($input);
         }
 
-        $unionOfTypedArrays = isset($input->{'unionOfTypedArrays'})
-            ? ((is_array($input->{'unionOfTypedArrays'})) ? $input->{'unionOfTypedArrays'} : null)
-            : null;
-        $refUnionOfTypedArrays = isset($input->{'refUnionOfTypedArrays'})
-            ? ((is_array($input->{'refUnionOfTypedArrays'}))
-                ? $input->{'refUnionOfTypedArrays'}
-                : null
-            )
-            : null;
+        $unionOfTypedArrays = isset($input->{'unionOfTypedArrays'}) ? $input->{'unionOfTypedArrays'} : null;
+        $refUnionOfTypedArrays = isset($input->{'refUnionOfTypedArrays'}) ? $input->{'refUnionOfTypedArrays'} : null;
         $refAndNotRefUnionOfTypedArrays = isset($input->{'refAndNotRefUnionOfTypedArrays'})
-            ? ((is_array($input->{'refAndNotRefUnionOfTypedArrays'}))
-                ? $input->{'refAndNotRefUnionOfTypedArrays'}
-                : null
-            )
+            ? $input->{'refAndNotRefUnionOfTypedArrays'}
             : null;
         $unionOfTypedArrayAndString = isset($input->{'unionOfTypedArrayAndString'})
-            ? ((is_array($input->{'unionOfTypedArrayAndString'})
-                || is_string($input->{'unionOfTypedArrayAndString'})
-            )
-                ? $input->{'unionOfTypedArrayAndString'}
-                : null
-            )
+            ? $input->{'unionOfTypedArrayAndString'}
             : null;
         $unionOfOneTypedArray = isset($input->{'unionOfOneTypedArray'}) ? $input->{'unionOfOneTypedArray'} : null;
 

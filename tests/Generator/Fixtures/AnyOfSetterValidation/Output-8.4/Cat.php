@@ -147,12 +147,7 @@ class Cat
             static::validateInput($input);
         }
 
-        $hasFur = isset($input->{'hasFur'})
-            ? match (true) {
-                in_array($input->{'hasFur'}, ['a', 'b'], true) || is_array($input->{'hasFur'}) => $input->{'hasFur'},
-                default => null,
-            }
-            : null;
+        $hasFur = isset($input->{'hasFur'}) ? $input->{'hasFur'} : null;
 
         $obj = new self($hasFur);
 
