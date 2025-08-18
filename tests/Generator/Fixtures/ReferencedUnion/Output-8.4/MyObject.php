@@ -86,7 +86,7 @@ class MyObject
         $foo = match (true) {
             A::tryFrom($input->{'foo'}) !== null => A::from($input->{'foo'}),
             B::tryFrom($input->{'foo'}) !== null => B::from($input->{'foo'}),
-            default => throw new \InvalidArgumentException("could not build property 'foo' from JSON"),
+            default => $input->{'foo'},
         };
 
         $obj = new self($foo);
@@ -104,6 +104,7 @@ class MyObject
         $output = [];
         $output['foo'] = match (true) {
             $this->foo instanceof A || $this->foo instanceof B => $this->foo->value,
+            default => $this->foo,
         };
 
         return $output;
@@ -119,6 +120,7 @@ class MyObject
         $output = new \stdClass();
         $output->{'foo'} = match (true) {
             $this->foo instanceof A || $this->foo instanceof B => $this->foo->value,
+            default => $this->foo,
         };
 
         return $output;

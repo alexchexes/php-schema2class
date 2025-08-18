@@ -443,7 +443,7 @@ class MyClass
                         ? (float)$input->{'qwert'}
                         : (int)$input->{'qwert'}
                     ),
-                default => null,
+                default => ($input->{'qwert'}),
             }
             : null;
         $zyx = isset($input->{'zyx'}) ? $input->{'zyx'} : null;
@@ -489,7 +489,7 @@ class MyClass
         }
         if (isset($this->qwert)) {
             $output['qwert'] = match (true) {
-                is_string($this->qwert) || (is_int($this->qwert) || is_float($this->qwert)) => $this->qwert,
+                default => $this->qwert,
             };
         }
         if (isset($this->zyx)) {
@@ -537,7 +537,7 @@ class MyClass
         }
         if (isset($this->qwert)) {
             $output->{'qwert'} = match (true) {
-                is_string($this->qwert) || (is_int($this->qwert) || is_float($this->qwert)) => $this->qwert,
+                default => $this->qwert,
             };
         }
         if (isset($this->zyx)) {

@@ -141,13 +141,12 @@ class MyClass
         }
 
         $foo = match (true) {
-            is_string($input->{'foo'}) || is_array($input->{'foo'}) || is_object($input->{'foo'}) => $input->{'foo'},
-            default => throw new \InvalidArgumentException("could not build property 'foo' from JSON"),
+            default => $input->{'foo'},
         };
         $bar = isset($input->{'bar'})
             ? match (true) {
                 is_string($input->{'bar'}) || is_array($input->{'bar'}) || is_object($input->{'bar'}) => $input->{'bar'},
-                default => null,
+                default => ($input->{'bar'}),
             }
             : null;
 
@@ -171,13 +170,13 @@ class MyClass
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
         $output['foo'] = match (true) {
-            is_string($this->foo) => $this->foo,
             is_array($this->foo) || is_object($this->foo) => json_decode(json_encode($this->foo), true),
+            default => $this->foo,
         };
         if (isset($this->bar)) {
             $output['bar'] = match (true) {
-                is_string($this->bar) => $this->bar,
                 is_array($this->bar) || is_object($this->bar) => json_decode(json_encode($this->bar), true),
+                default => $this->bar,
             };
         }
 
@@ -194,13 +193,13 @@ class MyClass
         $output = $this->_additionalProperties;
 
         $output->{'foo'} = match (true) {
-            is_string($this->foo) => $this->foo,
             is_array($this->foo) || is_object($this->foo) => json_decode(json_encode($this->foo)),
+            default => $this->foo,
         };
         if (isset($this->bar)) {
             $output->{'bar'} = match (true) {
-                is_string($this->bar) => $this->bar,
                 is_array($this->bar) || is_object($this->bar) => json_decode(json_encode($this->bar)),
+                default => $this->bar,
             };
         }
 

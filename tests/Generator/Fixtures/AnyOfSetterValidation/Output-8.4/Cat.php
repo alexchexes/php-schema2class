@@ -150,7 +150,7 @@ class Cat
         $hasFur = isset($input->{'hasFur'})
             ? match (true) {
                 in_array($input->{'hasFur'}, ['a', 'b'], true) || is_array($input->{'hasFur'}) => $input->{'hasFur'},
-                default => null,
+                default => ($input->{'hasFur'}),
             }
             : null;
 
@@ -175,7 +175,7 @@ class Cat
 
         if (isset($this->hasFur)) {
             $output['hasFur'] = match (true) {
-                in_array($this->hasFur, ['a', 'b'], true) || is_array($this->hasFur) => $this->hasFur,
+                default => $this->hasFur,
             };
         }
 
@@ -193,7 +193,7 @@ class Cat
 
         if (isset($this->hasFur)) {
             $output->{'hasFur'} = match (true) {
-                in_array($this->hasFur, ['a', 'b'], true) || is_array($this->hasFur) => $this->hasFur,
+                default => $this->hasFur,
             };
         }
 

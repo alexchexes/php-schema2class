@@ -153,7 +153,7 @@ class MyClass
             static::validateInput($input);
         }
 
-        if (MyClassFooAlternative2::validateInput($input->{'foo'}, true)) {
+        if ((is_object($input->{'foo'}) || is_array($input->{'foo'})) && MyClassFooAlternative2::validateInput($input->{'foo'}, true)) {
             $foo = MyClassFooAlternative2::fromInput($input->{'foo'}, $validate);
         } else {
             $foo = $input->{'foo'};
@@ -178,10 +178,10 @@ class MyClass
     {
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
-        if (is_string($this->foo)) {
-            $output['foo'] = $this->foo;
-        } elseif ($this->foo instanceof MyClassFooAlternative2) {
+        if ($this->foo instanceof MyClassFooAlternative2) {
             $output['foo'] = $this->foo->toArray();
+        } else {
+            $output['foo'] = $this->foo;
         }
 
         return $output;
@@ -196,10 +196,10 @@ class MyClass
     {
         $output = $this->_additionalProperties;
 
-        if (is_string($this->foo)) {
-            $output->{'foo'} = $this->foo;
-        } elseif ($this->foo instanceof MyClassFooAlternative2) {
+        if ($this->foo instanceof MyClassFooAlternative2) {
             $output->{'foo'} = $this->foo->toStdClass();
+        } else {
+            $output->{'foo'} = $this->foo;
         }
 
         return $output;

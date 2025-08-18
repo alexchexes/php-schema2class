@@ -170,11 +170,11 @@ class Baz
         }
 
         $grox = isset($input->{'grox'})
-            ? ((Foo::validateInput($input->{'grox'}, true))
+            ? (((is_object($input->{'grox'}) || is_array($input->{'grox'})) && Foo::validateInput($input->{'grox'}, true))
                 ? Foo::fromInput($input->{'grox'}, $validate)
-                : ((Bar::validateInput($input->{'grox'}, true))
+                : (((is_object($input->{'grox'}) || is_array($input->{'grox'})) && Bar::validateInput($input->{'grox'}, true))
                     ? Bar::fromInput($input->{'grox'}, $validate)
-                    : null
+                    : $input->{'grox'}
                 )
             )
             : null;
@@ -201,6 +201,8 @@ class Baz
         if (isset($this->grox)) {
             if ($this->grox instanceof Foo || $this->grox instanceof Bar) {
                 $output['grox'] = $this->grox->toArray();
+            } else {
+                $output['grox'] = $this->grox;
             }
         }
 
@@ -219,6 +221,8 @@ class Baz
         if (isset($this->grox)) {
             if ($this->grox instanceof Foo || $this->grox instanceof Bar) {
                 $output->{'grox'} = $this->grox->toStdClass();
+            } else {
+                $output->{'grox'} = $this->grox;
             }
         }
 

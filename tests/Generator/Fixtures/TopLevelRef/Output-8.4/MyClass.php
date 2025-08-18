@@ -123,7 +123,7 @@ class MyClass
                         ? (float)$input->{'foo'}
                         : (int)$input->{'foo'}
                     ),
-                default => null,
+                default => ($input->{'foo'}),
             }
             : null;
 
@@ -148,7 +148,7 @@ class MyClass
 
         if (isset($this->foo)) {
             $output['foo'] = match (true) {
-                is_string($this->foo) || (is_int($this->foo) || is_float($this->foo)) => $this->foo,
+                default => $this->foo,
             };
         }
 
@@ -166,7 +166,7 @@ class MyClass
 
         if (isset($this->foo)) {
             $output->{'foo'} = match (true) {
-                is_string($this->foo) || (is_int($this->foo) || is_float($this->foo)) => $this->foo,
+                default => $this->foo,
             };
         }
 

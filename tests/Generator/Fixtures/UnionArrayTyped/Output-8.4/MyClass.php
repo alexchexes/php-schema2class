@@ -376,19 +376,19 @@ class MyClass
         $unionOfTypedArrays = isset($input->{'unionOfTypedArrays'})
             ? match (true) {
                 is_array($input->{'unionOfTypedArrays'}) => $input->{'unionOfTypedArrays'},
-                default => null,
+                default => ($input->{'unionOfTypedArrays'}),
             }
             : null;
         $refUnionOfTypedArrays = isset($input->{'refUnionOfTypedArrays'})
             ? match (true) {
                 is_array($input->{'refUnionOfTypedArrays'}) => $input->{'refUnionOfTypedArrays'},
-                default => null,
+                default => ($input->{'refUnionOfTypedArrays'}),
             }
             : null;
         $refAndNotRefUnionOfTypedArrays = isset($input->{'refAndNotRefUnionOfTypedArrays'})
             ? match (true) {
                 is_array($input->{'refAndNotRefUnionOfTypedArrays'}) => $input->{'refAndNotRefUnionOfTypedArrays'},
-                default => null,
+                default => ($input->{'refAndNotRefUnionOfTypedArrays'}),
             }
             : null;
         $unionOfTypedArrayAndString = isset($input->{'unionOfTypedArrayAndString'})
@@ -396,7 +396,7 @@ class MyClass
                 is_array($input->{'unionOfTypedArrayAndString'})
                     || is_string($input->{'unionOfTypedArrayAndString'}) =>
                     $input->{'unionOfTypedArrayAndString'},
-                default => null,
+                default => ($input->{'unionOfTypedArrayAndString'}),
             }
             : null;
         $unionOfOneTypedArray = isset($input->{'unionOfOneTypedArray'}) ? $input->{'unionOfOneTypedArray'} : null;
@@ -428,23 +428,22 @@ class MyClass
 
         if (isset($this->unionOfTypedArrays)) {
             $output['unionOfTypedArrays'] = match (true) {
-                is_array($this->unionOfTypedArrays) => $this->unionOfTypedArrays,
+                default => $this->unionOfTypedArrays,
             };
         }
         if (isset($this->refUnionOfTypedArrays)) {
             $output['refUnionOfTypedArrays'] = match (true) {
-                is_array($this->refUnionOfTypedArrays) => $this->refUnionOfTypedArrays,
+                default => $this->refUnionOfTypedArrays,
             };
         }
         if (isset($this->refAndNotRefUnionOfTypedArrays)) {
             $output['refAndNotRefUnionOfTypedArrays'] = match (true) {
-                is_array($this->refAndNotRefUnionOfTypedArrays) => $this->refAndNotRefUnionOfTypedArrays,
+                default => $this->refAndNotRefUnionOfTypedArrays,
             };
         }
         if (isset($this->unionOfTypedArrayAndString)) {
             $output['unionOfTypedArrayAndString'] = match (true) {
-                is_array($this->unionOfTypedArrayAndString) || is_string($this->unionOfTypedArrayAndString) =>
-                    $this->unionOfTypedArrayAndString,
+                default => $this->unionOfTypedArrayAndString,
             };
         }
         if (isset($this->unionOfOneTypedArray)) {
@@ -465,23 +464,22 @@ class MyClass
 
         if (isset($this->unionOfTypedArrays)) {
             $output->{'unionOfTypedArrays'} = match (true) {
-                is_array($this->unionOfTypedArrays) => $this->unionOfTypedArrays,
+                default => $this->unionOfTypedArrays,
             };
         }
         if (isset($this->refUnionOfTypedArrays)) {
             $output->{'refUnionOfTypedArrays'} = match (true) {
-                is_array($this->refUnionOfTypedArrays) => $this->refUnionOfTypedArrays,
+                default => $this->refUnionOfTypedArrays,
             };
         }
         if (isset($this->refAndNotRefUnionOfTypedArrays)) {
             $output->{'refAndNotRefUnionOfTypedArrays'} = match (true) {
-                is_array($this->refAndNotRefUnionOfTypedArrays) => $this->refAndNotRefUnionOfTypedArrays,
+                default => $this->refAndNotRefUnionOfTypedArrays,
             };
         }
         if (isset($this->unionOfTypedArrayAndString)) {
             $output->{'unionOfTypedArrayAndString'} = match (true) {
-                is_array($this->unionOfTypedArrayAndString) || is_string($this->unionOfTypedArrayAndString) =>
-                    $this->unionOfTypedArrayAndString,
+                default => $this->unionOfTypedArrayAndString,
             };
         }
         if (isset($this->unionOfOneTypedArray)) {

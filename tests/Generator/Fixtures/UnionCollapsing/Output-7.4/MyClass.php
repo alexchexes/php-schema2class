@@ -253,10 +253,7 @@ class MyClass
         $foo = $input->{'foo'};
         $bar = $input->{'bar'};
         $baz = $input->{'baz'};
-        $qux = ($input->{'qux'} !== null
-            ? ((is_string($input->{'qux'})) ? $input->{'qux'} : null)
-            : null
-        );
+        $qux = ($input->{'qux'} !== null ? $input->{'qux'} : null);
 
         $obj = new self($foo, $bar, $baz, $qux);
 
@@ -277,18 +274,10 @@ class MyClass
     {
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
-        if (is_string($this->foo)) {
-            $output['foo'] = $this->foo;
-        }
-        if (is_string($this->bar)) {
-            $output['bar'] = $this->bar;
-        }
-        if (is_string($this->baz)) {
-            $output['baz'] = $this->baz;
-        }
-        if (is_string($this->qux)) {
-            $output['qux'] = $this->qux;
-        }
+        $output['foo'] = $this->foo;
+        $output['bar'] = $this->bar;
+        $output['baz'] = $this->baz;
+        $output['qux'] = $this->qux;
 
         return $output;
     }
@@ -302,18 +291,10 @@ class MyClass
     {
         $output = $this->_additionalProperties;
 
-        if (is_string($this->foo)) {
-            $output->{'foo'} = $this->foo;
-        }
-        if (is_string($this->bar)) {
-            $output->{'bar'} = $this->bar;
-        }
-        if (is_string($this->baz)) {
-            $output->{'baz'} = $this->baz;
-        }
-        if (is_string($this->qux)) {
-            $output->{'qux'} = $this->qux;
-        }
+        $output->{'foo'} = $this->foo;
+        $output->{'bar'} = $this->bar;
+        $output->{'baz'} = $this->baz;
+        $output->{'qux'} = $this->qux;
 
         return $output;
     }

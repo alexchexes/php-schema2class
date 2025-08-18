@@ -244,21 +244,18 @@ class MyClass
         }
 
         $foo = match (true) {
-            is_string($input->{'foo'}) => $input->{'foo'},
-            default => throw new \InvalidArgumentException("could not build property 'foo' from JSON"),
+            default => $input->{'foo'},
         };
         $bar = match (true) {
-            is_string($input->{'bar'}) => $input->{'bar'},
-            default => throw new \InvalidArgumentException("could not build property 'bar' from JSON"),
+            default => $input->{'bar'},
         };
         $baz = match (true) {
-            is_string($input->{'baz'}) => $input->{'baz'},
-            default => throw new \InvalidArgumentException("could not build property 'baz' from JSON"),
+            default => $input->{'baz'},
         };
         $qux = ($input->{'qux'} !== null
             ? match (true) {
                 is_string($input->{'qux'}) => $input->{'qux'},
-                default => null,
+                default => ($input->{'qux'}),
             }
             : null
         );
@@ -283,16 +280,16 @@ class MyClass
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
         $output['foo'] = match (true) {
-            is_string($this->foo) => $this->foo,
+            default => $this->foo,
         };
         $output['bar'] = match (true) {
-            is_string($this->bar) => $this->bar,
+            default => $this->bar,
         };
         $output['baz'] = match (true) {
-            is_string($this->baz) => $this->baz,
+            default => $this->baz,
         };
         $output['qux'] = match (true) {
-            is_string($this->qux) => $this->qux,
+            default => $this->qux,
         };
 
         return $output;
@@ -308,16 +305,16 @@ class MyClass
         $output = $this->_additionalProperties;
 
         $output->{'foo'} = match (true) {
-            is_string($this->foo) => $this->foo,
+            default => $this->foo,
         };
         $output->{'bar'} = match (true) {
-            is_string($this->bar) => $this->bar,
+            default => $this->bar,
         };
         $output->{'baz'} = match (true) {
-            is_string($this->baz) => $this->baz,
+            default => $this->baz,
         };
         $output->{'qux'} = match (true) {
-            is_string($this->qux) => $this->qux,
+            default => $this->qux,
         };
 
         return $output;

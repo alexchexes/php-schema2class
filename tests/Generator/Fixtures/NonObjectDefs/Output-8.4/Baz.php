@@ -150,9 +150,11 @@ class Baz
 
         $grox = isset($input->{'grox'})
             ? match (true) {
-                Foo::validateInput($input->{'grox'}, true) => Foo::fromInput($input->{'grox'}, $validate),
-                Bar::validateInput($input->{'grox'}, true) => Bar::fromInput($input->{'grox'}, $validate),
-                default => null,
+                (is_object($input->{'grox'}) || is_array($input->{'grox'})) && Foo::validateInput($input->{'grox'}, true) =>
+                    Foo::fromInput($input->{'grox'}, $validate),
+                (is_object($input->{'grox'}) || is_array($input->{'grox'})) && Bar::validateInput($input->{'grox'}, true) =>
+                    Bar::fromInput($input->{'grox'}, $validate),
+                default => $input->{'grox'},
             }
             : null;
 
@@ -178,6 +180,7 @@ class Baz
         if (isset($this->grox)) {
             $output['grox'] = match (true) {
                 $this->grox instanceof Foo || $this->grox instanceof Bar => $this->grox->toArray(),
+                default => $this->grox,
             };
         }
 
@@ -196,6 +199,7 @@ class Baz
         if (isset($this->grox)) {
             $output->{'grox'} = match (true) {
                 $this->grox instanceof Foo || $this->grox instanceof Bar => $this->grox->toStdClass(),
+                default => $this->grox,
             };
         }
 

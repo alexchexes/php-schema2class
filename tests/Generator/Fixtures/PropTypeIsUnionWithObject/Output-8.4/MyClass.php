@@ -118,10 +118,9 @@ class MyClass
         }
 
         $foo = match (true) {
-            is_string($input->{'foo'}) => $input->{'foo'},
-            MyClassFooAlternative2::validateInput($input->{'foo'}, true) =>
+            default => $input->{'foo'},
+            (is_object($input->{'foo'}) || is_array($input->{'foo'})) && MyClassFooAlternative2::validateInput($input->{'foo'}, true) =>
                 MyClassFooAlternative2::fromInput($input->{'foo'}, $validate),
-            default => throw new \InvalidArgumentException("could not build property 'foo' from JSON"),
         };
 
         $obj = new self($foo);
@@ -144,8 +143,8 @@ class MyClass
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
         $output['foo'] = match (true) {
-            is_string($this->foo) => $this->foo,
             $this->foo instanceof MyClassFooAlternative2 => $this->foo->toArray(),
+            default => $this->foo,
         };
 
         return $output;
@@ -161,8 +160,8 @@ class MyClass
         $output = $this->_additionalProperties;
 
         $output->{'foo'} = match (true) {
-            is_string($this->foo) => $this->foo,
             $this->foo instanceof MyClassFooAlternative2 => $this->foo->toStdClass(),
+            default => $this->foo,
         };
 
         return $output;

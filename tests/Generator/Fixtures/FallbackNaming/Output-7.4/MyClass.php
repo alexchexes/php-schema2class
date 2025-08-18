@@ -1383,11 +1383,11 @@ class MyClass
             : null;
         $_providedOptionals_1 = isset($input->{'__providedOptionals'}) ? $input->{'__providedOptionals'} : null;
         $ensureArgs1 = isset($input->{'ensureArgs1'})
-            ? ((MyClassEnsureArgs1Alternative1::validateInput($input->{'ensureArgs1'}, true))
+            ? (((is_object($input->{'ensureArgs1'}) || is_array($input->{'ensureArgs1'})) && MyClassEnsureArgs1Alternative1::validateInput($input->{'ensureArgs1'}, true))
                 ? MyClassEnsureArgs1Alternative1::fromInput($input->{'ensureArgs1'}, $validate, $materializeDefaults)
-                : ((MyClassEnsureArgs1Alternative2::validateInput($input->{'ensureArgs1'}, true))
+                : (((is_object($input->{'ensureArgs1'}) || is_array($input->{'ensureArgs1'})) && MyClassEnsureArgs1Alternative2::validateInput($input->{'ensureArgs1'}, true))
                     ? MyClassEnsureArgs1Alternative2::fromInput($input->{'ensureArgs1'}, $validate, $materializeDefaults)
-                    : ((is_string($input->{'ensureArgs1'})) ? $input->{'ensureArgs1'} : null)
+                    : $input->{'ensureArgs1'}
                 )
             )
             : null;
@@ -1533,7 +1533,7 @@ class MyClass
                 || $this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative2
             ) {
                 $output['ensureArgs1'] = $this->ensureArgs1->toArray($includeDefaults);
-            } elseif (is_string($this->ensureArgs1)) {
+            } else {
                 $output['ensureArgs1'] = $this->ensureArgs1;
             }
         }
@@ -1625,7 +1625,7 @@ class MyClass
                 || $this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative2
             ) {
                 $output->{'ensureArgs1'} = $this->ensureArgs1->toStdClass($includeDefaults);
-            } elseif (is_string($this->ensureArgs1)) {
+            } else {
                 $output->{'ensureArgs1'} = $this->ensureArgs1;
             }
         }

@@ -399,36 +399,16 @@ class MyClass
 
         $_providedOptionals = [];
         $foo = match (true) {
-            is_string($input->{'foo'})
-                || (is_int($input->{'foo'}) || is_float($input->{'foo'}))
-                || is_bool($input->{'foo'}) =>
-                $input->{'foo'},
-            default => throw new \InvalidArgumentException("could not build property 'foo' from JSON"),
+            default => $input->{'foo'},
         };
         $bar = match (true) {
-            is_string($input->{'bar'})
-                || (is_int($input->{'bar'}) || is_float($input->{'bar'}))
-                || is_bool($input->{'bar'})
-                || is_array($input->{'bar'}) =>
-                $input->{'bar'},
-            default => throw new \InvalidArgumentException("could not build property 'bar' from JSON"),
+            default => $input->{'bar'},
         };
         $baz = match (true) {
-            is_string($input->{'baz'})
-                || (is_int($input->{'baz'}) || is_float($input->{'baz'}))
-                || is_bool($input->{'baz'})
-                || is_array($input->{'baz'}) || is_object($input->{'baz'}) =>
-                $input->{'baz'},
-            default => throw new \InvalidArgumentException("could not build property 'baz' from JSON"),
+            default => $input->{'baz'},
         };
         $qux = match (true) {
-            is_string($input->{'qux'})
-                || (is_int($input->{'qux'}) || is_float($input->{'qux'}))
-                || is_bool($input->{'qux'})
-                || is_array($input->{'qux'})
-                || is_array($input->{'qux'}) || is_object($input->{'qux'}) =>
-                $input->{'qux'},
-            default => throw new \InvalidArgumentException("could not build property 'qux' from JSON"),
+            default => $input->{'qux'},
         };
         $thud = ($input->{'thud'} !== null
             ? match (true) {
@@ -442,7 +422,7 @@ class MyClass
                         : (int)$input->{'thud'}
                     ),
                 is_bool($input->{'thud'}) => (bool)$input->{'thud'},
-                default => null,
+                default => ($input->{'thud'}),
             }
             : null
         );
@@ -455,7 +435,7 @@ class MyClass
                         : (int)$input->{'optFoo'}
                     ),
                 is_bool($input->{'optFoo'}) => (bool)$input->{'optFoo'},
-                default => null,
+                default => ($input->{'optFoo'}),
             }
             : null;
         $optBar = isset($input->{'optBar'})
@@ -467,7 +447,7 @@ class MyClass
                         : (int)$input->{'optBar'}
                     ),
                 is_bool($input->{'optBar'}) => (bool)$input->{'optBar'},
-                default => null,
+                default => ($input->{'optBar'}),
             }
             : null;
         $optBaz = isset($input->{'optBaz'})
@@ -479,7 +459,7 @@ class MyClass
                         : (int)$input->{'optBaz'}
                     ),
                 is_bool($input->{'optBaz'}) => (bool)$input->{'optBaz'},
-                default => null,
+                default => ($input->{'optBaz'}),
             }
             : null;
         $optQux = isset($input->{'optQux'})
@@ -494,7 +474,7 @@ class MyClass
                         : (int)$input->{'optQux'}
                     ),
                 is_bool($input->{'optQux'}) => (bool)$input->{'optQux'},
-                default => null,
+                default => ($input->{'optQux'}),
             }
             : null;
         $optThud = null;
@@ -511,7 +491,7 @@ class MyClass
                             : (int)$input->{'optThud'}
                         ),
                     is_bool($input->{'optThud'}) => (bool)$input->{'optThud'},
-                    default => null,
+                    default => ($input->{'optThud'}),
                 }
                 : null
             );
@@ -550,81 +530,50 @@ class MyClass
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
         $output['foo'] = match (true) {
-            is_string($this->foo) || (is_int($this->foo) || is_float($this->foo)) || is_bool($this->foo) => $this->foo,
+            default => $this->foo,
         };
         $output['bar'] = match (true) {
-            is_string($this->bar)
-                || (is_int($this->bar) || is_float($this->bar))
-                || is_bool($this->bar)
-                || is_array($this->bar) =>
-                $this->bar,
+            default => $this->bar,
         };
         $output['baz'] = match (true) {
-            is_string($this->baz) || (is_int($this->baz) || is_float($this->baz)) || is_bool($this->baz) => $this->baz,
             is_array($this->baz) || is_object($this->baz) => json_decode(json_encode($this->baz), true),
+            default => $this->baz,
         };
         $output['qux'] = match (true) {
-            is_string($this->qux)
-                || (is_int($this->qux) || is_float($this->qux))
-                || is_bool($this->qux)
-                || is_array($this->qux) =>
-                $this->qux,
             is_array($this->qux) || is_object($this->qux) => json_decode(json_encode($this->qux), true),
+            default => $this->qux,
         };
         $output['thud'] = match (true) {
-            is_string($this->thud)
-                || (is_int($this->thud) || is_float($this->thud))
-                || is_bool($this->thud)
-                || is_array($this->thud) =>
-                $this->thud,
             is_array($this->thud) || is_object($this->thud) => json_decode(json_encode($this->thud), true),
+            default => $this->thud,
         };
         if (isset($this->optFoo)) {
             $output['optFoo'] = match (true) {
-                is_string($this->optFoo)
-                    || (is_int($this->optFoo) || is_float($this->optFoo))
-                    || is_bool($this->optFoo) =>
-                    $this->optFoo,
+                default => $this->optFoo,
             };
         }
         if (isset($this->optBar)) {
             $output['optBar'] = match (true) {
-                is_string($this->optBar)
-                    || (is_int($this->optBar) || is_float($this->optBar))
-                    || is_bool($this->optBar)
-                    || is_array($this->optBar) =>
-                    $this->optBar,
+                default => $this->optBar,
             };
         }
         if (isset($this->optBaz)) {
             $output['optBaz'] = match (true) {
-                is_string($this->optBaz)
-                    || (is_int($this->optBaz) || is_float($this->optBaz))
-                    || is_bool($this->optBaz) =>
-                    $this->optBaz,
                 is_array($this->optBaz) || is_object($this->optBaz) => json_decode(json_encode($this->optBaz), true),
+                default => $this->optBaz,
             };
         }
         if (isset($this->optQux)) {
             $output['optQux'] = match (true) {
-                is_string($this->optQux)
-                    || (is_int($this->optQux) || is_float($this->optQux))
-                    || is_bool($this->optQux)
-                    || is_array($this->optQux) =>
-                    $this->optQux,
                 is_array($this->optQux) || is_object($this->optQux) => json_decode(json_encode($this->optQux), true),
+                default => $this->optQux,
             };
         }
         if (isset($this->optThud) || array_key_exists('optThud', $this->_providedOptionals)) {
             $output['optThud'] = ($this->optThud !== null
                 ? match (true) {
-                    is_string($this->optThud)
-                        || (is_int($this->optThud) || is_float($this->optThud))
-                        || is_bool($this->optThud)
-                        || is_array($this->optThud) =>
-                        $this->optThud,
                     is_array($this->optThud) || is_object($this->optThud) => json_decode(json_encode($this->optThud), true),
-                    default => null,
+                    default => $this->optThud,
                 }
                 : null
             );
@@ -643,81 +592,50 @@ class MyClass
         $output = $this->_additionalProperties;
 
         $output->{'foo'} = match (true) {
-            is_string($this->foo) || (is_int($this->foo) || is_float($this->foo)) || is_bool($this->foo) => $this->foo,
+            default => $this->foo,
         };
         $output->{'bar'} = match (true) {
-            is_string($this->bar)
-                || (is_int($this->bar) || is_float($this->bar))
-                || is_bool($this->bar)
-                || is_array($this->bar) =>
-                $this->bar,
+            default => $this->bar,
         };
         $output->{'baz'} = match (true) {
-            is_string($this->baz) || (is_int($this->baz) || is_float($this->baz)) || is_bool($this->baz) => $this->baz,
             is_array($this->baz) || is_object($this->baz) => json_decode(json_encode($this->baz)),
+            default => $this->baz,
         };
         $output->{'qux'} = match (true) {
-            is_string($this->qux)
-                || (is_int($this->qux) || is_float($this->qux))
-                || is_bool($this->qux)
-                || is_array($this->qux) =>
-                $this->qux,
             is_array($this->qux) || is_object($this->qux) => json_decode(json_encode($this->qux)),
+            default => $this->qux,
         };
         $output->{'thud'} = match (true) {
-            is_string($this->thud)
-                || (is_int($this->thud) || is_float($this->thud))
-                || is_bool($this->thud)
-                || is_array($this->thud) =>
-                $this->thud,
             is_array($this->thud) || is_object($this->thud) => json_decode(json_encode($this->thud)),
+            default => $this->thud,
         };
         if (isset($this->optFoo)) {
             $output->{'optFoo'} = match (true) {
-                is_string($this->optFoo)
-                    || (is_int($this->optFoo) || is_float($this->optFoo))
-                    || is_bool($this->optFoo) =>
-                    $this->optFoo,
+                default => $this->optFoo,
             };
         }
         if (isset($this->optBar)) {
             $output->{'optBar'} = match (true) {
-                is_string($this->optBar)
-                    || (is_int($this->optBar) || is_float($this->optBar))
-                    || is_bool($this->optBar)
-                    || is_array($this->optBar) =>
-                    $this->optBar,
+                default => $this->optBar,
             };
         }
         if (isset($this->optBaz)) {
             $output->{'optBaz'} = match (true) {
-                is_string($this->optBaz)
-                    || (is_int($this->optBaz) || is_float($this->optBaz))
-                    || is_bool($this->optBaz) =>
-                    $this->optBaz,
                 is_array($this->optBaz) || is_object($this->optBaz) => json_decode(json_encode($this->optBaz)),
+                default => $this->optBaz,
             };
         }
         if (isset($this->optQux)) {
             $output->{'optQux'} = match (true) {
-                is_string($this->optQux)
-                    || (is_int($this->optQux) || is_float($this->optQux))
-                    || is_bool($this->optQux)
-                    || is_array($this->optQux) =>
-                    $this->optQux,
                 is_array($this->optQux) || is_object($this->optQux) => json_decode(json_encode($this->optQux)),
+                default => $this->optQux,
             };
         }
         if (isset($this->optThud) || array_key_exists('optThud', $this->_providedOptionals)) {
             $output->{'optThud'} = ($this->optThud !== null
                 ? match (true) {
-                    is_string($this->optThud)
-                        || (is_int($this->optThud) || is_float($this->optThud))
-                        || is_bool($this->optThud)
-                        || is_array($this->optThud) =>
-                        $this->optThud,
                     is_array($this->optThud) || is_object($this->optThud) => json_decode(json_encode($this->optThud)),
-                    default => null,
+                    default => $this->optThud,
                 }
                 : null
             );
