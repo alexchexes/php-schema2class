@@ -119,7 +119,7 @@ class MyClass
 
         $foo = match (true) {
             is_string($input->{'foo'}) => $input->{'foo'},
-            MyClassFooAlternative2::validateInput($input->{'foo'}, true) =>
+            ((is_object($input->{'foo'}) || is_array($input->{'foo'})) && MyClassFooAlternative2::validateInput($input->{'foo'}, true)) =>
                 MyClassFooAlternative2::fromInput($input->{'foo'}, $validate),
             default => throw new \InvalidArgumentException("could not build property 'foo' from JSON"),
         };
@@ -144,7 +144,7 @@ class MyClass
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
         $output['foo'] = match (true) {
-            is_string($this->foo) => $this->foo,
+            default => $this->foo,
             $this->foo instanceof MyClassFooAlternative2 => $this->foo->toArray(),
         };
 
@@ -161,7 +161,7 @@ class MyClass
         $output = $this->_additionalProperties;
 
         $output->{'foo'} = match (true) {
-            is_string($this->foo) => $this->foo,
+            default => $this->foo,
             $this->foo instanceof MyClassFooAlternative2 => $this->foo->toStdClass(),
         };
 
@@ -208,8 +208,9 @@ class MyClass
     public function __clone()
     {
         $this->foo = match (true) {
-            is_string($this->foo) => $this->foo,
+            is_string($this->foo) => ($this->foo),
             $this->foo instanceof MyClassFooAlternative2 => clone $this->foo,
+            default => $this->foo,
         };
     }
 }

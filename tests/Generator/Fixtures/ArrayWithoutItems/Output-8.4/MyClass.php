@@ -374,16 +374,16 @@ class MyClass
         $c = ($input->{'c'} !== null ? $input->{'c'} : null);
         $d = ($input->{'d'} !== null
             ? match (true) {
-                is_array($input->{'d'}) || is_string($input->{'d'}) => $input->{'d'},
-                default => null,
+                is_array($input->{'d'}) || is_string($input->{'d'}) => ($input->{'d'}),
+                default => $input->{'d'},
             }
             : null
         );
         $e = isset($input->{'e'}) ? $input->{'e'} : null;
         $f = isset($input->{'f'})
             ? match (true) {
-                is_array($input->{'f'}) || is_string($input->{'f'}) => $input->{'f'},
-                default => null,
+                is_array($input->{'f'}) || is_string($input->{'f'}) => ($input->{'f'}),
+                default => $input->{'f'},
             }
             : null;
         $g = null;
@@ -395,8 +395,8 @@ class MyClass
         if (property_exists($input, 'h')) {
             $h = ($input->{'h'} !== null
                 ? match (true) {
-                    is_array($input->{'h'}) || is_string($input->{'h'}) => $input->{'h'},
-                    default => null,
+                    is_array($input->{'h'}) || is_string($input->{'h'}) => ($input->{'h'}),
+                    default => $input->{'h'},
                 }
                 : null
             );
@@ -409,8 +409,8 @@ class MyClass
                     is_array($input->{'i'})
                         || is_string($input->{'i'})
                         || is_array($input->{'i'}) || is_object($input->{'i'}) =>
-                        $input->{'i'},
-                    default => null,
+                        ($input->{'i'}),
+                    default => $input->{'i'},
                 }
                 : null
             );
@@ -439,18 +439,18 @@ class MyClass
 
         $output['a'] = $this->a;
         $output['b'] = match (true) {
-            is_array($this->b) || is_string($this->b) => $this->b,
+            default => $this->b,
         };
         $output['c'] = $this->c;
         $output['d'] = match (true) {
-            is_array($this->d) || is_string($this->d) => $this->d,
+            default => $this->d,
         };
         if (isset($this->e)) {
             $output['e'] = $this->e;
         }
         if (isset($this->f)) {
             $output['f'] = match (true) {
-                is_array($this->f) || is_string($this->f) => $this->f,
+                default => $this->f,
             };
         }
         if (isset($this->g) || array_key_exists('g', $this->_providedOptionals)) {
@@ -459,8 +459,8 @@ class MyClass
         if (isset($this->h) || array_key_exists('h', $this->_providedOptionals)) {
             $output['h'] = ($this->h !== null
                 ? match (true) {
-                    is_array($this->h) || is_string($this->h) => $this->h,
-                    default => null,
+                    is_array($this->h) || is_string($this->h) => ($this->h),
+                    default => $this->h,
                 }
                 : null
             );
@@ -468,9 +468,9 @@ class MyClass
         if (isset($this->i) || array_key_exists('i', $this->_providedOptionals)) {
             $output['i'] = ($this->i !== null
                 ? match (true) {
-                    is_array($this->i) || is_string($this->i) => $this->i,
+                    is_array($this->i) || is_string($this->i) => ($this->i),
                     is_array($this->i) || is_object($this->i) => json_decode(json_encode($this->i), true),
-                    default => null,
+                    default => $this->i,
                 }
                 : null
             );
@@ -490,18 +490,18 @@ class MyClass
 
         $output->{'a'} = $this->a;
         $output->{'b'} = match (true) {
-            is_array($this->b) || is_string($this->b) => $this->b,
+            default => $this->b,
         };
         $output->{'c'} = $this->c;
         $output->{'d'} = match (true) {
-            is_array($this->d) || is_string($this->d) => $this->d,
+            default => $this->d,
         };
         if (isset($this->e)) {
             $output->{'e'} = $this->e;
         }
         if (isset($this->f)) {
             $output->{'f'} = match (true) {
-                is_array($this->f) || is_string($this->f) => $this->f,
+                default => $this->f,
             };
         }
         if (isset($this->g) || array_key_exists('g', $this->_providedOptionals)) {
@@ -510,8 +510,8 @@ class MyClass
         if (isset($this->h) || array_key_exists('h', $this->_providedOptionals)) {
             $output->{'h'} = ($this->h !== null
                 ? match (true) {
-                    is_array($this->h) || is_string($this->h) => $this->h,
-                    default => null,
+                    is_array($this->h) || is_string($this->h) => ($this->h),
+                    default => $this->h,
                 }
                 : null
             );
@@ -519,9 +519,9 @@ class MyClass
         if (isset($this->i) || array_key_exists('i', $this->_providedOptionals)) {
             $output->{'i'} = ($this->i !== null
                 ? match (true) {
-                    is_array($this->i) || is_string($this->i) => $this->i,
+                    is_array($this->i) || is_string($this->i) => ($this->i),
                     is_array($this->i) || is_object($this->i) => json_decode(json_encode($this->i)),
-                    default => null,
+                    default => $this->i,
                 }
                 : null
             );
@@ -571,8 +571,9 @@ class MyClass
     {
         if (isset($this->i)) {
             $this->i = match (true) {
-                is_array($this->i) || is_string($this->i) => $this->i,
+                is_array($this->i) || is_string($this->i) => ($this->i),
                 is_array($this->i) || is_object($this->i) => json_decode(json_encode($this->i), is_array($this->i)),
+                default => $this->i,
             };
         }
     }

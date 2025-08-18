@@ -806,47 +806,50 @@ class MyClass
         }
         $xyyz = isset($input->{'xyyz'})
             ? match (true) {
-                is_string($input->{'xyyz'}) || is_array($input->{'xyyz'}) => $input->{'xyyz'},
-                ObjDef::validateInput($input->{'xyyz'}, true) => ObjDef::fromInput($input->{'xyyz'}, $validate, $materializeDefaults),
-                default => null,
+                is_string($input->{'xyyz'}) || is_array($input->{'xyyz'}) => ($input->{'xyyz'}),
+                ((is_object($input->{'xyyz'}) || is_array($input->{'xyyz'})) && ObjDef::validateInput($input->{'xyyz'}, true)) =>
+                    ObjDef::fromInput($input->{'xyyz'}, $validate, $materializeDefaults),
+                default => $input->{'xyyz'},
             }
             : null;
         $buux = isset($input->{'buux'})
             ? match (true) {
-                is_string($input->{'buux'}) || is_array($input->{'buux'}) => $input->{'buux'},
-                ObjDef::validateInput($input->{'buux'}, true) => ObjDef::fromInput($input->{'buux'}, $validate, $materializeDefaults),
-                default => null,
+                is_string($input->{'buux'}) || is_array($input->{'buux'}) => ($input->{'buux'}),
+                ((is_object($input->{'buux'}) || is_array($input->{'buux'})) && ObjDef::validateInput($input->{'buux'}, true)) =>
+                    ObjDef::fromInput($input->{'buux'}, $validate, $materializeDefaults),
+                default => $input->{'buux'},
             }
             : null;
         $boic = isset($input->{'boic'})
             ? match (true) {
-                is_string($input->{'boic'}) || is_array($input->{'boic'}) => $input->{'boic'},
-                ObjDef::validateInput($input->{'boic'}, true) => ObjDef::fromInput($input->{'boic'}, $validate, $materializeDefaults),
-                default => null,
+                is_string($input->{'boic'}) || is_array($input->{'boic'}) => ($input->{'boic'}),
+                ((is_object($input->{'boic'}) || is_array($input->{'boic'})) && ObjDef::validateInput($input->{'boic'}, true)) =>
+                    ObjDef::fromInput($input->{'boic'}, $validate, $materializeDefaults),
+                default => $input->{'boic'},
             }
             : null;
         $poox = isset($input->{'poox'})
             ? match (true) {
-                is_string($input->{'poox'}) => $input->{'poox'},
-                NumericKeysObj::validateInput($input->{'poox'}, true) =>
+                is_string($input->{'poox'}) => ($input->{'poox'}),
+                ((is_object($input->{'poox'}) || is_array($input->{'poox'})) && NumericKeysObj::validateInput($input->{'poox'}, true)) =>
                     NumericKeysObj::fromInput($input->{'poox'}, $validate, $materializeDefaults),
-                default => null,
+                default => $input->{'poox'},
             }
             : null;
         $arrObjUnion = isset($input->{'arrObjUnion'})
             ? match (true) {
                 is_array($input->{'arrObjUnion'})
                     || is_array($input->{'arrObjUnion'}) || is_object($input->{'arrObjUnion'}) =>
-                    $input->{'arrObjUnion'},
-                default => null,
+                    ($input->{'arrObjUnion'}),
+                default => $input->{'arrObjUnion'},
             }
             : null;
         $objArrUnion = isset($input->{'objArrUnion'})
             ? match (true) {
                 is_array($input->{'objArrUnion'})
                     || is_array($input->{'objArrUnion'}) || is_object($input->{'objArrUnion'}) =>
-                    $input->{'objArrUnion'},
-                default => null,
+                    ($input->{'objArrUnion'}),
+                default => $input->{'objArrUnion'},
             }
             : null;
         $numKeysDefaults = isset($input->{'numKeysDefaults'})
@@ -904,37 +907,37 @@ class MyClass
         }
         if (isset($this->xyyz)) {
             $output['xyyz'] = match (true) {
-                is_string($this->xyyz) || is_array($this->xyyz) => $this->xyyz,
+                default => $this->xyyz,
                 $this->xyyz instanceof ObjDef => $this->xyyz->toArray($includeDefaults),
             };
         }
         if (isset($this->buux)) {
             $output['buux'] = match (true) {
-                is_string($this->buux) || is_array($this->buux) => $this->buux,
+                default => $this->buux,
                 $this->buux instanceof ObjDef => $this->buux->toArray($includeDefaults),
             };
         }
         if (isset($this->boic)) {
             $output['boic'] = match (true) {
-                is_string($this->boic) || is_array($this->boic) => $this->boic,
+                default => $this->boic,
                 $this->boic instanceof ObjDef => $this->boic->toArray($includeDefaults),
             };
         }
         if (isset($this->poox)) {
             $output['poox'] = match (true) {
-                is_string($this->poox) => $this->poox,
+                default => $this->poox,
                 $this->poox instanceof NumericKeysObj => $this->poox->toArray($includeDefaults),
             };
         }
         if (isset($this->arrObjUnion)) {
             $output['arrObjUnion'] = match (true) {
-                is_array($this->arrObjUnion) => $this->arrObjUnion,
+                default => $this->arrObjUnion,
                 is_array($this->arrObjUnion) || is_object($this->arrObjUnion) => json_decode(json_encode($this->arrObjUnion), true),
             };
         }
         if (isset($this->objArrUnion)) {
             $output['objArrUnion'] = match (true) {
-                is_array($this->objArrUnion) => $this->objArrUnion,
+                default => $this->objArrUnion,
                 is_array($this->objArrUnion) || is_object($this->objArrUnion) => json_decode(json_encode($this->objArrUnion), true),
             };
         }
@@ -979,37 +982,37 @@ class MyClass
         }
         if (isset($this->xyyz)) {
             $output->{'xyyz'} = match (true) {
-                is_string($this->xyyz) || is_array($this->xyyz) => $this->xyyz,
+                default => $this->xyyz,
                 $this->xyyz instanceof ObjDef => $this->xyyz->toStdClass($includeDefaults),
             };
         }
         if (isset($this->buux)) {
             $output->{'buux'} = match (true) {
-                is_string($this->buux) || is_array($this->buux) => $this->buux,
+                default => $this->buux,
                 $this->buux instanceof ObjDef => $this->buux->toStdClass($includeDefaults),
             };
         }
         if (isset($this->boic)) {
             $output->{'boic'} = match (true) {
-                is_string($this->boic) || is_array($this->boic) => $this->boic,
+                default => $this->boic,
                 $this->boic instanceof ObjDef => $this->boic->toStdClass($includeDefaults),
             };
         }
         if (isset($this->poox)) {
             $output->{'poox'} = match (true) {
-                is_string($this->poox) => $this->poox,
+                default => $this->poox,
                 $this->poox instanceof NumericKeysObj => $this->poox->toStdClass($includeDefaults),
             };
         }
         if (isset($this->arrObjUnion)) {
             $output->{'arrObjUnion'} = match (true) {
-                is_array($this->arrObjUnion) => $this->arrObjUnion,
+                default => $this->arrObjUnion,
                 is_array($this->arrObjUnion) || is_object($this->arrObjUnion) => json_decode(json_encode($this->arrObjUnion)),
             };
         }
         if (isset($this->objArrUnion)) {
             $output->{'objArrUnion'} = match (true) {
-                is_array($this->objArrUnion) => $this->objArrUnion,
+                default => $this->objArrUnion,
                 is_array($this->objArrUnion) || is_object($this->objArrUnion) => json_decode(json_encode($this->objArrUnion)),
             };
         }
@@ -1084,40 +1087,46 @@ class MyClass
         }
         if (isset($this->xyyz)) {
             $this->xyyz = match (true) {
-                is_string($this->xyyz) || is_array($this->xyyz) => $this->xyyz,
+                is_string($this->xyyz) || is_array($this->xyyz) => ($this->xyyz),
                 $this->xyyz instanceof ObjDef => clone $this->xyyz,
+                default => $this->xyyz,
             };
         }
         if (isset($this->buux)) {
             $this->buux = match (true) {
-                is_string($this->buux) || is_array($this->buux) => $this->buux,
+                is_string($this->buux) || is_array($this->buux) => ($this->buux),
                 $this->buux instanceof ObjDef => clone $this->buux,
+                default => $this->buux,
             };
         }
         if (isset($this->boic)) {
             $this->boic = match (true) {
-                is_string($this->boic) || is_array($this->boic) => $this->boic,
+                is_string($this->boic) || is_array($this->boic) => ($this->boic),
                 $this->boic instanceof ObjDef => clone $this->boic,
+                default => $this->boic,
             };
         }
         if (isset($this->poox)) {
             $this->poox = match (true) {
-                is_string($this->poox) => $this->poox,
+                is_string($this->poox) => ($this->poox),
                 $this->poox instanceof NumericKeysObj => clone $this->poox,
+                default => $this->poox,
             };
         }
         if (isset($this->arrObjUnion)) {
             $this->arrObjUnion = match (true) {
-                is_array($this->arrObjUnion) => $this->arrObjUnion,
+                is_array($this->arrObjUnion) => ($this->arrObjUnion),
                 is_array($this->arrObjUnion) || is_object($this->arrObjUnion) =>
                     json_decode(json_encode($this->arrObjUnion), is_array($this->arrObjUnion)),
+                default => $this->arrObjUnion,
             };
         }
         if (isset($this->objArrUnion)) {
             $this->objArrUnion = match (true) {
-                is_array($this->objArrUnion) => $this->objArrUnion,
+                is_array($this->objArrUnion) => ($this->objArrUnion),
                 is_array($this->objArrUnion) || is_object($this->objArrUnion) =>
                     json_decode(json_encode($this->objArrUnion), is_array($this->objArrUnion)),
+                default => $this->objArrUnion,
             };
         }
         if (isset($this->numKeysDefaults)) {

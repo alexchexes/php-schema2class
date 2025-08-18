@@ -117,13 +117,13 @@ class MyClass
 
         $foo = isset($input->{'foo'})
             ? match (true) {
-                is_string($input->{'foo'}) => $input->{'foo'},
+                is_string($input->{'foo'}) => ($input->{'foo'}),
                 (is_int($input->{'foo'}) || is_float($input->{'foo'})) =>
                     (str_contains((string)$input->{'foo'}, '.')
                         ? (float)$input->{'foo'}
                         : (int)$input->{'foo'}
                     ),
-                default => null,
+                default => $input->{'foo'},
             }
             : null;
 
@@ -148,7 +148,7 @@ class MyClass
 
         if (isset($this->foo)) {
             $output['foo'] = match (true) {
-                is_string($this->foo) || (is_int($this->foo) || is_float($this->foo)) => $this->foo,
+                default => $this->foo,
             };
         }
 
@@ -166,7 +166,7 @@ class MyClass
 
         if (isset($this->foo)) {
             $output->{'foo'} = match (true) {
-                is_string($this->foo) || (is_int($this->foo) || is_float($this->foo)) => $this->foo,
+                default => $this->foo,
             };
         }
 

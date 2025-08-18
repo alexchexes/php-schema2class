@@ -437,13 +437,13 @@ class MyClass
         $grox = isset($input->{'grox'}) ? $input->{'grox'} : null;
         $qwert = isset($input->{'qwert'})
             ? match (true) {
-                is_string($input->{'qwert'}) => $input->{'qwert'},
+                is_string($input->{'qwert'}) => ($input->{'qwert'}),
                 (is_int($input->{'qwert'}) || is_float($input->{'qwert'})) =>
                     (str_contains((string)$input->{'qwert'}, '.')
                         ? (float)$input->{'qwert'}
                         : (int)$input->{'qwert'}
                     ),
-                default => null,
+                default => $input->{'qwert'},
             }
             : null;
         $zyx = isset($input->{'zyx'}) ? $input->{'zyx'} : null;
@@ -489,7 +489,7 @@ class MyClass
         }
         if (isset($this->qwert)) {
             $output['qwert'] = match (true) {
-                is_string($this->qwert) || (is_int($this->qwert) || is_float($this->qwert)) => $this->qwert,
+                default => $this->qwert,
             };
         }
         if (isset($this->zyx)) {
@@ -537,7 +537,7 @@ class MyClass
         }
         if (isset($this->qwert)) {
             $output->{'qwert'} = match (true) {
-                is_string($this->qwert) || (is_int($this->qwert) || is_float($this->qwert)) => $this->qwert,
+                default => $this->qwert,
             };
         }
         if (isset($this->zyx)) {

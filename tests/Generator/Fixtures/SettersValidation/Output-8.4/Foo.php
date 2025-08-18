@@ -285,8 +285,8 @@ class Foo
         $_providedOptionals = [];
         $a = isset($input->{'a'})
             ? match (true) {
-                in_array($input->{'a'}, ['a', 'b'], true) || is_array($input->{'a'}) => $input->{'a'},
-                default => null,
+                in_array($input->{'a'}, ['a', 'b'], true) || is_array($input->{'a'}) => ($input->{'a'}),
+                default => $input->{'a'},
             }
             : null;
         $b = isset($input->{'b'}) ? $input->{'b'} : null;
@@ -319,7 +319,7 @@ class Foo
 
         if (isset($this->a)) {
             $output['a'] = match (true) {
-                in_array($this->a, ['a', 'b'], true) || is_array($this->a) => $this->a,
+                default => $this->a,
             };
         }
         if (isset($this->b)) {
@@ -346,7 +346,7 @@ class Foo
 
         if (isset($this->a)) {
             $output->{'a'} = match (true) {
-                in_array($this->a, ['a', 'b'], true) || is_array($this->a) => $this->a,
+                default => $this->a,
             };
         }
         if (isset($this->b)) {

@@ -104,6 +104,7 @@ class MyObject
         $output = [];
         $output['foo'] = match (true) {
             $this->foo instanceof A || $this->foo instanceof B => $this->foo->value,
+            default => $this->foo,
         };
 
         return $output;
@@ -119,6 +120,7 @@ class MyObject
         $output = new \stdClass();
         $output->{'foo'} = match (true) {
             $this->foo instanceof A || $this->foo instanceof B => $this->foo->value,
+            default => $this->foo,
         };
 
         return $output;

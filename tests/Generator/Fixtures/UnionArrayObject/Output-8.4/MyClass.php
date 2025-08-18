@@ -425,7 +425,7 @@ class MyClass
                         fn (object|array $i): MyClassArrayOfObjectsUnionAlternative2Item => MyClassArrayOfObjectsUnionAlternative2Item::fromInput($i, $validate),
                         $input->{'arrayOfObjectsUnion'},
                     ),
-                default => null,
+                default => $input->{'arrayOfObjectsUnion'},
             }
             : null;
         $refArrayOfObjectsUnion = isset($input->{'refArrayOfObjectsUnion'})
@@ -448,7 +448,7 @@ class MyClass
                         fn (object|array $i): MyClassRefArrayOfObjectsUnionAlternative2Item => MyClassRefArrayOfObjectsUnionAlternative2Item::fromInput($i, $validate),
                         $input->{'refArrayOfObjectsUnion'},
                     ),
-                default => null,
+                default => $input->{'refArrayOfObjectsUnion'},
             }
             : null;
         $refAndNotRefArrayOfObjectsUnion = isset($input->{'refAndNotRefArrayOfObjectsUnion'})
@@ -489,11 +489,12 @@ class MyClass
                         fn (object|array $i): MyClassRefAndNotRefArrayOfObjectsUnionAlternative4Item => MyClassRefAndNotRefArrayOfObjectsUnionAlternative4Item::fromInput($i, $validate),
                         $input->{'refAndNotRefArrayOfObjectsUnion'},
                     ),
-                default => null,
+                default => $input->{'refAndNotRefArrayOfObjectsUnion'},
             }
             : null;
         $arrayOfObjAndStringUnion = isset($input->{'arrayOfObjAndStringUnion'})
             ? match (true) {
+                is_string($input->{'arrayOfObjAndStringUnion'}) => ($input->{'arrayOfObjAndStringUnion'}),
                 (is_array($input->{'arrayOfObjAndStringUnion'})
                     && count($input->{'arrayOfObjAndStringUnion'}) === count(array_filter(
                         $input->{'arrayOfObjAndStringUnion'},
@@ -503,8 +504,7 @@ class MyClass
                         fn (object|array $i): MyClassArrayOfObjAndStringUnionAlternative1Item => MyClassArrayOfObjAndStringUnionAlternative1Item::fromInput($i, $validate),
                         $input->{'arrayOfObjAndStringUnion'},
                     ),
-                is_string($input->{'arrayOfObjAndStringUnion'}) => $input->{'arrayOfObjAndStringUnion'},
-                default => null,
+                default => $input->{'arrayOfObjAndStringUnion'},
             }
             : null;
         $unionOfOneArrayOfObjects = isset($input->{'unionOfOneArrayOfObjects'})
@@ -559,6 +559,7 @@ class MyClass
                         fn (MyClassArrayOfObjectsUnionAlternative2Item $i) => $i->toArray(),
                         $this->arrayOfObjectsUnion,
                     ),
+                default => $this->arrayOfObjectsUnion,
             };
         }
         if (isset($this->refArrayOfObjectsUnion)) {
@@ -581,6 +582,7 @@ class MyClass
                         fn (MyClassRefArrayOfObjectsUnionAlternative2Item $i) => $i->toArray(),
                         $this->refArrayOfObjectsUnion,
                     ),
+                default => $this->refArrayOfObjectsUnion,
             };
         }
         if (isset($this->refAndNotRefArrayOfObjectsUnion)) {
@@ -621,6 +623,7 @@ class MyClass
                         fn (MyClassRefAndNotRefArrayOfObjectsUnionAlternative4Item $i) => $i->toArray(),
                         $this->refAndNotRefArrayOfObjectsUnion,
                     ),
+                default => $this->refAndNotRefArrayOfObjectsUnion,
             };
         }
         if (isset($this->arrayOfObjAndStringUnion)) {
@@ -634,7 +637,7 @@ class MyClass
                         fn (MyClassArrayOfObjAndStringUnionAlternative1Item $i) => $i->toArray(),
                         $this->arrayOfObjAndStringUnion,
                     ),
-                is_string($this->arrayOfObjAndStringUnion) => $this->arrayOfObjAndStringUnion,
+                default => $this->arrayOfObjAndStringUnion,
             };
         }
         if (isset($this->unionOfOneArrayOfObjects)) {
@@ -676,6 +679,7 @@ class MyClass
                         fn (MyClassArrayOfObjectsUnionAlternative2Item $i) => $i->toStdClass(),
                         $this->arrayOfObjectsUnion,
                     ),
+                default => $this->arrayOfObjectsUnion,
             };
         }
         if (isset($this->refArrayOfObjectsUnion)) {
@@ -698,6 +702,7 @@ class MyClass
                         fn (MyClassRefArrayOfObjectsUnionAlternative2Item $i) => $i->toStdClass(),
                         $this->refArrayOfObjectsUnion,
                     ),
+                default => $this->refArrayOfObjectsUnion,
             };
         }
         if (isset($this->refAndNotRefArrayOfObjectsUnion)) {
@@ -738,6 +743,7 @@ class MyClass
                         fn (MyClassRefAndNotRefArrayOfObjectsUnionAlternative4Item $i) => $i->toStdClass(),
                         $this->refAndNotRefArrayOfObjectsUnion,
                     ),
+                default => $this->refAndNotRefArrayOfObjectsUnion,
             };
         }
         if (isset($this->arrayOfObjAndStringUnion)) {
@@ -751,7 +757,7 @@ class MyClass
                         fn (MyClassArrayOfObjAndStringUnionAlternative1Item $i) => $i->toStdClass(),
                         $this->arrayOfObjAndStringUnion,
                     ),
-                is_string($this->arrayOfObjAndStringUnion) => $this->arrayOfObjAndStringUnion,
+                default => $this->arrayOfObjAndStringUnion,
             };
         }
         if (isset($this->unionOfOneArrayOfObjects)) {
@@ -823,6 +829,7 @@ class MyClass
                         fn (MyClassArrayOfObjectsUnionAlternative2Item $i) => clone $i,
                         $this->arrayOfObjectsUnion,
                     ),
+                default => $this->arrayOfObjectsUnion,
             };
         }
         if (isset($this->refArrayOfObjectsUnion)) {
@@ -845,6 +852,7 @@ class MyClass
                         fn (MyClassRefArrayOfObjectsUnionAlternative2Item $i) => clone $i,
                         $this->refArrayOfObjectsUnion,
                     ),
+                default => $this->refArrayOfObjectsUnion,
             };
         }
         if (isset($this->refAndNotRefArrayOfObjectsUnion)) {
@@ -885,10 +893,12 @@ class MyClass
                         fn (MyClassRefAndNotRefArrayOfObjectsUnionAlternative4Item $i) => clone $i,
                         $this->refAndNotRefArrayOfObjectsUnion,
                     ),
+                default => $this->refAndNotRefArrayOfObjectsUnion,
             };
         }
         if (isset($this->arrayOfObjAndStringUnion)) {
             $this->arrayOfObjAndStringUnion = match (true) {
+                is_string($this->arrayOfObjAndStringUnion) => ($this->arrayOfObjAndStringUnion),
                 (is_array($this->arrayOfObjAndStringUnion)
                     && count($this->arrayOfObjAndStringUnion) === count(array_filter(
                         $this->arrayOfObjAndStringUnion,
@@ -898,7 +908,7 @@ class MyClass
                         fn (MyClassArrayOfObjAndStringUnionAlternative1Item $i) => clone $i,
                         $this->arrayOfObjAndStringUnion,
                     ),
-                is_string($this->arrayOfObjAndStringUnion) => $this->arrayOfObjAndStringUnion,
+                default => $this->arrayOfObjAndStringUnion,
             };
         }
         if (isset($this->unionOfOneArrayOfObjects)) {

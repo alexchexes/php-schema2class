@@ -146,8 +146,8 @@ class MyClass
         };
         $bar = isset($input->{'bar'})
             ? match (true) {
-                is_string($input->{'bar'}) || is_array($input->{'bar'}) || is_object($input->{'bar'}) => $input->{'bar'},
-                default => null,
+                is_string($input->{'bar'}) || is_array($input->{'bar'}) || is_object($input->{'bar'}) => ($input->{'bar'}),
+                default => $input->{'bar'},
             }
             : null;
 
@@ -171,12 +171,12 @@ class MyClass
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
         $output['foo'] = match (true) {
-            is_string($this->foo) => $this->foo,
+            default => $this->foo,
             is_array($this->foo) || is_object($this->foo) => json_decode(json_encode($this->foo), true),
         };
         if (isset($this->bar)) {
             $output['bar'] = match (true) {
-                is_string($this->bar) => $this->bar,
+                default => $this->bar,
                 is_array($this->bar) || is_object($this->bar) => json_decode(json_encode($this->bar), true),
             };
         }
@@ -194,12 +194,12 @@ class MyClass
         $output = $this->_additionalProperties;
 
         $output->{'foo'} = match (true) {
-            is_string($this->foo) => $this->foo,
+            default => $this->foo,
             is_array($this->foo) || is_object($this->foo) => json_decode(json_encode($this->foo)),
         };
         if (isset($this->bar)) {
             $output->{'bar'} = match (true) {
-                is_string($this->bar) => $this->bar,
+                default => $this->bar,
                 is_array($this->bar) || is_object($this->bar) => json_decode(json_encode($this->bar)),
             };
         }
@@ -247,13 +247,15 @@ class MyClass
     public function __clone()
     {
         $this->foo = match (true) {
-            is_string($this->foo) => $this->foo,
+            is_string($this->foo) => ($this->foo),
             is_array($this->foo) || is_object($this->foo) => json_decode(json_encode($this->foo), is_array($this->foo)),
+            default => $this->foo,
         };
         if (isset($this->bar)) {
             $this->bar = match (true) {
-                is_string($this->bar) => $this->bar,
+                is_string($this->bar) => ($this->bar),
                 is_array($this->bar) || is_object($this->bar) => json_decode(json_encode($this->bar), is_array($this->bar)),
+                default => $this->bar,
             };
         }
     }

@@ -150,10 +150,13 @@ class BarTest
 
         $exampleProp = isset($input->{'exampleProp'})
             ? match (true) {
-                FooTest::validateInput($input->{'exampleProp'}, true) => FooTest::fromInput($input->{'exampleProp'}, $validate),
-                MoiKlass::validateInput($input->{'exampleProp'}, true) => MoiKlass::fromInput($input->{'exampleProp'}, $validate),
-                FooTest_1::validateInput($input->{'exampleProp'}, true) => FooTest_1::fromInput($input->{'exampleProp'}, $validate),
-                default => null,
+                ((is_object($input->{'exampleProp'}) || is_array($input->{'exampleProp'})) && FooTest::validateInput($input->{'exampleProp'}, true)) =>
+                    FooTest::fromInput($input->{'exampleProp'}, $validate),
+                ((is_object($input->{'exampleProp'}) || is_array($input->{'exampleProp'})) && MoiKlass::validateInput($input->{'exampleProp'}, true)) =>
+                    MoiKlass::fromInput($input->{'exampleProp'}, $validate),
+                ((is_object($input->{'exampleProp'}) || is_array($input->{'exampleProp'})) && FooTest_1::validateInput($input->{'exampleProp'}, true)) =>
+                    FooTest_1::fromInput($input->{'exampleProp'}, $validate),
+                default => $input->{'exampleProp'},
             }
             : null;
 
@@ -182,6 +185,7 @@ class BarTest
                     || $this->exampleProp instanceof MoiKlass
                     || $this->exampleProp instanceof FooTest_1 =>
                     $this->exampleProp->toArray(),
+                default => $this->exampleProp,
             };
         }
 
@@ -203,6 +207,7 @@ class BarTest
                     || $this->exampleProp instanceof MoiKlass
                     || $this->exampleProp instanceof FooTest_1 =>
                     $this->exampleProp->toStdClass(),
+                default => $this->exampleProp,
             };
         }
 
