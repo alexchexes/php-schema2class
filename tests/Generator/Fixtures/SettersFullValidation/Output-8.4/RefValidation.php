@@ -223,8 +223,7 @@ class RefValidation
         $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
         $bar = isset($input->{'bar'})
             ? match (true) {
-                is_string($input->{'bar'}) || in_array($input->{'bar'}, [1, 2], true) => $input->{'bar'},
-                default => ($input->{'bar'}),
+                default => $input->{'bar'},
             }
             : null;
         $baz = isset($input->{'baz'})

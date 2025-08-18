@@ -168,13 +168,12 @@ class Cat
                     ) =>
                         ($input->{'hasFur'} !== null
                             ? match (true) {
-                                is_string($input->{'hasFur'}) => $input->{'hasFur'},
+                                default => $input->{'hasFur'},
                                 (is_int($input->{'hasFur'}) || is_float($input->{'hasFur'})) =>
                                     (str_contains((string)$input->{'hasFur'}, '.')
                                         ? (float)$input->{'hasFur'}
                                         : (int)$input->{'hasFur'}
                                     ),
-                                default => ($input->{'hasFur'}),
                             }
                             : null
                         ),
@@ -183,14 +182,13 @@ class Cat
                         || is_bool($input->{'hasFur'})
                     ) =>
                         match (true) {
-                            is_string($input->{'hasFur'}) => $input->{'hasFur'},
+                            default => $input->{'hasFur'},
                             (is_int($input->{'hasFur'}) || is_float($input->{'hasFur'})) =>
                                 (str_contains((string)$input->{'hasFur'}, '.')
                                     ? (float)$input->{'hasFur'}
                                     : (int)$input->{'hasFur'}
                                 ),
                             is_bool($input->{'hasFur'}) => (bool)$input->{'hasFur'},
-                            default => ($input->{'hasFur'}),
                         },
                     default => $input->{'hasFur'},
                 }

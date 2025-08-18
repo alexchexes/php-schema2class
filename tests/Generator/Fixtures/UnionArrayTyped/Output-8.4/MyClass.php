@@ -375,28 +375,22 @@ class MyClass
 
         $unionOfTypedArrays = isset($input->{'unionOfTypedArrays'})
             ? match (true) {
-                is_array($input->{'unionOfTypedArrays'}) => $input->{'unionOfTypedArrays'},
-                default => ($input->{'unionOfTypedArrays'}),
+                default => $input->{'unionOfTypedArrays'},
             }
             : null;
         $refUnionOfTypedArrays = isset($input->{'refUnionOfTypedArrays'})
             ? match (true) {
-                is_array($input->{'refUnionOfTypedArrays'}) => $input->{'refUnionOfTypedArrays'},
-                default => ($input->{'refUnionOfTypedArrays'}),
+                default => $input->{'refUnionOfTypedArrays'},
             }
             : null;
         $refAndNotRefUnionOfTypedArrays = isset($input->{'refAndNotRefUnionOfTypedArrays'})
             ? match (true) {
-                is_array($input->{'refAndNotRefUnionOfTypedArrays'}) => $input->{'refAndNotRefUnionOfTypedArrays'},
-                default => ($input->{'refAndNotRefUnionOfTypedArrays'}),
+                default => $input->{'refAndNotRefUnionOfTypedArrays'},
             }
             : null;
         $unionOfTypedArrayAndString = isset($input->{'unionOfTypedArrayAndString'})
             ? match (true) {
-                is_array($input->{'unionOfTypedArrayAndString'})
-                    || is_string($input->{'unionOfTypedArrayAndString'}) =>
-                    $input->{'unionOfTypedArrayAndString'},
-                default => ($input->{'unionOfTypedArrayAndString'}),
+                default => $input->{'unionOfTypedArrayAndString'},
             }
             : null;
         $unionOfOneTypedArray = isset($input->{'unionOfOneTypedArray'}) ? $input->{'unionOfOneTypedArray'} : null;

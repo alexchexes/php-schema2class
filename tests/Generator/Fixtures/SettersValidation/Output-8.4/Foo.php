@@ -285,8 +285,7 @@ class Foo
         $_providedOptionals = [];
         $a = isset($input->{'a'})
             ? match (true) {
-                in_array($input->{'a'}, ['a', 'b'], true) || is_array($input->{'a'}) => $input->{'a'},
-                default => ($input->{'a'}),
+                default => $input->{'a'},
             }
             : null;
         $b = isset($input->{'b'}) ? $input->{'b'} : null;

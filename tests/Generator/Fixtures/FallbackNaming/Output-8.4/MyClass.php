@@ -1363,8 +1363,7 @@ class MyClass
                     MyClassEnsureArgs1Alternative1::fromInput($input->{'ensureArgs1'}, $validate, $materializeDefaults),
                 (is_object($input->{'ensureArgs1'}) || is_array($input->{'ensureArgs1'})) && MyClassEnsureArgs1Alternative2::validateInput($input->{'ensureArgs1'}, true) =>
                     MyClassEnsureArgs1Alternative2::fromInput($input->{'ensureArgs1'}, $validate, $materializeDefaults),
-                is_string($input->{'ensureArgs1'}) => $input->{'ensureArgs1'},
-                default => ($input->{'ensureArgs1'}),
+                default => $input->{'ensureArgs1'},
             }
             : null;
         $ensureArgs2 = isset($input->{'ensureArgs2'})

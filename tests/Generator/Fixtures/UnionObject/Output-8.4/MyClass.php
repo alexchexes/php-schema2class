@@ -401,8 +401,7 @@ class MyClass
             ? match (true) {
                 (is_object($input->{'objAndStringUnion'}) || is_array($input->{'objAndStringUnion'})) && MyClassObjAndStringUnionAlternative1::validateInput($input->{'objAndStringUnion'}, true) =>
                     MyClassObjAndStringUnionAlternative1::fromInput($input->{'objAndStringUnion'}, $validate),
-                is_string($input->{'objAndStringUnion'}) => $input->{'objAndStringUnion'},
-                default => ($input->{'objAndStringUnion'}),
+                default => $input->{'objAndStringUnion'},
             }
             : null;
         $unionOfOneObj = isset($input->{'unionOfOneObj'})

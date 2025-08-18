@@ -254,8 +254,7 @@ class MyClass
         };
         $qux = ($input->{'qux'} !== null
             ? match (true) {
-                is_string($input->{'qux'}) => $input->{'qux'},
-                default => ($input->{'qux'}),
+                default => $input->{'qux'},
             }
             : null
         );

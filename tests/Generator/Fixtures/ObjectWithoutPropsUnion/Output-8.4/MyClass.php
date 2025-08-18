@@ -145,8 +145,7 @@ class MyClass
         };
         $bar = isset($input->{'bar'})
             ? match (true) {
-                is_string($input->{'bar'}) || is_array($input->{'bar'}) || is_object($input->{'bar'}) => $input->{'bar'},
-                default => ($input->{'bar'}),
+                default => $input->{'bar'},
             }
             : null;
 

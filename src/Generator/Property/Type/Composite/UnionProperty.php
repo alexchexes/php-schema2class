@@ -301,7 +301,7 @@ class UnionProperty extends AbstractProperty
 
         $defaultExpr = $expr;
         if (isset($arms[$expr])) {
-            $defaultExpr = "({$expr})";
+            $defaultExpr = "{$expr}";
         }
 
         return $this->renderConditionalExpr($arms, $defaultExpr);

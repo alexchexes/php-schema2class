@@ -503,8 +503,7 @@ class MyClass
                         fn (object|array $i): MyClassArrayOfObjAndStringUnionAlternative1Item => MyClassArrayOfObjAndStringUnionAlternative1Item::fromInput($i, $validate),
                         $input->{'arrayOfObjAndStringUnion'},
                     ),
-                is_string($input->{'arrayOfObjAndStringUnion'}) => $input->{'arrayOfObjAndStringUnion'},
-                default => ($input->{'arrayOfObjAndStringUnion'}),
+                default => $input->{'arrayOfObjAndStringUnion'},
             }
             : null;
         $unionOfOneArrayOfObjects = isset($input->{'unionOfOneArrayOfObjects'})

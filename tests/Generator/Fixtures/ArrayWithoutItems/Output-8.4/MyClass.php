@@ -373,16 +373,14 @@ class MyClass
         $c = ($input->{'c'} !== null ? $input->{'c'} : null);
         $d = ($input->{'d'} !== null
             ? match (true) {
-                is_array($input->{'d'}) || is_string($input->{'d'}) => $input->{'d'},
-                default => ($input->{'d'}),
+                default => $input->{'d'},
             }
             : null
         );
         $e = isset($input->{'e'}) ? $input->{'e'} : null;
         $f = isset($input->{'f'})
             ? match (true) {
-                is_array($input->{'f'}) || is_string($input->{'f'}) => $input->{'f'},
-                default => ($input->{'f'}),
+                default => $input->{'f'},
             }
             : null;
         $g = null;
@@ -394,8 +392,7 @@ class MyClass
         if (property_exists($input, 'h')) {
             $h = ($input->{'h'} !== null
                 ? match (true) {
-                    is_array($input->{'h'}) || is_string($input->{'h'}) => $input->{'h'},
-                    default => ($input->{'h'}),
+                    default => $input->{'h'},
                 }
                 : null
             );
@@ -405,11 +402,7 @@ class MyClass
         if (property_exists($input, 'i')) {
             $i = ($input->{'i'} !== null
                 ? match (true) {
-                    is_array($input->{'i'})
-                        || is_string($input->{'i'})
-                        || is_array($input->{'i'}) || is_object($input->{'i'}) =>
-                        $input->{'i'},
-                    default => ($input->{'i'}),
+                    default => $input->{'i'},
                 }
                 : null
             );
