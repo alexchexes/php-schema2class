@@ -177,14 +177,16 @@ class Qux
 
         $grox = isset($input->{'grox'})
             ? match (true) {
-                is_string($input->{'grox'}) || is_array($input->{'grox'}) => $input->{'grox'},
+                is_string($input->{'grox'}) || is_array($input->{'grox'}) => $input->{'grox'} /*union*/,
                 (Foo::validateInput($input->{'grox'}, true) || Bar::validateInput($input->{'grox'}, true)) =>
                     match (true) {
-                        Foo::validateInput($input->{'grox'}, true) => Foo::fromInput($input->{'grox'}, $validate),
-                        Bar::validateInput($input->{'grox'}, true) => Bar::fromInput($input->{'grox'}, $validate),
-                        default => null,
+                        ((is_object($input->{'grox'}) || is_array($input->{'grox'})) && Foo::validateInput($input->{'grox'}, true)) =>
+                            Foo::fromInput($input->{'grox'}, $validate),
+                        ((is_object($input->{'grox'}) || is_array($input->{'grox'})) && Bar::validateInput($input->{'grox'}, true)) =>
+                            Bar::fromInput($input->{'grox'}, $validate),
+                        default => $input->{'grox'},
                     },
-                default => null,
+                default => $input->{'grox'},
             }
             : null;
 

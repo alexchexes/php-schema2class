@@ -425,7 +425,7 @@ class MyClass
                         fn (object|array $i): MyClassArrayOfObjectsUnionAlternative2Item => MyClassArrayOfObjectsUnionAlternative2Item::fromInput($i, $validate),
                         $input->{'arrayOfObjectsUnion'},
                     ),
-                default => null,
+                default => $input->{'arrayOfObjectsUnion'},
             }
             : null;
         $refArrayOfObjectsUnion = isset($input->{'refArrayOfObjectsUnion'})
@@ -448,7 +448,7 @@ class MyClass
                         fn (object|array $i): MyClassRefArrayOfObjectsUnionAlternative2Item => MyClassRefArrayOfObjectsUnionAlternative2Item::fromInput($i, $validate),
                         $input->{'refArrayOfObjectsUnion'},
                     ),
-                default => null,
+                default => $input->{'refArrayOfObjectsUnion'},
             }
             : null;
         $refAndNotRefArrayOfObjectsUnion = isset($input->{'refAndNotRefArrayOfObjectsUnion'})
@@ -489,11 +489,12 @@ class MyClass
                         fn (object|array $i): MyClassRefAndNotRefArrayOfObjectsUnionAlternative4Item => MyClassRefAndNotRefArrayOfObjectsUnionAlternative4Item::fromInput($i, $validate),
                         $input->{'refAndNotRefArrayOfObjectsUnion'},
                     ),
-                default => null,
+                default => $input->{'refAndNotRefArrayOfObjectsUnion'},
             }
             : null;
         $arrayOfObjAndStringUnion = isset($input->{'arrayOfObjAndStringUnion'})
             ? match (true) {
+                is_string($input->{'arrayOfObjAndStringUnion'}) => $input->{'arrayOfObjAndStringUnion'} /*union*/,
                 (is_array($input->{'arrayOfObjAndStringUnion'})
                     && count($input->{'arrayOfObjAndStringUnion'}) === count(array_filter(
                         $input->{'arrayOfObjAndStringUnion'},
@@ -503,8 +504,7 @@ class MyClass
                         fn (object|array $i): MyClassArrayOfObjAndStringUnionAlternative1Item => MyClassArrayOfObjAndStringUnionAlternative1Item::fromInput($i, $validate),
                         $input->{'arrayOfObjAndStringUnion'},
                     ),
-                is_string($input->{'arrayOfObjAndStringUnion'}) => $input->{'arrayOfObjAndStringUnion'},
-                default => null,
+                default => $input->{'arrayOfObjAndStringUnion'},
             }
             : null;
         $unionOfOneArrayOfObjects = isset($input->{'unionOfOneArrayOfObjects'})

@@ -142,12 +142,12 @@ class MyClass
 
         $foo = match (true) {
             is_string($input->{'foo'}) || is_array($input->{'foo'}) || is_object($input->{'foo'}) => $input->{'foo'},
-            default => throw new \InvalidArgumentException("could not build property 'foo' from JSON"),
+            default => $validate ? throw new \InvalidArgumentException("could not build property 'foo' from JSON") : $input->{'foo'},
         };
         $bar = isset($input->{'bar'})
             ? match (true) {
-                is_string($input->{'bar'}) || is_array($input->{'bar'}) || is_object($input->{'bar'}) => $input->{'bar'},
-                default => null,
+                is_string($input->{'bar'}) || is_array($input->{'bar'}) || is_object($input->{'bar'}) => $input->{'bar'} /*union*/,
+                default => $input->{'bar'},
             }
             : null;
 

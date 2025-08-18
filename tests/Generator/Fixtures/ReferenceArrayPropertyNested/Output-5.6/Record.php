@@ -355,18 +355,24 @@ class Record
             : null;
         $dataArrayAnyOf = isset($input->{'dataArrayAnyOf'})
             ? array_map(function($i) use ($validate) {
-                return ((Phone::validateInput($i, true))
+                return ((((is_object($i) || is_array($i)) && Phone::validateInput($i, true)))
                     ? Phone::fromInput($i, $validate)
-                    : ((Fio::validateInput($i, true)) ? Fio::fromInput($i, $validate) : null)
+                    : ((((is_object($i) || is_array($i)) && Fio::validateInput($i, true)))
+                        ? Fio::fromInput($i, $validate)
+                        : $i
+                    )
                 );
             }, $input->{'dataArrayAnyOf'})
             : null;
         $dataArrayNestedAnyOf = isset($input->{'dataArrayNestedAnyOf'})
             ? array_map(function($i) use ($validate) {
                 return array_map(function($i) use ($validate) {
-                    return ((Phone::validateInput($i, true))
+                    return ((((is_object($i) || is_array($i)) && Phone::validateInput($i, true)))
                         ? Phone::fromInput($i, $validate)
-                        : ((Fio::validateInput($i, true)) ? Fio::fromInput($i, $validate) : null)
+                        : ((((is_object($i) || is_array($i)) && Fio::validateInput($i, true)))
+                            ? Fio::fromInput($i, $validate)
+                            : $i
+                        )
                     );
                 }, $i);
             }, $input->{'dataArrayNestedAnyOf'})

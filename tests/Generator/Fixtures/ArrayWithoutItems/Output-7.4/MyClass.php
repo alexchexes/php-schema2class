@@ -466,16 +466,14 @@ class MyClass
 
         $_providedOptionals = [];
         $a = $input->{'a'};
+        if ($validate) {
+            throw new \InvalidArgumentException("could not build property 'b' from JSON");
+        }
         $b = $input->{'b'};
         $c = ($input->{'c'} !== null ? $input->{'c'} : null);
-        $d = ($input->{'d'} !== null
-            ? ((is_array($input->{'d'}) || is_string($input->{'d'})) ? $input->{'d'} : null)
-            : null
-        );
+        $d = ($input->{'d'} !== null ? $input->{'d'} : null);
         $e = isset($input->{'e'}) ? $input->{'e'} : null;
-        $f = isset($input->{'f'})
-            ? ((is_array($input->{'f'}) || is_string($input->{'f'})) ? $input->{'f'} : null)
-            : null;
+        $f = isset($input->{'f'}) ? $input->{'f'} : null;
         $g = null;
         if (property_exists($input, 'g')) {
             $g = ($input->{'g'} !== null ? $input->{'g'} : null);
@@ -483,24 +481,12 @@ class MyClass
         }
         $h = null;
         if (property_exists($input, 'h')) {
-            $h = ($input->{'h'} !== null
-                ? ((is_array($input->{'h'}) || is_string($input->{'h'})) ? $input->{'h'} : null)
-                : null
-            );
+            $h = ($input->{'h'} !== null ? $input->{'h'} : null);
             $_providedOptionals['h'] = true;
         }
         $i = null;
         if (property_exists($input, 'i')) {
-            $i = ($input->{'i'} !== null
-                ? ((is_array($input->{'i'})
-                    || is_string($input->{'i'})
-                    || is_array($input->{'i'}) || is_object($input->{'i'})
-                )
-                    ? $input->{'i'}
-                    : null
-                )
-                : null
-            );
+            $i = ($input->{'i'} !== null ? $input->{'i'} : null);
             $_providedOptionals['i'] = true;
         }
 

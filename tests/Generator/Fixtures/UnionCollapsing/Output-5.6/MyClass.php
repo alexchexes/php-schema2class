@@ -307,13 +307,19 @@ class MyClass
             static::validateInput($input);
         }
 
+        if ($validate) {
+            throw new \InvalidArgumentException("could not build property 'foo' from JSON");
+        }
         $foo = $input->{'foo'};
+        if ($validate) {
+            throw new \InvalidArgumentException("could not build property 'bar' from JSON");
+        }
         $bar = $input->{'bar'};
+        if ($validate) {
+            throw new \InvalidArgumentException("could not build property 'baz' from JSON");
+        }
         $baz = $input->{'baz'};
-        $qux = ($input->{'qux'} !== null
-            ? ((is_string($input->{'qux'})) ? $input->{'qux'} : null)
-            : null
-        );
+        $qux = ($input->{'qux'} !== null ? $input->{'qux'} : null);
 
         $obj = new self($foo, $bar, $baz, $qux);
 

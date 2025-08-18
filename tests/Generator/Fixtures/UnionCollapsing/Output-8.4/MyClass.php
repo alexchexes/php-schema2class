@@ -245,20 +245,20 @@ class MyClass
 
         $foo = match (true) {
             is_string($input->{'foo'}) => $input->{'foo'},
-            default => throw new \InvalidArgumentException("could not build property 'foo' from JSON"),
+            default => $validate ? throw new \InvalidArgumentException("could not build property 'foo' from JSON") : $input->{'foo'},
         };
         $bar = match (true) {
             is_string($input->{'bar'}) => $input->{'bar'},
-            default => throw new \InvalidArgumentException("could not build property 'bar' from JSON"),
+            default => $validate ? throw new \InvalidArgumentException("could not build property 'bar' from JSON") : $input->{'bar'},
         };
         $baz = match (true) {
             is_string($input->{'baz'}) => $input->{'baz'},
-            default => throw new \InvalidArgumentException("could not build property 'baz' from JSON"),
+            default => $validate ? throw new \InvalidArgumentException("could not build property 'baz' from JSON") : $input->{'baz'},
         };
         $qux = ($input->{'qux'} !== null
             ? match (true) {
-                is_string($input->{'qux'}) => $input->{'qux'},
-                default => null,
+                is_string($input->{'qux'}) => $input->{'qux'} /*union*/,
+                default => $input->{'qux'},
             }
             : null
         );

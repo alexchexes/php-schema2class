@@ -103,6 +103,9 @@ class MyObject
             static::validateInput($input);
         }
 
+        if ($validate) {
+            throw new \InvalidArgumentException("could not build property 'foo' from JSON");
+        }
         $foo = $input->{'foo'};
 
         $obj = new self($foo);

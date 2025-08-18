@@ -119,9 +119,9 @@ class MyClass
 
         $foo = match (true) {
             is_string($input->{'foo'}) => $input->{'foo'},
-            MyClassFooAlternative2::validateInput($input->{'foo'}, true) =>
+            ((is_object($input->{'foo'}) || is_array($input->{'foo'})) && MyClassFooAlternative2::validateInput($input->{'foo'}, true)) =>
                 MyClassFooAlternative2::fromInput($input->{'foo'}, $validate),
-            default => throw new \InvalidArgumentException("could not build property 'foo' from JSON"),
+            default => $validate ? throw new \InvalidArgumentException("could not build property 'foo' from JSON") : $input->{'foo'},
         };
 
         $obj = new self($foo);

@@ -86,7 +86,7 @@ class MyObject
         $foo = match (true) {
             A::tryFrom($input->{'foo'}) !== null => A::from($input->{'foo'}),
             B::tryFrom($input->{'foo'}) !== null => B::from($input->{'foo'}),
-            default => throw new \InvalidArgumentException("could not build property 'foo' from JSON"),
+            default => $validate ? throw new \InvalidArgumentException("could not build property 'foo' from JSON") : $input->{'foo'},
         };
 
         $obj = new self($foo);

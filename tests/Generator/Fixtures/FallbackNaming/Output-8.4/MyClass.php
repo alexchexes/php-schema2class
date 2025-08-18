@@ -1359,12 +1359,12 @@ class MyClass
         $_providedOptionals_1 = isset($input->{'__providedOptionals'}) ? $input->{'__providedOptionals'} : null;
         $ensureArgs1 = isset($input->{'ensureArgs1'})
             ? match (true) {
-                MyClassEnsureArgs1Alternative1::validateInput($input->{'ensureArgs1'}, true) =>
+                is_string($input->{'ensureArgs1'}) => $input->{'ensureArgs1'} /*union*/,
+                ((is_object($input->{'ensureArgs1'}) || is_array($input->{'ensureArgs1'})) && MyClassEnsureArgs1Alternative1::validateInput($input->{'ensureArgs1'}, true)) =>
                     MyClassEnsureArgs1Alternative1::fromInput($input->{'ensureArgs1'}, $validate, $materializeDefaults),
-                MyClassEnsureArgs1Alternative2::validateInput($input->{'ensureArgs1'}, true) =>
+                ((is_object($input->{'ensureArgs1'}) || is_array($input->{'ensureArgs1'})) && MyClassEnsureArgs1Alternative2::validateInput($input->{'ensureArgs1'}, true)) =>
                     MyClassEnsureArgs1Alternative2::fromInput($input->{'ensureArgs1'}, $validate, $materializeDefaults),
-                is_string($input->{'ensureArgs1'}) => $input->{'ensureArgs1'},
-                default => null,
+                default => $input->{'ensureArgs1'},
             }
             : null;
         $ensureArgs2 = isset($input->{'ensureArgs2'})

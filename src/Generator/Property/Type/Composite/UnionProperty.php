@@ -81,23 +81,45 @@ class UnionProperty extends AbstractProperty
                     }
                 }
 
+                if (
+                    $sub instanceof NestedObjectProperty
+                    || ($sub instanceof ReferenceProperty && $sub->getRefType() instanceof ReferencedTypeClass)
+                ) {
+                    $isObjCheck = "(is_object({$accessor}) || is_array({$accessor}))";
+                    if (!str_contains($discriminator, $isObjCheck)) {
+                        $discriminator = "({$isObjCheck} && {$discriminator})";
+                    }
+                }
+
                 return $discriminator;
             }
         );
 
         $assignmentTemplate = "\${$name} = %s;";
         $fallback           = "\${$name} = {$accessor};";
-        $matchDefault       = "throw new \\InvalidArgumentException(\"could not build property '{$this->key()}' from JSON\")";
+        $validateArg        = ArgumentNames::VALIDATE;
+        $matchDefault       = "\${$validateArg} ? throw new \\InvalidArgumentException(\"could not build property '{$this->key()}' from JSON\") : {$accessor}";
         if (!$this->request->isAtLeastPHP('8.0')) {
             if (isset($arms[$accessor])) {
                 unset($arms[$accessor]);
             }
             if ($arms === []) {
-                return $fallback;
+                return <<<PHP
+if (\${$validateArg}) {
+    throw new \\InvalidArgumentException("could not build property '{$this->key()}' from JSON");
+}
+\${$name} = {$accessor};
+PHP;
             }
         }
 
-        return $this->renderAssignments($arms, $assignmentTemplate, $matchDefault, $fallback);
+        return $this->renderAssignments($arms, $assignmentTemplate, $matchDefault, <<<PHP
+if (\${$validateArg}) {
+    throw new \\InvalidArgumentException("could not build property '{$this->key()}' from JSON");
+}
+\${$name} = {$accessor};
+PHP
+        );
     }
 
     public function convertTypeToArray(): string
@@ -253,11 +275,36 @@ class UnionProperty extends AbstractProperty
     public function inputMappingExpr(string $expr, bool $asserted = false): string
     {
         $arms = $this->collectArms(
-            mappingFn: fn(PropertyInterface $sub): string => $sub->inputMappingExpr($expr),
-            assertFn: fn(PropertyInterface $sub): string => $sub->inputAssertionExpr($expr)
+            mappingFn: fn(PropertyInterface $sub): string => $sub->inputMappingExpr($expr, $asserted),
+            assertFn: function (PropertyInterface $sub) use ($expr): string {
+                $discriminator = $sub->inputAssertionExpr($expr);
+
+                if (
+                    $sub instanceof ReferenceArrayProperty
+                    || $sub instanceof ObjectArrayProperty
+                    || $sub instanceof PrimitiveArrayProperty
+                ) {
+                    $isArrayCheck = "is_array({$expr})";
+                    if (!str_contains($discriminator, $isArrayCheck)) {
+                        $discriminator = "({$isArrayCheck} && {$discriminator})";
+                    }
+                }
+
+                if (
+                    $sub instanceof NestedObjectProperty
+                    || ($sub instanceof ReferenceProperty && $sub->getRefType() instanceof ReferencedTypeClass)
+                ) {
+                    $isObjCheck = "(is_object({$expr}) || is_array({$expr}))";
+                    if (!str_contains($discriminator, $isObjCheck)) {
+                        $discriminator = "({$isObjCheck} && {$discriminator})";
+                    }
+                }
+
+                return $discriminator;
+            }
         );
 
-        return $this->renderConditionalExpr($arms, 'null');
+        return $this->renderConditionalExpr($arms, $expr);
     }
 
     public function outputMappingExpr(string $expr): string
@@ -370,7 +417,22 @@ class UnionProperty extends AbstractProperty
     private function renderConditionalExpr(array $arms, string $default, bool $includeMatchDefault = true): string
     {
         if ($this->request->isAtLeastPHP('8.0')) {
+            if ($includeMatchDefault && isset($arms[$default])) {
+                $defaultConds = $arms[$default];
+                unset($arms[$default]);
+                $arms = ["{$default} /*union*/" => $defaultConds] + $arms;
+            }
+            if ($arms === []) {
+                return $default;
+            }
             return $this->renderMatch($arms, $includeMatchDefault ? $default : null);
+        }
+
+        if (isset($arms[$default])) {
+            unset($arms[$default]);
+        }
+        if ($arms === []) {
+            return $default;
         }
 
         return $this->renderTernaries($arms, $default);

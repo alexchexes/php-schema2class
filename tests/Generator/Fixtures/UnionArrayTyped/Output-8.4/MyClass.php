@@ -375,28 +375,28 @@ class MyClass
 
         $unionOfTypedArrays = isset($input->{'unionOfTypedArrays'})
             ? match (true) {
-                is_array($input->{'unionOfTypedArrays'}) => $input->{'unionOfTypedArrays'},
-                default => null,
+                is_array($input->{'unionOfTypedArrays'}) => $input->{'unionOfTypedArrays'} /*union*/,
+                default => $input->{'unionOfTypedArrays'},
             }
             : null;
         $refUnionOfTypedArrays = isset($input->{'refUnionOfTypedArrays'})
             ? match (true) {
-                is_array($input->{'refUnionOfTypedArrays'}) => $input->{'refUnionOfTypedArrays'},
-                default => null,
+                is_array($input->{'refUnionOfTypedArrays'}) => $input->{'refUnionOfTypedArrays'} /*union*/,
+                default => $input->{'refUnionOfTypedArrays'},
             }
             : null;
         $refAndNotRefUnionOfTypedArrays = isset($input->{'refAndNotRefUnionOfTypedArrays'})
             ? match (true) {
-                is_array($input->{'refAndNotRefUnionOfTypedArrays'}) => $input->{'refAndNotRefUnionOfTypedArrays'},
-                default => null,
+                is_array($input->{'refAndNotRefUnionOfTypedArrays'}) => $input->{'refAndNotRefUnionOfTypedArrays'} /*union*/,
+                default => $input->{'refAndNotRefUnionOfTypedArrays'},
             }
             : null;
         $unionOfTypedArrayAndString = isset($input->{'unionOfTypedArrayAndString'})
             ? match (true) {
                 is_array($input->{'unionOfTypedArrayAndString'})
                     || is_string($input->{'unionOfTypedArrayAndString'}) =>
-                    $input->{'unionOfTypedArrayAndString'},
-                default => null,
+                    $input->{'unionOfTypedArrayAndString'} /*union*/,
+                default => $input->{'unionOfTypedArrayAndString'},
             }
             : null;
         $unionOfOneTypedArray = isset($input->{'unionOfOneTypedArray'}) ? $input->{'unionOfOneTypedArray'} : null;

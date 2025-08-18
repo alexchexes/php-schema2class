@@ -144,9 +144,12 @@ class MyClass
             static::validateInput($input);
         }
 
-        if (MyClassFooAlternative2::validateInput($input->{'foo'}, true)) {
+        if (((is_object($input->{'foo'}) || is_array($input->{'foo'})) && MyClassFooAlternative2::validateInput($input->{'foo'}, true))) {
             $foo = MyClassFooAlternative2::fromInput($input->{'foo'}, $validate);
         } else {
+            if ($validate) {
+                throw new \InvalidArgumentException("could not build property 'foo' from JSON");
+            }
             $foo = $input->{'foo'};
         }
 

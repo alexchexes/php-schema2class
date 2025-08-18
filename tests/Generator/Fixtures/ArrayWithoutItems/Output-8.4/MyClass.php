@@ -369,21 +369,21 @@ class MyClass
         $a = $input->{'a'};
         $b = match (true) {
             is_array($input->{'b'}) || is_string($input->{'b'}) => $input->{'b'},
-            default => throw new \InvalidArgumentException("could not build property 'b' from JSON"),
+            default => $validate ? throw new \InvalidArgumentException("could not build property 'b' from JSON") : $input->{'b'},
         };
         $c = ($input->{'c'} !== null ? $input->{'c'} : null);
         $d = ($input->{'d'} !== null
             ? match (true) {
-                is_array($input->{'d'}) || is_string($input->{'d'}) => $input->{'d'},
-                default => null,
+                is_array($input->{'d'}) || is_string($input->{'d'}) => $input->{'d'} /*union*/,
+                default => $input->{'d'},
             }
             : null
         );
         $e = isset($input->{'e'}) ? $input->{'e'} : null;
         $f = isset($input->{'f'})
             ? match (true) {
-                is_array($input->{'f'}) || is_string($input->{'f'}) => $input->{'f'},
-                default => null,
+                is_array($input->{'f'}) || is_string($input->{'f'}) => $input->{'f'} /*union*/,
+                default => $input->{'f'},
             }
             : null;
         $g = null;
@@ -395,8 +395,8 @@ class MyClass
         if (property_exists($input, 'h')) {
             $h = ($input->{'h'} !== null
                 ? match (true) {
-                    is_array($input->{'h'}) || is_string($input->{'h'}) => $input->{'h'},
-                    default => null,
+                    is_array($input->{'h'}) || is_string($input->{'h'}) => $input->{'h'} /*union*/,
+                    default => $input->{'h'},
                 }
                 : null
             );
@@ -409,8 +409,8 @@ class MyClass
                     is_array($input->{'i'})
                         || is_string($input->{'i'})
                         || is_array($input->{'i'}) || is_object($input->{'i'}) =>
-                        $input->{'i'},
-                    default => null,
+                        $input->{'i'} /*union*/,
+                    default => $input->{'i'},
                 }
                 : null
             );

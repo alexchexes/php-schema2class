@@ -149,8 +149,8 @@ class Cat
 
         $hasFur = isset($input->{'hasFur'})
             ? match (true) {
-                in_array($input->{'hasFur'}, ['a', 'b'], true) || is_array($input->{'hasFur'}) => $input->{'hasFur'},
-                default => null,
+                in_array($input->{'hasFur'}, ['a', 'b'], true) || is_array($input->{'hasFur'}) => $input->{'hasFur'} /*union*/,
+                default => $input->{'hasFur'},
             }
             : null;
 

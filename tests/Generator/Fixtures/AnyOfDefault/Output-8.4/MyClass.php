@@ -146,9 +146,8 @@ class MyClass
 
         $foo = isset($input->{'foo'})
             ? match (true) {
-                is_string($input->{'foo'}) => $input->{'foo'},
-                is_int($input->{'foo'}) => (int)$input->{'foo'},
-                default => null,
+                is_string($input->{'foo'}) || is_int($input->{'foo'}) => $input->{'foo'} /*union*/,
+                default => $input->{'foo'},
             }
             : null;
 
