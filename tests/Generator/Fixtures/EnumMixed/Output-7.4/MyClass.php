@@ -550,10 +550,10 @@ class MyClass
         $_providedOptionals = [];
         $foo = $input->{'foo'};
         $bar = $input->{'bar'};
-        $baz = ($input->{'baz'} !== null ? $input->{'baz'} : null);
+        $baz = $input->{'baz'};
         $contradiction = (int)$input->{'contradiction'};
         $contradiction2 = $input->{'contradiction2'};
-        $nullable = ($input->{'nullable'} !== null ? $input->{'nullable'} : null);
+        $nullable = $input->{'nullable'};
         $inferString = isset($input->{'inferString'}) ? $input->{'inferString'} : null;
         $inferInt = isset($input->{'inferInt'}) ? $input->{'inferInt'} : null;
         $optionalNullable = null;

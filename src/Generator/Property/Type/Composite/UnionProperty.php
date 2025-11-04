@@ -70,7 +70,7 @@ class UnionProperty extends AbstractProperty
         $accessor       = "\${$inputVarName}->{{$this->keyStr()}}";
 
         $arms = $this->collectArms(
-            mappingFn: fn(PropertyInterface $sub): string => $sub->inputMappingExpr($accessor, asserted: true),
+            mappingFn: fn(PropertyInterface $sub): string => $sub->inputMappingExpr($accessor),
             assertFn: function (PropertyInterface $sub) use ($accessor): string {
                 $discriminator = $sub->inputAssertionExpr($accessor);
 
@@ -102,12 +102,10 @@ class UnionProperty extends AbstractProperty
         $assignmentTemplate = "\${$name} = %s;";
         $fallback           = "\${$name} = {$accessor};";
         $matchDefault       = $accessor;
+
         if (!$this->request->isAtLeastPHP('8.0')) {
             if (isset($arms[$accessor])) {
                 unset($arms[$accessor]);
-            }
-            if ($arms === []) {
-                return $fallback;
             }
         }
 
@@ -535,5 +533,15 @@ class UnionProperty extends AbstractProperty
         }
 
         return false;
+    }
+    
+    public function inputMappingRequiresNullCheck(): bool
+    {
+        return false; // conditional checks already guard against it
+    }
+
+    public function outputMappingRequiresNullCheck(): bool
+    {
+        return false; // conditional checks already guard against it
     }
 }

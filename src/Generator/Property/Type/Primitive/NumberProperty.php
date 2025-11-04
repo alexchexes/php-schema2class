@@ -74,4 +74,13 @@ class NumberProperty extends AbstractProperty
         return SchemaKeywords::hasAny($this->schema, SchemaKeywords::NUMERIC_VALIDATION);
     }
 
+    public function inputMappingRequiresNullCheck(): bool
+    {
+        return true;
+    }
+
+    public function outputMappingRequiresNullCheck(): bool
+    {
+        return false;
+    }
 }

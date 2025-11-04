@@ -64,4 +64,16 @@ interface TypeExpressionInterface
      * Used for generation of `toStdClass` method.
      */
     public function outputMappingExprStdClass(string $expr): string;
+
+    /** 
+     * Indicates whether this property requires check for !== null
+     * before performing input conversion in the generated class runtime code.
+     */
+    public function inputMappingRequiresNullCheck(): bool;
+
+    /** 
+     * Indicates whether this property requires check for !== null
+     * before performing output conversion in the generated class runtime code.
+     */
+    public function outputMappingRequiresNullCheck(): bool;
 }

@@ -453,10 +453,10 @@ class MyClass
         $_providedOptionals = [];
         $foo = $input->{'foo'};
         $bar = $input->{'bar'};
-        $baz = ($input->{'baz'} !== null ? $input->{'baz'} : null);
+        $baz = $input->{'baz'};
         $contradiction = MyClassContradiction::from($input->{'contradiction'});
         $contradiction2 = $input->{'contradiction2'};
-        $nullable = ($input->{'nullable'} !== null ? MyClassNullable::from($input->{'nullable'}) : null);
+        $nullable = $input->{'nullable'} !== null ? MyClassNullable::from($input->{'nullable'}) : null;
         $inferString = isset($input->{'inferString'})
             ? MyClassInferString::from($input->{'inferString'})
             : null;
@@ -511,7 +511,7 @@ class MyClass
         }
         $output['contradiction'] = $this->contradiction->value;
         $output['contradiction2'] = $this->contradiction2;
-        $output['nullable'] = $this->nullable->value;
+        $output['nullable'] = $this->nullable !== null ? $this->nullable->value : null;
         if (isset($this->optionalNullable) || array_key_exists('optionalNullable', $this->_providedOptionals)) {
             $output['optionalNullable'] = ($this->optionalNullable !== null ? $this->optionalNullable->value : null);
         }
@@ -539,7 +539,7 @@ class MyClass
         }
         $output->{'contradiction'} = $this->contradiction->value;
         $output->{'contradiction2'} = $this->contradiction2;
-        $output->{'nullable'} = $this->nullable->value;
+        $output->{'nullable'} = $this->nullable !== null ? $this->nullable->value : null;
         if (isset($this->optionalNullable) || array_key_exists('optionalNullable', $this->_providedOptionals)) {
             $output->{'optionalNullable'} = ($this->optionalNullable !== null ? $this->optionalNullable->value : null);
         }

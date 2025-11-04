@@ -79,7 +79,7 @@ class PrimitiveArrayProperty extends AbstractProperty
         if ($this->isAssociativeArray) {
             return "(array){$expr}";
         }
-        return parent::inputMappingExpr($expr, $asserted);
+        return $expr;
     }
 
     public function needsValidation(): bool
@@ -121,6 +121,19 @@ class PrimitiveArrayProperty extends AbstractProperty
             }
         }
                 
+        return false;
+    }
+    
+    public function inputMappingRequiresNullCheck(): bool
+    {
+        if ($this->isAssociativeArray) {
+            return true;
+        }
+        return false;
+    }
+
+    public function outputMappingRequiresNullCheck(): bool
+    {
         return false;
     }
 }

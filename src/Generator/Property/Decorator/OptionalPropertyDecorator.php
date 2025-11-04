@@ -168,9 +168,8 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator
                 "array_key_exists('{$this->key}', \$this->{$OPTIONALS})",
             ], lengthToWrap: 110);
 
-            $keyStr = $this->keyStr();
             $map = $this->outputMappingExprStdClass("\$this->{$propName}");
-            $inner = "\${$outputVarName}->{{$keyStr}} = {$map};";
+            $inner = "\${$outputVarName}->{{$this->keyStr()}} = {$map};";
             return "if {$parenthesizedCond} {\n" . StringUtils::indentCode($inner) . "\n}";
         }
 

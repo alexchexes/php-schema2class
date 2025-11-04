@@ -35,5 +35,14 @@ class MixedProperty extends AbstractProperty
     {
         return false;
     }
+    
+    public function inputMappingRequiresNullCheck(): bool
+    {
+        return false;
+    }
 
+    public function outputMappingRequiresNullCheck(): bool
+    {
+        return false;
+    }
 }

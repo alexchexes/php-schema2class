@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ns\UnionCollapsing_8_4;
+namespace Ns\TypedArrayRequiredNullable_8_4;
 
 class MyClass
 {
@@ -10,84 +10,36 @@ class MyClass
      * Schema used to validate input for creating instances of this class
      */
     private static array $_schema = [
-        'required' => [
-            'foo',
-            'bar',
-            'baz',
-            'qux',
-        ],
+        'type' => 'object',
         'properties' => [
             'foo' => [
-                'oneOf' => [
-                    [
-                        'type' => 'string',
-                        'format' => 'uuid',
-                        'description' => 'Description of \'uuid\' string',
-                    ],
-                    [
-                        'type' => 'string',
-                        'description' => 'Description of \'maxLength\' string',
-                        'maxLength' => 0,
-                        'deprecated' => true,
-                    ],
-                ],
-            ],
-            'bar' => [
-                'oneOf' => [
-                    [
-                        '$ref' => '#/definitions/FooDef',
-                    ],
-                    [
-                        '$ref' => '#/definitions/BarDef',
-                    ],
-                ],
-            ],
-            'baz' => [
                 'anyOf' => [
                     [
-                        '$ref' => '#/definitions/FooDef',
+                        'type' => 'null',
                     ],
                     [
-                        '$ref' => '#/definitions/BarDef',
-                    ],
-                ],
-            ],
-            'qux' => [
-                'oneOf' => [
-                    [
-                        'type' => 'string',
-                        'format' => 'uuid',
-                        'description' => 'Description of \'uuid\' string',
-                    ],
-                    [
-                        'type' => [
-                            'string',
-                            'null',
+                        'type' => 'array',
+                        'items' => [
+                            '$ref' => '#/definitions/FooItem',
                         ],
-                        'description' => 'Description of \'maxLength\' string',
-                        'maxLength' => 0,
-                        'deprecated' => true,
-                    ],
-                    [
-                        '$ref' => '#/definitions/FooDef',
-                    ],
-                    [
-                        '$ref' => '#/definitions/BarDef',
                     ],
                 ],
             ],
         ],
+        'required' => [
+            'foo',
+        ],
         'definitions' => [
-            'FooDef' => [
-                'type' => 'string',
-                'format' => 'uuid',
-                'description' => 'Description of a definition of \'uuid\' string',
-            ],
-            'BarDef' => [
-                'type' => 'string',
-                'description' => 'Description of a definition of \'maxLength\' string',
-                'maxLength' => 0,
-                'deprecated' => true,
+            'FooItem' => [
+                'type' => 'object',
+                'properties' => [
+                    'innerFoo' => [
+                        'type' => 'string',
+                    ],
+                ],
+                'required' => [
+                    'foo',
+                ],
             ],
         ],
     ];
@@ -97,9 +49,6 @@ class MyClass
      */
     private static array $_namesMap = [
         'foo' => 'foo',
-        'bar' => 'bar',
-        'baz' => 'baz',
-        'qux' => 'qux',
     ];
 
     /**
@@ -107,22 +56,19 @@ class MyClass
      */
     private \stdClass $_additionalProperties;
 
-    private string $foo;
+    /**
+     * @var FooItem[]|null
+     */
+    private ?array $foo;
 
-    private string $bar;
-
-    private string $baz;
-
-    private ?string $qux;
-
-    public function __construct(string $foo, string $bar, string $baz, ?string $qux)
+    /**
+     * @param FooItem[]|null $foo
+     */
+    public function __construct(?array $foo)
     {
         $this->_additionalProperties = new \stdClass();
 
         $this->foo = $foo;
-        $this->bar = $bar;
-        $this->baz = $baz;
-        $this->qux = $qux;
     }
 
     /**
@@ -162,66 +108,21 @@ class MyClass
         return $clone;
     }
 
-    public function getFoo(): string
+    /**
+     * @return FooItem[]|null
+     */
+    public function getFoo(): ?array
     {
         return $this->foo;
     }
 
-    public function withFoo(string $foo, bool $validate = true): self
+    /**
+     * @param FooItem[]|null $foo
+     */
+    public function withFoo(?array $foo, bool $validate = true): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($foo, self::$_schema['properties']['foo']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->foo = $foo;
-
-        return $clone;
-    }
-
-    public function getBar(): string
-    {
-        return $this->bar;
-    }
-
-    public function withBar(string $bar, bool $validate = true): self
-    {
-        $clone = clone $this;
-        $clone->bar = $bar;
-        if ($validate) {
-            $clone->validate();
-        }
-        return $clone;
-    }
-
-    public function getBaz(): string
-    {
-        return $this->baz;
-    }
-
-    public function withBaz(string $baz, bool $validate = true): self
-    {
-        $clone = clone $this;
-        $clone->baz = $baz;
-        if ($validate) {
-            $clone->validate();
-        }
-        return $clone;
-    }
-
-    public function getQux(): ?string
-    {
-        return $this->qux;
-    }
-
-    public function withQux(?string $qux, bool $validate = true): self
-    {
-        $clone = clone $this;
-        $clone->qux = $qux;
         if ($validate) {
             $clone->validate();
         }
@@ -243,12 +144,11 @@ class MyClass
             static::validateInput($input);
         }
 
-        $foo = $input->{'foo'};
-        $bar = $input->{'bar'};
-        $baz = $input->{'baz'};
-        $qux = $input->{'qux'};
+        $foo = $input->{'foo'} !== null
+            ? array_map(fn (object|array $i): FooItem => FooItem::fromInput($i, $validate), $input->{'foo'})
+            : null;
 
-        $obj = new self($foo, $bar, $baz, $qux);
+        $obj = new self($foo);
 
         $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
         if (!empty($_additionalProperties)) {
@@ -267,10 +167,9 @@ class MyClass
     {
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
-        $output['foo'] = $this->foo;
-        $output['bar'] = $this->bar;
-        $output['baz'] = $this->baz;
-        $output['qux'] = $this->qux;
+        $output['foo'] = $this->foo !== null
+            ? array_map(fn (FooItem $i): array => $i->toArray(), $this->foo)
+            : null;
 
         return $output;
     }
@@ -284,10 +183,9 @@ class MyClass
     {
         $output = $this->_additionalProperties;
 
-        $output->{'foo'} = $this->foo;
-        $output->{'bar'} = $this->bar;
-        $output->{'baz'} = $this->baz;
-        $output->{'qux'} = $this->qux;
+        $output->{'foo'} = $this->foo !== null
+            ? array_map(fn (FooItem $i): object => $i->toStdClass(), $this->foo)
+            : null;
 
         return $output;
     }

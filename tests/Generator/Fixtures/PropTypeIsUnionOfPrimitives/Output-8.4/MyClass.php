@@ -408,22 +408,51 @@ class MyClass
         }
 
         $_providedOptionals = [];
-        $foo = $input->{'foo'};
-        $bar = $input->{'bar'};
-        $baz = $input->{'baz'};
-        $qux = $input->{'qux'};
-        $thud = ($input->{'thud'} !== null
-            ? match (true) {
-                default => $input->{'thud'},
-                (is_int($input->{'thud'}) || is_float($input->{'thud'})) =>
-                    (str_contains((string)$input->{'thud'}, '.')
-                        ? (float)$input->{'thud'}
-                        : (int)$input->{'thud'}
-                    ),
-                is_bool($input->{'thud'}) => (bool)$input->{'thud'},
-            }
-            : null
-        );
+        $foo = match (true) {
+            default => $input->{'foo'},
+            (is_int($input->{'foo'}) || is_float($input->{'foo'})) =>
+                (str_contains((string)$input->{'foo'}, '.')
+                    ? (float)$input->{'foo'}
+                    : (int)$input->{'foo'}
+                ),
+            is_bool($input->{'foo'}) => (bool)$input->{'foo'},
+        };
+        $bar = match (true) {
+            default => $input->{'bar'},
+            (is_int($input->{'bar'}) || is_float($input->{'bar'})) =>
+                (str_contains((string)$input->{'bar'}, '.')
+                    ? (float)$input->{'bar'}
+                    : (int)$input->{'bar'}
+                ),
+            is_bool($input->{'bar'}) => (bool)$input->{'bar'},
+        };
+        $baz = match (true) {
+            default => $input->{'baz'},
+            (is_int($input->{'baz'}) || is_float($input->{'baz'})) =>
+                (str_contains((string)$input->{'baz'}, '.')
+                    ? (float)$input->{'baz'}
+                    : (int)$input->{'baz'}
+                ),
+            is_bool($input->{'baz'}) => (bool)$input->{'baz'},
+        };
+        $qux = match (true) {
+            default => $input->{'qux'},
+            (is_int($input->{'qux'}) || is_float($input->{'qux'})) =>
+                (str_contains((string)$input->{'qux'}, '.')
+                    ? (float)$input->{'qux'}
+                    : (int)$input->{'qux'}
+                ),
+            is_bool($input->{'qux'}) => (bool)$input->{'qux'},
+        };
+        $thud = match (true) {
+            default => $input->{'thud'},
+            (is_int($input->{'thud'}) || is_float($input->{'thud'})) =>
+                (str_contains((string)$input->{'thud'}, '.')
+                    ? (float)$input->{'thud'}
+                    : (int)$input->{'thud'}
+                ),
+            is_bool($input->{'thud'}) => (bool)$input->{'thud'},
+        };
         $optFoo = isset($input->{'optFoo'})
             ? match (true) {
                 default => $input->{'optFoo'},

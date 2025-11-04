@@ -12,6 +12,12 @@ use Helmich\Schema2Class\Generator\Property\Type\Primitive\NullProperty;
 use Helmich\Schema2Class\Generator\Property\Type\PropertyInterface;
 use Helmich\Schema2Class\Generator\Property\Type\Primitive\StringProperty;
 use Helmich\Schema2Class\Generator\Expression\TernaryGenerator;
+use Helmich\Schema2Class\Generator\Property\Type\Array\PrimitiveArrayProperty;
+use Helmich\Schema2Class\Generator\Property\Type\Array\TypedArrayProperty;
+use Helmich\Schema2Class\Generator\Property\Type\Primitive\BooleanProperty;
+use Helmich\Schema2Class\Generator\Property\Type\Primitive\IntegerProperty;
+use Helmich\Schema2Class\Generator\Property\Type\Primitive\NumberProperty;
+use Helmich\Schema2Class\Util\StringUtils;
 use Helmich\Schema2Class\Writer\WriterInterface;
 use Laminas\Code\Generator\PropertyValueGenerator;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -108,31 +114,46 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface
 
     public function convertInputToType(): string
     {
+        if (!$this->inner->inputMappingRequiresNullCheck()) {
+            return $this->inner->convertInputToType();
+        }
         $varName  = $this->inner->varName();
-
         $inputVarName = ArgumentNames::INPUT;
         $accessor = "\${$inputVarName}->{{$this->keyStr()}}";
 
-        $mapped = $this->inner->inputMappingExpr($accessor);
-
-        // we don't need null guards for string and null type properties
-        $needsGuard = !($this->inner instanceof StringProperty || $this->inner instanceof NullProperty);
-
-        $expr = $needsGuard
-            ? TernaryGenerator::make("{$accessor} !== null", "{$mapped}", "null")
-            : $mapped;               // clean one-liner for strings/nulls
-
-        return "\${$varName} = {$expr};";
+        $innerMap = $this->inner->inputMappingExpr($accessor);
+        $map = TernaryGenerator::make("{$accessor} !== null", "{$innerMap}", "null", parens: false);
+        return "\${$varName} = {$map};";
     }
 
     public function convertTypeToArray(): string
     {
-        return $this->inner->convertTypeToArray();
+        if (!$this->inner->outputMappingRequiresNullCheck()) {
+            return $this->inner->convertTypeToArray();
+        }
+        $propName  = $this->inner->propName();
+        $outputVarName = VariableNames::OUTPUT;
+
+        $accessor = "\$this->{$propName}";
+        $inner = $this->inner->outputMappingExpr($accessor);
+        $map = TernaryGenerator::make("{$accessor} !== null", $inner, "null", parens: false);
+
+        return "\${$outputVarName}[{$this->keyStr()}] = {$map};";
     }
 
     public function convertTypeToStdClass(): string
     {
-        return $this->inner->convertTypeToStdClass();
+        if (!$this->inner->outputMappingRequiresNullCheck()) {
+            return $this->inner->convertTypeToStdClass();
+        }
+        $propName  = $this->inner->propName();
+        $outputVarName = VariableNames::OUTPUT;
+
+        $accessor = "\$this->{$propName}";
+        $inner = $this->inner->outputMappingExprStdClass($accessor);
+        $map = TernaryGenerator::make("{$accessor} !== null", $inner, "null", parens: false);
+
+        return "\${$outputVarName}->{{$this->keyStr()}} = {$map};";
     }
 
     public function typeAnnotation(): string
@@ -234,5 +255,15 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface
     public function formatValue(mixed $value): PropertyValueGenerator
     {
         return $this->inner->formatValue($value);
+    }
+
+    public function inputMappingRequiresNullCheck(): bool
+    {
+        return $this->inner->inputMappingRequiresNullCheck();
+    }
+
+    public function outputMappingRequiresNullCheck(): bool
+    {
+        return $this->inner->outputMappingRequiresNullCheck();
     }
 }

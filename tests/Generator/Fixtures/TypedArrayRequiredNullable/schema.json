@@ -1,0 +1,26 @@
+{
+  "definitions": {
+    "FooItem": {
+      "type": "object",
+      "properties": {
+        "innerFoo": { "type": "string" }
+      },
+      "required": ["foo"]
+    },
+    "MyClass": {
+      "type": "object",
+      "properties": {
+        "foo": {
+          "anyOf": [
+            { "type": "null" },
+            {
+              "type": "array",
+              "items": { "$ref": "#/definitions/FooItem" }
+            }
+          ]
+        }
+      },
+      "required": ["foo"]
+    }
+  }
+}

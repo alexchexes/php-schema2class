@@ -148,4 +148,21 @@ class StringEnumProperty extends AbstractProperty
     {
         return $this->request->getTargetClass() . $this->nameForClass;
     }
+    
+
+    public function inputMappingRequiresNullCheck(): bool
+    {
+        if ($this->request->isAtLeastPHP("8.1") && !$this->request->getNoEnums()) {
+            return true;
+        }
+        return false;
+    }
+
+    public function outputMappingRequiresNullCheck(): bool
+    {
+        if ($this->request->isAtLeastPHP("8.1") && !$this->request->getNoEnums()) {
+            return true;
+        }
+        return false;
+    }
 }

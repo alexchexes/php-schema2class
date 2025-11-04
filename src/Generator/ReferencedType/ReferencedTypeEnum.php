@@ -122,5 +122,20 @@ readonly class ReferencedTypeEnum implements ReferencedTypeInterface
     {
         return $this->canUseNativeEnum();
     }
+    
+    public function inputMappingRequiresNullCheck(): bool
+    {
+        if ($this->canUseNativeEnum()) {
+            return true;
+        }
+        return false;
+    }
 
+    public function outputMappingRequiresNullCheck(): bool
+    {
+        if ($this->canUseNativeEnum()) {
+            return true;
+        }
+        return false;
+    }
 }

@@ -105,4 +105,14 @@ class NestedObjectProperty extends AbstractProperty
         // Generated sub type has its own validation and PHP enforces the type.
         return false;
     }
+
+    public function inputMappingRequiresNullCheck(): bool
+    {
+        return true;
+    }
+
+    public function outputMappingRequiresNullCheck(): bool
+    {
+        return true;
+    }
 }

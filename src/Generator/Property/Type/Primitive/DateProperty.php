@@ -62,4 +62,14 @@ class DateProperty extends AbstractProperty
         // DateTime objects are validated via their type hint.
         return false;
     }
+
+    public function inputMappingRequiresNullCheck(): bool
+    {
+        return true;
+    }
+
+    public function outputMappingRequiresNullCheck(): bool
+    {
+        return true;
+    }
 }

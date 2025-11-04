@@ -377,8 +377,8 @@ class MyClass
         $_providedOptionals = [];
         $a = $input->{'a'};
         $b = $input->{'b'};
-        $c = ($input->{'c'} !== null ? $input->{'c'} : null);
-        $d = ($input->{'d'} !== null ? $input->{'d'} : null);
+        $c = $input->{'c'};
+        $d = $input->{'d'};
         $e = isset($input->{'e'}) ? $input->{'e'} : null;
         $f = isset($input->{'f'}) ? $input->{'f'} : null;
         $g = null;

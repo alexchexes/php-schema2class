@@ -84,4 +84,14 @@ class ReferenceProperty extends AbstractProperty
     {
         return $this->refType;
     }
+
+    public function inputMappingRequiresNullCheck(): bool
+    {
+        return $this->refType->inputMappingRequiresNullCheck();
+    }
+
+    public function outputMappingRequiresNullCheck(): bool
+    {
+        return $this->refType->outputMappingRequiresNullCheck();
+    }
 }

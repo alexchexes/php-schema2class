@@ -169,4 +169,14 @@ class IntersectProperty extends AbstractProperty
         // Resulting class is type hinted and validated separately.
         return false;
     }
+    
+    public function inputMappingRequiresNullCheck(): bool
+    {
+        return true;
+    }
+
+    public function outputMappingRequiresNullCheck(): bool
+    {
+        return true;
+    }
 }

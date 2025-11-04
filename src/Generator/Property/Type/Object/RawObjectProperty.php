@@ -67,4 +67,14 @@ class RawObjectProperty extends AbstractProperty
         // sufficient (or validation would be meaningless for PHP < 8).
         return false;
     }
+
+    public function inputMappingRequiresNullCheck(): bool
+    {
+        return true;
+    }
+
+    public function outputMappingRequiresNullCheck(): bool
+    {
+        return true;
+    }
 }

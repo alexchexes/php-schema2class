@@ -1010,20 +1010,18 @@ class MyClass
         $thud = $input->{'thud'};
         $grox = $input->{'grox'};
         $nullFoo = $input->{'nullFoo'};
-        $nullBar = ($input->{'nullBar'} !== null
+        $nullBar = $input->{'nullBar'} !== null
             ? (str_contains((string)$input->{'nullBar'}, '.')
                 ? (float)$input->{'nullBar'}
                 : (int)$input->{'nullBar'}
             )
-            : null
-        );
-        $nullBaz = ($input->{'nullBaz'} !== null ? (int)$input->{'nullBaz'} : null);
-        $nullQux = ($input->{'nullQux'} !== null ? (bool)$input->{'nullQux'} : null);
-        $nullQuux = ($input->{'nullQuux'} !== null
+            : null;
+        $nullBaz = $input->{'nullBaz'} !== null ? (int)$input->{'nullBaz'} : null;
+        $nullQux = $input->{'nullQux'} !== null ? (bool)$input->{'nullQux'} : null;
+        $nullQuux = $input->{'nullQuux'} !== null
             ? MyClassNullQuux::fromInput($input->{'nullQuux'}, $validate)
-            : null
-        );
-        $nullThud = ($input->{'nullThud'} !== null ? $input->{'nullThud'} : null);
+            : null;
+        $nullThud = $input->{'nullThud'};
         $optFoo = isset($input->{'optFoo'}) ? $input->{'optFoo'} : null;
         $optBar = isset($input->{'optBar'}) ? $input->{'optBar'} : null;
         $optBaz = isset($input->{'optBaz'}) ? $input->{'optBaz'} : null;
@@ -1129,7 +1127,7 @@ class MyClass
         $output['nullBar'] = $this->nullBar;
         $output['nullBaz'] = $this->nullBaz;
         $output['nullQux'] = $this->nullQux;
-        $output['nullQuux'] = $this->nullQuux->toArray();
+        $output['nullQuux'] = $this->nullQuux !== null ? $this->nullQuux->toArray() : null;
         $output['nullThud'] = $this->nullThud;
         if (isset($this->optFoo)) {
             $output['optFoo'] = $this->optFoo;
@@ -1194,7 +1192,7 @@ class MyClass
         $output->{'nullBar'} = $this->nullBar;
         $output->{'nullBaz'} = $this->nullBaz;
         $output->{'nullQux'} = $this->nullQux;
-        $output->{'nullQuux'} = $this->nullQuux->toStdClass();
+        $output->{'nullQuux'} = $this->nullQuux !== null ? $this->nullQuux->toStdClass() : null;
         $output->{'nullThud'} = $this->nullThud;
         if (isset($this->optFoo)) {
             $output->{'optFoo'} = $this->optFoo;

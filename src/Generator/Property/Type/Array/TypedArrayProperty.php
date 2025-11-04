@@ -189,4 +189,14 @@ class TypedArrayProperty extends AbstractProperty
         // Typed arrays always require validation since their type-hint is just 'array'
         return true;
     }
+    
+    public function inputMappingRequiresNullCheck(): bool
+    {
+        return true;
+    }
+
+    public function outputMappingRequiresNullCheck(): bool
+    {
+        return true;
+    }
 }

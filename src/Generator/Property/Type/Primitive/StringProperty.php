@@ -47,4 +47,13 @@ class StringProperty extends AbstractProperty
         return SchemaKeywords::hasAny($this->schema, SchemaKeywords::STRING_VALIDATION);
     }
 
+    public function inputMappingRequiresNullCheck(): bool
+    {
+        return false;
+    }
+
+    public function outputMappingRequiresNullCheck(): bool
+    {
+        return false;
+    }
 }

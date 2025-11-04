@@ -12,54 +12,54 @@ use Laminas\Code\Generator\ValueGenerator;
  */
 class NullProperty extends AbstractProperty
 {
-    /* ---------------------------------------------------------------------
-     * (1)  Tell the builder we handle  {"type":"null"}  and nothing else
-     * ------------------------------------------------------------------- */
     public static function canHandleSchema(array $schema): bool
     {
+        // we handle  {"type":"null"}  and nothing else
         return ($schema['type'] ?? null) === 'null';
     }
 
-    /* ---------------------------------------------------------------------
-     * (2)  PHPDoc says simply   null
-     * ------------------------------------------------------------------- */
     public function typeAnnotation(): string
     {
         return 'null';
     }
 
-    /* ---------------------------------------------------------------------
-     * (3)  Stand-alone  null  is *not* a legal PHP type-hint (PHP 8.1
-     *     still requires it to appear in a union), so we return null
-     *     to omit the hint for every PHP version.
-     * ------------------------------------------------------------------- */
     public function typeHint(): ?string
     {
+        // Stand-alone null type hint is valid since PHP 8.2 but we assume it is better for user
+        // to not enforce it in runtime.
         return null;
     }
 
-    /* ---------------------------------------------------------------------
-     * (4)  Assertions, mappings, cloning – all no-ops for a scalar null
-     * ------------------------------------------------------------------- */
-    public function typeAssertionExpr(string $expr): string  { return "{$expr} === null"; }
-    public function inputAssertionExpr(string $expr): string { return "{$expr} === null"; }
-    public function inputMappingExpr(string $expr, bool $asserted = false): string { return $expr; }
-    public function outputMappingExpr(string $expr): string { return $expr; }
-    public function outputMappingExprStdClass(string $expr): string { return $expr; }
-    public function cloneExpr(string $expr): string { return $expr; }
+    public function typeAssertionExpr(string $expr): string
+    {
+        return "{$expr} === null";
+    }
+    
+    public function inputAssertionExpr(string $expr): string
+    {
+        return "{$expr} === null";
+    }
 
-    /* ---------------------------------------------------------------------
-     * (5)  `null` is the only possible literal value.
-     * ------------------------------------------------------------------- */
     public function formatValue(mixed $value): PropertyValueGenerator
     {
+        // `null` is the only possible literal value.
         return new PropertyValueGenerator(null, ValueGenerator::TYPE_NULL);
     }
 
     public function needsValidation(): bool
     {
-        // Setter parameter cannot be typed to null only, so validation is
-        // required to enforce the value.
+        // We don't use type hints for this type, including setters,
+        // so validation is required to enforce the value.
         return true;
+    }
+
+    public function inputMappingRequiresNullCheck(): bool
+    {
+        return false;
+    }
+
+    public function outputMappingRequiresNullCheck(): bool
+    {
+        return false;
     }
 }

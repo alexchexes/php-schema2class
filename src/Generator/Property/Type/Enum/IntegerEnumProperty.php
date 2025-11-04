@@ -93,6 +93,7 @@ class IntegerEnumProperty extends AbstractProperty
         if ($this->request->isAtLeastPHP('8.1') && !$this->request->getNoEnums()) {
             return "{$this->subTypeName()}::from({$expr})";
         }
+
         if ($asserted) {
             return $expr;
         }
@@ -134,5 +135,18 @@ class IntegerEnumProperty extends AbstractProperty
     private function subTypeName(): string
     {
         return $this->request->getTargetClass() . $this->nameForClass;
+    }
+
+    public function inputMappingRequiresNullCheck(): bool
+    {
+        return true;
+    }
+
+    public function outputMappingRequiresNullCheck(): bool
+    {
+        if ($this->request->isAtLeastPHP('8.1') && !$this->request->getNoEnums()) {
+            return true;
+        }
+        return false;
     }
 }

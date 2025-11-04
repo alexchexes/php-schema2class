@@ -75,4 +75,14 @@ class BooleanProperty extends AbstractProperty
 
         return SchemaKeywords::hasAny($this->schema, SchemaKeywords::BOOLEAN_VALIDATION);
     }
+
+    public function inputMappingRequiresNullCheck(): bool
+    {
+        return true;
+    }
+
+    public function outputMappingRequiresNullCheck(): bool
+    {
+        return false;
+    }
 }

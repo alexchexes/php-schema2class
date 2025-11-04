@@ -232,5 +232,4 @@ abstract class AbstractProperty implements PropertyInterface
         
         return false;
     }
-
 }

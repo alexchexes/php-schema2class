@@ -53,7 +53,7 @@ class PrimitiveUnionEnumProperty extends AbstractProperty
 
     public function inputAssertionExpr(string $expr): string
     {
-        return $this->typeAssertionExpr($expr);
+        return EnumUtils::assertionExpr($this->schema['enum'], $expr);
     }
 
     /**
@@ -74,5 +74,15 @@ class PrimitiveUnionEnumProperty extends AbstractProperty
     {
         // Enumeration of literal values cannot be enforced via type hints.
         return true;
+    }
+
+    public function inputMappingRequiresNullCheck(): bool
+    {
+        return false;
+    }
+
+    public function outputMappingRequiresNullCheck(): bool
+    {
+        return false;
     }
 }

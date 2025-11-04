@@ -33,9 +33,7 @@ CODE;
         $generator->addArm('a === x', '1');
         $generator->addArm('default', '1');
 
-        $expected = <<<CODE
-1
-CODE;
+        $expected = '1';
 
         assertThat($generator->generate(), equalTo($expected));
     }

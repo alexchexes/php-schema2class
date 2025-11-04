@@ -94,4 +94,14 @@ readonly class ReferencedTypeClass implements ReferencedTypeInterface
         $TO_STD_CLASS = MethodNames::TO_STD_CLASS;
         return "{$expr}->{$TO_STD_CLASS}({$inclDefaultsArg})";
     }
+    
+    public function inputMappingRequiresNullCheck(): bool
+    {
+        return true;
+    }
+
+    public function outputMappingRequiresNullCheck(): bool
+    {
+        return true;
+    }
 }
