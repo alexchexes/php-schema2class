@@ -29,6 +29,11 @@ class MatchGenerator
     {
         $bodyParts = [];
 
+        // make sure we don't return match expressions with only default branch
+        if (count($this->arms) === 1 && in_array('default', $this->arms[array_key_first($this->arms)])) {
+            return (string) array_key_first($this->arms);
+        }
+
         foreach ($this->arms as $returnExpr => $conditionExprs) {
             $arm = in_array("default", $conditionExprs)
                 ? "default"

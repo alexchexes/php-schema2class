@@ -446,9 +446,6 @@ class MyClass
                         default => $i,
                         (is_int($i) || is_float($i)) => (str_contains((string)$i, '.') ? (float)$i : (int)$i),
                     }, $i),
-                (is_array($i) || is_array($i)) => match (true) {
-                    default => $i,
-                },
                 default => $i,
             }, $input->{'arrayOfUnions'})
             : null;
@@ -460,9 +457,6 @@ class MyClass
                         default => $i,
                         (is_int($i) || is_float($i)) => (str_contains((string)$i, '.') ? (float)$i : (int)$i),
                     }, $i),
-                (is_array($i) || is_array($i)) => match (true) {
-                    default => $i,
-                },
                 default => $i,
             }, $input->{'arrayOfRefUnions'})
             : null;
@@ -474,9 +468,6 @@ class MyClass
                         default => $i,
                         (is_int($i) || is_float($i)) => (str_contains((string)$i, '.') ? (float)$i : (int)$i),
                     }, $i),
-                (is_array($i) || is_array($i)) => match (true) {
-                    default => $i,
-                },
                 default => $i,
             }, $input->{'arrayOfRefAndNotRefUnions'})
             : null;

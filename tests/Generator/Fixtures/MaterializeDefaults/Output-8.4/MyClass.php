@@ -832,16 +832,8 @@ class MyClass
                     NumericKeysObj::fromInput($input->{'poox'}, $validate, $materializeDefaults),
             }
             : null;
-        $arrObjUnion = isset($input->{'arrObjUnion'})
-            ? match (true) {
-                default => $input->{'arrObjUnion'},
-            }
-            : null;
-        $objArrUnion = isset($input->{'objArrUnion'})
-            ? match (true) {
-                default => $input->{'objArrUnion'},
-            }
-            : null;
+        $arrObjUnion = isset($input->{'arrObjUnion'}) ? $input->{'arrObjUnion'} : null;
+        $objArrUnion = isset($input->{'objArrUnion'}) ? $input->{'objArrUnion'} : null;
         $numKeysDefaults = isset($input->{'numKeysDefaults'})
             ? MyClassNumKeysDefaults::fromInput($input->{'numKeysDefaults'}, $validate, $materializeDefaults)
             : null;

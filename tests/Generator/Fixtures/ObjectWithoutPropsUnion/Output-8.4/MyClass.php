@@ -140,14 +140,8 @@ class MyClass
             static::validateInput($input);
         }
 
-        $foo = match (true) {
-            default => $input->{'foo'},
-        };
-        $bar = isset($input->{'bar'})
-            ? match (true) {
-                default => $input->{'bar'},
-            }
-            : null;
+        $foo = $input->{'foo'};
+        $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
 
         $obj = new self($foo, $bar);
 

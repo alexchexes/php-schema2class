@@ -243,21 +243,10 @@ class MyClass
             static::validateInput($input);
         }
 
-        $foo = match (true) {
-            default => $input->{'foo'},
-        };
-        $bar = match (true) {
-            default => $input->{'bar'},
-        };
-        $baz = match (true) {
-            default => $input->{'baz'},
-        };
-        $qux = ($input->{'qux'} !== null
-            ? match (true) {
-                default => $input->{'qux'},
-            }
-            : null
-        );
+        $foo = $input->{'foo'};
+        $bar = $input->{'bar'};
+        $baz = $input->{'baz'};
+        $qux = ($input->{'qux'} !== null ? $input->{'qux'} : null);
 
         $obj = new self($foo, $bar, $baz, $qux);
 

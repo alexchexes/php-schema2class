@@ -221,11 +221,7 @@ class RefValidation
         }
 
         $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
-        $bar = isset($input->{'bar'})
-            ? match (true) {
-                default => $input->{'bar'},
-            }
-            : null;
+        $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
         $baz = isset($input->{'baz'})
             ? RefValidationBaz::fromInput($input->{'baz'}, $validate)
             : null;

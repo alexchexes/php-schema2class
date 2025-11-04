@@ -94,9 +94,7 @@ class SpecificationFilesItem
             static::validateInput($input);
         }
 
-        $_input = match (true) {
-            default => $input->{'input'},
-        };
+        $_input = $input->{'input'};
         $className = isset($input->{'className'}) ? $input->{'className'} : null;
         $options = isset($input->{'options'})
             ? SpecificationOptions::fromInput($input->{'options'}, $validate)

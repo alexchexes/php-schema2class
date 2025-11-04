@@ -283,11 +283,7 @@ class Foo
         }
 
         $_providedOptionals = [];
-        $a = isset($input->{'a'})
-            ? match (true) {
-                default => $input->{'a'},
-            }
-            : null;
+        $a = isset($input->{'a'}) ? $input->{'a'} : null;
         $b = isset($input->{'b'}) ? $input->{'b'} : null;
         $c = null;
         if (property_exists($input, 'c')) {

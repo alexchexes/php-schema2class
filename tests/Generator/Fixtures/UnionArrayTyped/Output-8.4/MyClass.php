@@ -373,25 +373,13 @@ class MyClass
             static::validateInput($input);
         }
 
-        $unionOfTypedArrays = isset($input->{'unionOfTypedArrays'})
-            ? match (true) {
-                default => $input->{'unionOfTypedArrays'},
-            }
-            : null;
-        $refUnionOfTypedArrays = isset($input->{'refUnionOfTypedArrays'})
-            ? match (true) {
-                default => $input->{'refUnionOfTypedArrays'},
-            }
-            : null;
+        $unionOfTypedArrays = isset($input->{'unionOfTypedArrays'}) ? $input->{'unionOfTypedArrays'} : null;
+        $refUnionOfTypedArrays = isset($input->{'refUnionOfTypedArrays'}) ? $input->{'refUnionOfTypedArrays'} : null;
         $refAndNotRefUnionOfTypedArrays = isset($input->{'refAndNotRefUnionOfTypedArrays'})
-            ? match (true) {
-                default => $input->{'refAndNotRefUnionOfTypedArrays'},
-            }
+            ? $input->{'refAndNotRefUnionOfTypedArrays'}
             : null;
         $unionOfTypedArrayAndString = isset($input->{'unionOfTypedArrayAndString'})
-            ? match (true) {
-                default => $input->{'unionOfTypedArrayAndString'},
-            }
+            ? $input->{'unionOfTypedArrayAndString'}
             : null;
         $unionOfOneTypedArray = isset($input->{'unionOfOneTypedArray'}) ? $input->{'unionOfOneTypedArray'} : null;
 

@@ -13,15 +13,28 @@ class MatchGeneratorTest extends TestCase
     public function testDefaultCaseReplacesRedundantArms()
     {
         $generator = new MatchGenerator('$foo');
-        $generator->addArm('1', '1');
-        $generator->addArm('2', '2');
+        $generator->addArm('a === x', '1');
+        $generator->addArm('a === y', '2');
         $generator->addArm('default', '2');
 
         $expected = <<<CODE
 match (\$foo) {
-    1 => 1,
+    a === x => 1,
     default => 2,
 }
+CODE;
+
+        assertThat($generator->generate(), equalTo($expected));
+    }
+
+    public function testNoMatchExpressionWhenOnlyDefaultArm()
+    {
+        $generator = new MatchGenerator('$foo');
+        $generator->addArm('a === x', '1');
+        $generator->addArm('default', '1');
+
+        $expected = <<<CODE
+1
 CODE;
 
         assertThat($generator->generate(), equalTo($expected));

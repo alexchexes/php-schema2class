@@ -398,18 +398,10 @@ class MyClass
         }
 
         $_providedOptionals = [];
-        $foo = match (true) {
-            default => $input->{'foo'},
-        };
-        $bar = match (true) {
-            default => $input->{'bar'},
-        };
-        $baz = match (true) {
-            default => $input->{'baz'},
-        };
-        $qux = match (true) {
-            default => $input->{'qux'},
-        };
+        $foo = $input->{'foo'};
+        $bar = $input->{'bar'};
+        $baz = $input->{'baz'};
+        $qux = $input->{'qux'};
         $thud = ($input->{'thud'} !== null
             ? match (true) {
                 default => $input->{'thud'},

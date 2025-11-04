@@ -367,22 +367,11 @@ class MyClass
 
         $_providedOptionals = [];
         $a = $input->{'a'};
-        $b = match (true) {
-            default => $input->{'b'},
-        };
+        $b = $input->{'b'};
         $c = ($input->{'c'} !== null ? $input->{'c'} : null);
-        $d = ($input->{'d'} !== null
-            ? match (true) {
-                default => $input->{'d'},
-            }
-            : null
-        );
+        $d = ($input->{'d'} !== null ? $input->{'d'} : null);
         $e = isset($input->{'e'}) ? $input->{'e'} : null;
-        $f = isset($input->{'f'})
-            ? match (true) {
-                default => $input->{'f'},
-            }
-            : null;
+        $f = isset($input->{'f'}) ? $input->{'f'} : null;
         $g = null;
         if (property_exists($input, 'g')) {
             $g = ($input->{'g'} !== null ? $input->{'g'} : null);
@@ -390,22 +379,12 @@ class MyClass
         }
         $h = null;
         if (property_exists($input, 'h')) {
-            $h = ($input->{'h'} !== null
-                ? match (true) {
-                    default => $input->{'h'},
-                }
-                : null
-            );
+            $h = ($input->{'h'} !== null ? $input->{'h'} : null);
             $_providedOptionals['h'] = true;
         }
         $i = null;
         if (property_exists($input, 'i')) {
-            $i = ($input->{'i'} !== null
-                ? match (true) {
-                    default => $input->{'i'},
-                }
-                : null
-            );
+            $i = ($input->{'i'} !== null ? $input->{'i'} : null);
             $_providedOptionals['i'] = true;
         }
 
