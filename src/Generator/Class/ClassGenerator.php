@@ -151,7 +151,7 @@ class ClassGenerator
         preg_match($ctorRegex, $content, $matches);
         $ctorArgsString = $matches[1] ?? '';
         $ctorArgs = explode(', ', $ctorArgsString);
-        if ($ctorArgs > 1 && strlen($ctorArgsString) > self::MAX_CTOR_ARGS_LEN) {
+        if (count($ctorArgs) > 1 && strlen($ctorArgsString) > self::MAX_CTOR_ARGS_LEN) {
             $tab = '    ';
             $indent = "\n{$tab}{$tab}";
             $newCtorArgsString = $indent . implode("," . $indent, $ctorArgs) . "\n{$tab}";
