@@ -8,8 +8,6 @@ class Specification
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
     private static array $_schema = ['properties' => ['options' => ['$ref' => '#/definitions/SpecificationOptions'], 'files' => ['type' => 'array', 'items' => ['properties' => ['input' => ['type' => ['string', 'object']], 'className' => ['type' => 'string'], 'options' => ['$ref' => '#/definitions/SpecificationOptions']], 'additionalProperties' => false, 'required' => ['input']]]], 'additionalProperties' => false, 'required' => ['files'], 'definitions' => ['SpecificationOptions' => ['additionalProperties' => false, 'properties' => ['targetDirectory' => ['type' => 'string'], 'targetNamespace' => ['type' => 'string'], 'targetPHPVersion' => ['oneOf' => [['type' => 'integer', 'enum' => [5, 7, 8]], ['type' => 'string']]], 'cleanTargetDirectory' => ['type' => 'boolean'], 'disableStrictTypes' => ['type' => 'boolean'], 'inlineAllofReferences' => ['type' => 'boolean'], 'newValidatorExpr' => ['type' => 'string'], 'arrayToObjectExpr' => ['type' => 'string'], 'preservePropertyNames' => ['type' => 'boolean'], 'noGetters' => ['type' => 'boolean'], 'noSetters' => ['type' => 'boolean'], 'mutableSetters' => ['oneOf' => [['type' => 'boolean', 'enum' => [true]], ['type' => 'string', 'enum' => ['chainable']]]], 'noSchemaMetadata' => ['type' => 'boolean'], 'singleLineSchema' => ['type' => 'boolean'], 'noEnums' => ['type' => 'boolean']]]]];
 
@@ -63,17 +61,11 @@ class Specification
      */
     public function withFiles(array $files, bool $validate = true): self
     {
-        if ($validate) {
-            $validator = new \JsonSchema\Validator();
-            $validator->validate($files, self::$_schema['properties']['files']);
-            if (!$validator->isValid()) {
-                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
-            }
-        }
-
         $clone = clone $this;
         $clone->files = $files;
-
+        if ($validate) {
+            $clone->validate();
+        }
         return $clone;
     }
 
@@ -92,15 +84,21 @@ class Specification
             static::validateInput($input);
         }
 
-        $files = array_map(fn (array|object $i): SpecificationFilesItem => SpecificationFilesItem::fromInput($i, $validate), $input->{'files'});
-        $options = isset($input->{'options'}) ? SpecificationOptions::fromInput($input->{'options'}, $validate) : null;
+        $files = array_map(
+            fn (object|array $i): SpecificationFilesItem => SpecificationFilesItem::fromInput($i, $validate),
+            $input->{'files'},
+        );
+        $options = isset($input->{'options'})
+            ? SpecificationOptions::fromInput($input->{'options'}, $validate)
+            : null;
 
         $obj = new self($files, $options);
+
         return $obj;
     }
 
     /**
-     * Converts this object back to a simple array that can be JSON-serialized
+     * Converts this object to array that can be JSON-serialized
      *
      * @return array Converted array
      */
@@ -132,11 +130,23 @@ class Specification
     }
 
     /**
+     * Validates the current instance against its schema
+     *
+     * @param bool $return Return instead of throwing errors
+     * @return bool Validation result if `$return` is `true`
+     * @throws \InvalidArgumentException
+     */
+    public function validate(bool $return = false): bool
+    {
+        return self::validateInput($this->toStdClass(), $return);
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data
      * @param bool $return Return instead of throwing errors
-     * @return bool Validation result
+     * @return bool Validation result if `$return` is `true`
      * @throws \InvalidArgumentException
      */
     public static function validateInput(array|object $input, bool $return = false): bool
@@ -146,9 +156,10 @@ class Specification
         $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
-            $errors = array_map(function(array $e): string {
-                return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];
-            }, $validator->getErrors());
+            $errors = array_map(
+                fn (array $e): string => ($e["property"] ? $e["property"] . ": " : "") . $e["message"],
+                $validator->getErrors(),
+            );
             throw new \InvalidArgumentException(join(".\n", $errors));
         }
 
@@ -157,6 +168,9 @@ class Specification
 
     public function __clone()
     {
+        if (isset($this->options)) {
+            $this->options = clone $this->options;
+        }
         $this->files = array_map(fn (SpecificationFilesItem $i) => clone $i, $this->files);
     }
 }
