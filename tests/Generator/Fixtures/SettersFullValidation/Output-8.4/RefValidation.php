@@ -253,9 +253,7 @@ class RefValidation
             $output['foo'] = $this->foo;
         }
         if (isset($this->bar)) {
-            $output['bar'] = match (true) {
-                default => $this->bar,
-            };
+            $output['bar'] = $this->bar;
         }
         if (isset($this->baz)) {
             $output['baz'] = $this->baz->toArray();
@@ -277,9 +275,7 @@ class RefValidation
             $output->{'foo'} = $this->foo;
         }
         if (isset($this->bar)) {
-            $output->{'bar'} = match (true) {
-                default => $this->bar,
-            };
+            $output->{'bar'} = $this->bar;
         }
         if (isset($this->baz)) {
             $output->{'baz'} = $this->baz->toStdClass();

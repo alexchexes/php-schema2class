@@ -421,24 +421,16 @@ class MyClass
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
         if (isset($this->unionOfTypedArrays)) {
-            $output['unionOfTypedArrays'] = match (true) {
-                default => $this->unionOfTypedArrays,
-            };
+            $output['unionOfTypedArrays'] = $this->unionOfTypedArrays;
         }
         if (isset($this->refUnionOfTypedArrays)) {
-            $output['refUnionOfTypedArrays'] = match (true) {
-                default => $this->refUnionOfTypedArrays,
-            };
+            $output['refUnionOfTypedArrays'] = $this->refUnionOfTypedArrays;
         }
         if (isset($this->refAndNotRefUnionOfTypedArrays)) {
-            $output['refAndNotRefUnionOfTypedArrays'] = match (true) {
-                default => $this->refAndNotRefUnionOfTypedArrays,
-            };
+            $output['refAndNotRefUnionOfTypedArrays'] = $this->refAndNotRefUnionOfTypedArrays;
         }
         if (isset($this->unionOfTypedArrayAndString)) {
-            $output['unionOfTypedArrayAndString'] = match (true) {
-                default => $this->unionOfTypedArrayAndString,
-            };
+            $output['unionOfTypedArrayAndString'] = $this->unionOfTypedArrayAndString;
         }
         if (isset($this->unionOfOneTypedArray)) {
             $output['unionOfOneTypedArray'] = $this->unionOfOneTypedArray;
@@ -457,24 +449,16 @@ class MyClass
         $output = $this->_additionalProperties;
 
         if (isset($this->unionOfTypedArrays)) {
-            $output->{'unionOfTypedArrays'} = match (true) {
-                default => $this->unionOfTypedArrays,
-            };
+            $output->{'unionOfTypedArrays'} = $this->unionOfTypedArrays;
         }
         if (isset($this->refUnionOfTypedArrays)) {
-            $output->{'refUnionOfTypedArrays'} = match (true) {
-                default => $this->refUnionOfTypedArrays,
-            };
+            $output->{'refUnionOfTypedArrays'} = $this->refUnionOfTypedArrays;
         }
         if (isset($this->refAndNotRefUnionOfTypedArrays)) {
-            $output->{'refAndNotRefUnionOfTypedArrays'} = match (true) {
-                default => $this->refAndNotRefUnionOfTypedArrays,
-            };
+            $output->{'refAndNotRefUnionOfTypedArrays'} = $this->refAndNotRefUnionOfTypedArrays;
         }
         if (isset($this->unionOfTypedArrayAndString)) {
-            $output->{'unionOfTypedArrayAndString'} = match (true) {
-                default => $this->unionOfTypedArrayAndString,
-            };
+            $output->{'unionOfTypedArrayAndString'} = $this->unionOfTypedArrayAndString;
         }
         if (isset($this->unionOfOneTypedArray)) {
             $output->{'unionOfOneTypedArray'} = $this->unionOfOneTypedArray;

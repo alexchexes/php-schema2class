@@ -173,9 +173,7 @@ class Cat
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
         if (isset($this->hasFur)) {
-            $output['hasFur'] = match (true) {
-                default => $this->hasFur,
-            };
+            $output['hasFur'] = $this->hasFur;
         }
 
         return $output;
@@ -191,9 +189,7 @@ class Cat
         $output = $this->_additionalProperties;
 
         if (isset($this->hasFur)) {
-            $output->{'hasFur'} = match (true) {
-                default => $this->hasFur,
-            };
+            $output->{'hasFur'} = $this->hasFur;
         }
 
         return $output;

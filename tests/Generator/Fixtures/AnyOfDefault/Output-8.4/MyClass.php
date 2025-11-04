@@ -172,9 +172,7 @@ class MyClass
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
         if (isset($this->foo)) {
-            $output['foo'] = match (true) {
-                default => $this->foo,
-            };
+            $output['foo'] = $this->foo;
         }
 
         if ($includeDefaults) {
@@ -199,9 +197,7 @@ class MyClass
         $output = $this->_additionalProperties;
 
         if (isset($this->foo)) {
-            $output->{'foo'} = match (true) {
-                default => $this->foo,
-            };
+            $output->{'foo'} = $this->foo;
         }
 
         if ($includeDefaults) {

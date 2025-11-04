@@ -514,12 +514,8 @@ class MyClass
     {
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
-        $output['foo'] = match (true) {
-            default => $this->foo,
-        };
-        $output['bar'] = match (true) {
-            default => $this->bar,
-        };
+        $output['foo'] = $this->foo;
+        $output['bar'] = $this->bar;
         $output['baz'] = match (true) {
             is_array($this->baz) || is_object($this->baz) => json_decode(json_encode($this->baz), true),
             default => $this->baz,
@@ -533,14 +529,10 @@ class MyClass
             default => $this->thud,
         };
         if (isset($this->optFoo)) {
-            $output['optFoo'] = match (true) {
-                default => $this->optFoo,
-            };
+            $output['optFoo'] = $this->optFoo;
         }
         if (isset($this->optBar)) {
-            $output['optBar'] = match (true) {
-                default => $this->optBar,
-            };
+            $output['optBar'] = $this->optBar;
         }
         if (isset($this->optBaz)) {
             $output['optBaz'] = match (true) {
@@ -576,12 +568,8 @@ class MyClass
     {
         $output = $this->_additionalProperties;
 
-        $output->{'foo'} = match (true) {
-            default => $this->foo,
-        };
-        $output->{'bar'} = match (true) {
-            default => $this->bar,
-        };
+        $output->{'foo'} = $this->foo;
+        $output->{'bar'} = $this->bar;
         $output->{'baz'} = match (true) {
             is_array($this->baz) || is_object($this->baz) => json_decode(json_encode($this->baz)),
             default => $this->baz,
@@ -595,14 +583,10 @@ class MyClass
             default => $this->thud,
         };
         if (isset($this->optFoo)) {
-            $output->{'optFoo'} = match (true) {
-                default => $this->optFoo,
-            };
+            $output->{'optFoo'} = $this->optFoo;
         }
         if (isset($this->optBar)) {
-            $output->{'optBar'} = match (true) {
-                default => $this->optBar,
-            };
+            $output->{'optBar'} = $this->optBar;
         }
         if (isset($this->optBaz)) {
             $output->{'optBaz'} = match (true) {

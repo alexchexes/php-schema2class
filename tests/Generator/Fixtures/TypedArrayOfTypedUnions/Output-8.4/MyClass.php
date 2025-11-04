@@ -520,12 +520,7 @@ class MyClass
             $output['arrayOfUnions'] = array_map(fn ($i) => match (true) {
                 (is_array($i)
                     && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || (is_int($i) || is_float($i)))))) =>
-                    array_map(fn ($i) => match (true) {
-                        default => $i,
-                    }, $i),
-                (is_array($i) || is_array($i)) => match (true) {
-                    default => $i,
-                },
+                    array_map(fn ($i) => $i, $i),
                 default => $i,
             }, $this->arrayOfUnions);
         }
@@ -533,12 +528,7 @@ class MyClass
             $output['arrayOfRefUnions'] = array_map(fn ($i) => match (true) {
                 (is_array($i)
                     && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || (is_int($i) || is_float($i)))))) =>
-                    array_map(fn ($i) => match (true) {
-                        default => $i,
-                    }, $i),
-                (is_array($i) || is_array($i)) => match (true) {
-                    default => $i,
-                },
+                    array_map(fn ($i) => $i, $i),
                 default => $i,
             }, $this->arrayOfRefUnions);
         }
@@ -546,12 +536,7 @@ class MyClass
             $output['arrayOfRefAndNotRefUnions'] = array_map(fn ($i) => match (true) {
                 (is_array($i)
                     && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || (is_int($i) || is_float($i)))))) =>
-                    array_map(fn ($i) => match (true) {
-                        default => $i,
-                    }, $i),
-                (is_array($i) || is_array($i)) => match (true) {
-                    default => $i,
-                },
+                    array_map(fn ($i) => $i, $i),
                 default => $i,
             }, $this->arrayOfRefAndNotRefUnions);
         }

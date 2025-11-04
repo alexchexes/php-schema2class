@@ -220,23 +220,11 @@ class Cat
         if (isset($this->hasFur) || array_key_exists('hasFur', $this->_providedOptionals)) {
             $output['hasFur'] = ($this->hasFur !== null
                 ? match (true) {
-                    ($this->hasFur === null || is_bool($this->hasFur)) => ($this->hasFur !== null ? $this->hasFur : null),
-                    ($this->hasFur === null
-                        || (is_string($this->hasFur) || (is_int($this->hasFur) || is_float($this->hasFur)))
-                    ) =>
-                        ($this->hasFur !== null
-                            ? match (true) {
-                                default => $this->hasFur,
-                            }
-                            : null
-                        ),
-                    (is_string($this->hasFur)
-                        || (is_int($this->hasFur) || is_float($this->hasFur))
-                        || is_bool($this->hasFur)
-                    ) =>
-                        match (true) {
-                            default => $this->hasFur,
-                        },
+                    ($this->hasFur === null || is_bool($this->hasFur))
+                        || ($this->hasFur === null
+                            || (is_string($this->hasFur) || (is_int($this->hasFur) || is_float($this->hasFur)))
+                        ) =>
+                        ($this->hasFur !== null ? $this->hasFur : null),
                     default => $this->hasFur,
                 }
                 : null

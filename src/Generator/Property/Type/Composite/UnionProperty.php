@@ -425,6 +425,10 @@ class UnionProperty extends AbstractProperty
      */
     private function renderConditionalExpr(array $arms, string $default, bool $includeMatchDefault = true): string
     {
+        if ($arms === []) {
+            return $default;
+        }
+
         if ($this->request->isAtLeastPHP('8.0')) {
             return $this->renderMatch($arms, $includeMatchDefault ? $default : null);
         }
@@ -475,6 +479,15 @@ class UnionProperty extends AbstractProperty
         ?string $matchDefault,
         ?string $fallback
     ): string {
+        if ($arms === []) {
+            $expr = $matchDefault ?? $fallback;
+            if ($expr === null) {
+                throw new GeneratorException('Unable to render union assignment without arms or fallback');
+            }
+
+            return sprintf($assignmentTemplate, $expr);
+        }
+
         if ($this->request->isAtLeastPHP('8.0')) {
             $expr = $this->renderMatch($arms, $matchDefault);
             return sprintf($assignmentTemplate, $expr);

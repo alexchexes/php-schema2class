@@ -487,9 +487,7 @@ class MyClass
             $output['grox'] = $this->grox;
         }
         if (isset($this->qwert)) {
-            $output['qwert'] = match (true) {
-                default => $this->qwert,
-            };
+            $output['qwert'] = $this->qwert;
         }
         if (isset($this->zyx)) {
             $output['zyx'] = $this->zyx;
@@ -535,9 +533,7 @@ class MyClass
             $output->{'grox'} = $this->grox;
         }
         if (isset($this->qwert)) {
-            $output->{'qwert'} = match (true) {
-                default => $this->qwert,
-            };
+            $output->{'qwert'} = $this->qwert;
         }
         if (isset($this->zyx)) {
             $output->{'zyx'} = $this->zyx;

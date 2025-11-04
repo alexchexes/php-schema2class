@@ -430,31 +430,20 @@ class MyClass
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
         $output['a'] = $this->a;
-        $output['b'] = match (true) {
-            default => $this->b,
-        };
+        $output['b'] = $this->b;
         $output['c'] = $this->c;
-        $output['d'] = match (true) {
-            default => $this->d,
-        };
+        $output['d'] = $this->d;
         if (isset($this->e)) {
             $output['e'] = $this->e;
         }
         if (isset($this->f)) {
-            $output['f'] = match (true) {
-                default => $this->f,
-            };
+            $output['f'] = $this->f;
         }
         if (isset($this->g) || array_key_exists('g', $this->_providedOptionals)) {
             $output['g'] = ($this->g !== null ? $this->g : null);
         }
         if (isset($this->h) || array_key_exists('h', $this->_providedOptionals)) {
-            $output['h'] = ($this->h !== null
-                ? match (true) {
-                    default => $this->h,
-                }
-                : null
-            );
+            $output['h'] = ($this->h !== null ? $this->h : null);
         }
         if (isset($this->i) || array_key_exists('i', $this->_providedOptionals)) {
             $output['i'] = ($this->i !== null
@@ -479,20 +468,14 @@ class MyClass
         $output = $this->_additionalProperties;
 
         $output->{'a'} = $this->a;
-        $output->{'b'} = match (true) {
-            default => $this->b,
-        };
+        $output->{'b'} = $this->b;
         $output->{'c'} = $this->c;
-        $output->{'d'} = match (true) {
-            default => $this->d,
-        };
+        $output->{'d'} = $this->d;
         if (isset($this->e)) {
             $output->{'e'} = $this->e;
         }
         if (isset($this->f)) {
-            $output->{'f'} = match (true) {
-                default => $this->f,
-            };
+            $output->{'f'} = $this->f;
         }
         if (isset($this->g) || array_key_exists('g', $this->_providedOptionals)) {
             $output->{'g'} = ($this->g !== null ? $this->g : null);

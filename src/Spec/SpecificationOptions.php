@@ -562,9 +562,7 @@ class SpecificationOptions
             $output['targetNamespace'] = $this->targetNamespace;
         }
         if (isset($this->targetPHPVersion)) {
-            $output['targetPHPVersion'] = match (true) {
-                default => $this->targetPHPVersion,
-            };
+            $output['targetPHPVersion'] = $this->targetPHPVersion;
         }
         if (isset($this->cleanTargetDirectory)) {
             $output['cleanTargetDirectory'] = $this->cleanTargetDirectory;
@@ -591,9 +589,7 @@ class SpecificationOptions
             $output['noSetters'] = $this->noSetters;
         }
         if (isset($this->mutableSetters)) {
-            $output['mutableSetters'] = match (true) {
-                default => $this->mutableSetters,
-            };
+            $output['mutableSetters'] = $this->mutableSetters;
         }
         if (isset($this->noSchemaMetadata)) {
             $output['noSchemaMetadata'] = $this->noSchemaMetadata;
@@ -623,9 +619,7 @@ class SpecificationOptions
             $output->{'targetNamespace'} = $this->targetNamespace;
         }
         if (isset($this->targetPHPVersion)) {
-            $output->{'targetPHPVersion'} = match (true) {
-                default => $this->targetPHPVersion,
-            };
+            $output->{'targetPHPVersion'} = $this->targetPHPVersion;
         }
         if (isset($this->cleanTargetDirectory)) {
             $output->{'cleanTargetDirectory'} = $this->cleanTargetDirectory;
@@ -652,9 +646,7 @@ class SpecificationOptions
             $output->{'noSetters'} = $this->noSetters;
         }
         if (isset($this->mutableSetters)) {
-            $output->{'mutableSetters'} = match (true) {
-                default => $this->mutableSetters,
-            };
+            $output->{'mutableSetters'} = $this->mutableSetters;
         }
         if (isset($this->noSchemaMetadata)) {
             $output->{'noSchemaMetadata'} = $this->noSchemaMetadata;

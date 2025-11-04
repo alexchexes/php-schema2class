@@ -278,18 +278,10 @@ class MyClass
     {
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
-        $output['foo'] = match (true) {
-            default => $this->foo,
-        };
-        $output['bar'] = match (true) {
-            default => $this->bar,
-        };
-        $output['baz'] = match (true) {
-            default => $this->baz,
-        };
-        $output['qux'] = match (true) {
-            default => $this->qux,
-        };
+        $output['foo'] = $this->foo;
+        $output['bar'] = $this->bar;
+        $output['baz'] = $this->baz;
+        $output['qux'] = $this->qux;
 
         return $output;
     }
@@ -303,18 +295,10 @@ class MyClass
     {
         $output = $this->_additionalProperties;
 
-        $output->{'foo'} = match (true) {
-            default => $this->foo,
-        };
-        $output->{'bar'} = match (true) {
-            default => $this->bar,
-        };
-        $output->{'baz'} = match (true) {
-            default => $this->baz,
-        };
-        $output->{'qux'} = match (true) {
-            default => $this->qux,
-        };
+        $output->{'foo'} = $this->foo;
+        $output->{'bar'} = $this->bar;
+        $output->{'baz'} = $this->baz;
+        $output->{'qux'} = $this->qux;
 
         return $output;
     }
