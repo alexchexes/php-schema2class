@@ -349,7 +349,9 @@ class Foo
         $b = isset($input->{'b'}) ? $input->{'b'} : null;
         $c = null;
         if (property_exists($input, 'c')) {
-            $c = ($input->{'c'} !== null ? $input->{'c'} : null);
+            $c = $input->{'c'} !== null
+                ? (str_contains((string)$input->{'c'}, '.') ? (float)$input->{'c'} : (int)$input->{'c'})
+                : null;
             $_providedOptionals['c'] = true;
         }
         $d = isset($input->{'d'}) ? Bar::fromInput($input->{'d'}, $validate) : null;
@@ -381,7 +383,7 @@ class Foo
             $output['b'] = $this->b;
         }
         if (isset($this->c) || array_key_exists('c', $this->_providedOptionals)) {
-            $output['c'] = ($this->c !== null ? $this->c : null);
+            $output['c'] = $this->c;
         }
         if (isset($this->d)) {
             $output['d'] = $this->d->toArray();
@@ -406,7 +408,7 @@ class Foo
             $output->{'b'} = $this->b;
         }
         if (isset($this->c) || array_key_exists('c', $this->_providedOptionals)) {
-            $output->{'c'} = ($this->c !== null ? $this->c : null);
+            $output->{'c'} = $this->c;
         }
         if (isset($this->d)) {
             $output->{'d'} = $this->d->toStdClass();

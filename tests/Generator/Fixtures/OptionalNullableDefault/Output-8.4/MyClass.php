@@ -510,29 +510,27 @@ class MyClass
         $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
         $baz = null;
         if (property_exists($input, 'baz')) {
-            $baz = ($input->{'baz'} !== null ? $input->{'baz'} : null);
+            $baz = $input->{'baz'};
             $_providedOptionals['baz'] = true;
         }
         $qux = null;
         if (property_exists($input, 'qux')) {
-            $qux = ($input->{'qux'} !== null ? $input->{'qux'} : null);
+            $qux = $input->{'qux'};
             $_providedOptionals['qux'] = true;
         }
         $xyyz = isset($input->{'xyyz'}) ? $input->{'xyyz'} : null;
         $grox = null;
         if (property_exists($input, 'grox')) {
-            $grox = ($input->{'grox'} !== null
+            $grox = $input->{'grox'} !== null
                 ? MyClassGrox::fromInput($input->{'grox'}, $validate, $materializeDefaults)
-                : null
-            );
+                : null;
             $_providedOptionals['grox'] = true;
         }
         $gooks = null;
         if (property_exists($input, 'gooks')) {
-            $gooks = ($input->{'gooks'} !== null
+            $gooks = $input->{'gooks'} !== null
                 ? MyClassGooks::fromInput($input->{'gooks'}, $validate, $materializeDefaults)
-                : null
-            );
+                : null;
             $_providedOptionals['gooks'] = true;
         }
 
@@ -562,10 +560,10 @@ class MyClass
             $output['bar'] = $this->bar;
         }
         if (isset($this->baz) || array_key_exists('baz', $this->_providedOptionals)) {
-            $output['baz'] = ($this->baz !== null ? $this->baz : null);
+            $output['baz'] = $this->baz;
         }
         if (isset($this->qux) || array_key_exists('qux', $this->_providedOptionals)) {
-            $output['qux'] = ($this->qux !== null ? $this->qux : null);
+            $output['qux'] = $this->qux;
         }
         $output['quux'] = $this->quux;
         if (isset($this->xyyz)) {
@@ -605,10 +603,10 @@ class MyClass
             $output->{'bar'} = $this->bar;
         }
         if (isset($this->baz) || array_key_exists('baz', $this->_providedOptionals)) {
-            $output->{'baz'} = ($this->baz !== null ? $this->baz : null);
+            $output->{'baz'} = $this->baz;
         }
         if (isset($this->qux) || array_key_exists('qux', $this->_providedOptionals)) {
-            $output->{'qux'} = ($this->qux !== null ? $this->qux : null);
+            $output->{'qux'} = $this->qux;
         }
         $output->{'quux'} = $this->quux;
         if (isset($this->xyyz)) {

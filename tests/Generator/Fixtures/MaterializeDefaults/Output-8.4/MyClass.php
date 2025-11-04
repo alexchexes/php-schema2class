@@ -798,23 +798,21 @@ class MyClass
             : null;
         $quxObj = null;
         if (property_exists($input, 'quxObj')) {
-            $quxObj = ($input->{'quxObj'} !== null
+            $quxObj = $input->{'quxObj'} !== null
                 ? MyClassQuxObj::fromInput($input->{'quxObj'}, $validate, $materializeDefaults)
-                : null
-            );
+                : null;
             $_providedOptionals['quxObj'] = true;
         }
         $quxObjNest = null;
         if (property_exists($input, 'quxObjNest')) {
-            $quxObjNest = ($input->{'quxObjNest'} !== null
+            $quxObjNest = $input->{'quxObjNest'} !== null
                 ? MyClassQuxObjNest::fromInput($input->{'quxObjNest'}, $validate, $materializeDefaults)
-                : null
-            );
+                : null;
             $_providedOptionals['quxObjNest'] = true;
         }
         $thudArray = null;
         if (property_exists($input, 'thudArray')) {
-            $thudArray = ($input->{'thudArray'} !== null ? $input->{'thudArray'} : null);
+            $thudArray = $input->{'thudArray'};
             $_providedOptionals['thudArray'] = true;
         }
         $xyyz = isset($input->{'xyyz'})
@@ -898,7 +896,7 @@ class MyClass
             $output['quxObjNest'] = ($this->quxObjNest !== null ? $this->quxObjNest->toArray($includeDefaults) : null);
         }
         if (isset($this->thudArray) || array_key_exists('thudArray', $this->_providedOptionals)) {
-            $output['thudArray'] = ($this->thudArray !== null ? $this->thudArray : null);
+            $output['thudArray'] = $this->thudArray;
         }
         if (isset($this->xyyz)) {
             $output['xyyz'] = match (true) {
@@ -973,7 +971,7 @@ class MyClass
             $output->{'quxObjNest'} = ($this->quxObjNest !== null ? $this->quxObjNest->toStdClass($includeDefaults) : null);
         }
         if (isset($this->thudArray) || array_key_exists('thudArray', $this->_providedOptionals)) {
-            $output->{'thudArray'} = ($this->thudArray !== null ? $this->thudArray : null);
+            $output->{'thudArray'} = $this->thudArray;
         }
         if (isset($this->xyyz)) {
             $output->{'xyyz'} = match (true) {

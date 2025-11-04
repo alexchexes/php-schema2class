@@ -328,7 +328,7 @@ class MyClass
             : null;
         $inferMixedOpt = null;
         if (property_exists($input, 'inferMixedOpt')) {
-            $inferMixedOpt = ($input->{'inferMixedOpt'} !== null ? $input->{'inferMixedOpt'} : null);
+            $inferMixedOpt = $input->{'inferMixedOpt'};
             $_providedOptionals['inferMixedOpt'] = true;
         }
 
@@ -369,7 +369,7 @@ class MyClass
             $output['inferIntOpt'] = $this->inferIntOpt->value;
         }
         if (isset($this->inferMixedOpt) || array_key_exists('inferMixedOpt', $this->_providedOptionals)) {
-            $output['inferMixedOpt'] = ($this->inferMixedOpt !== null ? $this->inferMixedOpt : null);
+            $output['inferMixedOpt'] = $this->inferMixedOpt;
         }
 
         return $output;
@@ -394,7 +394,7 @@ class MyClass
             $output->{'inferIntOpt'} = $this->inferIntOpt->value;
         }
         if (isset($this->inferMixedOpt) || array_key_exists('inferMixedOpt', $this->_providedOptionals)) {
-            $output->{'inferMixedOpt'} = ($this->inferMixedOpt !== null ? $this->inferMixedOpt : null);
+            $output->{'inferMixedOpt'} = $this->inferMixedOpt;
         }
 
         return $output;

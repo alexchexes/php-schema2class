@@ -325,9 +325,14 @@ class Foo
         }
 
         $requiredBoolEnumRef = $input->{'requiredBoolEnumRef'};
-        $floatEnum = isset($input->{'floatEnum'}) ? $input->{'floatEnum'} : null;
+        $floatEnum = isset($input->{'floatEnum'})
+            ? (str_contains((string)$input->{'floatEnum'}, '.')
+                ? (float)$input->{'floatEnum'}
+                : (int)$input->{'floatEnum'}
+            )
+            : null;
         $floatEnumRef = isset($input->{'floatEnumRef'}) ? $input->{'floatEnumRef'} : null;
-        $boolEnum = isset($input->{'boolEnum'}) ? $input->{'boolEnum'} : null;
+        $boolEnum = isset($input->{'boolEnum'}) ? (bool)$input->{'boolEnum'} : null;
         $boolEnumRef = isset($input->{'boolEnumRef'}) ? $input->{'boolEnumRef'} : null;
 
         $obj = new self(

@@ -433,11 +433,11 @@ class MyClass
         }
 
         $_providedOptionals = [];
-        $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
+        $foo = isset($input->{'foo'}) ? (int)$input->{'foo'} : null;
         $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
         $baz = null;
         if (property_exists($input, 'baz')) {
-            $baz = ($input->{'baz'} !== null ? $input->{'baz'} : null);
+            $baz = $input->{'baz'} !== null ? (int)$input->{'baz'} : null;
             $_providedOptionals['baz'] = true;
         }
         $qux = isset($input->{'qux'}) ? $input->{'qux'} : null;
@@ -483,7 +483,7 @@ class MyClass
             $output['bar'] = $this->bar;
         }
         if (isset($this->baz) || array_key_exists('baz', $this->_providedOptionals)) {
-            $output['baz'] = ($this->baz !== null ? $this->baz : null);
+            $output['baz'] = $this->baz;
         }
         if (isset($this->qux)) {
             $output['qux'] = $this->qux;
@@ -529,7 +529,7 @@ class MyClass
             $output->{'bar'} = $this->bar;
         }
         if (isset($this->baz) || array_key_exists('baz', $this->_providedOptionals)) {
-            $output->{'baz'} = ($this->baz !== null ? $this->baz : null);
+            $output->{'baz'} = $this->baz;
         }
         if (isset($this->qux)) {
             $output->{'qux'} = $this->qux;

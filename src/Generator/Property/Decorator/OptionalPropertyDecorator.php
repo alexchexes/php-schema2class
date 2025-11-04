@@ -49,21 +49,21 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator
             : $this->inner->inputAssertionExpr($expr);
     }
 
-    public function inputMappingExpr(string $expr, bool $asserted = false): string
+    public function inputMappingExpr(string $expr, bool $asserted = false, ?bool $parens = true): string
     {
         return $this->allowsNull()
-            ? parent::inputMappingExpr($expr, $asserted)
+            ? parent::inputMappingExpr($expr, $asserted, $parens)
             : $this->inner->inputMappingExpr($expr, $asserted);
     }
 
-    public function outputMappingExpr(string $expr): string
+    public function outputMappingExpr(string $expr, ?bool $parens = true): string
     {
         return $this->allowsNull()
             ? parent::outputMappingExpr($expr)
             : $this->inner->outputMappingExpr($expr);
     }
 
-    public function outputMappingExprStdClass(string $expr): string
+    public function outputMappingExprStdClass(string $expr, ?bool $parens = true): string
     {
         return $this->allowsNull()
             ? parent::outputMappingExprStdClass($expr)
@@ -99,18 +99,17 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator
         // JSON accessor:  $input->{'key'}   or   $input['key']
         $accessor = "\${$inputVarName}->{{$this->keyStr()}}";
 
-        // Build mapping expression. Nullable optionals must keep null values intact;
-        // if the wrapped property already allows null it will handle the guard itself.
-        if ($this->isOptionalNullable) {
-            $innerMap = $this->inner->inputMappingExpr($accessor, true);
-            $mapped = TernaryGenerator::make("{$accessor} !== null", $innerMap, "null");
-        } else {
-            $mapped = $this->inputMappingExpr($accessor, true);
-        }
-
         $existsCheck = $this->generateIssetCheckExpr($inputVarName);
+        
 
         if ($this->isOptionalNullable) {
+            $innerMap = $this->inner->inputMappingExpr($accessor);
+            if ($this->inner->inputMappingRequiresNullCheck()) {
+                $mapped = TernaryGenerator::make("{$accessor} !== null", $innerMap, "null", parens: false);
+            } else {
+                $mapped = $innerMap;
+            }
+
             $OPTIONALS_VAR_NAME = VariableNames::PROVIDED_OPTIONALS;
             $indent = StringUtils::indentCode(...);
             $code =
@@ -122,7 +121,8 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator
                 }
                 PHP;
         } else {
-            $toAssign = TernaryGenerator::make($existsCheck, $mapped, "null", false);
+            $mapped = $this->inputMappingExpr($accessor);
+            $toAssign = TernaryGenerator::make($existsCheck, $mapped, "null", parens: false);
             $code = "\${$varName} = {$toAssign};";
         }
         return $code;
@@ -141,7 +141,7 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator
                 "array_key_exists('{$this->key}', \$this->{$OPTIONALS})",
             ], lengthToWrap: 110);
 
-            $map = $this->outputMappingExpr("\$this->{$propName}");
+            $map = $this->outputMappingExpr("\$this->{$propName}", parens: false);
             $inner = "\${$outputVarName}[{$this->keyStr()}] = {$map};";
             return "if {$parenthesizedCond} {\n" . StringUtils::indentCode($inner) . "\n}";
         }
@@ -168,7 +168,7 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator
                 "array_key_exists('{$this->key}', \$this->{$OPTIONALS})",
             ], lengthToWrap: 110);
 
-            $map = $this->outputMappingExprStdClass("\$this->{$propName}");
+            $map = $this->outputMappingExprStdClass("\$this->{$propName}", parens: false);
             $inner = "\${$outputVarName}->{{$this->keyStr()}} = {$map};";
             return "if {$parenthesizedCond} {\n" . StringUtils::indentCode($inner) . "\n}";
         }

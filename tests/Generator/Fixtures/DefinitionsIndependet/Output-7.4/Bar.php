@@ -119,7 +119,7 @@ class Bar
             static::validateInput($input);
         }
 
-        $b = isset($input->{'b'}) ? $input->{'b'} : null;
+        $b = isset($input->{'b'}) ? (int)$input->{'b'} : null;
 
         $obj = new self($b);
 

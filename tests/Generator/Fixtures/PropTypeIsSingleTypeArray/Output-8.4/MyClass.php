@@ -1023,49 +1023,58 @@ class MyClass
             : null;
         $nullThud = $input->{'nullThud'};
         $optFoo = isset($input->{'optFoo'}) ? $input->{'optFoo'} : null;
-        $optBar = isset($input->{'optBar'}) ? $input->{'optBar'} : null;
-        $optBaz = isset($input->{'optBaz'}) ? $input->{'optBaz'} : null;
-        $optQux = isset($input->{'optQux'}) ? $input->{'optQux'} : null;
+        $optBar = isset($input->{'optBar'})
+            ? (str_contains((string)$input->{'optBar'}, '.')
+                ? (float)$input->{'optBar'}
+                : (int)$input->{'optBar'}
+            )
+            : null;
+        $optBaz = isset($input->{'optBaz'}) ? (int)$input->{'optBaz'} : null;
+        $optQux = isset($input->{'optQux'}) ? (bool)$input->{'optQux'} : null;
         $optQuux = isset($input->{'optQuux'})
             ? MyClassOptQuux::fromInput($input->{'optQuux'}, $validate)
             : null;
         $optThud = isset($input->{'optThud'}) ? $input->{'optThud'} : null;
         $optGrox = null;
         if (property_exists($input, 'optGrox')) {
-            $optGrox = ($input->{'optGrox'} !== null ? $input->{'optGrox'} : null);
+            $optGrox = $input->{'optGrox'};
             $_providedOptionals['optGrox'] = true;
         }
         $optNullFoo = null;
         if (property_exists($input, 'optNullFoo')) {
-            $optNullFoo = ($input->{'optNullFoo'} !== null ? $input->{'optNullFoo'} : null);
+            $optNullFoo = $input->{'optNullFoo'};
             $_providedOptionals['optNullFoo'] = true;
         }
         $optNullBar = null;
         if (property_exists($input, 'optNullBar')) {
-            $optNullBar = ($input->{'optNullBar'} !== null ? $input->{'optNullBar'} : null);
+            $optNullBar = $input->{'optNullBar'} !== null
+                ? (str_contains((string)$input->{'optNullBar'}, '.')
+                    ? (float)$input->{'optNullBar'}
+                    : (int)$input->{'optNullBar'}
+                )
+                : null;
             $_providedOptionals['optNullBar'] = true;
         }
         $optNullBaz = null;
         if (property_exists($input, 'optNullBaz')) {
-            $optNullBaz = ($input->{'optNullBaz'} !== null ? $input->{'optNullBaz'} : null);
+            $optNullBaz = $input->{'optNullBaz'} !== null ? (int)$input->{'optNullBaz'} : null;
             $_providedOptionals['optNullBaz'] = true;
         }
         $optNullQux = null;
         if (property_exists($input, 'optNullQux')) {
-            $optNullQux = ($input->{'optNullQux'} !== null ? $input->{'optNullQux'} : null);
+            $optNullQux = $input->{'optNullQux'} !== null ? (bool)$input->{'optNullQux'} : null;
             $_providedOptionals['optNullQux'] = true;
         }
         $optNullQuux = null;
         if (property_exists($input, 'optNullQuux')) {
-            $optNullQuux = ($input->{'optNullQuux'} !== null
+            $optNullQuux = $input->{'optNullQuux'} !== null
                 ? MyClassOptNullQuux::fromInput($input->{'optNullQuux'}, $validate)
-                : null
-            );
+                : null;
             $_providedOptionals['optNullQuux'] = true;
         }
         $optNullThud = null;
         if (property_exists($input, 'optNullThud')) {
-            $optNullThud = ($input->{'optNullThud'} !== null ? $input->{'optNullThud'} : null);
+            $optNullThud = $input->{'optNullThud'};
             $_providedOptionals['optNullThud'] = true;
         }
 
@@ -1148,25 +1157,25 @@ class MyClass
             $output['optThud'] = $this->optThud;
         }
         if (isset($this->optGrox) || array_key_exists('optGrox', $this->_providedOptionals)) {
-            $output['optGrox'] = ($this->optGrox !== null ? $this->optGrox : null);
+            $output['optGrox'] = $this->optGrox;
         }
         if (isset($this->optNullFoo) || array_key_exists('optNullFoo', $this->_providedOptionals)) {
-            $output['optNullFoo'] = ($this->optNullFoo !== null ? $this->optNullFoo : null);
+            $output['optNullFoo'] = $this->optNullFoo;
         }
         if (isset($this->optNullBar) || array_key_exists('optNullBar', $this->_providedOptionals)) {
-            $output['optNullBar'] = ($this->optNullBar !== null ? $this->optNullBar : null);
+            $output['optNullBar'] = $this->optNullBar;
         }
         if (isset($this->optNullBaz) || array_key_exists('optNullBaz', $this->_providedOptionals)) {
-            $output['optNullBaz'] = ($this->optNullBaz !== null ? $this->optNullBaz : null);
+            $output['optNullBaz'] = $this->optNullBaz;
         }
         if (isset($this->optNullQux) || array_key_exists('optNullQux', $this->_providedOptionals)) {
-            $output['optNullQux'] = ($this->optNullQux !== null ? $this->optNullQux : null);
+            $output['optNullQux'] = $this->optNullQux;
         }
         if (isset($this->optNullQuux) || array_key_exists('optNullQuux', $this->_providedOptionals)) {
             $output['optNullQuux'] = ($this->optNullQuux !== null ? $this->optNullQuux->toArray() : null);
         }
         if (isset($this->optNullThud) || array_key_exists('optNullThud', $this->_providedOptionals)) {
-            $output['optNullThud'] = ($this->optNullThud !== null ? $this->optNullThud : null);
+            $output['optNullThud'] = $this->optNullThud;
         }
 
         return $output;
@@ -1213,25 +1222,25 @@ class MyClass
             $output->{'optThud'} = $this->optThud;
         }
         if (isset($this->optGrox) || array_key_exists('optGrox', $this->_providedOptionals)) {
-            $output->{'optGrox'} = ($this->optGrox !== null ? $this->optGrox : null);
+            $output->{'optGrox'} = $this->optGrox;
         }
         if (isset($this->optNullFoo) || array_key_exists('optNullFoo', $this->_providedOptionals)) {
-            $output->{'optNullFoo'} = ($this->optNullFoo !== null ? $this->optNullFoo : null);
+            $output->{'optNullFoo'} = $this->optNullFoo;
         }
         if (isset($this->optNullBar) || array_key_exists('optNullBar', $this->_providedOptionals)) {
-            $output->{'optNullBar'} = ($this->optNullBar !== null ? $this->optNullBar : null);
+            $output->{'optNullBar'} = $this->optNullBar;
         }
         if (isset($this->optNullBaz) || array_key_exists('optNullBaz', $this->_providedOptionals)) {
-            $output->{'optNullBaz'} = ($this->optNullBaz !== null ? $this->optNullBaz : null);
+            $output->{'optNullBaz'} = $this->optNullBaz;
         }
         if (isset($this->optNullQux) || array_key_exists('optNullQux', $this->_providedOptionals)) {
-            $output->{'optNullQux'} = ($this->optNullQux !== null ? $this->optNullQux : null);
+            $output->{'optNullQux'} = $this->optNullQux;
         }
         if (isset($this->optNullQuux) || array_key_exists('optNullQuux', $this->_providedOptionals)) {
             $output->{'optNullQuux'} = ($this->optNullQuux !== null ? $this->optNullQuux->toStdClass() : null);
         }
         if (isset($this->optNullThud) || array_key_exists('optNullThud', $this->_providedOptionals)) {
-            $output->{'optNullThud'} = ($this->optNullThud !== null ? $this->optNullThud : null);
+            $output->{'optNullThud'} = $this->optNullThud;
         }
 
         return $output;

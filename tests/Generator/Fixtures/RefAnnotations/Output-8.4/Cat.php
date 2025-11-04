@@ -168,7 +168,7 @@ class Cat
         $_providedOptionals = [];
         $hasFur = null;
         if (property_exists($input, 'hasFur')) {
-            $hasFur = ($input->{'hasFur'} !== null ? $input->{'hasFur'} : null);
+            $hasFur = $input->{'hasFur'} !== null ? (bool)$input->{'hasFur'} : null;
             $_providedOptionals['hasFur'] = true;
         }
 
@@ -194,7 +194,7 @@ class Cat
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
         if (isset($this->hasFur) || array_key_exists('hasFur', $this->_providedOptionals)) {
-            $output['hasFur'] = ($this->hasFur !== null ? $this->hasFur : null);
+            $output['hasFur'] = $this->hasFur;
         }
 
         if ($includeDefaults) {
@@ -219,7 +219,7 @@ class Cat
         $output = $this->_additionalProperties;
 
         if (isset($this->hasFur) || array_key_exists('hasFur', $this->_providedOptionals)) {
-            $output->{'hasFur'} = ($this->hasFur !== null ? $this->hasFur : null);
+            $output->{'hasFur'} = $this->hasFur;
         }
 
         if ($includeDefaults) {

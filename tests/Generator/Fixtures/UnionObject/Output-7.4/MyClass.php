@@ -483,7 +483,7 @@ class MyClass
             : null;
         $unionOfOneNull = null;
         if (property_exists($input, 'unionOfOneNull')) {
-            $unionOfOneNull = ($input->{'unionOfOneNull'} !== null ? $input->{'unionOfOneNull'} : null);
+            $unionOfOneNull = $input->{'unionOfOneNull'};
             $_providedOptionals['unionOfOneNull'] = true;
         }
 
@@ -552,7 +552,7 @@ class MyClass
             $output['unionOfOneObj'] = $this->unionOfOneObj->toArray();
         }
         if (isset($this->unionOfOneNull) || array_key_exists('unionOfOneNull', $this->_providedOptionals)) {
-            $output['unionOfOneNull'] = ($this->unionOfOneNull !== null ? $this->unionOfOneNull : null);
+            $output['unionOfOneNull'] = $this->unionOfOneNull;
         }
 
         return $output;
@@ -605,7 +605,7 @@ class MyClass
             $output->{'unionOfOneObj'} = $this->unionOfOneObj->toStdClass();
         }
         if (isset($this->unionOfOneNull) || array_key_exists('unionOfOneNull', $this->_providedOptionals)) {
-            $output->{'unionOfOneNull'} = ($this->unionOfOneNull !== null ? $this->unionOfOneNull : null);
+            $output->{'unionOfOneNull'} = $this->unionOfOneNull;
         }
 
         return $output;

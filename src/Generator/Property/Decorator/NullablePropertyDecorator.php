@@ -120,9 +120,7 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface
         $varName  = $this->inner->varName();
         $inputVarName = ArgumentNames::INPUT;
         $accessor = "\${$inputVarName}->{{$this->keyStr()}}";
-
-        $innerMap = $this->inner->inputMappingExpr($accessor);
-        $map = TernaryGenerator::make("{$accessor} !== null", "{$innerMap}", "null", parens: false);
+        $map = $this->inputMappingExpr($accessor, parens: false);
         return "\${$varName} = {$map};";
     }
 
@@ -133,10 +131,9 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface
         }
         $propName  = $this->inner->propName();
         $outputVarName = VariableNames::OUTPUT;
-
         $accessor = "\$this->{$propName}";
-        $inner = $this->inner->outputMappingExpr($accessor);
-        $map = TernaryGenerator::make("{$accessor} !== null", $inner, "null", parens: false);
+
+        $map = $this->outputMappingExpr($accessor, parens: false);
 
         return "\${$outputVarName}[{$this->keyStr()}] = {$map};";
     }
@@ -148,10 +145,9 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface
         }
         $propName  = $this->inner->propName();
         $outputVarName = VariableNames::OUTPUT;
-
         $accessor = "\$this->{$propName}";
-        $inner = $this->inner->outputMappingExprStdClass($accessor);
-        $map = TernaryGenerator::make("{$accessor} !== null", $inner, "null", parens: false);
+
+        $map = $this->outputMappingExprStdClass($accessor, parens: false);
 
         return "\${$outputVarName}->{{$this->keyStr()}} = {$map};";
     }
@@ -220,31 +216,37 @@ class NullablePropertyDecorator implements PropertyDecoratorInterface
         return OrGenerator::make(["{$expr} === null", $this->inner->inputAssertionExpr($expr)]);
     }
 
-    public function inputMappingExpr(string $expr, bool $asserted = false): string
+    public function inputMappingExpr(string $expr, bool $asserted = false, ?bool $parens = true): string
     {
         // Let the inner property build its own mapping (casts, builder calls, …)
         $inner = $this->inner->inputMappingExpr($expr, $asserted);
 
         // If we're already inside an `isset()` check (asserted === true),
         // the value cannot be null → no extra guard needed.
-        if ($asserted) {
+        if ($asserted || !$this->inner->inputMappingRequiresNullCheck()) {
             return $inner;
         }
 
         // Top-level nullable field: we still need the null-guard here.
-        return TernaryGenerator::make("{$expr} !== null", $inner, "null");
+        return TernaryGenerator::make("{$expr} !== null", $inner, "null", parens: $parens);
     }
 
-    public function outputMappingExpr(string $expr): string
+    public function outputMappingExpr(string $expr, ?bool $parens = true): string
     {
         $inner = $this->inner->outputMappingExpr($expr);
-        return TernaryGenerator::make("{$expr} !== null", $inner, "null");
+        if ($this->inner->outputMappingRequiresNullCheck()) {
+            return TernaryGenerator::make("{$expr} !== null", $inner, "null", parens: $parens);
+        }
+        return $inner;
     }
 
-    public function outputMappingExprStdClass(string $expr): string
+    public function outputMappingExprStdClass(string $expr, ?bool $parens = true): string
     {
         $inner = $this->inner->outputMappingExprStdClass($expr);
-        return TernaryGenerator::make("{$expr} !== null", $inner, "null");
+        if ($this->inner->outputMappingRequiresNullCheck()) {
+            return TernaryGenerator::make("{$expr} !== null", $inner, "null", parens: $parens);
+        }
+        return $inner;
     }
 
     public function cloneExpr(string $expr): string

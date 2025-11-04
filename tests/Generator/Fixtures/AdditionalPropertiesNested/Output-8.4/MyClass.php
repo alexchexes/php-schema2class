@@ -139,7 +139,12 @@ class MyClass
             static::validateInput($input);
         }
 
-        $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
+        $foo = isset($input->{'foo'})
+            ? (str_contains((string)$input->{'foo'}, '.')
+                ? (float)$input->{'foo'}
+                : (int)$input->{'foo'}
+            )
+            : null;
         $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
 
         $obj = new self($foo, $bar);

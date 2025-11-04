@@ -499,18 +499,15 @@ class MyClass
             : null;
         $optThud = null;
         if (property_exists($input, 'optThud')) {
-            $optThud = ($input->{'optThud'} !== null
-                ? match (true) {
-                    default => $input->{'optThud'},
-                    (is_int($input->{'optThud'}) || is_float($input->{'optThud'})) =>
-                        (str_contains((string)$input->{'optThud'}, '.')
-                            ? (float)$input->{'optThud'}
-                            : (int)$input->{'optThud'}
-                        ),
-                    is_bool($input->{'optThud'}) => (bool)$input->{'optThud'},
-                }
-                : null
-            );
+            $optThud = match (true) {
+                default => $input->{'optThud'},
+                (is_int($input->{'optThud'}) || is_float($input->{'optThud'})) =>
+                    (str_contains((string)$input->{'optThud'}, '.')
+                        ? (float)$input->{'optThud'}
+                        : (int)$input->{'optThud'}
+                    ),
+                is_bool($input->{'optThud'}) => (bool)$input->{'optThud'},
+            };
             $_providedOptionals['optThud'] = true;
         }
 
@@ -578,13 +575,10 @@ class MyClass
             };
         }
         if (isset($this->optThud) || array_key_exists('optThud', $this->_providedOptionals)) {
-            $output['optThud'] = ($this->optThud !== null
-                ? match (true) {
-                    is_array($this->optThud) || is_object($this->optThud) => json_decode(json_encode($this->optThud), true),
-                    default => $this->optThud,
-                }
-                : null
-            );
+            $output['optThud'] = match (true) {
+                is_array($this->optThud) || is_object($this->optThud) => json_decode(json_encode($this->optThud), true),
+                default => $this->optThud,
+            };
         }
 
         return $output;
@@ -632,13 +626,10 @@ class MyClass
             };
         }
         if (isset($this->optThud) || array_key_exists('optThud', $this->_providedOptionals)) {
-            $output->{'optThud'} = ($this->optThud !== null
-                ? match (true) {
-                    is_array($this->optThud) || is_object($this->optThud) => json_decode(json_encode($this->optThud)),
-                    default => $this->optThud,
-                }
-                : null
-            );
+            $output->{'optThud'} = match (true) {
+                is_array($this->optThud) || is_object($this->optThud) => json_decode(json_encode($this->optThud)),
+                default => $this->optThud,
+            };
         }
 
         return $output;

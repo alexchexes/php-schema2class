@@ -154,7 +154,7 @@ class MyClass
         }
 
         $foo = $input->{'foo'};
-        $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
+        $bar = isset($input->{'bar'}) ? (int)$input->{'bar'} : null;
 
         $obj = new self($foo, $bar);
 

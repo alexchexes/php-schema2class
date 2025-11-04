@@ -463,10 +463,9 @@ class MyClass
         $inferInt = isset($input->{'inferInt'}) ? MyClassInferInt::from($input->{'inferInt'}) : null;
         $optionalNullable = null;
         if (property_exists($input, 'optionalNullable')) {
-            $optionalNullable = ($input->{'optionalNullable'} !== null
+            $optionalNullable = $input->{'optionalNullable'} !== null
                 ? MyClassOptionalNullable::from($input->{'optionalNullable'})
-                : null
-            );
+                : null;
             $_providedOptionals['optionalNullable'] = true;
         }
 

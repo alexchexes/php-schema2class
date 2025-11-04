@@ -1425,7 +1425,7 @@ class MyClass
         $_validate = isset($input->{'validate'}) ? $input->{'validate'} : null;
         $_materializeDefaults = null;
         if (property_exists($input, 'materializeDefaults')) {
-            $_materializeDefaults = ($input->{'materializeDefaults'} !== null ? $input->{'materializeDefaults'} : null);
+            $_materializeDefaults = $input->{'materializeDefaults'};
             $_providedOptionals['materializeDefaults'] = true;
         }
         $testObj = isset($input->{'testObj'})
@@ -1543,7 +1543,7 @@ class MyClass
             $output['validate'] = $this->validate;
         }
         if (isset($this->materializeDefaults) || array_key_exists('materializeDefaults', $this->_providedOptionals)) {
-            $output['materializeDefaults'] = ($this->materializeDefaults !== null ? $this->materializeDefaults : null);
+            $output['materializeDefaults'] = $this->materializeDefaults;
         }
         $output['obj'] = $this->obj;
         $output['includeDefaults'] = $this->includeDefaults;
@@ -1635,7 +1635,7 @@ class MyClass
             $output->{'validate'} = $this->validate;
         }
         if (isset($this->materializeDefaults) || array_key_exists('materializeDefaults', $this->_providedOptionals)) {
-            $output->{'materializeDefaults'} = ($this->materializeDefaults !== null ? $this->materializeDefaults : null);
+            $output->{'materializeDefaults'} = $this->materializeDefaults;
         }
         $output->{'obj'} = $this->obj;
         $output->{'includeDefaults'} = $this->includeDefaults;

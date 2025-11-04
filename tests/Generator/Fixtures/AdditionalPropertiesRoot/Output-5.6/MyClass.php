@@ -271,7 +271,12 @@ class MyClass
             static::validateInput($input);
         }
 
-        $number = isset($input->{'number'}) ? $input->{'number'} : null;
+        $number = isset($input->{'number'})
+            ? (str_contains((string)$input->{'number'}, '.')
+                ? (float)$input->{'number'}
+                : (int)$input->{'number'}
+            )
+            : null;
         $streetName = isset($input->{'street_name'}) ? $input->{'street_name'} : null;
         $streetType = isset($input->{'street_type'}) ? $input->{'street_type'} : null;
 

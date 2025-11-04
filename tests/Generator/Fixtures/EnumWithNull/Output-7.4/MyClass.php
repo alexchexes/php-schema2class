@@ -162,7 +162,7 @@ class MyClass
         $_providedOptionals = [];
         $foo = null;
         if (property_exists($input, 'foo')) {
-            $foo = ($input->{'foo'} !== null ? $input->{'foo'} : null);
+            $foo = $input->{'foo'};
             $_providedOptionals['foo'] = true;
         }
 
@@ -187,7 +187,7 @@ class MyClass
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
         if (isset($this->foo) || array_key_exists('foo', $this->_providedOptionals)) {
-            $output['foo'] = ($this->foo !== null ? $this->foo : null);
+            $output['foo'] = $this->foo;
         }
 
         return $output;
@@ -203,7 +203,7 @@ class MyClass
         $output = $this->_additionalProperties;
 
         if (isset($this->foo) || array_key_exists('foo', $this->_providedOptionals)) {
-            $output->{'foo'} = ($this->foo !== null ? $this->foo : null);
+            $output->{'foo'} = $this->foo;
         }
 
         return $output;

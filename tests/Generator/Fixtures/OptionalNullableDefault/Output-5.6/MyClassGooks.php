@@ -210,7 +210,9 @@ class MyClassGooks
         }
 
         $a = isset($input->{'a'}) ? $input->{'a'} : null;
-        $b = isset($input->{'b'}) ? $input->{'b'} : null;
+        $b = isset($input->{'b'})
+            ? (str_contains((string)$input->{'b'}, '.') ? (float)$input->{'b'} : (int)$input->{'b'})
+            : null;
 
         $obj = new self($a, $b);
 
