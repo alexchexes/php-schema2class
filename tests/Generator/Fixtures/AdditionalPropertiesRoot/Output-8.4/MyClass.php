@@ -54,8 +54,11 @@ class MyClass
 
     private ?MyClassStreetType $streetType = null;
 
-    public function __construct(int|float|null $number = null, ?string $streetName = null, ?MyClassStreetType $streetType = null)
-    {
+    public function __construct(
+        int|float|null $number = null,
+        ?string $streetName = null,
+        ?MyClassStreetType $streetType = null
+    ) {
         $this->_additionalProperties = new \stdClass();
 
         $this->number = $number;

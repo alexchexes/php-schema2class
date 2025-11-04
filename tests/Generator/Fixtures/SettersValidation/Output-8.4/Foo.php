@@ -95,8 +95,12 @@ class Foo
     /**
      * @param 'a'|'b'|string[]|null $a
      */
-    public function __construct(string|array|null $a = null, ?array $b = null, int|float|null $c = null, ?Bar $d = null)
-    {
+    public function __construct(
+        string|array|null $a = null,
+        ?array $b = null,
+        int|float|null $c = null,
+        ?Bar $d = null
+    ) {
         $this->_additionalProperties = new \stdClass();
 
         $this->a = $a;

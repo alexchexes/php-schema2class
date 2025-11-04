@@ -138,8 +138,24 @@ class MyClass
 
     private ?string $it_s_A = null;
 
-    public function __construct(string $foo, string $_foo, string $__foo, string $foo_, string $foo__, string $_foo_, string $__foo__, string $_foo_bar, string $foo_bar, string $baz_qux, string $_123_qwe, string $Gorod, string $nazvanie_iur_litsa, string $IP_adres, string $_tildas, ?string $it_s_A = null)
-    {
+    public function __construct(
+        string $foo,
+        string $_foo,
+        string $__foo,
+        string $foo_,
+        string $foo__,
+        string $_foo_,
+        string $__foo__,
+        string $_foo_bar,
+        string $foo_bar,
+        string $baz_qux,
+        string $_123_qwe,
+        string $Gorod,
+        string $nazvanie_iur_litsa,
+        string $IP_adres,
+        string $_tildas,
+        ?string $it_s_A = null
+    ) {
         $this->_additionalProperties = new \stdClass();
 
         $this->foo = $foo;

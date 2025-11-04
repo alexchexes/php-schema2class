@@ -145,8 +145,16 @@ class MyClass
 
     private ?string $zyx = null;
 
-    public function __construct(?int $foo = null, ?string $bar = null, ?int $baz = null, ?string $qux = null, ?string $thud = null, ?string $grox = null, int|float|string|null $qwert = null, ?string $zyx = null)
-    {
+    public function __construct(
+        ?int $foo = null,
+        ?string $bar = null,
+        ?int $baz = null,
+        ?string $qux = null,
+        ?string $thud = null,
+        ?string $grox = null,
+        int|float|string|null $qwert = null,
+        ?string $zyx = null
+    ) {
         $this->_additionalProperties = new \stdClass();
 
         $this->foo = $foo;

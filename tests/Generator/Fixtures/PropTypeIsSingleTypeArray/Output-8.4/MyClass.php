@@ -327,8 +327,34 @@ class MyClass
      * @param null $optGrox
      * @param string[]|null $optNullThud
      */
-    public function __construct(string $foo, int|float $bar, int $baz, bool $qux, MyClassQuux $quux, array $thud, $grox, ?string $nullFoo, int|float|null $nullBar, ?int $nullBaz, ?bool $nullQux, ?MyClassNullQuux $nullQuux, ?array $nullThud, ?string $optFoo = null, int|float|null $optBar = null, ?int $optBaz = null, ?bool $optQux = null, ?MyClassOptQuux $optQuux = null, ?array $optThud = null, $optGrox = null, ?string $optNullFoo = null, int|float|null $optNullBar = null, ?int $optNullBaz = null, ?bool $optNullQux = null, ?MyClassOptNullQuux $optNullQuux = null, ?array $optNullThud = null)
-    {
+    public function __construct(
+        string $foo,
+        int|float $bar,
+        int $baz,
+        bool $qux,
+        MyClassQuux $quux,
+        array $thud,
+        $grox,
+        ?string $nullFoo,
+        int|float|null $nullBar,
+        ?int $nullBaz,
+        ?bool $nullQux,
+        ?MyClassNullQuux $nullQuux,
+        ?array $nullThud,
+        ?string $optFoo = null,
+        int|float|null $optBar = null,
+        ?int $optBaz = null,
+        ?bool $optQux = null,
+        ?MyClassOptQuux $optQuux = null,
+        ?array $optThud = null,
+        $optGrox = null,
+        ?string $optNullFoo = null,
+        int|float|null $optNullBar = null,
+        ?int $optNullBaz = null,
+        ?bool $optNullQux = null,
+        ?MyClassOptNullQuux $optNullQuux = null,
+        ?array $optNullThud = null
+    ) {
         $this->_additionalProperties = new \stdClass();
 
         $this->foo = $foo;

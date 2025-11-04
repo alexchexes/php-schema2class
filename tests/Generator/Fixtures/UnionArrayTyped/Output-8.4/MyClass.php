@@ -147,8 +147,13 @@ class MyClass
      * @param string[]|string|null $unionOfTypedArrayAndString
      * @param string[]|null $unionOfOneTypedArray
      */
-    public function __construct(?array $unionOfTypedArrays = null, ?array $refUnionOfTypedArrays = null, ?array $refAndNotRefUnionOfTypedArrays = null, string|array|null $unionOfTypedArrayAndString = null, ?array $unionOfOneTypedArray = null)
-    {
+    public function __construct(
+        ?array $unionOfTypedArrays = null,
+        ?array $refUnionOfTypedArrays = null,
+        ?array $refAndNotRefUnionOfTypedArrays = null,
+        string|array|null $unionOfTypedArrayAndString = null,
+        ?array $unionOfOneTypedArray = null
+    ) {
         $this->_additionalProperties = new \stdClass();
 
         $this->unionOfTypedArrays = $unionOfTypedArrays;

@@ -129,8 +129,12 @@ class Record
      * @param (Phone|Fio)[]|null $dataArrayAnyOf
      * @param ((Phone|Fio)[])[]|null $dataArrayNestedAnyOf
      */
-    public function __construct(?array $dataArray = null, ?array $dataArrayNested = null, ?array $dataArrayAnyOf = null, ?array $dataArrayNestedAnyOf = null)
-    {
+    public function __construct(
+        ?array $dataArray = null,
+        ?array $dataArrayNested = null,
+        ?array $dataArrayAnyOf = null,
+        ?array $dataArrayNestedAnyOf = null
+    ) {
         $this->_additionalProperties = new \stdClass();
 
         $this->dataArray = $dataArray;

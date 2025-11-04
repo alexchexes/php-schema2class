@@ -212,8 +212,13 @@ class MyClass
      * @param (string[][]|string)[]|null $arrayOfUnionOfStringAndArray
      * @param string[][]|null $arrayOfUnionWithOneType
      */
-    public function __construct(?array $arrayOfUnions = null, ?array $arrayOfRefUnions = null, ?array $arrayOfRefAndNotRefUnions = null, ?array $arrayOfUnionOfStringAndArray = null, ?array $arrayOfUnionWithOneType = null)
-    {
+    public function __construct(
+        ?array $arrayOfUnions = null,
+        ?array $arrayOfRefUnions = null,
+        ?array $arrayOfRefAndNotRefUnions = null,
+        ?array $arrayOfUnionOfStringAndArray = null,
+        ?array $arrayOfUnionWithOneType = null
+    ) {
         $this->_additionalProperties = new \stdClass();
 
         $this->arrayOfUnions = $arrayOfUnions;

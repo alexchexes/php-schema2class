@@ -126,8 +126,17 @@ class MyClass
 
     private string|array|object|null $i = null;
 
-    public function __construct(array $a, string|array $b, ?array $c, string|array|null $d, ?array $e = null, string|array|null $f = null, ?array $g = null, string|array|null $h = null, string|array|object|null $i = null)
-    {
+    public function __construct(
+        array $a,
+        string|array $b,
+        ?array $c,
+        string|array|null $d,
+        ?array $e = null,
+        string|array|null $f = null,
+        ?array $g = null,
+        string|array|null $h = null,
+        string|array|object|null $i = null
+    ) {
         $this->_additionalProperties = new \stdClass();
 
         $this->a = $a;

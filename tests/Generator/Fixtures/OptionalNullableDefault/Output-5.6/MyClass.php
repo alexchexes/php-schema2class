@@ -218,8 +218,17 @@ class MyClass
      * @param MyClassGrox|null $grox
      * @param MyClassGooks|null $gooks
      */
-    public function __construct($foo, $quux, $thud, $bar = null, $baz = null, $qux = null, $xyyz = null, MyClassGrox $grox = null, MyClassGooks $gooks = null)
-    {
+    public function __construct(
+        $foo,
+        $quux,
+        $thud,
+        $bar = null,
+        $baz = null,
+        $qux = null,
+        $xyyz = null,
+        MyClassGrox $grox = null,
+        MyClassGooks $gooks = null
+    ) {
         $this->_additionalProperties = new \stdClass();
 
         $this->foo = $foo;

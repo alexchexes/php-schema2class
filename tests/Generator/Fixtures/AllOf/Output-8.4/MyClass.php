@@ -67,8 +67,13 @@ class MyClass
 
     private string $state;
 
-    public function __construct(string $streetAddress, string $state, ?string $houseNumber = null, ?MyClassType $type = null, ?string $city = null)
-    {
+    public function __construct(
+        string $streetAddress,
+        string $state,
+        ?string $houseNumber = null,
+        ?MyClassType $type = null,
+        ?string $city = null
+    ) {
         $this->_additionalProperties = new \stdClass();
 
         $this->streetAddress = $streetAddress;

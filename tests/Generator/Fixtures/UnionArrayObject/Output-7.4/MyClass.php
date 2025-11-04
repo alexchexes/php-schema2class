@@ -179,8 +179,13 @@ class MyClass
      * @param MyClassArrayOfObjAndStringUnionAlternative1Item[]|string|null $arrayOfObjAndStringUnion
      * @param MyClassUnionOfOneArrayOfObjectsItem[]|null $unionOfOneArrayOfObjects
      */
-    public function __construct(?array $arrayOfObjectsUnion = null, ?array $refArrayOfObjectsUnion = null, ?array $refAndNotRefArrayOfObjectsUnion = null, $arrayOfObjAndStringUnion = null, ?array $unionOfOneArrayOfObjects = null)
-    {
+    public function __construct(
+        ?array $arrayOfObjectsUnion = null,
+        ?array $refArrayOfObjectsUnion = null,
+        ?array $refAndNotRefArrayOfObjectsUnion = null,
+        $arrayOfObjAndStringUnion = null,
+        ?array $unionOfOneArrayOfObjects = null
+    ) {
         $this->_additionalProperties = new \stdClass();
 
         $this->arrayOfObjectsUnion = $arrayOfObjectsUnion;

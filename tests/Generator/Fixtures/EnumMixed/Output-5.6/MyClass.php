@@ -196,8 +196,17 @@ class MyClass
      * @param 3|4|null $inferInt
      * @param 'red'|'green'|null $optionalNullable
      */
-    public function __construct($foo, $bar, $baz, $contradiction, $contradiction2, $nullable, $inferString = null, $inferInt = null, $optionalNullable = null)
-    {
+    public function __construct(
+        $foo,
+        $bar,
+        $baz,
+        $contradiction,
+        $contradiction2,
+        $nullable,
+        $inferString = null,
+        $inferInt = null,
+        $optionalNullable = null
+    ) {
         $this->_additionalProperties = new \stdClass();
 
         $this->foo = $foo;

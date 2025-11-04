@@ -111,8 +111,13 @@ class Foo
      * @param false|null $boolEnum
      * @param false|null $boolEnumRef
      */
-    public function __construct($requiredBoolEnumRef, $floatEnum = null, $floatEnumRef = null, $boolEnum = null, $boolEnumRef = null)
-    {
+    public function __construct(
+        $requiredBoolEnumRef,
+        $floatEnum = null,
+        $floatEnumRef = null,
+        $boolEnum = null,
+        $boolEnumRef = null
+    ) {
         $this->_additionalProperties = new \stdClass();
 
         $this->requiredBoolEnumRef = $requiredBoolEnumRef;

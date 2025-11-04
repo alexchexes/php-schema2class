@@ -154,8 +154,18 @@ class MyClass
 
     private bool|int|float|string|array|object|null $optThud = null;
 
-    public function __construct(bool|int|float|string $foo, bool|int|float|string|array $bar, bool|int|float|string|array|object $baz, bool|int|float|string|array|object $qux, bool|int|float|string|array|object|null $thud, bool|int|float|string|null $optFoo = null, bool|int|float|string|array|null $optBar = null, bool|int|float|string|array|object|null $optBaz = null, bool|int|float|string|array|object|null $optQux = null, bool|int|float|string|array|object|null $optThud = null)
-    {
+    public function __construct(
+        bool|int|float|string $foo,
+        bool|int|float|string|array $bar,
+        bool|int|float|string|array|object $baz,
+        bool|int|float|string|array|object $qux,
+        bool|int|float|string|array|object|null $thud,
+        bool|int|float|string|null $optFoo = null,
+        bool|int|float|string|array|null $optBar = null,
+        bool|int|float|string|array|object|null $optBaz = null,
+        bool|int|float|string|array|object|null $optQux = null,
+        bool|int|float|string|array|object|null $optThud = null
+    ) {
         $this->_additionalProperties = new \stdClass();
 
         $this->foo = $foo;

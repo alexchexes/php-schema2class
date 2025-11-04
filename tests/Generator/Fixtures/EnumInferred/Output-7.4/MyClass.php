@@ -127,8 +127,14 @@ class MyClass
      * @param 3|4|5|null $inferIntOpt
      * @param '42'|42|42.5|false|null $inferMixedOpt
      */
-    public function __construct(string $inferString, int $inferInt, $inferMixed, ?string $inferStringOpt = null, ?int $inferIntOpt = null, $inferMixedOpt = null)
-    {
+    public function __construct(
+        string $inferString,
+        int $inferInt,
+        $inferMixed,
+        ?string $inferStringOpt = null,
+        ?int $inferIntOpt = null,
+        $inferMixedOpt = null
+    ) {
         $this->_additionalProperties = new \stdClass();
 
         $this->inferString = $inferString;

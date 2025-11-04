@@ -366,8 +366,21 @@ class MyClass
      * @param string|string[]|ObjDef|null $buux
      * @param string|string[]|ObjDef|null $boic
      */
-    public function __construct(string $foo, string $bar, ?MyClassBaz $baz = null, ?MyClassQuxObj $quxObj = null, ?MyClassQuxObjNest $quxObjNest = null, ?array $thudArray = null, ObjDef|string|array|null $xyyz = null, ObjDef|string|array|null $buux = null, ObjDef|string|array|null $boic = null, NumericKeysObj|string|null $poox = null, array|object|null $arrObjUnion = null, array|object|null $objArrUnion = null, ?MyClassNumKeysDefaults $numKeysDefaults = null)
-    {
+    public function __construct(
+        string $foo,
+        string $bar,
+        ?MyClassBaz $baz = null,
+        ?MyClassQuxObj $quxObj = null,
+        ?MyClassQuxObjNest $quxObjNest = null,
+        ?array $thudArray = null,
+        ObjDef|string|array|null $xyyz = null,
+        ObjDef|string|array|null $buux = null,
+        ObjDef|string|array|null $boic = null,
+        NumericKeysObj|string|null $poox = null,
+        array|object|null $arrObjUnion = null,
+        array|object|null $objArrUnion = null,
+        ?MyClassNumKeysDefaults $numKeysDefaults = null
+    ) {
         $this->_additionalProperties = new \stdClass();
 
         $this->foo = $foo;

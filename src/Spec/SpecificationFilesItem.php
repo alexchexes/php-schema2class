@@ -17,8 +17,11 @@ class SpecificationFilesItem
 
     private ?SpecificationOptions $options = null;
 
-    public function __construct(string|array|object $_input, ?string $className = null, ?SpecificationOptions $options = null)
-    {
+    public function __construct(
+        string|array|object $_input,
+        ?string $className = null,
+        ?SpecificationOptions $options = null
+    ) {
         $this->input = $_input;
         $this->className = $className;
         $this->options = $options;

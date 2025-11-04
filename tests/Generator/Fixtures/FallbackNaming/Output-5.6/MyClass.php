@@ -658,8 +658,58 @@ class MyClass
      * @param MyClassEnsureArgs2|null $ensureArgs2
      * @param MyClassEnsureArgs3Item[]|null $ensureArgs3
      */
-    public function __construct($_GLOBALS_1, $_GLOBALS, $GLOBALS1, $SERVER, $GET, $POST, $FILES, $REQUEST, $SESSION, $ENV, $COOKIE, $phpErrormsg, $httpResponseHeader, $_argc, $_argv, $_input, $_obj, $_includeDefaults, $fromInput, $toArray, $toStdClass, $validateInput, $_schema_1, $schema, $_defaults_1, $defaults, $providedOptionals, $_clone, $_clone_1, $construct, $destruct, $get, $set, $call, $isset, $unset, $sleep, $wakeup, $toString, $invoke, $debugInfo, $files, $_this, $_validate = null, $_materializeDefaults = null, MyClassTestObj $testObj = null, $_providedOptionals_1 = null, $ensureArgs1 = null, MyClassEnsureArgs2 $ensureArgs2 = null, array $ensureArgs3 = null)
-    {
+    public function __construct(
+        $_GLOBALS_1,
+        $_GLOBALS,
+        $GLOBALS1,
+        $SERVER,
+        $GET,
+        $POST,
+        $FILES,
+        $REQUEST,
+        $SESSION,
+        $ENV,
+        $COOKIE,
+        $phpErrormsg,
+        $httpResponseHeader,
+        $_argc,
+        $_argv,
+        $_input,
+        $_obj,
+        $_includeDefaults,
+        $fromInput,
+        $toArray,
+        $toStdClass,
+        $validateInput,
+        $_schema_1,
+        $schema,
+        $_defaults_1,
+        $defaults,
+        $providedOptionals,
+        $_clone,
+        $_clone_1,
+        $construct,
+        $destruct,
+        $get,
+        $set,
+        $call,
+        $isset,
+        $unset,
+        $sleep,
+        $wakeup,
+        $toString,
+        $invoke,
+        $debugInfo,
+        $files,
+        $_this,
+        $_validate = null,
+        $_materializeDefaults = null,
+        MyClassTestObj $testObj = null,
+        $_providedOptionals_1 = null,
+        $ensureArgs1 = null,
+        MyClassEnsureArgs2 $ensureArgs2 = null,
+        array $ensureArgs3 = null
+    ) {
         $this->_additionalProperties = new \stdClass();
 
         $this->_GLOBALS = $_GLOBALS_1;

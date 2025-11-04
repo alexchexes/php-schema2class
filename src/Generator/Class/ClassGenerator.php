@@ -29,6 +29,8 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class ClassGenerator
 {
+    private const MAX_CTOR_ARGS_LEN = 80;
+
     public function __construct(
         private GeneratorRequest $request,
         private array $schema,
@@ -142,6 +144,19 @@ class ClassGenerator
             $escapedOwnClasses = array_map(fn ($n) => preg_quote($n, '/'), $ownClasses);
             $classesPattern = '/\\\\(' . join('|', $escapedOwnClasses) . ')(?=\s|[,;)|]|$)/';
             $content = preg_replace($classesPattern, '$1', $content);
+        }
+
+        // make long constructor args multiline
+        $ctorRegex = '/__construct\(([^)]+)\)\s+{/';
+        preg_match($ctorRegex, $content, $matches);
+        $ctorArgsString = $matches[1] ?? '';
+        $ctorArgs = explode(', ', $ctorArgsString);
+        if ($ctorArgs > 1 && strlen($ctorArgsString) > self::MAX_CTOR_ARGS_LEN) {
+            $tab = '    ';
+            $indent = "\n{$tab}{$tab}";
+            $newCtorArgsString = $indent . implode("," . $indent, $ctorArgs) . "\n{$tab}";
+            /** @var string */
+            $content = preg_replace($ctorRegex, "__construct($newCtorArgsString) {", $content);
         }
 
         return $content;

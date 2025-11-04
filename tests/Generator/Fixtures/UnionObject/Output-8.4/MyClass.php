@@ -156,8 +156,14 @@ class MyClass
     /**
      * @param null $unionOfOneNull
      */
-    public function __construct(MyClassObjectsUnionAlternative1|MyClassObjectsUnionAlternative2|null $objectsUnion = null, SomeObj1|SomeObj2|null $refObjectsUnion = null, MyClassRefAndNotRefObjectsUnionAlternative2|MyClassRefAndNotRefObjectsUnionAlternative4|SomeObj1|SomeObj2|null $refAndNotRefObjectsUnion = null, MyClassObjAndStringUnionAlternative1|string|null $objAndStringUnion = null, ?MyClassUnionOfOneObj $unionOfOneObj = null, $unionOfOneNull = null)
-    {
+    public function __construct(
+        MyClassObjectsUnionAlternative1|MyClassObjectsUnionAlternative2|null $objectsUnion = null,
+        SomeObj1|SomeObj2|null $refObjectsUnion = null,
+        MyClassRefAndNotRefObjectsUnionAlternative2|MyClassRefAndNotRefObjectsUnionAlternative4|SomeObj1|SomeObj2|null $refAndNotRefObjectsUnion = null,
+        MyClassObjAndStringUnionAlternative1|string|null $objAndStringUnion = null,
+        ?MyClassUnionOfOneObj $unionOfOneObj = null,
+        $unionOfOneNull = null
+    ) {
         $this->_additionalProperties = new \stdClass();
 
         $this->objectsUnion = $objectsUnion;

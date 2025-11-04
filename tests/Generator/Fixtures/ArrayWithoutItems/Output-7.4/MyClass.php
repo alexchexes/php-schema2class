@@ -148,8 +148,17 @@ class MyClass
      * @param array|string|null $h
      * @param array|string|object|null $i
      */
-    public function __construct(array $a, $b, ?array $c, $d, ?array $e = null, $f = null, ?array $g = null, $h = null, $i = null)
-    {
+    public function __construct(
+        array $a,
+        $b,
+        ?array $c,
+        $d,
+        ?array $e = null,
+        $f = null,
+        ?array $g = null,
+        $h = null,
+        $i = null
+    ) {
         $this->_additionalProperties = new \stdClass();
 
         $this->a = $a;

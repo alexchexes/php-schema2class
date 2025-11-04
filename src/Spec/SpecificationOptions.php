@@ -51,8 +51,23 @@ class SpecificationOptions
      * @param 5|7|8|string|null $targetPHPVersion
      * @param true|'chainable'|null $mutableSetters
      */
-    public function __construct(?string $targetDirectory = null, ?string $targetNamespace = null, int|string|null $targetPHPVersion = null, ?bool $cleanTargetDirectory = null, ?bool $disableStrictTypes = null, ?bool $inlineAllofReferences = null, ?string $newValidatorExpr = null, ?string $arrayToObjectExpr = null, ?bool $preservePropertyNames = null, ?bool $noGetters = null, ?bool $noSetters = null, bool|string|null $mutableSetters = null, ?bool $noSchemaMetadata = null, ?bool $singleLineSchema = null, ?bool $noEnums = null)
-    {
+    public function __construct(
+        ?string $targetDirectory = null,
+        ?string $targetNamespace = null,
+        int|string|null $targetPHPVersion = null,
+        ?bool $cleanTargetDirectory = null,
+        ?bool $disableStrictTypes = null,
+        ?bool $inlineAllofReferences = null,
+        ?string $newValidatorExpr = null,
+        ?string $arrayToObjectExpr = null,
+        ?bool $preservePropertyNames = null,
+        ?bool $noGetters = null,
+        ?bool $noSetters = null,
+        bool|string|null $mutableSetters = null,
+        ?bool $noSchemaMetadata = null,
+        ?bool $singleLineSchema = null,
+        ?bool $noEnums = null
+    ) {
         $this->targetDirectory = $targetDirectory;
         $this->targetNamespace = $targetNamespace;
         $this->targetPHPVersion = $targetPHPVersion;

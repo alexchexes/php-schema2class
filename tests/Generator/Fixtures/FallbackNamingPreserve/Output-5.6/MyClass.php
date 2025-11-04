@@ -658,8 +658,58 @@ class MyClass
      * @param MyClassEnsureArgs2|null $ensureArgs2
      * @param MyClassEnsureArgs3Item[]|null $ensureArgs3
      */
-    public function __construct($_GLOBALS_1, $_GLOBALS, $GLOBALS_1, $_SERVER_1, $_GET_1, $_POST_1, $_FILES_1, $_REQUEST_1, $_SESSION_1, $_ENV_1, $_COOKIE_1, $_php_errormsg, $_http_response_header, $_argc, $_argv, $_input, $_obj, $_includeDefaults, $fromInput, $toArray, $toStdClass, $validateInput, $_schema_1, $schema, $_defaults_1, $defaults, $_providedOptionals_1, $_clone, $__clone, $__construct, $__destruct, $__get, $__set, $__call, $__isset, $__unset, $__sleep, $__wakeup, $__toString, $__invoke, $__debugInfo, $files, $_this, $_validate = null, $_materializeDefaults = null, MyClassTestObj $testObj = null, $__providedOptionals = null, $ensureArgs1 = null, MyClassEnsureArgs2 $ensureArgs2 = null, array $ensureArgs3 = null)
-    {
+    public function __construct(
+        $_GLOBALS_1,
+        $_GLOBALS,
+        $GLOBALS_1,
+        $_SERVER_1,
+        $_GET_1,
+        $_POST_1,
+        $_FILES_1,
+        $_REQUEST_1,
+        $_SESSION_1,
+        $_ENV_1,
+        $_COOKIE_1,
+        $_php_errormsg,
+        $_http_response_header,
+        $_argc,
+        $_argv,
+        $_input,
+        $_obj,
+        $_includeDefaults,
+        $fromInput,
+        $toArray,
+        $toStdClass,
+        $validateInput,
+        $_schema_1,
+        $schema,
+        $_defaults_1,
+        $defaults,
+        $_providedOptionals_1,
+        $_clone,
+        $__clone,
+        $__construct,
+        $__destruct,
+        $__get,
+        $__set,
+        $__call,
+        $__isset,
+        $__unset,
+        $__sleep,
+        $__wakeup,
+        $__toString,
+        $__invoke,
+        $__debugInfo,
+        $files,
+        $_this,
+        $_validate = null,
+        $_materializeDefaults = null,
+        MyClassTestObj $testObj = null,
+        $__providedOptionals = null,
+        $ensureArgs1 = null,
+        MyClassEnsureArgs2 $ensureArgs2 = null,
+        array $ensureArgs3 = null
+    ) {
         $this->_additionalProperties = new \stdClass();
 
         $this->_GLOBALS = $_GLOBALS_1;

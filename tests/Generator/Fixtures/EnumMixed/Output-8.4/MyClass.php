@@ -172,8 +172,17 @@ class MyClass
      * @param 'red'|'amber'|'green'|'42'|42|42.5|false|null $baz
      * @param 1|2|'one' $contradiction2
      */
-    public function __construct(int|string $foo, int|string $bar, bool|int|float|string|null $baz, MyClassContradiction $contradiction, int|string $contradiction2, ?MyClassNullable $nullable, ?MyClassInferString $inferString = null, ?MyClassInferInt $inferInt = null, ?MyClassOptionalNullable $optionalNullable = null)
-    {
+    public function __construct(
+        int|string $foo,
+        int|string $bar,
+        bool|int|float|string|null $baz,
+        MyClassContradiction $contradiction,
+        int|string $contradiction2,
+        ?MyClassNullable $nullable,
+        ?MyClassInferString $inferString = null,
+        ?MyClassInferInt $inferInt = null,
+        ?MyClassOptionalNullable $optionalNullable = null
+    ) {
         $this->_additionalProperties = new \stdClass();
 
         $this->foo = $foo;
