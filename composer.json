@@ -9,6 +9,10 @@
             "email": "martin@helmich.me"
         }
     ],
+    "scripts": {
+        "analyze": "phpstan",
+        "test": "phpunit"
+    },
 	"config": {
 		"allow-plugins": {
             "cweagans/composer-patches": true
