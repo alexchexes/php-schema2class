@@ -1,0 +1,116 @@
+{
+  "properties": {
+    "arrayOfUnions": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "array",
+            "items": {
+              "oneOf": [
+                { "type": "string" },
+                { "type": "number" }
+              ]
+            }
+          },
+          {
+            "oneOf": [
+              {
+                "type": "array",
+                "items": { "type": "string" }
+              },
+              {
+                "type": "array",
+                "items": { "type": "number" }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "arrayOfRefUnions": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          { "$ref": "#/definitions/ArrayOfOneOfs" },
+          { "$ref": "#/definitions/OneOfArrays" }
+        ]
+      }
+    },
+    "arrayOfRefAndNotRefUnions": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          { "$ref": "#/definitions/ArrayOfOneOfs" },
+          {
+            "type": "array",
+            "items": {
+              "oneOf": [
+                { "type": "string" },
+                { "type": "number" }
+              ]
+            }
+          },
+          { "$ref": "#/definitions/OneOfArrays" },
+          {
+            "oneOf": [
+              {
+                "type": "array",
+                "items": { "type": "string" }
+              },
+              {
+                "type": "array",
+                "items": { "type": "number" }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "arrayOfUnionOfStringAndArray": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {"type": "string"}
+            }
+          },
+          { "type": "string" }
+        ]
+      }
+    },
+    "arrayOfUnionWithOneType": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": {"type": "string"}
+      }
+    }
+  },
+  "definitions": {
+    "ArrayOfOneOfs": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          { "type": "string" },
+          { "type": "number" }
+        ]
+      }
+    },
+    "OneOfArrays": {
+      "oneOf": [
+        {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        {
+          "type": "array",
+          "items": { "type": "number" }
+        }
+      ]
+    }
+  }
+}

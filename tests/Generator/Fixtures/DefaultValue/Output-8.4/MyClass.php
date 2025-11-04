@@ -435,11 +435,16 @@ class MyClass
         $qux = isset($input->{'qux'}) ? $input->{'qux'} : null;
         $thud = isset($input->{'thud'}) ? $input->{'thud'} : null;
         $grox = isset($input->{'grox'}) ? $input->{'grox'} : null;
-        $qwert = isset($input->{'qwert'}) ? match (true) {
-            is_string($input->{'qwert'}) => $input->{'qwert'},
-            is_int($input->{'qwert'}) || is_float($input->{'qwert'}) => (str_contains((string)$input->{'qwert'}, '.') ? (float)$input->{'qwert'} : (int)$input->{'qwert'}),
-            default => null,
-        } : null;
+        $qwert = isset($input->{'qwert'})
+            ? match (true) {
+                default => $input->{'qwert'},
+                (is_int($input->{'qwert'}) || is_float($input->{'qwert'})) =>
+                    (str_contains((string)$input->{'qwert'}, '.')
+                        ? (float)$input->{'qwert'}
+                        : (int)$input->{'qwert'}
+                    ),
+            }
+            : null;
         $zyx = isset($input->{'zyx'}) ? $input->{'zyx'} : null;
 
         $obj = new self($foo, $bar, $baz, $qux, $thud, $grox, $qwert, $zyx);
@@ -454,7 +459,7 @@ class MyClass
     }
 
     /**
-     * Converts this object back to a simple array that can be JSON-serialized
+     * Converts this object to array that can be JSON-serialized
      *
      * @param bool $includeDefaults Add defaults for missing properties
      * @return array Converted array
@@ -470,7 +475,7 @@ class MyClass
             $output['bar'] = $this->bar;
         }
         if (isset($this->baz) || array_key_exists('baz', $this->_providedOptionals)) {
-            $output['baz'] = ($this->baz !== null) ? ($this->baz) : null;
+            $output['baz'] = ($this->baz !== null ? $this->baz : null);
         }
         if (isset($this->qux)) {
             $output['qux'] = $this->qux;
@@ -483,8 +488,7 @@ class MyClass
         }
         if (isset($this->qwert)) {
             $output['qwert'] = match (true) {
-                is_string($this->qwert),
-                is_int($this->qwert) || is_float($this->qwert) => $this->qwert,
+                default => $this->qwert,
             };
         }
         if (isset($this->zyx)) {
@@ -519,7 +523,7 @@ class MyClass
             $output->{'bar'} = $this->bar;
         }
         if (isset($this->baz) || array_key_exists('baz', $this->_providedOptionals)) {
-            $output->{'baz'} = ($this->baz !== null) ? ($this->baz) : null;
+            $output->{'baz'} = ($this->baz !== null ? $this->baz : null);
         }
         if (isset($this->qux)) {
             $output->{'qux'} = $this->qux;
@@ -532,8 +536,7 @@ class MyClass
         }
         if (isset($this->qwert)) {
             $output->{'qwert'} = match (true) {
-                is_string($this->qwert),
-                is_int($this->qwert) || is_float($this->qwert) => $this->qwert,
+                default => $this->qwert,
             };
         }
         if (isset($this->zyx)) {
@@ -580,23 +583,14 @@ class MyClass
         $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
-            $errors = array_map(function(array $e): string {
-                return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];
-            }, $validator->getErrors());
+            $errors = array_map(
+                fn (array $e): string => ($e["property"] ? $e["property"] . ": " : "") . $e["message"],
+                $validator->getErrors(),
+            );
             throw new \InvalidArgumentException(join(".\n", $errors));
         }
 
         return $validator->isValid();
-    }
-
-    public function __clone()
-    {
-        if (isset($this->qwert)) {
-            $this->qwert = match (true) {
-                is_string($this->qwert),
-                is_int($this->qwert) || is_float($this->qwert) => $this->qwert,
-            };
-        }
     }
 
     /**

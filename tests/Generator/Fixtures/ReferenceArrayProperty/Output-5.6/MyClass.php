@@ -21,6 +21,17 @@ class MyClass
                         'name' => 'foo',
                     ],
                 ],
+                'minItems' => 1,
+                'maxItems' => 1,
+            ],
+            'bar' => [
+                'type' => 'array',
+                'items' => [
+                    '$ref' => '#/definitions/BarItem',
+                ],
+                'default' => [
+                    
+                ],
             ],
         ],
         'definitions' => [
@@ -29,6 +40,13 @@ class MyClass
                     'name' => [
                         'type' => 'string',
                         'default' => 'a string',
+                    ],
+                ],
+            ],
+            'BarItem' => [
+                'properties' => [
+                    'name' => [
+                        'type' => 'string',
                     ],
                 ],
             ],
@@ -42,6 +60,7 @@ class MyClass
      */
     private static $_namesMap = [
         'foo' => 'foo',
+        'bar' => 'bar',
     ];
 
     /**
@@ -55,6 +74,12 @@ class MyClass
                 [
                     'name' => 'foo',
                 ],
+            ],
+            'type' => 'array',
+        ],
+        'bar' => [
+            'default' => [
+                
             ],
             'type' => 'array',
         ],
@@ -73,13 +98,20 @@ class MyClass
     private $foo = null;
 
     /**
-     * @param FooItem[]|null $foo
+     * @var BarItem[]|null
      */
-    public function __construct(array $foo = null)
+    private $bar = null;
+
+    /**
+     * @param FooItem[]|null $foo
+     * @param BarItem[]|null $bar
+     */
+    public function __construct(array $foo = null, array $bar = null)
     {
         $this->_additionalProperties = new \stdClass();
 
         $this->foo = $foo;
+        $this->bar = $bar;
     }
 
     /**
@@ -158,6 +190,40 @@ class MyClass
     }
 
     /**
+     * @return BarItem[]|null
+     */
+    public function getBar()
+    {
+        return isset($this->bar) ? $this->bar : null;
+    }
+
+    /**
+     * @param BarItem[] $bar
+     * @param bool $validate
+     * @return self
+     */
+    public function withBar(array $bar, $validate = true)
+    {
+        $clone = clone $this;
+        $clone->bar = $bar;
+        if ($validate) {
+            $clone->validate();
+        }
+        return $clone;
+    }
+
+    /**
+     * @return self
+     */
+    public function withoutBar()
+    {
+        $clone = clone $this;
+        unset($clone->bar);
+
+        return $clone;
+    }
+
+    /**
      * Builds a new instance from an input array or object
      *
      * @param array|object $input Input data
@@ -192,12 +258,18 @@ class MyClass
             static::validateInput($input);
         }
 
-        $foo = isset($input->{'foo'}) ? array_map(
-            fn($i) => FooItem::fromInput($i, $validate, $materializeDefaults),
-            $input->{'foo'}
-        ) : null;
+        $foo = isset($input->{'foo'})
+            ? array_map(function($i) use ($validate, $materializeDefaults) {
+                return FooItem::fromInput($i, $validate, $materializeDefaults);
+            }, $input->{'foo'})
+            : null;
+        $bar = isset($input->{'bar'})
+            ? array_map(function($i) use ($validate, $materializeDefaults) {
+                return BarItem::fromInput($i, $validate, $materializeDefaults);
+            }, $input->{'bar'})
+            : null;
 
-        $obj = new self($foo);
+        $obj = new self($foo, $bar);
 
         $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
         if (!empty($_additionalProperties)) {
@@ -208,7 +280,7 @@ class MyClass
     }
 
     /**
-     * Converts this object back to a simple array that can be JSON-serialized
+     * Converts this object to array that can be JSON-serialized
      *
      * @param bool $includeDefaults Add defaults for missing properties
      * @return array Converted array
@@ -218,7 +290,16 @@ class MyClass
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
         if (isset($this->foo)) {
-            $output['foo'] = array_map(fn(FooItem $i): array => $i->toArray($includeDefaults), $this->foo);
+            $output['foo'] = array_map(
+                function(FooItem $i) use ($includeDefaults) { return $i->toArray($includeDefaults); },
+                $this->foo
+            );
+        }
+        if (isset($this->bar)) {
+            $output['bar'] = array_map(
+                function(BarItem $i) use ($includeDefaults) { return $i->toArray($includeDefaults); },
+                $this->bar
+            );
         }
 
         if ($includeDefaults) {
@@ -243,7 +324,14 @@ class MyClass
         $output = $this->_additionalProperties;
 
         if (isset($this->foo)) {
-            $output->{'foo'} = array_map(fn(FooItem $i): object => $i->toStdClass($includeDefaults), $this->foo);
+            $output->{'foo'} = array_map(function(FooItem $i) use ($includeDefaults) {
+                return $i->toStdClass($includeDefaults);
+            }, $this->foo);
+        }
+        if (isset($this->bar)) {
+            $output->{'bar'} = array_map(function(BarItem $i) use ($includeDefaults) {
+                return $i->toStdClass($includeDefaults);
+            }, $this->bar);
         }
 
         if ($includeDefaults) {
@@ -286,7 +374,7 @@ class MyClass
         $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
-            $errors = array_map(function($e) {
+            $errors = array_map(function(array $e) {
                 return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];
             }, $validator->getErrors());
             throw new \InvalidArgumentException(join(".\n", $errors));

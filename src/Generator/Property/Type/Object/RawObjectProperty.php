@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class\Generator\Property\Type\Object;
 
 use Composer\Semver\Semver;
+use Helmich\Schema2Class\Generator\Expression\TernaryGenerator;
 use Helmich\Schema2Class\Generator\Property\Type\AbstractProperty;
 
 /**
@@ -14,7 +15,11 @@ class RawObjectProperty extends AbstractProperty
     public static function canHandleSchema(array $schema): bool
     {
         $isObject = (isset($schema['type']) && $schema['type'] === 'object');
-        $hasProps = isset($schema['properties']) && is_array($schema['properties']) && count($schema['properties']) > 0;
+
+        $hasProps = isset($schema['properties'])
+            && is_array($schema['properties'])
+            && count($schema['properties']) > 0;
+
         $hasAdditional = isset($schema['additionalProperties']);
 
         return $isObject && !$hasProps && !$hasAdditional;
@@ -46,6 +51,14 @@ class RawObjectProperty extends AbstractProperty
     public function outputMappingExprStdClass(string $expr): string
     {
         return 'json_decode(json_encode(' . $expr . '))';
+    }
+
+    public function cloneExpr(string $expr): string
+    {
+        // TODO: in fact, when such object stored as array, it can contain nested objects (that's
+        // why we deep-clone it in that case too), but they will be converted to arrays as well.
+        // Gotta rethink raw objects handling maintaining both consistency and convenience.
+        return "json_decode(json_encode({$expr}), is_array({$expr}))";
     }
 
     public function needsValidation(): bool

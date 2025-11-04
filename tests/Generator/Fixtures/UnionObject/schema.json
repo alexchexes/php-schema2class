@@ -40,12 +40,12 @@
   "definitions": {
     "SomeObj1": {
       "properties": {
-        "a": { "type": "string a" }
+        "a": { "type": "string" }
       }
     },
     "SomeObj2": {
       "properties": {
-        "a": { "type": "string b" }
+        "a": { "type": "string" }
       }
     }
   }

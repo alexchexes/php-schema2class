@@ -310,7 +310,7 @@ class MyClass
         $foo = $input->{'foo'};
         $bar = $input->{'bar'};
         $baz = $input->{'baz'};
-        $qux = ($input->{'qux'} !== null ? ((is_string($input->{'qux'})) ? $input->{'qux'} : (((is_string($input->{'qux'})) ? $input->{'qux'} : (((is_string($input->{'qux'})) ? $input->{'qux'} : (((is_string($input->{'qux'})) ? $input->{'qux'} : (null)))))))) : null);
+        $qux = ($input->{'qux'} !== null ? $input->{'qux'} : null);
 
         $obj = new self($foo, $bar, $baz, $qux);
 
@@ -323,7 +323,7 @@ class MyClass
     }
 
     /**
-     * Converts this object back to a simple array that can be JSON-serialized
+     * Converts this object to array that can be JSON-serialized
      *
      * @return array Converted array
      */
@@ -331,18 +331,10 @@ class MyClass
     {
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
-        if ((is_string($this->foo)) || (is_string($this->foo))) {
-            $output['foo'] = $this->foo;
-        }
-        if ((is_string($this->bar)) || (is_string($this->bar))) {
-            $output['bar'] = $this->bar;
-        }
-        if ((is_string($this->baz)) || (is_string($this->baz))) {
-            $output['baz'] = $this->baz;
-        }
-        if ((is_string($this->qux)) || (is_string($this->qux)) || (is_string($this->qux)) || (is_string($this->qux))) {
-            $output['qux'] = $this->qux;
-        }
+        $output['foo'] = $this->foo;
+        $output['bar'] = $this->bar;
+        $output['baz'] = $this->baz;
+        $output['qux'] = $this->qux;
 
         return $output;
     }
@@ -356,18 +348,10 @@ class MyClass
     {
         $output = $this->_additionalProperties;
 
-        if ((is_string($this->foo)) || (is_string($this->foo))) {
         $output->{'foo'} = $this->foo;
-        }
-        if ((is_string($this->bar)) || (is_string($this->bar))) {
         $output->{'bar'} = $this->bar;
-        }
-        if ((is_string($this->baz)) || (is_string($this->baz))) {
         $output->{'baz'} = $this->baz;
-        }
-        if ((is_string($this->qux)) || (is_string($this->qux)) || (is_string($this->qux)) || (is_string($this->qux))) {
         $output->{'qux'} = $this->qux;
-        }
 
         return $output;
     }
@@ -399,20 +383,12 @@ class MyClass
         $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
-            $errors = array_map(function($e) {
+            $errors = array_map(function(array $e) {
                 return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];
             }, $validator->getErrors());
             throw new \InvalidArgumentException(join(".\n", $errors));
         }
 
         return $validator->isValid();
-    }
-
-    public function __clone()
-    {
-        $this->foo = (is_string($this->foo) ? $this->foo : (is_string($this->foo) ? $this->foo : $this->foo));
-        $this->bar = (is_string($this->bar) ? $this->bar : (is_string($this->bar) ? $this->bar : $this->bar));
-        $this->baz = (is_string($this->baz) ? $this->baz : (is_string($this->baz) ? $this->baz : $this->baz));
-        $this->qux = (is_string($this->qux) ? $this->qux : (is_string($this->qux) ? $this->qux : (is_string($this->qux) ? $this->qux : (is_string($this->qux) ? $this->qux : $this->qux))));
     }
 }

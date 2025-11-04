@@ -1,0 +1,63 @@
+{
+  "properties": {
+    "arrayOfObjectsUnion": {
+      "oneOf": [
+        {
+          "type": "array",
+          "items": { "properties": { "name": { "type": "string" } } }
+        },
+        {
+          "type": "array",
+          "items": { "properties": { "accountNumber": { "type": "string" } } }
+        }
+      ]
+    },
+    "refArrayOfObjectsUnion": {
+      "oneOf": [
+        { "$ref": "#/definitions/ArrayOfObjects1" },
+        { "$ref": "#/definitions/ArrayOfObjects2" }
+      ]
+    },
+    "refAndNotRefArrayOfObjectsUnion": {
+      "oneOf": [
+        { "$ref": "#/definitions/ArrayOfObjects1" },
+        {
+          "type": "array",
+          "items": { "properties": { "name": { "type": "string" } } }
+        },
+        { "$ref": "#/definitions/ArrayOfObjects2" },
+        {
+          "type": "array",
+          "items": { "properties": { "accountNumber": { "type": "string" } } }
+        }
+      ]
+    },
+    "arrayOfObjAndStringUnion": {
+      "oneOf": [
+        {
+          "type": "array",
+          "items": { "properties": { "name": { "type": "string" } } }
+        },
+        { "type": "string" }
+      ]
+    },
+    "unionOfOneArrayOfObjects": {
+      "oneOf": [
+        {
+          "type": "array",
+          "items": { "properties": { "name": { "type": "string" } } }
+        }
+      ]
+    }
+  },
+  "definitions": {
+    "ArrayOfObjects1": {
+      "type": "array",
+      "items": { "properties": { "name": { "type": "string" } } }
+    },
+    "ArrayOfObjects2": {
+      "type": "array",
+      "items": { "properties": { "accountNumber": { "type": "string" } } }
+    }
+  }
+}

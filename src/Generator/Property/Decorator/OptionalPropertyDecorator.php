@@ -8,6 +8,8 @@ use Helmich\Schema2Class\Generator\Class\Method\FromInputMethodFactory;
 use Helmich\Schema2Class\Generator\Class\Method\Serialize\SerializeMethodFactory;
 use Helmich\Schema2Class\Generator\Class\PropertyNames;
 use Helmich\Schema2Class\Generator\Class\VariableNames;
+use Helmich\Schema2Class\Generator\Expression\OrGenerator;
+use Helmich\Schema2Class\Generator\Expression\TernaryGenerator;
 use Helmich\Schema2Class\Util\StringUtils;
 
 /**
@@ -101,7 +103,7 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator
         // if the wrapped property already allows null it will handle the guard itself.
         if ($this->isOptionalNullable) {
             $innerMap = $this->inner->inputMappingExpr($accessor, true);
-            $mapped   = "({$accessor} !== null ? {$innerMap} : null)";
+            $mapped = TernaryGenerator::make("{$accessor} !== null", $innerMap, "null");
         } else {
             $mapped = $this->inputMappingExpr($accessor, true);
         }
@@ -110,18 +112,19 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator
 
         if ($this->isOptionalNullable) {
             $OPTIONALS_VAR_NAME = VariableNames::PROVIDED_OPTIONALS;
+            $indent = StringUtils::indentCode(...);
             $code =
                 <<<PHP
                 \${$varName} = null;
                 if ({$existsCheck}) {
-                    \${$varName} = {$mapped};
-                    \${$OPTIONALS_VAR_NAME}['{$this->key}'] = true;
+                {$indent("\${$varName} = {$mapped};")}
+                {$indent("\${$OPTIONALS_VAR_NAME}['{$this->key}'] = true;")}
                 }
                 PHP;
         } else {
-            $code = "\${$varName} = {$existsCheck} ? {$mapped} : null;";
+            $toAssign = TernaryGenerator::make($existsCheck, $mapped, "null", false);
+            $code = "\${$varName} = {$toAssign};";
         }
-
         return $code;
     }
 
@@ -132,11 +135,15 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator
 
         if ($this->isOptionalNullable) {
             $OPTIONALS = PropertyNames::PROVIDED_OPTIONALS;
-            $check = "isset(\$this->{$propName}) || array_key_exists('{$this->key}', \$this->{$OPTIONALS})";
+
+            $parenthesizedCond = OrGenerator::make([
+                "isset(\$this->{$propName})",
+                "array_key_exists('{$this->key}', \$this->{$OPTIONALS})",
+            ], lengthToWrap: 110);
 
             $map = $this->outputMappingExpr("\$this->{$propName}");
             $inner = "\${$outputVarName}[{$this->keyStr()}] = {$map};";
-            return "if ({$check}) {\n" . StringUtils::indentCode($inner, 1) . "\n}";
+            return "if {$parenthesizedCond} {\n" . StringUtils::indentCode($inner) . "\n}";
         }
 
         $inner = $this->inner->convertTypeToArray();
@@ -145,7 +152,7 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator
             return $inner;
         }
 
-        return "if (isset(\$this->{$propName})) {\n" . StringUtils::indentCode($inner, 1) . "\n}";
+        return "if (isset(\$this->{$propName})) {\n" . StringUtils::indentCode($inner) . "\n}";
     }
 
     public function convertTypeToStdClass(): string
@@ -155,11 +162,16 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator
 
         if ($this->isOptionalNullable) {
             $OPTIONALS = PropertyNames::PROVIDED_OPTIONALS;
-            $check = "isset(\$this->{$propName}) || array_key_exists('{$this->key}', \$this->{$OPTIONALS})";
+
+            $parenthesizedCond = OrGenerator::make([
+                "isset(\$this->{$propName})",
+                "array_key_exists('{$this->key}', \$this->{$OPTIONALS})",
+            ], lengthToWrap: 110);
+
             $keyStr = $this->keyStr();
             $map = $this->outputMappingExprStdClass("\$this->{$propName}");
             $inner = "\${$outputVarName}->{{$keyStr}} = {$map};";
-            return "if ({$check}) {\n" . StringUtils::indentCode($inner, 1) . "\n}";
+            return "if {$parenthesizedCond} {\n" . StringUtils::indentCode($inner) . "\n}";
         }
 
         $inner = $this->inner->convertTypeToStdClass();
@@ -168,7 +180,7 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator
             return $inner;
         }
 
-        return "if (isset(\$this->{$propName})) {\n" . StringUtils::indentCode($inner, 1) . "\n}";
+        return "if (isset(\$this->{$propName})) {\n" . StringUtils::indentCode($inner) . "\n}";
     }
 
     public function cloneAssignment(): ?string
@@ -177,7 +189,7 @@ class OptionalPropertyDecorator extends NullablePropertyDecorator
         $inner = $this->inner->cloneAssignment();
 
         if ($inner !== null) {
-            return "if (isset(\$this->{$propName})) {\n" . StringUtils::indentCode($inner, 1) . "\n}";
+            return "if (isset(\$this->{$propName})) {\n" . StringUtils::indentCode($inner) . "\n}";
         }
 
         return null;

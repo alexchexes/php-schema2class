@@ -185,7 +185,9 @@ class MyClass
             static::validateInput($input);
         }
 
-        $foo = isset($input->{'foo'}) ? ((is_int($input->{'foo'})) ? (int)$input->{'foo'} : (((is_string($input->{'foo'})) ? $input->{'foo'} : (null)))) : null;
+        $foo = isset($input->{'foo'})
+            ? ((is_int($input->{'foo'})) ? (int)$input->{'foo'} : $input->{'foo'})
+            : null;
 
         $obj = new self($foo);
 
@@ -198,7 +200,7 @@ class MyClass
     }
 
     /**
-     * Converts this object back to a simple array that can be JSON-serialized
+     * Converts this object to array that can be JSON-serialized
      *
      * @param bool $includeDefaults Add defaults for missing properties
      * @return array Converted array
@@ -208,9 +210,7 @@ class MyClass
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
         if (isset($this->foo)) {
-            if ((is_string($this->foo)) || (is_int($this->foo))) {
-                $output['foo'] = $this->foo;
-            }
+            $output['foo'] = $this->foo;
         }
 
         if ($includeDefaults) {
@@ -235,9 +235,7 @@ class MyClass
         $output = $this->_additionalProperties;
 
         if (isset($this->foo)) {
-            if ((is_string($this->foo)) || (is_int($this->foo))) {
             $output->{'foo'} = $this->foo;
-            }
         }
 
         if ($includeDefaults) {
@@ -280,19 +278,12 @@ class MyClass
         $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
-            $errors = array_map(function($e) {
+            $errors = array_map(function(array $e) {
                 return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];
             }, $validator->getErrors());
             throw new \InvalidArgumentException(join(".\n", $errors));
         }
 
         return $validator->isValid();
-    }
-
-    public function __clone()
-    {
-        if (isset($this->foo)) {
-            $this->foo = (is_int($this->foo) ? $this->foo : (is_string($this->foo) ? $this->foo : $this->foo));
-        }
     }
 }

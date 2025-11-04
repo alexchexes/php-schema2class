@@ -6,7 +6,9 @@ namespace Helmich\Schema2Class\Generator\Class\Method;
 use Helmich\Schema2Class\Generator\Class\ArgumentNames;
 use Helmich\Schema2Class\Generator\Class\MethodNames;
 use Helmich\Schema2Class\Generator\Class\PropertyNames;
+use Helmich\Schema2Class\Generator\Expression\ArrayMapGenerator;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
+use Helmich\Schema2Class\Util\StringUtils;
 use Laminas\Code\Generator\DocBlock\Tag\ParamTag;
 use Laminas\Code\Generator\DocBlock\Tag\ReturnTag;
 use Laminas\Code\Generator\DocBlock\Tag\ThrowsTag;
@@ -80,20 +82,26 @@ class ValidateInputMethodFactory
         $SCHEMA = PropertyNames::SCHEMA;
         $INPUT_ARG = ArgumentNames::INPUT;
         $RETURN_ARG = ArgumentNames::RETURN;
+        
+        $errorsMapExpr = ArrayMapGenerator::make(
+            itemParam: '$e',
+            mapExpr: '($e["property"] ? $e["property"] . ": " : "") . $e["message"]',
+            arrayExpr: '$validator->getErrors()',
+            itemType: 'array',
+            returnType: 'string',
+            phpVer: $this->request->getTargetPHPVersion(),
+        );
 
-        $errorsMapExpr = $this->request->isAtLeastPHP('7.0')
-            ? '$errors = array_map(function(array $e): string'
-            : '$errors = array_map(function($e)';
+        $errorsMapBlock = StringUtils::indentCode("\$errors = {$errorsMapExpr};");
 
         $body =
             <<<PHP
             \$validator = {$newValidatorExpr};
             \${$INPUT_ARG} = is_array(\${$INPUT_ARG}) ? {$arrayToObjectExpr}(\${$INPUT_ARG}) : \${$INPUT_ARG};
-            \$validator->validate(\${$INPUT_ARG}, self::\${$SCHEMA});\n
+            \$validator->validate(\${$INPUT_ARG}, self::\${$SCHEMA});
+            
             if (!\$validator->isValid() && !\${$RETURN_ARG}) {
-                $errorsMapExpr {
-                    return (\$e["property"] ? \$e["property"] . ": " : "") . \$e["message"];
-                }, \$validator->getErrors());
+            {$errorsMapBlock}
                 throw new \\InvalidArgumentException(join(".\\n", \$errors));
             }
             

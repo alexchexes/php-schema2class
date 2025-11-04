@@ -12,7 +12,7 @@ class SomeObj2
     private static array $_schema = [
         'properties' => [
             'a' => [
-                'type' => 'string b',
+                'type' => 'string',
             ],
         ],
     ];
@@ -29,9 +29,9 @@ class SomeObj2
      */
     private \stdClass $_additionalProperties;
 
-    private mixed $a = null;
+    private ?string $a = null;
 
-    public function __construct(mixed $a = null)
+    public function __construct(?string $a = null)
     {
         $this->_additionalProperties = new \stdClass();
 
@@ -75,12 +75,12 @@ class SomeObj2
         return $clone;
     }
 
-    public function getA(): mixed
+    public function getA(): ?string
     {
         return $this->a ?? null;
     }
 
-    public function withA(mixed $a): self
+    public function withA(string $a): self
     {
         $clone = clone $this;
         $clone->a = $a;
@@ -124,7 +124,7 @@ class SomeObj2
     }
 
     /**
-     * Converts this object back to a simple array that can be JSON-serialized
+     * Converts this object to array that can be JSON-serialized
      *
      * @return array Converted array
      */
@@ -182,9 +182,10 @@ class SomeObj2
         $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
-            $errors = array_map(function(array $e): string {
-                return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];
-            }, $validator->getErrors());
+            $errors = array_map(
+                fn (array $e): string => ($e["property"] ? $e["property"] . ": " : "") . $e["message"],
+                $validator->getErrors(),
+            );
             throw new \InvalidArgumentException(join(".\n", $errors));
         }
 

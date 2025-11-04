@@ -181,7 +181,18 @@ class BarTest
             static::validateInput($input);
         }
 
-        $exampleProp = isset($input->{'exampleProp'}) ? ((FooTest_1::validateInput($input->{'exampleProp'}, true)) ? FooTest_1::fromInput($input->{'exampleProp'}, $validate) : (((MoiKlass::validateInput($input->{'exampleProp'}, true)) ? MoiKlass::fromInput($input->{'exampleProp'}, $validate) : (((FooTest::validateInput($input->{'exampleProp'}, true)) ? FooTest::fromInput($input->{'exampleProp'}, $validate) : (null)))))) : null;
+        $exampleProp = isset($input->{'exampleProp'})
+            ? (((is_object($input->{'exampleProp'}) || is_array($input->{'exampleProp'})) && FooTest::validateInput($input->{'exampleProp'}, true))
+                ? FooTest::fromInput($input->{'exampleProp'}, $validate)
+                : (((is_object($input->{'exampleProp'}) || is_array($input->{'exampleProp'})) && MoiKlass::validateInput($input->{'exampleProp'}, true))
+                    ? MoiKlass::fromInput($input->{'exampleProp'}, $validate)
+                    : (((is_object($input->{'exampleProp'}) || is_array($input->{'exampleProp'})) && FooTest_1::validateInput($input->{'exampleProp'}, true))
+                        ? FooTest_1::fromInput($input->{'exampleProp'}, $validate)
+                        : $input->{'exampleProp'}
+                    )
+                )
+            )
+            : null;
 
         $obj = new self($exampleProp);
 
@@ -194,7 +205,7 @@ class BarTest
     }
 
     /**
-     * Converts this object back to a simple array that can be JSON-serialized
+     * Converts this object to array that can be JSON-serialized
      *
      * @return array Converted array
      */
@@ -203,8 +214,13 @@ class BarTest
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
         if (isset($this->exampleProp)) {
-            if (($this->exampleProp instanceof FooTest) || ($this->exampleProp instanceof MoiKlass) || ($this->exampleProp instanceof FooTest_1)) {
+            if ($this->exampleProp instanceof FooTest
+                || $this->exampleProp instanceof MoiKlass
+                || $this->exampleProp instanceof FooTest_1
+            ) {
                 $output['exampleProp'] = $this->exampleProp->toArray();
+            } else {
+                $output['exampleProp'] = $this->exampleProp;
             }
         }
 
@@ -221,8 +237,13 @@ class BarTest
         $output = $this->_additionalProperties;
 
         if (isset($this->exampleProp)) {
-            if (($this->exampleProp instanceof FooTest) || ($this->exampleProp instanceof MoiKlass) || ($this->exampleProp instanceof FooTest_1)) {
-            $output->{'exampleProp'} = $this->exampleProp->toStdClass();
+            if ($this->exampleProp instanceof FooTest
+                || $this->exampleProp instanceof MoiKlass
+                || $this->exampleProp instanceof FooTest_1
+            ) {
+                $output->{'exampleProp'} = $this->exampleProp->toStdClass();
+            } else {
+                $output->{'exampleProp'} = $this->exampleProp;
             }
         }
 
@@ -256,7 +277,7 @@ class BarTest
         $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
-            $errors = array_map(function($e) {
+            $errors = array_map(function(array $e) {
                 return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];
             }, $validator->getErrors());
             throw new \InvalidArgumentException(join(".\n", $errors));
@@ -268,7 +289,13 @@ class BarTest
     public function __clone()
     {
         if (isset($this->exampleProp)) {
-            $this->exampleProp = ($this->exampleProp instanceof FooTest_1 ? $this->exampleProp : ($this->exampleProp instanceof MoiKlass ? $this->exampleProp : ($this->exampleProp instanceof FooTest ? $this->exampleProp : $this->exampleProp)));
+            $this->exampleProp = (($this->exampleProp instanceof FooTest
+                || $this->exampleProp instanceof MoiKlass
+                || $this->exampleProp instanceof FooTest_1
+            )
+                ? clone $this->exampleProp
+                : $this->exampleProp
+            );
         }
     }
 }

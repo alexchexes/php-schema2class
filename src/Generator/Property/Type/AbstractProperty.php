@@ -121,18 +121,18 @@ abstract class AbstractProperty implements PropertyInterface
 
     public function convertTypeToArray(): string
     {
-        $keyStr = $this->keyStr();
-        $map    = $this->outputMappingExpr("\$this->{$this->propName()}");
-        $outputVarName = VariableNames::OUTPUT;
-        return "\${$outputVarName}[{$keyStr}] = {$map};";
+        $OUTPUT_VAR = VariableNames::OUTPUT;
+        $map = $this->outputMappingExpr("\$this->{$this->propName()}");
+
+        return "\${$OUTPUT_VAR}[{$this->keyStr()}] = {$map};";
     }
 
     public function convertTypeToStdClass(): string
     {
-        $keyStr = $this->keyStr();
-        $map    = $this->outputMappingExprStdClass("\$this->{$this->propName()}");
-        $outputVarName = VariableNames::OUTPUT;
-        return "\${$outputVarName}->{{$keyStr}} = {$map};";
+        $OUTPUT_VAR = VariableNames::OUTPUT;
+        $map = $this->outputMappingExprStdClass("\$this->{$this->propName()}");
+
+        return "\${$OUTPUT_VAR}->{{$this->keyStr()}} = {$map};";
     }
 
     public function inputAssertionExpr(string $expr): string

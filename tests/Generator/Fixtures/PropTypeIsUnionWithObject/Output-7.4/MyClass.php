@@ -144,7 +144,7 @@ class MyClass
             static::validateInput($input);
         }
 
-        if ((MyClassFooAlternative2::validateInput($input->{'foo'}, true))) {
+        if ((is_object($input->{'foo'}) || is_array($input->{'foo'})) && MyClassFooAlternative2::validateInput($input->{'foo'}, true)) {
             $foo = MyClassFooAlternative2::fromInput($input->{'foo'}, $validate);
         } else {
             $foo = $input->{'foo'};
@@ -161,7 +161,7 @@ class MyClass
     }
 
     /**
-     * Converts this object back to a simple array that can be JSON-serialized
+     * Converts this object to array that can be JSON-serialized
      *
      * @return array Converted array
      */
@@ -169,10 +169,10 @@ class MyClass
     {
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
-        if ((is_string($this->foo))) {
-            $output['foo'] = $this->foo;
-        } else if (($this->foo instanceof MyClassFooAlternative2)) {
+        if ($this->foo instanceof MyClassFooAlternative2) {
             $output['foo'] = $this->foo->toArray();
+        } else {
+            $output['foo'] = $this->foo;
         }
 
         return $output;
@@ -187,10 +187,10 @@ class MyClass
     {
         $output = $this->_additionalProperties;
 
-        if ((is_string($this->foo))) {
-        $output->{'foo'} = $this->foo;
-        } else if (($this->foo instanceof MyClassFooAlternative2)) {
-        $output->{'foo'} = $this->foo->toStdClass();
+        if ($this->foo instanceof MyClassFooAlternative2) {
+            $output->{'foo'} = $this->foo->toStdClass();
+        } else {
+            $output->{'foo'} = $this->foo;
         }
 
         return $output;
@@ -223,9 +223,10 @@ class MyClass
         $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
-            $errors = array_map(function(array $e): string {
-                return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];
-            }, $validator->getErrors());
+            $errors = array_map(
+                fn (array $e): string => ($e["property"] ? $e["property"] . ": " : "") . $e["message"],
+                $validator->getErrors(),
+            );
             throw new \InvalidArgumentException(join(".\n", $errors));
         }
 
@@ -234,6 +235,6 @@ class MyClass
 
     public function __clone()
     {
-        $this->foo = ($this->foo instanceof MyClassFooAlternative2 ? clone $this->foo : (is_string($this->foo) ? $this->foo : $this->foo));
+        $this->foo = (($this->foo instanceof MyClassFooAlternative2) ? clone $this->foo : $this->foo);
     }
 }

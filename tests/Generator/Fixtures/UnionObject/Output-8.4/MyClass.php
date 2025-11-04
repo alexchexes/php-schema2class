@@ -100,14 +100,14 @@ class MyClass
             'SomeObj1' => [
                 'properties' => [
                     'a' => [
-                        'type' => 'string a',
+                        'type' => 'string',
                     ],
                 ],
             ],
             'SomeObj2' => [
                 'properties' => [
                     'a' => [
-                        'type' => 'string b',
+                        'type' => 'string',
                     ],
                 ],
             ],
@@ -366,29 +366,47 @@ class MyClass
         }
 
         $_providedOptionals = [];
-        $objectsUnion = isset($input->{'objectsUnion'}) ? match (true) {
-            MyClassObjectsUnionAlternative1::validateInput($input->{'objectsUnion'}, true) => MyClassObjectsUnionAlternative1::fromInput($input->{'objectsUnion'}, $validate),
-            MyClassObjectsUnionAlternative2::validateInput($input->{'objectsUnion'}, true) => MyClassObjectsUnionAlternative2::fromInput($input->{'objectsUnion'}, $validate),
-            default => null,
-        } : null;
-        $refObjectsUnion = isset($input->{'refObjectsUnion'}) ? match (true) {
-            SomeObj1::validateInput($input->{'refObjectsUnion'}, true) => SomeObj1::fromInput($input->{'refObjectsUnion'}, $validate),
-            SomeObj2::validateInput($input->{'refObjectsUnion'}, true) => SomeObj2::fromInput($input->{'refObjectsUnion'}, $validate),
-            default => null,
-        } : null;
-        $refAndNotRefObjectsUnion = isset($input->{'refAndNotRefObjectsUnion'}) ? match (true) {
-            SomeObj1::validateInput($input->{'refAndNotRefObjectsUnion'}, true) => SomeObj1::fromInput($input->{'refAndNotRefObjectsUnion'}, $validate),
-            MyClassRefAndNotRefObjectsUnionAlternative2::validateInput($input->{'refAndNotRefObjectsUnion'}, true) => MyClassRefAndNotRefObjectsUnionAlternative2::fromInput($input->{'refAndNotRefObjectsUnion'}, $validate),
-            SomeObj2::validateInput($input->{'refAndNotRefObjectsUnion'}, true) => SomeObj2::fromInput($input->{'refAndNotRefObjectsUnion'}, $validate),
-            MyClassRefAndNotRefObjectsUnionAlternative4::validateInput($input->{'refAndNotRefObjectsUnion'}, true) => MyClassRefAndNotRefObjectsUnionAlternative4::fromInput($input->{'refAndNotRefObjectsUnion'}, $validate),
-            default => null,
-        } : null;
-        $objAndStringUnion = isset($input->{'objAndStringUnion'}) ? match (true) {
-            MyClassObjAndStringUnionAlternative1::validateInput($input->{'objAndStringUnion'}, true) => MyClassObjAndStringUnionAlternative1::fromInput($input->{'objAndStringUnion'}, $validate),
-            is_string($input->{'objAndStringUnion'}) => $input->{'objAndStringUnion'},
-            default => null,
-        } : null;
-        $unionOfOneObj = isset($input->{'unionOfOneObj'}) ? MyClassUnionOfOneObj::fromInput($input->{'unionOfOneObj'}, $validate) : null;
+        $objectsUnion = isset($input->{'objectsUnion'})
+            ? match (true) {
+                (is_object($input->{'objectsUnion'}) || is_array($input->{'objectsUnion'})) && MyClassObjectsUnionAlternative1::validateInput($input->{'objectsUnion'}, true) =>
+                    MyClassObjectsUnionAlternative1::fromInput($input->{'objectsUnion'}, $validate),
+                (is_object($input->{'objectsUnion'}) || is_array($input->{'objectsUnion'})) && MyClassObjectsUnionAlternative2::validateInput($input->{'objectsUnion'}, true) =>
+                    MyClassObjectsUnionAlternative2::fromInput($input->{'objectsUnion'}, $validate),
+                default => $input->{'objectsUnion'},
+            }
+            : null;
+        $refObjectsUnion = isset($input->{'refObjectsUnion'})
+            ? match (true) {
+                (is_object($input->{'refObjectsUnion'}) || is_array($input->{'refObjectsUnion'})) && SomeObj1::validateInput($input->{'refObjectsUnion'}, true) =>
+                    SomeObj1::fromInput($input->{'refObjectsUnion'}, $validate),
+                (is_object($input->{'refObjectsUnion'}) || is_array($input->{'refObjectsUnion'})) && SomeObj2::validateInput($input->{'refObjectsUnion'}, true) =>
+                    SomeObj2::fromInput($input->{'refObjectsUnion'}, $validate),
+                default => $input->{'refObjectsUnion'},
+            }
+            : null;
+        $refAndNotRefObjectsUnion = isset($input->{'refAndNotRefObjectsUnion'})
+            ? match (true) {
+                (is_object($input->{'refAndNotRefObjectsUnion'}) || is_array($input->{'refAndNotRefObjectsUnion'})) && SomeObj1::validateInput($input->{'refAndNotRefObjectsUnion'}, true) =>
+                    SomeObj1::fromInput($input->{'refAndNotRefObjectsUnion'}, $validate),
+                (is_object($input->{'refAndNotRefObjectsUnion'}) || is_array($input->{'refAndNotRefObjectsUnion'})) && MyClassRefAndNotRefObjectsUnionAlternative2::validateInput($input->{'refAndNotRefObjectsUnion'}, true) =>
+                    MyClassRefAndNotRefObjectsUnionAlternative2::fromInput($input->{'refAndNotRefObjectsUnion'}, $validate),
+                (is_object($input->{'refAndNotRefObjectsUnion'}) || is_array($input->{'refAndNotRefObjectsUnion'})) && SomeObj2::validateInput($input->{'refAndNotRefObjectsUnion'}, true) =>
+                    SomeObj2::fromInput($input->{'refAndNotRefObjectsUnion'}, $validate),
+                (is_object($input->{'refAndNotRefObjectsUnion'}) || is_array($input->{'refAndNotRefObjectsUnion'})) && MyClassRefAndNotRefObjectsUnionAlternative4::validateInput($input->{'refAndNotRefObjectsUnion'}, true) =>
+                    MyClassRefAndNotRefObjectsUnionAlternative4::fromInput($input->{'refAndNotRefObjectsUnion'}, $validate),
+                default => $input->{'refAndNotRefObjectsUnion'},
+            }
+            : null;
+        $objAndStringUnion = isset($input->{'objAndStringUnion'})
+            ? match (true) {
+                (is_object($input->{'objAndStringUnion'}) || is_array($input->{'objAndStringUnion'})) && MyClassObjAndStringUnionAlternative1::validateInput($input->{'objAndStringUnion'}, true) =>
+                    MyClassObjAndStringUnionAlternative1::fromInput($input->{'objAndStringUnion'}, $validate),
+                default => $input->{'objAndStringUnion'},
+            }
+            : null;
+        $unionOfOneObj = isset($input->{'unionOfOneObj'})
+            ? MyClassUnionOfOneObj::fromInput($input->{'unionOfOneObj'}, $validate)
+            : null;
         $unionOfOneNull = null;
         if (property_exists($input, 'unionOfOneNull')) {
             $unionOfOneNull = ($input->{'unionOfOneNull'} !== null ? $input->{'unionOfOneNull'} : null);
@@ -414,7 +432,7 @@ class MyClass
     }
 
     /**
-     * Converts this object back to a simple array that can be JSON-serialized
+     * Converts this object to array that can be JSON-serialized
      *
      * @return array Converted array
      */
@@ -424,35 +442,40 @@ class MyClass
 
         if (isset($this->objectsUnion)) {
             $output['objectsUnion'] = match (true) {
-                $this->objectsUnion instanceof MyClassObjectsUnionAlternative1,
-                $this->objectsUnion instanceof MyClassObjectsUnionAlternative2 => $this->objectsUnion->toArray(),
+                $this->objectsUnion instanceof MyClassObjectsUnionAlternative1
+                    || $this->objectsUnion instanceof MyClassObjectsUnionAlternative2 =>
+                    $this->objectsUnion->toArray(),
+                default => $this->objectsUnion,
             };
         }
         if (isset($this->refObjectsUnion)) {
             $output['refObjectsUnion'] = match (true) {
-                $this->refObjectsUnion instanceof SomeObj1,
-                $this->refObjectsUnion instanceof SomeObj2 => $this->refObjectsUnion->toArray(),
+                $this->refObjectsUnion instanceof SomeObj1 || $this->refObjectsUnion instanceof SomeObj2 =>
+                    $this->refObjectsUnion->toArray(),
+                default => $this->refObjectsUnion,
             };
         }
         if (isset($this->refAndNotRefObjectsUnion)) {
             $output['refAndNotRefObjectsUnion'] = match (true) {
-                $this->refAndNotRefObjectsUnion instanceof SomeObj1,
-                $this->refAndNotRefObjectsUnion instanceof MyClassRefAndNotRefObjectsUnionAlternative2,
-                $this->refAndNotRefObjectsUnion instanceof SomeObj2,
-                $this->refAndNotRefObjectsUnion instanceof MyClassRefAndNotRefObjectsUnionAlternative4 => $this->refAndNotRefObjectsUnion->toArray(),
+                $this->refAndNotRefObjectsUnion instanceof SomeObj1
+                    || $this->refAndNotRefObjectsUnion instanceof MyClassRefAndNotRefObjectsUnionAlternative2
+                    || $this->refAndNotRefObjectsUnion instanceof SomeObj2
+                    || $this->refAndNotRefObjectsUnion instanceof MyClassRefAndNotRefObjectsUnionAlternative4 =>
+                    $this->refAndNotRefObjectsUnion->toArray(),
+                default => $this->refAndNotRefObjectsUnion,
             };
         }
         if (isset($this->objAndStringUnion)) {
             $output['objAndStringUnion'] = match (true) {
                 $this->objAndStringUnion instanceof MyClassObjAndStringUnionAlternative1 => $this->objAndStringUnion->toArray(),
-                is_string($this->objAndStringUnion) => $this->objAndStringUnion,
+                default => $this->objAndStringUnion,
             };
         }
         if (isset($this->unionOfOneObj)) {
             $output['unionOfOneObj'] = $this->unionOfOneObj->toArray();
         }
         if (isset($this->unionOfOneNull) || array_key_exists('unionOfOneNull', $this->_providedOptionals)) {
-            $output['unionOfOneNull'] = ($this->unionOfOneNull !== null) ? ($this->unionOfOneNull) : null;
+            $output['unionOfOneNull'] = ($this->unionOfOneNull !== null ? $this->unionOfOneNull : null);
         }
 
         return $output;
@@ -469,35 +492,40 @@ class MyClass
 
         if (isset($this->objectsUnion)) {
             $output->{'objectsUnion'} = match (true) {
-                $this->objectsUnion instanceof MyClassObjectsUnionAlternative1,
-                $this->objectsUnion instanceof MyClassObjectsUnionAlternative2 => $this->objectsUnion->toStdClass(),
+                $this->objectsUnion instanceof MyClassObjectsUnionAlternative1
+                    || $this->objectsUnion instanceof MyClassObjectsUnionAlternative2 =>
+                    $this->objectsUnion->toStdClass(),
+                default => $this->objectsUnion,
             };
         }
         if (isset($this->refObjectsUnion)) {
             $output->{'refObjectsUnion'} = match (true) {
-                $this->refObjectsUnion instanceof SomeObj1,
-                $this->refObjectsUnion instanceof SomeObj2 => $this->refObjectsUnion->toStdClass(),
+                $this->refObjectsUnion instanceof SomeObj1 || $this->refObjectsUnion instanceof SomeObj2 =>
+                    $this->refObjectsUnion->toStdClass(),
+                default => $this->refObjectsUnion,
             };
         }
         if (isset($this->refAndNotRefObjectsUnion)) {
             $output->{'refAndNotRefObjectsUnion'} = match (true) {
-                $this->refAndNotRefObjectsUnion instanceof SomeObj1,
-                $this->refAndNotRefObjectsUnion instanceof MyClassRefAndNotRefObjectsUnionAlternative2,
-                $this->refAndNotRefObjectsUnion instanceof SomeObj2,
-                $this->refAndNotRefObjectsUnion instanceof MyClassRefAndNotRefObjectsUnionAlternative4 => $this->refAndNotRefObjectsUnion->toStdClass(),
+                $this->refAndNotRefObjectsUnion instanceof SomeObj1
+                    || $this->refAndNotRefObjectsUnion instanceof MyClassRefAndNotRefObjectsUnionAlternative2
+                    || $this->refAndNotRefObjectsUnion instanceof SomeObj2
+                    || $this->refAndNotRefObjectsUnion instanceof MyClassRefAndNotRefObjectsUnionAlternative4 =>
+                    $this->refAndNotRefObjectsUnion->toStdClass(),
+                default => $this->refAndNotRefObjectsUnion,
             };
         }
         if (isset($this->objAndStringUnion)) {
             $output->{'objAndStringUnion'} = match (true) {
                 $this->objAndStringUnion instanceof MyClassObjAndStringUnionAlternative1 => $this->objAndStringUnion->toStdClass(),
-                is_string($this->objAndStringUnion) => $this->objAndStringUnion,
+                default => $this->objAndStringUnion,
             };
         }
         if (isset($this->unionOfOneObj)) {
             $output->{'unionOfOneObj'} = $this->unionOfOneObj->toStdClass();
         }
         if (isset($this->unionOfOneNull) || array_key_exists('unionOfOneNull', $this->_providedOptionals)) {
-            $output->{'unionOfOneNull'} = ($this->unionOfOneNull !== null) ? ($this->unionOfOneNull) : null;
+            $output->{'unionOfOneNull'} = ($this->unionOfOneNull !== null ? $this->unionOfOneNull : null);
         }
 
         return $output;
@@ -530,9 +558,10 @@ class MyClass
         $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
-            $errors = array_map(function(array $e): string {
-                return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];
-            }, $validator->getErrors());
+            $errors = array_map(
+                fn (array $e): string => ($e["property"] ? $e["property"] . ": " : "") . $e["message"],
+                $validator->getErrors(),
+            );
             throw new \InvalidArgumentException(join(".\n", $errors));
         }
 
@@ -542,24 +571,13 @@ class MyClass
     public function __clone()
     {
         if (isset($this->objectsUnion)) {
-            $this->objectsUnion = match (true) {
-                $this->objectsUnion instanceof MyClassObjectsUnionAlternative1,
-                $this->objectsUnion instanceof MyClassObjectsUnionAlternative2 => clone $this->objectsUnion,
-            };
+            $this->objectsUnion = clone $this->objectsUnion;
         }
         if (isset($this->refObjectsUnion)) {
-            $this->refObjectsUnion = match (true) {
-                $this->refObjectsUnion instanceof SomeObj1,
-                $this->refObjectsUnion instanceof SomeObj2 => $this->refObjectsUnion,
-            };
+            $this->refObjectsUnion = clone $this->refObjectsUnion;
         }
         if (isset($this->refAndNotRefObjectsUnion)) {
-            $this->refAndNotRefObjectsUnion = match (true) {
-                $this->refAndNotRefObjectsUnion instanceof SomeObj1,
-                $this->refAndNotRefObjectsUnion instanceof SomeObj2 => $this->refAndNotRefObjectsUnion,
-                $this->refAndNotRefObjectsUnion instanceof MyClassRefAndNotRefObjectsUnionAlternative2,
-                $this->refAndNotRefObjectsUnion instanceof MyClassRefAndNotRefObjectsUnionAlternative4 => clone $this->refAndNotRefObjectsUnion,
-            };
+            $this->refAndNotRefObjectsUnion = clone $this->refAndNotRefObjectsUnion;
         }
         if (isset($this->objAndStringUnion)) {
             $this->objAndStringUnion = match (true) {

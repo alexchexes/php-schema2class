@@ -14,6 +14,8 @@ use PHPUnit\Framework\TestCase;
 use function PHPUnit\Framework\assertSame;
 use function PHPUnit\Framework\assertTrue;
 use function PHPUnit\Framework\assertFalse;
+use function PHPUnit\Framework\assertNull;
+
 use Helmich\Schema2Class\Generator\Definition\Definition;
 use Helmich\Schema2Class\Generator\Property\Type\Composite\UnionProperty;
 use Helmich\Schema2Class\Generator\ReferenceLookup\DefinitionsReferenceLookup;
@@ -54,9 +56,11 @@ class UnionPropertyTest extends TestCase
 
         $expected = <<<'EOCODE'
 $myPropertyName = match (true) {
-    FooMyPropertyNameAlternative1::validateInput($input->{'myPropertyName'}, true) => FooMyPropertyNameAlternative1::fromInput($input->{'myPropertyName'}, $validate),
-    FooMyPropertyNameAlternative2::validateInput($input->{'myPropertyName'}, true) => FooMyPropertyNameAlternative2::fromInput($input->{'myPropertyName'}, $validate),
-    default => throw new \InvalidArgumentException("could not build property 'myPropertyName' from JSON"),
+    (is_object($input->{'myPropertyName'}) || is_array($input->{'myPropertyName'})) && FooMyPropertyNameAlternative1::validateInput($input->{'myPropertyName'}, true) =>
+        FooMyPropertyNameAlternative1::fromInput($input->{'myPropertyName'}, $validate),
+    (is_object($input->{'myPropertyName'}) || is_array($input->{'myPropertyName'})) && FooMyPropertyNameAlternative2::validateInput($input->{'myPropertyName'}, true) =>
+        FooMyPropertyNameAlternative2::fromInput($input->{'myPropertyName'}, $validate),
+    default => $input->{'myPropertyName'},
 };
 EOCODE;
 
@@ -71,8 +75,10 @@ EOCODE;
 
         $expected = <<<'EOCODE'
 $output['myPropertyName'] = match (true) {
-    $this->myPropertyName instanceof FooMyPropertyNameAlternative1,
-    $this->myPropertyName instanceof FooMyPropertyNameAlternative2 => $this->myPropertyName->toArray(),
+    $this->myPropertyName instanceof FooMyPropertyNameAlternative1
+        || $this->myPropertyName instanceof FooMyPropertyNameAlternative2 =>
+        $this->myPropertyName->toArray(),
+    default => $this->myPropertyName,
 };
 EOCODE;
 
@@ -87,8 +93,10 @@ EOCODE;
 
         $expected = <<<'EOCODE'
 $output->{'myPropertyName'} = match (true) {
-    $this->myPropertyName instanceof FooMyPropertyNameAlternative1,
-    $this->myPropertyName instanceof FooMyPropertyNameAlternative2 => $this->myPropertyName->toStdClass(),
+    $this->myPropertyName instanceof FooMyPropertyNameAlternative1
+        || $this->myPropertyName instanceof FooMyPropertyNameAlternative2 =>
+        $this->myPropertyName->toStdClass(),
+    default => $this->myPropertyName,
 };
 EOCODE;
 
@@ -98,12 +106,23 @@ EOCODE;
     public function testCloneProperty()
     {
         $expected = <<<'EOCODE'
-$this->myPropertyName = match (true) {
-    $this->myPropertyName instanceof FooMyPropertyNameAlternative1,
-    $this->myPropertyName instanceof FooMyPropertyNameAlternative2 => clone $this->myPropertyName,
-};
+$this->myPropertyName = clone $this->myPropertyName;
 EOCODE;
         assertSame($expected, $this->property->cloneAssignment());
+    }
+
+    public function testClonePropertyWithOnlyIdentityMappings(): void
+    {
+        $prop = new UnionProperty(
+            'foo',
+            ['anyOf' => [
+                ['type' => 'string'],
+                ['type' => 'string'],
+            ]],
+            $this->generatorRequest,
+        );
+
+        assertNull($prop->cloneAssignment());
     }
 
     public function testAllowsNullIfSubPropertyAllowsNull(): void
@@ -164,6 +183,12 @@ EOCODE;
                 ['anyOf' => [
                     ['required' => ['foo'], 'properties' => ['foo' => ['type' => 'int']]],
                     ['required' => ['bar'], 'properties' => ['bar' => ['type' => 'date-time']]]
+                ]],
+            ],
+            'arrays of objects' => [
+                ['oneOf' => [
+                    ['type' => 'array', 'items' => ['properties' => ['foo' => ['type' => 'int']]]],
+                    ['type' => 'array', 'items' => ['properties' => ['bar' => ['type' => 'string']]]],
                 ]],
             ],
         ];

@@ -4,10 +4,15 @@ declare(strict_types=1);
 namespace Helmich\Schema2Class\Generator\Property\Type\Array;
 
 use Helmich\Schema2Class\Generator\Class\ArgumentNames;
+use Helmich\Schema2Class\Generator\Expression\ArrayMapGenerator;
+use Helmich\Schema2Class\Generator\Expression\ArrowFunctionGenerator;
+use Helmich\Schema2Class\Generator\Expression\CallGenerator;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
 use Helmich\Schema2Class\Generator\Property\PropertyBuilder;
 use Helmich\Schema2Class\Generator\Property\Type\AbstractProperty;
+use Helmich\Schema2Class\Generator\Property\Type\Object\NestedObjectProperty;
 use Helmich\Schema2Class\Generator\Property\Type\PropertyInterface;
+use Helmich\Schema2Class\Util\StringUtils;
 use Helmich\Schema2Class\Writer\WriterInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -34,7 +39,11 @@ class TypedArrayProperty extends AbstractProperty
 
     public static function canHandleSchema(array $schema): bool
     {
-        if (!(isset($schema['type']) && $schema['type'] === 'array') || !isset($schema['items']) || !is_array($schema['items'])) {
+        if (
+            !(isset($schema['type']) && $schema['type'] === 'array')
+            || !isset($schema['items'])
+            || !is_array($schema['items'])
+        ) {
             return false;
         }
 
@@ -43,7 +52,10 @@ class TypedArrayProperty extends AbstractProperty
         }
 
         $items = $schema['items'];
-        if (isset($items['type']) && in_array($items['type'], ['string', 'integer', 'number', 'boolean'], true)) {
+        if (
+            isset($items['type'])
+            && in_array($items['type'], ['string', 'integer', 'number', 'boolean'], true)
+        ) {
             return false;
         }
         if (isset($items['$ref'])) {
@@ -72,63 +84,109 @@ class TypedArrayProperty extends AbstractProperty
         return 'array';
     }
 
+    /** 
+     * Used when array items are unions whose alternatives are themselves arrays of unions or arrays
+     */
     public function typeAssertionExpr(string $expr): string
     {
-        $inner = $this->itemType->typeAssertionExpr('$i');
-        return "is_array({$expr}) && count(array_filter({$expr}, fn(\$i) => {$inner})) === count({$expr})";
+        $innerAssertExpr = $this->itemType->typeAssertionExpr('$i');
+        return $this->buildAssertionExpr($expr, $innerAssertExpr);
     }
 
+    /** 
+     * Used when array items are unions whose alternatives are themselves arrays of unions or arrays
+     */
     public function inputAssertionExpr(string $expr): string
     {
-        $inner = $this->itemType->inputAssertionExpr('$i');
-        return "is_array({$expr}) && count(array_filter({$expr}, fn(\$i) => {$inner})) === count({$expr})";
+        $innerAssertExpr = $this->itemType->inputAssertionExpr('$i');
+        return $this->buildAssertionExpr($expr, $innerAssertExpr);
+    }
+
+    private function buildAssertionExpr(string $expr, string $innerAssertExpr): string
+    {
+        $phpVer = $this->request->getTargetPHPVersion();
+
+        $filterCallback = ArrowFunctionGenerator::make(
+            parameters: '$i',
+            expr: $innerAssertExpr,
+            phpVer: $phpVer,
+        );
+
+        $arrayFilter = CallGenerator::make(
+            callee: 'array_filter',
+            arguments: [$expr, $filterCallback],
+            phpVer: $phpVer,
+        );
+
+        $countExpr = CallGenerator::make(
+            callee: 'count',
+            arguments: [$arrayFilter],
+            phpVer: $phpVer,
+        );
+        
+        $ind = StringUtils::indentCode(...);
+        return "(is_array({$expr})\n{$ind("&& count({$expr}) === {$countExpr}")})";
     }
 
     public function inputMappingExpr(string $expr, bool $asserted = false): string
     {
-        $map = $this->itemType->inputMappingExpr('$i');
-        if ($this->request->isAtLeastPHP('7.4')) {
-            return "array_map(fn(\$i) => {$map}, {$expr})";
-        }
-
-        $use = ['$' . ArgumentNames::VALIDATE];
+        $useVars = ['$' . ArgumentNames::VALIDATE];
         if ($this->request->getClassHasDefaults()) {
-            $use[] = '$' . ArgumentNames::MATRLZ_DEFAULTS;
+            $useVars[] = '$' . ArgumentNames::MATRLZ_DEFAULTS;
         }
-        $useExpr = implode(', ', $use);
-        return "array_map(function(\$i) use ({$useExpr}) { return {$map}; }, {$expr})";
+        
+        return ArrayMapGenerator::make(
+            arrayExpr: $expr,
+            itemParam: '$i',
+            mapExpr: $this->itemType->inputMappingExpr('$i'),
+            useVars: $useVars,
+            phpVer: $this->request->getTargetPHPVersion(),
+        );
     }
 
     public function outputMappingExpr(string $expr): string
     {
-        $map = $this->itemType->outputMappingExpr('$i');
-        if ($this->request->isAtLeastPHP('7.4')) {
-            return "array_map(fn(\$i) => {$map}, {$expr})";
+        $useVars = [];
+        if ($this->itemType instanceof NestedObjectProperty && $this->request->getClassHasDefaults()) {
+            $useVars[] = '$' . ArgumentNames::INCL_DEFAULTS;
         }
-        return "array_map(function(\$i) { return {$map}; }, {$expr})";
+        return ArrayMapGenerator::make(
+            arrayExpr: $expr,
+            itemParam: '$i',
+            mapExpr: $this->itemType->outputMappingExpr('$i'),
+            phpVer: $this->request->getTargetPHPVersion(),
+            useVars: $useVars,
+        );
     }
 
     public function outputMappingExprStdClass(string $expr): string
     {
-        $map = $this->itemType->outputMappingExprStdClass('$i');
-        if ($this->request->isAtLeastPHP('7.4')) {
-            return "array_map(fn(\$i) => {$map}, {$expr})";
+        $useVars = [];
+        if ($this->itemType instanceof NestedObjectProperty && $this->request->getClassHasDefaults()) {
+            $useVars[] = '$' . ArgumentNames::INCL_DEFAULTS;
         }
-        return "array_map(function(\$i) { return {$map}; }, {$expr})";
+        return ArrayMapGenerator::make(
+            arrayExpr: $expr,
+            itemParam: '$i',
+            mapExpr: $this->itemType->outputMappingExprStdClass('$i'),
+            phpVer: $this->request->getTargetPHPVersion(),
+            useVars: $useVars,
+        );
     }
 
     public function cloneExpr(string $expr): string
     {
-        $map = $this->itemType->cloneExpr('$i');
-        if ($this->request->isAtLeastPHP('7.4')) {
-            return "array_map(fn(\$i) => {$map}, {$expr})";
-        }
-        return "array_map(function(\$i) { return {$map}; }, {$expr})";
+        return ArrayMapGenerator::make(
+            arrayExpr: $expr,
+            itemParam: '$i',
+            mapExpr: $this->itemType->cloneExpr('$i'),
+            phpVer: $this->request->getTargetPHPVersion(),
+        );
     }
 
     public function needsValidation(): bool
     {
-        // Typed arrays have `array` PHP type so run-time check of each element is needed.
+        // Typed arrays always require validation since their type-hint is just 'array'
         return true;
     }
 }

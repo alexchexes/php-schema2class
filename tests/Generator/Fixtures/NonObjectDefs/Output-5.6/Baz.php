@@ -181,7 +181,15 @@ class Baz
             static::validateInput($input);
         }
 
-        $grox = isset($input->{'grox'}) ? ((Bar::validateInput($input->{'grox'}, true)) ? Bar::fromInput($input->{'grox'}, $validate) : (((Foo::validateInput($input->{'grox'}, true)) ? Foo::fromInput($input->{'grox'}, $validate) : (null)))) : null;
+        $grox = isset($input->{'grox'})
+            ? (((is_object($input->{'grox'}) || is_array($input->{'grox'})) && Foo::validateInput($input->{'grox'}, true))
+                ? Foo::fromInput($input->{'grox'}, $validate)
+                : (((is_object($input->{'grox'}) || is_array($input->{'grox'})) && Bar::validateInput($input->{'grox'}, true))
+                    ? Bar::fromInput($input->{'grox'}, $validate)
+                    : $input->{'grox'}
+                )
+            )
+            : null;
 
         $obj = new self($grox);
 
@@ -194,7 +202,7 @@ class Baz
     }
 
     /**
-     * Converts this object back to a simple array that can be JSON-serialized
+     * Converts this object to array that can be JSON-serialized
      *
      * @return array Converted array
      */
@@ -203,8 +211,10 @@ class Baz
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
         if (isset($this->grox)) {
-            if (($this->grox instanceof Foo) || ($this->grox instanceof Bar)) {
+            if ($this->grox instanceof Foo || $this->grox instanceof Bar) {
                 $output['grox'] = $this->grox->toArray();
+            } else {
+                $output['grox'] = $this->grox;
             }
         }
 
@@ -221,8 +231,10 @@ class Baz
         $output = $this->_additionalProperties;
 
         if (isset($this->grox)) {
-            if (($this->grox instanceof Foo) || ($this->grox instanceof Bar)) {
-            $output->{'grox'} = $this->grox->toStdClass();
+            if ($this->grox instanceof Foo || $this->grox instanceof Bar) {
+                $output->{'grox'} = $this->grox->toStdClass();
+            } else {
+                $output->{'grox'} = $this->grox;
             }
         }
 
@@ -256,7 +268,7 @@ class Baz
         $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
-            $errors = array_map(function($e) {
+            $errors = array_map(function(array $e) {
                 return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];
             }, $validator->getErrors());
             throw new \InvalidArgumentException(join(".\n", $errors));
@@ -268,7 +280,10 @@ class Baz
     public function __clone()
     {
         if (isset($this->grox)) {
-            $this->grox = ($this->grox instanceof Bar ? $this->grox : ($this->grox instanceof Foo ? $this->grox : $this->grox));
+            $this->grox = (($this->grox instanceof Foo || $this->grox instanceof Bar)
+                ? clone $this->grox
+                : $this->grox
+            );
         }
     }
 }

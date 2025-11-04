@@ -131,10 +131,12 @@ class MyClass
             static::validateInput($input);
         }
 
-        $foo = isset($input->{'foo'}) ? array_map(
-            fn(array|object $i): \Helmich\Schema2Class\Example\CustomerAddress => \Helmich\Schema2Class\Example\CustomerAddress::fromInput($i, $validate),
-            $input->{'foo'}
-        ) : null;
+        $foo = isset($input->{'foo'})
+            ? array_map(
+                fn (object|array $i): \Helmich\Schema2Class\Example\CustomerAddress => \Helmich\Schema2Class\Example\CustomerAddress::fromInput($i, $validate),
+                $input->{'foo'},
+            )
+            : null;
 
         $obj = new self($foo);
 
@@ -147,7 +149,7 @@ class MyClass
     }
 
     /**
-     * Converts this object back to a simple array that can be JSON-serialized
+     * Converts this object to array that can be JSON-serialized
      *
      * @return array Converted array
      */
@@ -156,7 +158,10 @@ class MyClass
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
         if (isset($this->foo)) {
-            $output['foo'] = array_map(fn(\Helmich\Schema2Class\Example\CustomerAddress $i): array => $i->toArray(), $this->foo);
+            $output['foo'] = array_map(
+                fn (\Helmich\Schema2Class\Example\CustomerAddress $i): array => $i->toArray(),
+                $this->foo,
+            );
         }
 
         return $output;
@@ -172,7 +177,10 @@ class MyClass
         $output = $this->_additionalProperties;
 
         if (isset($this->foo)) {
-            $output->{'foo'} = array_map(fn(\Helmich\Schema2Class\Example\CustomerAddress $i): object => $i->toStdClass(), $this->foo);
+            $output->{'foo'} = array_map(
+                fn (\Helmich\Schema2Class\Example\CustomerAddress $i): object => $i->toStdClass(),
+                $this->foo,
+            );
         }
 
         return $output;
@@ -205,9 +213,10 @@ class MyClass
         $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
-            $errors = array_map(function(array $e): string {
-                return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];
-            }, $validator->getErrors());
+            $errors = array_map(
+                fn (array $e): string => ($e["property"] ? $e["property"] . ": " : "") . $e["message"],
+                $validator->getErrors(),
+            );
             throw new \InvalidArgumentException(join(".\n", $errors));
         }
 

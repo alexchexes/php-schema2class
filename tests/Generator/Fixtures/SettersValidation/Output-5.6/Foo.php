@@ -345,10 +345,7 @@ class Foo
         }
 
         $_providedOptionals = [];
-        $a = isset($input->{'a'}) ? ((is_array($input->{'a'})) ? $input->{'a'} : (((in_array($input->{'a'}, array (
-          0 => 'a',
-          1 => 'b',
-        ), true)) ? $input->{'a'} : (null)))) : null;
+        $a = isset($input->{'a'}) ? $input->{'a'} : null;
         $b = isset($input->{'b'}) ? $input->{'b'} : null;
         $c = null;
         if (property_exists($input, 'c')) {
@@ -369,7 +366,7 @@ class Foo
     }
 
     /**
-     * Converts this object back to a simple array that can be JSON-serialized
+     * Converts this object to array that can be JSON-serialized
      *
      * @return array Converted array
      */
@@ -378,18 +375,13 @@ class Foo
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
         if (isset($this->a)) {
-            if ((in_array($this->a, array (
-              0 => 'a',
-              1 => 'b',
-            ), true)) || (is_array($this->a))) {
-                $output['a'] = $this->a;
-            }
+            $output['a'] = $this->a;
         }
         if (isset($this->b)) {
             $output['b'] = $this->b;
         }
         if (isset($this->c) || array_key_exists('c', $this->_providedOptionals)) {
-            $output['c'] = ($this->c !== null) ? ($this->c) : null;
+            $output['c'] = ($this->c !== null ? $this->c : null);
         }
         if (isset($this->d)) {
             $output['d'] = $this->d->toArray();
@@ -408,18 +400,13 @@ class Foo
         $output = $this->_additionalProperties;
 
         if (isset($this->a)) {
-            if ((in_array($this->a, array (
-              0 => 'a',
-              1 => 'b',
-            ), true)) || (is_array($this->a))) {
             $output->{'a'} = $this->a;
-            }
         }
         if (isset($this->b)) {
             $output->{'b'} = $this->b;
         }
         if (isset($this->c) || array_key_exists('c', $this->_providedOptionals)) {
-            $output->{'c'} = ($this->c !== null) ? ($this->c) : null;
+            $output->{'c'} = ($this->c !== null ? $this->c : null);
         }
         if (isset($this->d)) {
             $output->{'d'} = $this->d->toStdClass();
@@ -455,7 +442,7 @@ class Foo
         $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
-            $errors = array_map(function($e) {
+            $errors = array_map(function(array $e) {
                 return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];
             }, $validator->getErrors());
             throw new \InvalidArgumentException(join(".\n", $errors));
@@ -466,11 +453,8 @@ class Foo
 
     public function __clone()
     {
-        if (isset($this->a)) {
-            $this->a = (is_array($this->a) ? $this->a : (in_array($this->a, array (
-              0 => 'a',
-              1 => 'b',
-            ), true) ? $this->a : $this->a));
+        if (isset($this->d)) {
+            $this->d = clone $this->d;
         }
     }
 

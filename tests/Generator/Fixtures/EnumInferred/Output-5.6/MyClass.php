@@ -448,7 +448,7 @@ class MyClass
     }
 
     /**
-     * Converts this object back to a simple array that can be JSON-serialized
+     * Converts this object to array that can be JSON-serialized
      *
      * @return array Converted array
      */
@@ -466,7 +466,7 @@ class MyClass
             $output['inferIntOpt'] = $this->inferIntOpt;
         }
         if (isset($this->inferMixedOpt) || array_key_exists('inferMixedOpt', $this->_providedOptionals)) {
-            $output['inferMixedOpt'] = ($this->inferMixedOpt !== null) ? ($this->inferMixedOpt) : null;
+            $output['inferMixedOpt'] = ($this->inferMixedOpt !== null ? $this->inferMixedOpt : null);
         }
 
         return $output;
@@ -491,7 +491,7 @@ class MyClass
             $output->{'inferIntOpt'} = $this->inferIntOpt;
         }
         if (isset($this->inferMixedOpt) || array_key_exists('inferMixedOpt', $this->_providedOptionals)) {
-            $output->{'inferMixedOpt'} = ($this->inferMixedOpt !== null) ? ($this->inferMixedOpt) : null;
+            $output->{'inferMixedOpt'} = ($this->inferMixedOpt !== null ? $this->inferMixedOpt : null);
         }
 
         return $output;
@@ -524,7 +524,7 @@ class MyClass
         $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
-            $errors = array_map(function($e) {
+            $errors = array_map(function(array $e) {
                 return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];
             }, $validator->getErrors());
             throw new \InvalidArgumentException(join(".\n", $errors));

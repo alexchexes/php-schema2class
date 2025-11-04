@@ -195,7 +195,9 @@ class Address
         }
 
         $city = $input->{'city'};
-        $name = isset($input->{'name'}) ? Address\Defs\Name::fromInput($input->{'name'}, $validate) : null;
+        $name = isset($input->{'name'})
+            ? Address\Defs\Name::fromInput($input->{'name'}, $validate)
+            : null;
 
         $obj = new self($city, $name);
 
@@ -208,7 +210,7 @@ class Address
     }
 
     /**
-     * Converts this object back to a simple array that can be JSON-serialized
+     * Converts this object to array that can be JSON-serialized
      *
      * @return array Converted array
      */
@@ -268,12 +270,19 @@ class Address
         $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
-            $errors = array_map(function($e) {
+            $errors = array_map(function(array $e) {
                 return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];
             }, $validator->getErrors());
             throw new \InvalidArgumentException(join(".\n", $errors));
         }
 
         return $validator->isValid();
+    }
+
+    public function __clone()
+    {
+        if (isset($this->name)) {
+            $this->name = clone $this->name;
+        }
     }
 }

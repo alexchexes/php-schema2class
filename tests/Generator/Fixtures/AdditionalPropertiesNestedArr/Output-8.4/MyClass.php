@@ -163,7 +163,7 @@ class MyClass
         }
 
         $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
-        $bar = isset($input->{'bar'}) ? array_map(fn($i) => $i, $input->{'bar'}) : null;
+        $bar = isset($input->{'bar'}) ? array_map(fn ($i) => $i, $input->{'bar'}) : null;
 
         $obj = new self($foo, $bar);
 
@@ -176,7 +176,7 @@ class MyClass
     }
 
     /**
-     * Converts this object back to a simple array that can be JSON-serialized
+     * Converts this object to array that can be JSON-serialized
      *
      * @return array Converted array
      */
@@ -188,7 +188,7 @@ class MyClass
             $output['foo'] = $this->foo;
         }
         if (isset($this->bar)) {
-            $output['bar'] = array_map(fn($i) => json_decode(json_encode($i), true), $this->bar);
+            $output['bar'] = array_map(fn ($i) => json_decode(json_encode($i), true), $this->bar);
         }
 
         return $output;
@@ -207,7 +207,7 @@ class MyClass
             $output->{'foo'} = $this->foo;
         }
         if (isset($this->bar)) {
-            $output->{'bar'} = array_map(fn($i) => json_decode(json_encode($i)), $this->bar);
+            $output->{'bar'} = array_map(fn ($i) => json_decode(json_encode($i)), $this->bar);
         }
 
         return $output;
@@ -240,9 +240,10 @@ class MyClass
         $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
-            $errors = array_map(function(array $e): string {
-                return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];
-            }, $validator->getErrors());
+            $errors = array_map(
+                fn (array $e): string => ($e["property"] ? $e["property"] . ": " : "") . $e["message"],
+                $validator->getErrors(),
+            );
             throw new \InvalidArgumentException(join(".\n", $errors));
         }
 
@@ -252,7 +253,7 @@ class MyClass
     public function __clone()
     {
         if (isset($this->bar)) {
-            $this->bar = array_map(fn($i) => $i, $this->bar);
+            $this->bar = array_map(fn ($i) => json_decode(json_encode($i), is_array($i)), $this->bar);
         }
     }
 }

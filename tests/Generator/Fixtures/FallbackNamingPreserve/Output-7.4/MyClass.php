@@ -1378,11 +1378,28 @@ class MyClass
             $_materializeDefaults = ($input->{'materializeDefaults'} !== null ? $input->{'materializeDefaults'} : null);
             $_providedOptionals['materializeDefaults'] = true;
         }
-        $testObj = isset($input->{'testObj'}) ? MyClassTestObj::fromInput($input->{'testObj'}, $validate, $materializeDefaults) : null;
+        $testObj = isset($input->{'testObj'})
+            ? MyClassTestObj::fromInput($input->{'testObj'}, $validate, $materializeDefaults)
+            : null;
         $__providedOptionals = isset($input->{'__providedOptionals'}) ? $input->{'__providedOptionals'} : null;
-        $ensureArgs1 = isset($input->{'ensureArgs1'}) ? ((is_string($input->{'ensureArgs1'})) ? $input->{'ensureArgs1'} : (((MyClassEnsureArgs1Alternative2::validateInput($input->{'ensureArgs1'}, true)) ? MyClassEnsureArgs1Alternative2::fromInput($input->{'ensureArgs1'}, $validate, $materializeDefaults) : (((MyClassEnsureArgs1Alternative1::validateInput($input->{'ensureArgs1'}, true)) ? MyClassEnsureArgs1Alternative1::fromInput($input->{'ensureArgs1'}, $validate, $materializeDefaults) : (null)))))) : null;
-        $ensureArgs2 = isset($input->{'ensureArgs2'}) ? MyClassEnsureArgs2::fromInput($input->{'ensureArgs2'}, $validate, $materializeDefaults) : null;
-        $ensureArgs3 = isset($input->{'ensureArgs3'}) ? array_map(fn ($i): MyClassEnsureArgs3Item => MyClassEnsureArgs3Item::fromInput($i, $validate, $materializeDefaults), $input->{'ensureArgs3'}) : null;
+        $ensureArgs1 = isset($input->{'ensureArgs1'})
+            ? (((is_object($input->{'ensureArgs1'}) || is_array($input->{'ensureArgs1'})) && MyClassEnsureArgs1Alternative1::validateInput($input->{'ensureArgs1'}, true))
+                ? MyClassEnsureArgs1Alternative1::fromInput($input->{'ensureArgs1'}, $validate, $materializeDefaults)
+                : (((is_object($input->{'ensureArgs1'}) || is_array($input->{'ensureArgs1'})) && MyClassEnsureArgs1Alternative2::validateInput($input->{'ensureArgs1'}, true))
+                    ? MyClassEnsureArgs1Alternative2::fromInput($input->{'ensureArgs1'}, $validate, $materializeDefaults)
+                    : $input->{'ensureArgs1'}
+                )
+            )
+            : null;
+        $ensureArgs2 = isset($input->{'ensureArgs2'})
+            ? MyClassEnsureArgs2::fromInput($input->{'ensureArgs2'}, $validate, $materializeDefaults)
+            : null;
+        $ensureArgs3 = isset($input->{'ensureArgs3'})
+            ? array_map(
+                fn ($i): MyClassEnsureArgs3Item => MyClassEnsureArgs3Item::fromInput($i, $validate, $materializeDefaults),
+                $input->{'ensureArgs3'},
+            )
+            : null;
 
         $obj = new self(
             $_GLOBALS_1,
@@ -1447,7 +1464,7 @@ class MyClass
     }
 
     /**
-     * Converts this object back to a simple array that can be JSON-serialized
+     * Converts this object to array that can be JSON-serialized
      *
      * @param bool $includeDefaults Add defaults for missing properties
      * @return array Converted array
@@ -1476,7 +1493,7 @@ class MyClass
             $output['validate'] = $this->validate;
         }
         if (isset($this->materializeDefaults) || array_key_exists('materializeDefaults', $this->_providedOptionals)) {
-            $output['materializeDefaults'] = ($this->materializeDefaults !== null) ? ($this->materializeDefaults) : null;
+            $output['materializeDefaults'] = ($this->materializeDefaults !== null ? $this->materializeDefaults : null);
         }
         $output['obj'] = $this->obj;
         $output['includeDefaults'] = $this->includeDefaults;
@@ -1512,9 +1529,11 @@ class MyClass
         $output['files'] = $this->files;
         $output['this'] = $this->_this;
         if (isset($this->ensureArgs1)) {
-            if (($this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative1) || ($this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative2)) {
+            if ($this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative1
+                || $this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative2
+            ) {
                 $output['ensureArgs1'] = $this->ensureArgs1->toArray($includeDefaults);
-            } else if ((is_string($this->ensureArgs1))) {
+            } else {
                 $output['ensureArgs1'] = $this->ensureArgs1;
             }
         }
@@ -1566,7 +1585,7 @@ class MyClass
             $output->{'validate'} = $this->validate;
         }
         if (isset($this->materializeDefaults) || array_key_exists('materializeDefaults', $this->_providedOptionals)) {
-            $output->{'materializeDefaults'} = ($this->materializeDefaults !== null) ? ($this->materializeDefaults) : null;
+            $output->{'materializeDefaults'} = ($this->materializeDefaults !== null ? $this->materializeDefaults : null);
         }
         $output->{'obj'} = $this->obj;
         $output->{'includeDefaults'} = $this->includeDefaults;
@@ -1602,10 +1621,12 @@ class MyClass
         $output->{'files'} = $this->files;
         $output->{'this'} = $this->_this;
         if (isset($this->ensureArgs1)) {
-            if (($this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative1) || ($this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative2)) {
-            $output->{'ensureArgs1'} = $this->ensureArgs1->toStdClass($includeDefaults);
-            } else if ((is_string($this->ensureArgs1))) {
-            $output->{'ensureArgs1'} = $this->ensureArgs1;
+            if ($this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative1
+                || $this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative2
+            ) {
+                $output->{'ensureArgs1'} = $this->ensureArgs1->toStdClass($includeDefaults);
+            } else {
+                $output->{'ensureArgs1'} = $this->ensureArgs1;
             }
         }
         if (isset($this->ensureArgs2)) {
@@ -1655,9 +1676,10 @@ class MyClass
         $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
-            $errors = array_map(function(array $e): string {
-                return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];
-            }, $validator->getErrors());
+            $errors = array_map(
+                fn (array $e): string => ($e["property"] ? $e["property"] . ": " : "") . $e["message"],
+                $validator->getErrors(),
+            );
             throw new \InvalidArgumentException(join(".\n", $errors));
         }
 
@@ -1670,7 +1692,12 @@ class MyClass
             $this->testObj = clone $this->testObj;
         }
         if (isset($this->ensureArgs1)) {
-            $this->ensureArgs1 = (is_string($this->ensureArgs1) ? $this->ensureArgs1 : ($this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative2 ? clone $this->ensureArgs1 : ($this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative1 ? clone $this->ensureArgs1 : $this->ensureArgs1)));
+            $this->ensureArgs1 = (($this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative1
+                || $this->ensureArgs1 instanceof MyClassEnsureArgs1Alternative2
+            )
+                ? clone $this->ensureArgs1
+                : $this->ensureArgs1
+            );
         }
         if (isset($this->ensureArgs2)) {
             $this->ensureArgs2 = clone $this->ensureArgs2;

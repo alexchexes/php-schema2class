@@ -8,8 +8,6 @@ class SpecificationOptions
 {
     /**
      * Schema used to validate input for creating instances of this class
-     *
-     * @var array
      */
     private static array $_schema = ['additionalProperties' => false, 'properties' => ['targetDirectory' => ['type' => 'string'], 'targetNamespace' => ['type' => 'string'], 'targetPHPVersion' => ['oneOf' => [['type' => 'integer', 'enum' => [5, 7, 8]], ['type' => 'string']]], 'cleanTargetDirectory' => ['type' => 'boolean'], 'disableStrictTypes' => ['type' => 'boolean'], 'inlineAllofReferences' => ['type' => 'boolean'], 'newValidatorExpr' => ['type' => 'string'], 'arrayToObjectExpr' => ['type' => 'string'], 'preservePropertyNames' => ['type' => 'boolean'], 'noGetters' => ['type' => 'boolean'], 'noSetters' => ['type' => 'boolean'], 'mutableSetters' => ['oneOf' => [['type' => 'boolean', 'enum' => [true]], ['type' => 'string', 'enum' => ['chainable']]]], 'noSchemaMetadata' => ['type' => 'boolean'], 'singleLineSchema' => ['type' => 'boolean'], 'noEnums' => ['type' => 'boolean']]];
 
@@ -119,7 +117,7 @@ class SpecificationOptions
      */
     public function getTargetPHPVersion(): int|string|null
     {
-        return $this->targetPHPVersion;
+        return $this->targetPHPVersion ?? null;
     }
 
     /**
@@ -367,7 +365,7 @@ class SpecificationOptions
      */
     public function getMutableSetters(): bool|string|null
     {
-        return $this->mutableSetters;
+        return $this->mutableSetters ?? null;
     }
 
     /**
@@ -502,18 +500,14 @@ class SpecificationOptions
             static::validateInput($input);
         }
 
-
         $targetDirectory = isset($input->{'targetDirectory'}) ? $input->{'targetDirectory'} : null;
         $targetNamespace = isset($input->{'targetNamespace'}) ? $input->{'targetNamespace'} : null;
-        $targetPHPVersion = isset($input->{'targetPHPVersion'}) ? match (true) {
-            in_array($input->{'targetPHPVersion'}, array (
-          0 => 5,
-          1 => 7,
-          2 => 8,
-        ), true) => (int)$input->{'targetPHPVersion'},
-            is_string($input->{'targetPHPVersion'}) => $input->{'targetPHPVersion'},
-            default => null,
-        } : null;
+        $targetPHPVersion = isset($input->{'targetPHPVersion'})
+            ? match (true) {
+                in_array($input->{'targetPHPVersion'}, [5, 7, 8], true) => (int)$input->{'targetPHPVersion'},
+                default => $input->{'targetPHPVersion'},
+            }
+            : null;
         $cleanTargetDirectory = isset($input->{'cleanTargetDirectory'}) ? $input->{'cleanTargetDirectory'} : null;
         $disableStrictTypes = isset($input->{'disableStrictTypes'}) ? $input->{'disableStrictTypes'} : null;
         $inlineAllofReferences = isset($input->{'inlineAllofReferences'}) ? $input->{'inlineAllofReferences'} : null;
@@ -522,15 +516,12 @@ class SpecificationOptions
         $preservePropertyNames = isset($input->{'preservePropertyNames'}) ? $input->{'preservePropertyNames'} : null;
         $noGetters = isset($input->{'noGetters'}) ? $input->{'noGetters'} : null;
         $noSetters = isset($input->{'noSetters'}) ? $input->{'noSetters'} : null;
-        $mutableSetters = isset($input->{'mutableSetters'}) ? match (true) {
-            in_array($input->{'mutableSetters'}, array (
-          0 => true,
-        ), true) => (bool)$input->{'mutableSetters'},
-            in_array($input->{'mutableSetters'}, array (
-          0 => 'chainable',
-        ), true) => $input->{'mutableSetters'},
-            default => null,
-        } : null;
+        $mutableSetters = isset($input->{'mutableSetters'})
+            ? match (true) {
+                in_array($input->{'mutableSetters'}, [true], true) => (bool)$input->{'mutableSetters'},
+                default => $input->{'mutableSetters'},
+            }
+            : null;
         $noSchemaMetadata = isset($input->{'noSchemaMetadata'}) ? $input->{'noSchemaMetadata'} : null;
         $singleLineSchema = isset($input->{'singleLineSchema'}) ? $input->{'singleLineSchema'} : null;
         $noEnums = isset($input->{'noEnums'}) ? $input->{'noEnums'} : null;
@@ -552,11 +543,12 @@ class SpecificationOptions
             $singleLineSchema,
             $noEnums
         );
+
         return $obj;
     }
 
     /**
-     * Converts this object back to a simple array that can be JSON-serialized
+     * Converts this object to array that can be JSON-serialized
      *
      * @return array Converted array
      */
@@ -571,12 +563,7 @@ class SpecificationOptions
         }
         if (isset($this->targetPHPVersion)) {
             $output['targetPHPVersion'] = match (true) {
-                in_array($this->targetPHPVersion, array (
-              0 => 5,
-              1 => 7,
-              2 => 8,
-            ), true),
-                is_string($this->targetPHPVersion) => $this->targetPHPVersion,
+                default => $this->targetPHPVersion,
             };
         }
         if (isset($this->cleanTargetDirectory)) {
@@ -605,12 +592,7 @@ class SpecificationOptions
         }
         if (isset($this->mutableSetters)) {
             $output['mutableSetters'] = match (true) {
-                in_array($this->mutableSetters, array (
-              0 => true,
-            ), true),
-                in_array($this->mutableSetters, array (
-              0 => 'chainable',
-            ), true) => $this->mutableSetters,
+                default => $this->mutableSetters,
             };
         }
         if (isset($this->noSchemaMetadata)) {
@@ -642,12 +624,7 @@ class SpecificationOptions
         }
         if (isset($this->targetPHPVersion)) {
             $output->{'targetPHPVersion'} = match (true) {
-                in_array($this->targetPHPVersion, array (
-              0 => 5,
-              1 => 7,
-              2 => 8,
-            ), true),
-                is_string($this->targetPHPVersion) => $this->targetPHPVersion,
+                default => $this->targetPHPVersion,
             };
         }
         if (isset($this->cleanTargetDirectory)) {
@@ -676,12 +653,7 @@ class SpecificationOptions
         }
         if (isset($this->mutableSetters)) {
             $output->{'mutableSetters'} = match (true) {
-                in_array($this->mutableSetters, array (
-              0 => true,
-            ), true),
-                in_array($this->mutableSetters, array (
-              0 => 'chainable',
-            ), true) => $this->mutableSetters,
+                default => $this->mutableSetters,
             };
         }
         if (isset($this->noSchemaMetadata)) {
@@ -698,11 +670,23 @@ class SpecificationOptions
     }
 
     /**
+     * Validates the current instance against its schema
+     *
+     * @param bool $return Return instead of throwing errors
+     * @return bool Validation result if `$return` is `true`
+     * @throws \InvalidArgumentException
+     */
+    public function validate(bool $return = false): bool
+    {
+        return self::validateInput($this->toStdClass(), $return);
+    }
+
+    /**
      * Validates an input array
      *
      * @param array|object $input Input data
      * @param bool $return Return instead of throwing errors
-     * @return bool Validation result
+     * @return bool Validation result if `$return` is `true`
      * @throws \InvalidArgumentException
      */
     public static function validateInput(array|object $input, bool $return = false): bool
@@ -712,37 +696,14 @@ class SpecificationOptions
         $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
-            $errors = array_map(function(array $e): string {
-                return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];
-            }, $validator->getErrors());
+            $errors = array_map(
+                fn (array $e): string => ($e["property"] ? $e["property"] . ": " : "") . $e["message"],
+                $validator->getErrors(),
+            );
             throw new \InvalidArgumentException(join(".\n", $errors));
         }
 
         return $validator->isValid();
-    }
-
-    public function __clone()
-    {
-        if (isset($this->targetPHPVersion)) {
-            $this->targetPHPVersion = match (true) {
-                in_array($this->targetPHPVersion, array (
-              0 => 5,
-              1 => 7,
-              2 => 8,
-            ), true),
-                is_string($this->targetPHPVersion) => $this->targetPHPVersion,
-            };
-        }
-        if (isset($this->mutableSetters)) {
-            $this->mutableSetters = match (true) {
-                in_array($this->mutableSetters, array (
-              0 => true,
-            ), true),
-                in_array($this->mutableSetters, array (
-              0 => 'chainable',
-            ), true) => $this->mutableSetters,
-            };
-        }
     }
 }
 

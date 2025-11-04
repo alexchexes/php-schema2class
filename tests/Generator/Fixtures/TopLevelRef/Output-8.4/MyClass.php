@@ -115,11 +115,16 @@ class MyClass
             static::validateInput($input);
         }
 
-        $foo = isset($input->{'foo'}) ? match (true) {
-            is_string($input->{'foo'}) => $input->{'foo'},
-            is_int($input->{'foo'}) || is_float($input->{'foo'}) => (str_contains((string)$input->{'foo'}, '.') ? (float)$input->{'foo'} : (int)$input->{'foo'}),
-            default => null,
-        } : null;
+        $foo = isset($input->{'foo'})
+            ? match (true) {
+                default => $input->{'foo'},
+                (is_int($input->{'foo'}) || is_float($input->{'foo'})) =>
+                    (str_contains((string)$input->{'foo'}, '.')
+                        ? (float)$input->{'foo'}
+                        : (int)$input->{'foo'}
+                    ),
+            }
+            : null;
 
         $obj = new self($foo);
 
@@ -132,7 +137,7 @@ class MyClass
     }
 
     /**
-     * Converts this object back to a simple array that can be JSON-serialized
+     * Converts this object to array that can be JSON-serialized
      *
      * @return array Converted array
      */
@@ -142,8 +147,7 @@ class MyClass
 
         if (isset($this->foo)) {
             $output['foo'] = match (true) {
-                is_string($this->foo),
-                is_int($this->foo) || is_float($this->foo) => $this->foo,
+                default => $this->foo,
             };
         }
 
@@ -161,8 +165,7 @@ class MyClass
 
         if (isset($this->foo)) {
             $output->{'foo'} = match (true) {
-                is_string($this->foo),
-                is_int($this->foo) || is_float($this->foo) => $this->foo,
+                default => $this->foo,
             };
         }
 
@@ -196,22 +199,13 @@ class MyClass
         $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
-            $errors = array_map(function(array $e): string {
-                return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];
-            }, $validator->getErrors());
+            $errors = array_map(
+                fn (array $e): string => ($e["property"] ? $e["property"] . ": " : "") . $e["message"],
+                $validator->getErrors(),
+            );
             throw new \InvalidArgumentException(join(".\n", $errors));
         }
 
         return $validator->isValid();
-    }
-
-    public function __clone()
-    {
-        if (isset($this->foo)) {
-            $this->foo = match (true) {
-                is_string($this->foo),
-                is_int($this->foo) || is_float($this->foo) => $this->foo,
-            };
-        }
     }
 }

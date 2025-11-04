@@ -109,7 +109,7 @@ class StringEnumProperty extends AbstractProperty
     public function outputMappingExpr(string $expr): string
     {
         if ($this->request->isAtLeastPHP("8.1") && !$this->request->getNoEnums()) {
-            return "({$expr})->value";
+            return "{$expr}->value";
         }
 
         return $expr;

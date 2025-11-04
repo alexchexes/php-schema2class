@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "Record": {
+      "type": "object",
+      "properties": {
+        "foo": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/FooItem" },
+          "default": [
+            {
+              "name": "foo"
+            }
+          ],
+          "minItems": 1,
+          "maxItems": 1
+        },
+        "bar": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/BarItem" },
+          "default": []
+        }
+      }
+    },
+    "FooItem": {
+      "properties": {
+        "name": { "type": "string", "default": "a string" }
+      }
+    },
+    "BarItem": {
+      "properties": {
+        "name": { "type": "string" }
+      }
+    }
+  }
+}

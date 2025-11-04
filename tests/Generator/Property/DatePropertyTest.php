@@ -66,7 +66,7 @@ EOCODE;
         $result = $this->property->convertTypeToArray();
 
         $expected = <<<'EOCODE'
-$output['myPropertyName'] = ($this->myPropertyName)->format(\DateTime::ATOM);
+$output['myPropertyName'] = $this->myPropertyName->format(\DateTime::ATOM);
 EOCODE;
 
         assertSame($expected, $result);

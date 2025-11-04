@@ -314,8 +314,12 @@ class MyClass
         $inferString = MyClassInferString::from($input->{'inferString'});
         $inferInt = MyClassInferInt::from($input->{'inferInt'});
         $inferMixed = ($input->{'inferMixed'} !== null ? $input->{'inferMixed'} : null);
-        $inferStringOpt = isset($input->{'inferStringOpt'}) ? MyClassInferStringOpt::from($input->{'inferStringOpt'}) : null;
-        $inferIntOpt = isset($input->{'inferIntOpt'}) ? MyClassInferIntOpt::from($input->{'inferIntOpt'}) : null;
+        $inferStringOpt = isset($input->{'inferStringOpt'})
+            ? MyClassInferStringOpt::from($input->{'inferStringOpt'})
+            : null;
+        $inferIntOpt = isset($input->{'inferIntOpt'})
+            ? MyClassInferIntOpt::from($input->{'inferIntOpt'})
+            : null;
         $inferMixedOpt = null;
         if (property_exists($input, 'inferMixedOpt')) {
             $inferMixedOpt = ($input->{'inferMixedOpt'} !== null ? $input->{'inferMixedOpt'} : null);
@@ -341,7 +345,7 @@ class MyClass
     }
 
     /**
-     * Converts this object back to a simple array that can be JSON-serialized
+     * Converts this object to array that can be JSON-serialized
      *
      * @return array Converted array
      */
@@ -349,17 +353,17 @@ class MyClass
     {
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
-        $output['inferString'] = ($this->inferString)->value;
+        $output['inferString'] = $this->inferString->value;
         $output['inferInt'] = $this->inferInt->value;
         $output['inferMixed'] = $this->inferMixed;
         if (isset($this->inferStringOpt)) {
-            $output['inferStringOpt'] = ($this->inferStringOpt)->value;
+            $output['inferStringOpt'] = $this->inferStringOpt->value;
         }
         if (isset($this->inferIntOpt)) {
             $output['inferIntOpt'] = $this->inferIntOpt->value;
         }
         if (isset($this->inferMixedOpt) || array_key_exists('inferMixedOpt', $this->_providedOptionals)) {
-            $output['inferMixedOpt'] = ($this->inferMixedOpt !== null) ? ($this->inferMixedOpt) : null;
+            $output['inferMixedOpt'] = ($this->inferMixedOpt !== null ? $this->inferMixedOpt : null);
         }
 
         return $output;
@@ -374,17 +378,17 @@ class MyClass
     {
         $output = $this->_additionalProperties;
 
-        $output->{'inferString'} = ($this->inferString)->value;
+        $output->{'inferString'} = $this->inferString->value;
         $output->{'inferInt'} = $this->inferInt->value;
         $output->{'inferMixed'} = $this->inferMixed;
         if (isset($this->inferStringOpt)) {
-            $output->{'inferStringOpt'} = ($this->inferStringOpt)->value;
+            $output->{'inferStringOpt'} = $this->inferStringOpt->value;
         }
         if (isset($this->inferIntOpt)) {
             $output->{'inferIntOpt'} = $this->inferIntOpt->value;
         }
         if (isset($this->inferMixedOpt) || array_key_exists('inferMixedOpt', $this->_providedOptionals)) {
-            $output->{'inferMixedOpt'} = ($this->inferMixedOpt !== null) ? ($this->inferMixedOpt) : null;
+            $output->{'inferMixedOpt'} = ($this->inferMixedOpt !== null ? $this->inferMixedOpt : null);
         }
 
         return $output;
@@ -417,9 +421,10 @@ class MyClass
         $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
-            $errors = array_map(function(array $e): string {
-                return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];
-            }, $validator->getErrors());
+            $errors = array_map(
+                fn (array $e): string => ($e["property"] ? $e["property"] . ": " : "") . $e["message"],
+                $validator->getErrors(),
+            );
             throw new \InvalidArgumentException(join(".\n", $errors));
         }
 

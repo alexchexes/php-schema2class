@@ -141,15 +141,13 @@ class MyClass
         }
 
         $foo = match (true) {
-            is_string($input->{'foo'}),
-            is_array($input->{'foo'}) || is_object($input->{'foo'}) => $input->{'foo'},
-            default => throw new \InvalidArgumentException("could not build property 'foo' from JSON"),
+            default => $input->{'foo'},
         };
-        $bar = isset($input->{'bar'}) ? match (true) {
-            is_string($input->{'bar'}),
-            is_array($input->{'bar'}) || is_object($input->{'bar'}) => $input->{'bar'},
-            default => null,
-        } : null;
+        $bar = isset($input->{'bar'})
+            ? match (true) {
+                default => $input->{'bar'},
+            }
+            : null;
 
         $obj = new self($foo, $bar);
 
@@ -162,7 +160,7 @@ class MyClass
     }
 
     /**
-     * Converts this object back to a simple array that can be JSON-serialized
+     * Converts this object to array that can be JSON-serialized
      *
      * @return array Converted array
      */
@@ -171,13 +169,13 @@ class MyClass
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
         $output['foo'] = match (true) {
-            is_string($this->foo) => $this->foo,
             is_array($this->foo) || is_object($this->foo) => json_decode(json_encode($this->foo), true),
+            default => $this->foo,
         };
         if (isset($this->bar)) {
             $output['bar'] = match (true) {
-                is_string($this->bar) => $this->bar,
                 is_array($this->bar) || is_object($this->bar) => json_decode(json_encode($this->bar), true),
+                default => $this->bar,
             };
         }
 
@@ -194,13 +192,13 @@ class MyClass
         $output = $this->_additionalProperties;
 
         $output->{'foo'} = match (true) {
-            is_string($this->foo) => $this->foo,
             is_array($this->foo) || is_object($this->foo) => json_decode(json_encode($this->foo)),
+            default => $this->foo,
         };
         if (isset($this->bar)) {
             $output->{'bar'} = match (true) {
-                is_string($this->bar) => $this->bar,
                 is_array($this->bar) || is_object($this->bar) => json_decode(json_encode($this->bar)),
+                default => $this->bar,
             };
         }
 
@@ -234,9 +232,10 @@ class MyClass
         $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
-            $errors = array_map(function(array $e): string {
-                return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];
-            }, $validator->getErrors());
+            $errors = array_map(
+                fn (array $e): string => ($e["property"] ? $e["property"] . ": " : "") . $e["message"],
+                $validator->getErrors(),
+            );
             throw new \InvalidArgumentException(join(".\n", $errors));
         }
 
@@ -246,13 +245,13 @@ class MyClass
     public function __clone()
     {
         $this->foo = match (true) {
-            is_string($this->foo),
-            is_array($this->foo) || is_object($this->foo) => $this->foo,
+            is_string($this->foo) => $this->foo,
+            is_array($this->foo) || is_object($this->foo) => json_decode(json_encode($this->foo), is_array($this->foo)),
         };
         if (isset($this->bar)) {
             $this->bar = match (true) {
-                is_string($this->bar),
-                is_array($this->bar) || is_object($this->bar) => $this->bar,
+                is_string($this->bar) => $this->bar,
+                is_array($this->bar) || is_object($this->bar) => json_decode(json_encode($this->bar), is_array($this->bar)),
             };
         }
     }

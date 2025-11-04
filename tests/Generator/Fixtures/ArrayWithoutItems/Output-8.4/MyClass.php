@@ -368,22 +368,21 @@ class MyClass
         $_providedOptionals = [];
         $a = $input->{'a'};
         $b = match (true) {
-            is_array($input->{'b'}),
-            is_string($input->{'b'}) => $input->{'b'},
-            default => throw new \InvalidArgumentException("could not build property 'b' from JSON"),
+            default => $input->{'b'},
         };
         $c = ($input->{'c'} !== null ? $input->{'c'} : null);
-        $d = ($input->{'d'} !== null ? match (true) {
-            is_array($input->{'d'}),
-            is_string($input->{'d'}) => $input->{'d'},
-            default => null,
-        } : null);
+        $d = ($input->{'d'} !== null
+            ? match (true) {
+                default => $input->{'d'},
+            }
+            : null
+        );
         $e = isset($input->{'e'}) ? $input->{'e'} : null;
-        $f = isset($input->{'f'}) ? match (true) {
-            is_array($input->{'f'}),
-            is_string($input->{'f'}) => $input->{'f'},
-            default => null,
-        } : null;
+        $f = isset($input->{'f'})
+            ? match (true) {
+                default => $input->{'f'},
+            }
+            : null;
         $g = null;
         if (property_exists($input, 'g')) {
             $g = ($input->{'g'} !== null ? $input->{'g'} : null);
@@ -391,21 +390,22 @@ class MyClass
         }
         $h = null;
         if (property_exists($input, 'h')) {
-            $h = ($input->{'h'} !== null ? match (true) {
-            is_array($input->{'h'}),
-            is_string($input->{'h'}) => $input->{'h'},
-            default => null,
-        } : null);
+            $h = ($input->{'h'} !== null
+                ? match (true) {
+                    default => $input->{'h'},
+                }
+                : null
+            );
             $_providedOptionals['h'] = true;
         }
         $i = null;
         if (property_exists($input, 'i')) {
-            $i = ($input->{'i'} !== null ? match (true) {
-            is_array($input->{'i'}),
-            is_string($input->{'i'}),
-            is_array($input->{'i'}) || is_object($input->{'i'}) => $input->{'i'},
-            default => null,
-        } : null);
+            $i = ($input->{'i'} !== null
+                ? match (true) {
+                    default => $input->{'i'},
+                }
+                : null
+            );
             $_providedOptionals['i'] = true;
         }
 
@@ -421,7 +421,7 @@ class MyClass
     }
 
     /**
-     * Converts this object back to a simple array that can be JSON-serialized
+     * Converts this object to array that can be JSON-serialized
      *
      * @return array Converted array
      */
@@ -431,40 +431,39 @@ class MyClass
 
         $output['a'] = $this->a;
         $output['b'] = match (true) {
-            is_array($this->b),
-            is_string($this->b) => $this->b,
+            default => $this->b,
         };
         $output['c'] = $this->c;
         $output['d'] = match (true) {
-            is_array($this->d),
-            is_string($this->d) => $this->d,
+            default => $this->d,
         };
         if (isset($this->e)) {
             $output['e'] = $this->e;
         }
         if (isset($this->f)) {
             $output['f'] = match (true) {
-                is_array($this->f),
-                is_string($this->f) => $this->f,
+                default => $this->f,
             };
         }
         if (isset($this->g) || array_key_exists('g', $this->_providedOptionals)) {
-            $output['g'] = ($this->g !== null) ? ($this->g) : null;
+            $output['g'] = ($this->g !== null ? $this->g : null);
         }
         if (isset($this->h) || array_key_exists('h', $this->_providedOptionals)) {
-            $output['h'] = ($this->h !== null) ? (match (true) {
-                default => null,
-                is_array($this->h),
-                is_string($this->h) => $this->h,
-            }) : null;
+            $output['h'] = ($this->h !== null
+                ? match (true) {
+                    default => $this->h,
+                }
+                : null
+            );
         }
         if (isset($this->i) || array_key_exists('i', $this->_providedOptionals)) {
-            $output['i'] = ($this->i !== null) ? (match (true) {
-                default => null,
-                is_array($this->i),
-                is_string($this->i) => $this->i,
-                is_array($this->i) || is_object($this->i) => json_decode(json_encode($this->i), true),
-            }) : null;
+            $output['i'] = ($this->i !== null
+                ? match (true) {
+                    is_array($this->i) || is_object($this->i) => json_decode(json_encode($this->i), true),
+                    default => $this->i,
+                }
+                : null
+            );
         }
 
         return $output;
@@ -481,40 +480,34 @@ class MyClass
 
         $output->{'a'} = $this->a;
         $output->{'b'} = match (true) {
-            is_array($this->b),
-            is_string($this->b) => $this->b,
+            default => $this->b,
         };
         $output->{'c'} = $this->c;
         $output->{'d'} = match (true) {
-            is_array($this->d),
-            is_string($this->d) => $this->d,
+            default => $this->d,
         };
         if (isset($this->e)) {
             $output->{'e'} = $this->e;
         }
         if (isset($this->f)) {
             $output->{'f'} = match (true) {
-                is_array($this->f),
-                is_string($this->f) => $this->f,
+                default => $this->f,
             };
         }
         if (isset($this->g) || array_key_exists('g', $this->_providedOptionals)) {
-            $output->{'g'} = ($this->g !== null) ? ($this->g) : null;
+            $output->{'g'} = ($this->g !== null ? $this->g : null);
         }
         if (isset($this->h) || array_key_exists('h', $this->_providedOptionals)) {
-            $output->{'h'} = ($this->h !== null) ? (match (true) {
-                default => null,
-                is_array($this->h),
-                is_string($this->h) => $this->h,
-            }) : null;
+            $output->{'h'} = ($this->h !== null ? $this->h : null);
         }
         if (isset($this->i) || array_key_exists('i', $this->_providedOptionals)) {
-            $output->{'i'} = ($this->i !== null) ? (match (true) {
-                default => null,
-                is_array($this->i),
-                is_string($this->i) => $this->i,
-                is_array($this->i) || is_object($this->i) => json_decode(json_encode($this->i)),
-            }) : null;
+            $output->{'i'} = ($this->i !== null
+                ? match (true) {
+                    is_array($this->i) || is_object($this->i) => json_decode(json_encode($this->i)),
+                    default => $this->i,
+                }
+                : null
+            );
         }
 
         return $output;
@@ -547,9 +540,10 @@ class MyClass
         $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
-            $errors = array_map(function(array $e): string {
-                return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];
-            }, $validator->getErrors());
+            $errors = array_map(
+                fn (array $e): string => ($e["property"] ? $e["property"] . ": " : "") . $e["message"],
+                $validator->getErrors(),
+            );
             throw new \InvalidArgumentException(join(".\n", $errors));
         }
 
@@ -558,31 +552,10 @@ class MyClass
 
     public function __clone()
     {
-        $this->b = match (true) {
-            is_array($this->b),
-            is_string($this->b) => $this->b,
-        };
-        $this->d = match (true) {
-            is_array($this->d),
-            is_string($this->d) => $this->d,
-        };
-        if (isset($this->f)) {
-            $this->f = match (true) {
-                is_array($this->f),
-                is_string($this->f) => $this->f,
-            };
-        }
-        if (isset($this->h)) {
-            $this->h = match (true) {
-                is_array($this->h),
-                is_string($this->h) => $this->h,
-            };
-        }
         if (isset($this->i)) {
             $this->i = match (true) {
-                is_array($this->i),
-                is_string($this->i),
-                is_array($this->i) || is_object($this->i) => $this->i,
+                is_array($this->i) || is_string($this->i) => $this->i,
+                is_array($this->i) || is_object($this->i) => json_decode(json_encode($this->i), is_array($this->i)),
             };
         }
     }

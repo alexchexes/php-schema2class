@@ -148,11 +148,15 @@ class Baz
             static::validateInput($input);
         }
 
-        $grox = isset($input->{'grox'}) ? match (true) {
-            Foo::validateInput($input->{'grox'}, true) => Foo::fromInput($input->{'grox'}, $validate),
-            Bar::validateInput($input->{'grox'}, true) => Bar::fromInput($input->{'grox'}, $validate),
-            default => null,
-        } : null;
+        $grox = isset($input->{'grox'})
+            ? match (true) {
+                (is_object($input->{'grox'}) || is_array($input->{'grox'})) && Foo::validateInput($input->{'grox'}, true) =>
+                    Foo::fromInput($input->{'grox'}, $validate),
+                (is_object($input->{'grox'}) || is_array($input->{'grox'})) && Bar::validateInput($input->{'grox'}, true) =>
+                    Bar::fromInput($input->{'grox'}, $validate),
+                default => $input->{'grox'},
+            }
+            : null;
 
         $obj = new self($grox);
 
@@ -165,7 +169,7 @@ class Baz
     }
 
     /**
-     * Converts this object back to a simple array that can be JSON-serialized
+     * Converts this object to array that can be JSON-serialized
      *
      * @return array Converted array
      */
@@ -175,8 +179,8 @@ class Baz
 
         if (isset($this->grox)) {
             $output['grox'] = match (true) {
-                $this->grox instanceof Foo,
-                $this->grox instanceof Bar => $this->grox->toArray(),
+                $this->grox instanceof Foo || $this->grox instanceof Bar => $this->grox->toArray(),
+                default => $this->grox,
             };
         }
 
@@ -194,8 +198,8 @@ class Baz
 
         if (isset($this->grox)) {
             $output->{'grox'} = match (true) {
-                $this->grox instanceof Foo,
-                $this->grox instanceof Bar => $this->grox->toStdClass(),
+                $this->grox instanceof Foo || $this->grox instanceof Bar => $this->grox->toStdClass(),
+                default => $this->grox,
             };
         }
 
@@ -229,9 +233,10 @@ class Baz
         $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
-            $errors = array_map(function(array $e): string {
-                return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];
-            }, $validator->getErrors());
+            $errors = array_map(
+                fn (array $e): string => ($e["property"] ? $e["property"] . ": " : "") . $e["message"],
+                $validator->getErrors(),
+            );
             throw new \InvalidArgumentException(join(".\n", $errors));
         }
 
@@ -241,10 +246,7 @@ class Baz
     public function __clone()
     {
         if (isset($this->grox)) {
-            $this->grox = match (true) {
-                $this->grox instanceof Foo,
-                $this->grox instanceof Bar => $this->grox,
-            };
+            $this->grox = clone $this->grox;
         }
     }
 }

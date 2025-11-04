@@ -221,15 +221,14 @@ class RefValidation
         }
 
         $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
-        $bar = isset($input->{'bar'}) ? match (true) {
-            is_string($input->{'bar'}),
-            in_array($input->{'bar'}, array (
-          0 => 1,
-          1 => 2,
-        ), true) => $input->{'bar'},
-            default => null,
-        } : null;
-        $baz = isset($input->{'baz'}) ? RefValidationBaz::fromInput($input->{'baz'}, $validate) : null;
+        $bar = isset($input->{'bar'})
+            ? match (true) {
+                default => $input->{'bar'},
+            }
+            : null;
+        $baz = isset($input->{'baz'})
+            ? RefValidationBaz::fromInput($input->{'baz'}, $validate)
+            : null;
 
         $obj = new self($foo, $bar, $baz);
 
@@ -242,7 +241,7 @@ class RefValidation
     }
 
     /**
-     * Converts this object back to a simple array that can be JSON-serialized
+     * Converts this object to array that can be JSON-serialized
      *
      * @return array Converted array
      */
@@ -255,11 +254,7 @@ class RefValidation
         }
         if (isset($this->bar)) {
             $output['bar'] = match (true) {
-                is_string($this->bar),
-                in_array($this->bar, array (
-              0 => 1,
-              1 => 2,
-            ), true) => $this->bar,
+                default => $this->bar,
             };
         }
         if (isset($this->baz)) {
@@ -283,11 +278,7 @@ class RefValidation
         }
         if (isset($this->bar)) {
             $output->{'bar'} = match (true) {
-                is_string($this->bar),
-                in_array($this->bar, array (
-              0 => 1,
-              1 => 2,
-            ), true) => $this->bar,
+                default => $this->bar,
             };
         }
         if (isset($this->baz)) {
@@ -324,9 +315,10 @@ class RefValidation
         $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
-            $errors = array_map(function(array $e): string {
-                return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];
-            }, $validator->getErrors());
+            $errors = array_map(
+                fn (array $e): string => ($e["property"] ? $e["property"] . ": " : "") . $e["message"],
+                $validator->getErrors(),
+            );
             throw new \InvalidArgumentException(join(".\n", $errors));
         }
 
@@ -335,15 +327,6 @@ class RefValidation
 
     public function __clone()
     {
-        if (isset($this->bar)) {
-            $this->bar = match (true) {
-                is_string($this->bar),
-                in_array($this->bar, array (
-              0 => 1,
-              1 => 2,
-            ), true) => $this->bar,
-            };
-        }
         if (isset($this->baz)) {
             $this->baz = clone $this->baz;
         }

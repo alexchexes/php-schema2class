@@ -194,7 +194,18 @@ class Qux
             static::validateInput($input);
         }
 
-        $grox = isset($input->{'grox'}) ? (((Foo::validateInput($input->{'grox'}, true)) || (Bar::validateInput($input->{'grox'}, true))) ? ((Bar::validateInput($input->{'grox'}, true)) ? Bar::fromInput($input->{'grox'}, $validate) : (((Foo::validateInput($input->{'grox'}, true)) ? Foo::fromInput($input->{'grox'}, $validate) : (null)))) : (((is_array($input->{'grox'})) ? $input->{'grox'} : (((is_string($input->{'grox'})) ? $input->{'grox'} : (null)))))) : null;
+        $grox = isset($input->{'grox'})
+            ? (((Foo::validateInput($input->{'grox'}, true) || Bar::validateInput($input->{'grox'}, true)))
+                ? (((is_object($input->{'grox'}) || is_array($input->{'grox'})) && Foo::validateInput($input->{'grox'}, true))
+                    ? Foo::fromInput($input->{'grox'}, $validate)
+                    : (((is_object($input->{'grox'}) || is_array($input->{'grox'})) && Bar::validateInput($input->{'grox'}, true))
+                        ? Bar::fromInput($input->{'grox'}, $validate)
+                        : $input->{'grox'}
+                    )
+                )
+                : $input->{'grox'}
+            )
+            : null;
 
         $obj = new self($grox);
 
@@ -207,7 +218,7 @@ class Qux
     }
 
     /**
-     * Converts this object back to a simple array that can be JSON-serialized
+     * Converts this object to array that can be JSON-serialized
      *
      * @return array Converted array
      */
@@ -216,10 +227,13 @@ class Qux
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
         if (isset($this->grox)) {
-            if ((is_string($this->grox)) || (is_array($this->grox))) {
+            if (($this->grox instanceof Foo || $this->grox instanceof Bar)) {
+                $output['grox'] = (($this->grox instanceof Foo || $this->grox instanceof Bar)
+                    ? $this->grox->toArray()
+                    : $this->grox
+                );
+            } else {
                 $output['grox'] = $this->grox;
-            } else if ((($this->grox instanceof Foo) || ($this->grox instanceof Bar))) {
-                $output['grox'] = ($this->grox instanceof Bar) ? ($this->grox->toArray()) : (($this->grox instanceof Foo) ? ($this->grox->toArray()) : (null));
             }
         }
 
@@ -236,10 +250,13 @@ class Qux
         $output = $this->_additionalProperties;
 
         if (isset($this->grox)) {
-            if ((is_string($this->grox)) || (is_array($this->grox))) {
-            $output->{'grox'} = $this->grox;
-            } else if ((($this->grox instanceof Foo) || ($this->grox instanceof Bar))) {
-            $output->{'grox'} = ($this->grox instanceof Bar) ? ($this->grox->toStdClass()) : (($this->grox instanceof Foo) ? ($this->grox->toStdClass()) : (null));
+            if (($this->grox instanceof Foo || $this->grox instanceof Bar)) {
+                $output->{'grox'} = (($this->grox instanceof Foo || $this->grox instanceof Bar)
+                    ? $this->grox->toStdClass()
+                    : $this->grox
+                );
+            } else {
+                $output->{'grox'} = $this->grox;
             }
         }
 
@@ -273,7 +290,7 @@ class Qux
         $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
-            $errors = array_map(function($e) {
+            $errors = array_map(function(array $e) {
                 return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];
             }, $validator->getErrors());
             throw new \InvalidArgumentException(join(".\n", $errors));
@@ -285,7 +302,13 @@ class Qux
     public function __clone()
     {
         if (isset($this->grox)) {
-            $this->grox = (($this->grox instanceof Foo) || ($this->grox instanceof Bar) ? ($this->grox instanceof Bar ? $this->grox : ($this->grox instanceof Foo ? $this->grox : $this->grox)) : (is_array($this->grox) ? $this->grox : (is_string($this->grox) ? $this->grox : $this->grox)));
+            $this->grox = ((($this->grox instanceof Foo || $this->grox instanceof Bar))
+                ? (($this->grox instanceof Foo || $this->grox instanceof Bar)
+                    ? clone $this->grox
+                    : $this->grox
+                )
+                : $this->grox
+            );
         }
     }
 }

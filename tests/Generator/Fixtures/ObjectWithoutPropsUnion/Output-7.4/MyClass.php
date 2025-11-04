@@ -186,7 +186,7 @@ class MyClass
         }
 
         $foo = $input->{'foo'};
-        $bar = isset($input->{'bar'}) ? ((is_array($input->{'bar'}) || is_object($input->{'bar'})) ? $input->{'bar'} : (((is_string($input->{'bar'})) ? $input->{'bar'} : (null)))) : null;
+        $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
 
         $obj = new self($foo, $bar);
 
@@ -199,7 +199,7 @@ class MyClass
     }
 
     /**
-     * Converts this object back to a simple array that can be JSON-serialized
+     * Converts this object to array that can be JSON-serialized
      *
      * @return array Converted array
      */
@@ -207,16 +207,16 @@ class MyClass
     {
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
-        if ((is_string($this->foo))) {
-            $output['foo'] = $this->foo;
-        } else if ((is_array($this->foo) || is_object($this->foo))) {
+        if (is_array($this->foo) || is_object($this->foo)) {
             $output['foo'] = json_decode(json_encode($this->foo), true);
+        } else {
+            $output['foo'] = $this->foo;
         }
         if (isset($this->bar)) {
-            if ((is_string($this->bar))) {
-                $output['bar'] = $this->bar;
-            } else if ((is_array($this->bar) || is_object($this->bar))) {
+            if (is_array($this->bar) || is_object($this->bar)) {
                 $output['bar'] = json_decode(json_encode($this->bar), true);
+            } else {
+                $output['bar'] = $this->bar;
             }
         }
 
@@ -232,16 +232,16 @@ class MyClass
     {
         $output = $this->_additionalProperties;
 
-        if ((is_string($this->foo))) {
-        $output->{'foo'} = $this->foo;
-        } else if ((is_array($this->foo) || is_object($this->foo))) {
-        $output->{'foo'} = json_decode(json_encode($this->foo));
+        if (is_array($this->foo) || is_object($this->foo)) {
+            $output->{'foo'} = json_decode(json_encode($this->foo));
+        } else {
+            $output->{'foo'} = $this->foo;
         }
         if (isset($this->bar)) {
-            if ((is_string($this->bar))) {
-            $output->{'bar'} = $this->bar;
-            } else if ((is_array($this->bar) || is_object($this->bar))) {
-            $output->{'bar'} = json_decode(json_encode($this->bar));
+            if (is_array($this->bar) || is_object($this->bar)) {
+                $output->{'bar'} = json_decode(json_encode($this->bar));
+            } else {
+                $output->{'bar'} = $this->bar;
             }
         }
 
@@ -275,9 +275,10 @@ class MyClass
         $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
-            $errors = array_map(function(array $e): string {
-                return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];
-            }, $validator->getErrors());
+            $errors = array_map(
+                fn (array $e): string => ($e["property"] ? $e["property"] . ": " : "") . $e["message"],
+                $validator->getErrors(),
+            );
             throw new \InvalidArgumentException(join(".\n", $errors));
         }
 
@@ -286,9 +287,15 @@ class MyClass
 
     public function __clone()
     {
-        $this->foo = (is_array($this->foo) || is_object($this->foo) ? $this->foo : (is_string($this->foo) ? $this->foo : $this->foo));
+        $this->foo = ((is_array($this->foo) || is_object($this->foo))
+            ? json_decode(json_encode($this->foo), is_array($this->foo))
+            : $this->foo
+        );
         if (isset($this->bar)) {
-            $this->bar = (is_array($this->bar) || is_object($this->bar) ? $this->bar : (is_string($this->bar) ? $this->bar : $this->bar));
+            $this->bar = ((is_array($this->bar) || is_object($this->bar))
+                ? json_decode(json_encode($this->bar), is_array($this->bar))
+                : $this->bar
+            );
         }
     }
 }

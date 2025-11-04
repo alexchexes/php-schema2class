@@ -79,7 +79,9 @@ class MyRecursiveObject
             static::validateInput($input);
         }
 
-        $MyRecursiveObject = isset($input->{'MyRecursiveObject'}) ? MyRecursiveObject::fromInput($input->{'MyRecursiveObject'}, $validate) : null;
+        $MyRecursiveObject = isset($input->{'MyRecursiveObject'})
+            ? MyRecursiveObject::fromInput($input->{'MyRecursiveObject'}, $validate)
+            : null;
 
         $obj = new self($MyRecursiveObject);
 
@@ -87,7 +89,7 @@ class MyRecursiveObject
     }
 
     /**
-     * Converts this object back to a simple array that can be JSON-serialized
+     * Converts this object to array that can be JSON-serialized
      *
      * @return array Converted array
      */
@@ -143,12 +145,20 @@ class MyRecursiveObject
         $validator->validate($input, self::$_schema);
 
         if (!$validator->isValid() && !$return) {
-            $errors = array_map(function(array $e): string {
-                return ($e["property"] ? $e["property"] . ": " : "") . $e["message"];
-            }, $validator->getErrors());
+            $errors = array_map(
+                fn (array $e): string => ($e["property"] ? $e["property"] . ": " : "") . $e["message"],
+                $validator->getErrors(),
+            );
             throw new \InvalidArgumentException(join(".\n", $errors));
         }
 
         return $validator->isValid();
+    }
+
+    public function __clone()
+    {
+        if (isset($this->MyRecursiveObject)) {
+            $this->MyRecursiveObject = clone $this->MyRecursiveObject;
+        }
     }
 }

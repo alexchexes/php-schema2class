@@ -7,13 +7,25 @@
         {
           "name": "foo"
         }
-      ]
+      ],
+      "minItems": 1,
+      "maxItems": 1
+    },
+    "bar": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/BarItem" },
+      "default": []
     }
   },
   "definitions": {
     "FooItem": {
       "properties": {
         "name": { "type": "string", "default": "a string" }
+      }
+    },
+    "BarItem": {
+      "properties": {
+        "name": { "type": "string" }
       }
     }
   }

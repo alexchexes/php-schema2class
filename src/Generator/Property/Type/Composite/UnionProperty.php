@@ -9,7 +9,8 @@ use Helmich\Schema2Class\Generator\Class\Method\Serialize\SerializeMethodFactory
 use Helmich\Schema2Class\Generator\Class\VariableNames;
 use Helmich\Schema2Class\Generator\GeneratorException;
 use Helmich\Schema2Class\Generator\GeneratorRequest;
-use Helmich\Schema2Class\Generator\MatchGenerator;
+use Helmich\Schema2Class\Generator\Expression\MatchGenerator;
+use Helmich\Schema2Class\Generator\Expression\OrGenerator;
 use Helmich\Schema2Class\Generator\Property\Type\Primitive\NullProperty;
 use Helmich\Schema2Class\Generator\Property\PropertyBuilder;
 use Helmich\Schema2Class\Generator\Property\Type\AbstractProperty;
@@ -20,6 +21,8 @@ use Helmich\Schema2Class\Generator\Property\Type\Object\NestedObjectProperty;
 use Helmich\Schema2Class\Generator\Property\Type\PropertyInterface;
 use Helmich\Schema2Class\Generator\Property\Type\ReferenceProperty;
 use Helmich\Schema2Class\Generator\ReferencedType\ReferencedTypeClass;
+use Helmich\Schema2Class\Generator\Expression\TernaryGenerator;
+use Helmich\Schema2Class\Util\StringUtils;
 use Helmich\Schema2Class\Writer\WriterInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -33,6 +36,8 @@ class UnionProperty extends AbstractProperty
 {
     /** @var PropertyInterface[] */
     private array $subProperties;
+
+    private bool $hasArrayLikeSubProperty;
 
     public function __construct(string $key, array $schema, GeneratorRequest $generatorRequest)
     {
@@ -48,6 +53,8 @@ class UnionProperty extends AbstractProperty
             return PropertyBuilder::buildPropertyFromSchema($generatorRequest, "{$key}Alternative" . ($idx + 1), $subSchema, true);
         }, array_keys($schema["oneOf"]));
 
+        $this->hasArrayLikeSubProperty = $this->detectArrayLikeSubProperty();
+
         parent::__construct($key, $schema, $generatorRequest);
     }
 
@@ -56,195 +63,93 @@ class UnionProperty extends AbstractProperty
         return isset($schema["oneOf"]) || isset($schema["anyOf"]);
     }
 
-    public function convertInputToTypeMatch(): string
-    {
-        $inputVarName = ArgumentNames::INPUT;
-        $accessor = "\${$inputVarName}->{{$this->keyStr()}}";
-
-        $match = new MatchGenerator("true");
-
-        foreach ($this->subProperties as $subProperty) {
-            $mapping       = $subProperty->inputMappingExpr($accessor, asserted: true);
-            $discriminator = $subProperty->inputAssertionExpr($accessor);
-            $match->addArm($discriminator, $mapping);
-        }
-
-        $match->addArm(
-            "default",
-            "throw new \\InvalidArgumentException(\"could not build property '{$this->key()}' from JSON\")"
-        );
-
-        // assign into the camel‑cased local variable
-        return "\${$this->varName()} = {$match->generate()};";
-    }
-
     public function convertInputToType(): string
     {
-        // PHP 8+ uses match() which already guards correctly
-        if ($this->request->isAtLeastPHP("8.0")) {
-            return $this->convertInputToTypeMatch();
-        }
-    
-        $name   = $this->varName();
-        $keyStr = $this->keyStr();
-    
-        $inputVarName = ArgumentNames::INPUT;
-        $accessor = "\${$inputVarName}->{{$keyStr}}";
-    
-        // Start with a "fallback" that just reassigns the raw value
-        $conversions = [
-            "\${$name} = {$accessor};" => ["discriminators" => [], "fallback" => true],
-        ];
-    
-        // Build up per‑arm conversions
-        foreach ($this->subProperties as $subProp) {
-            $mapping       = $subProp->inputMappingExpr($accessor, asserted: true);
-            $assignment    = "\${$name} = {$mapping};";
-            $discriminator = $subProp->inputAssertionExpr($accessor);
-    
-            // If this arm is an "array" type, prefix its test with is_array(...)
-            if (
-                $subProp instanceof ReferenceArrayProperty
-                || $subProp instanceof ObjectArrayProperty
-                || $subProp instanceof PrimitiveArrayProperty
-            ) {
-                $discriminator = "is_array({$accessor}) && ({$discriminator})";
+        $name           = $this->varName();
+        $inputVarName   = ArgumentNames::INPUT;
+        $accessor       = "\${$inputVarName}->{{$this->keyStr()}}";
+
+        $arms = $this->collectArms(
+            mappingFn: fn(PropertyInterface $sub): string => $sub->inputMappingExpr($accessor, asserted: true),
+            assertFn: function (PropertyInterface $sub) use ($accessor): string {
+                $discriminator = $sub->inputAssertionExpr($accessor);
+
+                if (
+                    $sub instanceof ReferenceArrayProperty
+                    || $sub instanceof ObjectArrayProperty
+                    || $sub instanceof PrimitiveArrayProperty
+                ) {
+                    $isArrayCheck = "is_array({$accessor})";
+                    if (!str_contains($discriminator, $isArrayCheck)) {
+                        $discriminator = "({$isArrayCheck} && {$discriminator})";
+                    }
+                }
+
+                if (
+                    $sub instanceof NestedObjectProperty
+                    || ($sub instanceof ReferenceProperty && $sub->getRefType() instanceof ReferencedTypeClass)
+                ) {
+                    $isObjCheck = $this->hasArrayLikeSubProperty
+                        ? "is_object({$accessor})"
+                        : "(is_object({$accessor}) || is_array({$accessor}))";
+                    $discriminator = "{$isObjCheck} && {$discriminator}";
+                }
+
+                return $discriminator;
             }
-    
-            if (! isset($conversions[$assignment])) {
-                $conversions[$assignment] = ["discriminators" => [], "fallback" => false];
+        );
+
+        $assignmentTemplate = "\${$name} = %s;";
+        $fallback           = "\${$name} = {$accessor};";
+        $matchDefault       = $accessor;
+        if (!$this->request->isAtLeastPHP('8.0')) {
+            if (isset($arms[$accessor])) {
+                unset($arms[$accessor]);
             }
-            $conversions[$assignment]["discriminators"][] = $discriminator;
-        }
-    
-        // Turn those into an if/elseif/else chain
-        $ifs      = 0;
-        $branches = [];
-        $fallback = null;
-    
-        foreach ($conversions as $assignment => $info) {
-            if ($info["fallback"]) {
-                $fallback = $assignment;
-                continue;
-            }
-            $cond = "(" . join(") || (", $info["discriminators"]) . ")";
-            $branches[] = ($ifs++ > 0 ? "else " : "if ")
-                . "($cond) {\n"
-                . "    $assignment\n"
-                . "}";
-        }
-    
-        // Attach the fallback at the end
-        if ($fallback !== null) {
-            if (count($branches) > 0) {
-                $branches[] = "else {\n    $fallback\n}";
-            } else {
-                $branches[] = $fallback;
+            if ($arms === []) {
+                return $fallback;
             }
         }
-    
-        // Join and normalize "}else" → "} else"
-        return str_replace("}\nelse", "} else", join("\n", $branches));
-    }
-    
 
-    private function convertTypeToArrayMatch(): string
-    {
-        $name   = $this->propName();
-        $keyStr = $this->keyStr();
-        $match  = new MatchGenerator("true");
-
-        foreach ($this->subProperties as $subProperty) {
-            $mapping       = $subProperty->outputMappingExpr("\$this->{$name}");
-            $discriminator = $subProperty->typeAssertionExpr("\$this->{$name}");
-
-            $match->addArm($discriminator, $mapping);
-        }
-        $outputVarName = VariableNames::OUTPUT;
-        return "\${$outputVarName}[{$keyStr}] = {$match->generate()};";
-    }
-
-    private function convertTypeToStdClassMatch(): string
-    {
-        $name   = $this->propName();
-        $keyStr = $this->keyStr();
-        $match  = new MatchGenerator("true");
-
-        foreach ($this->subProperties as $subProperty) {
-            $mapping       = $subProperty->outputMappingExprStdClass("\$this->{$name}");
-            $discriminator = $subProperty->typeAssertionExpr("\$this->{$name}");
-
-            $match->addArm($discriminator, $mapping);
-        }
-
-        $outputVarName = VariableNames::OUTPUT;
-        return "\${$outputVarName}->{{$keyStr}} = {$match->generate()};";
+        return $this->renderAssignments($arms, $assignmentTemplate, $matchDefault, $fallback);
     }
 
     public function convertTypeToArray(): string
     {
-        $outputVarName = VariableNames::OUTPUT;
-        if ($this->request->isAtLeastPHP("8.0")) {
-            return $this->convertTypeToArrayMatch();
-        }
+        $name       = $this->propName();
+        $keyStr     = $this->keyStr();
+        $outputVar  = VariableNames::OUTPUT;
 
-        $name   = $this->propName();
-        $keyStr = $this->keyStr();
-        $conversions = [];
+        $expr = "\$this->{$name}";
+        $arms = $this->collectArms(
+            mappingFn: fn(PropertyInterface $sub): string => $sub->outputMappingExpr($expr),
+            assertFn: fn(PropertyInterface $sub): string => $sub->typeAssertionExpr($expr),
+            skipMapFn: fn(string $map) => $map === $expr,
+        );
 
-        foreach ($this->subProperties as $subProperty) {
-            $mapping       = $subProperty->outputMappingExpr("\$this->{$name}");
-            $assignment    = "\${$outputVarName}[{$keyStr}] = {$mapping};";
-            $discriminator = $subProperty->typeAssertionExpr("\$this->{$name}");
+        $assignmentTemplate = "\${$outputVar}[{$keyStr}] = %s;";
+        $fallback           = "\${$outputVar}[{$keyStr}] = {$expr};";
 
-            if (!isset($conversions[$assignment])) {
-                $conversions[$assignment] = ["discriminators" => []];
-            }
-
-            $conversions[$assignment]["discriminators"][] = $discriminator;
-        }
-
-        $ifs      = 0;
-        $branches = [];
-        foreach ($conversions as $assignment => $conversion) {
-            $condition  = "(" . join(") || (", $conversion["discriminators"]) . ")";
-            $branches[] = ($ifs++ > 0 ? "else " : "") . "if ($condition) {\n    $assignment\n}";
-        }
-
-        return str_replace("}\nelse", "} else", join("\n", $branches));
+        return $this->renderAssignments($arms, $assignmentTemplate, $expr, $fallback);
     }
 
     public function convertTypeToStdClass(): string
     {
-        $outputVarName = VariableNames::OUTPUT;
-        if ($this->request->isAtLeastPHP("8.0")) {
-            return $this->convertTypeToStdClassMatch();
-        }
+        $name       = $this->propName();
+        $keyStr     = $this->keyStr();
+        $outputVar  = VariableNames::OUTPUT;
 
-        $name   = $this->propName();
-        $keyStr = $this->keyStr();
-        $conversions = [];
+        $expr = "\$this->{$name}";
+        $arms = $this->collectArms(
+            mappingFn: fn(PropertyInterface $sub): string => $sub->outputMappingExprStdClass($expr),
+            assertFn: fn(PropertyInterface $sub): string => $sub->typeAssertionExpr($expr),
+            skipMapFn: fn(string $map) => $map === $expr,
+        );
 
-        foreach ($this->subProperties as $subProperty) {
-            $mapping       = $subProperty->outputMappingExprStdClass("\$this->{$name}");
-            $assignment    = "\${$outputVarName}->{{$keyStr}} = {$mapping};";
-            $discriminator = $subProperty->typeAssertionExpr("\$this->{$name}");
+        $assignmentTemplate = "\${$outputVar}->{{$keyStr}} = %s;";
+        $fallback           = "\${$outputVar}->{{$keyStr}} = {$expr};";
 
-            if (!isset($conversions[$assignment])) {
-                $conversions[$assignment] = ["discriminators" => []];
-            }
-
-            $conversions[$assignment]["discriminators"][] = $discriminator;
-        }
-
-        $ifs      = 0;
-        $branches = [];
-        foreach ($conversions as $assignment => $conversion) {
-            $condition  = "(" . join(") || (", $conversion["discriminators"]) . ")";
-            $branches[] = ($ifs++ > 0 ? "else " : "") . "if ($condition) {\n$assignment\n}";
-        }
-
-        return str_replace("}\nelse", "} else", join("\n", $branches));
+        return $this->renderAssignments($arms, $assignmentTemplate, $expr, $fallback);
     }
 
     /**
@@ -252,22 +157,8 @@ class UnionProperty extends AbstractProperty
      */
     public function generateSubTypes(WriterInterface $writer, OutputInterface $output): void
     {
-        $def = $this->schema;
-
-        foreach ($def["oneOf"] as $i => $subDef) {
-            $propertyTypeName = $this->subTypeName($i);
-
-            $isObject = (isset($subDef["type"]) && $subDef["type"] === "object") || isset($subDef["properties"]);
-            $isEnum   = isset($subDef["enum"]);
-
-            if ($isObject || $isEnum) {
-                $req = $this->request
-                    ->withSchema($subDef)
-                    ->withClass($propertyTypeName);
-
-                $generator = $this->request->getSchemaToClassFactory()->build($writer, $output);
-                $generator->schemaToClass($this->propagateRootDefinitions($req));
-            }
+        foreach ($this->subProperties as $subProperty) {
+            $subProperty->generateSubTypes($writer, $output);
         }
     }
 
@@ -365,7 +256,7 @@ class UnionProperty extends AbstractProperty
             $subAssertions[] = $prop->typeAssertionExpr($expr);
         }
 
-        return "(" . join(") || (", $subAssertions) . ")";
+        return OrGenerator::make($subAssertions);
     }
 
     public function inputAssertionExpr(string $expr): string
@@ -376,112 +267,220 @@ class UnionProperty extends AbstractProperty
             $subAssertions[] = $prop->inputAssertionExpr($expr);
         }
 
-        $glue = ") || (";
-        return "(" . implode($glue, $subAssertions) . ")";
+        return OrGenerator::make($subAssertions);
     }
 
     public function inputMappingExpr(string $expr, bool $asserted = false): string
     {
-        if ($this->request->isAtLeastPHP("8.0")) {
-            $match = new MatchGenerator("true");
+        $skipMap = $this->request->isAtLeastPHP('8.0')
+            ? null
+            : fn(string $map) => $map === $expr;
 
-            foreach ($this->subProperties as $subProperty) {
-                $assert = $subProperty->inputAssertionExpr($expr);
-                $map    = $subProperty->inputMappingExpr($expr);
-                $match->addArm($assert, $map);
-            }
-            
-            $match->addArm("default", "null");
+        $arms = $this->collectArms(
+            mappingFn: fn(PropertyInterface $sub): string => $sub->inputMappingExpr($expr),
+            assertFn: function (PropertyInterface $sub) use ($expr): string {
+                $discriminator = $sub->inputAssertionExpr($expr);
 
-            return $match->generate();
+                if (
+                    $sub instanceof ReferenceArrayProperty
+                    || $sub instanceof ObjectArrayProperty
+                    || $sub instanceof PrimitiveArrayProperty
+                ) {
+                    $isArrayCheck = "is_array({$expr})";
+                    if (!str_contains($discriminator, $isArrayCheck)) {
+                        $discriminator = "({$isArrayCheck} && {$discriminator})";
+                    }
+                }
+
+                if (
+                    $sub instanceof NestedObjectProperty
+                    || ($sub instanceof ReferenceProperty && $sub->getRefType() instanceof ReferencedTypeClass)
+                ) {
+                    $isObjCheck = $this->hasArrayLikeSubProperty
+                        ? "is_object({$expr})"
+                        : "(is_object({$expr}) || is_array({$expr}))";
+                    $discriminator = "{$isObjCheck} && {$discriminator}";
+                }
+
+                return $discriminator;
+            },
+            skipMapFn: $skipMap,
+        );
+
+        $defaultExpr = $expr;
+        if (isset($arms[$expr])) {
+            $defaultExpr = "{$expr}";
         }
 
-        $out = "null";
-
-        foreach ($this->subProperties as $subProperty) {
-            $assert = $subProperty->inputAssertionExpr($expr);
-            $map    = $subProperty->inputMappingExpr($expr);
-            $out    = "(({$assert}) ? {$map} : ({$out}))";
-        }
-
-        return $out;
+        return $this->renderConditionalExpr($arms, $defaultExpr);
     }
 
     public function outputMappingExpr(string $expr): string
     {
-        if ($this->request->isAtLeastPHP("8.0")) {
-            $match = new MatchGenerator("true");
-            $match->addArm("default", "null");
+        $arms = $this->collectArms(
+            mappingFn: fn(PropertyInterface $sub): string => $sub->outputMappingExpr($expr),
+            assertFn: fn(PropertyInterface $sub): string => $sub->typeAssertionExpr($expr),
+            skipMapFn: fn(string $map) => $map === $expr,
+        );
 
-            foreach ($this->subProperties as $subProperty) {
-                $assert = $subProperty->typeAssertionExpr($expr);
-                $map    = $subProperty->outputMappingExpr($expr);
-                $match->addArm($assert, $map);
-            }
-
-            return $match->generate();
-        }
-
-        $out = "null";
-
-        foreach ($this->subProperties as $subProperty) {
-            $assert = $subProperty->typeAssertionExpr($expr);
-            $map    = $subProperty->outputMappingExpr($expr);
-            $out    = "({$assert}) ? ({$map}) : ({$out})";
-        }
-
-        return $out;
+        return $this->renderConditionalExpr($arms, $expr);
     }
 
     public function outputMappingExprStdClass(string $expr): string
     {
-        if ($this->request->isAtLeastPHP("8.0")) {
-            $match = new MatchGenerator("true");
-            $match->addArm("default", "null");
+        $arms = $this->collectArms(
+            mappingFn: fn(PropertyInterface $sub): string => $sub->outputMappingExprStdClass($expr),
+            assertFn: fn(PropertyInterface $sub): string => $sub->typeAssertionExpr($expr),
+            skipMapFn: fn(string $map) => $map === $expr,
+        );
 
-            foreach ($this->subProperties as $subProperty) {
-                $assert = $subProperty->typeAssertionExpr($expr);
-                $map    = $subProperty->outputMappingExprStdClass($expr);
-                $match->addArm($assert, $map);
-            }
-
-            return $match->generate();
+        if ($arms === []) {
+            return $expr;
         }
 
-        $out = "null";
+        return $this->renderConditionalExpr($arms, $expr);
+    }
 
+    public function cloneExpr(string $expr): string
+    {
+        $skipMap = $this->request->isAtLeastPHP('8.0')
+            ? null
+            : fn(string $map): bool => $map === $expr;
+
+        $arms = $this->collectArms(
+            mappingFn: fn(PropertyInterface $sub): string => $sub->cloneExpr($expr),
+            assertFn: fn(PropertyInterface $sub): string => $sub->typeAssertionExpr($expr),
+            skipMapFn: $skipMap,
+        );
+
+        if ($arms === []) {
+            return $expr;
+        }
+
+        if ($this->request->isAtLeastPHP('8.0') && count($arms) === 1) {
+            return array_key_first($arms);
+        }
+
+        return $this->renderConditionalExpr($arms, $expr, false);
+    }
+
+    /**
+     * @param callable(PropertyInterface):string $mappingFn
+     * @param callable(PropertyInterface):string $assertFn
+     * @param (callable(string):bool)|null $skipMapFn
+     * @return array<string,string[]>
+     */
+    private function collectArms(
+        callable $mappingFn,
+        callable $assertFn,
+        ?callable $skipMapFn = null
+    ): array {
+        $arms = [];
         foreach ($this->subProperties as $subProperty) {
-            $assert = $subProperty->typeAssertionExpr($expr);
-            $map    = $subProperty->outputMappingExprStdClass($expr);
-            $out    = "({$assert}) ? ({$map}) : ({$out})";
+            $map = $mappingFn($subProperty);
+            if ($skipMapFn !== null && $skipMapFn($map)) {
+                continue;
+            }
+            $assert = $assertFn($subProperty);
+            $arms[$map][] = $assert;
+        }
+
+        return $arms;
+    }
+
+    /**
+     * @param array<string,string[]> $arms
+     */
+    private function renderMatch(array $arms, ?string $default): string
+    {
+        $match = new MatchGenerator('true');
+        foreach ($arms as $map => $asserts) {
+            $conditions = array_values(array_unique($asserts));
+            $match->addArm(OrGenerator::make($conditions, parens: false), $map);
+        }
+        if ($default !== null) {
+            $match->addArm('default', $default);
+        }
+
+        return $match->generate();
+    }
+
+    /**
+     * @param array<string,string[]> $arms
+     */
+    private function renderTernaries(array $arms, string $default): string
+    {
+        $out = $default;
+        foreach (array_reverse($arms) as $map => $asserts) {
+            $conditions = array_values(array_unique($asserts));
+            $cond       = OrGenerator::make($conditions);
+            $out        = TernaryGenerator::make($cond, $map, $out);
         }
 
         return $out;
     }
 
-    public function cloneExpr(string $expr): string
+    /**
+     * @param array<string,string[]> $arms
+     */
+    private function renderConditionalExpr(array $arms, string $default, bool $includeMatchDefault = true): string
     {
-        if ($this->request->isAtLeastPHP("8.0")) {
-            $match = new MatchGenerator("true");
+        if ($this->request->isAtLeastPHP('8.0')) {
+            return $this->renderMatch($arms, $includeMatchDefault ? $default : null);
+        }
 
-            foreach ($this->subProperties as $subProperty) {
-                $assert = $subProperty->typeAssertionExpr($expr);
-                $map    = $subProperty->cloneExpr($expr);
-                $match->addArm($assert, $map);
+        return $this->renderTernaries($arms, $default);
+    }
+
+    /**
+     * @param array<string,string[]> $arms
+     */
+    private function renderIfChain(array $arms, string $assignmentTemplate, ?string $fallback): string
+    {
+        $indent   = StringUtils::indentCode(...);
+        $branches = [];
+        foreach ($arms as $map => $asserts) {
+            $assignment             = sprintf($assignmentTemplate, $map);
+            $conditions             = array_values(array_unique($asserts));
+            $parenthesizedCondition = OrGenerator::make($conditions);
+            $keyword                = count($branches) ? 'elseif' : 'if';
+            $branches[]             = <<<PHP
+                {$keyword} {$parenthesizedCondition} {
+                {$indent($assignment)}
+                }
+                PHP;
+        }
+
+        if ($fallback !== null) {
+            if (count($branches)) {
+                $branches[] = <<<PHP
+                    else {
+                    {$indent($fallback)}
+                    }
+                    PHP;
+            } else {
+                $branches[] = $fallback;
             }
-
-            return $match->generate();
         }
 
-        $out = $expr;
+        return join(' ', $branches);
+    }
 
-        foreach ($this->subProperties as $subProperty) {
-            $assert = $subProperty->typeAssertionExpr($expr);
-            $map    = $subProperty->cloneExpr($expr);
-            $out    = "({$assert} ? {$map} : {$out})";
+    /**
+     * @param array<string,string[]> $arms
+     */
+    private function renderAssignments(
+        array $arms,
+        string $assignmentTemplate,
+        ?string $matchDefault,
+        ?string $fallback
+    ): string {
+        if ($this->request->isAtLeastPHP('8.0')) {
+            $expr = $this->renderMatch($arms, $matchDefault);
+            return sprintf($assignmentTemplate, $expr);
         }
 
-        return $out;
+        return $this->renderIfChain($arms, $assignmentTemplate, $fallback);
     }
 
     public function allowsNull(): bool
@@ -495,11 +494,6 @@ class UnionProperty extends AbstractProperty
         return parent::allowsNull();
     }
 
-    private function subTypeName(int $idx = 0): string
-    {
-        return $this->request->getTargetClass() . $this->nameForClass . "Alternative" . ($idx + 1);
-    }
-
     public function needsValidation(): bool
     {
         if (!$this->request->isAtLeastPHP('8.0')) {
@@ -508,6 +502,21 @@ class UnionProperty extends AbstractProperty
 
         foreach ($this->subProperties as $prop) {
             if ($prop->needsValidation()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function detectArrayLikeSubProperty(): bool
+    {
+        foreach ($this->subProperties as $subProperty) {
+            if (
+                $subProperty instanceof PrimitiveArrayProperty
+                || $subProperty instanceof ObjectArrayProperty
+                || $subProperty instanceof ReferenceArrayProperty
+            ) {
                 return true;
             }
         }
