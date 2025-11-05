@@ -177,7 +177,6 @@ class Qux
 
         $grox = isset($input->{'grox'})
             ? match (true) {
-                default => $input->{'grox'},
                 (Foo::validateInput($input->{'grox'}, true) || Bar::validateInput($input->{'grox'}, true)) =>
                     match (true) {
                         (is_object($input->{'grox'}) || is_array($input->{'grox'})) && Foo::validateInput($input->{'grox'}, true) =>
@@ -186,6 +185,7 @@ class Qux
                             Bar::fromInput($input->{'grox'}, $validate),
                         default => $input->{'grox'},
                     },
+                default => $input->{'grox'},
             }
             : null;
 

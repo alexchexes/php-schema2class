@@ -409,94 +409,94 @@ class MyClass
 
         $_providedOptionals = [];
         $foo = match (true) {
-            default => $input->{'foo'},
             (is_int($input->{'foo'}) || is_float($input->{'foo'})) =>
                 (str_contains((string)$input->{'foo'}, '.')
                     ? (float)$input->{'foo'}
                     : (int)$input->{'foo'}
                 ),
+            default => $input->{'foo'},
         };
         $bar = match (true) {
-            default => $input->{'bar'},
             (is_int($input->{'bar'}) || is_float($input->{'bar'})) =>
                 (str_contains((string)$input->{'bar'}, '.')
                     ? (float)$input->{'bar'}
                     : (int)$input->{'bar'}
                 ),
+            default => $input->{'bar'},
         };
         $baz = match (true) {
-            default => $input->{'baz'},
             (is_int($input->{'baz'}) || is_float($input->{'baz'})) =>
                 (str_contains((string)$input->{'baz'}, '.')
                     ? (float)$input->{'baz'}
                     : (int)$input->{'baz'}
                 ),
+            default => $input->{'baz'},
         };
         $qux = match (true) {
-            default => $input->{'qux'},
             (is_int($input->{'qux'}) || is_float($input->{'qux'})) =>
                 (str_contains((string)$input->{'qux'}, '.')
                     ? (float)$input->{'qux'}
                     : (int)$input->{'qux'}
                 ),
+            default => $input->{'qux'},
         };
         $thud = match (true) {
-            default => $input->{'thud'},
             (is_int($input->{'thud'}) || is_float($input->{'thud'})) =>
                 (str_contains((string)$input->{'thud'}, '.')
                     ? (float)$input->{'thud'}
                     : (int)$input->{'thud'}
                 ),
+            default => $input->{'thud'},
         };
         $optFoo = isset($input->{'optFoo'})
             ? match (true) {
-                default => $input->{'optFoo'},
                 (is_int($input->{'optFoo'}) || is_float($input->{'optFoo'})) =>
                     (str_contains((string)$input->{'optFoo'}, '.')
                         ? (float)$input->{'optFoo'}
                         : (int)$input->{'optFoo'}
                     ),
+                default => $input->{'optFoo'},
             }
             : null;
         $optBar = isset($input->{'optBar'})
             ? match (true) {
-                default => $input->{'optBar'},
                 (is_int($input->{'optBar'}) || is_float($input->{'optBar'})) =>
                     (str_contains((string)$input->{'optBar'}, '.')
                         ? (float)$input->{'optBar'}
                         : (int)$input->{'optBar'}
                     ),
+                default => $input->{'optBar'},
             }
             : null;
         $optBaz = isset($input->{'optBaz'})
             ? match (true) {
-                default => $input->{'optBaz'},
                 (is_int($input->{'optBaz'}) || is_float($input->{'optBaz'})) =>
                     (str_contains((string)$input->{'optBaz'}, '.')
                         ? (float)$input->{'optBaz'}
                         : (int)$input->{'optBaz'}
                     ),
+                default => $input->{'optBaz'},
             }
             : null;
         $optQux = isset($input->{'optQux'})
             ? match (true) {
-                default => $input->{'optQux'},
                 (is_int($input->{'optQux'}) || is_float($input->{'optQux'})) =>
                     (str_contains((string)$input->{'optQux'}, '.')
                         ? (float)$input->{'optQux'}
                         : (int)$input->{'optQux'}
                     ),
+                default => $input->{'optQux'},
             }
             : null;
         $optThud = null;
         if (property_exists($input, 'optThud')) {
             $optThud = match (true) {
-                default => $input->{'optThud'},
                 (is_int($input->{'optThud'}) || is_float($input->{'optThud'})) =>
                     (str_contains((string)$input->{'optThud'}, '.')
                         ? (float)$input->{'optThud'}
                         : (int)$input->{'optThud'}
                     ),
+                default => $input->{'optThud'},
             };
             $_providedOptionals['optThud'] = true;
         }

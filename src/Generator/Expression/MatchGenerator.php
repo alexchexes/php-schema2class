@@ -31,7 +31,6 @@ class MatchGenerator
                 throw new InvalidArgumentException("Default arm already added: {$this->defaultReturn}");
             }
             $this->defaultReturn = $returnExpr;
-            return;
         }
         $this->arms[$returnExpr][] = $conditionExpr;
         $this->arms[$returnExpr] = array_unique($this->arms[$returnExpr]);
@@ -40,11 +39,6 @@ class MatchGenerator
     public function generate(): string
     {
         $matchBody = [];
-
-        // add default to the end
-        if ($this->defaultReturn !== null) {
-            $this->arms[$this->defaultReturn][] = 'default';
-        }
         
         if (!$this->arms) {
             throw new \Exception("Attempt to generate 'match' expression without any arms");
@@ -53,6 +47,13 @@ class MatchGenerator
         // make sure we don't return match expressions with only default branch
         if (count($this->arms) === 1 && in_array('default', $this->arms[array_key_first($this->arms)])) {
             return (string) array_key_first($this->arms);
+        }
+        
+        // move default to the end
+        if ($this->defaultReturn !== null && isset($this->arms[$this->defaultReturn])) {
+            $v = $this->arms[$this->defaultReturn];
+            unset($this->arms[$this->defaultReturn]);
+            $this->arms[$this->defaultReturn] = $v; // moved to end
         }
 
         foreach ($this->arms as $returnExpr => $conditionExprs) {

@@ -160,7 +160,6 @@ class Cat
         $hasFur = null;
         if (property_exists($input, 'hasFur')) {
             $hasFur = match (true) {
-                default => $input->{'hasFur'},
                 ($input->{'hasFur'} === null
                     || (is_string($input->{'hasFur'}) || (is_int($input->{'hasFur'}) || is_float($input->{'hasFur'})))
                 )
@@ -169,13 +168,14 @@ class Cat
                         || is_bool($input->{'hasFur'})
                     ) =>
                     match (true) {
-                        default => $input->{'hasFur'},
                         (is_int($input->{'hasFur'}) || is_float($input->{'hasFur'})) =>
                             (str_contains((string)$input->{'hasFur'}, '.')
                                 ? (float)$input->{'hasFur'}
                                 : (int)$input->{'hasFur'}
                             ),
+                        default => $input->{'hasFur'},
                     },
+                default => $input->{'hasFur'},
             };
             $_providedOptionals['hasFur'] = true;
         }

@@ -118,9 +118,9 @@ class MyClass
         }
 
         $foo = match (true) {
-            default => $input->{'foo'},
             (is_object($input->{'foo'}) || is_array($input->{'foo'})) && MyClassFooAlternative2::validateInput($input->{'foo'}, true) =>
                 MyClassFooAlternative2::fromInput($input->{'foo'}, $validate),
+            default => $input->{'foo'},
         };
 
         $obj = new self($foo);

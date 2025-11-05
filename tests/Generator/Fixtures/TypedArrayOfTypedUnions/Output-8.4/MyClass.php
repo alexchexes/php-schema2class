@@ -448,8 +448,8 @@ class MyClass
                 (is_array($i)
                     && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || (is_int($i) || is_float($i)))))) =>
                     array_map(fn ($i) => match (true) {
-                        default => $i,
                         (is_int($i) || is_float($i)) => (str_contains((string)$i, '.') ? (float)$i : (int)$i),
+                        default => $i,
                     }, $i),
                 default => $i,
             }, $input->{'arrayOfUnions'})
@@ -459,8 +459,8 @@ class MyClass
                 (is_array($i)
                     && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || (is_int($i) || is_float($i)))))) =>
                     array_map(fn ($i) => match (true) {
-                        default => $i,
                         (is_int($i) || is_float($i)) => (str_contains((string)$i, '.') ? (float)$i : (int)$i),
+                        default => $i,
                     }, $i),
                 default => $i,
             }, $input->{'arrayOfRefUnions'})
@@ -470,8 +470,8 @@ class MyClass
                 (is_array($i)
                     && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || (is_int($i) || is_float($i)))))) =>
                     array_map(fn ($i) => match (true) {
-                        default => $i,
                         (is_int($i) || is_float($i)) => (str_contains((string)$i, '.') ? (float)$i : (int)$i),
+                        default => $i,
                     }, $i),
                 default => $i,
             }, $input->{'arrayOfRefAndNotRefUnions'})

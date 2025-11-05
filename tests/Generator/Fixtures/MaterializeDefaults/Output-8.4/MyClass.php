@@ -817,30 +817,30 @@ class MyClass
         }
         $xyyz = isset($input->{'xyyz'})
             ? match (true) {
-                default => $input->{'xyyz'},
                 is_object($input->{'xyyz'}) && ObjDef::validateInput($input->{'xyyz'}, true) =>
                     ObjDef::fromInput($input->{'xyyz'}, $validate, $materializeDefaults),
+                default => $input->{'xyyz'},
             }
             : null;
         $buux = isset($input->{'buux'})
             ? match (true) {
-                default => $input->{'buux'},
                 is_object($input->{'buux'}) && ObjDef::validateInput($input->{'buux'}, true) =>
                     ObjDef::fromInput($input->{'buux'}, $validate, $materializeDefaults),
+                default => $input->{'buux'},
             }
             : null;
         $boic = isset($input->{'boic'})
             ? match (true) {
-                default => $input->{'boic'},
                 is_object($input->{'boic'}) && ObjDef::validateInput($input->{'boic'}, true) =>
                     ObjDef::fromInput($input->{'boic'}, $validate, $materializeDefaults),
+                default => $input->{'boic'},
             }
             : null;
         $poox = isset($input->{'poox'})
             ? match (true) {
-                default => $input->{'poox'},
                 (is_object($input->{'poox'}) || is_array($input->{'poox'})) && NumericKeysObj::validateInput($input->{'poox'}, true) =>
                     NumericKeysObj::fromInput($input->{'poox'}, $validate, $materializeDefaults),
+                default => $input->{'poox'},
             }
             : null;
         $arrObjUnion = isset($input->{'arrObjUnion'}) ? $input->{'arrObjUnion'} : null;
