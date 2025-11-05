@@ -99,6 +99,7 @@ class OptionalPropertyDecoratorTest extends TestCase
 
         $result = $decorator->convertInputToType();
 
+        // TODO: Fix this, useless double ternary
         $expected = <<<'CODE'
 $myPropertyName = property_exists($input, 'myPropertyName')
     ? ($input->{'myPropertyName'} !== null ? INNER_EXPR : null)
