@@ -63,7 +63,7 @@ class OptionalPropertyDecoratorTest extends TestCase
     {
         $this->innerProperty->varName()->shouldBeCalled()->willReturn('myPropertyName');
         $this->innerProperty
-            ->inputMappingExpr('$input->{\'myPropertyName\'}', true)
+            ->inputMappingExpr('$input->{\'myPropertyName\'}', false)
             ->shouldBeCalled()
             ->willReturn('INNER_EXPR');
 
@@ -81,8 +81,9 @@ class OptionalPropertyDecoratorTest extends TestCase
         $prophecy->allowsNull()->willReturn(true);
         $prophecy->varName()->willReturn('myPropertyName');
         $prophecy
-            ->inputMappingExpr('$input->{\'myPropertyName\'}', true)
+            ->inputMappingExpr('$input->{\'myPropertyName\'}', false)
             ->willReturn('INNER_EXPR');
+        $prophecy->inputMappingRequiresNullCheck()->willReturn(true);
         $prophecy->formatValue(false)->willReturn(new PropertyValueGenerator(false));
         $prophecy->keyStr()->willReturn('\'myPropertyName\'');
 
@@ -98,7 +99,11 @@ class OptionalPropertyDecoratorTest extends TestCase
 
         $result = $decorator->convertInputToType();
 
-        $expected = '$myPropertyName = property_exists($input, \'myPropertyName\') ? INNER_EXPR : null;';
+        $expected = <<<'CODE'
+$myPropertyName = property_exists($input, 'myPropertyName')
+    ? ($input->{'myPropertyName'} !== null ? INNER_EXPR : null)
+    : null;
+CODE;
         assertSame($expected, $result);
     }
 

@@ -531,12 +531,7 @@ class SpecificationOptions
         $preservePropertyNames = isset($input->{'preservePropertyNames'}) ? $input->{'preservePropertyNames'} : null;
         $noGetters = isset($input->{'noGetters'}) ? $input->{'noGetters'} : null;
         $noSetters = isset($input->{'noSetters'}) ? $input->{'noSetters'} : null;
-        $mutableSetters = isset($input->{'mutableSetters'})
-            ? match (true) {
-                in_array($input->{'mutableSetters'}, [true], true) => (bool)$input->{'mutableSetters'},
-                default => $input->{'mutableSetters'},
-            }
-            : null;
+        $mutableSetters = isset($input->{'mutableSetters'}) ? $input->{'mutableSetters'} : null;
         $noSchemaMetadata = isset($input->{'noSchemaMetadata'}) ? $input->{'noSchemaMetadata'} : null;
         $singleLineSchema = isset($input->{'singleLineSchema'}) ? $input->{'singleLineSchema'} : null;
         $noEnums = isset($input->{'noEnums'}) ? $input->{'noEnums'} : null;

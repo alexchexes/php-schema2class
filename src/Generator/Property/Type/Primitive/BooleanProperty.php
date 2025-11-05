@@ -56,11 +56,11 @@ class BooleanProperty extends AbstractProperty
 
     public function inputMappingExpr(string $expr, bool $asserted = false): string
     {
-        if ($asserted) {
+        // if ($asserted) {
             return $expr;
-        }
+        // }
 
-        return "(bool){$expr}";
+        // return "(bool){$expr}";
     }
 
     public function needsValidation(): bool
@@ -78,7 +78,7 @@ class BooleanProperty extends AbstractProperty
 
     public function inputMappingRequiresNullCheck(): bool
     {
-        return true;
+        return false;
     }
 
     public function outputMappingRequiresNullCheck(): bool

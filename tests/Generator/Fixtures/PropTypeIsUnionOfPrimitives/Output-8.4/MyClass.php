@@ -415,7 +415,6 @@ class MyClass
                     ? (float)$input->{'foo'}
                     : (int)$input->{'foo'}
                 ),
-            is_bool($input->{'foo'}) => (bool)$input->{'foo'},
         };
         $bar = match (true) {
             default => $input->{'bar'},
@@ -424,7 +423,6 @@ class MyClass
                     ? (float)$input->{'bar'}
                     : (int)$input->{'bar'}
                 ),
-            is_bool($input->{'bar'}) => (bool)$input->{'bar'},
         };
         $baz = match (true) {
             default => $input->{'baz'},
@@ -433,7 +431,6 @@ class MyClass
                     ? (float)$input->{'baz'}
                     : (int)$input->{'baz'}
                 ),
-            is_bool($input->{'baz'}) => (bool)$input->{'baz'},
         };
         $qux = match (true) {
             default => $input->{'qux'},
@@ -442,7 +439,6 @@ class MyClass
                     ? (float)$input->{'qux'}
                     : (int)$input->{'qux'}
                 ),
-            is_bool($input->{'qux'}) => (bool)$input->{'qux'},
         };
         $thud = match (true) {
             default => $input->{'thud'},
@@ -451,7 +447,6 @@ class MyClass
                     ? (float)$input->{'thud'}
                     : (int)$input->{'thud'}
                 ),
-            is_bool($input->{'thud'}) => (bool)$input->{'thud'},
         };
         $optFoo = isset($input->{'optFoo'})
             ? match (true) {
@@ -461,7 +456,6 @@ class MyClass
                         ? (float)$input->{'optFoo'}
                         : (int)$input->{'optFoo'}
                     ),
-                is_bool($input->{'optFoo'}) => (bool)$input->{'optFoo'},
             }
             : null;
         $optBar = isset($input->{'optBar'})
@@ -472,7 +466,6 @@ class MyClass
                         ? (float)$input->{'optBar'}
                         : (int)$input->{'optBar'}
                     ),
-                is_bool($input->{'optBar'}) => (bool)$input->{'optBar'},
             }
             : null;
         $optBaz = isset($input->{'optBaz'})
@@ -483,7 +476,6 @@ class MyClass
                         ? (float)$input->{'optBaz'}
                         : (int)$input->{'optBaz'}
                     ),
-                is_bool($input->{'optBaz'}) => (bool)$input->{'optBaz'},
             }
             : null;
         $optQux = isset($input->{'optQux'})
@@ -494,7 +486,6 @@ class MyClass
                         ? (float)$input->{'optQux'}
                         : (int)$input->{'optQux'}
                     ),
-                is_bool($input->{'optQux'}) => (bool)$input->{'optQux'},
             }
             : null;
         $optThud = null;
@@ -506,7 +497,6 @@ class MyClass
                         ? (float)$input->{'optThud'}
                         : (int)$input->{'optThud'}
                     ),
-                is_bool($input->{'optThud'}) => (bool)$input->{'optThud'},
             };
             $_providedOptionals['optThud'] = true;
         }

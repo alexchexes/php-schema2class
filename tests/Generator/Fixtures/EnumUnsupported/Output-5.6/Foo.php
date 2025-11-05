@@ -368,7 +368,7 @@ class Foo
             )
             : null;
         $floatEnumRef = isset($input->{'floatEnumRef'}) ? $input->{'floatEnumRef'} : null;
-        $boolEnum = isset($input->{'boolEnum'}) ? (bool)$input->{'boolEnum'} : null;
+        $boolEnum = isset($input->{'boolEnum'}) ? $input->{'boolEnum'} : null;
         $boolEnumRef = isset($input->{'boolEnumRef'}) ? $input->{'boolEnumRef'} : null;
 
         $obj = new self(

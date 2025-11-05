@@ -1005,7 +1005,7 @@ class MyClass
             : (int)$input->{'bar'}
         );
         $baz = (int)$input->{'baz'};
-        $qux = (bool)$input->{'qux'};
+        $qux = $input->{'qux'};
         $quux = MyClassQuux::fromInput($input->{'quux'}, $validate);
         $thud = $input->{'thud'};
         $grox = $input->{'grox'};
@@ -1017,7 +1017,7 @@ class MyClass
             )
             : null;
         $nullBaz = $input->{'nullBaz'} !== null ? (int)$input->{'nullBaz'} : null;
-        $nullQux = $input->{'nullQux'} !== null ? (bool)$input->{'nullQux'} : null;
+        $nullQux = $input->{'nullQux'};
         $nullQuux = $input->{'nullQuux'} !== null
             ? MyClassNullQuux::fromInput($input->{'nullQuux'}, $validate)
             : null;
@@ -1030,7 +1030,7 @@ class MyClass
             )
             : null;
         $optBaz = isset($input->{'optBaz'}) ? (int)$input->{'optBaz'} : null;
-        $optQux = isset($input->{'optQux'}) ? (bool)$input->{'optQux'} : null;
+        $optQux = isset($input->{'optQux'}) ? $input->{'optQux'} : null;
         $optQuux = isset($input->{'optQuux'})
             ? MyClassOptQuux::fromInput($input->{'optQuux'}, $validate)
             : null;
@@ -1062,7 +1062,7 @@ class MyClass
         }
         $optNullQux = null;
         if (property_exists($input, 'optNullQux')) {
-            $optNullQux = $input->{'optNullQux'} !== null ? (bool)$input->{'optNullQux'} : null;
+            $optNullQux = $input->{'optNullQux'};
             $_providedOptionals['optNullQux'] = true;
         }
         $optNullQuux = null;
