@@ -259,4 +259,9 @@ class MyClassEnsureArgs2
 
         return $validator->isValid();
     }
+
+    public function __clone()
+    {
+        $this->_additionalProperties = json_decode(json_encode($this->_additionalProperties));
+    }
 }

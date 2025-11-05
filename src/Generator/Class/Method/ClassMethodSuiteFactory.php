@@ -38,7 +38,7 @@ class ClassMethodSuiteFactory
             ...(new SerializeMethodFactory($this->request, $this->schemaProperties, $this->defaults, $this->additionalsAllowed))->generateAll(),
             (new ValidateMethodFactory($this->request))->generate(),
             (new ValidateInputMethodFactory($this->request))->generate(),
-            (new CloneMethodFactory($this->schemaProperties))->generate(),
+            (new CloneMethodFactory($this->schemaProperties, $this->additionalsAllowed))->generate(),
             (new IsOptionalProvidedMethodFactory($this->request, $this->schemaProperties->hasOptionalNullable()))->generate(),
         ];
 

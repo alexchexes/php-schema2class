@@ -458,6 +458,8 @@ class Record
 
     public function __clone()
     {
+        $this->_additionalProperties = json_decode(json_encode($this->_additionalProperties));
+
         if (isset($this->dataArrayNested)) {
             $this->dataArrayNested = array_map(fn ($i) => $i, $this->dataArrayNested);
         }

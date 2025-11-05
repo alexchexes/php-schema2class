@@ -636,6 +636,8 @@ class MyClass
 
     public function __clone()
     {
+        $this->_additionalProperties = json_decode(json_encode($this->_additionalProperties));
+
         if (isset($this->arrayOfUnions)) {
             $this->arrayOfUnions = array_map(fn ($i) => match (true) {
                 (is_array($i)

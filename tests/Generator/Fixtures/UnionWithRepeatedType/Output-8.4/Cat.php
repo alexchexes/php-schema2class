@@ -262,6 +262,8 @@ class Cat
 
     public function __clone()
     {
+        $this->_additionalProperties = json_decode(json_encode($this->_additionalProperties));
+
         if (isset($this->hasFur)) {
             $this->hasFur = match (true) {
                 ($this->hasFur === null || is_bool($this->hasFur))

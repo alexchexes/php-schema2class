@@ -343,6 +343,8 @@ class MyClass
 
     public function __clone()
     {
+        $this->_additionalProperties = json_decode(json_encode($this->_additionalProperties));
+
         $this->bar = clone $this->bar;
     }
 

@@ -233,6 +233,8 @@ class Address
 
     public function __clone()
     {
+        $this->_additionalProperties = json_decode(json_encode($this->_additionalProperties));
+
         if (isset($this->name)) {
             $this->name = clone $this->name;
         }

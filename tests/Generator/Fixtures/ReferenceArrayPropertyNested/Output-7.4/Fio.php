@@ -221,6 +221,11 @@ class Fio
         return $validator->isValid();
     }
 
+    public function __clone()
+    {
+        $this->_additionalProperties = json_decode(json_encode($this->_additionalProperties));
+    }
+
     /**
      * Checks if an optional nullable property was explicitly set.
      *

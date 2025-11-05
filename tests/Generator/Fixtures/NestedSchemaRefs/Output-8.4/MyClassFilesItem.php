@@ -240,6 +240,8 @@ class MyClassFilesItem
 
     public function __clone()
     {
+        $this->_additionalProperties = json_decode(json_encode($this->_additionalProperties));
+
         if (isset($this->options)) {
             $this->options = clone $this->options;
         }

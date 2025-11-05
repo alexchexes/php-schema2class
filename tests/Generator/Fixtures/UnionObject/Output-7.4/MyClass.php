@@ -650,6 +650,8 @@ class MyClass
 
     public function __clone()
     {
+        $this->_additionalProperties = json_decode(json_encode($this->_additionalProperties));
+
         if (isset($this->objectsUnion)) {
             $this->objectsUnion = (($this->objectsUnion instanceof MyClassObjectsUnionAlternative1
                 || $this->objectsUnion instanceof MyClassObjectsUnionAlternative2

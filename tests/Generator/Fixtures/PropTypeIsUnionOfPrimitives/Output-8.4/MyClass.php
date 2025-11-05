@@ -664,6 +664,8 @@ class MyClass
 
     public function __clone()
     {
+        $this->_additionalProperties = json_decode(json_encode($this->_additionalProperties));
+
         $this->baz = match (true) {
             is_string($this->baz) || (is_int($this->baz) || is_float($this->baz)) || is_bool($this->baz) => $this->baz,
             is_array($this->baz) || is_object($this->baz) => json_decode(json_encode($this->baz), is_array($this->baz)),

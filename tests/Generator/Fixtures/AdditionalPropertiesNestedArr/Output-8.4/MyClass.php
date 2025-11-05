@@ -257,6 +257,8 @@ class MyClass
 
     public function __clone()
     {
+        $this->_additionalProperties = json_decode(json_encode($this->_additionalProperties));
+
         if (isset($this->bar)) {
             $this->bar = array_map(fn ($i) => json_decode(json_encode($i), is_array($i)), $this->bar);
         }

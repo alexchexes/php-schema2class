@@ -243,6 +243,8 @@ class MyClass
 
     public function __clone()
     {
+        $this->_additionalProperties = json_decode(json_encode($this->_additionalProperties));
+
         $this->foo = (($this->foo instanceof MyClassFooAlternative2) ? clone $this->foo : $this->foo);
     }
 }

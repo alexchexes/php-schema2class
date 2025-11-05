@@ -294,6 +294,8 @@ class MyClassQuxObjNest
 
     public function __clone()
     {
+        $this->_additionalProperties = json_decode(json_encode($this->_additionalProperties));
+
         if (isset($this->a)) {
             $this->a = json_decode(json_encode($this->a), is_array($this->a));
         }

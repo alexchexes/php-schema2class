@@ -1285,6 +1285,8 @@ class MyClass
 
     public function __clone()
     {
+        $this->_additionalProperties = json_decode(json_encode($this->_additionalProperties));
+
         $this->quux = clone $this->quux;
         $this->nullQuux = clone $this->nullQuux;
         if (isset($this->optQuux)) {

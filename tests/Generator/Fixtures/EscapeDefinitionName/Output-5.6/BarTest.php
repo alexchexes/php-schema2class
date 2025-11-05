@@ -288,6 +288,8 @@ class BarTest
 
     public function __clone()
     {
+        $this->_additionalProperties = json_decode(json_encode($this->_additionalProperties));
+
         if (isset($this->exampleProp)) {
             $this->exampleProp = (($this->exampleProp instanceof FooTest
                 || $this->exampleProp instanceof MoiKlass

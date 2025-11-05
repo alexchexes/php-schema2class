@@ -206,6 +206,8 @@ class MyClass
 
     public function __clone()
     {
+        $this->_additionalProperties = json_decode(json_encode($this->_additionalProperties));
+
         $this->foo = match (true) {
             is_string($this->foo) => $this->foo,
             $this->foo instanceof MyClassFooAlternative2 => clone $this->foo,

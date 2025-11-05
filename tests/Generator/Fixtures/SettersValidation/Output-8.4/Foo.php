@@ -398,6 +398,8 @@ class Foo
 
     public function __clone()
     {
+        $this->_additionalProperties = json_decode(json_encode($this->_additionalProperties));
+
         if (isset($this->d)) {
             $this->d = clone $this->d;
         }

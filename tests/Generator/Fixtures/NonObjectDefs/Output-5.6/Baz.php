@@ -279,6 +279,8 @@ class Baz
 
     public function __clone()
     {
+        $this->_additionalProperties = json_decode(json_encode($this->_additionalProperties));
+
         if (isset($this->grox)) {
             $this->grox = (($this->grox instanceof Foo || $this->grox instanceof Bar)
                 ? clone $this->grox
