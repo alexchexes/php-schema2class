@@ -40,6 +40,12 @@ class SchemaToClass
         // collect definitions and prepare lookups before dereferencing
         $this->definitionsToSchemas($req);
 
+        // When only specific definitions should be generated, skip the root schema altogether.
+        // It does not have a definition name, so it can never be explicitly whitelisted.
+        if ($req->getOptions()->getIncludeDefinitions() !== null) {
+            return;
+        }
+
         // if the caller supplied root definitions, *always* splice them in here
         // (but don't overwrite if the schema already carried its own definitions)
         $this->mergeRootDefinitions($schema, $rootDefs, $req->getRootDefinitions());

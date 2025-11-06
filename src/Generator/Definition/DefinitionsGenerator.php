@@ -96,11 +96,13 @@ class DefinitionsGenerator
             $request->getSchema()['$defs'] ?? [],
         );
 
+        $baseRequest = $request->withoutIncludeDefinitions();
+
         foreach ($definitions as $definition) {
             $deps        = self::collectLocalRefs($definition->schema, $rootDefinitions);
             $trimmedDefs = array_intersect_key($rootDefinitions, array_flip($deps));
 
-            $newRequest = $request
+            $newRequest = $baseRequest
                 ->withClass($definition->className)
                 ->withSchema($definition->schema)
                 ->withNamespace($definition->namespace)
