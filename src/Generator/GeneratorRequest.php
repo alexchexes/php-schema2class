@@ -51,7 +51,12 @@ class GeneratorRequest
 
     /** @var array<class-string, ReferenceLookupInterface> */
     private array $referenceLookup = [];
-    
+
+    /**
+     * @var string[]|null
+     */
+    private ?array $allowedDefinitionNames = null;
+
     /**
      * Whether the object schema from which the class is currently generated has defaults.
      */
@@ -207,7 +212,26 @@ class GeneratorRequest
         $clone->generatedClassNames = $names;
         return $clone;
     }
-    
+
+    /**
+     * @param string[] $names
+     */
+    public function withAllowedDefinitionNames(array $names): self
+    {
+        $clone = clone $this;
+        $clone->allowedDefinitionNames = array_values(array_unique($names));
+
+        return $clone;
+    }
+
+    /**
+     * @return string[]|null
+     */
+    public function getAllowedDefinitionNames(): ?array
+    {
+        return $this->allowedDefinitionNames;
+    }
+
     public function getGeneratedClassNames(): array
     {
         return $this->generatedClassNames;

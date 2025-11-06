@@ -38,14 +38,26 @@ class DefinitionsGenerator
             $iter = function (mixed $node) use (&$iter, &$needed, &$queue, &$visited, $allDefinitions) {
                 if (is_array($node)) {
                     foreach ($node as $k => $v) {
-                        if ($k === '$ref' && is_string($v) && str_starts_with($v, '#/definitions/')) {
-                            $name = substr($v, 14);
-                            if (!isset($visited[$name])) {
-                                $visited[$name] = true;
-                                $needed[]       = $name;
+                        if ($k === '$ref' && is_string($v)) {
+                            $name = null;
+                            if (str_starts_with($v, '#/definitions/')) {
+                                $name = substr($v, 14);
+                            } elseif (str_starts_with($v, '#/$defs/')) {
+                                $name = substr($v, 7);
+                            }
 
-                                if (isset($allDefinitions[$name])) {
-                                    $queue[] = $allDefinitions[$name];
+                            if ($name !== null) {
+                                if (str_contains($name, '/')) {
+                                    continue;
+                                }
+
+                                if (!isset($visited[$name])) {
+                                    $visited[$name] = true;
+                                    $needed[]       = $name;
+
+                                    if (isset($allDefinitions[$name])) {
+                                        $queue[] = $allDefinitions[$name];
+                                    }
                                 }
                             }
                         } elseif (is_array($v)) {

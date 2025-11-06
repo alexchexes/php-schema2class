@@ -188,15 +188,30 @@ class SchemaToClass
         $collector = new DefinitionsCollector($req);
         $allDefinitions  = iterator_to_array($collector->collect($req->getSchema()));
 
+        $allowedDefinitionPaths = $this->resolveAllowedDefinitionPaths($req, $allDefinitions);
+        if ($allowedDefinitionPaths !== null) {
+            $definitionsToGenerate = array_intersect_key($allDefinitions, $allowedDefinitionPaths);
+            $req = $req->withAllowedDefinitionNames(
+                array_map(
+                    function (string $path): string {
+                        return $this->definitionNameFromPath($path);
+                    },
+                    array_keys($allowedDefinitionPaths)
+                )
+            );
+        } else {
+            $definitionsToGenerate = $allDefinitions;
+        }
+
         $ns = $req->getTargetNamespace();
-        
+
         $generatedClasses = array_map(static function(Definition $d) use ($ns): string {
             $cls = $d->classFQN;
             if ($ns !== '' && str_starts_with($cls, $ns . '\\')) {
                 return substr($cls, strlen($ns) + 1);
             }
             return ltrim($cls, '\\');
-        }, $allDefinitions);
+        }, $definitionsToGenerate);
 
         if ($req->getTargetClass() !== null) {
             $generatedClasses[] = $req->getTargetClass();
@@ -206,7 +221,6 @@ class SchemaToClass
             ->withAdditionalReferenceLookup(new DefinitionsReferenceLookup($allDefinitions))
             ->withGeneratedClassNames($generatedClasses);
 
-        $definitionsToGenerate = $allDefinitions;
         if (is_string($rootRef)) {
             $canonical = $rootRef;
             if (!isset($definitionsToGenerate[$canonical])) {
@@ -227,5 +241,120 @@ class SchemaToClass
 
         $generator = new DefinitionsGenerator($this);
         $generator->generate($definitionsToGenerate, $req);
+    }
+
+    /**
+     * @param array<string, Definition> $allDefinitions
+     * @return array<string, bool>|null
+     */
+    private function resolveAllowedDefinitionPaths(GeneratorRequest $req, array $allDefinitions): ?array
+    {
+        $names = $req->getAllowedDefinitionNames();
+        if ($names === null) {
+            $names = $req->getOptions()->getGenerateDefinitions();
+        }
+
+        if ($names === null) {
+            return null;
+        }
+
+        $names = array_values(array_unique($names));
+        $pathsByName = [];
+        foreach ($allDefinitions as $path => $definition) {
+            $pathsByName[$this->definitionNameFromPath($path)][] = $path;
+        }
+
+        $allowedPaths = [];
+        foreach ($names as $name) {
+            if (!isset($pathsByName[$name])) {
+                continue;
+            }
+            foreach ($pathsByName[$name] as $path) {
+                $allowedPaths[$path] = true;
+            }
+        }
+
+        if ($allowedPaths === [] && $names === []) {
+            return [];
+        }
+
+        $knownPaths = array_fill_keys(array_keys($allDefinitions), true);
+        $queue = array_keys($allowedPaths);
+
+        while ($queue !== []) {
+            $path = array_pop($queue);
+            if (!isset($allDefinitions[$path])) {
+                continue;
+            }
+
+            $deps = $this->collectDefinitionDependencyPaths($allDefinitions[$path]->schema, $knownPaths, $path);
+            foreach ($deps as $dependencyPath) {
+                if (!isset($allowedPaths[$dependencyPath])) {
+                    $allowedPaths[$dependencyPath] = true;
+                    $queue[] = $dependencyPath;
+                }
+            }
+        }
+
+        return $allowedPaths;
+    }
+
+    /**
+     * @param array<string, bool> $definitionPaths
+     * @return string[]
+     */
+    private function collectDefinitionDependencyPaths(array $schema, array $definitionPaths, string $currentPath): array
+    {
+        $deps = [];
+        $queue = [$schema];
+
+        while ($queue !== []) {
+            $node = array_pop($queue);
+            if (!is_array($node)) {
+                continue;
+            }
+
+            foreach ($node as $key => $value) {
+                if ($key === '$ref' && is_string($value)) {
+                    $normalized = $this->normalizeDefinitionReference($value, $definitionPaths);
+                    if ($normalized !== null && $normalized !== $currentPath) {
+                        $deps[$normalized] = true;
+                    }
+                } elseif (is_array($value)) {
+                    $queue[] = $value;
+                }
+            }
+        }
+
+        return array_keys($deps);
+    }
+
+    /**
+     * @param array<string, bool> $definitionPaths
+     */
+    private function normalizeDefinitionReference(string $ref, array $definitionPaths): ?string
+    {
+        foreach (['#/definitions/', '#/$defs/'] as $prefix) {
+            if (!str_starts_with($ref, $prefix)) {
+                continue;
+            }
+
+            $suffix = substr($ref, strlen($prefix));
+            $segments = array_values(array_filter(explode('/', $suffix), static fn(string $part): bool => $part !== ''));
+            for ($length = count($segments); $length > 0; $length--) {
+                $candidate = $prefix . implode('/', array_slice($segments, 0, $length));
+                if (isset($definitionPaths[$candidate])) {
+                    return $candidate;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private function definitionNameFromPath(string $path): string
+    {
+        $segments = array_values(array_filter(explode('/', $path)));
+        return $segments !== [] ? end($segments) : $path;
     }
 }
