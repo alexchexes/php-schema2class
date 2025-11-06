@@ -1,0 +1,92 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Definition filter",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "address": {
+      "$ref": "#/definitions/Address"
+    }
+  },
+  "required": [
+    "address"
+  ],
+  "definitions": {
+    "Address": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "line1": {
+          "type": "string"
+        },
+        "country": {
+          "$ref": "#/definitions/Country"
+        },
+        "coordinates": {
+          "$ref": "#/definitions/Address/$defs/Coordinates"
+        }
+      },
+      "required": [
+        "line1",
+        "country"
+      ],
+      "$defs": {
+        "Coordinates": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "lat": {
+              "type": "number"
+            },
+            "lng": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "lat",
+            "lng"
+          ]
+        }
+      }
+    },
+    "Country": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "region": {
+          "$ref": "#/definitions/Region"
+        }
+      },
+      "required": [
+        "name"
+      ]
+    },
+    "Region": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "code"
+      ]
+    },
+    "Unused": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

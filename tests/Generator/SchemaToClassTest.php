@@ -106,6 +106,57 @@ class SchemaToClassTest extends TestCase
         $this->assertStringContainsString('skipping generation of SkippedDef5', $output->fetch());
     }
 
+    public function testIncludeDefinitionsOption(): void
+    {
+        $schema = [
+            'type' => 'object',
+            'properties' => [
+                'alpha' => ['$ref' => '#/definitions/Alpha'],
+            ],
+            'definitions' => [
+                'Alpha' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'beta' => ['$ref' => '#/definitions/Beta'],
+                    ],
+                ],
+                'Beta' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => ['type' => 'integer'],
+                    ],
+                ],
+                'Gamma' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'label' => ['type' => 'string'],
+                    ],
+                ],
+            ],
+        ];
+
+        $req = new GeneratorRequest(
+            $schema,
+            new ValidatedSpecificationFilesItem('Ns\\Filtered', 'Root', sys_get_temp_dir()),
+            (new SpecificationOptions())
+                ->withTargetPHPVersion(GeneratorRequest::DEFAULT_PHP8_VERSION)
+                ->withIncludeDefinitions(['Alpha'])
+        );
+
+        $output = new NullOutput();
+        $writer = new DebugWriter($output);
+        $factory = new SchemaToClassFactory();
+
+        $factory->build($writer, $output)->schemaToClass($req);
+
+        $writtenFiles = array_map('basename', array_keys($writer->getWrittenFiles()));
+
+        $this->assertContains('Root.php', $writtenFiles);
+        $this->assertContains('Alpha.php', $writtenFiles);
+        $this->assertContains('Beta.php', $writtenFiles);
+        $this->assertNotContains('Gamma.php', $writtenFiles);
+    }
+
     private static function loadTestDefaultsData(): array
     {
         static $testData = null;

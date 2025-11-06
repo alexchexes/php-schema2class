@@ -21,6 +21,8 @@ New options provide more control over how classes are generated:
 - `singleLineSchema` - store the validation schema as a single line in the generated class to reduce the length of .php files.
 - `noEnums` - Disable generation of PHP `enum` classes even when targeting PHP 8.1 or newer.
 - `cleanTargetDirectory` - remove all files from the target directory before generation.
+- `includeDefinitions` - restrict generation to the selected definitions while automatically including their referenced
+  dependencies.
 
 ### Additional CLI options
 
