@@ -375,43 +375,43 @@ class MyClass
         $objectsUnion = isset($input->{'objectsUnion'})
             ? match (true) {
                 (is_object($input->{'objectsUnion'}) || is_array($input->{'objectsUnion'})) && MyClassObjectsUnionAlternative1::validateInput($input->{'objectsUnion'}, true) =>
-                    MyClassObjectsUnionAlternative1::fromInput($input->{'objectsUnion'}, $validate),
+                    MyClassObjectsUnionAlternative1::fromInput($input->{'objectsUnion'}, false),
                 (is_object($input->{'objectsUnion'}) || is_array($input->{'objectsUnion'})) && MyClassObjectsUnionAlternative2::validateInput($input->{'objectsUnion'}, true) =>
-                    MyClassObjectsUnionAlternative2::fromInput($input->{'objectsUnion'}, $validate),
+                    MyClassObjectsUnionAlternative2::fromInput($input->{'objectsUnion'}, false),
                 default => $input->{'objectsUnion'},
             }
             : null;
         $refObjectsUnion = isset($input->{'refObjectsUnion'})
             ? match (true) {
                 (is_object($input->{'refObjectsUnion'}) || is_array($input->{'refObjectsUnion'})) && SomeObj1::validateInput($input->{'refObjectsUnion'}, true) =>
-                    SomeObj1::fromInput($input->{'refObjectsUnion'}, $validate),
+                    SomeObj1::fromInput($input->{'refObjectsUnion'}, false),
                 (is_object($input->{'refObjectsUnion'}) || is_array($input->{'refObjectsUnion'})) && SomeObj2::validateInput($input->{'refObjectsUnion'}, true) =>
-                    SomeObj2::fromInput($input->{'refObjectsUnion'}, $validate),
+                    SomeObj2::fromInput($input->{'refObjectsUnion'}, false),
                 default => $input->{'refObjectsUnion'},
             }
             : null;
         $refAndNotRefObjectsUnion = isset($input->{'refAndNotRefObjectsUnion'})
             ? match (true) {
                 (is_object($input->{'refAndNotRefObjectsUnion'}) || is_array($input->{'refAndNotRefObjectsUnion'})) && SomeObj1::validateInput($input->{'refAndNotRefObjectsUnion'}, true) =>
-                    SomeObj1::fromInput($input->{'refAndNotRefObjectsUnion'}, $validate),
+                    SomeObj1::fromInput($input->{'refAndNotRefObjectsUnion'}, false),
                 (is_object($input->{'refAndNotRefObjectsUnion'}) || is_array($input->{'refAndNotRefObjectsUnion'})) && MyClassRefAndNotRefObjectsUnionAlternative2::validateInput($input->{'refAndNotRefObjectsUnion'}, true) =>
-                    MyClassRefAndNotRefObjectsUnionAlternative2::fromInput($input->{'refAndNotRefObjectsUnion'}, $validate),
+                    MyClassRefAndNotRefObjectsUnionAlternative2::fromInput($input->{'refAndNotRefObjectsUnion'}, false),
                 (is_object($input->{'refAndNotRefObjectsUnion'}) || is_array($input->{'refAndNotRefObjectsUnion'})) && SomeObj2::validateInput($input->{'refAndNotRefObjectsUnion'}, true) =>
-                    SomeObj2::fromInput($input->{'refAndNotRefObjectsUnion'}, $validate),
+                    SomeObj2::fromInput($input->{'refAndNotRefObjectsUnion'}, false),
                 (is_object($input->{'refAndNotRefObjectsUnion'}) || is_array($input->{'refAndNotRefObjectsUnion'})) && MyClassRefAndNotRefObjectsUnionAlternative4::validateInput($input->{'refAndNotRefObjectsUnion'}, true) =>
-                    MyClassRefAndNotRefObjectsUnionAlternative4::fromInput($input->{'refAndNotRefObjectsUnion'}, $validate),
+                    MyClassRefAndNotRefObjectsUnionAlternative4::fromInput($input->{'refAndNotRefObjectsUnion'}, false),
                 default => $input->{'refAndNotRefObjectsUnion'},
             }
             : null;
         $objAndStringUnion = isset($input->{'objAndStringUnion'})
             ? match (true) {
                 (is_object($input->{'objAndStringUnion'}) || is_array($input->{'objAndStringUnion'})) && MyClassObjAndStringUnionAlternative1::validateInput($input->{'objAndStringUnion'}, true) =>
-                    MyClassObjAndStringUnionAlternative1::fromInput($input->{'objAndStringUnion'}, $validate),
+                    MyClassObjAndStringUnionAlternative1::fromInput($input->{'objAndStringUnion'}, false),
                 default => $input->{'objAndStringUnion'},
             }
             : null;
         $unionOfOneObj = isset($input->{'unionOfOneObj'})
-            ? MyClassUnionOfOneObj::fromInput($input->{'unionOfOneObj'}, $validate)
+            ? MyClassUnionOfOneObj::fromInput($input->{'unionOfOneObj'}, false)
             : null;
         $unionOfOneNull = null;
         if (property_exists($input, 'unionOfOneNull')) {

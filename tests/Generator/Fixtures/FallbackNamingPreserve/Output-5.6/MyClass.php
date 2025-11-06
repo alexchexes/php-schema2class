@@ -2403,24 +2403,24 @@ class MyClass
             $_providedOptionals['materializeDefaults'] = true;
         }
         $testObj = isset($input->{'testObj'})
-            ? MyClassTestObj::fromInput($input->{'testObj'}, $validate, $materializeDefaults)
+            ? MyClassTestObj::fromInput($input->{'testObj'}, false, $materializeDefaults)
             : null;
         $__providedOptionals = isset($input->{'__providedOptionals'}) ? $input->{'__providedOptionals'} : null;
         $ensureArgs1 = isset($input->{'ensureArgs1'})
             ? (((is_object($input->{'ensureArgs1'}) || is_array($input->{'ensureArgs1'})) && MyClassEnsureArgs1Alternative1::validateInput($input->{'ensureArgs1'}, true))
-                ? MyClassEnsureArgs1Alternative1::fromInput($input->{'ensureArgs1'}, $validate, $materializeDefaults)
+                ? MyClassEnsureArgs1Alternative1::fromInput($input->{'ensureArgs1'}, false, $materializeDefaults)
                 : (((is_object($input->{'ensureArgs1'}) || is_array($input->{'ensureArgs1'})) && MyClassEnsureArgs1Alternative2::validateInput($input->{'ensureArgs1'}, true))
-                    ? MyClassEnsureArgs1Alternative2::fromInput($input->{'ensureArgs1'}, $validate, $materializeDefaults)
+                    ? MyClassEnsureArgs1Alternative2::fromInput($input->{'ensureArgs1'}, false, $materializeDefaults)
                     : $input->{'ensureArgs1'}
                 )
             )
             : null;
         $ensureArgs2 = isset($input->{'ensureArgs2'})
-            ? MyClassEnsureArgs2::fromInput($input->{'ensureArgs2'}, $validate, $materializeDefaults)
+            ? MyClassEnsureArgs2::fromInput($input->{'ensureArgs2'}, false, $materializeDefaults)
             : null;
         $ensureArgs3 = isset($input->{'ensureArgs3'})
             ? array_map(function($i) use ($validate, $materializeDefaults) {
-                return MyClassEnsureArgs3Item::fromInput($i, $validate, $materializeDefaults);
+                return MyClassEnsureArgs3Item::fromInput($i, false, $materializeDefaults);
             }, $input->{'ensureArgs3'})
             : null;
 

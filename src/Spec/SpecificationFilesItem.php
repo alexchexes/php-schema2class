@@ -100,7 +100,7 @@ class SpecificationFilesItem
         $_input = $input->{'input'};
         $className = isset($input->{'className'}) ? $input->{'className'} : null;
         $options = isset($input->{'options'})
-            ? SpecificationOptions::fromInput($input->{'options'}, $validate)
+            ? SpecificationOptions::fromInput($input->{'options'}, false)
             : null;
 
         $obj = new self($_input, $className, $options);

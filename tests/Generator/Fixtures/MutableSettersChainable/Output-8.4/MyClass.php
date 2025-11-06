@@ -181,7 +181,7 @@ class MyClass
         }
 
         $_providedOptionals = [];
-        $bar = Baz::fromInput($input->{'bar'}, $validate);
+        $bar = Baz::fromInput($input->{'bar'}, false);
         $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
         $opt = null;
         if (property_exists($input, 'opt')) {

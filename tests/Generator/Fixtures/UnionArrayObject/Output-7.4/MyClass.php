@@ -425,7 +425,7 @@ class MyClass
                 )))
             )
                 ? array_map(
-                    fn ($i): MyClassArrayOfObjectsUnionAlternative1Item => MyClassArrayOfObjectsUnionAlternative1Item::fromInput($i, $validate),
+                    fn ($i): MyClassArrayOfObjectsUnionAlternative1Item => MyClassArrayOfObjectsUnionAlternative1Item::fromInput($i, false),
                     $input->{'arrayOfObjectsUnion'},
                 )
                 : (((is_array($input->{'arrayOfObjectsUnion'})
@@ -435,7 +435,7 @@ class MyClass
                     )))
                 )
                     ? array_map(
-                        fn ($i): MyClassArrayOfObjectsUnionAlternative2Item => MyClassArrayOfObjectsUnionAlternative2Item::fromInput($i, $validate),
+                        fn ($i): MyClassArrayOfObjectsUnionAlternative2Item => MyClassArrayOfObjectsUnionAlternative2Item::fromInput($i, false),
                         $input->{'arrayOfObjectsUnion'},
                     )
                     : $input->{'arrayOfObjectsUnion'}
@@ -450,7 +450,7 @@ class MyClass
                 )))
             )
                 ? array_map(
-                    fn ($i): MyClassRefArrayOfObjectsUnionAlternative1Item => MyClassRefArrayOfObjectsUnionAlternative1Item::fromInput($i, $validate),
+                    fn ($i): MyClassRefArrayOfObjectsUnionAlternative1Item => MyClassRefArrayOfObjectsUnionAlternative1Item::fromInput($i, false),
                     $input->{'refArrayOfObjectsUnion'},
                 )
                 : (((is_array($input->{'refArrayOfObjectsUnion'})
@@ -460,7 +460,7 @@ class MyClass
                     )))
                 )
                     ? array_map(
-                        fn ($i): MyClassRefArrayOfObjectsUnionAlternative2Item => MyClassRefArrayOfObjectsUnionAlternative2Item::fromInput($i, $validate),
+                        fn ($i): MyClassRefArrayOfObjectsUnionAlternative2Item => MyClassRefArrayOfObjectsUnionAlternative2Item::fromInput($i, false),
                         $input->{'refArrayOfObjectsUnion'},
                     )
                     : $input->{'refArrayOfObjectsUnion'}
@@ -475,7 +475,7 @@ class MyClass
                 )))
             )
                 ? array_map(
-                    fn ($i): MyClassRefAndNotRefArrayOfObjectsUnionAlternative1Item => MyClassRefAndNotRefArrayOfObjectsUnionAlternative1Item::fromInput($i, $validate),
+                    fn ($i): MyClassRefAndNotRefArrayOfObjectsUnionAlternative1Item => MyClassRefAndNotRefArrayOfObjectsUnionAlternative1Item::fromInput($i, false),
                     $input->{'refAndNotRefArrayOfObjectsUnion'},
                 )
                 : (((is_array($input->{'refAndNotRefArrayOfObjectsUnion'})
@@ -485,7 +485,7 @@ class MyClass
                     )))
                 )
                     ? array_map(
-                        fn ($i): MyClassRefAndNotRefArrayOfObjectsUnionAlternative2Item => MyClassRefAndNotRefArrayOfObjectsUnionAlternative2Item::fromInput($i, $validate),
+                        fn ($i): MyClassRefAndNotRefArrayOfObjectsUnionAlternative2Item => MyClassRefAndNotRefArrayOfObjectsUnionAlternative2Item::fromInput($i, false),
                         $input->{'refAndNotRefArrayOfObjectsUnion'},
                     )
                     : (((is_array($input->{'refAndNotRefArrayOfObjectsUnion'})
@@ -495,7 +495,7 @@ class MyClass
                         )))
                     )
                         ? array_map(
-                            fn ($i): MyClassRefAndNotRefArrayOfObjectsUnionAlternative3Item => MyClassRefAndNotRefArrayOfObjectsUnionAlternative3Item::fromInput($i, $validate),
+                            fn ($i): MyClassRefAndNotRefArrayOfObjectsUnionAlternative3Item => MyClassRefAndNotRefArrayOfObjectsUnionAlternative3Item::fromInput($i, false),
                             $input->{'refAndNotRefArrayOfObjectsUnion'},
                         )
                         : (((is_array($input->{'refAndNotRefArrayOfObjectsUnion'})
@@ -505,7 +505,7 @@ class MyClass
                             )))
                         )
                             ? array_map(
-                                fn ($i): MyClassRefAndNotRefArrayOfObjectsUnionAlternative4Item => MyClassRefAndNotRefArrayOfObjectsUnionAlternative4Item::fromInput($i, $validate),
+                                fn ($i): MyClassRefAndNotRefArrayOfObjectsUnionAlternative4Item => MyClassRefAndNotRefArrayOfObjectsUnionAlternative4Item::fromInput($i, false),
                                 $input->{'refAndNotRefArrayOfObjectsUnion'},
                             )
                             : $input->{'refAndNotRefArrayOfObjectsUnion'}
@@ -522,7 +522,7 @@ class MyClass
                 )))
             )
                 ? array_map(
-                    fn ($i): MyClassArrayOfObjAndStringUnionAlternative1Item => MyClassArrayOfObjAndStringUnionAlternative1Item::fromInput($i, $validate),
+                    fn ($i): MyClassArrayOfObjAndStringUnionAlternative1Item => MyClassArrayOfObjAndStringUnionAlternative1Item::fromInput($i, false),
                     $input->{'arrayOfObjAndStringUnion'},
                 )
                 : $input->{'arrayOfObjAndStringUnion'}
@@ -530,7 +530,7 @@ class MyClass
             : null;
         $unionOfOneArrayOfObjects = isset($input->{'unionOfOneArrayOfObjects'})
             ? array_map(
-                fn ($i): MyClassUnionOfOneArrayOfObjectsItem => MyClassUnionOfOneArrayOfObjectsItem::fromInput($i, $validate),
+                fn ($i): MyClassUnionOfOneArrayOfObjectsItem => MyClassUnionOfOneArrayOfObjectsItem::fromInput($i, false),
                 $input->{'unionOfOneArrayOfObjects'},
             )
             : null;

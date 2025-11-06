@@ -145,7 +145,7 @@ class MyClass
         }
 
         $foo = $input->{'foo'} !== null
-            ? array_map(fn (object|array $i): FooItem => FooItem::fromInput($i, $validate), $input->{'foo'})
+            ? array_map(fn (object|array $i): FooItem => FooItem::fromInput($i, false), $input->{'foo'})
             : null;
 
         $obj = new self($foo);

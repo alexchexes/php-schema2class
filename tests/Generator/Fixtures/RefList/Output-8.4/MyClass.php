@@ -133,7 +133,7 @@ class MyClass
 
         $foo = isset($input->{'foo'})
             ? array_map(
-                fn (object|array $i): \Helmich\Schema2Class\Example\CustomerAddress => \Helmich\Schema2Class\Example\CustomerAddress::fromInput($i, $validate),
+                fn (object|array $i): \Helmich\Schema2Class\Example\CustomerAddress => \Helmich\Schema2Class\Example\CustomerAddress::fromInput($i, false),
                 $input->{'foo'},
             )
             : null;

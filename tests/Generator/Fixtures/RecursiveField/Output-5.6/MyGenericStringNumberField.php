@@ -104,7 +104,7 @@ class MyGenericStringNumberField
         }
 
         $field = isset($input->{'field'})
-            ? MyGenericStringNumber::fromInput($input->{'field'}, $validate)
+            ? MyGenericStringNumber::fromInput($input->{'field'}, false)
             : null;
 
         $obj = new self($field);

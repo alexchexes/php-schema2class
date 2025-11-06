@@ -152,7 +152,7 @@ class MyClass
 
         $foo = isset($input->{'foo'})
             ? array_map(function($i) use ($validate) {
-                return \Helmich\Schema2Class\Example\CustomerAddress::fromInput($i, $validate);
+                return \Helmich\Schema2Class\Example\CustomerAddress::fromInput($i, false);
             }, $input->{'foo'})
             : null;
 

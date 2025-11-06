@@ -168,8 +168,8 @@ class Pets
             static::validateInput($input);
         }
 
-        $pet = isset($input->{'pet'}) ? GenericPet::fromInput($input->{'pet'}, $validate) : null;
-        $cat = isset($input->{'cat'}) ? Cat::fromInput($input->{'cat'}, $validate) : null;
+        $pet = isset($input->{'pet'}) ? GenericPet::fromInput($input->{'pet'}, false) : null;
+        $cat = isset($input->{'cat'}) ? Cat::fromInput($input->{'cat'}, false) : null;
 
         $obj = new self($pet, $cat);
 

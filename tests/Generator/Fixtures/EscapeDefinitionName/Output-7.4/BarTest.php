@@ -171,11 +171,11 @@ class BarTest
 
         $exampleProp = isset($input->{'exampleProp'})
             ? (((is_object($input->{'exampleProp'}) || is_array($input->{'exampleProp'})) && FooTest::validateInput($input->{'exampleProp'}, true))
-                ? FooTest::fromInput($input->{'exampleProp'}, $validate)
+                ? FooTest::fromInput($input->{'exampleProp'}, false)
                 : (((is_object($input->{'exampleProp'}) || is_array($input->{'exampleProp'})) && MoiKlass::validateInput($input->{'exampleProp'}, true))
-                    ? MoiKlass::fromInput($input->{'exampleProp'}, $validate)
+                    ? MoiKlass::fromInput($input->{'exampleProp'}, false)
                     : (((is_object($input->{'exampleProp'}) || is_array($input->{'exampleProp'})) && FooTest_1::validateInput($input->{'exampleProp'}, true))
-                        ? FooTest_1::fromInput($input->{'exampleProp'}, $validate)
+                        ? FooTest_1::fromInput($input->{'exampleProp'}, false)
                         : $input->{'exampleProp'}
                     )
                 )

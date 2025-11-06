@@ -98,7 +98,7 @@ class MyClass
             static::validateInput($input);
         }
 
-        $value = MyGenericStringNumber::fromInput($input->{'value'}, $validate);
+        $value = MyGenericStringNumber::fromInput($input->{'value'}, false);
 
         $obj = new self($value);
 

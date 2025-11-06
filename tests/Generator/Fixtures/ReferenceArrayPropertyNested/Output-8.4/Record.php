@@ -312,26 +312,26 @@ class Record
         }
 
         $dataArray = isset($input->{'dataArray'})
-            ? array_map(fn (object|array $i): Phone => Phone::fromInput($i, $validate), $input->{'dataArray'})
+            ? array_map(fn (object|array $i): Phone => Phone::fromInput($i, false), $input->{'dataArray'})
             : null;
         $dataArrayNested = isset($input->{'dataArrayNested'})
             ? array_map(
-                fn ($i) => array_map(fn (object|array $i): Phone => Phone::fromInput($i, $validate), $i),
+                fn ($i) => array_map(fn (object|array $i): Phone => Phone::fromInput($i, false), $i),
                 $input->{'dataArrayNested'},
             )
             : null;
         $dataArrayAnyOf = isset($input->{'dataArrayAnyOf'})
             ? array_map(fn ($i) => match (true) {
-                (is_object($i) || is_array($i)) && Phone::validateInput($i, true) => Phone::fromInput($i, $validate),
-                (is_object($i) || is_array($i)) && Fio::validateInput($i, true) => Fio::fromInput($i, $validate),
+                (is_object($i) || is_array($i)) && Phone::validateInput($i, true) => Phone::fromInput($i, false),
+                (is_object($i) || is_array($i)) && Fio::validateInput($i, true) => Fio::fromInput($i, false),
                 default => $i,
             }, $input->{'dataArrayAnyOf'})
             : null;
         $dataArrayNestedAnyOf = isset($input->{'dataArrayNestedAnyOf'})
             ? array_map(
                 fn ($i) => array_map(fn ($i) => match (true) {
-                    (is_object($i) || is_array($i)) && Phone::validateInput($i, true) => Phone::fromInput($i, $validate),
-                    (is_object($i) || is_array($i)) && Fio::validateInput($i, true) => Fio::fromInput($i, $validate),
+                    (is_object($i) || is_array($i)) && Phone::validateInput($i, true) => Phone::fromInput($i, false),
+                    (is_object($i) || is_array($i)) && Fio::validateInput($i, true) => Fio::fromInput($i, false),
                     default => $i,
                 }, $i),
                 $input->{'dataArrayNestedAnyOf'},

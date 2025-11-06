@@ -102,7 +102,7 @@ class Country
         }
 
         $name = $input->{'name'};
-        $region = isset($input->{'region'}) ? Region::fromInput($input->{'region'}, $validate) : null;
+        $region = isset($input->{'region'}) ? Region::fromInput($input->{'region'}, false) : null;
 
         $obj = new self($name, $region);
 

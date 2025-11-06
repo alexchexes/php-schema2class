@@ -145,7 +145,7 @@ class MyClass
         }
 
         if ((is_object($input->{'foo'}) || is_array($input->{'foo'})) && MyClassFooAlternative2::validateInput($input->{'foo'}, true)) {
-            $foo = MyClassFooAlternative2::fromInput($input->{'foo'}, $validate);
+            $foo = MyClassFooAlternative2::fromInput($input->{'foo'}, false);
         } else {
             $foo = $input->{'foo'};
         }

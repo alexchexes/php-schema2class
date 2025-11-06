@@ -794,19 +794,19 @@ class MyClass
         $foo = $input->{'foo'};
         $bar = $input->{'bar'};
         $baz = isset($input->{'baz'})
-            ? MyClassBaz::fromInput($input->{'baz'}, $validate, $materializeDefaults)
+            ? MyClassBaz::fromInput($input->{'baz'}, false, $materializeDefaults)
             : null;
         $quxObj = null;
         if (property_exists($input, 'quxObj')) {
             $quxObj = $input->{'quxObj'} !== null
-                ? MyClassQuxObj::fromInput($input->{'quxObj'}, $validate, $materializeDefaults)
+                ? MyClassQuxObj::fromInput($input->{'quxObj'}, false, $materializeDefaults)
                 : null;
             $_providedOptionals['quxObj'] = true;
         }
         $quxObjNest = null;
         if (property_exists($input, 'quxObjNest')) {
             $quxObjNest = $input->{'quxObjNest'} !== null
-                ? MyClassQuxObjNest::fromInput($input->{'quxObjNest'}, $validate, $materializeDefaults)
+                ? MyClassQuxObjNest::fromInput($input->{'quxObjNest'}, false, $materializeDefaults)
                 : null;
             $_providedOptionals['quxObjNest'] = true;
         }
@@ -818,35 +818,35 @@ class MyClass
         $xyyz = isset($input->{'xyyz'})
             ? match (true) {
                 is_object($input->{'xyyz'}) && ObjDef::validateInput($input->{'xyyz'}, true) =>
-                    ObjDef::fromInput($input->{'xyyz'}, $validate, $materializeDefaults),
+                    ObjDef::fromInput($input->{'xyyz'}, false, $materializeDefaults),
                 default => $input->{'xyyz'},
             }
             : null;
         $buux = isset($input->{'buux'})
             ? match (true) {
                 is_object($input->{'buux'}) && ObjDef::validateInput($input->{'buux'}, true) =>
-                    ObjDef::fromInput($input->{'buux'}, $validate, $materializeDefaults),
+                    ObjDef::fromInput($input->{'buux'}, false, $materializeDefaults),
                 default => $input->{'buux'},
             }
             : null;
         $boic = isset($input->{'boic'})
             ? match (true) {
                 is_object($input->{'boic'}) && ObjDef::validateInput($input->{'boic'}, true) =>
-                    ObjDef::fromInput($input->{'boic'}, $validate, $materializeDefaults),
+                    ObjDef::fromInput($input->{'boic'}, false, $materializeDefaults),
                 default => $input->{'boic'},
             }
             : null;
         $poox = isset($input->{'poox'})
             ? match (true) {
                 (is_object($input->{'poox'}) || is_array($input->{'poox'})) && NumericKeysObj::validateInput($input->{'poox'}, true) =>
-                    NumericKeysObj::fromInput($input->{'poox'}, $validate, $materializeDefaults),
+                    NumericKeysObj::fromInput($input->{'poox'}, false, $materializeDefaults),
                 default => $input->{'poox'},
             }
             : null;
         $arrObjUnion = isset($input->{'arrObjUnion'}) ? $input->{'arrObjUnion'} : null;
         $objArrUnion = isset($input->{'objArrUnion'}) ? $input->{'objArrUnion'} : null;
         $numKeysDefaults = isset($input->{'numKeysDefaults'})
-            ? MyClassNumKeysDefaults::fromInput($input->{'numKeysDefaults'}, $validate, $materializeDefaults)
+            ? MyClassNumKeysDefaults::fromInput($input->{'numKeysDefaults'}, false, $materializeDefaults)
             : null;
 
         $obj = new self(

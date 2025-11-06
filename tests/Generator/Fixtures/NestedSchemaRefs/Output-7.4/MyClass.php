@@ -180,13 +180,10 @@ class MyClass
         }
 
         $files = isset($input->{'files'})
-            ? array_map(
-                fn ($i): MyClassFilesItem => MyClassFilesItem::fromInput($i, $validate),
-                $input->{'files'},
-            )
+            ? array_map(fn ($i): MyClassFilesItem => MyClassFilesItem::fromInput($i, false), $input->{'files'})
             : null;
         $options = isset($input->{'options'})
-            ? OptionsObject::fromInput($input->{'options'}, $validate)
+            ? OptionsObject::fromInput($input->{'options'}, false)
             : null;
 
         $obj = new self($files, $options);

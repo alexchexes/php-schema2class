@@ -119,7 +119,7 @@ class MyClass
 
         $foo = match (true) {
             (is_object($input->{'foo'}) || is_array($input->{'foo'})) && MyClassFooAlternative2::validateInput($input->{'foo'}, true) =>
-                MyClassFooAlternative2::fromInput($input->{'foo'}, $validate),
+                MyClassFooAlternative2::fromInput($input->{'foo'}, false),
             default => $input->{'foo'},
         };
 

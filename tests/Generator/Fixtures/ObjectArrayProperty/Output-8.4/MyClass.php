@@ -238,13 +238,13 @@ class MyClass
 
         $foo = isset($input->{'foo'})
             ? array_map(
-                fn (object|array $i): MyClassFooItem => MyClassFooItem::fromInput($i, $validate, $materializeDefaults),
+                fn (object|array $i): MyClassFooItem => MyClassFooItem::fromInput($i, false, $materializeDefaults),
                 $input->{'foo'},
             )
             : null;
         $bar = isset($input->{'bar'})
             ? array_map(
-                fn (object|array $i): MyClassBarItem => MyClassBarItem::fromInput($i, $validate, $materializeDefaults),
+                fn (object|array $i): MyClassBarItem => MyClassBarItem::fromInput($i, false, $materializeDefaults),
                 $input->{'bar'},
             )
             : null;

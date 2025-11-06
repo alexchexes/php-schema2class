@@ -57,9 +57,9 @@ class UnionPropertyTest extends TestCase
         $expected = <<<'EOCODE'
 $myPropertyName = match (true) {
     (is_object($input->{'myPropertyName'}) || is_array($input->{'myPropertyName'})) && FooMyPropertyNameAlternative1::validateInput($input->{'myPropertyName'}, true) =>
-        FooMyPropertyNameAlternative1::fromInput($input->{'myPropertyName'}, $validate),
+        FooMyPropertyNameAlternative1::fromInput($input->{'myPropertyName'}, false),
     (is_object($input->{'myPropertyName'}) || is_array($input->{'myPropertyName'})) && FooMyPropertyNameAlternative2::validateInput($input->{'myPropertyName'}, true) =>
-        FooMyPropertyNameAlternative2::fromInput($input->{'myPropertyName'}, $validate),
+        FooMyPropertyNameAlternative2::fromInput($input->{'myPropertyName'}, false),
     default => $input->{'myPropertyName'},
 };
 EOCODE;

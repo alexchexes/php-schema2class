@@ -171,7 +171,7 @@ class MyClass
         }
 
         $foo = isset($input->{'foo'}) ? $input->{'foo'} : null;
-        $bar = isset($input->{'bar'}) ? Baz::fromInput($input->{'bar'}, $validate) : null;
+        $bar = isset($input->{'bar'}) ? Baz::fromInput($input->{'bar'}, false) : null;
 
         $obj = new self($foo, $bar);
 

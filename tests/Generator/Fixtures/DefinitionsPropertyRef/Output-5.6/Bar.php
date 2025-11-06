@@ -151,7 +151,7 @@ class Bar
             static::validateInput($input);
         }
 
-        $a = isset($input->{'a'}) ? Foo::fromInput($input->{'a'}, $validate) : null;
+        $a = isset($input->{'a'}) ? Foo::fromInput($input->{'a'}, false) : null;
 
         $obj = new self($a);
 

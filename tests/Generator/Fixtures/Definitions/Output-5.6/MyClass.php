@@ -155,9 +155,7 @@ class MyClass
         }
 
         $id = (int)$input->{'id'};
-        $address = isset($input->{'address'})
-            ? Address::fromInput($input->{'address'}, $validate)
-            : null;
+        $address = isset($input->{'address'}) ? Address::fromInput($input->{'address'}, false) : null;
 
         $obj = new self($id, $address);
 

@@ -315,7 +315,7 @@ class Foo
                 : null;
             $_providedOptionals['c'] = true;
         }
-        $d = isset($input->{'d'}) ? Bar::fromInput($input->{'d'}, $validate) : null;
+        $d = isset($input->{'d'}) ? Bar::fromInput($input->{'d'}, false) : null;
 
         $obj = new self($a, $b, $c, $d);
         $obj->_providedOptionals = $_providedOptionals;

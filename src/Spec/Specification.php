@@ -85,11 +85,11 @@ class Specification
         }
 
         $files = array_map(
-            fn (object|array $i): SpecificationFilesItem => SpecificationFilesItem::fromInput($i, $validate),
+            fn (object|array $i): SpecificationFilesItem => SpecificationFilesItem::fromInput($i, false),
             $input->{'files'},
         );
         $options = isset($input->{'options'})
-            ? SpecificationOptions::fromInput($input->{'options'}, $validate)
+            ? SpecificationOptions::fromInput($input->{'options'}, false)
             : null;
 
         $obj = new self($files, $options);

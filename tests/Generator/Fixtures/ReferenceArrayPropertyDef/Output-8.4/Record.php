@@ -235,13 +235,13 @@ class Record
 
         $foo = isset($input->{'foo'})
             ? array_map(
-                fn (object|array $i): FooItem => FooItem::fromInput($i, $validate, $materializeDefaults),
+                fn (object|array $i): FooItem => FooItem::fromInput($i, false, $materializeDefaults),
                 $input->{'foo'},
             )
             : null;
         $bar = isset($input->{'bar'})
             ? array_map(
-                fn (object|array $i): BarItem => BarItem::fromInput($i, $validate, $materializeDefaults),
+                fn (object|array $i): BarItem => BarItem::fromInput($i, false, $materializeDefaults),
                 $input->{'bar'},
             )
             : null;

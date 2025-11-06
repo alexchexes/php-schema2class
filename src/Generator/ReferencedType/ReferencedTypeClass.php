@@ -70,7 +70,7 @@ readonly class ReferencedTypeClass implements ReferencedTypeInterface
 
     public function inputMappingExpr(string $expr, bool $asserted = false): string
     {
-        $args = [$expr, '$' . ArgumentNames::VALIDATE];
+        $args = [$expr, 'false' /* no need to validate again */];
         if ($this->request->getClassHasDefaults()) {
             $args[] = '$' . ArgumentNames::MATRLZ_DEFAULTS;
         }

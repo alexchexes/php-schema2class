@@ -522,14 +522,14 @@ class MyClass
         $grox = null;
         if (property_exists($input, 'grox')) {
             $grox = $input->{'grox'} !== null
-                ? MyClassGrox::fromInput($input->{'grox'}, $validate, $materializeDefaults)
+                ? MyClassGrox::fromInput($input->{'grox'}, false, $materializeDefaults)
                 : null;
             $_providedOptionals['grox'] = true;
         }
         $gooks = null;
         if (property_exists($input, 'gooks')) {
             $gooks = $input->{'gooks'} !== null
-                ? MyClassGooks::fromInput($input->{'gooks'}, $validate, $materializeDefaults)
+                ? MyClassGooks::fromInput($input->{'gooks'}, false, $materializeDefaults)
                 : null;
             $_providedOptionals['gooks'] = true;
         }

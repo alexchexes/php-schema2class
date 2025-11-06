@@ -241,9 +241,9 @@ class Baz
             static::validateInput($input);
         }
 
-        $a = isset($input->{'a'}) ? FooTest::fromInput($input->{'a'}, $validate) : null;
-        $b = isset($input->{'b'}) ? FooTest::fromInput($input->{'b'}, $validate) : null;
-        $c = isset($input->{'c'}) ? BarTest::fromInput($input->{'c'}, $validate) : null;
+        $a = isset($input->{'a'}) ? FooTest::fromInput($input->{'a'}, false) : null;
+        $b = isset($input->{'b'}) ? FooTest::fromInput($input->{'b'}, false) : null;
+        $c = isset($input->{'c'}) ? BarTest::fromInput($input->{'c'}, false) : null;
 
         $obj = new self($a, $b, $c);
 

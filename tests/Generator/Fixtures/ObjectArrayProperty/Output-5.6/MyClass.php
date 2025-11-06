@@ -264,12 +264,12 @@ class MyClass
 
         $foo = isset($input->{'foo'})
             ? array_map(function($i) use ($validate, $materializeDefaults) {
-                return MyClassFooItem::fromInput($i, $validate, $materializeDefaults);
+                return MyClassFooItem::fromInput($i, false, $materializeDefaults);
             }, $input->{'foo'})
             : null;
         $bar = isset($input->{'bar'})
             ? array_map(function($i) use ($validate, $materializeDefaults) {
-                return MyClassBarItem::fromInput($i, $validate, $materializeDefaults);
+                return MyClassBarItem::fromInput($i, false, $materializeDefaults);
             }, $input->{'bar'})
             : null;
 

@@ -206,11 +206,11 @@ class MyClass
 
         $files = isset($input->{'files'})
             ? array_map(function($i) use ($validate) {
-                return MyClassFilesItem::fromInput($i, $validate);
+                return MyClassFilesItem::fromInput($i, false);
             }, $input->{'files'})
             : null;
         $options = isset($input->{'options'})
-            ? OptionsObject::fromInput($input->{'options'}, $validate)
+            ? OptionsObject::fromInput($input->{'options'}, false)
             : null;
 
         $obj = new self($files, $options);

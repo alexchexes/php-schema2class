@@ -346,23 +346,25 @@ class Record
         }
 
         $dataArray = isset($input->{'dataArray'})
-            ? array_map(function($i) use ($validate) {
-                return Phone::fromInput($i, $validate);
-            }, $input->{'dataArray'})
+            ? array_map(
+                function($i) use ($validate) { return Phone::fromInput($i, false); },
+                $input->{'dataArray'}
+            )
             : null;
         $dataArrayNested = isset($input->{'dataArrayNested'})
             ? array_map(function($i) use ($validate) {
-                return array_map(function($i) use ($validate) {
-                    return Phone::fromInput($i, $validate);
-                }, $i);
+                return array_map(
+                    function($i) use ($validate) { return Phone::fromInput($i, false); },
+                    $i
+                );
             }, $input->{'dataArrayNested'})
             : null;
         $dataArrayAnyOf = isset($input->{'dataArrayAnyOf'})
             ? array_map(function($i) use ($validate) {
                 return (((is_object($i) || is_array($i)) && Phone::validateInput($i, true))
-                    ? Phone::fromInput($i, $validate)
+                    ? Phone::fromInput($i, false)
                     : (((is_object($i) || is_array($i)) && Fio::validateInput($i, true))
-                        ? Fio::fromInput($i, $validate)
+                        ? Fio::fromInput($i, false)
                         : $i
                     )
                 );
@@ -372,9 +374,9 @@ class Record
             ? array_map(function($i) use ($validate) {
                 return array_map(function($i) use ($validate) {
                     return (((is_object($i) || is_array($i)) && Phone::validateInput($i, true))
-                        ? Phone::fromInput($i, $validate)
+                        ? Phone::fromInput($i, false)
                         : (((is_object($i) || is_array($i)) && Fio::validateInput($i, true))
-                            ? Fio::fromInput($i, $validate)
+                            ? Fio::fromInput($i, false)
                             : $i
                         )
                     );
