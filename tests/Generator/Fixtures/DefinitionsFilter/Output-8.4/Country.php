@@ -2,105 +2,86 @@
 
 declare(strict_types=1);
 
-namespace Ns\DefinitionsFilter2_8_4;
+namespace Ns\DefinitionsFilter_8_4;
 
-class Dependency
+class Country
 {
     /**
      * Schema used to validate input for creating instances of this class
      */
     private static array $_schema = [
         'type' => 'object',
+        'additionalProperties' => false,
         'properties' => [
-            'leaf' => [
-                '$ref' => '#/definitions/Leaf',
+            'name' => [
+                'type' => 'string',
+            ],
+            'region' => [
+                '$ref' => '#/definitions/Region',
             ],
         ],
         'required' => [
-            'leaf',
+            'name',
         ],
         'definitions' => [
-            'Leaf' => [
+            'Region' => [
                 'type' => 'object',
+                'additionalProperties' => false,
                 'properties' => [
-                    'value' => [
+                    'code' => [
+                        'type' => 'string',
+                    ],
+                    'description' => [
                         'type' => 'string',
                     ],
                 ],
                 'required' => [
-                    'value',
+                    'code',
                 ],
             ],
         ],
     ];
 
-    /**
-     * Mapping of schema property names to this class's property names.
-     */
-    private static array $_namesMap = [
-        'leaf' => 'leaf',
-    ];
+    private string $name;
 
-    /**
-     * Map of name/value pairs for properties not specified in the schema.
-     */
-    private \stdClass $_additionalProperties;
+    private ?Region $region = null;
 
-    private Leaf $leaf;
-
-    public function __construct(Leaf $leaf)
+    public function __construct(string $name, ?Region $region = null)
     {
-        $this->_additionalProperties = new \stdClass();
-
-        $this->leaf = $leaf;
+        $this->name = $name;
+        $this->region = $region;
     }
 
-    /**
-     * Object (`stdClass`) or array with name/value pairs for properties not specified in the schema.
-     *
-     * @param bool $asArray Whether return an associative array instead of `stdClass` object.
-     */
-    public function getAdditionalProperties(bool $asArray = true): \stdClass|array
+    public function getName(): string
     {
-        return $asArray
-            ? json_decode(json_encode($this->_additionalProperties), true)
-            : $this->_additionalProperties;
+        return $this->name;
     }
 
-    /**
-     * Allows adding properties not specified in the schema.
-     *
-     * @param \stdClass|array $additionalProperties Map of property name/value pairs to add.
-     */
-    public function withAdditionalProperties(\stdClass|array $additionalProperties): self
+    public function withName(string $name): self
     {
         $clone = clone $this;
-        $clone->_additionalProperties = is_array($additionalProperties)
-            ? \JsonSchema\Validator::arrayToObjectRecursive($additionalProperties)
-            : $additionalProperties;
+        $clone->name = $name;
 
         return $clone;
     }
 
-    /**
-     * Removes all extra properties not specified in the schema.
-     */
-    public function withoutAdditionalProperties(): self
+    public function getRegion(): ?Region
+    {
+        return $this->region ?? null;
+    }
+
+    public function withRegion(Region $region): self
     {
         $clone = clone $this;
-        $clone->_additionalProperties = new \stdClass();
+        $clone->region = $region;
+
         return $clone;
     }
 
-    public function getLeaf(): Leaf
-    {
-        return $this->leaf;
-    }
-
-    public function withLeaf(Leaf $leaf): self
+    public function withoutRegion(): self
     {
         $clone = clone $this;
-        $clone->leaf = $leaf;
+        unset($clone->region);
 
         return $clone;
     }
@@ -110,24 +91,20 @@ class Dependency
      *
      * @param array|object $input Input data
      * @param bool $validate If `false`, validation against the schema will be skipped.
-     * @return Dependency Created instance
+     * @return Country Created instance
      * @throws \InvalidArgumentException
      */
-    public static function fromInput(array|object $input, bool $validate = true): Dependency
+    public static function fromInput(array|object $input, bool $validate = true): Country
     {
         $input = is_array($input) ? \JsonSchema\Validator::arrayToObjectRecursive($input) : $input;
         if ($validate) {
             static::validateInput($input);
         }
 
-        $leaf = Leaf::fromInput($input->{'leaf'}, $validate);
+        $name = $input->{'name'};
+        $region = isset($input->{'region'}) ? Region::fromInput($input->{'region'}, $validate) : null;
 
-        $obj = new self($leaf);
-
-        $_additionalProperties = array_diff_key(get_object_vars($input), self::$_namesMap);
-        if (!empty($_additionalProperties)) {
-            $obj->_additionalProperties = (object) $_additionalProperties;
-        }
+        $obj = new self($name, $region);
 
         return $obj;
     }
@@ -139,9 +116,11 @@ class Dependency
      */
     public function toArray(): array
     {
-        $output = json_decode(json_encode($this->_additionalProperties), true);
-
-        $output['leaf'] = $this->leaf->toArray();
+        $output = [];
+        $output['name'] = $this->name;
+        if (isset($this->region)) {
+            $output['region'] = $this->region->toArray();
+        }
 
         return $output;
     }
@@ -153,9 +132,11 @@ class Dependency
      */
     public function toStdClass(): \stdClass
     {
-        $output = $this->_additionalProperties;
-
-        $output->{'leaf'} = $this->leaf->toStdClass();
+        $output = new \stdClass();
+        $output->{'name'} = $this->name;
+        if (isset($this->region)) {
+            $output->{'region'} = $this->region->toStdClass();
+        }
 
         return $output;
     }
@@ -199,8 +180,8 @@ class Dependency
 
     public function __clone()
     {
-        $this->_additionalProperties = json_decode(json_encode($this->_additionalProperties));
-
-        $this->leaf = clone $this->leaf;
+        if (isset($this->region)) {
+            $this->region = clone $this->region;
+        }
     }
 }

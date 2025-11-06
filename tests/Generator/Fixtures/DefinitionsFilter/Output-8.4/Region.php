@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ns\DefinitionsFilter1_8_4;
+namespace Ns\DefinitionsFilter_8_4;
 
 class Region
 {
