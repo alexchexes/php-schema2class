@@ -223,6 +223,14 @@ class GeneratorRequest
         return $clone;
     }
 
+    public function withoutIncludeDefinitions(): self
+    {
+        $clone       = clone $this;
+        $clone->opts = $this->opts->withoutIncludeDefinitions();
+
+        return $clone;
+    }
+
     /**
      * Adds a property to generated classes.
      *
