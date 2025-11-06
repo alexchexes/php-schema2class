@@ -38,14 +38,24 @@ class DefinitionsGenerator
             $iter = function (mixed $node) use (&$iter, &$needed, &$queue, &$visited, $allDefinitions) {
                 if (is_array($node)) {
                     foreach ($node as $k => $v) {
-                        if ($k === '$ref' && is_string($v) && str_starts_with($v, '#/definitions/')) {
-                            $name = substr($v, 14);
-                            if (!isset($visited[$name])) {
-                                $visited[$name] = true;
-                                $needed[]       = $name;
+                        if ($k === '$ref' && is_string($v) && str_starts_with($v, '#/')) {
+                            $pointer = substr($v, 2);
+                            if (str_starts_with($pointer, 'definitions/')) {
+                                $refName = substr($pointer, 12);
+                            } elseif (str_starts_with($pointer, '$defs/')) {
+                                $refName = substr($pointer, 6);
+                            } else {
+                                $refName = null;
+                            }
 
-                                if (isset($allDefinitions[$name])) {
-                                    $queue[] = $allDefinitions[$name];
+                            if ($refName !== null) {
+                                if (!isset($visited[$refName])) {
+                                    $visited[$refName] = true;
+                                    $needed[]       = $refName;
+
+                                    if (isset($allDefinitions[$refName])) {
+                                        $queue[] = $allDefinitions[$refName];
+                                    }
                                 }
                             }
                         } elseif (is_array($v)) {
@@ -96,7 +106,8 @@ class DefinitionsGenerator
                 ->withNamespace($definition->namespace)
                 ->withDirectory($definition->directory)
                 ->withGeneratedClassNames($generatedClasses)
-                ->withRootDefinitions($trimmedDefs);
+                ->withRootDefinitions($trimmedDefs)
+                ->withoutIncludeDefinitions();
 
             try {
                 $this->schemaToClass->schemaToClass($newRequest);

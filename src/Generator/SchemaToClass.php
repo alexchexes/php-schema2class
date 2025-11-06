@@ -40,6 +40,18 @@ class SchemaToClass
         // collect definitions and prepare lookups before dereferencing
         $this->definitionsToSchemas($req);
 
+        // When only specific definitions should be generated, skip the root schema altogether.
+        // It does not have a definition name, so it can never be explicitly whitelisted.
+        $includeDefinitions = $req->getOptions()->getIncludeDefinitions();
+        if ($includeDefinitions !== null && $includeDefinitions !== []) {
+            $class = $req->getTargetClass();
+            if ($class !== null) {
+                $this->output->writeln("skipping generation of <comment>{$class}</comment>");
+            }
+
+            return;
+        }
+
         // if the caller supplied root definitions, *always* splice them in here
         // (but don't overwrite if the schema already carried its own definitions)
         $this->mergeRootDefinitions($schema, $rootDefs, $req->getRootDefinitions());
@@ -188,25 +200,26 @@ class SchemaToClass
         $collector = new DefinitionsCollector($req);
         $allDefinitions  = iterator_to_array($collector->collect($req->getSchema()));
 
+        $definitionsToGenerate = $this->filterDefinitionsByOptions($allDefinitions, $req);
+
         $ns = $req->getTargetNamespace();
-        
+
         $generatedClasses = array_map(static function(Definition $d) use ($ns): string {
             $cls = $d->classFQN;
             if ($ns !== '' && str_starts_with($cls, $ns . '\\')) {
                 return substr($cls, strlen($ns) + 1);
             }
             return ltrim($cls, '\\');
-        }, $allDefinitions);
+        }, $definitionsToGenerate);
 
         if ($req->getTargetClass() !== null) {
             $generatedClasses[] = $req->getTargetClass();
         }
 
         $req = $req
-            ->withAdditionalReferenceLookup(new DefinitionsReferenceLookup($allDefinitions))
+            ->withAdditionalReferenceLookup(new DefinitionsReferenceLookup($definitionsToGenerate))
             ->withGeneratedClassNames($generatedClasses);
 
-        $definitionsToGenerate = $allDefinitions;
         if (is_string($rootRef)) {
             $canonical = $rootRef;
             if (!isset($definitionsToGenerate[$canonical])) {
@@ -227,5 +240,122 @@ class SchemaToClass
 
         $generator = new DefinitionsGenerator($this);
         $generator->generate($definitionsToGenerate, $req);
+    }
+
+    /**
+     * @param array<string, Definition> $definitions
+     * @return array<string, Definition>
+     */
+    private function filterDefinitionsByOptions(array $definitions, GeneratorRequest $req): array
+    {
+        $allowed = $req->getOptions()->getIncludeDefinitions();
+        if ($allowed === null) {
+            return $definitions;
+        }
+
+        if ($allowed === []) {
+            return [];
+        }
+
+        $allowedMap = array_fill_keys($allowed, true);
+
+        $deps = [];
+        foreach ($definitions as $ref => $definition) {
+            $deps[$ref] = $this->collectDefinitionDependencies($definition->schema, $definitions);
+        }
+
+        $keep = [];
+        foreach ($definitions as $ref => $_definition) {
+            if (isset($allowedMap[$this->extractDefinitionName($ref)])) {
+                $keep[$ref] = true;
+            }
+        }
+
+        if ($keep === []) {
+            return [];
+        }
+
+        $queue = array_keys($keep);
+        while ($queue !== []) {
+            $ref = array_pop($queue);
+            foreach ($deps[$ref] ?? [] as $depRef) {
+                if (!isset($keep[$depRef])) {
+                    $keep[$depRef] = true;
+                    $queue[]       = $depRef;
+                }
+            }
+        }
+
+        return array_intersect_key($definitions, $keep);
+    }
+
+    /**
+     * @param array<string, Definition> $definitions
+     * @return string[]
+     */
+    private function collectDefinitionDependencies(array $schema, array $definitions): array
+    {
+        $deps = [];
+        $stack = [$schema];
+
+        while ($stack !== []) {
+            $node = array_pop($stack);
+            foreach ($node as $key => $value) {
+                if ($key === '$ref' && is_string($value)) {
+                    $canonical = $this->canonicalizeDefinitionRef($value, $definitions);
+                    if ($canonical !== null && !isset($deps[$canonical])) {
+                        $deps[$canonical] = true;
+                    }
+                } elseif (is_array($value)) {
+                    $stack[] = $value;
+                }
+            }
+        }
+
+        return array_keys($deps);
+    }
+
+    /**
+     * @param array<string, Definition> $definitions
+     */
+    private function canonicalizeDefinitionRef(string $ref, array $definitions): ?string
+    {
+        $ref = rawurldecode($ref);
+
+        if (!str_starts_with($ref, '#/')) {
+            return null;
+        }
+
+        $candidates = [$ref];
+        if (str_starts_with($ref, '#/definitions/')) {
+            $candidates[] = '#/$defs/' . substr($ref, strlen('#/definitions/'));
+        } elseif (str_starts_with($ref, '#/$defs/')) {
+            $candidates[] = '#/definitions/' . substr($ref, strlen('#/$defs/'));
+        }
+
+        foreach ($candidates as $candidate) {
+            $current = $candidate;
+            while (strlen($current) > 2) {
+                if (isset($definitions[$current])) {
+                    return $current;
+                }
+
+                $lastSlash = strrpos($current, '/');
+                if ($lastSlash === false || $lastSlash <= 1) {
+                    break;
+                }
+                $current = substr($current, 0, $lastSlash);
+            }
+        }
+
+        return null;
+    }
+
+    private function extractDefinitionName(string $ref): string
+    {
+        $ref = rawurldecode($ref);
+        $parts = explode('/', $ref);
+
+        return $parts[count($parts) - 1] ?? $ref;
     }
 }
