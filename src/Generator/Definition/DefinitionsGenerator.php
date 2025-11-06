@@ -106,7 +106,8 @@ class DefinitionsGenerator
                 ->withNamespace($definition->namespace)
                 ->withDirectory($definition->directory)
                 ->withGeneratedClassNames($generatedClasses)
-                ->withRootDefinitions($trimmedDefs);
+                ->withRootDefinitions($trimmedDefs)
+                ->asDefinitionContext();
 
             try {
                 $this->schemaToClass->schemaToClass($newRequest);

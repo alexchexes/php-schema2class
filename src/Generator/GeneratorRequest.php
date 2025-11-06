@@ -45,6 +45,7 @@ class GeneratorRequest
     /** @var array<string,mixed>|null Root schema's definitions, if any */
     private ?array $rootDefinitions = null;
     private array $generatedClassNames = [];
+    private bool $definitionContext = false;
 
     private ValidatedSpecificationFilesItem $spec;
     private SpecificationOptions $opts;
@@ -207,10 +208,22 @@ class GeneratorRequest
         $clone->generatedClassNames = $names;
         return $clone;
     }
-    
+
     public function getGeneratedClassNames(): array
     {
         return $this->generatedClassNames;
+    }
+
+    public function isDefinitionContext(): bool
+    {
+        return $this->definitionContext;
+    }
+
+    public function asDefinitionContext(): self
+    {
+        $clone = clone $this;
+        $clone->definitionContext = true;
+        return $clone;
     }
 
     public function withPHPVersion(string $targetPHPVersion): self
