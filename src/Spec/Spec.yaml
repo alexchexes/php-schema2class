@@ -94,3 +94,7 @@ definitions:
           Limits generation to the selected definitions. Provide definition names as
           they appear in the schema (for example `MyDefinition` or `MyDef/Nested`).
           Referenced definitions that are required by the selected entries are always generated.
+      validateArgValue:
+        type: boolean
+        description: |
+          Default value for \$validate arguments in all methods where it present. Default 'true'

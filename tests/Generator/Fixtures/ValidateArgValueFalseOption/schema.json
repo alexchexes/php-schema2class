@@ -1,0 +1,29 @@
+{
+  "type": "object",
+  "properties": {
+    "foo": {
+      "enum": ["a", 1]
+    },
+    "bar": {
+      "$ref": "#/definitions/Baz"
+    }
+  },
+  "additionalProperties": {
+    "type": "string"
+  },
+  "maxProperties": 10,
+  "definitions": {
+    "Baz": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "enum": ["x", 2]
+        }
+      },
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "maxProperties": 10
+  }
+}

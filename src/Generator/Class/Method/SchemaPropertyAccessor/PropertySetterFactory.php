@@ -141,7 +141,7 @@ class PropertySetterFactory
             $validateParam = new ParameterGenerator(
                 name: ArgumentNames::VALIDATE,
                 type: $type,
-                defaultValue: true,
+                defaultValue: $this->request->getOptions()->getValidateArgValue(),
             );
             $parameters[] = $validateParam;
         }

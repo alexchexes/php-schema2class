@@ -27,6 +27,7 @@ final class OptionsDefaults
             'noSchemaMetadata'      => false,
             'singleLineSchema'      => false,
             'noEnums'               => false,
+            'validateArgValue'      => true,
         ];
 
         $all_keys = array_unique(array_merge(array_keys($opts), array_keys($defaults)));

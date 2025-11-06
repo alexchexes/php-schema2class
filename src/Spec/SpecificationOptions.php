@@ -9,7 +9,7 @@ class SpecificationOptions
     /**
      * Schema used to validate input for creating instances of this class
      */
-    private static array $_schema = ['additionalProperties' => false, 'properties' => ['targetDirectory' => ['type' => 'string'], 'targetNamespace' => ['type' => 'string'], 'targetPHPVersion' => ['oneOf' => [['type' => 'integer', 'enum' => [5, 7, 8]], ['type' => 'string']]], 'cleanTargetDirectory' => ['type' => 'boolean'], 'disableStrictTypes' => ['type' => 'boolean'], 'inlineAllofReferences' => ['type' => 'boolean'], 'newValidatorExpr' => ['type' => 'string'], 'arrayToObjectExpr' => ['type' => 'string'], 'preservePropertyNames' => ['type' => 'boolean'], 'noGetters' => ['type' => 'boolean'], 'noSetters' => ['type' => 'boolean'], 'mutableSetters' => ['oneOf' => [['type' => 'boolean', 'enum' => [true]], ['type' => 'string', 'enum' => ['chainable']]]], 'noSchemaMetadata' => ['type' => 'boolean'], 'singleLineSchema' => ['type' => 'boolean'], 'noEnums' => ['type' => 'boolean'], 'includeDefinitions' => ['type' => 'array', 'items' => ['type' => 'string']]]];
+    private static array $_schema = ['additionalProperties' => false, 'properties' => ['targetDirectory' => ['type' => 'string'], 'targetNamespace' => ['type' => 'string'], 'targetPHPVersion' => ['oneOf' => [['type' => 'integer', 'enum' => [5, 7, 8]], ['type' => 'string']]], 'cleanTargetDirectory' => ['type' => 'boolean'], 'disableStrictTypes' => ['type' => 'boolean'], 'inlineAllofReferences' => ['type' => 'boolean'], 'newValidatorExpr' => ['type' => 'string'], 'arrayToObjectExpr' => ['type' => 'string'], 'preservePropertyNames' => ['type' => 'boolean'], 'noGetters' => ['type' => 'boolean'], 'noSetters' => ['type' => 'boolean'], 'mutableSetters' => ['oneOf' => [['type' => 'boolean', 'enum' => [true]], ['type' => 'string', 'enum' => ['chainable']]]], 'noSchemaMetadata' => ['type' => 'boolean'], 'singleLineSchema' => ['type' => 'boolean'], 'noEnums' => ['type' => 'boolean'], 'includeDefinitions' => ['type' => 'array', 'items' => ['type' => 'string']], 'validateArgValue' => ['type' => 'boolean']]];
 
     private ?string $targetDirectory = null;
 
@@ -52,6 +52,8 @@ class SpecificationOptions
      */
     private ?array $includeDefinitions = null;
 
+    private ?bool $validateArgValue = null;
+
     /**
      * @param 5|7|8|string|null $targetPHPVersion
      * @param true|'chainable'|null $mutableSetters
@@ -73,7 +75,8 @@ class SpecificationOptions
         ?bool $noSchemaMetadata = null,
         ?bool $singleLineSchema = null,
         ?bool $noEnums = null,
-        ?array $includeDefinitions = null
+        ?array $includeDefinitions = null,
+        ?bool $validateArgValue = null
     ) {
         $this->targetDirectory = $targetDirectory;
         $this->targetNamespace = $targetNamespace;
@@ -91,6 +94,7 @@ class SpecificationOptions
         $this->singleLineSchema = $singleLineSchema;
         $this->noEnums = $noEnums;
         $this->includeDefinitions = $includeDefinitions;
+        $this->validateArgValue = $validateArgValue;
     }
 
     public function getTargetDirectory(): ?string
@@ -554,6 +558,33 @@ class SpecificationOptions
     }
 
     /**
+     * Default value for \$validate arguments in all methods where it present. Default 'true'
+     */
+    public function getValidateArgValue(): ?bool
+    {
+        return $this->validateArgValue ?? null;
+    }
+
+    /**
+     * Default value for \$validate arguments in all methods where it present. Default 'true'
+     */
+    public function withValidateArgValue(bool $validateArgValue): self
+    {
+        $clone = clone $this;
+        $clone->validateArgValue = $validateArgValue;
+
+        return $clone;
+    }
+
+    public function withoutValidateArgValue(): self
+    {
+        $clone = clone $this;
+        unset($clone->validateArgValue);
+
+        return $clone;
+    }
+
+    /**
      * Builds a new instance from an input array or object
      *
      * @param array|object $input Input data
@@ -589,6 +620,7 @@ class SpecificationOptions
         $singleLineSchema = isset($input->{'singleLineSchema'}) ? $input->{'singleLineSchema'} : null;
         $noEnums = isset($input->{'noEnums'}) ? $input->{'noEnums'} : null;
         $includeDefinitions = isset($input->{'includeDefinitions'}) ? $input->{'includeDefinitions'} : null;
+        $validateArgValue = isset($input->{'validateArgValue'}) ? $input->{'validateArgValue'} : null;
 
         $obj = new self(
             $targetDirectory,
@@ -606,7 +638,8 @@ class SpecificationOptions
             $noSchemaMetadata,
             $singleLineSchema,
             $noEnums,
-            $includeDefinitions
+            $includeDefinitions,
+            $validateArgValue
         );
 
         return $obj;
@@ -668,6 +701,9 @@ class SpecificationOptions
         if (isset($this->includeDefinitions)) {
             $output['includeDefinitions'] = $this->includeDefinitions;
         }
+        if (isset($this->validateArgValue)) {
+            $output['validateArgValue'] = $this->validateArgValue;
+        }
 
         return $output;
     }
@@ -727,6 +763,9 @@ class SpecificationOptions
         }
         if (isset($this->includeDefinitions)) {
             $output->{'includeDefinitions'} = $this->includeDefinitions;
+        }
+        if (isset($this->validateArgValue)) {
+            $output->{'validateArgValue'} = $this->validateArgValue;
         }
 
         return $output;

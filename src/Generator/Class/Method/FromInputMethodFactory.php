@@ -67,7 +67,7 @@ class FromInputMethodFactory
             new ParameterGenerator(
                 name: ArgumentNames::VALIDATE,
                 type: $this->request->isAtLeastPHP('7.0') ? 'bool' : null,
-                defaultValue: true
+                defaultValue: $this->request->getOptions()->getValidateArgValue()
             ),
         ];
 
