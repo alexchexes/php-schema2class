@@ -49,6 +49,18 @@ class SchemaToClass
 
         $req = $req->withSchema($schema);
 
+        $includeDefinitions = $req->getOptions()->getIncludeDefinitions();
+        if ($includeDefinitions !== null && $includeDefinitions !== []) {
+            $class = $req->getTargetClass();
+            if ($class !== null) {
+                $this->output->writeln(
+                    "skipping generation of <comment>{$class}</comment> (filtered by includeDefinitions)"
+                );
+            }
+
+            return;
+        }
+
         if ($this->handleEnum($schema, $req)) {
             return;
         }

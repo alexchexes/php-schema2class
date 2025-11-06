@@ -75,6 +75,8 @@ class DefinitionsGenerator
      */
     public function generate(array $definitions, GeneratorRequest $request): void
     {
+        $request = $request->withoutIncludeDefinitions();
+
         $ns = $request->getTargetNamespace();
         $generatedClasses = array_map(
             static function(Definition $d) use ($ns): string {

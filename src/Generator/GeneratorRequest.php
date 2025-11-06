@@ -329,6 +329,14 @@ class GeneratorRequest
         return $this->opts;
     }
 
+    public function withoutIncludeDefinitions(): self
+    {
+        $clone       = clone $this;
+        $clone->opts = $this->opts->withoutIncludeDefinitions();
+
+        return $clone;
+    }
+
     public function lookupReference(string $ref): ReferencedTypeInterface
     {
         if (empty($this->referenceLookup)) {
