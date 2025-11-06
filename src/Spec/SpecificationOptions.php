@@ -9,7 +9,7 @@ class SpecificationOptions
     /**
      * Schema used to validate input for creating instances of this class
      */
-    private static array $_schema = ['additionalProperties' => false, 'properties' => ['targetDirectory' => ['type' => 'string'], 'targetNamespace' => ['type' => 'string'], 'targetPHPVersion' => ['oneOf' => [['type' => 'integer', 'enum' => [5, 7, 8]], ['type' => 'string']]], 'cleanTargetDirectory' => ['type' => 'boolean'], 'disableStrictTypes' => ['type' => 'boolean'], 'inlineAllofReferences' => ['type' => 'boolean'], 'newValidatorExpr' => ['type' => 'string'], 'arrayToObjectExpr' => ['type' => 'string'], 'preservePropertyNames' => ['type' => 'boolean'], 'noGetters' => ['type' => 'boolean'], 'noSetters' => ['type' => 'boolean'], 'mutableSetters' => ['oneOf' => [['type' => 'boolean', 'enum' => [true]], ['type' => 'string', 'enum' => ['chainable']]]], 'noSchemaMetadata' => ['type' => 'boolean'], 'singleLineSchema' => ['type' => 'boolean'], 'noEnums' => ['type' => 'boolean']]];
+    private static array $_schema = ['additionalProperties' => false, 'properties' => ['targetDirectory' => ['type' => 'string'], 'targetNamespace' => ['type' => 'string'], 'targetPHPVersion' => ['oneOf' => [['type' => 'integer', 'enum' => [5, 7, 8]], ['type' => 'string']]], 'cleanTargetDirectory' => ['type' => 'boolean'], 'disableStrictTypes' => ['type' => 'boolean'], 'inlineAllofReferences' => ['type' => 'boolean'], 'newValidatorExpr' => ['type' => 'string'], 'arrayToObjectExpr' => ['type' => 'string'], 'preservePropertyNames' => ['type' => 'boolean'], 'noGetters' => ['type' => 'boolean'], 'noSetters' => ['type' => 'boolean'], 'mutableSetters' => ['oneOf' => [['type' => 'boolean', 'enum' => [true]], ['type' => 'string', 'enum' => ['chainable']]]], 'noSchemaMetadata' => ['type' => 'boolean'], 'singleLineSchema' => ['type' => 'boolean'], 'noEnums' => ['type' => 'boolean'], 'allowedDefinitions' => ['type' => 'array', 'items' => ['type' => 'string']]]];
 
     private ?string $targetDirectory = null;
 
@@ -48,8 +48,14 @@ class SpecificationOptions
     private ?bool $noEnums = null;
 
     /**
+     * @var string[]|null
+     */
+    private ?array $allowedDefinitions = null;
+
+    /**
      * @param 5|7|8|string|null $targetPHPVersion
      * @param true|'chainable'|null $mutableSetters
+     * @param string[]|null $allowedDefinitions
      */
     public function __construct(
         ?string $targetDirectory = null,
@@ -66,7 +72,8 @@ class SpecificationOptions
         bool|string|null $mutableSetters = null,
         ?bool $noSchemaMetadata = null,
         ?bool $singleLineSchema = null,
-        ?bool $noEnums = null
+        ?bool $noEnums = null,
+        ?array $allowedDefinitions = null
     ) {
         $this->targetDirectory = $targetDirectory;
         $this->targetNamespace = $targetNamespace;
@@ -83,6 +90,7 @@ class SpecificationOptions
         $this->noSchemaMetadata = $noSchemaMetadata;
         $this->singleLineSchema = $singleLineSchema;
         $this->noEnums = $noEnums;
+        $this->allowedDefinitions = $allowedDefinitions;
     }
 
     public function getTargetDirectory(): ?string
@@ -501,6 +509,53 @@ class SpecificationOptions
     }
 
     /**
+     * Limits generation to the selected definitions. Provide definition names as
+     * they appear in the schema (for example `MyDefinition` or `MyDef/Nested`).
+     * Referenced definitions that are required by the selected entries are always
+     * generated.
+     *
+     *
+     * @return string[]|null
+     */
+    public function getAllowedDefinitions(): ?array
+    {
+        return $this->allowedDefinitions ?? null;
+    }
+
+    /**
+     * Limits generation to the selected definitions. Provide definition names as
+     * they appear in the schema (for example `MyDefinition` or `MyDef/Nested`).
+     * Referenced definitions that are required by the selected entries are always
+     * generated.
+     *
+     *
+     * @param string[] $allowedDefinitions
+     */
+    public function withAllowedDefinitions(array $allowedDefinitions, bool $validate = true): self
+    {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($allowedDefinitions, self::$_schema['properties']['allowedDefinitions']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
+        $clone = clone $this;
+        $clone->allowedDefinitions = $allowedDefinitions;
+
+        return $clone;
+    }
+
+    public function withoutAllowedDefinitions(): self
+    {
+        $clone = clone $this;
+        unset($clone->allowedDefinitions);
+
+        return $clone;
+    }
+
+    /**
      * Builds a new instance from an input array or object
      *
      * @param array|object $input Input data
@@ -535,6 +590,7 @@ class SpecificationOptions
         $noSchemaMetadata = isset($input->{'noSchemaMetadata'}) ? $input->{'noSchemaMetadata'} : null;
         $singleLineSchema = isset($input->{'singleLineSchema'}) ? $input->{'singleLineSchema'} : null;
         $noEnums = isset($input->{'noEnums'}) ? $input->{'noEnums'} : null;
+        $allowedDefinitions = isset($input->{'allowedDefinitions'}) ? $input->{'allowedDefinitions'} : null;
 
         $obj = new self(
             $targetDirectory,
@@ -551,7 +607,8 @@ class SpecificationOptions
             $mutableSetters,
             $noSchemaMetadata,
             $singleLineSchema,
-            $noEnums
+            $noEnums,
+            $allowedDefinitions
         );
 
         return $obj;
@@ -610,6 +667,9 @@ class SpecificationOptions
         if (isset($this->noEnums)) {
             $output['noEnums'] = $this->noEnums;
         }
+        if (isset($this->allowedDefinitions)) {
+            $output['allowedDefinitions'] = $this->allowedDefinitions;
+        }
 
         return $output;
     }
@@ -666,6 +726,9 @@ class SpecificationOptions
         }
         if (isset($this->noEnums)) {
             $output->{'noEnums'} = $this->noEnums;
+        }
+        if (isset($this->allowedDefinitions)) {
+            $output->{'allowedDefinitions'} = $this->allowedDefinitions;
         }
 
         return $output;

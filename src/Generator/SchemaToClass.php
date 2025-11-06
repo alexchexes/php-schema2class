@@ -206,26 +206,194 @@ class SchemaToClass
             ->withAdditionalReferenceLookup(new DefinitionsReferenceLookup($allDefinitions))
             ->withGeneratedClassNames($generatedClasses);
 
-        $definitionsToGenerate = $allDefinitions;
+        $definitionsToGenerate = $this->filterDefinitionsByAllowedList($allDefinitions, $req);
+
         if (is_string($rootRef)) {
-            $canonical = $rootRef;
-            if (!isset($definitionsToGenerate[$canonical])) {
-                if (str_starts_with($rootRef, '#/definitions/')) {
-                    $alt = '#/$defs/' . substr($rootRef, 14);
-                    if (isset($definitionsToGenerate[$alt])) {
-                        $canonical = $alt;
-                    }
-                } elseif (str_starts_with($rootRef, '#/$defs/')) {
-                    $alt = '#/definitions/' . substr($rootRef, 7);
-                    if (isset($definitionsToGenerate[$alt])) {
-                        $canonical = $alt;
-                    }
-                }
+            $decodedRootRef = rawurldecode($rootRef);
+            $canonical = $this->resolveDefinitionRef($decodedRootRef, $allDefinitions);
+            if ($canonical !== null) {
+                unset($definitionsToGenerate[$canonical]);
             }
-            unset($definitionsToGenerate[$canonical]);
         }
 
         $generator = new DefinitionsGenerator($this);
         $generator->generate($definitionsToGenerate, $req);
+    }
+
+    /**
+     * @param array<string, Definition> $definitions
+     * @return array<string, Definition>
+     */
+    private function filterDefinitionsByAllowedList(array $definitions, GeneratorRequest $req): array
+    {
+        $allowedNames = $req->getAllowedDefinitionNames();
+        if ($allowedNames === null) {
+            return $definitions;
+        }
+
+        $allowedPaths = $this->resolveAllowedDefinitionPaths($definitions, $allowedNames);
+        if ($allowedPaths === []) {
+            return [];
+        }
+
+        $requiredPaths = $this->expandDefinitionDependencies($allowedPaths, $definitions);
+
+        return array_intersect_key($definitions, array_flip($requiredPaths));
+    }
+
+    /**
+     * @param array<string, Definition> $definitions
+     * @param list<string> $allowedNames
+     * @return list<string>
+     */
+    private function resolveAllowedDefinitionPaths(array $definitions, array $allowedNames): array
+    {
+        $resolved = [];
+
+        foreach ($allowedNames as $name) {
+            if ($name === '') {
+                continue;
+            }
+
+            if (str_starts_with($name, '#/')) {
+                $canonical = $this->resolveDefinitionRef(rawurldecode($name), $definitions);
+                if ($canonical !== null) {
+                    $resolved[$canonical] = true;
+                }
+                continue;
+            }
+
+            foreach ($definitions as $path => $_definition) {
+                if ($this->definitionPathMatchesName($path, $name)) {
+                    $resolved[$path] = true;
+                }
+            }
+        }
+
+        return array_keys($resolved);
+    }
+
+    private function definitionPathMatchesName(string $path, string $name): bool
+    {
+        $normalizedPath = $this->normalizeDefinitionName($path);
+        $normalizedName = $this->normalizeDefinitionName($name);
+
+        if ($normalizedPath === $normalizedName) {
+            return true;
+        }
+
+        if (!str_contains($normalizedName, '/')) {
+            $lastSegment = $this->lastDefinitionSegment($normalizedPath);
+            return $lastSegment === $normalizedName;
+        }
+
+        return false;
+    }
+
+    private function normalizeDefinitionName(string $value): string
+    {
+        $trimmed = ltrim($value, '#/');
+        if ($trimmed === '') {
+            return '';
+        }
+
+        $segments = explode('/', $trimmed);
+        $filtered = array_values(array_filter($segments, static function (string $segment): bool {
+            return $segment !== 'definitions' && $segment !== '$defs';
+        }));
+
+        return implode('/', $filtered);
+    }
+
+    private function lastDefinitionSegment(string $normalizedPath): string
+    {
+        $pos = strrpos($normalizedPath, '/');
+        if ($pos === false) {
+            return $normalizedPath;
+        }
+
+        return substr($normalizedPath, $pos + 1);
+    }
+
+    /**
+     * @param list<string> $allowedPaths
+     * @param array<string, Definition> $definitions
+     * @return list<string>
+     */
+    private function expandDefinitionDependencies(array $allowedPaths, array $definitions): array
+    {
+        $required = [];
+        foreach ($allowedPaths as $path) {
+            if (isset($definitions[$path])) {
+                $required[$path] = true;
+            }
+        }
+
+        $queue = array_keys($required);
+
+        while (!empty($queue)) {
+            $current = array_pop($queue);
+            if (!isset($definitions[$current])) {
+                continue;
+            }
+
+            foreach ($this->collectDefinitionDependencies($definitions[$current], $definitions) as $dependency) {
+                if (!isset($required[$dependency]) && isset($definitions[$dependency])) {
+                    $required[$dependency] = true;
+                    $queue[] = $dependency;
+                }
+            }
+        }
+
+        return array_keys($required);
+    }
+
+    /**
+     * @param array<string, Definition> $definitions
+     * @return list<string>
+     */
+    private function collectDefinitionDependencies(Definition $definition, array $definitions): array
+    {
+        $dependencies = [];
+        $queue = [$definition->schema];
+
+        while ($current = array_pop($queue)) {
+            foreach ($current as $key => $value) {
+                if ($key === '$ref' && is_string($value)) {
+                    $canonical = $this->resolveDefinitionRef(rawurldecode($value), $definitions);
+                    if ($canonical !== null && !isset($dependencies[$canonical])) {
+                        $dependencies[$canonical] = true;
+                    }
+                } elseif (is_array($value)) {
+                    $queue[] = $value;
+                }
+            }
+        }
+
+        return array_keys($dependencies);
+    }
+
+    /**
+     * @param array<string, Definition> $definitions
+     */
+    private function resolveDefinitionRef(string $ref, array $definitions): ?string
+    {
+        if (isset($definitions[$ref])) {
+            return $ref;
+        }
+
+        if (str_starts_with($ref, '#/definitions/')) {
+            $alt = '#/$defs/' . substr($ref, 14);
+            if (isset($definitions[$alt])) {
+                return $alt;
+            }
+        } elseif (str_starts_with($ref, '#/$defs/')) {
+            $alt = '#/definitions/' . substr($ref, 7);
+            if (isset($definitions[$alt])) {
+                return $alt;
+            }
+        }
+
+        return null;
     }
 }
