@@ -287,6 +287,28 @@ class GeneratorRequest
         return $this->opts->getNoEnums() === true;
     }
 
+    /**
+     * @return list<string>|null
+     */
+    public function getAllowedDefinitionNames(): ?array
+    {
+        $allowed = $this->opts->getAllowedDefinitionNames();
+        if ($allowed === null) {
+            return null;
+        }
+
+        $names = [];
+        foreach ($allowed as $name) {
+            $trimmed = trim((string)$name);
+            if ($trimmed === '') {
+                continue;
+            }
+            $names[] = $trimmed;
+        }
+
+        return $names;
+    }
+
     public function isAtLeastPHP(string $version): bool
     {
         return Comparator::greaterThanOrEqualTo($this->getTargetPHPVersion(), self::semversifyVersionNumber($version));

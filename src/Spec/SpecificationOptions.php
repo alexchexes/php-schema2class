@@ -9,7 +9,7 @@ class SpecificationOptions
     /**
      * Schema used to validate input for creating instances of this class
      */
-    private static array $_schema = ['additionalProperties' => false, 'properties' => ['targetDirectory' => ['type' => 'string'], 'targetNamespace' => ['type' => 'string'], 'targetPHPVersion' => ['oneOf' => [['type' => 'integer', 'enum' => [5, 7, 8]], ['type' => 'string']]], 'cleanTargetDirectory' => ['type' => 'boolean'], 'disableStrictTypes' => ['type' => 'boolean'], 'inlineAllofReferences' => ['type' => 'boolean'], 'newValidatorExpr' => ['type' => 'string'], 'arrayToObjectExpr' => ['type' => 'string'], 'preservePropertyNames' => ['type' => 'boolean'], 'noGetters' => ['type' => 'boolean'], 'noSetters' => ['type' => 'boolean'], 'mutableSetters' => ['oneOf' => [['type' => 'boolean', 'enum' => [true]], ['type' => 'string', 'enum' => ['chainable']]]], 'noSchemaMetadata' => ['type' => 'boolean'], 'singleLineSchema' => ['type' => 'boolean'], 'noEnums' => ['type' => 'boolean']]];
+    private static array $_schema = ['additionalProperties' => false, 'properties' => ['targetDirectory' => ['type' => 'string'], 'targetNamespace' => ['type' => 'string'], 'targetPHPVersion' => ['oneOf' => [['type' => 'integer', 'enum' => [5, 7, 8]], ['type' => 'string']]], 'cleanTargetDirectory' => ['type' => 'boolean'], 'disableStrictTypes' => ['type' => 'boolean'], 'inlineAllofReferences' => ['type' => 'boolean'], 'newValidatorExpr' => ['type' => 'string'], 'arrayToObjectExpr' => ['type' => 'string'], 'preservePropertyNames' => ['type' => 'boolean'], 'noGetters' => ['type' => 'boolean'], 'noSetters' => ['type' => 'boolean'], 'mutableSetters' => ['oneOf' => [['type' => 'boolean', 'enum' => [true]], ['type' => 'string', 'enum' => ['chainable']]]], 'noSchemaMetadata' => ['type' => 'boolean'], 'singleLineSchema' => ['type' => 'boolean'], 'noEnums' => ['type' => 'boolean'], 'allowedDefinitionNames' => ['type' => 'array', 'items' => ['type' => 'string']]]];
 
     private ?string $targetDirectory = null;
 
@@ -48,8 +48,14 @@ class SpecificationOptions
     private ?bool $noEnums = null;
 
     /**
+     * @var string[]|null
+     */
+    private ?array $allowedDefinitionNames = null;
+
+    /**
      * @param 5|7|8|string|null $targetPHPVersion
      * @param true|'chainable'|null $mutableSetters
+     * @param string[]|null $allowedDefinitionNames
      */
     public function __construct(
         ?string $targetDirectory = null,
@@ -66,7 +72,8 @@ class SpecificationOptions
         bool|string|null $mutableSetters = null,
         ?bool $noSchemaMetadata = null,
         ?bool $singleLineSchema = null,
-        ?bool $noEnums = null
+        ?bool $noEnums = null,
+        ?array $allowedDefinitionNames = null
     ) {
         $this->targetDirectory = $targetDirectory;
         $this->targetNamespace = $targetNamespace;
@@ -83,6 +90,7 @@ class SpecificationOptions
         $this->noSchemaMetadata = $noSchemaMetadata;
         $this->singleLineSchema = $singleLineSchema;
         $this->noEnums = $noEnums;
+        $this->allowedDefinitionNames = $allowedDefinitionNames;
     }
 
     public function getTargetDirectory(): ?string
@@ -501,6 +509,49 @@ class SpecificationOptions
     }
 
     /**
+     * Restrict generation of schema definitions to the specified definition names.
+     * Definitions referenced from these names are generated automatically.
+     *
+     *
+     * @return string[]|null
+     */
+    public function getAllowedDefinitionNames(): ?array
+    {
+        return $this->allowedDefinitionNames ?? null;
+    }
+
+    /**
+     * Restrict generation of schema definitions to the specified definition names.
+     * Definitions referenced from these names are generated automatically.
+     *
+     *
+     * @param string[] $allowedDefinitionNames
+     */
+    public function withAllowedDefinitionNames(array $allowedDefinitionNames, bool $validate = true): self
+    {
+        if ($validate) {
+            $validator = new \JsonSchema\Validator();
+            $validator->validate($allowedDefinitionNames, self::$_schema['properties']['allowedDefinitionNames']);
+            if (!$validator->isValid()) {
+                throw new \InvalidArgumentException($validator->getErrors()[0]['message']);
+            }
+        }
+
+        $clone = clone $this;
+        $clone->allowedDefinitionNames = $allowedDefinitionNames;
+
+        return $clone;
+    }
+
+    public function withoutAllowedDefinitionNames(): self
+    {
+        $clone = clone $this;
+        unset($clone->allowedDefinitionNames);
+
+        return $clone;
+    }
+
+    /**
      * Builds a new instance from an input array or object
      *
      * @param array|object $input Input data
@@ -535,6 +586,7 @@ class SpecificationOptions
         $noSchemaMetadata = isset($input->{'noSchemaMetadata'}) ? $input->{'noSchemaMetadata'} : null;
         $singleLineSchema = isset($input->{'singleLineSchema'}) ? $input->{'singleLineSchema'} : null;
         $noEnums = isset($input->{'noEnums'}) ? $input->{'noEnums'} : null;
+        $allowedDefinitionNames = isset($input->{'allowedDefinitionNames'}) ? $input->{'allowedDefinitionNames'} : null;
 
         $obj = new self(
             $targetDirectory,
@@ -551,7 +603,8 @@ class SpecificationOptions
             $mutableSetters,
             $noSchemaMetadata,
             $singleLineSchema,
-            $noEnums
+            $noEnums,
+            $allowedDefinitionNames
         );
 
         return $obj;
@@ -610,6 +663,9 @@ class SpecificationOptions
         if (isset($this->noEnums)) {
             $output['noEnums'] = $this->noEnums;
         }
+        if (isset($this->allowedDefinitionNames)) {
+            $output['allowedDefinitionNames'] = $this->allowedDefinitionNames;
+        }
 
         return $output;
     }
@@ -666,6 +722,9 @@ class SpecificationOptions
         }
         if (isset($this->noEnums)) {
             $output->{'noEnums'} = $this->noEnums;
+        }
+        if (isset($this->allowedDefinitionNames)) {
+            $output->{'allowedDefinitionNames'} = $this->allowedDefinitionNames;
         }
 
         return $output;

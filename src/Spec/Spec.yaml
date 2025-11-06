@@ -86,3 +86,10 @@ definitions:
         description: |
           Disable generating PHP enum classes even on PHP ≥ 8.1. Enum values will be
           handled like in earlier PHP versions.
+      allowedDefinitionNames:
+        type: array
+        items:
+          type: string
+        description: |
+          Restrict generation of schema definitions to the specified definition names.
+          Definitions referenced from these names are generated automatically.
