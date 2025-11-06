@@ -151,7 +151,7 @@ class SchemaToClassTest extends TestCase
 
         $writtenFiles = array_map('basename', array_keys($writer->getWrittenFiles()));
 
-        $this->assertContains('Root.php', $writtenFiles);
+        $this->assertNotContains('Root.php', $writtenFiles);
         $this->assertContains('Alpha.php', $writtenFiles);
         $this->assertContains('Beta.php', $writtenFiles);
         $this->assertNotContains('Gamma.php', $writtenFiles);
