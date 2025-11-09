@@ -230,5 +230,7 @@ class MyClass
     public function __clone()
     {
         $this->_additionalProperties = json_decode(json_encode($this->_additionalProperties));
+
+        $this->foo = array_map(fn (FooItem $i): FooItem => clone $i, $this->foo);
     }
 }

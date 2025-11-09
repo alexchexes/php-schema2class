@@ -386,5 +386,18 @@ class MyClass
     public function __clone()
     {
         $this->_additionalProperties = json_decode(json_encode($this->_additionalProperties));
+
+        if (isset($this->foo)) {
+            $this->foo = array_map(
+                function(FooItem $i) { return clone $i; },
+                $this->foo
+            );
+        }
+        if (isset($this->bar)) {
+            $this->bar = array_map(
+                function(BarItem $i) { return clone $i; },
+                $this->bar
+            );
+        }
     }
 }

@@ -465,8 +465,11 @@ class Record
     {
         $this->_additionalProperties = json_decode(json_encode($this->_additionalProperties));
 
+        if (isset($this->dataArray)) {
+            $this->dataArray = array_map(fn (Phone $i): Phone => clone $i, $this->dataArray);
+        }
         if (isset($this->dataArrayNested)) {
-            $this->dataArrayNested = array_map(fn ($i) => $i, $this->dataArrayNested);
+            $this->dataArrayNested = array_map(fn ($i) => array_map(fn (Phone $i): Phone => clone $i, $i), $this->dataArrayNested);
         }
         if (isset($this->dataArrayAnyOf)) {
             $this->dataArrayAnyOf = array_map(

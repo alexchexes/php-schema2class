@@ -154,6 +154,22 @@ class ReferenceArrayProperty extends AbstractProperty
         );
     }
 
+    public function cloneExpr(string $expr): string
+    {
+        if (!($this->refType instanceof ReferencedTypeClass)) {
+            return $expr;
+        }
+
+        return ArrayMapGenerator::make(
+            arrayExpr: $expr,
+            itemParam: '$i',
+            mapExpr: 'clone $i',
+            phpVer: $this->request->getTargetPHPVersion(),
+            itemType: $this->refType->typeHint(),
+            returnType: $this->refType->typeHint(),
+        );
+    }
+
     public function needsValidation(): bool
     {
         // Typed arrays always require validation since their type-hint is just 'array'

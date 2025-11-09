@@ -243,5 +243,12 @@ class MyClass
     public function __clone()
     {
         $this->_additionalProperties = json_decode(json_encode($this->_additionalProperties));
+
+        if (isset($this->foo)) {
+            $this->foo = array_map(
+                function(\Helmich\Schema2Class\Example\CustomerAddress $i) { return clone $i; },
+                $this->foo
+            );
+        }
     }
 }

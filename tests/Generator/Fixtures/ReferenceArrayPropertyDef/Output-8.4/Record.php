@@ -354,5 +354,12 @@ class Record
     public function __clone()
     {
         $this->_additionalProperties = json_decode(json_encode($this->_additionalProperties));
+
+        if (isset($this->foo)) {
+            $this->foo = array_map(fn (FooItem $i): FooItem => clone $i, $this->foo);
+        }
+        if (isset($this->bar)) {
+            $this->bar = array_map(fn (BarItem $i): BarItem => clone $i, $this->bar);
+        }
     }
 }

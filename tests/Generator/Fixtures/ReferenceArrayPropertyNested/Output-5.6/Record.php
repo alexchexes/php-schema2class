@@ -512,11 +512,19 @@ class Record
     {
         $this->_additionalProperties = json_decode(json_encode($this->_additionalProperties));
 
-        if (isset($this->dataArrayNested)) {
-            $this->dataArrayNested = array_map(
-                function($i) { return $i; },
-                $this->dataArrayNested
+        if (isset($this->dataArray)) {
+            $this->dataArray = array_map(
+                function(Phone $i) { return clone $i; },
+                $this->dataArray
             );
+        }
+        if (isset($this->dataArrayNested)) {
+            $this->dataArrayNested = array_map(function($i) {
+                return array_map(
+                    function(Phone $i) { return clone $i; },
+                    $i
+                );
+            }, $this->dataArrayNested);
         }
         if (isset($this->dataArrayAnyOf)) {
             $this->dataArrayAnyOf = array_map(function($i) {
