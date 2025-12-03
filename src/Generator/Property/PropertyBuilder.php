@@ -80,6 +80,7 @@ class PropertyBuilder
     ): PropertyInterface
     {
         $definition = self::collapseSingleUnion($definition);
+        $definition = self::convertConstToEnum($definition);
         $definition = self::sanitizeEnum($definition);
         $definition = self::collapseSingleTypeArray($definition);
         
@@ -144,6 +145,41 @@ class PropertyBuilder
         $defType = $definition['type'] ?? null;
         if (is_array($defType) && count($defType) === 1) {
             $definition['type'] = $defType[0];
+        }
+
+        return $definition;
+    }
+
+    /**
+     * Turn `const` into a single-value enum to reuse enum handling logic.
+     */
+    private static function convertConstToEnum(array $definition): array
+    {
+        if (!array_key_exists('const', $definition)) {
+            return $definition;
+        }
+
+        $const = $definition['const'];
+
+        if (isset($definition['enum']) && is_array($definition['enum'])) {
+            if (!in_array($const, $definition['enum'], true)) {
+                $definition['enum'][] = $const;
+            }
+        } else {
+            $definition['enum'] = [$const];
+        }
+
+        unset($definition['const']);
+
+        if (!isset($definition['type']) && !isset($definition['anyOf']) && !isset($definition['oneOf'])) {
+            $definition['type'] = match (true) {
+                $const === null   => 'null',
+                is_string($const) => 'string',
+                is_int($const)    => 'integer',
+                is_float($const)  => 'number',
+                is_bool($const)   => 'boolean',
+                default           => $definition['type'] ?? null,
+            };
         }
 
         return $definition;
