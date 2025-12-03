@@ -80,6 +80,7 @@ class PropertyBuilder
     ): PropertyInterface
     {
         $definition = self::collapseSingleUnion($definition);
+        $definition = self::expandConstToEnum($definition);
         $definition = self::sanitizeEnum($definition);
         $definition = self::collapseSingleTypeArray($definition);
         
@@ -464,6 +465,22 @@ class PropertyBuilder
         if (is_array($definition['type']) && count($definition['type']) === 1 && !$originalIsArray) {
             $definition['type'] = $definition['type'][0];
         }
+
+        return $definition;
+    }
+
+    /**
+     * Convert `const` to an `enum` with a single value so it can be
+     * processed uniformly alongside regular enums.
+     */
+    private static function expandConstToEnum(array $definition): array
+    {
+        if (!array_key_exists('const', $definition)) {
+            return $definition;
+        }
+
+        $definition['enum'] = [$definition['const']];
+        unset($definition['const']);
 
         return $definition;
     }
