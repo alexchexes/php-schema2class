@@ -360,6 +360,11 @@ class PropertyBuilder
      */
     private static function sanitizeEnum(array $definition): array
     {
+        if (!isset($definition['enum']) && array_key_exists('const', $definition)) {
+            $definition['enum'] = [$definition['const']];
+            unset($definition['const']);
+        }
+
         if (!isset($definition['enum'])) {
             return $definition;
         }
