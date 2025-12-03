@@ -1,0 +1,24 @@
+{
+  "definitions": {
+    "AddressAdminData": {
+      "type": "object",
+      "properties": {
+        "fias_level": {
+          "anyOf": [
+            { "type": "null" },
+            { "$ref": "#/definitions/AddressFiasLevel" }
+          ]
+        }
+      },
+      "required": ["fias_level"]
+    },
+    "AddressFiasLevel": {
+      "anyOf": [
+        { "type": "string", "const": "0" },
+        { "type": "string", "enum": ["1", "8"] },
+        { "type": "string", "const": "75" },
+        { "type": "string", "const": "-1" }
+      ]
+    }
+  }
+}
