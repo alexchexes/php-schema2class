@@ -1071,14 +1071,10 @@ class MyClass
             $this->baz = clone $this->baz;
         }
         if (isset($this->quxObj)) {
-            if (isset($this->quxObj)) {
-                $this->quxObj = clone $this->quxObj;
-            }
+            $this->quxObj = clone $this->quxObj;
         }
         if (isset($this->quxObjNest)) {
-            if (isset($this->quxObjNest)) {
-                $this->quxObjNest = clone $this->quxObjNest;
-            }
+            $this->quxObjNest = clone $this->quxObjNest;
         }
         if (isset($this->xyyz)) {
             $this->xyyz = match (true) {

@@ -1293,9 +1293,7 @@ class MyClass
             $this->optQuux = clone $this->optQuux;
         }
         if (isset($this->optNullQuux)) {
-            if (isset($this->optNullQuux)) {
-                $this->optNullQuux = clone $this->optNullQuux;
-            }
+            $this->optNullQuux = clone $this->optNullQuux;
         }
     }
 
