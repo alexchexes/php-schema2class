@@ -320,7 +320,7 @@ class PropertyBuilder
                     $singleSchema[$k] = $definition[$k];
                 }
             }
-            $inner = self::buildPropertyFromSchema($req, $name, $singleSchema, $isRequired);
+            $inner = self::buildPropertyFromSchema($req, $name, $singleSchema, true);
             return $isRequired
                 ? new NullablePropertyDecorator($name, $inner, $req)
                 : self::wrapProperty($req, $inner, $definition, $name, false);

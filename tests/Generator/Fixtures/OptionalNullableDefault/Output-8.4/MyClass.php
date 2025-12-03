@@ -675,14 +675,10 @@ class MyClass
         $this->_additionalProperties = json_decode(json_encode($this->_additionalProperties));
 
         if (isset($this->grox)) {
-            if (isset($this->grox)) {
-                $this->grox = clone $this->grox;
-            }
+            $this->grox = clone $this->grox;
         }
         if (isset($this->gooks)) {
-            if (isset($this->gooks)) {
-                $this->gooks = clone $this->gooks;
-            }
+            $this->gooks = clone $this->gooks;
         }
     }
 

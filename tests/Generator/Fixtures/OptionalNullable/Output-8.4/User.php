@@ -233,9 +233,7 @@ class User
         $this->_additionalProperties = json_decode(json_encode($this->_additionalProperties));
 
         if (isset($this->address)) {
-            if (isset($this->address)) {
-                $this->address = clone $this->address;
-            }
+            $this->address = clone $this->address;
         }
     }
 
