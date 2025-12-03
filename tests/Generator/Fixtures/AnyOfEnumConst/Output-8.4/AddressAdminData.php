@@ -66,12 +66,12 @@ class AddressAdminData
     private \stdClass $_additionalProperties;
 
     /**
-     * @var string|'1'|'8'|null
+     * @var '0'|'1'|'8'|'75'|'-1'|null
      */
     private ?string $fiasLevel;
 
     /**
-     * @param string|'1'|'8'|null $fiasLevel
+     * @param '0'|'1'|'8'|'75'|'-1'|null $fiasLevel
      */
     public function __construct(?string $fiasLevel)
     {
@@ -118,7 +118,7 @@ class AddressAdminData
     }
 
     /**
-     * @return string|'1'|'8'|null
+     * @return '0'|'1'|'8'|'75'|'-1'|null
      */
     public function getFiasLevel(): ?string
     {
@@ -126,7 +126,7 @@ class AddressAdminData
     }
 
     /**
-     * @param string|'1'|'8'|null $fiasLevel
+     * @param '0'|'1'|'8'|'75'|'-1'|null $fiasLevel
      */
     public function withFiasLevel(?string $fiasLevel, bool $validate = true): self
     {

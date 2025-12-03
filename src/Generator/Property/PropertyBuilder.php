@@ -80,6 +80,7 @@ class PropertyBuilder
     ): PropertyInterface
     {
         $definition = self::collapseSingleUnion($definition);
+        $definition = self::convertConstToEnum($definition);
         $definition = self::sanitizeEnum($definition);
         $definition = self::collapseSingleTypeArray($definition);
         
@@ -464,6 +465,18 @@ class PropertyBuilder
         if (is_array($definition['type']) && count($definition['type']) === 1 && !$originalIsArray) {
             $definition['type'] = $definition['type'][0];
         }
+
+        return $definition;
+    }
+
+    private static function convertConstToEnum(array $definition): array
+    {
+        if (!array_key_exists('const', $definition)) {
+            return $definition;
+        }
+
+        $definition['enum'] = [$definition['const']];
+        unset($definition['const']);
 
         return $definition;
     }
