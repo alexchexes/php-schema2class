@@ -1,0 +1,21 @@
+{
+  "definitions": {
+    "Address": {
+      "type": "object",
+      "properties": {
+        "street": { "type": "string" }
+      }
+    },
+    "User": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "anyOf": [
+            { "type": "null" },
+            { "$ref": "#/definitions/Address" }
+          ]
+        }
+      }
+    }
+  }
+}
