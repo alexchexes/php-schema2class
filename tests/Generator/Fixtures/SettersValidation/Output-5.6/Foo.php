@@ -345,12 +345,7 @@ class Foo
         }
 
         $_providedOptionals = [];
-        $a = isset($input->{'a'})
-            ? ((in_array($input->{'a'}, ['a', 'b'], true) || is_array($input->{'a'}))
-                ? $input->{'a'}
-                : null
-            )
-            : null;
+        $a = isset($input->{'a'}) ? $input->{'a'} : null;
         $b = isset($input->{'b'}) ? $input->{'b'} : null;
         $c = null;
         if (property_exists($input, 'c')) {
@@ -380,9 +375,7 @@ class Foo
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
         if (isset($this->a)) {
-            if (in_array($this->a, ['a', 'b'], true) || is_array($this->a)) {
-                $output['a'] = $this->a;
-            }
+            $output['a'] = $this->a;
         }
         if (isset($this->b)) {
             $output['b'] = $this->b;
@@ -407,9 +400,7 @@ class Foo
         $output = $this->_additionalProperties;
 
         if (isset($this->a)) {
-            if (in_array($this->a, ['a', 'b'], true) || is_array($this->a)) {
-                $output->{'a'} = $this->a;
-            }
+            $output->{'a'} = $this->a;
         }
         if (isset($this->b)) {
             $output->{'b'} = $this->b;

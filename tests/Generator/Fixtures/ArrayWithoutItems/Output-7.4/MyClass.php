@@ -468,14 +468,9 @@ class MyClass
         $a = $input->{'a'};
         $b = $input->{'b'};
         $c = ($input->{'c'} !== null ? $input->{'c'} : null);
-        $d = ($input->{'d'} !== null
-            ? ((is_array($input->{'d'}) || is_string($input->{'d'})) ? $input->{'d'} : null)
-            : null
-        );
+        $d = ($input->{'d'} !== null ? $input->{'d'} : null);
         $e = isset($input->{'e'}) ? $input->{'e'} : null;
-        $f = isset($input->{'f'})
-            ? ((is_array($input->{'f'}) || is_string($input->{'f'})) ? $input->{'f'} : null)
-            : null;
+        $f = isset($input->{'f'}) ? $input->{'f'} : null;
         $g = null;
         if (property_exists($input, 'g')) {
             $g = ($input->{'g'} !== null ? $input->{'g'} : null);
@@ -483,24 +478,12 @@ class MyClass
         }
         $h = null;
         if (property_exists($input, 'h')) {
-            $h = ($input->{'h'} !== null
-                ? ((is_array($input->{'h'}) || is_string($input->{'h'})) ? $input->{'h'} : null)
-                : null
-            );
+            $h = ($input->{'h'} !== null ? $input->{'h'} : null);
             $_providedOptionals['h'] = true;
         }
         $i = null;
         if (property_exists($input, 'i')) {
-            $i = ($input->{'i'} !== null
-                ? ((is_array($input->{'i'})
-                    || is_string($input->{'i'})
-                    || is_array($input->{'i'}) || is_object($input->{'i'})
-                )
-                    ? $input->{'i'}
-                    : null
-                )
-                : null
-            );
+            $i = ($input->{'i'} !== null ? $input->{'i'} : null);
             $_providedOptionals['i'] = true;
         }
 
@@ -525,38 +508,26 @@ class MyClass
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
         $output['a'] = $this->a;
-        if (is_array($this->b) || is_string($this->b)) {
-            $output['b'] = $this->b;
-        }
+        $output['b'] = $this->b;
         $output['c'] = $this->c;
-        if (is_array($this->d) || is_string($this->d)) {
-            $output['d'] = $this->d;
-        }
+        $output['d'] = $this->d;
         if (isset($this->e)) {
             $output['e'] = $this->e;
         }
         if (isset($this->f)) {
-            if (is_array($this->f) || is_string($this->f)) {
-                $output['f'] = $this->f;
-            }
+            $output['f'] = $this->f;
         }
         if (isset($this->g) || array_key_exists('g', $this->_providedOptionals)) {
             $output['g'] = ($this->g !== null ? $this->g : null);
         }
         if (isset($this->h) || array_key_exists('h', $this->_providedOptionals)) {
-            $output['h'] = ($this->h !== null
-                ? ((is_array($this->h) || is_string($this->h)) ? $this->h : null)
-                : null
-            );
+            $output['h'] = ($this->h !== null ? $this->h : null);
         }
         if (isset($this->i) || array_key_exists('i', $this->_providedOptionals)) {
             $output['i'] = ($this->i !== null
-                ? ((is_array($this->i) || is_string($this->i))
-                    ? $this->i
-                    : ((is_array($this->i) || is_object($this->i))
-                        ? json_decode(json_encode($this->i), true)
-                        : null
-                    )
+                ? ((is_array($this->i) || is_object($this->i))
+                    ? json_decode(json_encode($this->i), true)
+                    : $this->i
                 )
                 : null
             );
@@ -575,38 +546,26 @@ class MyClass
         $output = $this->_additionalProperties;
 
         $output->{'a'} = $this->a;
-        if (is_array($this->b) || is_string($this->b)) {
-            $output->{'b'} = $this->b;
-        }
+        $output->{'b'} = $this->b;
         $output->{'c'} = $this->c;
-        if (is_array($this->d) || is_string($this->d)) {
-            $output->{'d'} = $this->d;
-        }
+        $output->{'d'} = $this->d;
         if (isset($this->e)) {
             $output->{'e'} = $this->e;
         }
         if (isset($this->f)) {
-            if (is_array($this->f) || is_string($this->f)) {
-                $output->{'f'} = $this->f;
-            }
+            $output->{'f'} = $this->f;
         }
         if (isset($this->g) || array_key_exists('g', $this->_providedOptionals)) {
             $output->{'g'} = ($this->g !== null ? $this->g : null);
         }
         if (isset($this->h) || array_key_exists('h', $this->_providedOptionals)) {
-            $output->{'h'} = ($this->h !== null
-                ? ((is_array($this->h) || is_string($this->h)) ? $this->h : null)
-                : null
-            );
+            $output->{'h'} = ($this->h !== null ? $this->h : null);
         }
         if (isset($this->i) || array_key_exists('i', $this->_providedOptionals)) {
             $output->{'i'} = ($this->i !== null
-                ? ((is_array($this->i) || is_string($this->i))
-                    ? $this->i
-                    : ((is_array($this->i) || is_object($this->i))
-                        ? json_decode(json_encode($this->i))
-                        : null
-                    )
+                ? ((is_array($this->i) || is_object($this->i))
+                    ? json_decode(json_encode($this->i))
+                    : $this->i
                 )
                 : null
             );

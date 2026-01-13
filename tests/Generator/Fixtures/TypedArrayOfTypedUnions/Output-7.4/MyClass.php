@@ -449,42 +449,33 @@ class MyClass
             ? array_map(fn ($i) => (((is_array($i)
                 && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || (is_int($i) || is_float($i))))))
             )
-                ? array_map(fn ($i) => ((is_string($i))
-                    ? $i
-                    : (((is_int($i) || is_float($i)))
-                        ? (str_contains((string)$i, '.') ? (float)$i : (int)$i)
-                        : null
-                    )
+                ? array_map(fn ($i) => (((is_int($i) || is_float($i)))
+                    ? (str_contains((string)$i, '.') ? (float)$i : (int)$i)
+                    : $i
                 ), $i)
-                : (((is_array($i) || is_array($i))) ? ((is_array($i)) ? $i : null) : null)
+                : $i
             ), $input->{'arrayOfUnions'})
             : null;
         $arrayOfRefUnions = isset($input->{'arrayOfRefUnions'})
             ? array_map(fn ($i) => (((is_array($i)
                 && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || (is_int($i) || is_float($i))))))
             )
-                ? array_map(fn ($i) => ((is_string($i))
-                    ? $i
-                    : (((is_int($i) || is_float($i)))
-                        ? (str_contains((string)$i, '.') ? (float)$i : (int)$i)
-                        : null
-                    )
+                ? array_map(fn ($i) => (((is_int($i) || is_float($i)))
+                    ? (str_contains((string)$i, '.') ? (float)$i : (int)$i)
+                    : $i
                 ), $i)
-                : (((is_array($i) || is_array($i))) ? ((is_array($i)) ? $i : null) : null)
+                : $i
             ), $input->{'arrayOfRefUnions'})
             : null;
         $arrayOfRefAndNotRefUnions = isset($input->{'arrayOfRefAndNotRefUnions'})
             ? array_map(fn ($i) => (((is_array($i)
                 && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || (is_int($i) || is_float($i))))))
             )
-                ? array_map(fn ($i) => ((is_string($i))
-                    ? $i
-                    : (((is_int($i) || is_float($i)))
-                        ? (str_contains((string)$i, '.') ? (float)$i : (int)$i)
-                        : null
-                    )
+                ? array_map(fn ($i) => (((is_int($i) || is_float($i)))
+                    ? (str_contains((string)$i, '.') ? (float)$i : (int)$i)
+                    : $i
                 ), $i)
-                : (((is_array($i) || is_array($i))) ? ((is_array($i)) ? $i : null) : null)
+                : $i
             ), $input->{'arrayOfRefAndNotRefUnions'})
             : null;
         $arrayOfUnionOfStringAndArray = isset($input->{'arrayOfUnionOfStringAndArray'})
@@ -492,7 +483,7 @@ class MyClass
                 && count($i) === count(array_filter($i, fn ($i) => is_array($i))))
             )
                 ? array_map(fn ($i) => $i, $i)
-                : ((is_string($i)) ? $i : null)
+                : $i
             ), $input->{'arrayOfUnionOfStringAndArray'})
             : null;
         $arrayOfUnionWithOneType = isset($input->{'arrayOfUnionWithOneType'})
@@ -528,24 +519,24 @@ class MyClass
             $output['arrayOfUnions'] = array_map(fn ($i) => (((is_array($i)
                 && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || (is_int($i) || is_float($i))))))
             )
-                ? array_map(fn ($i) => ((is_string($i) || (is_int($i) || is_float($i))) ? $i : null), $i)
-                : (((is_array($i) || is_array($i))) ? ((is_array($i)) ? $i : null) : null)
+                ? array_map(fn ($i) => $i, $i)
+                : $i
             ), $this->arrayOfUnions);
         }
         if (isset($this->arrayOfRefUnions)) {
             $output['arrayOfRefUnions'] = array_map(fn ($i) => (((is_array($i)
                 && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || (is_int($i) || is_float($i))))))
             )
-                ? array_map(fn ($i) => ((is_string($i) || (is_int($i) || is_float($i))) ? $i : null), $i)
-                : (((is_array($i) || is_array($i))) ? ((is_array($i)) ? $i : null) : null)
+                ? array_map(fn ($i) => $i, $i)
+                : $i
             ), $this->arrayOfRefUnions);
         }
         if (isset($this->arrayOfRefAndNotRefUnions)) {
             $output['arrayOfRefAndNotRefUnions'] = array_map(fn ($i) => (((is_array($i)
                 && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || (is_int($i) || is_float($i))))))
             )
-                ? array_map(fn ($i) => ((is_string($i) || (is_int($i) || is_float($i))) ? $i : null), $i)
-                : (((is_array($i) || is_array($i))) ? ((is_array($i)) ? $i : null) : null)
+                ? array_map(fn ($i) => $i, $i)
+                : $i
             ), $this->arrayOfRefAndNotRefUnions);
         }
         if (isset($this->arrayOfUnionOfStringAndArray)) {
@@ -553,7 +544,7 @@ class MyClass
                 && count($i) === count(array_filter($i, fn ($i) => is_array($i))))
             )
                 ? array_map(fn ($i) => $i, $i)
-                : ((is_string($i)) ? $i : null)
+                : $i
             ), $this->arrayOfUnionOfStringAndArray);
         }
         if (isset($this->arrayOfUnionWithOneType)) {
@@ -576,24 +567,24 @@ class MyClass
             $output->{'arrayOfUnions'} = array_map(fn ($i) => (((is_array($i)
                 && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || (is_int($i) || is_float($i))))))
             )
-                ? array_map(fn ($i) => ((is_string($i) || (is_int($i) || is_float($i))) ? $i : null), $i)
-                : (((is_array($i) || is_array($i))) ? ((is_array($i)) ? $i : null) : null)
+                ? array_map(fn ($i) => $i, $i)
+                : $i
             ), $this->arrayOfUnions);
         }
         if (isset($this->arrayOfRefUnions)) {
             $output->{'arrayOfRefUnions'} = array_map(fn ($i) => (((is_array($i)
                 && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || (is_int($i) || is_float($i))))))
             )
-                ? array_map(fn ($i) => ((is_string($i) || (is_int($i) || is_float($i))) ? $i : null), $i)
-                : (((is_array($i) || is_array($i))) ? ((is_array($i)) ? $i : null) : null)
+                ? array_map(fn ($i) => $i, $i)
+                : $i
             ), $this->arrayOfRefUnions);
         }
         if (isset($this->arrayOfRefAndNotRefUnions)) {
             $output->{'arrayOfRefAndNotRefUnions'} = array_map(fn ($i) => (((is_array($i)
                 && count($i) === count(array_filter($i, fn ($i) => (is_string($i) || (is_int($i) || is_float($i))))))
             )
-                ? array_map(fn ($i) => ((is_string($i) || (is_int($i) || is_float($i))) ? $i : null), $i)
-                : (((is_array($i) || is_array($i))) ? ((is_array($i)) ? $i : null) : null)
+                ? array_map(fn ($i) => $i, $i)
+                : $i
             ), $this->arrayOfRefAndNotRefUnions);
         }
         if (isset($this->arrayOfUnionOfStringAndArray)) {
@@ -601,7 +592,7 @@ class MyClass
                 && count($i) === count(array_filter($i, fn ($i) => is_array($i))))
             )
                 ? array_map(fn ($i) => $i, $i)
-                : ((is_string($i)) ? $i : null)
+                : $i
             ), $this->arrayOfUnionOfStringAndArray);
         }
         if (isset($this->arrayOfUnionWithOneType)) {

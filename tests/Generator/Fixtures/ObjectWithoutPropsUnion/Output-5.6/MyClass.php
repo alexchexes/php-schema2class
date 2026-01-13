@@ -200,12 +200,7 @@ class MyClass
         }
 
         $foo = $input->{'foo'};
-        $bar = isset($input->{'bar'})
-            ? ((is_string($input->{'bar'}) || is_array($input->{'bar'}) || is_object($input->{'bar'}))
-                ? $input->{'bar'}
-                : null
-            )
-            : null;
+        $bar = isset($input->{'bar'}) ? $input->{'bar'} : null;
 
         $obj = new self($foo, $bar);
 
@@ -226,16 +221,16 @@ class MyClass
     {
         $output = json_decode(json_encode($this->_additionalProperties), true);
 
-        if (is_string($this->foo)) {
-            $output['foo'] = $this->foo;
-        } elseif (is_array($this->foo) || is_object($this->foo)) {
+        if (is_array($this->foo) || is_object($this->foo)) {
             $output['foo'] = json_decode(json_encode($this->foo), true);
+        } else {
+            $output['foo'] = $this->foo;
         }
         if (isset($this->bar)) {
-            if (is_string($this->bar)) {
-                $output['bar'] = $this->bar;
-            } elseif (is_array($this->bar) || is_object($this->bar)) {
+            if (is_array($this->bar) || is_object($this->bar)) {
                 $output['bar'] = json_decode(json_encode($this->bar), true);
+            } else {
+                $output['bar'] = $this->bar;
             }
         }
 
@@ -251,16 +246,16 @@ class MyClass
     {
         $output = $this->_additionalProperties;
 
-        if (is_string($this->foo)) {
-            $output->{'foo'} = $this->foo;
-        } elseif (is_array($this->foo) || is_object($this->foo)) {
+        if (is_array($this->foo) || is_object($this->foo)) {
             $output->{'foo'} = json_decode(json_encode($this->foo));
+        } else {
+            $output->{'foo'} = $this->foo;
         }
         if (isset($this->bar)) {
-            if (is_string($this->bar)) {
-                $output->{'bar'} = $this->bar;
-            } elseif (is_array($this->bar) || is_object($this->bar)) {
+            if (is_array($this->bar) || is_object($this->bar)) {
                 $output->{'bar'} = json_decode(json_encode($this->bar));
+            } else {
+                $output->{'bar'} = $this->bar;
             }
         }
 

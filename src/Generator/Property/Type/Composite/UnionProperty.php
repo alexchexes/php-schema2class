@@ -67,22 +67,7 @@ class UnionProperty extends AbstractProperty
 
         $arms = $this->collectArms(
             mappingFn: fn(PropertyInterface $sub): string => $sub->inputMappingExpr($accessor, asserted: true),
-            assertFn: function (PropertyInterface $sub) use ($accessor): string {
-                $discriminator = $sub->inputAssertionExpr($accessor);
-
-                if (
-                    $sub instanceof ReferenceArrayProperty
-                    || $sub instanceof ObjectArrayProperty
-                    || $sub instanceof PrimitiveArrayProperty
-                ) {
-                    $isArrayCheck = "is_array({$accessor})";
-                    if (!str_contains($discriminator, $isArrayCheck)) {
-                        $discriminator = "({$isArrayCheck} && {$discriminator})";
-                    }
-                }
-
-                return $discriminator;
-            }
+            assertFn: fn(PropertyInterface $sub) => $this->guardInputAssertion($sub, $accessor)
         );
 
         $assignmentTemplate = "\${$name} = %s;";
@@ -106,14 +91,19 @@ class UnionProperty extends AbstractProperty
         $keyStr     = $this->keyStr();
         $outputVar  = VariableNames::OUTPUT;
 
+        $valueExpr = '$this->' . $name;
+        $skipMap   = $this->request->isAtLeastPHP('8.0') ? null : fn(string $map): bool => $map === $valueExpr;
         $arms = $this->collectArms(
-            mappingFn: fn(PropertyInterface $sub): string => $sub->outputMappingExpr("\$this->{$name}"),
-            assertFn: fn(PropertyInterface $sub): string => $sub->typeAssertionExpr("\$this->{$name}")
+            mappingFn: fn(PropertyInterface $sub): string => $sub->outputMappingExpr($valueExpr),
+            assertFn: fn(PropertyInterface $sub): string => $sub->typeAssertionExpr($valueExpr),
+            skipMapFn: $skipMap,
         );
 
         $assignmentTemplate = "\${$outputVar}[{$keyStr}] = %s;";
+        $matchDefault       = $valueExpr;
+        $fallback           = sprintf($assignmentTemplate, $valueExpr);
 
-        return $this->renderAssignments($arms, $assignmentTemplate, null, null);
+        return $this->renderAssignments($arms, $assignmentTemplate, $matchDefault, $fallback);
     }
 
     public function convertTypeToStdClass(): string
@@ -122,14 +112,19 @@ class UnionProperty extends AbstractProperty
         $keyStr     = $this->keyStr();
         $outputVar  = VariableNames::OUTPUT;
 
+        $valueExpr = '$this->' . $name;
+        $skipMap   = $this->request->isAtLeastPHP('8.0') ? null : fn(string $map): bool => $map === $valueExpr;
         $arms = $this->collectArms(
-            mappingFn: fn(PropertyInterface $sub): string => $sub->outputMappingExprStdClass("\$this->{$name}"),
-            assertFn: fn(PropertyInterface $sub): string => $sub->typeAssertionExpr("\$this->{$name}")
+            mappingFn: fn(PropertyInterface $sub): string => $sub->outputMappingExprStdClass($valueExpr),
+            assertFn: fn(PropertyInterface $sub): string => $sub->typeAssertionExpr($valueExpr),
+            skipMapFn: $skipMap,
         );
 
         $assignmentTemplate = "\${$outputVar}->{{$keyStr}} = %s;";
+        $matchDefault       = $valueExpr;
+        $fallback           = sprintf($assignmentTemplate, $valueExpr);
 
-        return $this->renderAssignments($arms, $assignmentTemplate, null, null);
+        return $this->renderAssignments($arms, $assignmentTemplate, $matchDefault, $fallback);
     }
 
     /**
@@ -252,44 +247,73 @@ class UnionProperty extends AbstractProperty
 
     public function inputMappingExpr(string $expr, bool $asserted = false): string
     {
+        $skipMap = $this->request->isAtLeastPHP('8.0') ? null : fn(string $map): bool => $map === $expr;
         $arms = $this->collectArms(
             mappingFn: fn(PropertyInterface $sub): string => $sub->inputMappingExpr($expr),
-            assertFn: fn(PropertyInterface $sub): string => $sub->inputAssertionExpr($expr)
+            assertFn: fn(PropertyInterface $sub) => $this->guardInputAssertion($sub, $expr),
+            skipMapFn: $skipMap,
         );
 
-        return $this->renderConditionalExpr($arms, 'null');
+        if ($arms === []) {
+            return $expr;
+        }
+
+        if ($this->request->isAtLeastPHP('8.0')) {
+            if (count($arms) === 1) {
+                $only = array_key_first($arms);
+                if ($only !== $expr) {
+                    return $only;
+                }
+            }
+        }
+
+        return $this->renderConditionalExpr($arms, $expr);
     }
 
     public function outputMappingExpr(string $expr): string
     {
+        $skipMap = $this->request->isAtLeastPHP('8.0') ? null : fn(string $map): bool => $map === $expr;
         $arms = $this->collectArms(
             mappingFn: fn(PropertyInterface $sub): string => $sub->outputMappingExpr($expr),
-            assertFn: fn(PropertyInterface $sub): string => $sub->typeAssertionExpr($expr)
+            assertFn: fn(PropertyInterface $sub): string => $sub->typeAssertionExpr($expr),
+            skipMapFn: $skipMap,
         );
 
-        return $this->renderConditionalExpr($arms, 'null');
+        if ($arms === []) {
+            return $expr;
+        }
+
+        if ($this->request->isAtLeastPHP('8.0')) {
+            if (count($arms) === 1) {
+                $only = array_key_first($arms);
+                if ($only !== $expr) {
+                    return $only;
+                }
+            }
+        }
+
+        return $this->renderConditionalExpr($arms, $expr);
     }
 
     public function outputMappingExprStdClass(string $expr): string
     {
+        $skipMap = $this->request->isAtLeastPHP('8.0') ? null : fn(string $map): bool => $map === $expr;
         $arms = $this->collectArms(
             mappingFn: fn(PropertyInterface $sub): string => $sub->outputMappingExprStdClass($expr),
             assertFn: fn(PropertyInterface $sub): string => $sub->typeAssertionExpr($expr),
-            skipMapFn: fn(string $map) => $map === 'null'
+            skipMapFn: $skipMap,
         );
 
         if ($arms === []) {
-            return 'null';
+            return $expr;
         }
 
-        return $this->renderConditionalExpr($arms, 'null');
+        return $this->renderConditionalExpr($arms, $expr);
     }
 
     public function cloneExpr(string $expr): string
     {
-        $skipMap = $this->request->isAtLeastPHP('8.0')
-            ? null
-            : fn(string $map): bool => $map === $expr;
+        $skipMap = $this->request->isAtLeastPHP('8.0') ? null : fn(string $map): bool => $map === $expr;
 
         $arms = $this->collectArms(
             mappingFn: fn(PropertyInterface $sub): string => $sub->cloneExpr($expr),
@@ -302,10 +326,38 @@ class UnionProperty extends AbstractProperty
         }
 
         if ($this->request->isAtLeastPHP('8.0') && count($arms) === 1) {
-            return array_key_first($arms);
+            $only = array_key_first($arms);
+            if ($only === $expr) {
+                return $expr;
+            }
+            return $only;
         }
 
-        return $this->renderConditionalExpr($arms, $expr, false);
+        return $this->renderConditionalExpr($arms, $expr);
+    }
+
+    private function guardInputAssertion(PropertyInterface $sub, string $expr): string
+    {
+        $assertion = $sub->inputAssertionExpr($expr);
+
+        if (
+            $sub instanceof ReferenceArrayProperty
+            || $sub instanceof ObjectArrayProperty
+            || $sub instanceof PrimitiveArrayProperty
+        ) {
+            $isArrayCheck = "is_array({$expr})";
+            if (!str_contains($assertion, $isArrayCheck)) {
+                $assertion = "({$isArrayCheck} && {$assertion})";
+            }
+        } elseif (
+            $sub instanceof NestedObjectProperty
+            || ($sub instanceof ReferenceProperty && $sub->getRefType() instanceof ReferencedTypeClass)
+        ) {
+            $isObjCheck = "(is_object({$expr}) || is_array({$expr}))";
+            $assertion  = "({$isObjCheck} && {$assertion})";
+        }
+
+        return $assertion;
     }
 
     /**
@@ -370,6 +422,12 @@ class UnionProperty extends AbstractProperty
     private function renderConditionalExpr(array $arms, string $default, bool $includeMatchDefault = true): string
     {
         if ($this->request->isAtLeastPHP('8.0')) {
+            if ($includeMatchDefault && array_key_exists($default, $arms)) {
+                $wrapped = '(' . $default . ')';
+                $condArms = $arms[$default];
+                unset($arms[$default]);
+                $arms = [$wrapped => $condArms] + $arms;
+            }
             return $this->renderMatch($arms, $includeMatchDefault ? $default : null);
         }
 

@@ -120,9 +120,7 @@ class MyObject
     public function toArray()
     {
         $output = [];
-        if (in_array($this->foo, ['foo', 'bar'], true) || in_array($this->foo, ['baz', 'quz'], true)) {
-            $output['foo'] = $this->foo;
-        }
+        $output['foo'] = $this->foo;
 
         return $output;
     }
@@ -135,9 +133,7 @@ class MyObject
     public function toStdClass()
     {
         $output = new \stdClass();
-        if (in_array($this->foo, ['foo', 'bar'], true) || in_array($this->foo, ['baz', 'quz'], true)) {
-            $output->{'foo'} = $this->foo;
-        }
+        $output->{'foo'} = $this->foo;
 
         return $output;
     }
